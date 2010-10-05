@@ -30,7 +30,6 @@
 #include <SimCore/Actors/LogicConditionalActor.h>
 #include <dtDAL/enginepropertytypes.h>
 #include <dtDAL/arrayactorproperty.h>
-#include <dtDAL/groupactorproperty.h>
 #include <dtDAL/namedparameter.h>
 #include <dtGame/message.h>
 #include <dtGame/messagefactory.h>

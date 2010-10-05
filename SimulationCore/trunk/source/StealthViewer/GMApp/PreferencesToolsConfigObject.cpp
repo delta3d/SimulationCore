@@ -260,7 +260,7 @@ namespace StealthGM
 
          if (sic == NULL)
          {
-            throw dtUtil::Exception(dtGame::ExceptionEnum::GENERAL_GAMEMANAGER_EXCEPTION,
+            throw dtGame::GeneralGameManagerException(
                "Failed to locate the stealth input component on the Game Manager.",
                __FILE__, __LINE__);
          }

@@ -95,9 +95,9 @@ namespace SimCore
       {
          public:
             static const unsigned CONTROL_BYTE_SIZE;
-            static const std::string PARAM_NAME_VALUE_MIN;
-            static const std::string PARAM_NAME_VALUE_MAX;
-            static const std::string PARAM_NAME_VALUE;
+            static const dtUtil::RefString PARAM_NAME_VALUE_MIN;
+            static const dtUtil::RefString PARAM_NAME_VALUE_MAX;
+            static const dtUtil::RefString PARAM_NAME_VALUE;
 
             ContinuousControl( const std::string& name = "",
                double minValue = 0.0, double maxValue = 0.0, double value = 0.0 );
@@ -139,8 +139,8 @@ namespace SimCore
       {
          public:
             static const unsigned CONTROL_BYTE_SIZE;
-            static const std::string PARAM_NAME_TOTAL_STATES;
-            static const std::string PARAM_NAME_CURRENT_STATE;
+            static const dtUtil::RefString PARAM_NAME_TOTAL_STATES;
+            static const dtUtil::RefString PARAM_NAME_CURRENT_STATE;
 
             DiscreteControl( const std::string& name = "", unsigned long totalStates = 0, long currentState = 0 );
 
@@ -176,12 +176,12 @@ namespace SimCore
       class SIMCORE_EXPORT ControlStateActor : public dtGame::GameActor
       {
          public:
-            static const std::string PARAM_NAME_ENTITY_ID;
-            static const std::string PARAM_NAME_STATION_TYPE;
-            static const std::string PARAM_NAME_NUM_DISCRETE_CONTROLS;
-            static const std::string PARAM_NAME_NUM_CONTINUOUS_CONTROLS;
-            static const std::string PARAM_NAME_ARRAY_DISCRETE_CONTROLS;
-            static const std::string PARAM_NAME_ARRAY_CONTINUOUS_CONTROLS;
+            static const dtUtil::RefString PARAM_NAME_ENTITY_ID;
+            static const dtUtil::RefString PARAM_NAME_STATION_TYPE;
+            static const dtUtil::RefString PARAM_NAME_NUM_DISCRETE_CONTROLS;
+            static const dtUtil::RefString PARAM_NAME_NUM_CONTINUOUS_CONTROLS;
+            static const dtUtil::RefString PARAM_NAME_ARRAY_DISCRETE_CONTROLS;
+            static const dtUtil::RefString PARAM_NAME_ARRAY_CONTINUOUS_CONTROLS;
 
             static const float TIME_BETWEEN_UPDATES;//(10.0f);
 
@@ -288,7 +288,7 @@ namespace SimCore
       class SIMCORE_EXPORT ControlStateProxy : public dtGame::GameActorProxy
       {
          public:
-            static const std::string CLASS_NAME;
+            static const dtUtil::RefString CLASS_NAME;
 
             ControlStateProxy();
 

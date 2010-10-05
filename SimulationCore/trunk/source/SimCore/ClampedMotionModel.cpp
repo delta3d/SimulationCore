@@ -56,8 +56,8 @@ namespace SimCore
       , mEnabledUpDown(true)
       , mEnabledLeftRight(true)
       , mLeftRightLimit(-1.0)
-      , mUpLimit(-1.0)
       , mDownLimit(-1.0)
+      , mUpLimit(-1.0)
       , mKeyboard(keyboard)
       , mDOF(NULL)
       , mTestMode(false)
@@ -134,7 +134,7 @@ namespace SimCore
 
             // Do the original rotation
             //get the real time.
-            const double deltaFrameTime = static_cast<const double*>(data->userData)[1];
+            //const double deltaFrameTime = static_cast<const double*>(data->userData)[1];
 
             osg::Vec3 hpr = GetTargetsRotation();
             mHPRChange = hpr;

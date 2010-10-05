@@ -129,9 +129,9 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       const unsigned ContinuousControl::CONTROL_BYTE_SIZE = BaseControl::NAME_LENGTH
          + sizeof(double)*3;
-      const std::string ContinuousControl::PARAM_NAME_VALUE_MIN("MinValue");
-      const std::string ContinuousControl::PARAM_NAME_VALUE_MAX("MaxValue");
-      const std::string ContinuousControl::PARAM_NAME_VALUE("Value");
+      const dtUtil::RefString ContinuousControl::PARAM_NAME_VALUE_MIN("MinValue");
+      const dtUtil::RefString ContinuousControl::PARAM_NAME_VALUE_MAX("MaxValue");
+      const dtUtil::RefString ContinuousControl::PARAM_NAME_VALUE("Value");
 
       //////////////////////////////////////////////////////////////////////////
       ContinuousControl::ContinuousControl( const std::string& name,
@@ -327,8 +327,8 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       const unsigned DiscreteControl::CONTROL_BYTE_SIZE = BaseControl::NAME_LENGTH
          + sizeof(unsigned long) + sizeof(long);
-      const std::string DiscreteControl::PARAM_NAME_TOTAL_STATES("TotalStates");
-      const std::string DiscreteControl::PARAM_NAME_CURRENT_STATE("CurrentState");
+      const dtUtil::RefString DiscreteControl::PARAM_NAME_TOTAL_STATES("TotalStates");
+      const dtUtil::RefString DiscreteControl::PARAM_NAME_CURRENT_STATE("CurrentState");
 
       //////////////////////////////////////////////////////////////////////////
       DiscreteControl::DiscreteControl( const std::string& name,
@@ -484,12 +484,12 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       // ENTITY CONTROL STATE CODE
       //////////////////////////////////////////////////////////////////////////
-      const std::string ControlStateActor::PARAM_NAME_ENTITY_ID("EntityID");
-      const std::string ControlStateActor::PARAM_NAME_STATION_TYPE("StationType");
-      const std::string ControlStateActor::PARAM_NAME_NUM_DISCRETE_CONTROLS("NumDiscreteControls");
-      const std::string ControlStateActor::PARAM_NAME_NUM_CONTINUOUS_CONTROLS("NumContinuousControls");
-      const std::string ControlStateActor::PARAM_NAME_ARRAY_DISCRETE_CONTROLS("ArrayDiscreteControls");
-      const std::string ControlStateActor::PARAM_NAME_ARRAY_CONTINUOUS_CONTROLS("ArrayContinuousControls");
+      const dtUtil::RefString ControlStateActor::PARAM_NAME_ENTITY_ID("EntityID");
+      const dtUtil::RefString ControlStateActor::PARAM_NAME_STATION_TYPE("StationType");
+      const dtUtil::RefString ControlStateActor::PARAM_NAME_NUM_DISCRETE_CONTROLS("NumDiscreteControls");
+      const dtUtil::RefString ControlStateActor::PARAM_NAME_NUM_CONTINUOUS_CONTROLS("NumContinuousControls");
+      const dtUtil::RefString ControlStateActor::PARAM_NAME_ARRAY_DISCRETE_CONTROLS("ArrayDiscreteControls");
+      const dtUtil::RefString ControlStateActor::PARAM_NAME_ARRAY_CONTINUOUS_CONTROLS("ArrayContinuousControls");
 
       const float ControlStateActor::TIME_BETWEEN_UPDATES(5.0f);
 
@@ -760,7 +760,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       // ENTITY CONTROL STATE PROXY CODE
       //////////////////////////////////////////////////////////////////////////
-      const std::string ControlStateProxy::CLASS_NAME("SimCore::Actors::ControlStateActor");
+      const dtUtil::RefString ControlStateProxy::CLASS_NAME("SimCore::Actors::ControlStateActor");
 
       //////////////////////////////////////////////////////////////////////////
       ControlStateProxy::ControlStateProxy()

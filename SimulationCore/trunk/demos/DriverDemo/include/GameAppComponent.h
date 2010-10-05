@@ -72,14 +72,14 @@ namespace DriverDemo
          static const int  LOG_TIME_AMOUNT = 20; // for logging
 
          /// Constructor
-         GameAppComponent(const std::string &name = DEFAULT_NAME);
+         GameAppComponent(const std::string& name = DEFAULT_NAME);
 
          /**
          * Processes messages sent from the Game Manager
          * @param The message to process
          * @see dtGame::GameManager
          */
-         virtual void ProcessMessage(const dtGame::Message &msg);
+         virtual void ProcessMessage(const dtGame::Message& msg);
 
          /// initializes command line to parser and sets the options in the command
          /// line component.
@@ -89,7 +89,7 @@ namespace DriverDemo
          void InitializePlayer();
 
          /// inits the vhiecle for app - Uses "Hover_Vehicle" as a default name. Pass in to command line to change.
-         SimCore::Actors::BasePhysicsVehicleActor *CreateNewVehicle();
+         SimCore::Actors::BasePhysicsVehicleActor* CreateNewVehicle();
 
       protected:
          /// Destructor
