@@ -31,7 +31,7 @@
 
 #include <CEGUI/CEGUIVersion.h>
 
-#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
+#if CEGUI_VERSION_MAJOR == 0 && CEGUI_VERSION_MINOR < 7
 #include <dtGUI/ceuidrawable.h>
 #else
 #include <dtGUI/gui.h>
@@ -179,7 +179,7 @@ namespace NetDemo
          // High Order Objects
          dtCore::ObserverPtr<PlayerStatusActor> mPlayer;
          dtCore::ObserverPtr<GameLogicComponent> mAppComp;
-#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
+#if CEGUI_VERSION_MAJOR == 0 && CEGUI_VERSION_MINOR < 7
          dtCore::RefPtr<dtGUI::CEUIDrawable> mGUI;
 #else
          dtCore::RefPtr<dtGUI::GUI> mGUI;

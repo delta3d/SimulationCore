@@ -30,7 +30,7 @@
 #include <dtDAL/project.h>
 #include <dtGame/actorupdatemessage.h>
 #include <dtGame/basemessages.h>
-#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
+#if CEGUI_VERSION_MAJOR == 0 && CEGUI_VERSION_MINOR < 7
 #include <dtGUI/ceuidrawable.h>
 #endif
 #include <dtGUI/scriptmodule.h>
@@ -299,7 +299,7 @@ namespace NetDemo
       dtABC::Application& app = GetGameManager()->GetApplication();
 
       // Initialize CEGUI
-#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
+#if CEGUI_VERSION_MAJOR == 0 && CEGUI_VERSION_MINOR < 7
       mGUI = new dtGUI::CEUIDrawable(app.GetWindow(), app.GetKeyboard(), app.GetMouse(), mScriptModule);
       osg::Node* guiOSGNode = mGUI->GetOSGNode();
 
@@ -322,7 +322,7 @@ namespace NetDemo
 
       guiOSGNode->getOrCreateStateSet()->setRenderBinDetails(SimCore::Components::RenderingSupportComponent::RENDER_BIN_HUD, "RenderBin");
 
-#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
+#if CEGUI_VERSION_MAJOR == 0 && CEGUI_VERSION_MINOR < 7
       std::string path = dtUtil::FindFileInPathList(schemeFile);
       if(path.empty())
       {
@@ -333,7 +333,7 @@ namespace NetDemo
 
       try
       {
-#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
+#if CEGUI_VERSION_MAJOR == 0 && CEGUI_VERSION_MINOR < 7
          CEGUI::SchemeManager::getSingleton().loadScheme(path);
 #else
          mGUI->LoadScheme(schemeFile);
