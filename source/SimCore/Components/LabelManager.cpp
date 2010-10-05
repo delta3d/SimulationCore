@@ -113,7 +113,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void HUDLabel::SetText(const std::string& text)
       {
-         SetProperty(PROPERTY_TEXT, text.c_str());
+         SetProperty(PROPERTY_TEXT, text);
          mSized = false;
       }
 
