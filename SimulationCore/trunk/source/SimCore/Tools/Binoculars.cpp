@@ -23,7 +23,7 @@
 #include <prefix/SimCorePrefix.h>
 
 #include <SimCore/Tools/Binoculars.h>
-
+#include <SimCore/Components/BaseHUDElements.h>
 #include <SimCore/Actors/StealthActor.h>
 #include <SimCore/UnitEnums.h>
 
@@ -69,6 +69,10 @@ namespace SimCore
       , mIsDynamicZooming(false)
       , mZoomFactor(7.0f)
  	   {
+         CEGUI::String propFrameEnabled(Components::HUDElement::PROPERTY_FRAME_ENABLED.c_str());
+         CEGUI::String propBackEnabled(Components::HUDElement::PROPERTY_BACKGROUND_ENABLED.c_str());
+         CEGUI::String propValue("false");
+
          try
          {
             CEGUI::WindowManager*wm = CEGUI::WindowManager::getSingletonPtr();
@@ -78,14 +82,14 @@ namespace SimCore
                mainWindow->addChildWindow(mOverlay);
             mOverlay->setPosition(CEGUI::UVector2(cegui_reldim(0.0f), cegui_reldim(0.0f)));
             mOverlay->setSize(CEGUI::UVector2(cegui_reldim(1.0f), cegui_reldim(1.0f)));
-            mOverlay->setProperty("BackgroundEnabled", "false");
-            mOverlay->setProperty("FrameEnabled", "false");
+            mOverlay->setProperty(propBackEnabled, propValue);
+            mOverlay->setProperty(propFrameEnabled, propValue);
 
             mReticle = wm->createWindow("WindowsLook/StaticImage", !isLRF ? "binoculars_recticle" : "lrf_recticle");
             mReticle->setPosition(CEGUI::UVector2(cegui_reldim(0.0f), cegui_reldim(0.0f)));
             mReticle->setSize(CEGUI::UVector2(cegui_reldim(1.0f), cegui_reldim(1.0f)));
-            mReticle->setProperty("BackgroundEnabled", "false");
-            mReticle->setProperty("FrameEnabled", "false");
+            mReticle->setProperty(propBackEnabled, propValue);
+            mReticle->setProperty(propFrameEnabled, propValue);
 
             if(mCamera->GetAspectRatio() < 1.47)
             {
@@ -106,8 +110,8 @@ namespace SimCore
                mIntersectionText->setFont("DejaVuSans-10");
                mIntersectionText->setProperty("TextColours", CEGUI::PropertyHelper::colourToString(CEGUI::colour(1, 1, 1)));
                mIntersectionText->setSize(CEGUI::UVector2(cegui_reldim(0.8f), cegui_reldim(0.25f)));
-               mIntersectionText->setProperty("FrameEnabled", "false");
-               mIntersectionText->setProperty("BackgroundEnabled", "false");
+               mIntersectionText->setProperty(propFrameEnabled, propValue);
+               mIntersectionText->setProperty(propBackEnabled, propValue);
                mIntersectionText->setHorizontalAlignment(CEGUI::HA_LEFT);
                SetDistanceReadoutScreenPosition(0.910f,0.85f);
 
@@ -117,8 +121,8 @@ namespace SimCore
                mElevationText->setFont("DejaVuSans-10");
                mElevationText->setProperty("TextColours", CEGUI::PropertyHelper::colourToString(CEGUI::colour(1, 1, 1)));
                mElevationText->setSize(CEGUI::UVector2(cegui_reldim(0.8f), cegui_reldim(0.25f)));
-               mElevationText->setProperty("FrameEnabled", "false");
-               mElevationText->setProperty("BackgroundEnabled", "false");
+               mElevationText->setProperty(propFrameEnabled, propValue);
+               mElevationText->setProperty(propBackEnabled, propValue);
                mElevationText->setHorizontalAlignment(CEGUI::HA_LEFT);
                SetElevationReadoutScreenPosition(0.910f,0.8f);
             }

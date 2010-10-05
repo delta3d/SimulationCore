@@ -25,6 +25,7 @@
 
 #include <SimCore/Tools/GPS.h>
 #include <SimCore/Actors/StealthActor.h>
+#include <SimCore/Components/BaseHUDElements.h>
 
 #include <dtGame/exceptionenum.h>
 
@@ -47,6 +48,8 @@ namespace SimCore
          Tool(mainWindow),
          mPosText(NULL)
       {
+         using namespace Components;
+
          try
          {
             CEGUI::WindowManager *wm = CEGUI::WindowManager::getSingletonPtr();
@@ -61,8 +64,8 @@ namespace SimCore
             mPosText->setProperty("TextColours", CEGUI::PropertyHelper::colourToString(CEGUI::colour(1, 1, 1)));
             mPosText->setPosition(CEGUI::UVector2(cegui_reldim(0.0f), cegui_reldim(0.80f)));
             mPosText->setSize(CEGUI::UVector2(cegui_reldim(0.8f), cegui_reldim(0.25f)));
-            mPosText->setProperty("FrameEnabled", "false");
-            mPosText->setProperty("BackgroundEnabled", "false");
+            mPosText->setProperty(HUDElement::PROPERTY_FRAME_ENABLED.c_str(), "false");
+            mPosText->setProperty(HUDElement::PROPERTY_BACKGROUND_ENABLED.c_str(), "false");
             mPosText->setHorizontalAlignment(CEGUI::HA_LEFT);
          }
          catch(CEGUI::Exception &e)
