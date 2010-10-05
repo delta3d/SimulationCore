@@ -335,7 +335,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       // HUD Call Sign
       //////////////////////////////////////////////////////////////////////////
-#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
+#if CEGUI_VERSION_MAJOR == 0 && CEGUI_VERSION_MINOR < 7
       typedef dtCore::DeltaDrawable GuiDrawable;
 #else
       typedef dtGUI::GUI GuiDrawable;

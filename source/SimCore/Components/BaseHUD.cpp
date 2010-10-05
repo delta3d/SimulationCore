@@ -33,7 +33,7 @@
 
 #include <dtGame/gamemanager.h>
 
-#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
+#if CEGUI_VERSION_MAJOR == 0 && CEGUI_VERSION_MINOR < 7
 #include <dtGUI/ceuidrawable.h>
 #include <dtGUI/basescriptmodule.h>
 #else
@@ -50,7 +50,7 @@
 #include <osg/MatrixTransform>
 #include <osg/Matrix>
 
-#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
+#if CEGUI_VERSION_MAJOR == 0 && CEGUI_VERSION_MINOR < 7
 #include <dtABC/applicationconfigschema.h>
 //these are to realize a window if we do not have a valid context to initialize
 #include <osg/GraphicsContext>
@@ -110,7 +110,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void BaseHUD::Initialize( unsigned int designedResWidth, unsigned int designedResHeight )
       {
-#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
+#if CEGUI_VERSION_MAJOR == 0 && CEGUI_VERSION_MINOR < 7
          bool realized = GetGameManager()->GetApplication().GetWindow()->GetOsgViewerGraphicsWindow()->isRealized();
          //this code will create an opengl context to initialize CEGUI with
          //we only need to do this if OSG does not realize on creation
@@ -172,7 +172,7 @@ namespace SimCore
       {
          dtABC::Application &app = GetGameManager()->GetApplication();
          // Initialize CEGUI
-#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
+#if CEGUI_VERSION_MAJOR == 0 && CEGUI_VERSION_MINOR < 7
          mGUI = new dtGUI::CEUIDrawable(app.GetWindow(), app.GetKeyboard(), app.GetMouse(), mScriptModule);
          osg::Node* guiOSGNode = mGUI->GetOSGNode();
          std::string path = dtUtil::FindFileInPathList(mSchemeFile);
@@ -267,7 +267,7 @@ namespace SimCore
          }
          else if (message.GetMessageType() == dtGame::MessageType::INFO_MAP_LOADED)
          {
-#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
+#if CEGUI_VERSION_MAJOR == 0 && CEGUI_VERSION_MINOR < 7
             GetGameManager()->GetScene().AddDrawable(GetGUIDrawable().get());
 #endif
          }

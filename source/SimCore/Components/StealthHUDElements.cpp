@@ -846,7 +846,7 @@ namespace SimCore
          if( gui != NULL && mNeedle.valid() )
          {
             mGUI = gui;
-#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
+#if CEGUI_VERSION_MAJOR == 0 && CEGUI_VERSION_MINOR < 7
             mGUI->AddChild( mNeedle.get() );
 #else
             mGUI->GetRootNode().addChild(mNeedle->GetOSGNode());
@@ -862,7 +862,7 @@ namespace SimCore
       {
          if( mGUI.valid() && mNeedle.valid() )
          {
-#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
+#if CEGUI_VERSION_MAJOR == 0 && CEGUI_VERSION_MINOR < 7
             mGUI->RemoveChild( mNeedle.get() );
 #else
             mGUI->GetRootNode().removeChild(mNeedle->GetOSGNode());

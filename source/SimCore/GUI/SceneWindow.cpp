@@ -21,7 +21,7 @@
 #include <dtUtil/mathdefines.h>
 #include <SimCore/GUI/SceneWindow.h>
 #include <dtCore/transform.h>
-#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
+#if CEGUI_VERSION_MAJOR == 0 && CEGUI_VERSION_MINOR < 7
 #include <dtGUI/ceguitexture.h>
 #else
 #include <osg/Texture2D>
@@ -67,7 +67,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
+#if CEGUI_VERSION_MAJOR == 0 && CEGUI_VERSION_MINOR < 7
       void SceneWindow::InitializeCamera( osg::Group& sceneNode,
 #else
       void SceneWindow::InitializeCamera( dtGUI::GUI& mainGUI, osg::Group& sceneNode,
@@ -76,13 +76,13 @@ namespace SimCore
       {
          CEGUI::Window* w = GetCEGUIWindow();
          dtCore::RefPtr<osg::Texture2D> rttTex;// = mainGUI.CreateRenderTargetTexture(*w, NULL, "RTT", "RTTImage");
-#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
+#if CEGUI_VERSION_MAJOR == 0 && CEGUI_VERSION_MINOR < 7
          GetOrCreateOSGTexture(rttTex, *w, textureWidth, textureHeight);
 #else
          GetOrCreateOSGTexture(rttTex, mainGUI, *w, textureWidth, textureHeight);
 #endif
          osg::Vec2 viewDims(w->getPixelSize().d_width, w->getPixelSize().d_height);
-#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
+#if CEGUI_VERSION_MAJOR == 0 && CEGUI_VERSION_MINOR < 7
          mCamera = new dtCore::Camera();
 
          //mCamera->setRenderOrder(osg::Camera::PRE_RENDER, 0);
@@ -221,7 +221,7 @@ namespace SimCore
 
       //////////////////////////////////////////////////////////////////////////
       void SceneWindow::GetOrCreateOSGTexture(dtCore::RefPtr<osg::Texture2D>& outTexture,
-#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
+#if CEGUI_VERSION_MAJOR == 0 && CEGUI_VERSION_MINOR < 7
          CEGUI::Window& widget,
 #else
          dtGUI::GUI& mainGUI, CEGUI::Window& widget,
@@ -239,7 +239,7 @@ namespace SimCore
          {
             // Generate an image set with a unique name.
             std::string imagesetName = "RenderTargetTexture." + std::string(widget.getName().c_str());
-#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
+#if CEGUI_VERSION_MAJOR == 0 && CEGUI_VERSION_MINOR < 7
             while( CEGUI::ImagesetManager::getSingleton().isImagesetPresent(imagesetName) )
 #else
             while( CEGUI::ImagesetManager::getSingleton().isDefined(imagesetName) )
@@ -249,7 +249,7 @@ namespace SimCore
             }
 
             // Create and assign the texture to the widget.
-#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
+#if CEGUI_VERSION_MAJOR == 0 && CEGUI_VERSION_MINOR < 7
             dtGUI::CEGUITexture* texture = (dtGUI::CEGUITexture *)(CEGUI::System::getSingleton().getRenderer()->createTexture(textureWidth));
             outTexture = texture->GetOSGTexture();
 #else

@@ -65,7 +65,7 @@ namespace SimCore
 
             SceneWindow( CEGUI::Window& window );
 
-#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
+#if CEGUI_VERSION_MAJOR == 0 && CEGUI_VERSION_MINOR < 7
             virtual void InitializeCamera( osg::Group& sceneNode,
 #else
             virtual void InitializeCamera(dtGUI::GUI& mainGUI, osg::Group& sceneNode,
@@ -94,7 +94,7 @@ namespace SimCore
             osg::Vec2 GetViewArea() const;
 
             void GetOrCreateOSGTexture(dtCore::RefPtr<osg::Texture2D>& outTexture,
-#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
+#if CEGUI_VERSION_MAJOR == 0 && CEGUI_VERSION_MINOR < 7
                CEGUI::Window& widget,
 #else
                dtGUI::GUI& mainGUI, CEGUI::Window& widget,
