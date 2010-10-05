@@ -22,6 +22,7 @@
  * David Guthrie
  */
 
+#include <prefix/SimCorePrefix.h>
 #include <SimCore/Actors/EnvironmentProcessActor.h>
 #include <dtGame/gameactor.h>
 #include <dtDAL/propertymacros.h>
