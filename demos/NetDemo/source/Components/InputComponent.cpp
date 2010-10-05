@@ -189,6 +189,7 @@ namespace NetDemo
       mWeaponMM->SetUpDownLimit(45.0f, 15.0f); // should probably be per vehicle
       mWeaponMM->SetName("WeaponMM");
 
+      UpdateDebugInfo(true);
    }
 
    //////////////////////////////////////////////////////////////
@@ -578,6 +579,7 @@ namespace NetDemo
       AddTopDownNode(25.0f, DOF_TOPDOWN_VIEW_01);
       AddTopDownNode(35.0f, DOF_TOPDOWN_VIEW_02);
 
+      UpdateDebugInfo(true);
    }
 
    /////////////////////////////////////////////////////////////////////////////
@@ -707,7 +709,6 @@ namespace NetDemo
             actor->SetSlavedEntity(mVehicle);
             GetGameManager()->AddActor(*mDRGhostActorProxy, false, false);
          }
-
          mDRGhostMode = GHOST_ON;
       }
 
@@ -719,7 +720,6 @@ namespace NetDemo
          {
             SendAttachOrDetachMessage(mDRGhostActorProxy->GetGameActor().GetUniqueId(), "");
          }
-
          mDRGhostMode = ATTACH_TO_GHOST;
       }
 
@@ -731,7 +731,6 @@ namespace NetDemo
          {
             mPhysVehicle->SetVisible(false);
          }
-
          mDRGhostMode = HIDE_REAL;
       }
 
@@ -752,6 +751,7 @@ namespace NetDemo
          mDRGhostMode = NONE;
       }
 
+      UpdateDebugInfo(true);
    }
 
    ////////////////////////////////////////////////////////////////////////////////
@@ -780,6 +780,10 @@ namespace NetDemo
             std::cout << "Toggle - UseVelocity in DR Update Decision changed to [" << 
                mPhysVehicle->GetDRPublishingActComp()->GetUseVelocityInDRUpdateDecision() << "]." << std::endl;
          }
+
+         // This whole method is not really used anymore, so if needed in the future,
+         // add a call to UpdateDebugInfo(true).  
+         //UpdateDebugInfo(true);
       }
    }
 
@@ -821,6 +825,8 @@ namespace NetDemo
          //mVehicle->GetDeadReckoningHelper().SetMaxTranslationSmoothingTime(0.97 * rateInSeconds);
          std::cout << "TEST - Min time between publishes[" << rateInSeconds <<  "]." << std::endl;
          */
+
+         UpdateDebugInfo(true);
       }
    }
 
@@ -882,6 +888,8 @@ namespace NetDemo
          mDebugToggleMode = DEBUG_TOGGLE_DR_ALGORITHM;
          LOG_ALWAYS("DEBUG -- Changing Toggle Mode to DR_ALGORITHM. Press 0 to do toggle.");
       }
+
+      UpdateDebugInfo(true);
    }
 
    ////////////////////////////////////////////////////////////////////////////////
@@ -907,6 +915,8 @@ namespace NetDemo
       {
          ToggleFixedBlendTime();
       }
+
+      UpdateDebugInfo(true);
    }
 
    ////////////////////////////////////////////////////////////////////////////////
@@ -950,6 +960,7 @@ namespace NetDemo
             LOG_ALWAYS("TEST -- Toggling - Publish Angular Velocity to TRUE");
          }
       }
+      //GetLogicComponent()->GetDebugInfo().mCurDebugVar = "DR Algorithm";
    }
 
    ////////////////////////////////////////////////////////////////////////////////
@@ -1036,7 +1047,103 @@ namespace NetDemo
                (dtGame::GroundClampTypeEnum::NONE);
          }
       }
+   }
 
+   ////////////////////////////////////////////////////////////////////////////////
+   void InputComponent::UpdateDebugInfo(bool sendUpdateMessage)
+   {
+      SimCore::Actors::BasePhysicsVehicleActor* physVehicle =
+         dynamic_cast<SimCore::Actors::BasePhysicsVehicleActor*>(mVehicle.get());
+
+      if (physVehicle != NULL)
+      {
+         if (physVehicle->IsDeadReckoningHelperValid())
+         {
+            GetLogicComponent()->GetDebugInfo().mDRGroundClampStatus = 
+               physVehicle->GetDeadReckoningHelper().GetGroundClampType().GetName();
+            GetLogicComponent()->GetDebugInfo().mDRAlgorithm = 
+               physVehicle->GetDeadReckoningHelper().GetDeadReckoningAlgorithm().GetName();
+            GetLogicComponent()->GetDebugInfo().mDRUseSplines = 
+               physVehicle->GetDeadReckoningHelper().GetUseCubicSplineTransBlend();
+            GetLogicComponent()->GetDebugInfo().mDRUseFixedBlend = 
+               physVehicle->GetDeadReckoningHelper().GetUseFixedSmoothingTime();            
+         }
+         else 
+         {
+            GetLogicComponent()->GetDebugInfo().mDRGroundClampStatus = "NA";
+            GetLogicComponent()->GetDebugInfo().mDRAlgorithm = "NA";
+            GetLogicComponent()->GetDebugInfo().mDRUseSplines = "NA";
+         }
+         //GetLogicComponent()->GetDebugInfo().mDRPublishRate = 0;
+         //GetLogicComponent()->GetDebugInfo().mDRUseFixedBlend = ???;
+
+         if (physVehicle->GetDRPublishingActComp() != NULL)
+         {
+            GetLogicComponent()->GetDebugInfo().mDRPublishRate = (int)
+               physVehicle->GetDRPublishingActComp()->GetMaxUpdateSendRate();
+            GetLogicComponent()->GetDebugInfo().mDRPublishAngularVel = 
+               physVehicle->GetDRPublishingActComp()->GetPublishAngularVelocity();
+         }
+
+         // Current Debug Var
+         if (mDebugToggleMode == DEBUG_TOGGLE_DR_ALGORITHM)
+         {
+            GetLogicComponent()->GetDebugInfo().mCurDebugVar = "DR Algorithm";
+         }
+         else if (mDebugToggleMode == DEBUG_TOGGLE_PUBLISH_ANGULAR_VELOCITY)
+         {
+            GetLogicComponent()->GetDebugInfo().mCurDebugVar = "DR Publish Ang Vel";
+         }
+         else if (mDebugToggleMode == DEBUG_TOGGLE_DR_WITH_CUBIC_SPLINE)
+         {
+            GetLogicComponent()->GetDebugInfo().mCurDebugVar = "DR Blending Type";
+         }
+         else if (mDebugToggleMode == DEBUG_TOGGLE_GROUND_CLAMPING)
+         {
+            GetLogicComponent()->GetDebugInfo().mCurDebugVar = "DR Ground Clamp";
+         }
+         else if (mDebugToggleMode == DEBUG_FIXED_BLEND_TIME)
+         {
+            GetLogicComponent()->GetDebugInfo().mCurDebugVar = "DR Fixed Blend";
+         }
+         else
+         {
+            GetLogicComponent()->GetDebugInfo().mCurDebugVar = "UNKNOWN";
+         }
+
+         // GHOST MODE
+         if (mDRGhostMode == NONE)
+         {
+            GetLogicComponent()->GetDebugInfo().mShowDebugWindow = false;
+            GetLogicComponent()->GetDebugInfo().mDRGhostMode = "OFF";
+         }
+         else if (mDRGhostMode == GHOST_ON)
+         {
+            GetLogicComponent()->GetDebugInfo().mShowDebugWindow = true;
+            GetLogicComponent()->GetDebugInfo().mDRGhostMode = "ON";
+         }
+         else if (mDRGhostMode == ATTACH_TO_GHOST)
+         {
+            GetLogicComponent()->GetDebugInfo().mShowDebugWindow = true;
+            GetLogicComponent()->GetDebugInfo().mDRGhostMode = "Attach Ghost";
+         }
+         else if (mDRGhostMode == HIDE_REAL)
+         {
+            GetLogicComponent()->GetDebugInfo().mShowDebugWindow = true;
+            GetLogicComponent()->GetDebugInfo().mDRGhostMode = "Hide Real";
+         }
+         else if (mDRGhostMode == DETACH_FROM_VEHICLE)
+         {
+            GetLogicComponent()->GetDebugInfo().mShowDebugWindow = true;
+            GetLogicComponent()->GetDebugInfo().mDRGhostMode = "Detached";
+         }
+
+      }
+
+      if (sendUpdateMessage)
+      {
+         SendSimpleMessage(NetDemo::MessageType::UI_DEBUGINFO_UPDATED);
+      }
    }
 
    ////////////////////////////////////////////////////////////////////////////////

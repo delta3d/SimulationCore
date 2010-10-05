@@ -67,6 +67,31 @@ namespace NetDemo
     */
    class GameLogicComponent : public SimCore::Components::GameStateComponent
    {
+      /// Internal data struct/class for debug specific data. Member vars are public to act like a struct. Accessed by InputComponent and HUDScreen
+      class DebugInformation 
+      {
+      public:
+         /// Constructor
+         DebugInformation()
+            : mShowDebugWindow(false)
+            , mDRUseSplines(false)
+            , mDRPublishRate(1)
+            , mDRUseFixedBlend(false)
+            , mDRPublishAngularVel(false)
+         {  }
+
+         bool mShowDebugWindow;
+         std::string mCurDebugVar;
+         std::string mDRAlgorithm;
+         std::string mDRGroundClampStatus;
+         std::string mDRGhostMode;
+         bool mDRUseSplines;
+         int mDRPublishRate;
+         bool mDRUseFixedBlend; 
+         bool mDRPublishAngularVel;
+      };
+
+      //// Rest of class
       public:
          static const std::string TIMER_UPDATE_TERRAIN;
          static const std::string HOVER_VEHICLE_PROTOTYPE;
@@ -119,6 +144,9 @@ namespace NetDemo
          void SetVehicleType(PlayerStatusActor::VehicleTypeEnum& vehicleType);
          const PlayerStatusActor::VehicleTypeEnum& GetVehicleType() const;
 
+         /// Returns the debug info struct - directly modifiable
+         DebugInformation& GetDebugInfo() { return mDebugInformation; } 
+
       protected:
          void HandleActorUpdateMessage(const dtGame::Message& msg);
          void HandleTimerElapsedMessage(const dtGame::Message& msg);
@@ -170,6 +198,8 @@ namespace NetDemo
          bool mStartTheGameOnNextGameRunning;
 
          PlayerStatusActor::VehicleTypeEnum* mVehicleType;
+
+         DebugInformation mDebugInformation;
    };
 
 

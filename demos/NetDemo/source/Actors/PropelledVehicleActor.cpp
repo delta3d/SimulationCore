@@ -1,6 +1,6 @@
 /* -*-c++-*-
  * SimulationCore
- * Copyright 2007-2008, Alion Science and Technology
+ * Copyright 2007-2010, Alion Science and Technology
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -19,7 +19,7 @@
  * This software was developed by Alion Science and Technology Corporation under
  * circumstances in which the U. S. Government may have rights in the software.
  *
- * Bradley Anderegg
+ * Bradley Anderegg, Curtiss Murphy
  */
 
 #include <Actors/PropelledVehicleActor.h>
@@ -88,19 +88,23 @@ namespace NetDemo
       GetOSGNode()->accept(*visitor);
 
       // Add a particle system to see where the vehicle has been.
-      //mTrailParticles = new dtCore::ParticleSystem;
-      //mTrailParticles->LoadFile("Particles/SimpleSpotTrailGreen.osg", true);
-      //mTrailParticles->SetEnabled(true);
-      //AddChild(mTrailParticles.get());
+      mTrailParticles = new dtCore::ParticleSystem;
+      mTrailParticles->LoadFile("Particles/SimpleSpotTrailGreen.osg", true);
+      mTrailParticles->SetEnabled(true);
+      AddChild(mTrailParticles.get());
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
-   /*
    void PropelledVehicleActor::ProcessMessage(const dtGame::Message& message)
    {
 
       if (message.GetMessageType() == dtGame::MessageType::TICK_REMOTE)
       {
+         // The following behavior is left here because it was used for the statistics published 
+         // with the Game Engine Gems 2 article, 'Believable Dead Reckoning for Networked Games'.  
+         // It computes the difference between the dead reckoned location and the real location 
+         // every frame and prints out an avg value. 
+         /*
          // Pull the real position for DR testing. The real loc is set by the physics at the end 
          // of the previous frame.  
          dtCore::Transform xform;
@@ -118,20 +122,26 @@ namespace NetDemo
          // Every so often, print the cumulative averaged delta and the vel
          static int counter = 0;
          counter ++;
-         if (counter >= 30)
+         if (counter >= 60)
          {
-            printf("  Avg DR Error[%6.4f m], Last DR Speed[%6.4f m/s].\r\n", 
-               mDRTestingAveragedError, testingDRSpeed);
+            printf("  Avg DR Error[%6.4f m], Last DR Speed[%6.4f m/s], NumPubs[%5.4f].\r\n", 
+               mDRTestingAveragedError, testingDRSpeed, GetDRPublishingActComp()->GetMaxUpdateSendRate());
             counter = 0;
          }
-      }
+         */
 
-      if (IsRemote())
+         if (IsRemote())
+         {
+            BaseClass::ProcessMessage(message);
+         }
+      }
+      else  // Separated out because it registers for TickRemote, even if local for the test behavior above.
       {
          BaseClass::ProcessMessage(message);
       }
+
    }
-*/
+
    ///////////////////////////////////////////////////////////////////////////////////
    void PropelledVehicleActor::UpdateVehicleTorquesAndAngles(float deltaTime)
    {
@@ -306,7 +316,7 @@ namespace NetDemo
    ////////////////////////////////////////////////////////////////////////
    void PropelledVehicleActorProxy::OnEnteredWorld()
    {
-      //RegisterForMessages(dtGame::MessageType::TICK_REMOTE);
+      RegisterForMessages(dtGame::MessageType::TICK_REMOTE);
 
       BaseClass::OnEnteredWorld();
    }

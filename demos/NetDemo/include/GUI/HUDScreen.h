@@ -74,6 +74,14 @@ namespace NetDemo
 
             void ToggleHelp();
 
+            // Debug Info Methods
+            void HandleDebugInfoUpdated();
+            void SetDebugInfoEnabled(bool enabled);
+            bool IsDebugInfoEnabled() const;
+            void ToggleDebugInfo();
+            void SetDebugInfoTextLine(int index, const std::string& text, 
+               const osg::Vec4 color = osg::Vec4(1.0, 1.0, 1.0, 1.0));
+
             // DEBUG:
             void SetHelpTextLine(int index, const std::string& text,
                const osg::Vec4 color = osg::Vec4(1.0,1.0,1.0,1.0));
@@ -83,19 +91,22 @@ namespace NetDemo
 
          private:
             bool mHelpEnabled;
+			bool mDebugInfoEnabled;
             float mDamageMeterTimer;
             float mDamageMeterLevel;
             osg::Vec4 mDamageMeterColor;
             dtCore::RefPtr<GameLogicComponent> mLogicComp;
 
             // Animation Controllers
-            dtCore::RefPtr<SimCore::GUI::PositionController> mControlHelpPos;
+			dtCore::RefPtr<SimCore::GUI::PositionController> mControlHelpPos;
+			dtCore::RefPtr<SimCore::GUI::PositionController> mControlDebugInfoPos;
 
             // Special Widgets
             CEGUI::Window* mFortPoints;
             CEGUI::Window* mDamageMeter_Fort;
             CEGUI::Window* mScore;
-            dtCore::RefPtr<SimCore::Components::HUDElement> mHelp;
+			dtCore::RefPtr<SimCore::Components::HUDElement> mHelp;
+			dtCore::RefPtr<SimCore::Components::HUDElement> mDebugInfo;
       };
    }
 }

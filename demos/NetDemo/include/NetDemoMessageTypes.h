@@ -54,6 +54,7 @@ namespace NetDemo
       static const MessageType UI_OPTION_PREV;
       static const MessageType UI_OPTION_SELECT;
       static const MessageType UI_HELP;
+	  static const MessageType UI_DEBUGINFO_UPDATED;
       static const MessageType ENTITY_ACTION;
    DT_DECLARE_MESSAGE_TYPE_CLASS_END()
 
