@@ -26,13 +26,15 @@
 #include <dtUtil/nodecollector.h>
 #include <dtCore/particlesystem.h>
 #include <dtCore/transform.h>
-#include <dtDAL/enginepropertytypes.h>
-#include <dtDAL/functor.h>
+#include <dtDAL/booleanactorproperty.h>
+#include <dtDAL/resourceactorproperty.h>
 #include <dtGame/gamemanager.h>
 #include <dtGame/invokable.h>
 #include <SimCore/Actors/MissileActor.h>
 #include <SimCore/Components/TimedDeleterComponent.h>
 #include <SimCore/Components/ParticleManagerComponent.h>
+
+#include <dtDAL/propertymacros.h>
 
 #include <osg/MatrixTransform>
 
@@ -58,8 +60,6 @@ namespace SimCore
       void MissileActorProxy::BuildInvokables()
       {
          PlatformActorProxy::BuildInvokables();
-
-         MissileActor &actor = static_cast<MissileActor&>(GetGameActor());
       }
 
       //////////////////////////////////////////////////////////
@@ -67,22 +67,27 @@ namespace SimCore
       {
          PlatformActorProxy::BuildPropertyMap();
 
-         AddProperty(new dtDAL::BooleanActorProperty("Smoke Trail Enabled", "Smoke Trail Enabled",
-            dtDAL::MakeFunctor(static_cast<MissileActor&>(GetGameActor()), &MissileActor::SetSmokeTrailEnabled),
-            dtDAL::MakeFunctorRet(static_cast<MissileActor&>(GetGameActor()), &MissileActor::IsSmokeTrailEnabled),
-            "Turns the smoke trail particle system on or off"));
+         static const dtUtil::RefString GROUPNAME("MissileActor");
+         static const dtUtil::RefString GROUPNAME_PARTICLES("Particles");
+
+         MissileActor* drawable = NULL;
+         GetActor(drawable);
+
+         typedef dtDAL::PropertyRegHelper<MissileActorProxy&, MissileActor> PropRegHelperType;
+         PropRegHelperType propRegHelper(*this, drawable, GROUPNAME);
+
+         DT_REGISTER_PROPERTY_WITH_NAME_AND_LABEL(SmokeTrailEnabled, "Smoke Trail Enabled", "Smoke Trail Enabled",
+                  "Turns the smoke trail particle system on or off", PropRegHelperType, propRegHelper);
 
          AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::PARTICLE_SYSTEM,
-            "Smoke Trail File", "Smoke Trail File", dtDAL::MakeFunctor(*this, &MissileActorProxy::LoadSmokeTrailFile),
+            "Smoke Trail File", "Smoke Trail File", dtUtil::MakeFunctor(&MissileActorProxy::LoadSmokeTrailFile, this),
             "Loads the file of the missile smoke trail", "Particles"));
 
-         AddProperty(new dtDAL::BooleanActorProperty("Flame Enabled", "Flame Enabled",
-            dtDAL::MakeFunctor(static_cast<MissileActor&>(GetGameActor()), &MissileActor::SetFlameEnabled),
-            dtDAL::MakeFunctorRet(static_cast<MissileActor&>(GetGameActor()), &MissileActor::IsFlameEnabled),
-            "Turns the flame particle system on or off"));
+         DT_REGISTER_PROPERTY_WITH_NAME_AND_LABEL(FlameEnabled, "Flame Enabled", "Flame Enabled",
+                  "Turns the flame particle system on or off", PropRegHelperType, propRegHelper);
 
          AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::PARTICLE_SYSTEM,
-            "Flame File", "Flame File", dtDAL::MakeFunctor(*this, &MissileActorProxy::LoadFlameFile),
+            "Flame File", "Flame File", dtUtil::MakeFunctor(&MissileActorProxy::LoadFlameFile, this),
             "Loads the file of the missile thruster flame", "Particles"));
       }
 
@@ -169,7 +174,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////
-      bool MissileActor::IsFlameEnabled()
+      bool MissileActor::GetFlameEnabled()
       {
          if(mFlame.valid())
          {
@@ -224,9 +229,9 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////
-      bool MissileActor::IsSmokeTrailEnabled()
+      bool MissileActor::GetSmokeTrailEnabled()
       {
-         if(mSmokeTrail.valid())
+         if (mSmokeTrail.valid())
          {
             const dtDAL::BooleanActorProperty* prop = NULL;
             mSmokeTrail->GetProperty("Enable", prop);

@@ -58,7 +58,7 @@ namespace SimCore
 
          void SetFlameEnabled( bool enable );
 
-         bool IsFlameEnabled();
+         bool GetFlameEnabled();
 
          void LoadFlameFile(const std::string &fileName);
 
@@ -68,9 +68,9 @@ namespace SimCore
 
          void SetSmokeTrailEnabled( bool enable );
 
-         bool IsSmokeTrailEnabled();
+         bool GetSmokeTrailEnabled();
 
-         void LoadSmokeTrailFile(const std::string &fileName);
+         void LoadSmokeTrailFile(const std::string& fileName);
 
          void SetSmokeTrail( dtActors::ParticleSystemActorProxy* particleProxy );
 
@@ -110,9 +110,9 @@ namespace SimCore
          /// Creates the actor
          void CreateActor();
 
-         void LoadSmokeTrailFile(const std::string &fileName);
+         void LoadSmokeTrailFile(const std::string& fileName);
 
-         void LoadFlameFile(const std::string &fileName);
+         void LoadFlameFile(const std::string& fileName);
 
          virtual void OnRemovedFromWorld();
 
