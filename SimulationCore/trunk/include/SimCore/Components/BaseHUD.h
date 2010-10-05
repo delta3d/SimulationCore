@@ -36,7 +36,7 @@
 
 namespace dtGUI
 {
-#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
+#if CEGUI_VERSION_MAJOR == 0 && CEGUI_VERSION_MINOR < 7
    class BaseScriptModule;
 #else
    class GUI;
@@ -100,7 +100,7 @@ namespace SimCore
          CEGUI::Window* GetMainCEGUIWindow();
          const CEGUI::Window* GetMainCEGUIWindow() const;
 
-#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
+#if CEGUI_VERSION_MAJOR == 0 && CEGUI_VERSION_MINOR < 7
          dtCore::RefPtr<dtGUI::CEUIDrawable> GetGUIDrawable() { return mGUI; }
          const dtCore::RefPtr<dtGUI::CEUIDrawable> GetGUIDrawable() const { return mGUI; }
 #else
@@ -145,7 +145,7 @@ namespace SimCore
       private:
          dtCore::DeltaWin* mWin;
          dtCore::RefPtr<HUDGroup> mMainWindow;
-#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
+#if CEGUI_VERSION_MAJOR == 0 && CEGUI_VERSION_MINOR < 7
          dtCore::RefPtr<dtGUI::CEUIDrawable> mGUI;
 #else
          dtCore::RefPtr<dtGUI::GUI> mGUI;
