@@ -73,6 +73,7 @@ set(LIB_SOURCES_2
    "${SOURCE_PATH}/Actors/DynamicLightPrototypeActor.cpp"
    "${SOURCE_PATH}/Actors/DynamicParticleSystem.cpp"
    "${SOURCE_PATH}/Actors/EntityActorRegistry.cpp"
+   "${SOURCE_PATH}/Actors/EnvironmentProcessActor.cpp"
    "${SOURCE_PATH}/Actors/EphemerisEnvironmentActor.cpp"
    "${SOURCE_PATH}/Actors/FireActor.cpp"
    "${SOURCE_PATH}/Actors/FlareActor.cpp"
