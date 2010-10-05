@@ -84,7 +84,7 @@ namespace DriverDemo
    const std::string GameAppComponent::CMD_LINE_START_HEADING       = "StartHeading";
 
    //////////////////////////////////////////////////////////////////////////
-   GameAppComponent::GameAppComponent(const std::string &name)
+   GameAppComponent::GameAppComponent(const std::string& name)
       : SimCore::Components::BaseGameAppComponent(name)
       , mWaitForVehicle(false)
    {

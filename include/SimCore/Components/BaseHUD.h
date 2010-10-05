@@ -49,20 +49,18 @@ namespace SimCore
    namespace Components
    {
 
-      /**
-      * Exception that may be thrown by the HUD.
-      */
-      class BaseHUDException : public dtUtil::Enumeration
+      class SIMCORE_EXPORT BaseHUDInitException : public dtUtil::Exception
       {
-         DECLARE_ENUM(BaseHUDException);
       public:
-         static BaseHUDException INIT_ERROR;
-         static BaseHUDException RUNTIME_ERROR;
-      private:
-         BaseHUDException(const std::string &name) : dtUtil::Enumeration(name)
-         {
-            AddInstance(this);
-         }
+         BaseHUDInitException(const std::string& message, const std::string& filename, unsigned int linenum);
+         virtual ~BaseHUDInitException() {};
+      };
+
+      class SIMCORE_EXPORT BaseHUDRuntimeException : public dtUtil::Exception
+      {
+      public:
+         BaseHUDRuntimeException(const std::string& message, const std::string& filename, unsigned int linenum);
+         virtual ~BaseHUDRuntimeException() {};
       };
 
       /**

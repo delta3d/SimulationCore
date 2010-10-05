@@ -61,13 +61,18 @@ namespace SimCore
 {
    namespace Components
    {
-      //////////////////////////////////////////////////////////////////////////
-      // Base HUD Exceptions Code
-      //////////////////////////////////////////////////////////////////////////
-      IMPLEMENT_ENUM(BaseHUDException);
-      BaseHUDException BaseHUDException::INIT_ERROR("INIT_ERROR");
-      BaseHUDException BaseHUDException::RUNTIME_ERROR("RUNTIME_ERROR");
 
+      BaseHUDInitException::BaseHUDInitException(const std::string& message,
+               const std::string& filename, unsigned int linenum)
+      : dtUtil::Exception(message, filename, linenum)
+      {
+      }
+
+      BaseHUDRuntimeException::BaseHUDRuntimeException(const std::string& message,
+               const std::string& filename, unsigned int linenum)
+      : dtUtil::Exception(message, filename, linenum)
+      {
+      }
 
 
       //////////////////////////////////////////////////////////////////////////
@@ -159,7 +164,7 @@ namespace SimCore
          {
             std::ostringstream oss;
             oss << "CEGUI while setting up GUI: " << e.getMessage().c_str();
-            throw dtUtil::Exception(BaseHUDException::INIT_ERROR,oss.str(), __FILE__, __LINE__);
+            throw BaseHUDInitException(oss.str(), __FILE__, __LINE__);
          }
       }
 
@@ -196,7 +201,7 @@ namespace SimCore
          {
             std::ostringstream oss;
             oss << "CEGUI while setting up BaseHUD: " << e.getMessage().c_str();
-            throw dtUtil::Exception(BaseHUDException::INIT_ERROR,oss.str(), __FILE__, __LINE__);
+            throw BaseHUDInitException(oss.str(), __FILE__, __LINE__);
          }
          dtUtil::FileUtils::GetInstance().PopDirectory();
 

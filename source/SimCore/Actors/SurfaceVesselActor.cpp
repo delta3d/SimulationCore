@@ -246,7 +246,7 @@ namespace SimCore
          dtCore::ParticleSystem::LayerList::iterator iter = layers.begin();
          for( ; iter != layers.end(); ++iter )
          {
-            osgParticle::ParticleSystem* ref = &iter->GetParticleSystem();
+            //osgParticle::ParticleSystem* ref = &iter->GetParticleSystem();
             dtCore::ParticleLayer& pLayer = *iter;
             BindShaderToNode(shaderName, pLayer.GetGeode());
          }
