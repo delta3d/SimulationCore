@@ -24,6 +24,7 @@
 
 #include <SimCore/Tools/LaserRangeFinder.h>
 #include <SimCore/Tools/Binoculars.h>
+#include <SimCore/Components/BaseHUDElements.h>
 
 #include <SimCore/Actors/StealthActor.h>
 #include <SimCore/UnitEnums.h>
@@ -54,6 +55,8 @@ namespace SimCore
            //mElevationText(NULL)//,
            //mIntersectionText(NULL)
       {
+         using namespace Components;
+
          try
          {
             CEGUI::WindowManager *wm = CEGUI::WindowManager::getSingletonPtr();
@@ -65,9 +68,9 @@ namespace SimCore
                mainWindow->addChildWindow(mOverlay);
             mOverlay->setPosition(CEGUI::UVector2(cegui_reldim(0.0f), cegui_reldim(0.0f)));
             mOverlay->setSize(CEGUI::UVector2(cegui_reldim(1.0f), cegui_reldim(1.0f)));
-            mOverlay->setProperty("BackgroundEnabled", "false");
-            mOverlay->setProperty("FrameEnabled", "false");
-            mOverlay->setProperty("Image", "set:LRF image:LRF");
+            mOverlay->setProperty(HUDElement::PROPERTY_BACKGROUND_ENABLED.c_str(), "false");
+            mOverlay->setProperty(HUDElement::PROPERTY_FRAME_ENABLED.c_str(), "false");
+            mOverlay->setProperty(HUDElement::PROPERTY_IMAGE.c_str(), "set:LRF image:LRF");
 
             /*mOverlay->addChildWindow(mIntersectionText);
             mIntersectionText->setFont("DejaVuSans-10");
