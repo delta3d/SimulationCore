@@ -242,6 +242,10 @@ namespace NetDemo
       {
          mScreenHUD->ToggleHelp();
       }
+      else if (messageType == NetDemo::MessageType::UI_DEBUGINFO_UPDATED)
+      {
+         mScreenHUD->HandleDebugInfoUpdated();
+      }
       else if(messageType == dtGame::MessageType::INFO_ACTOR_CREATED
          || messageType == dtGame::MessageType::INFO_ACTOR_UPDATED)
       {

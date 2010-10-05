@@ -105,6 +105,9 @@ namespace NetDemo
 
          bool HandleButtonReleased(const dtCore::Mouse* mouse, dtCore::Mouse::MouseButton button);
 
+         /// Updates the debug info structure on the Game Logic component and sends a UI_DEBUGINFO_UPDATED message
+         void UpdateDebugInfo(bool sendUpdateMessage);
+
       protected:
          virtual ~InputComponent();
          void FireSomething();

@@ -97,6 +97,21 @@ namespace NetDemo
          osg::Vec2 startPos(-(bounds.x() + bounds.z()), bounds.y());
          mControlHelpPos->SetStartTarget(startPos);
          mControlHelpPos->SetToStart();
+
+         // Debug Info Window
+         window = wm.loadWindowLayout("CEGUI/layouts/NetDemo/DebugInfo.layout");
+         mDebugInfo = new SimCore::Components::HUDElement(*window);
+         GetRoot()->GetCEGUIWindow()->addChildWindow(window);
+
+         // Debug Info - Animation Controller
+         mControlDebugInfoPos = static_cast<SimCore::GUI::PositionController*>
+            (AddAnimationControl(SimCore::GUI::Screen::ANIM_TYPE_MOTION, *mDebugInfo));
+         osg::Vec4 bounds2 = SimCore::GUI::CeguiUtils::GetNormalizedScreenBounds(*window);
+         bounds2.y() = window->getPosition().d_y.d_scale;
+         osg::Vec2 startPos2(-(bounds2.x() + bounds2.z()), bounds2.y());
+         mControlDebugInfoPos->SetStartTarget(startPos2);
+         mControlDebugInfoPos->SetToStart();
+
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -219,5 +234,135 @@ namespace NetDemo
          }
       }
 
+      //////////////////////////////////////////////////////////////////////////
+      void HUDScreen::HandleDebugInfoUpdated()
+      {
+         if (mLogicComp.valid())
+         {
+            // std::string mDRGhostMode;
+
+            SetDebugInfoEnabled(mLogicComp->GetDebugInfo().mShowDebugWindow);
+
+            if (mLogicComp->GetDebugInfo().mShowDebugWindow)
+            {
+               CEGUI::WindowManager& wm = *CEGUI::WindowManager::getSingletonPtr();
+               std::string tempValue;
+               osg::Vec4 highlightColor(0.2, 1.0, 0.2, 1.0);
+               osg::Vec4 normalColor(1.0, 1.0, 1.0, 1.0);
+
+               // Current Debug Variable
+               tempValue = "Cur Var: " + mLogicComp->GetDebugInfo().mCurDebugVar;
+               SetDebugInfoTextLine(2, tempValue, highlightColor);
+
+               // DR Algorithm
+               tempValue = "DR Algorithm: " + mLogicComp->GetDebugInfo().mDRAlgorithm;
+               SetDebugInfoTextLine(3, tempValue, 
+                  (mLogicComp->GetDebugInfo().mCurDebugVar == "DR Algorithm" 
+                     ? highlightColor : normalColor));
+
+               // Ground Clamp
+               tempValue = "DR Ground Clamp: " + mLogicComp->GetDebugInfo().mDRGroundClampStatus;
+               SetDebugInfoTextLine(4, tempValue, 
+                  (mLogicComp->GetDebugInfo().mCurDebugVar == "DR Ground Clamp" 
+                     ? highlightColor : normalColor));
+
+               // Ground Clamp
+               tempValue = "DR Blending Type: " + (mLogicComp->GetDebugInfo().mDRUseSplines 
+                  ? std::string("Splines") : std::string("Projective"));
+               SetDebugInfoTextLine(5, tempValue,
+                  (mLogicComp->GetDebugInfo().mCurDebugVar == "DR Blending Type" 
+                     ? highlightColor : normalColor));
+
+               // DR Ghost Mode
+               tempValue = "DR Ghost Mode: " + mLogicComp->GetDebugInfo().mDRGhostMode;
+               SetDebugInfoTextLine(6, tempValue, normalColor);
+
+               // Publish Rate
+               tempValue = "Publish Rate: " + dtUtil::ToString(mLogicComp->GetDebugInfo().mDRPublishRate) + "/sec";
+               SetDebugInfoTextLine(7, tempValue, normalColor);
+
+               // DR Fixed Blend
+               tempValue = "DR Fixed Blend: " + (mLogicComp->GetDebugInfo().mDRUseFixedBlend
+                  ? std::string("TRUE") : std::string("FALSE"));
+               SetDebugInfoTextLine(8, tempValue, 
+                  (mLogicComp->GetDebugInfo().mCurDebugVar == "DR Fixed Blend" 
+                     ? highlightColor : normalColor));
+
+               // DR Publish Ang Vel
+               tempValue = "DR Publish Ang Vel: " + (mLogicComp->GetDebugInfo().mDRPublishAngularVel
+                  ? std::string("TRUE") : std::string("FALSE"));
+               SetDebugInfoTextLine(9, tempValue, 
+                  (mLogicComp->GetDebugInfo().mCurDebugVar == "DR Publish Ang Vel" 
+                  ? highlightColor : normalColor));
+
+               
+            }
+         }
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void HUDScreen::SetDebugInfoEnabled(bool enabled)
+      {
+         if(mDebugInfoEnabled != enabled)
+         {
+            mDebugInfoEnabled = enabled;
+
+            if(enabled)
+            {
+               mControlDebugInfoPos->Execute(0.4f, 0.0f, false); // Slide In
+            }
+            else
+            {
+               mControlDebugInfoPos->Execute(0.4f, 0.0f, true); // Slide Out
+            }
+         }
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      bool HUDScreen::IsDebugInfoEnabled() const
+      {
+         return mDebugInfoEnabled;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void HUDScreen::ToggleDebugInfo()
+      {
+         SetDebugInfoEnabled( !mDebugInfoEnabled );
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void HUDScreen::SetDebugInfoTextLine(int index, const std::string& text, const osg::Vec4 color)
+      {
+         //if(index >= 0 && index < 6)
+         //{
+ 	         CEGUI::WindowManager& wm = *CEGUI::WindowManager::getSingletonPtr();
+ 
+            try
+            {
+               std::stringstream ss;
+               ss << "DebugInfo_" << (index+1);
+               CEGUI::Window* textLine = wm.getWindow(ss.str());
+
+               if(textLine != NULL)
+               {
+                  textLine->setText(text.c_str());
+
+                  CEGUI::ColourRect colorRect;
+                  CEGUI::colour cornerColor(color.x(),color.y(),color.z(),color.w());
+                  colorRect.d_bottom_left = cornerColor;
+                  colorRect.d_bottom_right = cornerColor;
+                  colorRect.d_top_left = cornerColor;
+                  colorRect.d_top_right = cornerColor;
+                  textLine->setProperty("TextColours", CEGUI::PropertyHelper::colourRectToString(colorRect));
+               }
+            }
+            catch(...)
+            {
+               std::stringstream ss;
+               ss << "\n\tHUDScreen could not find DebugInfo line \"DebugInfo_" << (index+1) << "\"\n\n";
+               printf(ss.str().c_str());
+            }
+         //}
+      }
    }
 }

@@ -52,9 +52,13 @@ namespace NetDemo
       "Used to toggle the UI help window",
       NETDEMO_MESSAGE_TYPE_ID + 3, DT_MSG_CLASS(dtGame::Message));
 
+   const MessageType MessageType::UI_DEBUGINFO_UPDATED("UI Debug Info Updated", "NetDemo",
+	   "Used to indicate the DebugInfo was updated for the GUI Component",
+	   NETDEMO_MESSAGE_TYPE_ID + 4, DT_MSG_CLASS(dtGame::Message));
+
    const MessageType MessageType::ENTITY_ACTION("Entity Action", "NetDemo",
       "Generic message type for communicating most types of interactions of the network.",
-      NETDEMO_MESSAGE_TYPE_ID + 4, DT_MSG_CLASS(NetDemo::EntityActionMessage));
+      NETDEMO_MESSAGE_TYPE_ID + 5, DT_MSG_CLASS(NetDemo::EntityActionMessage));
   
 
 }
