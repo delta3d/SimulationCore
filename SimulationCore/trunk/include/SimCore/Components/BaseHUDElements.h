@@ -33,7 +33,7 @@
 #endif
 #include <CEGUI/CEGUI.h>
 #include <CEGUI/CEGUIVersion.h>
-#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
+#if CEGUI_VERSION_MAJOR == 0 && CEGUI_VERSION_MINOR < 7
 #include <dtGUI/dtgui.h>
 #else
 #include <dtGUI/gui.h>
@@ -102,10 +102,12 @@ namespace SimCore
       class SIMCORE_EXPORT HUDElement : public dtCore::Base
       {
          public:
-            static const std::string DEFAULT_BLANK_TYPE;
-            static const std::string DEFAULT_IMAGE_TYPE;
-            static const std::string DEFAULT_TEXT_TYPE;
-            static const std::string PROPERTY_IMAGE;
+            static const dtUtil::RefString DEFAULT_BLANK_TYPE;
+            static const dtUtil::RefString DEFAULT_IMAGE_TYPE;
+            static const dtUtil::RefString DEFAULT_TEXT_TYPE;
+            static const dtUtil::RefString PROPERTY_IMAGE;
+            static const dtUtil::RefString PROPERTY_FRAME_ENABLED;
+            static const dtUtil::RefString PROPERTY_BACKGROUND_ENABLED;
 
             // @param type The defined CEGUI window type
             // @name The name of this element
@@ -138,6 +140,8 @@ namespace SimCore
             const HUDAlignment& GetAlignment() const;
             
             void SetProperty( const std::string& propName, const std::string& value );
+            void SetProperty( const std::string& propName, const char* value );
+            void SetProperty( const std::string& propName, bool value);
             std::string GetProperty( const std::string& propName ) const;
 
             virtual void SetVisible( bool visible );

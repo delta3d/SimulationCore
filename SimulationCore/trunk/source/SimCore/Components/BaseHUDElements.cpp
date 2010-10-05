@@ -124,10 +124,12 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       // HUD Element Code
       //////////////////////////////////////////////////////////////////////////
-      const std::string HUDElement::DEFAULT_BLANK_TYPE("DefaultWindow");
-      const std::string HUDElement::DEFAULT_IMAGE_TYPE("WindowsLook/StaticImage");
-      const std::string HUDElement::DEFAULT_TEXT_TYPE("WindowsLook/StaticText");
-      const std::string HUDElement::PROPERTY_IMAGE("Image");
+      const dtUtil::RefString HUDElement::DEFAULT_BLANK_TYPE("DefaultWindow");
+      const dtUtil::RefString HUDElement::DEFAULT_IMAGE_TYPE("WindowsLook/StaticImage");
+      const dtUtil::RefString HUDElement::DEFAULT_TEXT_TYPE("WindowsLook/StaticText");
+      const dtUtil::RefString HUDElement::PROPERTY_IMAGE("Image");
+      const dtUtil::RefString HUDElement::PROPERTY_FRAME_ENABLED("FrameEnabled");
+      const dtUtil::RefString HUDElement::PROPERTY_BACKGROUND_ENABLED("BackgroundEnabled");
 
       //////////////////////////////////////////////////////////////////////////
       HUDElement::HUDElement(const std::string& name, const std::string& type)
@@ -312,7 +314,10 @@ namespace SimCore
       {
          try
          {
-            mWindow->setProperty(propName, value);
+            if(mWindow->isPropertyPresent(propName))
+            {
+               mWindow->setProperty(propName, value);
+            }
          }
          catch(CEGUI::Exception& e)
          {
@@ -321,6 +326,23 @@ namespace SimCore
                << propName.c_str() << "\", \""<< value.c_str() << "\")" << std::endl
                 << e.getMessage().c_str();
          }
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void HUDElement::SetProperty( const std::string& propName, const char* value )
+      {
+         // This method overload prevents string literals from being treated
+         // as booleans.
+         std::string str(value);
+         SetProperty(propName, str);
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void HUDElement::SetProperty(const std::string& propName, bool value)
+      {
+         static const dtUtil::RefString STR_TRUE("true");
+         static const dtUtil::RefString STR_FALSE("false");
+         SetProperty(propName, value?STR_TRUE.c_str():STR_FALSE.c_str());
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -422,8 +444,8 @@ namespace SimCore
          : HUDElement(name, type)
       {
          SetAlignment(HUDAlignment::LEFT_TOP);
-         SetProperty("FrameEnabled", "false");
-         SetProperty("BackgroundEnabled", "false");
+         SetProperty(PROPERTY_FRAME_ENABLED, false);
+         SetProperty(PROPERTY_BACKGROUND_ENABLED, false);
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -488,8 +510,8 @@ namespace SimCore
       HUDImage::HUDImage(const std::string& name, const std::string& type)
          : HUDElement(name, type)
       {
-         SetProperty("FrameEnabled", "false");
-         SetProperty("BackgroundEnabled", "false");
+         SetProperty(PROPERTY_FRAME_ENABLED, false);
+         SetProperty(PROPERTY_BACKGROUND_ENABLED, false);
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -512,8 +534,8 @@ namespace SimCore
       HUDGroup::HUDGroup(const std::string& name, const std::string& type)
          : HUDElement(name, type)
       {
-         SetProperty("FrameEnabled", "false");
-         SetProperty("BackgroundEnabled", "false");
+         SetProperty(PROPERTY_FRAME_ENABLED, false);
+         SetProperty(PROPERTY_BACKGROUND_ENABLED, false);
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -617,8 +639,8 @@ namespace SimCore
          mActive(true),
          mDisabled(false)
       {
-         SetProperty("FrameEnabled", "false");
-         SetProperty("BackgroundEnabled", "false");
+         SetProperty(PROPERTY_FRAME_ENABLED, false);
+         SetProperty(PROPERTY_BACKGROUND_ENABLED, false);
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -790,8 +812,8 @@ namespace SimCore
          mUnits(0.0f),
          mHorizontal(true)
       {
-         SetProperty("FrameEnabled", "false");
-         SetProperty("BackgroundEnabled", "false");
+         SetProperty(PROPERTY_FRAME_ENABLED, false);
+         SetProperty(PROPERTY_BACKGROUND_ENABLED, false);
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -1022,8 +1044,8 @@ namespace SimCore
          mMidSpace(0.0f),
          mEndSpace(0.0f)
       {
-         SetProperty("FrameEnabled", "false");
-         SetProperty("BackgroundEnabled", "false");
+         SetProperty(PROPERTY_FRAME_ENABLED, false);
+         SetProperty(PROPERTY_BACKGROUND_ENABLED, false);
       }
 
       //////////////////////////////////////////////////////////////////////////
