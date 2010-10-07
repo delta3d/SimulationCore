@@ -56,7 +56,7 @@ namespace NetDemo
 
       virtual void OnRemovedFromGM();
 
-      DT_DECLARE_ACCESSOR(SpawnComponent, int, MaxEnemies);
+      DT_DECLARE_ACCESSOR(int, MaxEnemies);
       DT_DECLARE_ACCESSOR(int, Difficulty);
       DT_DECLARE_ACCESSOR(int, WaveNumber);
       DT_DECLARE_ACCESSOR(int, NumPlayers);
