@@ -161,46 +161,38 @@ namespace NetDemo
 
    void SpawnComponent::SpawnEnemy( const EnemyDescriptionActor* desc )
    {
-      std::vector<dtDAL::ActorProxy*> proxies;
-      GetGameManager()->FindActorsByType(*NetDemoActorRegistry::ENEMY_MINE_ACTOR_TYPE, proxies);
-      GetGameManager()->FindActorsByType(*NetDemoActorRegistry::ENEMY_HELIX_ACTOR_TYPE, proxies);
+      std::string errorMessage("Error attempting to spawn enemy, cannot find prototype by the name '" + desc->GetPrototypeName() + ".'");
 
-      int numEnemies = proxies.size();
-      if(numEnemies <= mMaxEnemies)
+      dtCore::RefPtr<BaseEnemyActorProxy> enemyProxy = NULL;
+      SimCore::Utils::CreateActorFromPrototypeWithException(*GetGameManager(),
+         desc->GetSpawnInfo().GetEnemyPrototypeName(), enemyProxy, errorMessage);
+
+      if(enemyProxy.valid())
       {
-         std::string errorMessage("Error attempting to spawn enemy, cannot find prototype by the name '" + desc->GetPrototypeName() + ".'");
+         osg::Vec3 point;
+         BaseEnemyActor& enemyActor = static_cast<BaseEnemyActor&>(*(enemyProxy->GetActor()));
 
-         dtCore::RefPtr<BaseEnemyActorProxy> enemyProxy = NULL;
-         SimCore::Utils::CreateActorFromPrototypeWithException(*GetGameManager(),
-            desc->GetSpawnInfo().GetEnemyPrototypeName(), enemyProxy, errorMessage);
-
-         if(enemyProxy.valid())
+         if(!mSpawnVolumes.empty())
          {
-            osg::Vec3 point;
-            BaseEnemyActor& enemyActor = static_cast<BaseEnemyActor&>(*(enemyProxy->GetActor()));
-
-            if(!mSpawnVolumes.empty())
+            int index = dtUtil::RandRange(0, mSpawnVolumes.size() - 1);
+            if(mSpawnVolumes[index].valid())
             {
-               int index = dtUtil::RandRange(0, mSpawnVolumes.size() - 1);
-               if(mSpawnVolumes[index].valid())
-               {
-                  point = mSpawnVolumes[index]->GetSpawnPoint();
+               point = mSpawnVolumes[index]->GetSpawnPoint();
 
-                  //TEMP HACK SINCE WAVE MESSAGES DONT WORK
-                  //if(point[2] > 200.0f) return;             
-               }
+               //TEMP HACK SINCE WAVE MESSAGES DONT WORK
+               //if(point[2] > 200.0f) return;             
             }
-
-            enemyActor.InitAI(desc);
-
-            //this doesn't appear to work
-            dtCore::Transform trans;
-            enemyActor.GetTransform(trans);
-            trans.SetTranslation(point);
-            enemyActor.SetTransform(trans);
-
-            GetGameManager()->AddActor(*enemyProxy, false, true);
          }
+
+         enemyActor.InitAI(desc);
+
+         //this doesn't appear to work
+         dtCore::Transform trans;
+         enemyActor.GetTransform(trans);
+         trans.SetTranslation(point);
+         enemyActor.SetTransform(trans);
+
+         GetGameManager()->AddActor(*enemyProxy, false, true);
       }
    }
 
@@ -225,32 +217,44 @@ namespace NetDemo
    {
       if(GetGameStatus() == ServerGameStatusActor::ServerGameStatusEnum::WAVE_IN_PROGRESS)
       {
-         //LOG_ALWAYS("Wave in progress");
-         EnemyDescriptionActor* desc = NULL;
+         std::vector<dtDAL::ActorProxy*> proxies;
+         GetGameManager()->FindActorsByType(*NetDemoActorRegistry::ENEMY_MINE_ACTOR_TYPE, proxies);
 
-         EnemyDescArray::iterator iter = mEnemies.begin();
-         EnemyDescArray::iterator iterEnd = mEnemies.end();
-         for(;iter != iterEnd; ++iter)
+         int numEnemies = proxies.size();
+         proxies.clear();
+
+         GetGameManager()->FindActorsByType(*NetDemoActorRegistry::ENEMY_HELIX_ACTOR_TYPE, proxies);
+         numEnemies += proxies.size();
+
+         if(numEnemies <= mMaxEnemies)
          {
-            if((*iter).valid())
+            //LOG_ALWAYS("Wave in progress");
+            EnemyDescriptionActor* desc = NULL;
+
+            EnemyDescArray::iterator iter = mEnemies.begin();
+            EnemyDescArray::iterator iterEnd = mEnemies.end();
+            for(;iter != iterEnd; ++iter)
             {
-               desc = (*iter).get();
-
-               EnemyDescriptionActor::EnemySpawnInfo& info = desc->GetSpawnInfo();
-
-               float lastSpawn = info.GetLastSpawnTime();
-               lastSpawn += dt;
-
-               //check if it is time to spawn a new one
-               if((info.GetNumSpawnPerMinute() / 60) * lastSpawn > 1.0)
+               if((*iter).valid())
                {
-                  lastSpawn = 0;
-                  SpawnEnemy(desc);
+                  desc = (*iter).get();
+
+                  EnemyDescriptionActor::EnemySpawnInfo& info = desc->GetSpawnInfo();
+
+                  float lastSpawn = info.GetLastSpawnTime();
+                  lastSpawn += dt;
+
+                  //check if it is time to spawn a new one
+                  if((info.GetNumSpawnPerMinute() / 60) * lastSpawn > 1.0)
+                  {
+                     lastSpawn = 0;
+                     SpawnEnemy(desc);
+                  }
+
+                  info.SetLastSpawnTime(lastSpawn);
                }
 
-               info.SetLastSpawnTime(lastSpawn);
             }
-
          }
 
       }
