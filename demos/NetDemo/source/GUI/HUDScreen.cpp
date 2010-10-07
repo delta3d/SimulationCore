@@ -228,8 +228,8 @@ namespace NetDemo
             catch(...)
             {
                std::stringstream ss;
-               ss << "\n\tHUDScreen could not find help text line \"Help_" << (index+1) << "\"\n\n";
-               printf(ss.str().c_str());
+               ss << "\n\tHUDScreen could not find help text line \"Help_" << (index+1) << "\"\n";
+               printf("%s\n", ss.str().c_str());
             }
          }
       }

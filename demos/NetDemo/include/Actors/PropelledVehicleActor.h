@@ -32,6 +32,12 @@
 #include <SimCore/Actors/FourWheelVehicleActor.h>
 #include <SimCore/FourWheelVehiclePhysicsHelper.h>
 #include <dtCore/particlesystem.h>
+#include <dtGame/basemessages.h>
+
+namespace dtGame
+{
+   class TickMessage;
+}
 
 namespace NetDemo
 {
@@ -50,8 +56,7 @@ namespace NetDemo
       virtual void OnEnteredWorld();
       virtual void UpdateVehicleTorquesAndAngles(float deltaTime);
 
-      /// Overridden for a few testing messages
-      virtual void ProcessMessage(const dtGame::Message& message);
+      virtual void OnTickRemoteTest(const dtGame::TickMessage& message);
 
    protected:
       virtual ~PropelledVehicleActor();

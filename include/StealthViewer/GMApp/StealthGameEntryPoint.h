@@ -29,11 +29,6 @@
 #include <StealthViewer/GMApp/Export.h>
 #include <StealthViewer/GMApp/StealthHUD.h>
 
-namespace dtDAL
-{
-   class ActorProxy;
-}
-
 namespace dtGame
 {
    class GameApplication;
@@ -113,7 +108,6 @@ namespace StealthGM
       private:
          //dtCore::RefPtr<dtGame::DeadReckoningComponent> mDrComp;
          dtCore::ObserverPtr<SimCore::Actors::StealthActor> mStealth;
-         //std::vector<dtCore::RefPtr<dtDAL::ActorProxy> > mActors;
 
          dtCore::RefPtr<StealthHUD> mHudGUI;
 

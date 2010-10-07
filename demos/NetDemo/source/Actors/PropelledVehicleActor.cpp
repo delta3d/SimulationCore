@@ -42,6 +42,7 @@
 #include <dtGame/deadreckoninghelper.h>
 #include <dtGame/messagetype.h>
 #include <dtGame/message.h>
+#include <dtGame/invokable.h>
 #include <dtCore/shaderprogram.h>
 
 namespace NetDemo
@@ -98,63 +99,47 @@ namespace NetDemo
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
-   void PropelledVehicleActor::ProcessMessage(const dtGame::Message& message)
+   void PropelledVehicleActor::OnTickRemoteTest(const dtGame::TickMessage& tickMessage)
    {
 
-      if (message.GetMessageType() == dtGame::MessageType::TICK_REMOTE)
+      // The following behavior is left here because it was used for the statistics published
+      // with the Game Engine Gems 2 article, 'Believable Dead Reckoning for Networked Games'.
+      // It computes the difference between the dead reckoned location and the real location
+      // every frame and passes along the avg value to the debug values.
+
+      // compute DR debug values on Remote message, but only if we are a local actor
+      // Pull the real position for DR testing. The real loc is set by the physics at the end
+      // of the previous frame.
+      dtCore::Transform xform;
+      GetTransform(xform);
+      xform.GetTranslation(mDRTestingRealLocation);
+
+      // Get the DR position. The DR pos is set in Tick Remote, so we pull it after that.
+      osg::Vec3 testingDRLoc = GetDeadReckoningHelper().GetCurrentDeadReckonedTranslation();
+      float testingDRSpeed = GetDeadReckoningHelper().GetLastKnownVelocity().length();
+
+      // Compare the DR loc to the real loc.
+      float difference = (mDRTestingRealLocation - testingDRLoc).length();
+      mDRTestingAveragedError = mDRTestingAveragedError * 0.99f + difference * 0.01f;
+
+      // Every so often, print the cumulative averaged delta and the vel
+      static int counter = 0;
+      counter ++;
+      if (counter >= 60)
       {
-         // The following behavior is left here because it was used for the statistics published 
-         // with the Game Engine Gems 2 article, 'Believable Dead Reckoning for Networked Games'.  
-         // It computes the difference between the dead reckoned location and the real location 
-         // every frame and passes along the avg value to the debug values. 
-
-         // compute DR debug values on Remote message, but only if we are a local actor
-         if (!IsRemote()) 
+         GameLogicComponent* comp = NULL;
+         GetGameActorProxy().GetGameManager()->GetComponentByName(GameLogicComponent::DEFAULT_NAME, comp);
+         if (comp != NULL)
          {
-            // Pull the real position for DR testing. The real loc is set by the physics at the end 
-            // of the previous frame.  
-            dtCore::Transform xform;
-            GetTransform(xform);
-            xform.GetTranslation(mDRTestingRealLocation);
-
-            // Get the DR position. The DR pos is set in Tick Remote, so we pull it after that.
-            osg::Vec3 testingDRLoc = GetDeadReckoningHelper().GetCurrentDeadReckonedTranslation();
-            float testingDRSpeed = GetDeadReckoningHelper().GetLastKnownVelocity().length();
-
-            // Compare the DR loc to the real loc.
-            float difference = (mDRTestingRealLocation - testingDRLoc).length();
-            mDRTestingAveragedError = mDRTestingAveragedError * 0.99f + difference * 0.01f; 
-
-            // Every so often, print the cumulative averaged delta and the vel
-            static int counter = 0;
-            counter ++;
-            if (counter >= 60)
-            {
-               GameLogicComponent* comp = NULL;
-               GetGameActorProxy().GetGameManager()->GetComponentByName(GameLogicComponent::DEFAULT_NAME, comp);
-               if (comp != NULL)
-               {
-                  comp->GetDebugInfo().mDRAvgSpeed = testingDRSpeed;
-                  comp->GetDebugInfo().mDRAvgError = mDRTestingAveragedError;
-                  MessageUtils::SendSimpleMessage(NetDemo::MessageType::UI_DEBUGINFO_UPDATED, 
-                     *GetGameActorProxy().GetGameManager());
-               }
-               //printf("  Avg DR Error[%6.4f m], Last DR Speed[%6.4f m/s], NumPubs[%5.4f].\r\n", 
-               //   mDRTestingAveragedError, testingDRSpeed, GetDRPublishingActComp()->GetMaxUpdateSendRate());
-               counter = 0;
-            }
+            comp->GetDebugInfo().mDRAvgSpeed = testingDRSpeed;
+            comp->GetDebugInfo().mDRAvgError = mDRTestingAveragedError;
+            MessageUtils::SendSimpleMessage(NetDemo::MessageType::UI_DEBUGINFO_UPDATED,
+               *GetGameActorProxy().GetGameManager());
          }
-
-         if (IsRemote())
-         {
-            BaseClass::ProcessMessage(message);
-         }
+         //printf("  Avg DR Error[%6.4f m], Last DR Speed[%6.4f m/s], NumPubs[%5.4f].\r\n",
+         //   mDRTestingAveragedError, testingDRSpeed, GetDRPublishingActComp()->GetMaxUpdateSendRate());
+         counter = 0;
       }
-      else  // Separated out because it registers for TickRemote, even if local for the test behavior above.
-      {
-         BaseClass::ProcessMessage(message);
-      }
-
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
@@ -326,12 +311,21 @@ namespace NetDemo
    void PropelledVehicleActorProxy::BuildInvokables()
    {
       BaseClass::BuildInvokables();
+
+      PropelledVehicleActor* pEntity = NULL;
+      GetActor(pEntity);
+
+      AddInvokable(*new dtGame::Invokable("TickRemoteTest",
+               dtUtil::MakeFunctor(&PropelledVehicleActor::OnTickRemoteTest, pEntity)));
    }
 
    ////////////////////////////////////////////////////////////////////////
    void PropelledVehicleActorProxy::OnEnteredWorld()
    {
-      RegisterForMessages(dtGame::MessageType::TICK_REMOTE);
+      if (!IsRemote())
+      {
+         RegisterForMessages(dtGame::MessageType::TICK_REMOTE, "TickRemoteTest");
+      }
 
       BaseClass::OnEnteredWorld();
    }
