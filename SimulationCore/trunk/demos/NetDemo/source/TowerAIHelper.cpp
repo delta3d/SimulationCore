@@ -48,61 +48,6 @@
 namespace NetDemo
 {
 
-   //class TowerAlign: public Align
-   //{
-   //public:
-   //   typedef Align BaseClass;
-
-   //   TowerAlign(float lookAhead, float timeToTarget)
-   //      : Align(lookAhead, timeToTarget)
-   //   {}
-
-   //   /*virtual*/ void Think(float dt, BaseClass::ConstKinematicGoalParam current_goal, BaseClass::ConstKinematicParam current_state, BaseClass::SteeringOutByRefParam result)
-   //   {
-   //      dtUtil::Clamp(dt, 0.01f, 0.1f);
-
-   //      float lookAhead = mTimeToTarget * dt;
-   //      osg::Vec3 targetPos = GetTargetPosition(lookAhead, current_goal);        
-
-   //      osg::Vec3 goalForward;
-   //      float dist = GetTargetForward(lookAhead, targetPos, current_goal, current_state, goalForward);      
-
-   //      osg::Vec3 currForward = current_state.GetForward();
-   //      currForward.normalize();
-
-   //      //float heading = osg::RadiansToDegrees(atan2(currForward[1], currForward[0]));
-
-   //      float dot = goalForward * currForward;
-   //      float sign = (currForward[0] * goalForward[1]) - (currForward[1] * goalForward[0]);
-
-   //      float angle = acos(dot);
-   //      //LOG_ALWAYS("angle: " + dtUtil::ToString(heading));
-   //      dtUtil::MatrixUtil::Print(currForward);
-   //      if(dot < 0.9999f)
-   //      {     
-   //         float yaw = angle / osg::DegreesToRadians(current_state.GetAngularVel());
-   //         dtUtil::Clamp(yaw, 0.0001f, mTimeToTarget);
-   //         yaw /= mTimeToTarget;
-   //         yaw = Sgn(sign) * yaw;
-
-   //         if(!dtUtil::IsFinite(yaw)) 
-   //         {
-   //            yaw = 0.0f;
-   //         }
-   //        
-   //         result.SetYaw(yaw);
-   //      }  
-   //      //else
-   //      {
-   //         result.SetYaw(1.0f);
-   //      }
-
-   //   }
-
-   //protected:
-
-   //};
-
    TowerAIHelper::TowerAIHelper()
    {
      

@@ -64,9 +64,9 @@ namespace NetDemo
       BaseClass::OnInit(desc);
 
       float minSpeedPercent = 0.0f;
-      float maxSpeedPercent = 1.0f;
+      float maxSpeedPercent = 2.5f;
       float lookAheadTime = 2.0f;
-      float timeToTarget = 30.0f;
+      float timeToTarget = 10.0f;
       float lookAheadRot = 2.5f;
       float timeToTargetRot = 1.0f;
 
@@ -85,7 +85,7 @@ namespace NetDemo
       mTargetOffset = osg::Vec3(
          dtUtil::RandFloat(-35.0f, 35.0f),
          dtUtil::RandFloat(-15.0f, 35.0f),
-         dtUtil::RandFloat(5.0f, 15.0f) );
+         dtUtil::RandFloat(15.0f, 15.0f) );
    }
 
 

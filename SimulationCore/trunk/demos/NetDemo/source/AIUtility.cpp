@@ -252,7 +252,7 @@ namespace NetDemo
 
       if(current_state.GetVel().length() < mSpeed)
       {
-         result.SetThrust(dot);
+         result.SetThrust(2.0f * dot);
       }
       else
       {
@@ -393,7 +393,7 @@ namespace NetDemo
       float zVel = current_state.GetVel()[2];
       if(fabs(zVel) < 0.0001) zVel = BaseClass::Sgn(zVel) * 0.0001;
 
-      float heightLookAhead = zVel * mTimeToTarget;
+      float heightLookAhead = zVel * 2.5f * mTimeToTarget;
 
       float heightDiff = goalPos[2] - (pos[2] + heightLookAhead);
       float remainingFallTime = fabs(heightDiff / zVel);
