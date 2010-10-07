@@ -51,7 +51,7 @@ namespace NetDemo
       virtual void UpdateVehicleTorquesAndAngles(float deltaTime);
 
       /// Overridden for a few testing messages
-      //virtual void ProcessMessage(const dtGame::Message& message);
+      virtual void ProcessMessage(const dtGame::Message& message);
 
    protected:
       virtual ~PropelledVehicleActor();

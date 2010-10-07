@@ -27,7 +27,7 @@ Group {
         }
         BlendFunc {
           source SRC_ALPHA
-          destination ONE
+          destination ONE_MINUS_SRC_ALPHA
         }
         textureUnit 0 {
           GL_TEXTURE_2D ON
@@ -64,15 +64,15 @@ Group {
       defaultBoundingBox -10 -10 -10 10 10 10
       particleTemplate {
         shape QUAD
-        lifeTime 6
-        sizeRange 0.12 0.1
-        alphaRange 1 0.66
+        lifeTime 6.5
+        sizeRange 0.25 0.25
+        alphaRange 1 1
         colorRange 0 1 0 1 0 1 0 1
         position 0 0 0
         velocity 0 0 0
         angle 0 0 0
         angularVelocity 0 0 0
-        radius 0.2
+        radius 0.25
         mass 0.1
         textureTile 1 1 1
         sizeInterpolator {
@@ -127,7 +127,7 @@ Group {
       resetTime 0
       useDefaultTemplate TRUE
       osgParticle::RandomRateCounter {
-        rateRange 120 120
+        rateRange 60 60
       }
       osgParticle::PointPlacer {
         center 0 0 0.1

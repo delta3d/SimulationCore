@@ -35,7 +35,7 @@
 #include <SimCore/Actors/DRPublishingActComp.h>
 
 
-
+#include <NetDemoUtils.h>
 #include <States.h>
 #include <ActorRegistry.h>
 #include <Components/GameLogicComponent.h>
@@ -450,6 +450,12 @@ namespace NetDemo
             }
             break;
 
+         case osgGA::GUIEventAdapter::KEY_F2:
+            {
+               ToggleDebugInfo();
+            }
+            break;
+
          default:
             keyUsed = false;
       }
@@ -633,6 +639,8 @@ namespace NetDemo
 
       mVehicle = NULL;
       EnableMotionModels();
+
+      UpdateDebugInfo(true);
    }
 
    ////////////////////////////////////////////////////////////////////////////////
@@ -677,9 +685,7 @@ namespace NetDemo
    ////////////////////////////////////////////////////////////////////////////////
    void InputComponent::SendSimpleMessage(const NetDemo::MessageType& messageType)
    {
-      dtCore::RefPtr<dtGame::Message> message;
-      GetGameManager()->GetMessageFactory().CreateMessage(messageType, message);
-      GetGameManager()->SendMessage(*message);
+      MessageUtils::SendSimpleMessage(messageType, *GetGameManager());
    }
 
    ////////////////////////////////////////////////////////////////////////////////
@@ -1050,95 +1056,117 @@ namespace NetDemo
    }
 
    ////////////////////////////////////////////////////////////////////////////////
+   void InputComponent::ToggleDebugInfo()
+   {
+      GameLogicComponent* glComp = GetLogicComponent();
+
+      if (glComp != NULL) 
+      {
+         glComp->GetDebugInfo().mShowDebugWindow = !glComp->GetDebugInfo().mShowDebugWindow;
+         UpdateDebugInfo(true);
+      }
+   }
+
+   ////////////////////////////////////////////////////////////////////////////////
    void InputComponent::UpdateDebugInfo(bool sendUpdateMessage)
    {
+      GameLogicComponent* glComp = GetLogicComponent();
       SimCore::Actors::BasePhysicsVehicleActor* physVehicle =
          dynamic_cast<SimCore::Actors::BasePhysicsVehicleActor*>(mVehicle.get());
+
+      if (glComp == NULL) 
+      {
+         return; // nothing to do without a Game logic component
+      }
 
       if (physVehicle != NULL)
       {
          if (physVehicle->IsDeadReckoningHelperValid())
          {
-            GetLogicComponent()->GetDebugInfo().mDRGroundClampStatus = 
+            glComp->GetDebugInfo().mDRGroundClampStatus = 
                physVehicle->GetDeadReckoningHelper().GetGroundClampType().GetName();
-            GetLogicComponent()->GetDebugInfo().mDRAlgorithm = 
+            glComp->GetDebugInfo().mDRAlgorithm = 
                physVehicle->GetDeadReckoningHelper().GetDeadReckoningAlgorithm().GetName();
-            GetLogicComponent()->GetDebugInfo().mDRUseSplines = 
+            glComp->GetDebugInfo().mDRUseSplines = 
                physVehicle->GetDeadReckoningHelper().GetUseCubicSplineTransBlend();
-            GetLogicComponent()->GetDebugInfo().mDRUseFixedBlend = 
+            glComp->GetDebugInfo().mDRUseFixedBlend = 
                physVehicle->GetDeadReckoningHelper().GetUseFixedSmoothingTime();            
          }
          else 
          {
-            GetLogicComponent()->GetDebugInfo().mDRGroundClampStatus = "NA";
-            GetLogicComponent()->GetDebugInfo().mDRAlgorithm = "NA";
-            GetLogicComponent()->GetDebugInfo().mDRUseSplines = "NA";
+            glComp->GetDebugInfo().mDRGroundClampStatus = "NA";
+            glComp->GetDebugInfo().mDRAlgorithm = "NA";
+            glComp->GetDebugInfo().mDRUseSplines = "NA";
          }
-         //GetLogicComponent()->GetDebugInfo().mDRPublishRate = 0;
-         //GetLogicComponent()->GetDebugInfo().mDRUseFixedBlend = ???;
 
          if (physVehicle->GetDRPublishingActComp() != NULL)
          {
-            GetLogicComponent()->GetDebugInfo().mDRPublishRate = (int)
+            glComp->GetDebugInfo().mDRPublishRate = (int)
                physVehicle->GetDRPublishingActComp()->GetMaxUpdateSendRate();
-            GetLogicComponent()->GetDebugInfo().mDRPublishAngularVel = 
+            glComp->GetDebugInfo().mDRPublishAngularVel = 
                physVehicle->GetDRPublishingActComp()->GetPublishAngularVelocity();
          }
-
-         // Current Debug Var
-         if (mDebugToggleMode == DEBUG_TOGGLE_DR_ALGORITHM)
-         {
-            GetLogicComponent()->GetDebugInfo().mCurDebugVar = "DR Algorithm";
-         }
-         else if (mDebugToggleMode == DEBUG_TOGGLE_PUBLISH_ANGULAR_VELOCITY)
-         {
-            GetLogicComponent()->GetDebugInfo().mCurDebugVar = "DR Publish Ang Vel";
-         }
-         else if (mDebugToggleMode == DEBUG_TOGGLE_DR_WITH_CUBIC_SPLINE)
-         {
-            GetLogicComponent()->GetDebugInfo().mCurDebugVar = "DR Blending Type";
-         }
-         else if (mDebugToggleMode == DEBUG_TOGGLE_GROUND_CLAMPING)
-         {
-            GetLogicComponent()->GetDebugInfo().mCurDebugVar = "DR Ground Clamp";
-         }
-         else if (mDebugToggleMode == DEBUG_FIXED_BLEND_TIME)
-         {
-            GetLogicComponent()->GetDebugInfo().mCurDebugVar = "DR Fixed Blend";
-         }
-         else
-         {
-            GetLogicComponent()->GetDebugInfo().mCurDebugVar = "UNKNOWN";
-         }
-
-         // GHOST MODE
-         if (mDRGhostMode == NONE)
-         {
-            GetLogicComponent()->GetDebugInfo().mShowDebugWindow = false;
-            GetLogicComponent()->GetDebugInfo().mDRGhostMode = "OFF";
-         }
-         else if (mDRGhostMode == GHOST_ON)
-         {
-            GetLogicComponent()->GetDebugInfo().mShowDebugWindow = true;
-            GetLogicComponent()->GetDebugInfo().mDRGhostMode = "ON";
-         }
-         else if (mDRGhostMode == ATTACH_TO_GHOST)
-         {
-            GetLogicComponent()->GetDebugInfo().mShowDebugWindow = true;
-            GetLogicComponent()->GetDebugInfo().mDRGhostMode = "Attach Ghost";
-         }
-         else if (mDRGhostMode == HIDE_REAL)
-         {
-            GetLogicComponent()->GetDebugInfo().mShowDebugWindow = true;
-            GetLogicComponent()->GetDebugInfo().mDRGhostMode = "Hide Real";
-         }
-         else if (mDRGhostMode == DETACH_FROM_VEHICLE)
-         {
-            GetLogicComponent()->GetDebugInfo().mShowDebugWindow = true;
-            GetLogicComponent()->GetDebugInfo().mDRGhostMode = "Detached";
-         }
-
       }
+      else  // not attached to a vehicle
+      {
+         glComp->GetDebugInfo().mDRAvgSpeed = 0.0f;
+         glComp->GetDebugInfo().mDRAvgError = 0.0f;
+         glComp->GetDebugInfo().mDRPublishRate = 0;
+         glComp->GetDebugInfo().mDRUseFixedBlend = false;
+         glComp->GetDebugInfo().mDRPublishAngularVel = false;
+         glComp->GetDebugInfo().mDRGroundClampStatus = "NA";
+         glComp->GetDebugInfo().mDRAlgorithm = "NA";
+         glComp->GetDebugInfo().mDRUseSplines = "NA";
+      }
+
+      // Current Debug Var
+      if (mDebugToggleMode == DEBUG_TOGGLE_DR_ALGORITHM)
+      {
+         glComp->GetDebugInfo().mCurDebugVar = "DR Algorithm";
+      }
+      else if (mDebugToggleMode == DEBUG_TOGGLE_PUBLISH_ANGULAR_VELOCITY)
+      {
+         glComp->GetDebugInfo().mCurDebugVar = "DR Publish Ang Vel";
+      }
+      else if (mDebugToggleMode == DEBUG_TOGGLE_DR_WITH_CUBIC_SPLINE)
+      {
+         glComp->GetDebugInfo().mCurDebugVar = "DR Blending Type";
+      }
+      else if (mDebugToggleMode == DEBUG_TOGGLE_GROUND_CLAMPING)
+      {
+         glComp->GetDebugInfo().mCurDebugVar = "DR Ground Clamp";
+      }
+      else if (mDebugToggleMode == DEBUG_FIXED_BLEND_TIME)
+      {
+         glComp->GetDebugInfo().mCurDebugVar = "DR Fixed Blend";
+      }
+      else
+      {
+         glComp->GetDebugInfo().mCurDebugVar = "UNKNOWN";
+      }
+
+      // GHOST MODE
+      if (mDRGhostMode == NONE)
+      {
+         glComp->GetDebugInfo().mDRGhostMode = "OFF";
+      }
+      else if (mDRGhostMode == GHOST_ON)
+      {
+         glComp->GetDebugInfo().mDRGhostMode = "ON";
+      }
+      else if (mDRGhostMode == ATTACH_TO_GHOST)
+      {
+         glComp->GetDebugInfo().mDRGhostMode = "Attach Ghost";
+      }
+      else if (mDRGhostMode == HIDE_REAL)
+      {
+         glComp->GetDebugInfo().mDRGhostMode = "Hide Real";
+      }
+      else if (mDRGhostMode == DETACH_FROM_VEHICLE)
+      {
+         glComp->GetDebugInfo().mDRGhostMode = "Detached";
+      }
+
 
       if (sendUpdateMessage)
       {

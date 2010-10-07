@@ -78,6 +78,8 @@ namespace NetDemo
             , mDRPublishRate(1)
             , mDRUseFixedBlend(false)
             , mDRPublishAngularVel(false)
+            , mDRAvgError(0.0f)
+            , mDRAvgSpeed(0.0f)
          {  }
 
          bool mShowDebugWindow;
@@ -89,6 +91,8 @@ namespace NetDemo
          int mDRPublishRate;
          bool mDRUseFixedBlend; 
          bool mDRPublishAngularVel;
+         float mDRAvgError; // reported by a vehicle such as the PropelledVehicleActor
+         float mDRAvgSpeed; // reported by a vehicle such as the PropelledVehicleActor
       };
 
       //// Rest of class

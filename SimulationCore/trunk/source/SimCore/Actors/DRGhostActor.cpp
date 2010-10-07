@@ -190,14 +190,14 @@ namespace SimCore
 
             // Add a particle system to the Ghost to see where it's been.
             mTrailParticles = new dtCore::ParticleSystem;
-            mTrailParticles->LoadFile("Particles/SimpleSpotTrail.osg", true);
+            mTrailParticles->LoadFile("Particles/SimpleSpotTrailRed.osg", true);
             mTrailParticles->SetEnabled(true);
             AddChild(mTrailParticles.get());
 
 
             // Add a particle system to the Ghost - that works ONLY right after our slave gets updated.
             mUpdateTrailParticles = new dtCore::ParticleSystem;
-            mUpdateTrailParticles->LoadFile("Particles/SimpleSpotTrailRed.osg", true);
+            mUpdateTrailParticles->LoadFile("Particles/SimpleSpotTrail.osg", true);
             AddChild(mUpdateTrailParticles.get());
             // Start our red system OFF. 
             //mUpdateTrailParticles->SetEnabled(false); // put back when ParticleSystemParameterVisitor is deleted

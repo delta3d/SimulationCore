@@ -89,7 +89,7 @@
          <Property Name="Font" Value="DejaVuSans-12"/>
          <Property Name="AlwaysOnTop" Value="True"/>
          <Property Name="TextColours" Value="FFFFFFFF"/>
-         <Property Name="Text" Value="F1: Help"/>
+         <Property Name="Text" Value="Esc: Menu"/>
       </Window>
 
       <!-- TEXT - 7 -->
@@ -102,7 +102,7 @@
          <Property Name="Font" Value="DejaVuSans-12"/>
          <Property Name="AlwaysOnTop" Value="True"/>
          <Property Name="TextColours" Value="FFFFFFFF"/>
-         <Property Name="Text" Value="Esc: Quit Game"/>
+         <Property Name="Text" Value="L-Click: Fire"/>
       </Window>
 
       <!-- TEXT - 8 -->
@@ -128,7 +128,7 @@
          <Property Name="Font" Value="DejaVuSans-12"/>
          <Property Name="AlwaysOnTop" Value="True"/>
          <Property Name="TextColours" Value="FFFFFFFF"/>
-         <Property Name="Text" Value="L-Click: Fire"/>
+         <Property Name="Text" Value="F2: Debug Info"/>
       </Window>
         
       <!-- TEXT - 10 -->

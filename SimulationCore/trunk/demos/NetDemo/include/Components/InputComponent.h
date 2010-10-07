@@ -108,6 +108,9 @@ namespace NetDemo
          /// Updates the debug info structure on the Game Logic component and sends a UI_DEBUGINFO_UPDATED message
          void UpdateDebugInfo(bool sendUpdateMessage);
 
+         /// Toggles the Debug Info flag and sends a message - called when F2 is pressed
+         void ToggleDebugInfo();
+
       protected:
          virtual ~InputComponent();
          void FireSomething();
