@@ -44,11 +44,13 @@
 #include <dtPhysics/physicsobject.h>
 #include <dtPhysics/bodywrapper.h>
 
+#include <dtUtil/mathdefines.h>
+
 namespace NetDemo
 {
 
    EnemyMineAIHelper::EnemyMineAIHelper()
-      : mMaxVelocity(150.0f)
+      : mMaxVelocity(500.0f)
    {
      
    }
@@ -92,26 +94,20 @@ namespace NetDemo
 
          if(physicsObject != NULL)
          {
-            if(mCurrentControls.GetThrust() != 0.0f)
-            {
-               osg::Vec3 at = mGoalState.GetPos() - mCurrentState.GetPos();
-               at.normalize();
+            osg::Vec3 at = mGoalState.GetPos() - mCurrentState.GetPos();
+            float length = at.normalize();
 
-               float maxThrustForce = 2500.0f;
+            dtUtil::Clamp(length, 0.0f, 50.0f);
 
-               float mass = physicsObject->GetBodyWrapper()->GetMass();
+            float maxThrustForce =  1.5f * (52.5f - length);
 
-               osg::Vec3 force = at * (mCurrentControls.GetThrust() * maxThrustForce);
+            float mass = physicsObject->GetBodyWrapper()->GetMass();
+            
+            osg::Vec3 up(0.0f, 0.0f, 3.5f);
+            //osg::Vec3 force = up + (at * (mCurrentControls.GetThrust() * maxThrustForce));
+            osg::Vec3 force = up + (at * maxThrustForce);
 
-               physicsObject->GetBodyWrapper()->AddForce(force);
-            }
-            else
-            {
-               osg::Vec3 force = physicsObject->GetLinearVelocity();
-               physicsObject->GetBodyWrapper()->ApplyImpulse(force * -2.5f);
-
-            }
-
+            physicsObject->GetBodyWrapper()->ApplyImpulse(force);
          }
       }
    }
@@ -166,9 +162,10 @@ namespace NetDemo
          //if we are within distance, detonate
          //this is only for the enemy mine, and should be refactored
          float dist = GetDistance(pos);
-         if(dist < 25.0f)
+         if(dist < 20.0f)
          {
             BaseClass::GetStateMachine().MakeCurrent(&AIStateType::AI_STATE_DETONATE);
+            
             return;
          }
          

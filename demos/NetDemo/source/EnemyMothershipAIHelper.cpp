@@ -60,8 +60,8 @@ namespace NetDemo
    {
       mTargetOffset = osg::Vec3(
          dtUtil::RandFloat(-35.0f, 25.0f),
-         dtUtil::RandFloat(250.0f, 500.0f),
-         dtUtil::RandFloat(50.0f, 150.0f) );
+         dtUtil::RandFloat(150.0f, 250.0f),
+         dtUtil::RandFloat(50.0f, 100.0f) );
    }
 
    void EnemyMothershipAIHelper::OnInit(const EnemyDescriptionActor* desc)
@@ -71,7 +71,7 @@ namespace NetDemo
       float minSpeedPercent = 0.0f;
       float maxSpeedPercent = 0.8f;
       float lookAheadTime = 10.0f;
-      float timeToTarget = 30.0f;
+      float timeToTarget = 5.0f;
       float lookAheadRot = 1.5f;
       float timeToTargetRot = 1.0f;
 

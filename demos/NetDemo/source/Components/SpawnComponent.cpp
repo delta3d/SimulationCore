@@ -42,6 +42,7 @@ namespace NetDemo
    : BaseClass(name)
    , mDifficulty(1)
    , mWaveNumber(0)
+   , mMaxEnemies(7)
    , mNumPlayers(1)
    , mTimeLeftInWave(0.0f)
    , mGameStatus(&ServerGameStatusActor::ServerGameStatusEnum::UNKNOWN)
@@ -55,6 +56,7 @@ namespace NetDemo
 
    }
 
+   DT_IMPLEMENT_ACCESSOR(SpawnComponent, int, MaxEnemies);
    DT_IMPLEMENT_ACCESSOR(SpawnComponent, int, Difficulty);
    DT_IMPLEMENT_ACCESSOR(SpawnComponent,int, WaveNumber);
    DT_IMPLEMENT_ACCESSOR(SpawnComponent, int, NumPlayers);
@@ -159,8 +161,12 @@ namespace NetDemo
 
    void SpawnComponent::SpawnEnemy( const EnemyDescriptionActor* desc )
    {
-      //static int count = 0;
-      //if(count++ < 5)
+      std::vector<dtDAL::ActorProxy*> proxies;
+      GetGameManager()->FindActorsByType(*NetDemoActorRegistry::ENEMY_MINE_ACTOR_TYPE, proxies);
+      GetGameManager()->FindActorsByType(*NetDemoActorRegistry::ENEMY_HELIX_ACTOR_TYPE, proxies);
+
+      int numEnemies = proxies.size();
+      if(numEnemies <= mMaxEnemies)
       {
          std::string errorMessage("Error attempting to spawn enemy, cannot find prototype by the name '" + desc->GetPrototypeName() + ".'");
 

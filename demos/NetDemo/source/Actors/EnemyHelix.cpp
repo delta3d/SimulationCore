@@ -42,6 +42,8 @@
 #include <dtPhysics/bodywrapper.h>
 #include <dtPhysics/palphysicsworld.h>
 
+#include <dtUtil/nodecollector.h>
+
 #include <EnemyHelixAIHelper.h> 
 //all below are included from the above- #include <AISpaceShip.h> 
 //#include <EnemyAIHelper.h>
@@ -154,7 +156,17 @@ namespace NetDemo
             mWeaponProxy = static_cast<SimCore::Actors::WeaponActorProxy*>(&weapon->GetGameActorProxy());
 
             //slow down the rate of fire
-            mWeapon->SetFireRate(1.0f);
+            mWeapon->SetFireRate(0.65f);
+
+            dtUtil::NodeCollector* nodes = GetNodeCollector();
+            osgSim::DOFTransform* dof = nodes->GetDOFTransform("dof_hotspot_01");
+            if (dof != NULL)
+            {
+               osg::Vec3 hpr;
+               hpr = dof->getCurrentHPR();
+               hpr[1] -= osg::DegreesToRadians(10.0f);
+               dof->setCurrentHPR(hpr);
+            }
          }
       }
       else
@@ -252,7 +264,7 @@ namespace NetDemo
       osg::Vec3 angleToTarget = mAIHelper->mGoalState.GetPos() - mAIHelper->mCurrentState.GetPos();
       angleToTarget.normalize();
       float angle = angleToTarget * mAIHelper->mCurrentState.GetForward();
-      if(distToTarget < 150.0f && angle > 0.9f)
+      if(angle > 0.9f)
       {
          Shoot(0.0f);
       }

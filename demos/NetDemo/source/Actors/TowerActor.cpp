@@ -96,7 +96,7 @@ namespace NetDemo
          LOG_ERROR("CRITICAL ERROR - No DR Publishing Actor Component.");
          return;
       }
-      drPublishingActComp->SetMaxUpdateSendRate(2.0f);
+      drPublishingActComp->SetMaxUpdateSendRate(1.5f);
       //drPublishingActComp->SetPublishLinearVelocity(false);
       //drPublishingActComp->SetPublishAngularVelocity(false);
    }

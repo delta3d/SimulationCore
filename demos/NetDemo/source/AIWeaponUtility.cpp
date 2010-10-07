@@ -68,8 +68,8 @@ namespace NetDemo
    //TurretGoalState
    //////////////////////////////////////////////////////////////////////////
    TurretGoalState::TurretGoalState()
-   : mMinAngle(-180.0f, -60.0f)
-   , mMaxAngle(180.0f, 60.0f)
+   : mMinAngle(-180.0f, -30.0f)
+   , mMaxAngle(180.0f, 30.0f)
    , mMaxVel(1.5f, 1.5f)
    , mAngleToTarget()
    {

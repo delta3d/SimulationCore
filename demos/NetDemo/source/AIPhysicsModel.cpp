@@ -214,7 +214,12 @@ namespace NetDemo
 
       osg::Matrix rotation = osg::Matrix::rotate(thetaAngle, osg::Vec3(0.0, 0.0, 1.0));
 
-      mCurrentState->SetForward(osg::Matrix::transform3x3(mCurrentState->GetForward(), rotation));
+      //since the AI does not currently use acceleration (just simplifies things quite a bit)
+      //we are doing this to smooth out the ability to change heading
+      osg::Vec3 deltaForward = osg::Matrix::transform3x3(mCurrentState->GetForward(), rotation);
+      osg::Vec3 newForward = mCurrentState->GetForward() + mCurrentState->GetForward() + deltaForward;
+      newForward /= 3.0f;
+      mCurrentState->SetForward(newForward);
    }
 
    void AIPhysicsModel::UpdateAngularVelocity(const BaseAIControls& controls)
