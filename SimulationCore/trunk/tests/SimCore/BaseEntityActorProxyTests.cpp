@@ -51,6 +51,8 @@
 #include <dtUtil/macros.h>
 #include <dtUtil/mathdefines.h>
 
+#include <dtCore/timer.h>
+
 #include <dtAudio/audiomanager.h>
 
 #include <SimCore/Actors/BaseEntity.h>
@@ -69,21 +71,12 @@
 
 #include <dtDAL/transformableactorproxy.h>
 
-
 #include <TestComponent.h>
 #include <UnitTestMain.h>
 #include <dtABC/application.h>
 
 #ifdef AGEIA_PHYSICS
 #include <NxAgeiaWorldComponent.h>
-#endif
-
-#ifdef DELTA_WIN32
-   #include <dtUtil/mswin.h>
-   #define SLEEP(milliseconds) Sleep((milliseconds))
-#else
-   #include <unistd.h>
-   #define SLEEP(milliseconds) usleep(((milliseconds) * 1000))
 #endif
 
 using dtCore::RefPtr;
@@ -792,7 +785,8 @@ void BaseEntityActorProxyTests::TestBaseEntityActorUpdates(SimCore::Actors::Base
       (initialTimeUntilNextFullUpdate < defaultValue * 1.5001f) && 
       (initialTimeUntilNextFullUpdate > defaultValue * 0.4999f);
 
-   CPPUNIT_ASSERT_MESSAGE("The first full update time should be between 0.5 & 1.5 times the default.",
+   CPPUNIT_ASSERT_MESSAGE("The first full update time should be between 0.5 & 1.5 times the default, but it is \""
+            + dtUtil::ToString(initialTimeUntilNextFullUpdate) + "\" with default \"" + dtUtil::ToString(defaultValue) + "\"",
       initialValueIsInRange);
    //CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(
    //      "The time until next update should be seeded to the time between complete updates.",
@@ -815,7 +809,7 @@ void BaseEntityActorProxyTests::TestBaseEntityActorUpdates(SimCore::Actors::Base
    xform.SetTranslation(pos + smallMovement);
    entityActor.SetTransform(xform, dtCore::Transformable::REL_CS);
 
-   SLEEP(20);// Give the DR Publisher time to do the actor update. At 60 hz, we technically only need 16.6 ms
+   dtCore::AppSleep(20);// Give the DR Publisher time to do the actor update. At 60 hz, we technically only need 16.6 ms
 
    float timeUntilUpdate1 = entityActor.GetDRPublishingActComp()->GetTimeUntilNextFullUpdate();
    dtCore::System::GetInstance().Step();
@@ -837,7 +831,7 @@ void BaseEntityActorProxyTests::TestBaseEntityActorUpdates(SimCore::Actors::Base
    xform.SetTranslation(pos + largeMovement);
    entityActor.SetTransform(xform, dtCore::Transformable::REL_CS);
 
-   SLEEP(20);// Give the DR Publisher time to do the actor update. At 60 hz, we technically only need 16.6 ms
+   dtCore::AppSleep(20);// Give the DR Publisher time to do the actor update. At 60 hz, we technically only need 16.6 ms
 
    dtCore::System::GetInstance().Step();
 
@@ -865,7 +859,7 @@ void BaseEntityActorProxyTests::TestBaseEntityActorUpdates(SimCore::Actors::Base
    xform.SetRotation(smallMovement);
    entityActor.SetTransform(xform, dtCore::Transformable::REL_CS);
 
-   SLEEP(20);// Give the DR Publisher time to do the actor update. At 60 hz, we technically only need 16.6 ms
+   dtCore::AppSleep(20);// Give the DR Publisher time to do the actor update. At 60 hz, we technically only need 16.6 ms
 
    dtCore::System::GetInstance().Step();
 
@@ -877,7 +871,7 @@ void BaseEntityActorProxyTests::TestBaseEntityActorUpdates(SimCore::Actors::Base
    xform.SetRotation(largeMovement);
    entityActor.SetTransform(xform, dtCore::Transformable::REL_CS);
 
-   SLEEP(20);// Give the DR Publisher time to do the actor update. At 60 hz, we technically only need 16.6 ms
+   dtCore::AppSleep(20);// Give the DR Publisher time to do the actor update. At 60 hz, we technically only need 16.6 ms
 
    dtCore::System::GetInstance().Step();
 
@@ -1077,7 +1071,7 @@ void BaseEntityActorProxyTests::TestPlayerActorProxy()
    CPPUNIT_ASSERT(pa != NULL);
 
    mGM->AddActor(*pa, false, false);
-   SLEEP(10);
+   dtCore::AppSleep(10);
    dtCore::System::GetInstance().Step();
    RefPtr<const dtGame::Message> msg =
       tc->FindProcessMessageOfType(dtGame::MessageType::INFO_PLAYER_ENTERED_WORLD);
@@ -1090,7 +1084,7 @@ void BaseEntityActorProxyTests::TestPlayerActorProxy()
    dtCore::System::GetInstance().Step();
 
    mGM->AddActor(*pa, true, false);
-   SLEEP(10);
+   dtCore::AppSleep(10);
    dtCore::System::GetInstance().Step();
 
    msg = tc->FindProcessMessageOfType(dtGame::MessageType::INFO_PLAYER_ENTERED_WORLD);
@@ -1114,13 +1108,13 @@ void BaseEntityActorProxyTests::TestDetonationActorProxy()
    // TODO Add detonation to GM, set a timer and everything, ensure it fires and deletes
    // itself via its invokable
    mGM->AddActor(*dap, false, false);
-   SLEEP(1);
+   dtCore::AppSleep(1);
    dtCore::System::GetInstance().Step();
 
-   SLEEP(1);
+   dtCore::AppSleep(1);
    dtCore::System::GetInstance().Step();
 
-   SLEEP(1);
+   dtCore::AppSleep(1);
    dtCore::System::GetInstance().Step();
 
    std::vector<dtGame::GameActorProxy*> proxies;
@@ -1146,13 +1140,13 @@ void BaseEntityActorProxyTests::TestDetonationActorProxy()
       detList.push_back(d);
    }
 
-   SLEEP(1);
+   dtCore::AppSleep(1);
    dtCore::System::GetInstance().Step();
 
-   SLEEP(1);
+   dtCore::AppSleep(1);
    dtCore::System::GetInstance().Step();
 
-   SLEEP(1);
+   dtCore::AppSleep(1);
    dtCore::System::GetInstance().Step();
 
    mGM->GetAllGameActors(proxies);

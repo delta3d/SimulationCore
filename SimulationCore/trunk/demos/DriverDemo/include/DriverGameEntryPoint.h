@@ -36,11 +36,6 @@
 #include <GameAppComponent.h>
 #include <DriverExport.h>
 
-namespace dtDAL
-{
-   class ActorProxy;
-}
-
 namespace dtGame
 {
    class GameManager;
