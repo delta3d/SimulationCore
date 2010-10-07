@@ -32,6 +32,16 @@
 namespace NetDemo
 {
    ////////////////////////////////////////////////////////////////////////////////
+   void MessageUtils::SendSimpleMessage(const NetDemo::MessageType& messageType, 
+      dtGame::GameManager& gm)
+   {
+      dtCore::RefPtr<dtGame::Message> message;
+      gm.GetMessageFactory().CreateMessage(messageType, message);
+      gm.SendMessage(*message);
+   }
+
+
+   ////////////////////////////////////////////////////////////////////////////////
    void MessageUtils::SendActionMessage(dtGame::GameActor& sendingActor,
       const EntityActionMessageParams& params)
    {

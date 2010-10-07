@@ -65,7 +65,7 @@ Group {
       particleTemplate {
         shape QUAD
         lifeTime 6
-        sizeRange 0.09 0.1
+        sizeRange 0.15 0.2
         alphaRange 1 0.48
         colorRange 0.22 0.4 1 1 0.25 0.47 1 1
         position 0 0 0
@@ -130,7 +130,7 @@ Group {
         rateRange 60 60
       }
       osgParticle::PointPlacer {
-        center 0 0 0
+        center 0 0 0.1
       }
       osgParticle::RadialShooter {
         thetaRange 0 0

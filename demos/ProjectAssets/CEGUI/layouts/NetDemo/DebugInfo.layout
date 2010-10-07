@@ -16,8 +16,8 @@
 
       <!-- TEXT - 0 -->
       <Window Name="DebugInfo_0" Type="WindowsLook/StaticText">
-         <Property Name="UnifiedSize" Value="{{0.8,0},{0.08,0}}"/>
-	 <Property Name="UnifiedPosition" Value="{{-0.02,0},{0.05,0}}"/>
+         <Property Name="UnifiedSize" Value="{{0.8,0},{0.075,0}}"/>
+	 <Property Name="UnifiedPosition" Value="{{-0.02,0},{0.04,0}}"/>
          <Property Name="BackgroundEnabled" Value="False"/>
          <Property Name="FrameEnabled" Value="False"/>
          <Property Name="HorizontalAlignment" Value="Centre"/>
@@ -29,8 +29,8 @@
 
       <!-- TEXT - 1 -->
       <Window Name="DebugInfo_1" Type="WindowsLook/StaticText">
-         <Property Name="UnifiedSize" Value="{{0.8,0},{0.08,0}}"/>
-         <Property Name="UnifiedPosition" Value="{{-0.02,0},{0.13,0}}"/>
+         <Property Name="UnifiedSize" Value="{{0.8,0},{0.075,0}}"/>
+         <Property Name="UnifiedPosition" Value="{{-0.02,0},{0.115,0}}"/>
          <Property Name="BackgroundEnabled" Value="False"/>
          <Property Name="FrameEnabled" Value="False"/>
          <Property Name="HorizontalAlignment" Value="Centre"/>
@@ -42,8 +42,8 @@
 
       <!-- TEXT - 2 -->
       <Window Name="DebugInfo_2" Type="WindowsLook/StaticText">
-         <Property Name="UnifiedSize" Value="{{0.8,0},{0.08,0}}"/>
-         <Property Name="UnifiedPosition" Value="{{-0.02,0},{0.21,0}}"/>
+         <Property Name="UnifiedSize" Value="{{0.8,0},{0.075,0}}"/>
+         <Property Name="UnifiedPosition" Value="{{-0.02,0},{0.19,0}}"/>
          <Property Name="BackgroundEnabled" Value="False"/>
          <Property Name="FrameEnabled" Value="False"/>
          <Property Name="HorizontalAlignment" Value="Centre"/>
@@ -55,8 +55,8 @@
 
       <!-- TEXT - 3 -->
       <Window Name="DebugInfo_3" Type="WindowsLook/StaticText">
-         <Property Name="UnifiedSize" Value="{{0.8,0},{0.08,0}}"/>
-         <Property Name="UnifiedPosition" Value="{{-0.02,0},{0.29,0}}"/>
+         <Property Name="UnifiedSize" Value="{{0.8,0},{0.075,0}}"/>
+         <Property Name="UnifiedPosition" Value="{{-0.02,0},{0.26.5,0}}"/>
          <Property Name="BackgroundEnabled" Value="False"/>
          <Property Name="FrameEnabled" Value="False"/>
          <Property Name="HorizontalAlignment" Value="Centre"/>
@@ -69,7 +69,7 @@
       <!-- TEXT - 4 -->
       <Window Name="DebugInfo_4" Type="WindowsLook/StaticText">
          <Property Name="UnifiedSize" Value="{{0.8,0},{0.075,0}}"/>
-         <Property Name="UnifiedPosition" Value="{{-0.02,0},{0.41,0}}"/>
+         <Property Name="UnifiedPosition" Value="{{-0.02,0},{0.37,0}}"/>
          <Property Name="BackgroundEnabled" Value="False"/>
          <Property Name="FrameEnabled" Value="False"/>
          <Property Name="HorizontalAlignment" Value="Centre"/>
@@ -82,7 +82,7 @@
       <!-- TEXT - 5 -->
       <Window Name="DebugInfo_5" Type="WindowsLook/StaticText">
          <Property Name="UnifiedSize" Value="{{0.8,0},{0.075,0}}"/>
-         <Property Name="UnifiedPosition" Value="{{-0.02,0},{0.485,0}}"/>
+         <Property Name="UnifiedPosition" Value="{{-0.02,0},{0.445,0}}"/>
          <Property Name="BackgroundEnabled" Value="False"/>
          <Property Name="FrameEnabled" Value="False"/>
          <Property Name="HorizontalAlignment" Value="Centre"/>
@@ -95,7 +95,7 @@
       <!-- TEXT - 6 -->
       <Window Name="DebugInfo_6" Type="WindowsLook/StaticText">
          <Property Name="UnifiedSize" Value="{{0.8,0},{0.075,0}}"/>
-         <Property Name="UnifiedPosition" Value="{{-0.02,0},{0.56,0}}"/>
+         <Property Name="UnifiedPosition" Value="{{-0.02,0},{0.52,0}}"/>
          <Property Name="BackgroundEnabled" Value="False"/>
          <Property Name="FrameEnabled" Value="False"/>
          <Property Name="HorizontalAlignment" Value="Centre"/>
@@ -108,7 +108,7 @@
       <!-- TEXT - 7 -->
       <Window Name="DebugInfo_7" Type="WindowsLook/StaticText">
          <Property Name="UnifiedSize" Value="{{0.8,0},{0.075,0}}"/>
-         <Property Name="UnifiedPosition" Value="{{-0.02,0},{0.635,0}}"/>
+         <Property Name="UnifiedPosition" Value="{{-0.02,0},{0.595,0}}"/>
          <Property Name="BackgroundEnabled" Value="False"/>
          <Property Name="FrameEnabled" Value="False"/>
          <Property Name="HorizontalAlignment" Value="Centre"/>
@@ -121,7 +121,7 @@
       <!-- TEXT - 8 -->
       <Window Name="DebugInfo_8" Type="WindowsLook/StaticText">
          <Property Name="UnifiedSize" Value="{{0.8,0},{0.075,0}}"/>
-         <Property Name="UnifiedPosition" Value="{{-0.02,0},{0.71,0}}"/>
+         <Property Name="UnifiedPosition" Value="{{-0.02,0},{0.67,0}}"/>
          <Property Name="BackgroundEnabled" Value="False"/>
          <Property Name="FrameEnabled" Value="False"/>
          <Property Name="HorizontalAlignment" Value="Centre"/>
@@ -134,7 +134,7 @@
       <!-- TEXT - 9 -->
       <Window Name="DebugInfo_9" Type="WindowsLook/StaticText">
          <Property Name="UnifiedSize" Value="{{0.8,0},{0.075,0}}"/>
-         <Property Name="UnifiedPosition" Value="{{-0.02,0},{0.785,0}}"/>
+         <Property Name="UnifiedPosition" Value="{{-0.02,0},{0.745,0}}"/>
          <Property Name="BackgroundEnabled" Value="False"/>
          <Property Name="FrameEnabled" Value="False"/>
          <Property Name="HorizontalAlignment" Value="Centre"/>
@@ -147,7 +147,7 @@
       <!-- TEXT - 10 -->
       <Window Name="DebugInfo_10" Type="WindowsLook/StaticText">
          <Property Name="UnifiedSize" Value="{{0.8,0},{0.075,0}}"/>
-         <Property Name="UnifiedPosition" Value="{{-0.02,0},{0.86,0}}"/>
+         <Property Name="UnifiedPosition" Value="{{-0.02,0},{0.82,0}}"/>
          <Property Name="BackgroundEnabled" Value="False"/>
          <Property Name="FrameEnabled" Value="False"/>
          <Property Name="HorizontalAlignment" Value="Centre"/>
@@ -155,6 +155,19 @@
          <Property Name="AlwaysOnTop" Value="True"/>
          <Property Name="TextColours" Value="FFFFFFFF"/>
          <Property Name="Text" Value="DR Publish Ang Vel: ?"/>
+      </Window>
+
+      <!-- TEXT - 11 -->
+      <Window Name="DebugInfo_11" Type="WindowsLook/StaticText">
+         <Property Name="UnifiedSize" Value="{{0.8,0},{0.075,0}}"/>
+         <Property Name="UnifiedPosition" Value="{{-0.02,0},{0.89,0}}"/>
+         <Property Name="BackgroundEnabled" Value="False"/>
+         <Property Name="FrameEnabled" Value="False"/>
+         <Property Name="HorizontalAlignment" Value="Centre"/>
+         <Property Name="Font" Value="DejaVuSans-12"/>
+         <Property Name="AlwaysOnTop" Value="True"/>
+         <Property Name="TextColours" Value="FFFFFFFF"/>
+         <Property Name="Text" Value="Avg Error: ?"/>
       </Window>
 
         

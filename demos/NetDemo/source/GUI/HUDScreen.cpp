@@ -295,6 +295,10 @@ namespace NetDemo
                   (mLogicComp->GetDebugInfo().mCurDebugVar == "DR Publish Ang Vel" 
                   ? highlightColor : normalColor));
 
+               // Avg DR error and cur speed
+               tempValue = "Spd: " + dtUtil::ToString(mLogicComp->GetDebugInfo().mDRAvgSpeed) + 
+                  "  DRErr: " + dtUtil::ToString(mLogicComp->GetDebugInfo().mDRAvgError);
+               SetDebugInfoTextLine(10, tempValue, normalColor);
                
             }
          }

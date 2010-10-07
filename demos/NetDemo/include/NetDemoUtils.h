@@ -39,6 +39,7 @@ namespace dtGame
 namespace NetDemo
 {
    struct EntityActionMessageParams;
+   class MessageType;
 
    /////////////////////////////////////////////////////////////////////////////
    // MESSAGE UTILS CODE
@@ -46,6 +47,14 @@ namespace NetDemo
    class NETDEMO_EXPORT MessageUtils
    {
       public:
+         /**
+          * Convenience method for sending out a simple NetDemo message with no data params
+          * @param messageType The NetDemo message type.
+          * @param gm The game manager.
+          */
+         static void SendSimpleMessage(const NetDemo::MessageType& messageType, 
+            dtGame::GameManager& gm);
+
          /**
           * Convenience method for handling the creation of a message and
           * setting all of its parameters.
