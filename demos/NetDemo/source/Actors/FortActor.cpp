@@ -142,8 +142,7 @@ namespace NetDemo
       //dtGame::GameActorProxy* gap = GetGameActorProxy().GetGameManager()->FindGameActorById(message.GetSendingActorId());
       //return incomingDamage * float(!IsEnemyActor(gap));
 
-      // Do some logic here if you like, but for now, we just reduce the damage we take cause we're BIG.
-      return incomingDamage * 0.10f;
+      return incomingDamage;
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
