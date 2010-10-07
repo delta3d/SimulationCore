@@ -3490,7 +3490,7 @@
             </property>
             <property>
                 <name>NumSpawnPerMinute</name>
-                <float>0.2157001</float>
+                <float>4.2157001</float>
             </property>
             <property>
                 <name>WaveDenominator</name>
@@ -4042,7 +4042,7 @@
             </property>
             <property>
                 <name>NumSpawnPerMinute</name>
-                <float>0.1150999</float>
+                <float>4.1150999</float>
             </property>
             <property>
                 <name>WaveDenominator</name>
@@ -4598,7 +4598,7 @@
             </property>
             <property>
                 <name>NumSpawnPerMinute</name>
-                <float>0.1</float>
+                <float>6.1</float>
             </property>
             <property>
                 <name>WaveDenominator</name>
