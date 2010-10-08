@@ -42,7 +42,7 @@ namespace NetDemo
    : BaseClass(name)
    , mDifficulty(1)
    , mWaveNumber(0)
-   , mMaxEnemies(7)
+   , mMaxEnemies(10)
    , mNumPlayers(1)
    , mTimeLeftInWave(0.0f)
    , mGameStatus(&ServerGameStatusActor::ServerGameStatusEnum::UNKNOWN)
