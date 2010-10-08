@@ -566,8 +566,8 @@
                 <enumerated>Velocity and Acceleration</enumerated>
             </property>
             <property>
-                <name>Flying</name>
-                <boolean>true</boolean>
+                <name>Ground Clamp Type</name>
+                <boolean>None</boolean>
             </property>
             <property>
                 <name>Ground Offset</name>
@@ -999,8 +999,8 @@
                 <enumerated>Velocity and Acceleration</enumerated>
             </property>
             <property>
-                <name>Flying</name>
-                <boolean>true</boolean>
+                <name>Ground Clamp Type</name>
+                <boolean>None</boolean>
             </property>
             <property>
                 <name>Ground Offset</name>
@@ -1861,8 +1861,8 @@
                 <enumerated>Velocity and Acceleration</enumerated>
             </property>
             <property>
-                <name>Flying</name>
-                <boolean>true</boolean>
+                <name>Ground Clamp Type</name>
+                <boolean>None</boolean>
             </property>
             <property>
                 <name>Ground Offset</name>
@@ -2923,8 +2923,8 @@
                 <enumerated>Velocity and Acceleration</enumerated>
             </property>
             <property>
-                <name>Flying</name>
-                <boolean>true</boolean>
+                <name>Ground Clamp Type</name>
+                <boolean>None</boolean>
             </property>
             <property>
                 <name>Ground Offset</name>
@@ -4480,8 +4480,8 @@
                 <enumerated>Velocity and Acceleration</enumerated>
             </property>
             <property>
-                <name>Flying</name>
-                <boolean>true</boolean>
+                <name>Ground Clamp Type</name>
+                <boolean>None</boolean>
             </property>
             <property>
                 <name>Ground Offset</name>
@@ -6159,8 +6159,8 @@
                 <enumerated>Velocity and Acceleration</enumerated>
             </property>
             <property>
-                <name>Flying</name>
-                <boolean>true</boolean>
+                <name>Ground Clamp Type</name>
+                <boolean>None</boolean>
             </property>
             <property>
                 <name>Ground Offset</name>
