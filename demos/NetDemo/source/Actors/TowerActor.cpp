@@ -191,7 +191,7 @@ namespace NetDemo
             mWeapon = weapon;
             mWeaponProxy = static_cast<SimCore::Actors::WeaponActorProxy*>(&weapon->GetGameActorProxy());
 
-            mWeapon->SetFireRate(0.333f);
+            mWeapon->SetFireRate(1.0f);
          }
       }
       else
