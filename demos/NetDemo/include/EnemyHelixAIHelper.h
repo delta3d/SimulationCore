@@ -30,7 +30,8 @@
 #include <DemoExport.h>
 #include <AISteeringModel.h>
 #include <EnemyAIHelper.h>
- 
+#include <AIWeaponUtility.h> 
+
 #include <dtDAL/propertymacros.h>
 #include <dtAI/controllable.h>
 #include <dtAI/steeringbehavior.h>
@@ -60,6 +61,10 @@ namespace NetDemo
 
       void SetCurrentTarget(dtCore::Transformable& target);
 
+      bool GetTriggerState() const;
+      const osg::Vec2& GetWeaponAngle() const;
+      void SetWeaponAngle(const osg::Vec2& angle);
+
    protected:
       EnemyHelixAIHelper(const EnemyHelixAIHelper&);  //not implemented by design
       EnemyHelixAIHelper& operator=(const EnemyHelixAIHelper&);  //not implemented by design
@@ -80,6 +85,8 @@ namespace NetDemo
       //float GetDistance(const osg::Vec3& pos);
 
       osg::Vec3 mTargetOffset;
+
+      AITurret mTurretAI;
       /*EnemyHelixTargeter mDefaultTargeter;
       
       EnemyHelixSteeringBehavior* mDefaultBehavior;

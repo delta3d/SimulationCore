@@ -98,6 +98,11 @@ namespace NetDemo
          state = mAIHelper->GetStateMachine().GetState(&AIStateType::AI_STATE_DETONATE);
          state->SetUpdate(dtAI::NPCState::UpdateFunctor(this, &EnemyHelixActor::DoExplosion));
 
+         //redirecting the shoot 
+         //state = mAIHelper->GetStateMachine().GetState(&AIStateType::AI_STATE_FIRE_LASER);
+         //state->SetUpdate(dtAI::NPCState::UpdateFunctor(this, &EnemyHelixActor::Shoot));
+
+
          mAIHelper->AddTransition(&AIEvent::AI_EVENT_TOOK_DAMAGE, &AIStateType::AI_STATE_IDLE, &AIStateType::AI_STATE_DETONATE);
          mAIHelper->AddTransition(&AIEvent::AI_EVENT_TOOK_DAMAGE, &AIStateType::AI_STATE_DIE, &AIStateType::AI_STATE_DETONATE);
          mAIHelper->AddTransition(&AIEvent::AI_EVENT_TOOK_DAMAGE, &AIStateType::AI_STATE_FIND_TARGET, &AIStateType::AI_STATE_DETONATE);
@@ -157,16 +162,6 @@ namespace NetDemo
 
             //slow down the rate of fire
             mWeapon->SetFireRate(0.65f);
-
-            dtUtil::NodeCollector* nodes = GetNodeCollector();
-            osgSim::DOFTransform* dof = nodes->GetDOFTransform("dof_hotspot_01");
-            if (dof != NULL)
-            {
-               osg::Vec3 hpr;
-               hpr = dof->getCurrentHPR();
-               hpr[1] -= osg::DegreesToRadians(10.0f);
-               dof->setCurrentHPR(hpr);
-            }
          }
       }
       else
@@ -243,6 +238,8 @@ namespace NetDemo
       {
          mWeapon->SetTriggerHeld(true);
          mWeapon->Fire();
+
+         //mAIHelper->GetStateMachine().MakeCurrent(&AIStateType::AI_STATE_ATTACK);
       }
    }
 
@@ -258,20 +255,54 @@ namespace NetDemo
       ////////let the AI do its thing
       mAIHelper->Update(tickMessage.GetDeltaSimTime());
 
+
+      //TODO- THIS DOESNT WORK, HOW DO WE ORIENT THE LASER
+      //dtUtil::NodeCollector* nodes = GetNodeCollector();
+      //osgSim::DOFTransform* dof = nodes->GetDOFTransform("dof_hotspot_01");
+      //if (dof != NULL)
+      //{
+      //   osg::Vec3 hpr = dof->getCurrentHPR();      
+      //   osg::Vec3 hprLast = hpr;
+
+      //   ////TODO- This doesn't seem to work, how do we orient the laser?
+      //   osg::Vec3 current_xyz, current_hpr;
+      //   dtCore::Transform current_trans;
+      //   GetTransform(current_trans);
+      //   current_trans.Get(current_xyz, current_hpr);
+
+      //   osg::Vec2 angle = dynamic_cast<EnemyHelixAIHelper*>(mAIHelper.get())->GetWeaponAngle();
+
+      //   hpr[0] = angle[0]  - osg::PI_2;
+      //   //hpr[1] = -angle[1] + (0.95 * osg::PI_2);
+
+      //   hpr[0] -= current_hpr[0];
+      //   //hpr[1] -= current_hpr[1];
+
+      //   if(dtUtil::IsFinite(hpr[0]) && dtUtil::IsFinite(hpr[1]))
+      //   {
+      //      dof->setCurrentHPR(hpr);
+
+      //      if(GetArticulationHelper() != NULL)
+      //      {
+      //         GetArticulationHelper()->HandleUpdatedDOFOrientation(*dof, hpr - hprLast, hpr);
+      //      }
+      //   }
+      //}
+
+
       //this is a temporary workaround to get the helix to shoot
       //this should be called from the ai fire laser state
       float distToTarget = mAIHelper->GetDistance(mAIHelper->mGoalState.GetPos());
       osg::Vec3 angleToTarget = mAIHelper->mGoalState.GetPos() - mAIHelper->mCurrentState.GetPos();
       angleToTarget.normalize();
       float angle = angleToTarget * mAIHelper->mCurrentState.GetForward();
-      if(angle > 0.9f)
+      if(angle > 0.75f)
       {
          Shoot(0.0f);
       }
 
 
       BaseClass::OnTickLocal(tickMessage);
-
 
       mWeapon->SetTriggerHeld(false);
    }

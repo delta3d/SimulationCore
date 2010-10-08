@@ -118,12 +118,17 @@ namespace NetDemo
    void EnemyHelixAIHelper::CreateStates()
    {
       BaseClass::CreateStates();
+      
+      //GetStateMachine().AddState(&AIStateType::AI_STATE_FIRE_LASER);
    }
 
    //////////////////////////////////////////////////////////////////////////
    void EnemyHelixAIHelper::SetupTransitions()
    {
       BaseClass::SetupTransitions();
+
+      //BaseClass::AddTransition(&AIEvent::AI_EVENT_FIRE_LASER, &AIStateType::AI_STATE_ATTACK, &AIStateType::AI_STATE_FIRE_LASER);
+
    }
 
    //////////////////////////////////////////////////////////////////////////
@@ -155,14 +160,27 @@ namespace NetDemo
          attackState->mStateData.mTarget->GetTransform(xform);
          osg::Vec3 pos = xform.GetTranslation();
 
-         pos += mTargetOffset;
+         //pos += mTargetOffset;
          mDefaultTargeter->Push(pos);
          mGoalState.SetPos(pos);
 
-         if(GetDistance(pos) < 20.0f)
+
+         //osg::Vec3 vel = pos - attackState->mStateData.mLastPos;
+         //osg::Vec3 predictedPos = pos + (vel * 2.5);
+         mTurretAI.mCurrentState.SetOrigin(mCurrentState.GetPos());
+         mTurretAI.GetTargeter().Push(pos);
+         mTurretAI.StepTurret(dt);
+         //attackState->mStateData.mLastPos = pos;
+
+         /*if(mTurretAI.mCurrentState.GetTrigger())
+         {
+            BaseClass::GetStateMachine().HandleEvent(&AIEvent::AI_EVENT_FIRE_LASER);
+         }*/
+
+         /*if(GetDistance(pos) < 20.0f)
          {
             ComputeTargetOffset();
-         }
+         }*/
       }
       else
       {
@@ -185,6 +203,25 @@ namespace NetDemo
       {
          LOG_ERROR("Invalid state type for state 'AI_STATE_ATTACK'");
       }
+   }
+
+
+   //////////////////////////////////////////////////////////////////////////
+   const osg::Vec2& EnemyHelixAIHelper::GetWeaponAngle() const
+   {
+      return mTurretAI.mCurrentState.GetCurrentAngle();
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   void EnemyHelixAIHelper::SetWeaponAngle(const osg::Vec2& angle)
+   {
+      mTurretAI.mCurrentState.SetCurrentAngle(angle);
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   bool EnemyHelixAIHelper::GetTriggerState() const
+   {
+      return mTurretAI.mCurrentState.GetTrigger();
    }
 
 }//namespace NetDemo

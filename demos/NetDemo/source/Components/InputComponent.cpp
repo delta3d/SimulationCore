@@ -558,7 +558,7 @@ namespace NetDemo
          //return;
       }
 
-      SendAttachOrDetachMessage(mVehicle->GetUniqueId(), DOF_NAME_WEAPON_PIVOT.Get());
+      SendAttachOrDetachMessage(mVehicle->GetUniqueId(), DOF_NAME_VIEW_02.Get());
 
       ///////////////////////////////////////////
       // Setup our Motion Models

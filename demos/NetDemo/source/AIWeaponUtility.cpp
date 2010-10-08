@@ -274,6 +274,7 @@ namespace NetDemo
       mCurrentState.SetTrigger(steerData.GetTrigger());
       mCurrentState.SetCurrentAngle(steerData.GetCurrentAngle());
       mCurrentState.SetCurrentVel(steerData.GetCurrentVel());
+      mCurrentState.SetOrigin(steerData.GetOrigin());
    }
 
    void AITurret::OutputControl( const BaseClass::AIPath& pathToFollow, const TurretWeaponState& current_state, TurretWeaponState& result ) const
