@@ -255,19 +255,20 @@ namespace NetDemo
    public:
       typedef Align BaseClass;
 
-      FollowPath(float minSpeed, float maxSpeed, float lookAhead, float timeToTarget, float lookAheadRot, float timeToTargetRot)
+      FollowPath(float minSpeed, float maxSpeed, float lookAhead, float timeToTarget, float timeToTargetHeight, float lookAheadRot, float timeToTargetRot)
          : BaseClass(lookAheadRot, timeToTargetRot)
          , mMinSpeed(minSpeed)
          , mMaxSpeed(maxSpeed)
          , mLookAhead(lookAhead)
          , mTimeToTarget(timeToTarget)
+         , mTimeToTargetHeight(timeToTargetHeight)
       {}
 
       /*virtual*/ void Think(float dt, BaseClass::ConstKinematicGoalParam current_goal, BaseClass::ConstKinematicParam current_state, BaseClass::SteeringOutByRefParam result);
 
    private:
 
-      float mMinSpeed, mMaxSpeed, mLookAhead, mTimeToTarget;
+      float mMinSpeed, mMaxSpeed, mLookAhead, mTimeToTarget, mTimeToTargetHeight;
    };
 
 

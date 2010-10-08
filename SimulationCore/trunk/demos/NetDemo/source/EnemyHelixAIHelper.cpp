@@ -48,6 +48,7 @@ namespace NetDemo
    //EnemyHelixAIHelper
    //////////////////////////////////////////////////////////////////////////
    EnemyHelixAIHelper::EnemyHelixAIHelper()
+      : mTargetOffset(0.0f, 0.0f, 5.0f)
    {
 
    }
@@ -67,10 +68,11 @@ namespace NetDemo
       float maxSpeedPercent = 2.5f;
       float lookAheadTime = 2.0f;
       float timeToTarget = 10.0f;
+      float timeToTargetHeight = 30.0f;
       float lookAheadRot = 2.5f;
       float timeToTargetRot = 1.0f;
 
-      GetSteeringModel()->AddSteeringBehavior(new FollowPath(minSpeedPercent, maxSpeedPercent, lookAheadTime, timeToTarget, lookAheadRot, timeToTargetRot));
+      GetSteeringModel()->AddSteeringBehavior(new FollowPath(minSpeedPercent, maxSpeedPercent, lookAheadTime, timeToTarget, timeToTargetHeight, lookAheadRot, timeToTargetRot));
    }
 
    //////////////////////////////////////////////////////////////////////////
@@ -160,7 +162,7 @@ namespace NetDemo
          attackState->mStateData.mTarget->GetTransform(xform);
          osg::Vec3 pos = xform.GetTranslation();
 
-         //pos += mTargetOffset;
+         pos += mTargetOffset;
          mDefaultTargeter->Push(pos);
          mGoalState.SetPos(pos);
 
@@ -172,10 +174,10 @@ namespace NetDemo
          mTurretAI.StepTurret(dt);
          //attackState->mStateData.mLastPos = pos;
 
-         /*if(mTurretAI.mCurrentState.GetTrigger())
-         {
-            BaseClass::GetStateMachine().HandleEvent(&AIEvent::AI_EVENT_FIRE_LASER);
-         }*/
+         //if(mTurretAI.mCurrentState.GetTrigger())
+         //{
+         //   BaseClass::GetStateMachine().HandleEvent(&AIEvent::AI_EVENT_FIRE_LASER);
+         //}
 
          /*if(GetDistance(pos) < 20.0f)
          {

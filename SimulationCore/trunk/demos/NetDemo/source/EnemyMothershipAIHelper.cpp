@@ -71,11 +71,12 @@ namespace NetDemo
       float minSpeedPercent = 0.0f;
       float maxSpeedPercent = 0.8f;
       float lookAheadTime = 10.0f;
-      float timeToTarget = 5.0f;
+      float timeToTarget = 15.0f;
+      float timeToTargetHeight = 30.0f;
       float lookAheadRot = 1.5f;
       float timeToTargetRot = 1.0f;
 
-      GetSteeringModel()->AddSteeringBehavior(new FollowPath(minSpeedPercent, maxSpeedPercent, lookAheadTime, timeToTarget, lookAheadRot, timeToTargetRot));
+      GetSteeringModel()->AddSteeringBehavior(new FollowPath(minSpeedPercent, maxSpeedPercent, lookAheadTime, timeToTarget, timeToTargetHeight, lookAheadRot, timeToTargetRot));
 
    }
 

@@ -23,7 +23,7 @@
 */
 #include <dtUtil/mswin.h>
 #include <Actors/EnemyHelix.h>
-
+#include <iostream>
 #include <dtDAL/enginepropertytypes.h>
 #include <dtUtil/matrixutil.h>
 #include <dtUtil/mathdefines.h>
@@ -50,6 +50,7 @@
 //#include <AIUtility.h>
 #include <AIEvent.h>
 #include <AIState.h>
+#include <Actors/TowerActor.h>
 
 #include <ActorRegistry.h>
 #include <Actors/FortActor.h>
@@ -173,15 +174,27 @@ namespace NetDemo
    //////////////////////////////////////////////////////////////////////
    void EnemyHelixActor::FindTarget(float)
    {
-      //temporarily lets just look for a fort to destroy
-      FortActorProxy* fortProxy = NULL;
-      GetGameActorProxy().GetGameManager()->FindActorByType(*NetDemoActorRegistry::FORT_ACTOR_TYPE, fortProxy);
-      if (fortProxy != NULL)
-      {
-         FortActor& fort = *static_cast<FortActor*>(fortProxy->GetActor());
-         mAIHelper->SetCurrentTarget(fort);
-      }
+      //randomly choose a tower to attack
+      int attackTower = dtUtil::RandRange(0, 3);
 
+      std::vector<dtDAL::ActorProxy*> towerProxies;
+      GetGameActorProxy().GetGameManager()->FindActorsByType(*NetDemoActorRegistry::TOWER_ACTOR_TYPE, towerProxies);
+      if(attackTower == 0 && !towerProxies.empty())
+      {
+         unsigned index = dtUtil::RandRange(0, towerProxies.size() - 1);
+         TowerActor* tower = static_cast<TowerActor*>(towerProxies[index]->GetActor());
+         mAIHelper->SetCurrentTarget(*tower);
+      }
+      else
+      {
+         FortActorProxy* fortProxy = NULL;
+         GetGameActorProxy().GetGameManager()->FindActorByType(*NetDemoActorRegistry::FORT_ACTOR_TYPE, fortProxy);
+         if (fortProxy != NULL)
+         {
+            FortActor& fort = *static_cast<FortActor*>(fortProxy->GetActor());
+            mAIHelper->SetCurrentTarget(fort);
+         }
+      }
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
@@ -236,6 +249,45 @@ namespace NetDemo
    {
       if(mWeapon.valid())
       {
+
+         //TODO- THIS DOESNT WORK, HOW DO WE ORIENT THE LASER
+         dtUtil::NodeCollector* nodes = GetNodeCollector();
+         osgSim::DOFTransform* dof = nodes->GetDOFTransform("dof_hotspot_01");
+         if (dof != NULL)
+         {
+            osg::Vec3 hpr = dof->getCurrentHPR();      
+            osg::Vec3 hprLast = hpr;
+
+            ////TODO- This doesn't seem to work, how do we orient the laser?
+            osg::Vec3 current_xyz, current_hpr;
+            dtCore::Transform current_trans;
+            GetTransform(current_trans);
+            current_trans.Get(current_xyz, current_hpr);
+
+            EnemyHelixAIHelper* helix = dynamic_cast<EnemyHelixAIHelper*>(mAIHelper.get());
+            if(helix != NULL)
+            {
+               osg::Vec2 angle = helix->GetWeaponAngle();
+
+               //hpr[0] = angle[0]  - osg::PI_2;
+               hpr[1] = -angle[1] + (0.95 * osg::PI_2);
+
+               //hpr[0] -= current_hpr[0];
+               hpr[1] -= current_hpr[1];
+
+               if(dtUtil::IsFinite(hpr[0]) && dtUtil::IsFinite(hpr[1]))
+               {
+                  //std::cout << "HPR: " << hpr[0] << ", " << hpr[1] << ", " << hpr[2] << std::endl;
+                  dof->setCurrentHPR(hpr);
+
+                  if(GetArticulationHelper() != NULL)
+                  {
+                     GetArticulationHelper()->HandleUpdatedDOFOrientation(*dof, hpr - hprLast, hpr);
+                  }
+               }
+            }
+         }
+
          mWeapon->SetTriggerHeld(true);
          mWeapon->Fire();
 
@@ -253,54 +305,32 @@ namespace NetDemo
       mAIHelper->PreSync(trans);
 
       ////////let the AI do its thing
-      mAIHelper->Update(tickMessage.GetDeltaSimTime());
+      mAIHelper->Update(tickMessage.GetDeltaSimTime());     
 
 
-      //TODO- THIS DOESNT WORK, HOW DO WE ORIENT THE LASER
-      //dtUtil::NodeCollector* nodes = GetNodeCollector();
-      //osgSim::DOFTransform* dof = nodes->GetDOFTransform("dof_hotspot_01");
-      //if (dof != NULL)
-      //{
-      //   osg::Vec3 hpr = dof->getCurrentHPR();      
-      //   osg::Vec3 hprLast = hpr;
-
-      //   ////TODO- This doesn't seem to work, how do we orient the laser?
-      //   osg::Vec3 current_xyz, current_hpr;
-      //   dtCore::Transform current_trans;
-      //   GetTransform(current_trans);
-      //   current_trans.Get(current_xyz, current_hpr);
-
-      //   osg::Vec2 angle = dynamic_cast<EnemyHelixAIHelper*>(mAIHelper.get())->GetWeaponAngle();
-
-      //   hpr[0] = angle[0]  - osg::PI_2;
-      //   //hpr[1] = -angle[1] + (0.95 * osg::PI_2);
-
-      //   hpr[0] -= current_hpr[0];
-      //   //hpr[1] -= current_hpr[1];
-
-      //   if(dtUtil::IsFinite(hpr[0]) && dtUtil::IsFinite(hpr[1]))
-      //   {
-      //      dof->setCurrentHPR(hpr);
-
-      //      if(GetArticulationHelper() != NULL)
-      //      {
-      //         GetArticulationHelper()->HandleUpdatedDOFOrientation(*dof, hpr - hprLast, hpr);
-      //      }
-      //   }
-      //}
-
-
-      //this is a temporary workaround to get the helix to shoot
-      //this should be called from the ai fire laser state
-      float distToTarget = mAIHelper->GetDistance(mAIHelper->mGoalState.GetPos());
-      osg::Vec3 angleToTarget = mAIHelper->mGoalState.GetPos() - mAIHelper->mCurrentState.GetPos();
-      angleToTarget.normalize();
-      float angle = angleToTarget * mAIHelper->mCurrentState.GetForward();
-      if(angle > 0.75f)
+      EnemyHelixAIHelper* helix = dynamic_cast<EnemyHelixAIHelper*>(mAIHelper.get());
+      if(helix != NULL && helix->GetTriggerState())
       {
          Shoot(0.0f);
       }
+      else
+      {
+         osg::Vec3 angleToTarget = mAIHelper->mGoalState.GetPos() - mAIHelper->mCurrentState.GetPos();
+         angleToTarget.normalize();
+         float angle = angleToTarget * mAIHelper->mCurrentState.GetForward();
+         if(angle > 0.75f)
+         {
+            Shoot(0.0f);
+         }
+      }
 
+      //randomly switch targets
+      int switchTarget = dtUtil::RandRange(0, 100);
+      if(switchTarget == 0)
+      {
+         FindTarget(0.0f);
+      }
+      
 
       BaseClass::OnTickLocal(tickMessage);
 

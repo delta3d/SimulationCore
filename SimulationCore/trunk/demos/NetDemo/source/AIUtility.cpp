@@ -393,7 +393,7 @@ namespace NetDemo
       float zVel = current_state.GetVel()[2];
       if(fabs(zVel) < 0.0001) zVel = BaseClass::Sgn(zVel) * 0.0001;
 
-      float heightLookAhead = zVel * 2.5f * mTimeToTarget;
+      float heightLookAhead = zVel * mTimeToTargetHeight;
 
       float heightDiff = goalPos[2] - (pos[2] + heightLookAhead);
       float remainingFallTime = fabs(heightDiff / zVel);
@@ -406,6 +406,9 @@ namespace NetDemo
       {
          lift = 0.0f;
       }
+      
+      //dtUtil::Clamp(lift, 0.25f, 1.0f);
+
       result.SetLift(lift);
    }
 
