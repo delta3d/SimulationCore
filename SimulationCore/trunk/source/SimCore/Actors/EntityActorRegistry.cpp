@@ -56,12 +56,8 @@
 #include <SimCore/Actors/PhysicsParticleSystemActor.h>
 #include <SimCore/Actors/MunitionParticlesActor.h>
 #include <SimCore/Actors/FourWheelVehicleActor.h>
-
-
-#ifdef AGEIA_PHYSICS
-   #include <SimCore/Actors/NxAgeiaFourWheelVehicleActor.h>
-   #include <SimCore/Actors/NECCBoatActor.h>
-#endif
+#include <SimCore/Actors/EnvironmentProcessActor.h>
+#include <SimCore/Actors/SimpleMovingShapeActor.h>
 
 #include <SimCore/Actors/PlatformWithPhysics.h>
 #include <SimCore/Actors/PagedTerrainPhysicsActor.h>
@@ -195,6 +191,13 @@ namespace SimCore
       RefPtr<dtDAL::ActorType> EntityActorRegistry::CAMO_CONFIG_ACTOR_TYPE(
          new dtDAL::ActorType("CamoConfigActor", "SimCore.Config", "An actor that loads information about camo patterns and colors from a specified config file."));
 
+      RefPtr<dtDAL::ActorType> EntityActorRegistry::ENVIRONMENT_PROCESS_ACTOR_TYPE(
+               new dtDAL::ActorType("EnvironmentProcess", "SimCore", "Represents an environmental process such as smoke plumes, clouds, mist, etc.")
+               );
+
+      RefPtr<dtDAL::ActorType> EntityActorRegistry::ENVIRONMENT_PROCESS_MOVING_SHAPE_ACTOR_TYPE(
+               new dtDAL::ActorType("EnvironmentProcessMovingShape", "SimCore", "Represents an shape or other deadreckoned area that is part of an environment process.")
+               );
 
       ///////////////////////////////////////////////////////////////////////////
       extern "C" SIMCORE_EXPORT dtDAL::ActorPluginRegistry* CreatePluginRegistry()
@@ -256,12 +259,7 @@ namespace SimCore
          mActorFactory->RegisterType<PhysicsParticleSystemActorProxy>(PHYSICS_PARTICLE_SYSTEM_TYPE.get());
          mActorFactory->RegisterType<MunitionParticlesActorProxy>(PHYSICS_MUNITIONS_PARTICLE_SYSTEM_TYPE.get());
 
-#ifdef AGEIA_PHYSICS
-         mActorFactory->RegisterType<NxAgeiaFourWheelVehicleActorProxy>(AGEIA_VEHICLE_ACTOR_TYPE.get());
-         mActorFactory->RegisterType<NECCBoatActorProxy>(NECC_BOAT_ACTOR_TYPE.get());
-#else
          mActorFactory->RegisterType<PlatformWithPhysicsActorProxy>(AGEIA_VEHICLE_ACTOR_TYPE.get());
-#endif
          mActorFactory->RegisterType<FourWheelVehicleActorProxy>(FOUR_WHEEL_VEHICLE_ACTOR_TYPE.get());
 
          mActorFactory->RegisterType<HumanWithPhysicsActorProxy>(HUMAN_PHYSICS_ACTOR_TYPE.get());
@@ -289,6 +287,8 @@ namespace SimCore
          mActorFactory->RegisterType<HumanWithPhysicsActorProxy>(new dtDAL::ActorType("HumanWithPhysicsActor", "NxAgeiaPhysicsModels", "Human with a physics collision mesh",
                   EntityActorRegistry::HUMAN_ACTOR_TYPE.get()));
 
+         mActorFactory->RegisterType<EnvironmentProcessActorProxy>(ENVIRONMENT_PROCESS_ACTOR_TYPE);
+         mActorFactory->RegisterType<SimpleMovingShapeActorProxy>(ENVIRONMENT_PROCESS_MOVING_SHAPE_ACTOR_TYPE);
 
          mActorFactory->RegisterType<WaterGridActorProxy>(WATER_GRID_ACTOR_TYPE.get());
          mActorFactory->RegisterType<DRGhostActorProxy>(DR_GHOST_ACTOR_TYPE.get());

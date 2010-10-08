@@ -98,6 +98,11 @@ namespace SimCore
 
             static dtCore::RefPtr<dtDAL::ActorType> CAMO_CONFIG_ACTOR_TYPE;
 
+            static dtCore::RefPtr<dtDAL::ActorType> ENVIRONMENT_PROCESS_ACTOR_TYPE;
+
+            static dtCore::RefPtr<dtDAL::ActorType> ENVIRONMENT_PROCESS_MOVING_SHAPE_ACTOR_TYPE;
+
+
             /// Constructor
             EntityActorRegistry();
 

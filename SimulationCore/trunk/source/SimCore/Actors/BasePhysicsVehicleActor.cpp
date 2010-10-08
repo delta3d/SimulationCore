@@ -281,19 +281,21 @@ namespace SimCore
          // Allow the base class to handle expected base functionality.
          // NOTE: This is called last since the vehicle's position will be final.
          //       The base TickLocal currently queries the vehicle's position and orientation.
-         Platform::OnTickLocal(tickMessage);
+         BaseClass::OnTickLocal(tickMessage);
       }
 
 
       ///////////////////////////////////////////////////////////////////////////////////
       void BasePhysicsVehicleActor::UpdateSoundEffects(float deltaTime)
       {
-         // Do nothing in the base. That's yer job.
+         // Do nothing in the base. That's your job.
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
       void BasePhysicsVehicleActor::OnTickRemote(const dtGame::TickMessage& tickMessage)
       {
+         BaseClass::OnTickRemote(tickMessage);
+
          float ElapsedTime = tickMessage.GetDeltaSimTime();
          UpdateSoundEffects(ElapsedTime);
       }
