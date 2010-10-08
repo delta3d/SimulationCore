@@ -162,7 +162,7 @@ namespace NetDemo
       goalStateIn.SetMaxElevation(200.0f);
       goalStateIn.SetDragCoef(0.005f);
       goalStateIn.SetAngularDragCoef(0.005f);
-      goalStateIn.SetVerticalDragCoef(0.005f);
+      goalStateIn.SetVerticalDragCoef(200.005f);
    }
 
    void AIPhysicsModel::SetState(BaseAIGameState& state, const osg::Matrix& matIn)
