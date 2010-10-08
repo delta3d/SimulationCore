@@ -340,7 +340,6 @@ namespace NetDemo
          //we are static, no need to obtain an update
          //mAIHelper->PostSync(trans);
 
-         //we are currently only using the heading
          hpr = hprLast;
          osg::Vec2 angle = mAIHelper->GetWeaponAngle();
          hpr[0] = angle[0]  - osg::PI_2;
