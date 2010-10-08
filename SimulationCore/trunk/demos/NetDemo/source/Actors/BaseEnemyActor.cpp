@@ -289,6 +289,9 @@ namespace NetDemo
    void BaseEnemyActor::OnTickLocal( const dtGame::TickMessage& tickMessage )
    {
       BaseClass::OnTickLocal( tickMessage );
+
+      // Set the angular velocity manually because we are abusing the physics engine in all enemies.
+      GetDRPublishingActComp()->SetCurrentAngularVelocity(osg::Vec3(0.0f, 0.0f, 0.0f));
    }
 
    //////////////////////////////////////////////////////////////////////
