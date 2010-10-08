@@ -32,6 +32,8 @@
 
 #include <dtUtil/getsetmacros.h>
 
+#include <SimCore/Actors/SimpleMovingShapeActor.h>
+
 namespace SimCore
 {
 
@@ -43,17 +45,65 @@ namespace SimCore
       public:
          typedef dtGame::GameActorProxy BaseClass;
          typedef std::vector<dtCore::RefPtr<dtDAL::NamedGroupParameter> > RecordList;
+         typedef std::map<int, dtCore::RefPtr<SimpleMovingShapeActorProxy> > CreatedActorList;
+
+         enum EnvironmentRecordTypeCode
+         {
+            COMBICStateRecordType = 256,
+            FlareStateRecordType = 259,
+            BoundingSphereRecordType = 65536,
+            UniformGeometryRecordType = 327680,
+            PointRecord1Type = 655360,
+            LineRecord1Type = 786432,
+            SphereRecord1Type = 851968,
+            EllipsoidRecord1Type = 1048576,
+            ConeRecord1Type = 3145728,
+            RectangularVolRecord1Type = 5242880,
+            RectangularVolRecord3Type = 83886080,
+            PointRecord2Type = 167772160,
+            LineRecord2Type = 201326592,
+            SphereRecord2Type = 218103808,
+            EllipsoidRecord2Type = 268435456,
+            ConeRecord2Type = 805306368,
+            RectangularVolRecord2Type = 1342177280,
+            GaussianPlumeRecordType = 1610612736,
+            GaussianPuffRecordType = 1879048192
+         };
+
+         // This set of strings matches what's in the code in the dtHLA mapping, but since this actor
+         // is completely decoupled and it defines an internal data structure, I couldn't share the data.
+         static const dtUtil::RefString PARAM_INDEX;
+         static const dtUtil::RefString PARAM_TYPE_CODE;
+         static const dtUtil::RefString PARAM_LOCATION;
+         static const dtUtil::RefString PARAM_ORIGINATION_LOCATION;
+         static const dtUtil::RefString PARAM_ORIENTATION;
+         static const dtUtil::RefString PARAM_VELOCITY;
+         static const dtUtil::RefString PARAM_ANGULAR_VELOCITY;
+         static const dtUtil::RefString PARAM_DIMENSION;
+         static const dtUtil::RefString PARAM_DIMENSION_RATE;
+         static const dtUtil::RefString PARAM_CENTROID_HEIGHT;
+         static const dtUtil::RefString PARAM_RADIUS;
+         static const dtUtil::RefString PARAM_RADIUS_RATE;
 
          EnvironmentProcessActorProxy();
 
+
          DT_DECLARE_ACCESSOR(int, SequenceNumber);
+
+         DT_DECLARE_ACCESSOR(int, LastUpdateSequenceNumber);
 
          void SetRecords(const dtDAL::NamedGroupParameter& groupParam);
          dtCore::RefPtr<dtDAL::NamedGroupParameter> GetRecords() const;
 
-         virtual void OnRecordsChange(dtDAL::NamedGroupParameter& records) = 0;
+         const CreatedActorList& GetCreatedActors();
+
+         void ClearCreatedActors();
 
       protected:
+         void OnRecordsChange(const RecordList& records);
+
+         // This takes a ref ptr by reference because it's called from a functor
+         virtual void OnRecordChange(const dtCore::RefPtr<dtDAL::NamedGroupParameter>& record);
 
          virtual ~EnvironmentProcessActorProxy();
 
@@ -62,6 +112,7 @@ namespace SimCore
 
       private:
          RecordList mRecords;
+         CreatedActorList mCreatedActors;
       };
 
    }

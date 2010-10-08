@@ -476,10 +476,10 @@ namespace SimCore
 
             AddComponent(*mDeadReckoningHelper);
          }
-         //else
-         //{
-            //GetComponent(mDeadReckoningHelper->GetType());
-         //}
+         else
+         {
+            GetComponent(mDeadReckoningHelper);
+         }
 
 
          // DEAD RECKONING - PUBLISHING ACTOR COMPONENT
@@ -487,6 +487,10 @@ namespace SimCore
          {
             mDRPublishingActComp = new DRPublishingActComp();
             AddComponent(*mDRPublishingActComp);  // Add AFTER the DRhelper.
+         }
+         else
+         {
+            GetComponent(mDRPublishingActComp);
          }
       }
 
