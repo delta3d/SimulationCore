@@ -376,7 +376,7 @@ namespace SimCore
             mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::PLAYER_ACTOR_TYPE, curProxy);
 
             curEntity = dynamic_cast<SimCore::Actors::BaseEntity*> (&(curProxy->GetGameActor()));
-            curEntity->SetAutoRegisterWithDeadReckoningComponent(false);
+            curEntity->GetDeadReckoningHelper().SetAutoRegisterWithGMComponent(false);
             listToFill.push_back( curEntity );
 
             if(putInGameManager)
@@ -1424,7 +1424,7 @@ namespace SimCore
          entityAP->GetGameActor().GetTransform(xform);
          xform.SetTranslation(tankLocation);
          SimCore::Actors::BaseEntity* curEntity = dynamic_cast<SimCore::Actors::BaseEntity*> (&(entityAP->GetGameActor()));
-         curEntity->SetAutoRegisterWithDeadReckoningComponent(false);
+         curEntity->GetDeadReckoningHelper().SetAutoRegisterWithGMComponent(false);
          mGM->AddActor(*entityAP, false, false);
 
          dtCore::AppSleep(10);

@@ -55,8 +55,14 @@ namespace SimCore
          // DEAD RECKONING - ACT COMPONENT
          if (!ga->HasComponent(dtGame::DeadReckoningHelper::TYPE)) // not added by a subclass
          {
-            ga->AddComponent(*new dtGame::DeadReckoningHelper());
+            // TODO, use a subclassed dr actor comp that makes the shape dr too.
+            dtCore::RefPtr<dtGame::DeadReckoningHelper> drHelper = new dtGame::DeadReckoningHelper();
+            drHelper->SetDeadReckoningAlgorithm(dtGame::DeadReckoningAlgorithm::VELOCITY_ONLY);
+            drHelper->SetGroundClampType(dtGame::GroundClampTypeEnum::NONE);
+            ga->AddComponent(*drHelper);
          }
+
+         BaseClass::BuildActorComponents();
       }
 
       ////////////////////////////////////////////////////////////////////////////
@@ -78,7 +84,7 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////
       void SimpleMovingShapeActorProxy::BuildPropertyMap()
       {
-         static const dtUtil::RefString GROUPNAME("SimpleMovingShapeActor");
+         static const dtUtil::RefString GROUPNAME("SimpleMovingShape");
 
          typedef dtDAL::PropertyRegHelper<SimpleMovingShapeActorProxy&, SimpleMovingShapeActorProxy> PropRegHelperType;
          PropRegHelperType propRegHelper(*this, this, GROUPNAME);

@@ -253,9 +253,6 @@ namespace SimCore
             DT_DECLARE_ACCESSOR(bool, Frozen);
 
             DT_DECLARE_ACCESSOR(bool, AutoRegisterWithMunitionsComponent);
-            /// Not an actual property. Defaults to true. Set to false if for some bizarre reason you don't want the DR Component
-            DT_DECLARE_ACCESSOR(bool, AutoRegisterWithDeadReckoningComponent);
-
 
             /**
              * Set the name of the munition damage table found in the Configs/MunitionsConfig.xml
@@ -410,9 +407,6 @@ namespace SimCore
 
             ///updates the scale of the model base on the default scale and magnification.
             void UpdateModelScale();
-
-            /// Called in OnEnteredWorld. A basic part of entities.
-            void RegisterWithDeadReckoningComponent();
 
          private:
             ///a sub-matrix node just for doing scale on the model.
