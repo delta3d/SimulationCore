@@ -76,6 +76,35 @@
          <Property Name="TextColours" Value="FFFFFF00"/>
          <Property Name="Text" Value="Score: 0"/>
       </Window>
+
+      <!-- HELP LABEL BOX -->
+      <Window Name="HUD_HelpLabelBox" Type="NetDemo/GlowFrame">
+         <Property Name="UnifiedSize" Value="{{0.12,0},{0.08,0}}"/>
+         <Property Name="UnifiedPosition" Value="{{0.0,0},{0.0,0}}"/>
+         <Property Name="ZOrderChangeEnabled" Value="False"/>
+         <Property Name="AlwaysOnTop" Value="True"/>
+         <Property Name="HorizontalAlignment" Value="Right"/>
+         <Property Name="VerticalAlignment" Value="Top"/>
+         <Property Name="BackColour" Value="CC000000"/>
+         <Property Name="FrameColour" Value="00000000"/>
+         <Property Name="GlowColour" Value="00000000"/>
+      </Window>
+      
+      <!-- HELP LABEL -->
+      <Window Name="HUD_HelpLabel" Type="WindowsLook/StaticText">
+         <Property Name="UnifiedSize" Value="{{0.1,0},{0.075,0}}"/>
+         <Property Name="UnifiedPosition" Value="{{0.0,0},{0.0,0}}"/>
+         <Property Name="HorizontalAlignment" Value="Right"/>
+         <Property Name="VerticalAlignment" Value="Top"/>
+         <Property Name="BackgroundEnabled" Value="False"/>
+         <Property Name="FrameEnabled" Value="False"/>
+         <Property Name="ZOrderChangeEnabled" Value="False"/>
+         <Property Name="AlwaysOnTop" Value="True"/>
+         <Property Name="HorizontalTextFormat" Value="RightAligned"/>
+         <Property Name="Font" Value="Arial-Bold-24"/>
+         <Property Name="TextColours" Value="FFFFFF00"/>
+         <Property Name="Text" Value="Help (F1)"/>
+      </Window>
         
 	</Window>
    
