@@ -38,6 +38,8 @@ namespace SimCore
       class SIMCORE_EXPORT SimpleMovingShapeActorProxy : public dtGame::GameActorProxy
       {
       public:
+         typedef dtGame::GameActorProxy BaseClass;
+
          SimpleMovingShapeActorProxy();
 
          virtual void BuildActorComponents();

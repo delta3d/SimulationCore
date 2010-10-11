@@ -408,7 +408,6 @@ namespace SimCore
          , mFirepowerDisabled(false)
          , mFrozen(false)
          , mAutoRegisterWithMunitionsComponent(true)
-         , mAutoRegisterWithDeadReckoningComponent(true)
          , mScaleMatrixNode(new osg::MatrixTransform)
          , mDeadReckoningHelper(NULL)
          , mDamageState(&BaseEntityActorProxy::DamageStateEnum::NO_DAMAGE)
@@ -446,7 +445,6 @@ namespace SimCore
       DT_IMPLEMENT_ACCESSOR(BaseEntity, bool, FirepowerDisabled);
       DT_IMPLEMENT_ACCESSOR(BaseEntity, bool, Frozen);
       DT_IMPLEMENT_ACCESSOR(BaseEntity, bool, AutoRegisterWithMunitionsComponent);
-      DT_IMPLEMENT_ACCESSOR(BaseEntity, bool, AutoRegisterWithDeadReckoningComponent);
       DT_IMPLEMENT_ACCESSOR(BaseEntity, std::string, MunitionDamageTableName);
 
       ////////////////////////////////////////////////////////////////////////////////////
@@ -522,11 +520,6 @@ namespace SimCore
                   munitionsComp->Register(*this, false, GetMaxDamageAmount());
                }
             }
-         }
-
-         if (mAutoRegisterWithDeadReckoningComponent)
-         {
-            RegisterWithDeadReckoningComponent();
          }
 
          //////////////////////////////
@@ -720,37 +713,6 @@ namespace SimCore
             }
          }
          mSmokePlumePresent = enable;
-      }
-
-      ////////////////////////////////////////////////////////////////////////////////////
-      void BaseEntity::RegisterWithDeadReckoningComponent()
-      {
-         dtGame::DeadReckoningComponent* drc = NULL;
-
-         GetGameActorProxy().GetGameManager()->
-            GetComponentByName(dtGame::DeadReckoningComponent::DEFAULT_NAME, drc);
-
-         // We have to have a DR helper to add the component
-         if (!IsDeadReckoningHelperValid())
-         {
-            mLogger->LogMessage(dtUtil::Log::LOG_ERROR, __FUNCTION__, __LINE__,
-               "Actor \"%s\"\"%s\" does not have a DeadReckoningHelper.",
-               GetName().c_str(), GetUniqueId().ToString().c_str());
-
-            return;
-         }
-
-         if (drc != NULL)
-         {
-            drc->RegisterActor(GetGameActorProxy(), GetDeadReckoningHelper());
-         }
-         else
-         {
-            mLogger->LogMessage(dtUtil::Log::LOG_WARNING, __FUNCTION__, __LINE__,
-               "Actor \"%s\"\"%s\" unable to find DeadReckoningComponent.",
-               GetName().c_str(), GetUniqueId().ToString().c_str());
-         }
-
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
