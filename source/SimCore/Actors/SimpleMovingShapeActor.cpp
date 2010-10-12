@@ -22,6 +22,7 @@
  * David Guthrie
  */
 
+#include <prefix/SimCorePrefix.h>
 #include <SimCore/Actors/SimpleMovingShapeActor.h>
 #include <dtGame/gameactor.h>
 #include <dtGame/deadreckoninghelper.h>
