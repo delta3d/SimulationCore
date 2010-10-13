@@ -170,8 +170,9 @@ namespace SimCore
 
          // Compute the probability of damage
          float distanceFromImpact = 0.0f;
-         munitionDamage->GetDamageProbabilities( *mScratchProbs, distanceFromImpact, directHit,
-            message.GetFinalVelocityVector(), message.GetDetonationLocation(), entityPos );
+         munitionDamage->GetDamageProbabilities( *mScratchProbs, distanceFromImpact, 
+            mEntityDimensions, directHit, message.GetFinalVelocityVector(), 
+            message.GetDetonationLocation(), entityPos );
 
          // Apply damage and force only if the entity is within the range of effect.
          if( distanceFromImpact <= munitionDamage->GetCutoffRange() )

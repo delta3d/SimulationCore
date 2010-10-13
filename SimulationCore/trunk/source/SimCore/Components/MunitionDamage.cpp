@@ -297,11 +297,11 @@ namespace SimCore
 
       //////////////////////////////////////////////////////////
       void MunitionDamage::GetDamageProbabilities( DamageProbability& outProbabilities, 
-         float& outDistanceFromImpact,
+         float& outDistanceFromImpact, const osg::Vec3& modelDimensions,
          bool directFire,
          const osg::Vec3& munitionTrajectory, 
          const osg::Vec3& munitionPosition, 
-         const osg::Vec3& entityPosition ) const
+         const osg::Vec3& entityPosition) const
       {
          if( directFire )
          {
@@ -327,7 +327,9 @@ namespace SimCore
          // Continue with Indirect Fire...
          osg::Vec3 offset = entityPosition - munitionPosition;
 
-         outDistanceFromImpact = offset.length();
+         // Distance is the offset, minus half the width of the model.
+         outDistanceFromImpact = offset.length() - modelDimensions.length()/2.0;
+         outDistanceFromImpact = dtUtil::Max(outDistanceFromImpact, 0.0f);
          if( outDistanceFromImpact >= mCutoffRange )
          {
             outProbabilities.SetAbsoluteMode( true );

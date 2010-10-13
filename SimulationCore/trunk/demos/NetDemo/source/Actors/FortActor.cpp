@@ -142,6 +142,8 @@ namespace NetDemo
       //dtGame::GameActorProxy* gap = GetGameActorProxy().GetGameManager()->FindGameActorById(message.GetSendingActorId());
       //return incomingDamage * float(!IsEnemyActor(gap));
 
+      // Send out an actor update message. should probably be a partial update
+      GetGameActorProxy().NotifyFullActorUpdate();
       return incomingDamage;
    }
 

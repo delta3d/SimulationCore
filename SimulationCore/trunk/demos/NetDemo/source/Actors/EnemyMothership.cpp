@@ -73,6 +73,14 @@ namespace NetDemo
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
+   float EnemyMothershipActor::ValidateIncomingDamage(float incomingDamage, const SimCore::DetonationMessage& message, 
+      const SimCore::Actors::MunitionTypeActor& munition)
+   {
+      // We don't need no stinking damage...
+      return 0.0f;
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////////
    void EnemyMothershipActor::OnEnteredWorld()
    {
       BaseClass::OnEnteredWorld();

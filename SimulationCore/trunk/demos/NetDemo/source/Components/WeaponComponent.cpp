@@ -153,15 +153,15 @@ namespace NetDemo
 
       // weapons -- for array iterator.
       // WEAPON 1
-      CreateWeapon( "Weapon_Grenade",
-         "Particle_System_Weapon_Grenade",
+      CreateWeapon( "Weapon_MachineGun",
+         "Particle_System_Weapon_GunWithTracer",
          "weapon_gun_flash.osg", curWeapon );
       if (curWeapon != NULL) { mWeaponList.push_back(curWeapon); }
       curWeapon = NULL;
 
       // WEAPON 2
-      CreateWeapon( "Weapon_MachineGun",
-         "Particle_System_Weapon_GunWithTracer",
+      CreateWeapon( "Weapon_Grenade",
+         "Particle_System_Weapon_Grenade",
          "weapon_gun_flash.osg", curWeapon );
       if (curWeapon != NULL) { mWeaponList.push_back(curWeapon); }
       curWeapon = NULL;

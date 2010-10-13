@@ -238,11 +238,11 @@ namespace SimCore
             const DamageProbability* GetIndirectFireProbabilities() { return mIndirectFireProbs.get(); }
 
             void GetDamageProbabilities( DamageProbability& outProbabilities,
-               float& outDistanceFromImpact,
+               float& outDistanceFromImpact, const osg::Vec3& modelDimensions,
                bool directFire,
                const osg::Vec3& munitionTrajectory,
                const osg::Vec3& munitionPosition,
-               const osg::Vec3& entityPosition ) const;
+               const osg::Vec3& entityPosition) const;
 
             // Get the damage probability via the Carleton Method
             // D0 is one of the damage probability coefficients: M, F, MF, K

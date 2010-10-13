@@ -47,6 +47,7 @@
 
 #include <SimCore/Components/RenderingSupportComponent.h>
 #include <SimCore/Components/MunitionsComponent.h>
+#include <SimCore/Components/DamageHelper.h>
 #include <SimCore/Actors/MunitionTypeActor.h>
 #include <SimCore/Actors/DRPublishingActComp.h>
 #include <SimCore/Messages.h>
@@ -518,6 +519,15 @@ namespace SimCore
                {
                   // Changed to the second parameter to false because the entity does the update itself now.
                   munitionsComp->Register(*this, false, GetMaxDamageAmount());
+
+                  // Give the model size of the current model to the damage helper to use to help
+                  // damage to occur to really large objects - previously large buildings were too 'far' 
+                  // away from teh impact even though it was a direct hit.
+                  SimCore::Components::DamageHelper* helper = munitionsComp->GetHelperByEntityId(GetUniqueId());
+                  if (helper != NULL)
+                  {
+                     helper->SetEntityDimensions(GetDeadReckoningHelper().GetModelDimensions());
+                  }
                }
             }
          }
