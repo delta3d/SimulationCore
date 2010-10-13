@@ -45,6 +45,9 @@ namespace NetDemo
       /// Constructor
       EnemyMothershipActor (SimCore::Actors::BasePhysicsVehicleActorProxy &proxy);
 
+      /*virtual*/ float ValidateIncomingDamage(float incomingDamage, const SimCore::DetonationMessage& message, 
+         const SimCore::Actors::MunitionTypeActor& munition);
+
       /*virtual*/ void OnEnteredWorld();
 
       /*virtual*/ void OnTickLocal(const dtGame::TickMessage& tickMessage);
