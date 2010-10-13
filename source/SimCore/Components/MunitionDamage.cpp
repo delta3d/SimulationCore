@@ -23,6 +23,7 @@
 
 #include <prefix/SimCorePrefix.h>
 #include <SimCore/Components/MunitionDamage.h>
+#include <dtUtil/mathdefines.h>
 
 #include <cmath>
 namespace SimCore
