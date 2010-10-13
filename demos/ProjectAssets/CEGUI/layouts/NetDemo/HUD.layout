@@ -19,7 +19,6 @@
          <Property Name="FrameEnabled" Value="False"/>
          <Property Name="ZOrderChangeEnabled" Value="False"/>
          <Property Name="AlwaysOnTop" Value="True"/>
-         <Property Name="HorizontalTextFormat" Value="LeftAligned"/>
          <Property Name="Image" Value="set:Fort image:Fort"/>
       </Window>
 
@@ -33,7 +32,6 @@
          <Property Name="FrameEnabled" Value="False"/>
          <Property Name="ZOrderChangeEnabled" Value="False"/>
          <Property Name="AlwaysOnTop" Value="True"/>
-         <Property Name="HorizontalTextFormat" Value="LeftAligned"/>
          <Property Name="Font" Value="Arial-Bold-24"/>
          <Property Name="TextColours" Value="FFFFFF00"/>
       </Window>
@@ -71,7 +69,6 @@
          <Property Name="FrameEnabled" Value="False"/>
          <Property Name="ZOrderChangeEnabled" Value="False"/>
          <Property Name="AlwaysOnTop" Value="True"/>
-         <Property Name="HorizontalTextFormat" Value="LeftAligned"/>
          <Property Name="Font" Value="Arial-Bold-24"/>
          <Property Name="TextColours" Value="FFFFFF00"/>
          <Property Name="Text" Value="Score: 0"/>
@@ -100,7 +97,6 @@
          <Property Name="FrameEnabled" Value="False"/>
          <Property Name="ZOrderChangeEnabled" Value="False"/>
          <Property Name="AlwaysOnTop" Value="True"/>
-         <Property Name="HorizontalTextFormat" Value="RightAligned"/>
          <Property Name="Font" Value="Arial-Bold-24"/>
          <Property Name="TextColours" Value="FFFFFF00"/>
          <Property Name="Text" Value="Help (F1)"/>

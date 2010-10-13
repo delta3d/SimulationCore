@@ -8,13 +8,15 @@
    <Imageset Name="GlowFrame" Filename="CEGUI/imagesets/GlowFrame.imageset" />
    <Imageset Name="Meter" Filename="CEGUI/imagesets/Meter.imageset" />
    <Imageset Name="UFOButton" Filename="CEGUI/imagesets/UFOButton.imageset" />
+   <Imageset Name="WindowsLook" Filename="CEGUI/imagesets/WindowsLook.imageset" />
    
    <!-- FONTS -->
    <Font Name="Arial-Bold-12" Filename="CEGUI/fonts/Arial-Bold-12.font" />
    <Font Name="Arial-Bold-16" Filename="CEGUI/fonts/Arial-Bold-16.font" />
-   <Font Name="Arial-Bold-16" Filename="CEGUI/fonts/Arial-Bold-24.font" />
-   <Font Name="Arial-Bold-16" Filename="CEGUI/fonts/Arial-Bold-48.font" />
+   <Font Name="Arial-Bold-24" Filename="CEGUI/fonts/Arial-Bold-24.font" />
+   <Font Name="Arial-Bold-48" Filename="CEGUI/fonts/Arial-Bold-48.font" />
    <Font Name="DejaVuSans-10" Filename="CEGUI/fonts/DejaVuSans-10.font" />
+   <Font Name="DejaVuSans-12" Filename="CEGUI/fonts/DejaVuSans-12.font" />
 
    <!-- LOOKNFEELS -->
    <LookNFeel Filename="CEGUI/looknfeel/NetDemo.looknfeel" />
