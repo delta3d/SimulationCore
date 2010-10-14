@@ -183,17 +183,19 @@ namespace NetDemo
       {
          unsigned index = dtUtil::RandRange(0, towerProxies.size() - 1);
          TowerActor* tower = static_cast<TowerActor*>(towerProxies[index]->GetActor());
-         mAIHelper->SetCurrentTarget(*tower);
-      }
-      else
-      {
-         FortActorProxy* fortProxy = NULL;
-         GetGameActorProxy().GetGameManager()->FindActorByType(*NetDemoActorRegistry::FORT_ACTOR_TYPE, fortProxy);
-         if (fortProxy != NULL)
+         if(tower->GetDamageState() != BaseEnemyActorProxy::DamageStateEnum::DESTROYED)
          {
-            FortActor& fort = *static_cast<FortActor*>(fortProxy->GetActor());
-            mAIHelper->SetCurrentTarget(fort);
+            mAIHelper->SetCurrentTarget(*tower);
+            return;
          }
+      }
+
+      FortActorProxy* fortProxy = NULL;
+      GetGameActorProxy().GetGameManager()->FindActorByType(*NetDemoActorRegistry::FORT_ACTOR_TYPE, fortProxy);
+      if (fortProxy != NULL)
+      {
+         FortActor& fort = *static_cast<FortActor*>(fortProxy->GetActor());
+         mAIHelper->SetCurrentTarget(fort);
       }
    }
 
@@ -325,7 +327,7 @@ namespace NetDemo
       }
 
       //randomly switch targets
-      int switchTarget = dtUtil::RandRange(0, 100);
+      int switchTarget = dtUtil::RandRange(0, 500);
       if(switchTarget == 0)
       {
          FindTarget(0.0f);

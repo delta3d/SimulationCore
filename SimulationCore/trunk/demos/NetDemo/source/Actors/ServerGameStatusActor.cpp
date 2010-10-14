@@ -47,7 +47,7 @@ namespace NetDemo
       , mLastPublishTime(0.0)
       , mNumPlayers(0)
       , mNumTeams(0)
-      , mWaveStartDuration(5.0f)
+      , mWaveStartDuration(25.0f)
       , mWaveDuration(300.0f)
       , mGameDifficulty(0)
       , mMaxNumberWaves(50)
