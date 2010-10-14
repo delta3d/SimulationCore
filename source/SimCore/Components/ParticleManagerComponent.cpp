@@ -260,11 +260,12 @@ namespace SimCore
 
       //////////////////////////////////////////////////////////
       ParticleManagerComponent::ParticleManagerComponent( const std::string& name )
-         : dtGame::GMComponent(name),
-         mGlobalParticleCount(0),
-         mUpdateEnabled(true),
-         mUpdateInterval(3.0),
-         mUpdateTimerName("ParticleMgrComp("+name+"):UpdateTimer")
+         : dtGame::GMComponent(name)
+         , mGlobalParticleCount(0)
+         , mUpdateEnabled(true)
+         , mUpdateInterval(3.0)
+         , mUpdateTimerName("ParticleMgrComp("+name+"):UpdateTimer")
+         , mWindWasUpdated(false)
       {
 
       }
@@ -357,6 +358,7 @@ namespace SimCore
             // Capture the wind force that must be applied to new
             // particle systems registered to this component.
             mWind = envActor->GetWind();
+            mWindWasUpdated = true;
 
             // Update the physics particles wind....
             std::vector<dtDAL::ActorProxy*> toFill;
@@ -379,6 +381,13 @@ namespace SimCore
             // Release all particle info only, it will not remove the timer.
             // The timer will be removed on GameManager shutdown.
             Clear();
+         }
+         // After map is loaded, reset our timer. Since map unload deletes all timers
+         else if (msgType == dtGame::MessageType::INFO_MAP_LOADED)
+         {
+            // Resetting the update interval turns the timer back on if appropriate.
+            SetUpdateInterval(mUpdateInterval);
+            mWindWasUpdated = true; // cause an initial reset, just in case.
          }
          // Restarts is a special state change, slightly different from
          // complete shutdown. Reset is similar to Clear but is intended
@@ -537,6 +546,12 @@ namespace SimCore
       //////////////////////////////////////////////////////////
       void ParticleManagerComponent::UpdateParticleForces()
       {
+         // Nothing to do if the wind hasn't changed. Wind is applied when first registered.
+         if (!mWindWasUpdated)
+         {
+            return;
+         }
+
          bool forceInfoUpdate = false;
          dtCore::ParticleSystem* curParticles = NULL;
          ParticleInfo::ForceOperatorList* curForces = NULL;
@@ -547,16 +562,6 @@ namespace SimCore
             curInfo = infoIter->second.get();
             if( curInfo == NULL || curInfo->GetParticleSystem() == NULL )
             {
-               // Ensure that the invalid particle info is removed by calling
-               // UpdateParticleInfo at the end of this function. The update timer
-               // may not have been activated and thus would not call updates on
-               // all particle infos and not remove invalid ones. This makes certain
-               // that any and all invalid infos are removed from the manager.
-               forceInfoUpdate = true;
-
-               // DEBUG:
-               // std::cout << "\tINFO: " << (curInfo==NULL?"NULL":"OK")
-               //   << "\tParticlePtr: " << (curInfo==NULL || curInfo->GetParticleSystem()==NULL?"NULL":"OK") << std::endl;
                continue;
             }
 
@@ -577,14 +582,6 @@ namespace SimCore
 
             } // End Forces Loop
          }// End Particle Infos Loop
-
-         // Force an update on particle infos if any were found to be invalid.
-         if( forceInfoUpdate )
-         {
-            // We no longer force this behavior because it causes a series of events for
-            // almost every munition that goes away, instead of acting as a batch every 3 seconds.
-            //UpdateParticleInfo();
-         }
       }
 
       //////////////////////////////////////////////////////////
