@@ -68,11 +68,13 @@ namespace NetDemo
       float maxSpeedPercent = 2.5f;
       float lookAheadTime = 2.0f;
       float timeToTarget = 10.0f;
-      float timeToTargetHeight = 30.0f;
+      float timeToTargetHeight = 25.0f;
       float lookAheadRot = 2.5f;
       float timeToTargetRot = 1.0f;
 
       GetSteeringModel()->AddSteeringBehavior(new FollowPath(minSpeedPercent, maxSpeedPercent, lookAheadTime, timeToTarget, timeToTargetHeight, lookAheadRot, timeToTargetRot));
+
+      ComputeTargetOffset();
    }
 
    //////////////////////////////////////////////////////////////////////////
@@ -85,9 +87,9 @@ namespace NetDemo
    void EnemyHelixAIHelper::ComputeTargetOffset()
    {
       mTargetOffset = osg::Vec3(
-         dtUtil::RandFloat(-35.0f, 35.0f),
-         dtUtil::RandFloat(-15.0f, 35.0f),
-         dtUtil::RandFloat(15.0f, 15.0f) );
+         dtUtil::RandFloat(0.0f, 0.0f),
+         dtUtil::RandFloat(0.0f, 0.0f),
+         dtUtil::RandFloat(10.0f, 15.0f) );
    }
 
 
@@ -165,7 +167,6 @@ namespace NetDemo
          pos += mTargetOffset;
          mDefaultTargeter->Push(pos);
          mGoalState.SetPos(pos);
-
 
          //osg::Vec3 vel = pos - attackState->mStateData.mLastPos;
          //osg::Vec3 predictedPos = pos + (vel * 2.5);

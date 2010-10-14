@@ -247,8 +247,8 @@ namespace NetDemo
       //TODO- FIX STEERINGPIPELINE.H 
       //mGoalState.SetMaxVel(osg::Vec2(1.0f, 1.5f));
 
-      float lookAhead = 1.0f;
-      float timeToTarget = 0.15f;
+      float lookAhead = 0.65f;
+      float timeToTarget = 0.05f;
       TurretAlign* t_align = new TurretAlign(lookAhead, timeToTarget);
       mBehaviors.push_back(t_align);
    }

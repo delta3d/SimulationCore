@@ -191,7 +191,7 @@ namespace NetDemo
             mWeapon = weapon;
             mWeaponProxy = static_cast<SimCore::Actors::WeaponActorProxy*>(&weapon->GetGameActorProxy());
 
-            mWeapon->SetFireRate(1.0f);
+            mWeapon->SetFireRate(0.65f);
          }
       }
       else
@@ -311,7 +311,7 @@ namespace NetDemo
 
       //randomly search for better targets
       //temporary hack
-      if(dtUtil::RandPercent() < 0.1)
+      if(dtUtil::RandPercent() < 0.05)
       {
          mAIHelper->GetStateMachine().HandleEvent(&AIEvent::AI_EVENT_TARGET_KILLED);
       }
