@@ -273,6 +273,7 @@ namespace SimCore
 
          // Forces to be applied to registered particles
          osg::Vec3 mWind;
+         bool mWindWasUpdated;
       };
    } // namespace
 }// namespace
