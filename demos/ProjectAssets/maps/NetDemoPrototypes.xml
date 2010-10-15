@@ -7,7 +7,7 @@
         <comment>Place for prototype actors</comment>
         <copyright>2009</copyright>
         <createTimestamp>2009-05-19T17:43:27.0-05:00</createTimestamp>
-        <lastUpdateTimestamp>2010-06-01T21:17:33-05:00</lastUpdateTimestamp>
+        <lastUpdateTimestamp>2010-10-15T16:11:39-05:00</lastUpdateTimestamp>
         <editorVersion>2.5.0</editorVersion>
         <schemaVersion>1.0</schemaVersion>
     </header>
@@ -508,6 +508,14 @@
                 <float>-1</float>
             </property>
             <property>
+                <name>VehicleBody: LinearDamping</name>
+                <float>0.0099999998</float>
+            </property>
+            <property>
+                <name>VehicleBody: AngularDamping</name>
+                <float>0.0099999998</float>
+            </property>
+            <property>
                 <name>Perform_Above_Ground_Safety_Check</name>
                 <boolean>false</boolean>
             </property>
@@ -566,8 +574,8 @@
                 <enumerated>Velocity and Acceleration</enumerated>
             </property>
             <property>
-                <name>Ground Clamp Type</name>
-                <boolean>None</boolean>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
             </property>
             <property>
                 <name>Ground Offset</name>
@@ -575,11 +583,134 @@
             </property>
             <property>
                 <name>VelocityAveragingFrameCount</name>
-                <integer>2</integer>
+                <integer>1</integer>
             </property>
             <property>
                 <name>DesiredNumUpdatesPerSec</name>
-                <float>4</float>
+                <float>5</float>
+            </property>
+            <property>
+                <name>Paint Color 1</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Paint Color 2</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Paint Color 3</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Paint Color 4</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Pattern Scale</name>
+                <vec4>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                    <value4>1.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Projection Direction</name>
+                <vec4>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                    <value4>1.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Replacement Diffuse Mask Texture</name>
+                <resourceType>Textures</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
+            </property>
+            <property>
+                <name>Pattern Texture</name>
+                <resourceType>Textures</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
+            </property>
+            <property>
+                <name>Paint State</name>
+                <float>0</float>
+            </property>
+            <property>
+                <name>Diffuse Frame Scale</name>
+                <float>1</float>
+            </property>
+            <property>
+                <name>Overlay Frame Scale</name>
+                <float>1</float>
+            </property>
+            <property>
+                <name>Overlay Texture</name>
+                <resourceType>Textures</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
+            </property>
+            <property>
+                <name>Camo Id</name>
+                <integer>0</integer>
+            </property>
+            <property>
+                <name>Concealed State</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>Conceal Shader Group</name>
+                <string></string>
+            </property>
+            <property>
+                <name>Conceal Mesh Dimensions</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>WeaponSwapRootNode</name>
+                <string>dof_gun_01</string>
+            </property>
+            <property>
+                <name>WeaponName</name>
+                <string>Default</string>
+            </property>
+            <property>
+                <name>WeaponHotSpotDOF</name>
+                <string>hotspot_01</string>
+            </property>
+            <property>
+                <name>WeaponSwapMesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
             </property>
         </actor>
         <actor>
@@ -941,6 +1072,14 @@
                 <float>-1</float>
             </property>
             <property>
+                <name>VehicleBody: LinearDamping</name>
+                <float>0.0099999998</float>
+            </property>
+            <property>
+                <name>VehicleBody: AngularDamping</name>
+                <float>0.0099999998</float>
+            </property>
+            <property>
                 <name>Perform_Above_Ground_Safety_Check</name>
                 <boolean>false</boolean>
             </property>
@@ -999,8 +1138,8 @@
                 <enumerated>Velocity and Acceleration</enumerated>
             </property>
             <property>
-                <name>Ground Clamp Type</name>
-                <boolean>None</boolean>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
             </property>
             <property>
                 <name>Ground Offset</name>
@@ -1008,11 +1147,134 @@
             </property>
             <property>
                 <name>VelocityAveragingFrameCount</name>
-                <integer>2</integer>
+                <integer>1</integer>
             </property>
             <property>
                 <name>DesiredNumUpdatesPerSec</name>
-                <float>4</float>
+                <float>5</float>
+            </property>
+            <property>
+                <name>Paint Color 1</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Paint Color 2</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Paint Color 3</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Paint Color 4</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Pattern Scale</name>
+                <vec4>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                    <value4>1.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Projection Direction</name>
+                <vec4>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                    <value4>1.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Replacement Diffuse Mask Texture</name>
+                <resourceType>Textures</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
+            </property>
+            <property>
+                <name>Pattern Texture</name>
+                <resourceType>Textures</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
+            </property>
+            <property>
+                <name>Paint State</name>
+                <float>0</float>
+            </property>
+            <property>
+                <name>Diffuse Frame Scale</name>
+                <float>1</float>
+            </property>
+            <property>
+                <name>Overlay Frame Scale</name>
+                <float>1</float>
+            </property>
+            <property>
+                <name>Overlay Texture</name>
+                <resourceType>Textures</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
+            </property>
+            <property>
+                <name>Camo Id</name>
+                <integer>0</integer>
+            </property>
+            <property>
+                <name>Concealed State</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>Conceal Shader Group</name>
+                <string></string>
+            </property>
+            <property>
+                <name>Conceal Mesh Dimensions</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>WeaponSwapRootNode</name>
+                <string>dof_gun_01</string>
+            </property>
+            <property>
+                <name>WeaponName</name>
+                <string>Default</string>
+            </property>
+            <property>
+                <name>WeaponHotSpotDOF</name>
+                <string>hotspot_01</string>
+            </property>
+            <property>
+                <name>WeaponSwapMesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
             </property>
         </actor>
         <actor>
@@ -1374,6 +1636,14 @@
                 <float>-1</float>
             </property>
             <property>
+                <name>VehicleBody: LinearDamping</name>
+                <float>0.0099999998</float>
+            </property>
+            <property>
+                <name>VehicleBody: AngularDamping</name>
+                <float>0.0099999998</float>
+            </property>
+            <property>
                 <name>Perform_Above_Ground_Safety_Check</name>
                 <boolean>false</boolean>
             </property>
@@ -1428,8 +1698,8 @@
                 <enumerated>Velocity and Acceleration</enumerated>
             </property>
             <property>
-                <name>Flying</name>
-                <boolean>false</boolean>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
             </property>
             <property>
                 <name>Ground Offset</name>
@@ -1437,11 +1707,134 @@
             </property>
             <property>
                 <name>VelocityAveragingFrameCount</name>
-                <integer>2</integer>
+                <integer>1</integer>
             </property>
             <property>
                 <name>DesiredNumUpdatesPerSec</name>
                 <float>2</float>
+            </property>
+            <property>
+                <name>Paint Color 1</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Paint Color 2</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Paint Color 3</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Paint Color 4</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Pattern Scale</name>
+                <vec4>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                    <value4>1.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Projection Direction</name>
+                <vec4>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                    <value4>1.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Replacement Diffuse Mask Texture</name>
+                <resourceType>Textures</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
+            </property>
+            <property>
+                <name>Pattern Texture</name>
+                <resourceType>Textures</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
+            </property>
+            <property>
+                <name>Paint State</name>
+                <float>0</float>
+            </property>
+            <property>
+                <name>Diffuse Frame Scale</name>
+                <float>1</float>
+            </property>
+            <property>
+                <name>Overlay Frame Scale</name>
+                <float>1</float>
+            </property>
+            <property>
+                <name>Overlay Texture</name>
+                <resourceType>Textures</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
+            </property>
+            <property>
+                <name>Camo Id</name>
+                <integer>0</integer>
+            </property>
+            <property>
+                <name>Concealed State</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>Conceal Shader Group</name>
+                <string></string>
+            </property>
+            <property>
+                <name>Conceal Mesh Dimensions</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>WeaponSwapRootNode</name>
+                <string>dof_gun_01</string>
+            </property>
+            <property>
+                <name>WeaponName</name>
+                <string>Default</string>
+            </property>
+            <property>
+                <name>WeaponHotSpotDOF</name>
+                <string>hotspot_01</string>
+            </property>
+            <property>
+                <name>WeaponSwapMesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
             </property>
         </actor>
         <actor>
@@ -1803,6 +2196,14 @@
                 <float>-1</float>
             </property>
             <property>
+                <name>VehicleBody: LinearDamping</name>
+                <float>0.0099999998</float>
+            </property>
+            <property>
+                <name>VehicleBody: AngularDamping</name>
+                <float>0.0099999998</float>
+            </property>
+            <property>
                 <name>Perform_Above_Ground_Safety_Check</name>
                 <boolean>false</boolean>
             </property>
@@ -1861,8 +2262,8 @@
                 <enumerated>Velocity and Acceleration</enumerated>
             </property>
             <property>
-                <name>Ground Clamp Type</name>
-                <boolean>None</boolean>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
             </property>
             <property>
                 <name>Ground Offset</name>
@@ -1870,11 +2271,134 @@
             </property>
             <property>
                 <name>VelocityAveragingFrameCount</name>
-                <integer>2</integer>
+                <integer>1</integer>
             </property>
             <property>
                 <name>DesiredNumUpdatesPerSec</name>
-                <float>4</float>
+                <float>5</float>
+            </property>
+            <property>
+                <name>Paint Color 1</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Paint Color 2</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Paint Color 3</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Paint Color 4</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Pattern Scale</name>
+                <vec4>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                    <value4>1.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Projection Direction</name>
+                <vec4>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                    <value4>1.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Replacement Diffuse Mask Texture</name>
+                <resourceType>Textures</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
+            </property>
+            <property>
+                <name>Pattern Texture</name>
+                <resourceType>Textures</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
+            </property>
+            <property>
+                <name>Paint State</name>
+                <float>0</float>
+            </property>
+            <property>
+                <name>Diffuse Frame Scale</name>
+                <float>1</float>
+            </property>
+            <property>
+                <name>Overlay Frame Scale</name>
+                <float>1</float>
+            </property>
+            <property>
+                <name>Overlay Texture</name>
+                <resourceType>Textures</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
+            </property>
+            <property>
+                <name>Camo Id</name>
+                <integer>0</integer>
+            </property>
+            <property>
+                <name>Concealed State</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>Conceal Shader Group</name>
+                <string></string>
+            </property>
+            <property>
+                <name>Conceal Mesh Dimensions</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>WeaponSwapRootNode</name>
+                <string>dof_gun_01</string>
+            </property>
+            <property>
+                <name>WeaponName</name>
+                <string>Default</string>
+            </property>
+            <property>
+                <name>WeaponHotSpotDOF</name>
+                <string>hotspot_01</string>
+            </property>
+            <property>
+                <name>WeaponSwapMesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
             </property>
         </actor>
         <actor>
@@ -2149,11 +2673,11 @@
             </property>
             <property>
                 <name>FrontSuspensionTravel</name>
-                <float>0.30</float>
+                <float>0.30000001</float>
             </property>
             <property>
                 <name>FrontSuspensionRestLength</name>
-                <float>0.32</float>
+                <float>0.31999999</float>
             </property>
             <property>
                 <name>FrontSuspensionSpringFreq</name>
@@ -2201,11 +2725,11 @@
             </property>
             <property>
                 <name>RearSuspensionTravel</name>
-                <float>0.30</float>
+                <float>0.30000001</float>
             </property>
             <property>
                 <name>RearSuspensionRestLength</name>
-                <float>0.32</float>
+                <float>0.31999999</float>
             </property>
             <property>
                 <name>RearSuspensionSpringFreq</name>
@@ -2338,6 +2862,14 @@
             <property>
                 <name>chassis: ActivationTimeThreshold</name>
                 <float>-1</float>
+            </property>
+            <property>
+                <name>chassis: LinearDamping</name>
+                <float>0.0099999998</float>
+            </property>
+            <property>
+                <name>chassis: AngularDamping</name>
+                <float>0.0099999998</float>
             </property>
             <property>
                 <name>Four Wheel Drive</name>
@@ -2490,8 +3022,8 @@
                 <enumerated>Velocity and Acceleration</enumerated>
             </property>
             <property>
-                <name>Flying</name>
-                <boolean>false</boolean>
+                <name>GroundClampType</name>
+                <enumerated>KeepAbove</enumerated>
             </property>
             <property>
                 <name>Ground Offset</name>
@@ -2504,6 +3036,129 @@
             <property>
                 <name>DesiredNumUpdatesPerSec</name>
                 <float>5</float>
+            </property>
+            <property>
+                <name>Paint Color 1</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Paint Color 2</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Paint Color 3</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Paint Color 4</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Pattern Scale</name>
+                <vec4>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                    <value4>1.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Projection Direction</name>
+                <vec4>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                    <value4>1.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Replacement Diffuse Mask Texture</name>
+                <resourceType>Textures</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
+            </property>
+            <property>
+                <name>Pattern Texture</name>
+                <resourceType>Textures</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
+            </property>
+            <property>
+                <name>Paint State</name>
+                <float>0</float>
+            </property>
+            <property>
+                <name>Diffuse Frame Scale</name>
+                <float>1</float>
+            </property>
+            <property>
+                <name>Overlay Frame Scale</name>
+                <float>1</float>
+            </property>
+            <property>
+                <name>Overlay Texture</name>
+                <resourceType>Textures</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
+            </property>
+            <property>
+                <name>Camo Id</name>
+                <integer>0</integer>
+            </property>
+            <property>
+                <name>Concealed State</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>Conceal Shader Group</name>
+                <string></string>
+            </property>
+            <property>
+                <name>Conceal Mesh Dimensions</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>WeaponSwapRootNode</name>
+                <string>dof_gun_01</string>
+            </property>
+            <property>
+                <name>WeaponName</name>
+                <string>Default</string>
+            </property>
+            <property>
+                <name>WeaponHotSpotDOF</name>
+                <string>hotspot_01</string>
+            </property>
+            <property>
+                <name>WeaponSwapMesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
             </property>
         </actor>
         <actor>
@@ -2865,6 +3520,14 @@
                 <float>-1</float>
             </property>
             <property>
+                <name>VehicleBody: LinearDamping</name>
+                <float>0.0099999998</float>
+            </property>
+            <property>
+                <name>VehicleBody: AngularDamping</name>
+                <float>0.0099999998</float>
+            </property>
+            <property>
                 <name>Perform_Above_Ground_Safety_Check</name>
                 <boolean>false</boolean>
             </property>
@@ -2923,8 +3586,8 @@
                 <enumerated>Velocity and Acceleration</enumerated>
             </property>
             <property>
-                <name>Ground Clamp Type</name>
-                <boolean>None</boolean>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
             </property>
             <property>
                 <name>Ground Offset</name>
@@ -2932,11 +3595,134 @@
             </property>
             <property>
                 <name>VelocityAveragingFrameCount</name>
-                <integer>2</integer>
+                <integer>1</integer>
             </property>
             <property>
                 <name>DesiredNumUpdatesPerSec</name>
-                <float>4</float>
+                <float>5</float>
+            </property>
+            <property>
+                <name>Paint Color 1</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Paint Color 2</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Paint Color 3</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Paint Color 4</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Pattern Scale</name>
+                <vec4>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                    <value4>1.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Projection Direction</name>
+                <vec4>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                    <value4>1.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Replacement Diffuse Mask Texture</name>
+                <resourceType>Textures</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
+            </property>
+            <property>
+                <name>Pattern Texture</name>
+                <resourceType>Textures</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
+            </property>
+            <property>
+                <name>Paint State</name>
+                <float>0</float>
+            </property>
+            <property>
+                <name>Diffuse Frame Scale</name>
+                <float>1</float>
+            </property>
+            <property>
+                <name>Overlay Frame Scale</name>
+                <float>1</float>
+            </property>
+            <property>
+                <name>Overlay Texture</name>
+                <resourceType>Textures</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
+            </property>
+            <property>
+                <name>Camo Id</name>
+                <integer>0</integer>
+            </property>
+            <property>
+                <name>Concealed State</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>Conceal Shader Group</name>
+                <string></string>
+            </property>
+            <property>
+                <name>Conceal Mesh Dimensions</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>WeaponSwapRootNode</name>
+                <string>dof_gun_01</string>
+            </property>
+            <property>
+                <name>WeaponName</name>
+                <string>Default</string>
+            </property>
+            <property>
+                <name>WeaponHotSpotDOF</name>
+                <string>hotspot_01</string>
+            </property>
+            <property>
+                <name>WeaponSwapMesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
             </property>
         </actor>
         <actor>
@@ -3298,6 +4084,14 @@
                 <float>-1</float>
             </property>
             <property>
+                <name>VehicleBody: LinearDamping</name>
+                <float>0.0099999998</float>
+            </property>
+            <property>
+                <name>VehicleBody: AngularDamping</name>
+                <float>0.0099999998</float>
+            </property>
+            <property>
                 <name>Max Forward MPH</name>
                 <float>120</float>
             </property>
@@ -3372,8 +4166,8 @@
                 <enumerated>Velocity and Acceleration</enumerated>
             </property>
             <property>
-                <name>Flying</name>
-                <boolean>true</boolean>
+                <name>GroundClampType</name>
+                <enumerated>KeepAbove</enumerated>
             </property>
             <property>
                 <name>Ground Offset</name>
@@ -3381,11 +4175,134 @@
             </property>
             <property>
                 <name>VelocityAveragingFrameCount</name>
-                <integer>2</integer>
+                <integer>1</integer>
             </property>
             <property>
                 <name>DesiredNumUpdatesPerSec</name>
                 <float>5</float>
+            </property>
+            <property>
+                <name>Paint Color 1</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Paint Color 2</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Paint Color 3</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Paint Color 4</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Pattern Scale</name>
+                <vec4>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                    <value4>1.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Projection Direction</name>
+                <vec4>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                    <value4>1.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Replacement Diffuse Mask Texture</name>
+                <resourceType>Textures</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
+            </property>
+            <property>
+                <name>Pattern Texture</name>
+                <resourceType>Textures</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
+            </property>
+            <property>
+                <name>Paint State</name>
+                <float>0</float>
+            </property>
+            <property>
+                <name>Diffuse Frame Scale</name>
+                <float>1</float>
+            </property>
+            <property>
+                <name>Overlay Frame Scale</name>
+                <float>1</float>
+            </property>
+            <property>
+                <name>Overlay Texture</name>
+                <resourceType>Textures</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
+            </property>
+            <property>
+                <name>Camo Id</name>
+                <integer>0</integer>
+            </property>
+            <property>
+                <name>Concealed State</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>Conceal Shader Group</name>
+                <string></string>
+            </property>
+            <property>
+                <name>Conceal Mesh Dimensions</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>WeaponSwapRootNode</name>
+                <string>dof_gun_01</string>
+            </property>
+            <property>
+                <name>WeaponName</name>
+                <string>Default</string>
+            </property>
+            <property>
+                <name>WeaponHotSpotDOF</name>
+                <string>hotspot_01</string>
+            </property>
+            <property>
+                <name>WeaponSwapMesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
             </property>
         </actor>
         <actor>
@@ -3528,7 +4445,7 @@
                 <vec3>
                     <value1>0.864559</value1>
                     <value2>0.027809</value2>
-                    <value3>-1.788434</value3>
+                    <value3>-1.788407</value3>
                 </vec3>
             </property>
             <property>
@@ -3870,6 +4787,14 @@
                 <float>-1</float>
             </property>
             <property>
+                <name>VehicleBody: LinearDamping</name>
+                <float>0.0099999998</float>
+            </property>
+            <property>
+                <name>VehicleBody: AngularDamping</name>
+                <float>0.0099999998</float>
+            </property>
+            <property>
                 <name>Perform_Above_Ground_Safety_Check</name>
                 <boolean>false</boolean>
             </property>
@@ -3924,8 +4849,8 @@
                 <enumerated>None</enumerated>
             </property>
             <property>
-                <name>Flying</name>
-                <boolean>false</boolean>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
             </property>
             <property>
                 <name>Ground Offset</name>
@@ -3933,11 +4858,134 @@
             </property>
             <property>
                 <name>VelocityAveragingFrameCount</name>
-                <integer>2</integer>
+                <integer>1</integer>
             </property>
             <property>
                 <name>DesiredNumUpdatesPerSec</name>
                 <float>2</float>
+            </property>
+            <property>
+                <name>Paint Color 1</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Paint Color 2</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Paint Color 3</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Paint Color 4</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Pattern Scale</name>
+                <vec4>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                    <value4>1.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Projection Direction</name>
+                <vec4>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                    <value4>1.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Replacement Diffuse Mask Texture</name>
+                <resourceType>Textures</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
+            </property>
+            <property>
+                <name>Pattern Texture</name>
+                <resourceType>Textures</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
+            </property>
+            <property>
+                <name>Paint State</name>
+                <float>0</float>
+            </property>
+            <property>
+                <name>Diffuse Frame Scale</name>
+                <float>1</float>
+            </property>
+            <property>
+                <name>Overlay Frame Scale</name>
+                <float>1</float>
+            </property>
+            <property>
+                <name>Overlay Texture</name>
+                <resourceType>Textures</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
+            </property>
+            <property>
+                <name>Camo Id</name>
+                <integer>0</integer>
+            </property>
+            <property>
+                <name>Concealed State</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>Conceal Shader Group</name>
+                <string></string>
+            </property>
+            <property>
+                <name>Conceal Mesh Dimensions</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>WeaponSwapRootNode</name>
+                <string>dof_gun_01</string>
+            </property>
+            <property>
+                <name>WeaponName</name>
+                <string>Default</string>
+            </property>
+            <property>
+                <name>WeaponHotSpotDOF</name>
+                <string>hotspot_01</string>
+            </property>
+            <property>
+                <name>WeaponSwapMesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
             </property>
         </actor>
         <actor>
@@ -4422,6 +5470,14 @@
                 <float>-1</float>
             </property>
             <property>
+                <name>VehicleBody: LinearDamping</name>
+                <float>0.0099999998</float>
+            </property>
+            <property>
+                <name>VehicleBody: AngularDamping</name>
+                <float>0.0099999998</float>
+            </property>
+            <property>
                 <name>Perform_Above_Ground_Safety_Check</name>
                 <boolean>false</boolean>
             </property>
@@ -4480,8 +5536,8 @@
                 <enumerated>Velocity and Acceleration</enumerated>
             </property>
             <property>
-                <name>Ground Clamp Type</name>
-                <boolean>None</boolean>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
             </property>
             <property>
                 <name>Ground Offset</name>
@@ -4489,11 +5545,134 @@
             </property>
             <property>
                 <name>VelocityAveragingFrameCount</name>
-                <integer>2</integer>
+                <integer>1</integer>
             </property>
             <property>
                 <name>DesiredNumUpdatesPerSec</name>
-                <float>4</float>
+                <float>5</float>
+            </property>
+            <property>
+                <name>Paint Color 1</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Paint Color 2</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Paint Color 3</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Paint Color 4</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Pattern Scale</name>
+                <vec4>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                    <value4>1.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Projection Direction</name>
+                <vec4>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                    <value4>1.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Replacement Diffuse Mask Texture</name>
+                <resourceType>Textures</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
+            </property>
+            <property>
+                <name>Pattern Texture</name>
+                <resourceType>Textures</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
+            </property>
+            <property>
+                <name>Paint State</name>
+                <float>0</float>
+            </property>
+            <property>
+                <name>Diffuse Frame Scale</name>
+                <float>1</float>
+            </property>
+            <property>
+                <name>Overlay Frame Scale</name>
+                <float>1</float>
+            </property>
+            <property>
+                <name>Overlay Texture</name>
+                <resourceType>Textures</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
+            </property>
+            <property>
+                <name>Camo Id</name>
+                <integer>0</integer>
+            </property>
+            <property>
+                <name>Concealed State</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>Conceal Shader Group</name>
+                <string></string>
+            </property>
+            <property>
+                <name>Conceal Mesh Dimensions</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>WeaponSwapRootNode</name>
+                <string>dof_gun_01</string>
+            </property>
+            <property>
+                <name>WeaponName</name>
+                <string>Default</string>
+            </property>
+            <property>
+                <name>WeaponHotSpotDOF</name>
+                <string>hotspot_01</string>
+            </property>
+            <property>
+                <name>WeaponSwapMesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
             </property>
         </actor>
         <actor>
@@ -4598,7 +5777,7 @@
             </property>
             <property>
                 <name>NumSpawnPerMinute</name>
-                <float>6.1</float>
+                <float>6.0999999</float>
             </property>
             <property>
                 <name>WaveDenominator</name>
@@ -4956,7 +6135,7 @@
             </property>
             <property>
                 <name>FrontSuspensionTravel</name>
-                <float>0.30</float>
+                <float>0.30000001</float>
             </property>
             <property>
                 <name>FrontSuspensionRestLength</name>
@@ -4968,11 +6147,11 @@
             </property>
             <property>
                 <name>FrontSuspensionDamperFactor</name>
-                <float>0.40</float>
+                <float>0.40000001</float>
             </property>
             <property>
                 <name>FrontTireSlip</name>
-                <float>0.7</float>
+                <float>0.69999999</float>
             </property>
             <property>
                 <name>FrontTireValue</name>
@@ -5008,7 +6187,7 @@
             </property>
             <property>
                 <name>RearSuspensionTravel</name>
-                <float>0.30</float>
+                <float>0.30000001</float>
             </property>
             <property>
                 <name>RearSuspensionRestLength</name>
@@ -5020,11 +6199,11 @@
             </property>
             <property>
                 <name>RearSuspensionDamperFactor</name>
-                <float>0.40</float>
+                <float>0.40000001</float>
             </property>
             <property>
                 <name>RearTireSlip</name>
-                <float>0.8</float>
+                <float>0.80000001</float>
             </property>
             <property>
                 <name>RearTireValue</name>
@@ -5145,6 +6324,14 @@
             <property>
                 <name>chassis: ActivationTimeThreshold</name>
                 <float>-1</float>
+            </property>
+            <property>
+                <name>chassis: LinearDamping</name>
+                <float>0.0099999998</float>
+            </property>
+            <property>
+                <name>chassis: AngularDamping</name>
+                <float>0.0099999998</float>
             </property>
             <property>
                 <name>Four Wheel Drive</name>
@@ -5297,8 +6484,8 @@
                 <enumerated>Velocity and Acceleration</enumerated>
             </property>
             <property>
-                <name>Flying</name>
-                <boolean>false</boolean>
+                <name>GroundClampType</name>
+                <enumerated>KeepAbove</enumerated>
             </property>
             <property>
                 <name>Ground Offset</name>
@@ -5306,11 +6493,134 @@
             </property>
             <property>
                 <name>VelocityAveragingFrameCount</name>
-                <integer>2</integer>
+                <integer>1</integer>
             </property>
             <property>
                 <name>DesiredNumUpdatesPerSec</name>
                 <float>5</float>
+            </property>
+            <property>
+                <name>Paint Color 1</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Paint Color 2</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Paint Color 3</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Paint Color 4</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Pattern Scale</name>
+                <vec4>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                    <value4>1.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Projection Direction</name>
+                <vec4>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                    <value4>1.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Replacement Diffuse Mask Texture</name>
+                <resourceType>Textures</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
+            </property>
+            <property>
+                <name>Pattern Texture</name>
+                <resourceType>Textures</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
+            </property>
+            <property>
+                <name>Paint State</name>
+                <float>0</float>
+            </property>
+            <property>
+                <name>Diffuse Frame Scale</name>
+                <float>1</float>
+            </property>
+            <property>
+                <name>Overlay Frame Scale</name>
+                <float>1</float>
+            </property>
+            <property>
+                <name>Overlay Texture</name>
+                <resourceType>Textures</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
+            </property>
+            <property>
+                <name>Camo Id</name>
+                <integer>0</integer>
+            </property>
+            <property>
+                <name>Concealed State</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>Conceal Shader Group</name>
+                <string></string>
+            </property>
+            <property>
+                <name>Conceal Mesh Dimensions</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>WeaponSwapRootNode</name>
+                <string>dof_gun_01</string>
+            </property>
+            <property>
+                <name>WeaponName</name>
+                <string>Default</string>
+            </property>
+            <property>
+                <name>WeaponHotSpotDOF</name>
+                <string>hotspot_01</string>
+            </property>
+            <property>
+                <name>WeaponSwapMesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
             </property>
         </actor>
         <actor>
@@ -5672,6 +6982,14 @@
                 <float>-1</float>
             </property>
             <property>
+                <name>VehicleBody: LinearDamping</name>
+                <float>0.0099999998</float>
+            </property>
+            <property>
+                <name>VehicleBody: AngularDamping</name>
+                <float>0.0099999998</float>
+            </property>
+            <property>
                 <name>Perform_Above_Ground_Safety_Check</name>
                 <boolean>false</boolean>
             </property>
@@ -5726,8 +7044,8 @@
                 <enumerated>Velocity and Acceleration</enumerated>
             </property>
             <property>
-                <name>Flying</name>
-                <boolean>false</boolean>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
             </property>
             <property>
                 <name>Ground Offset</name>
@@ -5735,11 +7053,134 @@
             </property>
             <property>
                 <name>VelocityAveragingFrameCount</name>
-                <integer>2</integer>
+                <integer>1</integer>
             </property>
             <property>
                 <name>DesiredNumUpdatesPerSec</name>
-                <float>2</float>
+                <float>3</float>
+            </property>
+            <property>
+                <name>Paint Color 1</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Paint Color 2</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Paint Color 3</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Paint Color 4</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Pattern Scale</name>
+                <vec4>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                    <value4>1.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Projection Direction</name>
+                <vec4>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                    <value4>1.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Replacement Diffuse Mask Texture</name>
+                <resourceType>Textures</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
+            </property>
+            <property>
+                <name>Pattern Texture</name>
+                <resourceType>Textures</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
+            </property>
+            <property>
+                <name>Paint State</name>
+                <float>0</float>
+            </property>
+            <property>
+                <name>Diffuse Frame Scale</name>
+                <float>1</float>
+            </property>
+            <property>
+                <name>Overlay Frame Scale</name>
+                <float>1</float>
+            </property>
+            <property>
+                <name>Overlay Texture</name>
+                <resourceType>Textures</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
+            </property>
+            <property>
+                <name>Camo Id</name>
+                <integer>0</integer>
+            </property>
+            <property>
+                <name>Concealed State</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>Conceal Shader Group</name>
+                <string></string>
+            </property>
+            <property>
+                <name>Conceal Mesh Dimensions</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>WeaponSwapRootNode</name>
+                <string>dof_gun_01</string>
+            </property>
+            <property>
+                <name>WeaponName</name>
+                <string>Default</string>
+            </property>
+            <property>
+                <name>WeaponHotSpotDOF</name>
+                <string>hotspot_01</string>
+            </property>
+            <property>
+                <name>WeaponSwapMesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
             </property>
         </actor>
         <actor>
@@ -6101,6 +7542,14 @@
                 <float>-1</float>
             </property>
             <property>
+                <name>VehicleBody: LinearDamping</name>
+                <float>0.0099999998</float>
+            </property>
+            <property>
+                <name>VehicleBody: AngularDamping</name>
+                <float>0.0099999998</float>
+            </property>
+            <property>
                 <name>Perform_Above_Ground_Safety_Check</name>
                 <boolean>false</boolean>
             </property>
@@ -6159,8 +7608,8 @@
                 <enumerated>Velocity and Acceleration</enumerated>
             </property>
             <property>
-                <name>Ground Clamp Type</name>
-                <boolean>None</boolean>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
             </property>
             <property>
                 <name>Ground Offset</name>
@@ -6168,11 +7617,134 @@
             </property>
             <property>
                 <name>VelocityAveragingFrameCount</name>
-                <integer>2</integer>
+                <integer>1</integer>
             </property>
             <property>
                 <name>DesiredNumUpdatesPerSec</name>
-                <float>4</float>
+                <float>5</float>
+            </property>
+            <property>
+                <name>Paint Color 1</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Paint Color 2</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Paint Color 3</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Paint Color 4</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Pattern Scale</name>
+                <vec4>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                    <value4>1.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Projection Direction</name>
+                <vec4>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                    <value4>1.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Replacement Diffuse Mask Texture</name>
+                <resourceType>Textures</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
+            </property>
+            <property>
+                <name>Pattern Texture</name>
+                <resourceType>Textures</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
+            </property>
+            <property>
+                <name>Paint State</name>
+                <float>0</float>
+            </property>
+            <property>
+                <name>Diffuse Frame Scale</name>
+                <float>1</float>
+            </property>
+            <property>
+                <name>Overlay Frame Scale</name>
+                <float>1</float>
+            </property>
+            <property>
+                <name>Overlay Texture</name>
+                <resourceType>Textures</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
+            </property>
+            <property>
+                <name>Camo Id</name>
+                <integer>0</integer>
+            </property>
+            <property>
+                <name>Concealed State</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>Conceal Shader Group</name>
+                <string></string>
+            </property>
+            <property>
+                <name>Conceal Mesh Dimensions</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>WeaponSwapRootNode</name>
+                <string>dof_gun_01</string>
+            </property>
+            <property>
+                <name>WeaponName</name>
+                <string>Default</string>
+            </property>
+            <property>
+                <name>WeaponHotSpotDOF</name>
+                <string>hotspot_01</string>
+            </property>
+            <property>
+                <name>WeaponSwapMesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
             </property>
         </actor>
         <actor>
