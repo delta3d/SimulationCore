@@ -17,6 +17,7 @@ C:\Curtiss\Projects\Delta3D\SimulationCore\demos\NetDemo (as appropriate)
     <View Name="defaultView" CameraInstance="defaultCam" 
 	    SceneInstance="defaultScene" /> 
 
+    <GlobalLog Level="Error" />
     <Log Level="Error" />
     <!--Log Name="gameactor.cpp" Level="Warn" /--> <!-- Example on how to set log levels -->
 
@@ -63,7 +64,7 @@ C:\Curtiss\Projects\Delta3D\SimulationCore\demos\NetDemo (as appropriate)
       <Property Name="MunitionsConfigFile">Configs:NetDemoMunitionsConfig.xml</Property>
       <Property Name="MunitionMap">DemoMunitionTypesMap</Property>
       <Property Name="NetDemo.DefaultPlayMode">FOUR_WHEEL</Property><!--FOUR_WHEEL  HOVER -->
-      <Property Name="NetDemo.DefaultHoverVehiclePrototype">Hover Tank</Property>
+      <Property Name="NetDemo.DefaultHoverVehiclePrototype">Hover Vehicle</Property>
       <!--Property Name="NetDemo.DefaultWheeledVehiclePrototype">HMMWV</Property--> 
       <Property Name="NetDemo.DefaultWheeledVehiclePrototype">Propelled Vehicle</Property> 
       <Property Name="HasBinocs">true</Property>
