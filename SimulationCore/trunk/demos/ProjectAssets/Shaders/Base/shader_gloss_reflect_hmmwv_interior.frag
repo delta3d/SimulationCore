@@ -52,11 +52,12 @@ void main(void)
    //accumulate the dynamic light contribution
    vec3 dynamicLightContrib;
    dynamic_light_fragment(worldNormal, worldPos, dynamicLightContrib);
-   lightContrib += dynamicLightContrib + (dynamicLightContrib * (10.0 * NVG_Enable));
 
    vec3 spotLightContrib;
    spot_light_fragment(worldNormal, worldPos, spotLightContrib);
    dynamicLightContrib += spotLightContrib;
+   
+   lightContrib += dynamicLightContrib + (dynamicLightContrib * (10.0 * NVG_Enable));   
    
    //add in the nvg components
    vec3 diffuseLight = vec3(diffuseRadiance, gl_LightSource[1].diffuse.g, gl_LightSource[1].diffuse.b);
