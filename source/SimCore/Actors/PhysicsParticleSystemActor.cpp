@@ -840,13 +840,15 @@ void PhysicsParticleSystemActorProxy::OnRemovedFromWorld()
 //////////////////////////////////////////////////////////////////////////
 dtCore::RefPtr<dtDAL::ActorProperty> PhysicsParticleSystemActorProxy::GetDeprecatedProperty(const std::string& name)
 {
-#ifndef AGEIA_PHYSICS
-   PhysicsParticleSystemActor* actor = NULL;
-   GetActor(actor);
-   return actor->GetPhysicsHelper().GetDeprecatedProperty(name);
-#else
-   return NULL;
-#endif
+   dtCore::RefPtr<dtDAL::ActorProperty> depProp = BaseClass::GetDeprecatedProperty(name);
+
+   if (!depProp.valid())
+   {
+      PhysicsParticleSystemActor* actor = NULL;
+      GetActor(actor);
+      depProp = actor->GetPhysicsHelper().GetDeprecatedProperty(name);
+   }
+   return depProp;
 }
 
 //////////////////////////////////////////////////////////////////
