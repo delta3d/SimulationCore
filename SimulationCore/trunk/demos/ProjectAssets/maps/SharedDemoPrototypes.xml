@@ -2720,8 +2720,8 @@
                 <resource>Particles:smoke.osg</resource>
             </property>
             <property>
-                <name>Flying</name>
-                <boolean>true</boolean>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
             </property>
             <property>
                 <name>DrawingModel</name>
@@ -3101,8 +3101,8 @@
                 <resource>Particles:smoke.osg</resource>
             </property>
             <property>
-                <name>Flying</name>
-                <boolean>true</boolean>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
             </property>
             <property>
                 <name>DrawingModel</name>
