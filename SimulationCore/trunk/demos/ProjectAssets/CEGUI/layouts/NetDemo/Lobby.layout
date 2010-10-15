@@ -117,7 +117,7 @@
             <Property Name="UnifiedSize" Value="{{1.0,0},{0.5,0}}"/>
             <Property Name="UnifiedPosition" Value="{{0.0,0},{0.5,0}}"/>
             <Property Name="SelectedTextColour" Value="FF00FF00"/>
-            <Property Name="Text" Value="Hover Tank"/>
+            <Property Name="Text" Value="Hover"/>
          </Window>
          
       </Window>
