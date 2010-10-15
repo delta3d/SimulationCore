@@ -82,6 +82,7 @@ namespace NetDemo
       //drPublishingActComp->SetPublishAngularVelocity(false);
       drPublishingActComp->SetMaxTranslationError(0.001f);
       drPublishingActComp->SetMaxRotationError(0.5f);
+      drPublishingActComp->SetPublishAngularVelocity(false);
    }
 
    ///////////////////////////////////////////////////////////////////////////////////

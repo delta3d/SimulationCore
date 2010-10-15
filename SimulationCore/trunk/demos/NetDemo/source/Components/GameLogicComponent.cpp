@@ -256,7 +256,7 @@ namespace NetDemo
          oss << "Server Status Updated: \"" << serverStatus->GetGameStatus().GetName() << "], Wave[" <<
             serverStatus->GetWaveNumber() << "] Players[" << serverStatus->GetNumPlayers() << "] TimeLeft[" <<
             serverStatus->GetTimeLeftInCurState() << "], EnemiesKilt[" << serverStatus->GetNumEnemiesKilled() << "].";
-         LOG_ALWAYS(oss.str());
+         LOG_INFO(oss.str());
       }
    }
 
