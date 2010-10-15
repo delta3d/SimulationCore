@@ -577,28 +577,9 @@ namespace NetDemo
    /////////////////////////////////////////////////////////////////////////////
    bool GUIComponent::OnVehicleTypeSelected(const CEGUI::EventArgs& args)
    {
-      if(mListVehicleType->getSelectedCount() > 0)
-      {
-         CEGUI::ItemEntry* listItem = mListVehicleType->getFirstSelectedItem();
-         if(listItem != NULL)
-         {
-            std::string selectedValue(listItem->getText().c_str());
-            PlayerStatusActor::VehicleTypeEnum* vehicleType = NULL;
-            if(selectedValue == "Truck")
-            {
-               vehicleType = &PlayerStatusActor::VehicleTypeEnum::FOUR_WHEEL;
-            }
-            else if(selectedValue == "Hover Tank")
-            {
-               vehicleType = &PlayerStatusActor::VehicleTypeEnum::HOVER;
-            }
-
-            if(vehicleType != NULL)
-            {
-               mAppComp->SetVehicleType(*vehicleType);
-            }
-         }
-      }
+      // Do nothing - it generate the event when you click, instead it generates it 
+      // when you move the mouse around or something.  So, I moved it to when the press
+      // connect
 
       // Let CEGUI know the button has been handled.
       return true;
@@ -652,6 +633,31 @@ namespace NetDemo
       // Determine if this is a special button.
       if(buttonType == BUTTON_TYPE_CONNECT.Get())
       {
+         // Pick the vehicle type
+         if(mListVehicleType->getSelectedCount() > 0)
+         {
+            CEGUI::ItemEntry* listItem = mListVehicleType->getFirstSelectedItem();
+            if(listItem != NULL)
+            {
+               std::string selectedValue(listItem->getText().c_str());
+               PlayerStatusActor::VehicleTypeEnum* vehicleType = NULL;
+               if(selectedValue == "Truck")
+               {
+                  vehicleType = &PlayerStatusActor::VehicleTypeEnum::FOUR_WHEEL;
+               }
+               else if(selectedValue == "Hover")
+               {
+                  vehicleType = &PlayerStatusActor::VehicleTypeEnum::HOVER;
+               }
+
+               if(vehicleType != NULL)
+               {
+                  mAppComp->SetVehicleType(*vehicleType);
+               }
+            }
+         }
+
+
          dtUtil::ConfigProperties& configParams = GetGameManager()->GetConfiguration();
          const std::string role = configParams.GetConfigPropertyValue("dtNetGM.Role", "server");
          //const std::string gameName = configParams.GetConfigPropertyValue("dtNetGM.GameName", "NetDemo");
