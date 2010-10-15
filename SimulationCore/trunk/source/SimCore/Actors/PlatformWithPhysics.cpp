@@ -256,9 +256,15 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       dtCore::RefPtr<dtDAL::ActorProperty> PlatformWithPhysicsActorProxy::GetDeprecatedProperty(const std::string& name)
       {
-         PlatformWithPhysics* actor = NULL;
-         GetActor(actor);
-         return actor->GetPhysicsHelper()->GetDeprecatedProperty(name);
+         dtCore::RefPtr<dtDAL::ActorProperty> depProp = BaseClass::GetDeprecatedProperty(name);
+
+         if (!depProp.valid())
+         {
+            PlatformWithPhysics* actor = NULL;
+            GetActor(actor);
+            depProp = actor->GetPhysicsHelper()->GetDeprecatedProperty(name);
+         }
+         return depProp;
       }
 
    } // namespace
