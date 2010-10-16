@@ -26,6 +26,7 @@
 #include <Actors/EnemyDescriptionActor.h>
 #include <Actors/PropelledVehicleActor.h>
 #include <Actors/TowerActor.h>
+#include <Actors/LightTower.h>
 #include <dtCore/shadermanager.h>
 #include <dtCore/scene.h>
 
@@ -72,6 +73,9 @@ namespace NetDemo
    RefPtr<dtDAL::ActorType> NetDemoActorRegistry::ENEMY_DESCRIPTION_TYPE(
       new dtDAL::ActorType("EnemyDecriptionActor", "NetDemo", "Describes the attributes of an enemy prototype."));
 
+   RefPtr<dtDAL::ActorType> NetDemoActorRegistry::LIGHT_TOWER_ACTOR_TYPE(
+      new dtDAL::ActorType("LightTower", "NetDemo", "A light tower with a tracking spot light, for a front line of defense.",
+      SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE.get()));
 
    ///////////////////////////////////////////////////////////////////////////
    extern "C" NETDEMO_EXPORT dtDAL::ActorPluginRegistry* CreatePluginRegistry()
@@ -104,6 +108,7 @@ namespace NetDemo
       mActorFactory->RegisterType<EnemyHelixActorProxy>(ENEMY_HELIX_ACTOR_TYPE.get());
       mActorFactory->RegisterType<EnemyDescriptionActorProxy>(ENEMY_DESCRIPTION_TYPE.get());
       mActorFactory->RegisterType<EnemyMothershipActorProxy>(ENEMY_MOTHERSHIP_ACTOR_TYPE.get());
+      mActorFactory->RegisterType<LightTowerProxy>(LIGHT_TOWER_ACTOR_TYPE.get());
 
    }
 }

@@ -430,7 +430,7 @@ namespace SimCore
                   //
                   // NOTE: The following string value for the light name should eventually be
                   //       property, but is not currently for the sake of time.
-                  dl = rsComp->AddDynamicLightByPrototypeName( "Light-Headlight" );
+                  dl = rsComp->AddSpotLightByPrototypeName( "Light-Headlight" );
                   dl->mTarget = headLightPoint.get();
                   mHeadLightID = dl->GetId();
                }

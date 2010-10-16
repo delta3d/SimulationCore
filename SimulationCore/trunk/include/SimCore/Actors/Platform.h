@@ -323,6 +323,8 @@ namespace SimCore
              */
             virtual void BuildActorComponents();
 
+            unsigned GetHeadlightId() const{ return mHeadLightID;}
+
          protected:
 
             /**
