@@ -21,6 +21,7 @@
 * THE SOFTWARE.
 *
 * @author Curtiss Murphy
+* @author Bradley Anderegg
 */
 //#ifdef AGEIA_PHYSICS
 #ifndef _BASE_ENEMY_ACTOR_

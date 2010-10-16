@@ -133,7 +133,6 @@ namespace NetDemo
       dtCore::RefPtr<SimCore::Components::RenderingSupportComponent> renderingSupportComponent
          = new SimCore::Components::RenderingSupportComponent();
       renderingSupportComponent->SetEnableCullVisitor(false);
-      renderingSupportComponent->SetMaxSpotLights(3);
       renderingSupportComponent->SetEnableStaticTerrainPhysics(false);
       gm.AddComponent(*renderingSupportComponent, dtGame::GameManager::ComponentPriority::NORMAL);
 

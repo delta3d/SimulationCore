@@ -9,7 +9,9 @@
 * (757) 857-5670, www.alionscience.com
 *
 * @author Curtiss Murphy
+* @author Bradley Anderegg
 */
+
 #include <prefix/SimCorePrefix.h>
 
 //#ifdef AGEIA_PHYSICS
@@ -124,11 +126,10 @@ namespace NetDemo
          SimCore::Components::RenderingSupportComponent::DynamicLight* sl =
             new SimCore::Components::RenderingSupportComponent::DynamicLight();
          
-         //we should always see the light from our base... more user friendly in finding it
-         sl->mRadius = 3000.0f;
+         sl->mRadius = 150.0f;
          sl->mIntensity = 1.0f;
          sl->mColor.set(1.0f, 1.0f, 1.0f);
-         sl->mAttenuation.set(0.001, 0.004, 0.0002);
+         sl->mAttenuation.set(0.001, 0.00035, 0.0008);
          sl->mTarget = this;
          sl->mAutoDeleteLightOnTargetNull = true;
          renderComp->AddDynamicLight(sl);

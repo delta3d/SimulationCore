@@ -374,6 +374,35 @@ namespace NetDemo
             }
             break;
 
+
+         case 'l':
+            {
+               if( ! mVehicle->IsRemote() )
+               {
+                  mVehicle->SetHeadLightsEnabled( ! mVehicle->IsHeadLightsEnabled() );
+
+                  SimCore::Components::RenderingSupportComponent* rsComp = NULL;
+                  SimCore::Components::RenderingSupportComponent::SpotLight* dl = NULL;
+
+                  GetGameManager()->GetComponentByName( SimCore::Components::RenderingSupportComponent::DEFAULT_NAME, rsComp);
+
+                  if (rsComp != NULL)
+                  {
+                     // ...so that the head light effect can be accessed...
+                     dl = dynamic_cast<SimCore::Components::RenderingSupportComponent::SpotLight*>(rsComp->GetDynamicLight(mVehicle->GetHeadlightId()));
+
+                     // ...and if the light effect does not exist...
+                     if(dl != NULL)
+                     {
+                        dl->mTarget = mVehicle.get();
+                     }
+                  }
+
+                  mVehicle->GetGameActorProxy().NotifyFullActorUpdate();
+               }
+            }
+            break;
+
          case 'v':
             {
                if (mVehicle.valid())
