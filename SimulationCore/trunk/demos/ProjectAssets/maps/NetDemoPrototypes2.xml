@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <map xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="delta3dMap" xsi:schemaLocation="delta3dMap map.xsd">
     <header>
         <name>NetDemoPrototypes2</name>
@@ -8,7 +7,7 @@
         <comment>Place for prototype actors</comment>
         <copyright>2009</copyright>
         <createTimestamp>2008-06-10T17:43:27.0-05:00</createTimestamp>
-        <lastUpdateTimestamp>2010-10-16T13:30:35-05:00</lastUpdateTimestamp>
+        <lastUpdateTimestamp>2010-10-17T11:02:25-05:00</lastUpdateTimestamp>
         <editorVersion>2.5.0</editorVersion>
         <schemaVersion>1.0</schemaVersion>
     </header>
@@ -725,7 +724,7 @@
             </property>
             <property>
                 <name>Radius</name>
-                <float>40</float>
+                <float>5</float>
             </property>
             <property>
                 <name>Delete When Target Is Null</name>
@@ -1433,7 +1432,7 @@
             </property>
             <property>
                 <name>Radius</name>
-                <float>100</float>
+                <float>5</float>
             </property>
             <property>
                 <name>Delete When Target Is Null</name>
@@ -2172,7 +2171,7 @@
             </property>
             <property>
                 <name>Radius</name>
-                <float>100</float>
+                <float>10</float>
             </property>
             <property>
                 <name>Delete When Target Is Null</name>
@@ -2880,7 +2879,7 @@
             </property>
             <property>
                 <name>Radius</name>
-                <float>20</float>
+                <float>5</float>
             </property>
             <property>
                 <name>Delete When Target Is Null</name>

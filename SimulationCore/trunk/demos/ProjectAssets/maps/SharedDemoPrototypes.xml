@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <map xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="delta3dMap" xsi:schemaLocation="delta3dMap map.xsd">
     <header>
         <name>SharedDemoPrototypes</name>
@@ -8,8 +7,8 @@
         <comment>Place for prototype actors</comment>
         <copyright>2009</copyright>
         <createTimestamp>2008-06-10T17:43:27.0-05:00</createTimestamp>
-        <lastUpdateTimestamp>2009-06-12T10:22:50-05:00</lastUpdateTimestamp>
-        <editorVersion>2.3.0</editorVersion>
+        <lastUpdateTimestamp>2010-10-17T11:13:14-05:00</lastUpdateTimestamp>
+        <editorVersion>2.5.0</editorVersion>
         <schemaVersion>1.0</schemaVersion>
     </header>
     <libraries>
@@ -26,6 +25,10 @@
             <property>
                 <name>Description</name>
                 <string></string>
+            </property>
+            <property>
+                <name>IsActive</name>
+                <boolean>true</boolean>
             </property>
             <property>
                 <name>Rotation</name>
@@ -98,6 +101,10 @@
             <property>
                 <name>Initial Ownership</name>
                 <enumerated>PROTOTYPE</enumerated>
+            </property>
+            <property>
+                <name>Local Actor Update Policy</name>
+                <enumerated>ACCEPT_ALL</enumerated>
             </property>
             <property>
                 <name>ShaderGroup</name>
@@ -294,6 +301,12 @@
                 <name>UseTracers</name>
                 <boolean>true</boolean>
             </property>
+            <property>
+                <name>CurrentShader</name>
+                <resourceType>Shaders</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
+            </property>
         </actor>
         <actor>
             <type>Effects.MunitionParticles</type>
@@ -302,6 +315,10 @@
             <property>
                 <name>Description</name>
                 <string></string>
+            </property>
+            <property>
+                <name>IsActive</name>
+                <boolean>true</boolean>
             </property>
             <property>
                 <name>Rotation</name>
@@ -374,6 +391,10 @@
             <property>
                 <name>Initial Ownership</name>
                 <enumerated>PROTOTYPE</enumerated>
+            </property>
+            <property>
+                <name>Local Actor Update Policy</name>
+                <enumerated>ACCEPT_ALL</enumerated>
             </property>
             <property>
                 <name>ShaderGroup</name>
@@ -570,6 +591,12 @@
                 <name>UseTracers</name>
                 <boolean>false</boolean>
             </property>
+            <property>
+                <name>CurrentShader</name>
+                <resourceType>Shaders</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
+            </property>
         </actor>
         <actor>
             <type>Effects.DynamicLightPrototypeActorType</type>
@@ -578,6 +605,10 @@
             <property>
                 <name>Description</name>
                 <string></string>
+            </property>
+            <property>
+                <name>IsActive</name>
+                <boolean>true</boolean>
             </property>
             <property>
                 <name>Rotation</name>
@@ -652,6 +683,10 @@
                 <enumerated>PROTOTYPE</enumerated>
             </property>
             <property>
+                <name>Local Actor Update Policy</name>
+                <enumerated>ACCEPT_ALL</enumerated>
+            </property>
+            <property>
                 <name>ShaderGroup</name>
                 <string>
             </string>
@@ -690,7 +725,7 @@
             </property>
             <property>
                 <name>Radius</name>
-                <float>40</float>
+                <float>10</float>
             </property>
             <property>
                 <name>Delete When Target Is Null</name>
@@ -700,6 +735,12 @@
                 <name>Dynamic Light Type</name>
                 <enumerated>Fire</enumerated>
             </property>
+            <property>
+                <name>CurrentShader</name>
+                <resourceType>Shaders</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
+            </property>
         </actor>
         <actor>
             <type>Effects.PhysicsParticleSystem</type>
@@ -708,6 +749,10 @@
             <property>
                 <name>Description</name>
                 <string></string>
+            </property>
+            <property>
+                <name>IsActive</name>
+                <boolean>true</boolean>
             </property>
             <property>
                 <name>Rotation</name>
@@ -780,6 +825,10 @@
             <property>
                 <name>Initial Ownership</name>
                 <enumerated>PROTOTYPE</enumerated>
+            </property>
+            <property>
+                <name>Local Actor Update Policy</name>
+                <enumerated>ACCEPT_ALL</enumerated>
             </property>
             <property>
                 <name>ShaderGroup</name>
@@ -968,6 +1017,12 @@
                 <resourceDisplayName></resourceDisplayName>
                 <resource></resource>
             </property>
+            <property>
+                <name>CurrentShader</name>
+                <resourceType>Shaders</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
+            </property>
         </actor>
         <actor>
             <type>Effects.PhysicsParticleSystem</type>
@@ -976,6 +1031,10 @@
             <property>
                 <name>Description</name>
                 <string></string>
+            </property>
+            <property>
+                <name>IsActive</name>
+                <boolean>true</boolean>
             </property>
             <property>
                 <name>Rotation</name>
@@ -1048,6 +1107,10 @@
             <property>
                 <name>Initial Ownership</name>
                 <enumerated>PROTOTYPE</enumerated>
+            </property>
+            <property>
+                <name>Local Actor Update Policy</name>
+                <enumerated>ACCEPT_ALL</enumerated>
             </property>
             <property>
                 <name>ShaderGroup</name>
@@ -1236,6 +1299,12 @@
                 <resourceDisplayName>StaticMeshes:particles:building:cinder block:cinder_01.ive</resourceDisplayName>
                 <resource>StaticMeshes:particles:building:cinder block:cinder_01.ive</resource>
             </property>
+            <property>
+                <name>CurrentShader</name>
+                <resourceType>Shaders</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
+            </property>
         </actor>
         <actor>
             <type>Effects.DynamicLightPrototypeActorType</type>
@@ -1244,6 +1313,10 @@
             <property>
                 <name>Description</name>
                 <string></string>
+            </property>
+            <property>
+                <name>IsActive</name>
+                <boolean>true</boolean>
             </property>
             <property>
                 <name>Rotation</name>
@@ -1316,6 +1389,10 @@
             <property>
                 <name>Initial Ownership</name>
                 <enumerated>PROTOTYPE</enumerated>
+            </property>
+            <property>
+                <name>Local Actor Update Policy</name>
+                <enumerated>ACCEPT_ALL</enumerated>
             </property>
             <property>
                 <name>ShaderGroup</name>
@@ -1352,11 +1429,11 @@
             </property>
             <property>
                 <name>Fade Out Time</name>
-                <float>1</float>
+                <float>0.5</float>
             </property>
             <property>
                 <name>Radius</name>
-                <float>100</float>
+                <float>5</float>
             </property>
             <property>
                 <name>Delete When Target Is Null</name>
@@ -1366,6 +1443,12 @@
                 <name>Dynamic Light Type</name>
                 <enumerated>Tracer</enumerated>
             </property>
+            <property>
+                <name>CurrentShader</name>
+                <resourceType>Shaders</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
+            </property>
         </actor>
         <actor>
             <type>Effects.DynamicLightPrototypeActorType</type>
@@ -1374,6 +1457,10 @@
             <property>
                 <name>Description</name>
                 <string></string>
+            </property>
+            <property>
+                <name>IsActive</name>
+                <boolean>true</boolean>
             </property>
             <property>
                 <name>Rotation</name>
@@ -1446,6 +1533,10 @@
             <property>
                 <name>Initial Ownership</name>
                 <enumerated>PROTOTYPE</enumerated>
+            </property>
+            <property>
+                <name>Local Actor Update Policy</name>
+                <enumerated>ACCEPT_ALL</enumerated>
             </property>
             <property>
                 <name>ShaderGroup</name>
@@ -1496,6 +1587,12 @@
                 <name>Dynamic Light Type</name>
                 <enumerated>Unknown</enumerated>
             </property>
+            <property>
+                <name>CurrentShader</name>
+                <resourceType>Shaders</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
+            </property>
         </actor>
         <actor>
             <type>Effects.DynamicLightPrototypeActorType</type>
@@ -1504,6 +1601,10 @@
             <property>
                 <name>Description</name>
                 <string></string>
+            </property>
+            <property>
+                <name>IsActive</name>
+                <boolean>true</boolean>
             </property>
             <property>
                 <name>Rotation</name>
@@ -1576,6 +1677,10 @@
             <property>
                 <name>Initial Ownership</name>
                 <enumerated>PROTOTYPE</enumerated>
+            </property>
+            <property>
+                <name>Local Actor Update Policy</name>
+                <enumerated>ACCEPT_ALL</enumerated>
             </property>
             <property>
                 <name>ShaderGroup</name>
@@ -1626,6 +1731,12 @@
                 <name>Dynamic Light Type</name>
                 <enumerated>Unknown</enumerated>
             </property>
+            <property>
+                <name>CurrentShader</name>
+                <resourceType>Shaders</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
+            </property>
         </actor>
         <actor>
             <type>Effects.DynamicLightPrototypeActorType</type>
@@ -1634,6 +1745,10 @@
             <property>
                 <name>Description</name>
                 <string></string>
+            </property>
+            <property>
+                <name>IsActive</name>
+                <boolean>true</boolean>
             </property>
             <property>
                 <name>Rotation</name>
@@ -1706,6 +1821,10 @@
             <property>
                 <name>Initial Ownership</name>
                 <enumerated>PROTOTYPE</enumerated>
+            </property>
+            <property>
+                <name>Local Actor Update Policy</name>
+                <enumerated>ACCEPT_ALL</enumerated>
             </property>
             <property>
                 <name>ShaderGroup</name>
@@ -1756,6 +1875,12 @@
                 <name>Dynamic Light Type</name>
                 <enumerated>Unknown</enumerated>
             </property>
+            <property>
+                <name>CurrentShader</name>
+                <resourceType>Shaders</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
+            </property>
         </actor>
         <actor>
             <type>Effects.DynamicLightPrototypeActorType</type>
@@ -1764,6 +1889,10 @@
             <property>
                 <name>Description</name>
                 <string></string>
+            </property>
+            <property>
+                <name>IsActive</name>
+                <boolean>true</boolean>
             </property>
             <property>
                 <name>Rotation</name>
@@ -1838,6 +1967,10 @@
                 <enumerated>PROTOTYPE</enumerated>
             </property>
             <property>
+                <name>Local Actor Update Policy</name>
+                <enumerated>ACCEPT_ALL</enumerated>
+            </property>
+            <property>
                 <name>ShaderGroup</name>
                 <string>
             </string>
@@ -1868,7 +2001,7 @@
             </property>
             <property>
                 <name>Maximum Time</name>
-                <float>1</float>
+                <float>0.25</float>
             </property>
             <property>
                 <name>Fade Out Time</name>
@@ -1876,7 +2009,7 @@
             </property>
             <property>
                 <name>Radius</name>
-                <float>100</float>
+                <float>10</float>
             </property>
             <property>
                 <name>Delete When Target Is Null</name>
@@ -1886,6 +2019,12 @@
                 <name>Dynamic Light Type</name>
                 <enumerated>Unknown</enumerated>
             </property>
+            <property>
+                <name>CurrentShader</name>
+                <resourceType>Shaders</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
+            </property>
         </actor>
         <actor>
             <type>Effects.PhysicsParticleSystem</type>
@@ -1894,6 +2033,10 @@
             <property>
                 <name>Description</name>
                 <string></string>
+            </property>
+            <property>
+                <name>IsActive</name>
+                <boolean>true</boolean>
             </property>
             <property>
                 <name>Rotation</name>
@@ -1966,6 +2109,10 @@
             <property>
                 <name>Initial Ownership</name>
                 <enumerated>PROTOTYPE</enumerated>
+            </property>
+            <property>
+                <name>Local Actor Update Policy</name>
+                <enumerated>ACCEPT_ALL</enumerated>
             </property>
             <property>
                 <name>ShaderGroup</name>
@@ -2154,6 +2301,12 @@
                 <resourceDisplayName></resourceDisplayName>
                 <resource></resource>
             </property>
+            <property>
+                <name>CurrentShader</name>
+                <resourceType>Shaders</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
+            </property>
         </actor>
         <actor>
             <type>Effects.PhysicsParticleSystem</type>
@@ -2162,6 +2315,10 @@
             <property>
                 <name>Description</name>
                 <string></string>
+            </property>
+            <property>
+                <name>IsActive</name>
+                <boolean>true</boolean>
             </property>
             <property>
                 <name>Rotation</name>
@@ -2236,6 +2393,10 @@
                 <enumerated>PROTOTYPE</enumerated>
             </property>
             <property>
+                <name>Local Actor Update Policy</name>
+                <enumerated>ACCEPT_ALL</enumerated>
+            </property>
+            <property>
                 <name>ShaderGroup</name>
                 <string>
             </string>
@@ -2270,11 +2431,11 @@
             </property>
             <property>
                 <name>ParticleEmitterRateMax</name>
-                <float>9.9999997e-05</float>
+                <float>9.9999997e-005</float>
             </property>
             <property>
                 <name>ParticleEmitterRateMin</name>
-                <float>9.9999997e-05</float>
+                <float>9.9999997e-005</float>
             </property>
             <property>
                 <name>ParticleLengthofStay</name>
@@ -2422,6 +2583,12 @@
                 <resourceDisplayName></resourceDisplayName>
                 <resource></resource>
             </property>
+            <property>
+                <name>CurrentShader</name>
+                <resourceType>Shaders</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
+            </property>
         </actor>
         <actor>
             <type>Effects.DynamicLightPrototypeActorType</type>
@@ -2430,6 +2597,10 @@
             <property>
                 <name>Description</name>
                 <string></string>
+            </property>
+            <property>
+                <name>IsActive</name>
+                <boolean>true</boolean>
             </property>
             <property>
                 <name>Rotation</name>
@@ -2504,6 +2675,10 @@
                 <enumerated>PROTOTYPE</enumerated>
             </property>
             <property>
+                <name>Local Actor Update Policy</name>
+                <enumerated>ACCEPT_ALL</enumerated>
+            </property>
+            <property>
                 <name>ShaderGroup</name>
                 <string>
             </string>
@@ -2534,15 +2709,15 @@
             </property>
             <property>
                 <name>Maximum Time</name>
-                <float>0.5</float>
+                <float>0.25</float>
             </property>
             <property>
                 <name>Fade Out Time</name>
-                <float>0.1</float>
+                <float>0.5</float>
             </property>
             <property>
                 <name>Radius</name>
-                <float>20</float>
+                <float>5</float>
             </property>
             <property>
                 <name>Delete When Target Is Null</name>
@@ -2552,6 +2727,12 @@
                 <name>Dynamic Light Type</name>
                 <enumerated>Weapons - Flash</enumerated>
             </property>
+            <property>
+                <name>CurrentShader</name>
+                <resourceType>Shaders</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
+            </property>
         </actor>
         <actor>
             <type>Munitions.WeaponActor</type>
@@ -2560,6 +2741,10 @@
             <property>
                 <name>Description</name>
                 <string></string>
+            </property>
+            <property>
+                <name>IsActive</name>
+                <boolean>true</boolean>
             </property>
             <property>
                 <name>Rotation</name>
@@ -2634,63 +2819,15 @@
                 <enumerated>PROTOTYPE</enumerated>
             </property>
             <property>
+                <name>Local Actor Update Policy</name>
+                <enumerated>ACCEPT_ALL</enumerated>
+            </property>
+            <property>
                 <name>ShaderGroup</name>
                 <string>SimpleVehicleShaderGroup</string>
             </property>
             <property>
-                <name>Last Known Translation</name>
-                <vec3>
-                    <value1>0.000000</value1>
-                    <value2>0.000000</value2>
-                    <value3>0.000000</value3>
-                </vec3>
-            </property>
-            <property>
-                <name>Last Known Rotation</name>
-                <vec3>
-                    <value1>0.000000</value1>
-                    <value2>0.000000</value2>
-                    <value3>0.000000</value3>
-                </vec3>
-            </property>
-            <property>
-                <name>Velocity Vector</name>
-                <vec3>
-                    <value1>0.000000</value1>
-                    <value2>0.000000</value2>
-                    <value3>0.000000</value3>
-                </vec3>
-            </property>
-            <property>
-                <name>Acceleration Vector</name>
-                <vec3>
-                    <value1>0.000000</value1>
-                    <value2>0.000000</value2>
-                    <value3>0.000000</value3>
-                </vec3>
-            </property>
-            <property>
-                <name>Angular Velocity Vector</name>
-                <vec3>
-                    <value1>0.000000</value1>
-                    <value2>0.000000</value2>
-                    <value3>0.000000</value3>
-                </vec3>
-            </property>
-            <property>
                 <name>Frozen</name>
-                <boolean>false</boolean>
-            </property>
-            <property>
-                <name>EngineSmokePosition</name>
-                <vec3>
-                    <value1>0.000000</value1>
-                    <value2>0.000000</value2>
-                    <value3>0.000000</value3>
-                </vec3>
-            </property>
-            <property>
-                <name>EngineSmokeOn</name>
                 <boolean>false</boolean>
             </property>
             <property>
@@ -2714,16 +2851,6 @@
                 <resource>Particles:fire.osg</resource>
             </property>
             <property>
-                <name>Engine smoke particles</name>
-                <resourceType>Particles</resourceType>
-                <resourceDisplayName>Particles:smoke.osg</resourceDisplayName>
-                <resource>Particles:smoke.osg</resource>
-            </property>
-            <property>
-                <name>GroundClampType</name>
-                <enumerated>None</enumerated>
-            </property>
-            <property>
                 <name>DrawingModel</name>
                 <boolean>true</boolean>
             </property>
@@ -2732,20 +2859,20 @@
                 <enumerated>No Damage</enumerated>
             </property>
             <property>
+                <name>Max Damage Amount</name>
+                <float>1</float>
+            </property>
+            <property>
+                <name>Cur Damage Ratio</name>
+                <float>0</float>
+            </property>
+            <property>
                 <name>Domain</name>
                 <enumerated>GROUND</enumerated>
             </property>
             <property>
-                <name>Dead Reckoning Algorithm</name>
-                <enumerated>None</enumerated>
-            </property>
-            <property>
                 <name>Force Affiliation</name>
                 <enumerated>NEUTRAL</enumerated>
-            </property>
-            <property>
-                <name>Ground Offset</name>
-                <float>0.090000004</float>
             </property>
             <property>
                 <name>Service</name>
@@ -2838,10 +2965,6 @@
                 <string></string>
             </property>
             <property>
-                <name>MinDistanceIdleSound</name>
-                <float>5</float>
-            </property>
-            <property>
                 <name>MaxDistanceIdleSound</name>
                 <float>30</float>
             </property>
@@ -2850,6 +2973,24 @@
                 <resourceType>Sounds</resourceType>
                 <resourceDisplayName></resourceDisplayName>
                 <resource></resource>
+            </property>
+            <property>
+                <name>EngineSmokePosition</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>EngineSmokeOn</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>Engine smoke particles</name>
+                <resourceType>Particles</resourceType>
+                <resourceDisplayName>Particles:smoke.osg</resourceDisplayName>
+                <resource>Particles:smoke.osg</resource>
             </property>
             <property>
                 <name>Fire Sound</name>
@@ -2933,6 +3074,195 @@
                 <name>Flash Actor</name>
                 <actorId></actorId>
             </property>
+            <property>
+                <name>CurrentShader</name>
+                <resourceType>Shaders</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
+            </property>
+            <property>
+                <name>Last Known Translation</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Last Known Rotation</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Velocity Vector</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Acceleration Vector</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Angular Velocity Vector</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>Ground Offset</name>
+                <float>0.090000004</float>
+            </property>
+            <property>
+                <name>VelocityAveragingFrameCount</name>
+                <integer>1</integer>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>5</float>
+            </property>
+            <property>
+                <name>Paint Color 1</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Paint Color 2</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Paint Color 3</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Paint Color 4</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Pattern Scale</name>
+                <vec4>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                    <value4>1.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Projection Direction</name>
+                <vec4>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                    <value4>1.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Replacement Diffuse Mask Texture</name>
+                <resourceType>Textures</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
+            </property>
+            <property>
+                <name>Pattern Texture</name>
+                <resourceType>Textures</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
+            </property>
+            <property>
+                <name>Paint State</name>
+                <float>0</float>
+            </property>
+            <property>
+                <name>Diffuse Frame Scale</name>
+                <float>1</float>
+            </property>
+            <property>
+                <name>Overlay Frame Scale</name>
+                <float>1</float>
+            </property>
+            <property>
+                <name>Overlay Texture</name>
+                <resourceType>Textures</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
+            </property>
+            <property>
+                <name>Camo Id</name>
+                <integer>0</integer>
+            </property>
+            <property>
+                <name>Concealed State</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>Conceal Shader Group</name>
+                <string></string>
+            </property>
+            <property>
+                <name>Conceal Mesh Dimensions</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>WeaponSwapRootNode</name>
+                <string>dof_gun_01</string>
+            </property>
+            <property>
+                <name>WeaponName</name>
+                <string>Default</string>
+            </property>
+            <property>
+                <name>WeaponHotSpotDOF</name>
+                <string>hotspot_01</string>
+            </property>
+            <property>
+                <name>WeaponSwapMesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
+            </property>
         </actor>
         <actor>
             <type>Munitions.WeaponActor</type>
@@ -2941,6 +3271,10 @@
             <property>
                 <name>Description</name>
                 <string></string>
+            </property>
+            <property>
+                <name>IsActive</name>
+                <boolean>true</boolean>
             </property>
             <property>
                 <name>Rotation</name>
@@ -3015,63 +3349,15 @@
                 <enumerated>PROTOTYPE</enumerated>
             </property>
             <property>
+                <name>Local Actor Update Policy</name>
+                <enumerated>ACCEPT_ALL</enumerated>
+            </property>
+            <property>
                 <name>ShaderGroup</name>
                 <string>SimpleVehicleShaderGroup</string>
             </property>
             <property>
-                <name>Last Known Translation</name>
-                <vec3>
-                    <value1>0.000000</value1>
-                    <value2>0.000000</value2>
-                    <value3>0.000000</value3>
-                </vec3>
-            </property>
-            <property>
-                <name>Last Known Rotation</name>
-                <vec3>
-                    <value1>0.000000</value1>
-                    <value2>0.000000</value2>
-                    <value3>0.000000</value3>
-                </vec3>
-            </property>
-            <property>
-                <name>Velocity Vector</name>
-                <vec3>
-                    <value1>0.000000</value1>
-                    <value2>0.000000</value2>
-                    <value3>0.000000</value3>
-                </vec3>
-            </property>
-            <property>
-                <name>Acceleration Vector</name>
-                <vec3>
-                    <value1>0.000000</value1>
-                    <value2>0.000000</value2>
-                    <value3>0.000000</value3>
-                </vec3>
-            </property>
-            <property>
-                <name>Angular Velocity Vector</name>
-                <vec3>
-                    <value1>0.000000</value1>
-                    <value2>0.000000</value2>
-                    <value3>0.000000</value3>
-                </vec3>
-            </property>
-            <property>
                 <name>Frozen</name>
-                <boolean>false</boolean>
-            </property>
-            <property>
-                <name>EngineSmokePosition</name>
-                <vec3>
-                    <value1>0.000000</value1>
-                    <value2>0.000000</value2>
-                    <value3>0.000000</value3>
-                </vec3>
-            </property>
-            <property>
-                <name>EngineSmokeOn</name>
                 <boolean>false</boolean>
             </property>
             <property>
@@ -3095,16 +3381,6 @@
                 <resource>Particles:fire.osg</resource>
             </property>
             <property>
-                <name>Engine smoke particles</name>
-                <resourceType>Particles</resourceType>
-                <resourceDisplayName>Particles:smoke.osg</resourceDisplayName>
-                <resource>Particles:smoke.osg</resource>
-            </property>
-            <property>
-                <name>GroundClampType</name>
-                <enumerated>None</enumerated>
-            </property>
-            <property>
                 <name>DrawingModel</name>
                 <boolean>true</boolean>
             </property>
@@ -3113,20 +3389,20 @@
                 <enumerated>No Damage</enumerated>
             </property>
             <property>
+                <name>Max Damage Amount</name>
+                <float>1</float>
+            </property>
+            <property>
+                <name>Cur Damage Ratio</name>
+                <float>0</float>
+            </property>
+            <property>
                 <name>Domain</name>
                 <enumerated>GROUND</enumerated>
             </property>
             <property>
-                <name>Dead Reckoning Algorithm</name>
-                <enumerated>None</enumerated>
-            </property>
-            <property>
                 <name>Force Affiliation</name>
                 <enumerated>NEUTRAL</enumerated>
-            </property>
-            <property>
-                <name>Ground Offset</name>
-                <float>0.090000004</float>
             </property>
             <property>
                 <name>Service</name>
@@ -3219,10 +3495,6 @@
                 <string></string>
             </property>
             <property>
-                <name>MinDistanceIdleSound</name>
-                <float>5</float>
-            </property>
-            <property>
                 <name>MaxDistanceIdleSound</name>
                 <float>30</float>
             </property>
@@ -3231,6 +3503,24 @@
                 <resourceType>Sounds</resourceType>
                 <resourceDisplayName></resourceDisplayName>
                 <resource></resource>
+            </property>
+            <property>
+                <name>EngineSmokePosition</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>EngineSmokeOn</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>Engine smoke particles</name>
+                <resourceType>Particles</resourceType>
+                <resourceDisplayName>Particles:smoke.osg</resourceDisplayName>
+                <resource>Particles:smoke.osg</resource>
             </property>
             <property>
                 <name>Fire Sound</name>
@@ -3314,7 +3604,197 @@
                 <name>Flash Actor</name>
                 <actorId></actorId>
             </property>
+            <property>
+                <name>CurrentShader</name>
+                <resourceType>Shaders</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
+            </property>
+            <property>
+                <name>Last Known Translation</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Last Known Rotation</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Velocity Vector</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Acceleration Vector</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Angular Velocity Vector</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>Ground Offset</name>
+                <float>0.090000004</float>
+            </property>
+            <property>
+                <name>VelocityAveragingFrameCount</name>
+                <integer>1</integer>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>5</float>
+            </property>
+            <property>
+                <name>Paint Color 1</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Paint Color 2</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Paint Color 3</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Paint Color 4</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Pattern Scale</name>
+                <vec4>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                    <value4>1.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Projection Direction</name>
+                <vec4>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                    <value4>1.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>Replacement Diffuse Mask Texture</name>
+                <resourceType>Textures</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
+            </property>
+            <property>
+                <name>Pattern Texture</name>
+                <resourceType>Textures</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
+            </property>
+            <property>
+                <name>Paint State</name>
+                <float>0</float>
+            </property>
+            <property>
+                <name>Diffuse Frame Scale</name>
+                <float>1</float>
+            </property>
+            <property>
+                <name>Overlay Frame Scale</name>
+                <float>1</float>
+            </property>
+            <property>
+                <name>Overlay Texture</name>
+                <resourceType>Textures</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
+            </property>
+            <property>
+                <name>Camo Id</name>
+                <integer>0</integer>
+            </property>
+            <property>
+                <name>Concealed State</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>Conceal Shader Group</name>
+                <string></string>
+            </property>
+            <property>
+                <name>Conceal Mesh Dimensions</name>
+                <vec4>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                    <value4>0.000000</value4>
+                </vec4>
+            </property>
+            <property>
+                <name>WeaponSwapRootNode</name>
+                <string>dof_gun_01</string>
+            </property>
+            <property>
+                <name>WeaponName</name>
+                <string>Default</string>
+            </property>
+            <property>
+                <name>WeaponHotSpotDOF</name>
+                <string>hotspot_01</string>
+            </property>
+            <property>
+                <name>WeaponSwapMesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
+            </property>
         </actor>
     </actors>
     <groups></groups>
+    <presetCameras></presetCameras>
 </map>

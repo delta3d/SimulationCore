@@ -48,9 +48,9 @@ namespace NetDemo
       , mNumPlayers(0)
       , mNumTeams(0)
       , mWaveStartDuration(5.0f)
-      , mWaveDuration(30.0f)
+      , mWaveDuration(20.0f)
       , mGameDifficulty(0)
-      , mMaxNumberWaves(25)
+      , mMaxNumberWaves(30)
       , mTimeTillNextUpdate(0.0f)
       , mTimeBetweenUpdates(1.0f)
       , mDirtySettings(false)
@@ -270,7 +270,7 @@ namespace NetDemo
       mWaveNumber = 1;
       mNumEnemiesKilled = 0;
       mGameStatus = &ServerGameStatusEnum::WAVE_ABOUT_TO_START;
-      mTimeLeftInCurState = mWaveStartDuration + 60.0f; // the 5 is to allow players to load and get into the game;
+      mTimeLeftInCurState = mWaveStartDuration + 55.0f; // the 5 is to allow players to load and get into the game;
       PublishGameStatus();
 
       // TODO - Send a message letting folks know that the game status has changed.
