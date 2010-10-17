@@ -41,6 +41,7 @@ set(LIB_SOURCES_1
    "${SOURCE_PATH}/States.cpp"
    "${SOURCE_PATH}/TowerAIHelper.cpp"
    "${SOURCE_PATH}/AIWeaponUtility.cpp"
+   "${SOURCE_PATH}/NetDemoWaypoint.cpp"
    )
 set(LIB_SOURCES_2 
    "${SOURCE_PATH}/Actors/BaseEnemyActor.cpp"
@@ -56,6 +57,7 @@ set(LIB_SOURCES_2
    "${SOURCE_PATH}/Actors/ServerGameStatusActor.cpp"
    "${SOURCE_PATH}/Actors/SpawnVolumeActor.cpp"
    "${SOURCE_PATH}/Actors/TowerActor.cpp"
+   "${SOURCE_PATH}/Actors/LightTower.cpp"
    )
    
 set(LIB_SOURCES_3 

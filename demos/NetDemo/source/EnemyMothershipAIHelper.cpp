@@ -71,7 +71,7 @@ namespace NetDemo
       float minSpeedPercent = 0.0f;
       float maxSpeedPercent = 0.8f;
       float lookAheadTime = 10.0f;
-      float timeToTarget = 15.0f;
+      float timeToTarget = 25.0f;
       float timeToTargetHeight = 20.0f;
       float lookAheadRot = 1.5f;
       float timeToTargetRot = 1.0f;

@@ -162,7 +162,7 @@ namespace NetDemo
          //if we are within distance, detonate
          //this is only for the enemy mine, and should be refactored
          float dist = GetDistance(pos);
-         if(dist < 20.0f)
+         if(dist < 30.0f)
          {
             BaseClass::GetStateMachine().MakeCurrent(&AIStateType::AI_STATE_DETONATE);
             
