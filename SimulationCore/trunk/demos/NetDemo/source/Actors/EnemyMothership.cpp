@@ -52,6 +52,7 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////////////
    EnemyMothershipActor::EnemyMothershipActor(SimCore::Actors::BasePhysicsVehicleActorProxy &proxy)
       : BaseEnemyActor(proxy)
+      , mTimeToCheckForTarget(0.0f)
    {
       mAIHelper = new EnemyMothershipAIHelper();
    }
@@ -113,13 +114,11 @@ namespace NetDemo
 
    void EnemyMothershipActor::FindTarget(float)
    {
-      //temporarily lets just look for a fort to destroy
-      FortActorProxy* fortProxy = NULL;
-      GetGameActorProxy().GetGameManager()->FindActorByType(*NetDemoActorRegistry::FORT_ACTOR_TYPE, fortProxy);
-      if (fortProxy != NULL)
+      FortActor* fort = GetClosestFort();
+
+      if(fort != NULL)
       {
-         FortActor& fort = *static_cast<FortActor*>(fortProxy->GetActor());
-         mAIHelper->SetCurrentTarget(fort);
+         mAIHelper->SetCurrentTarget(*fort);
       }
 
    }
@@ -185,6 +184,13 @@ namespace NetDemo
       mAIHelper->Update(tickMessage.GetDeltaSimTime());
 
       BaseClass::OnTickLocal(tickMessage);
+
+      mTimeToCheckForTarget += tickMessage.GetDeltaSimTime();
+      if(mTimeToCheckForTarget > 10.0f)
+      {
+         mTimeToCheckForTarget = 10.0f;
+         FindTarget(0.0f);
+      }
    }
 
    void EnemyMothershipActor::AddDynamicLight()

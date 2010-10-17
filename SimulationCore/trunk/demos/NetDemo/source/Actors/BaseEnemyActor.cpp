@@ -44,6 +44,8 @@
 #include <AIEvent.h>
 #include <NetDemoUtils.h>
 #include <ActorRegistry.h>
+#include <Actors/FortActor.h>
+#include <Actors/TowerActor.h>
 
 
 namespace NetDemo
@@ -334,7 +336,63 @@ namespace NetDemo
       return false;
    }
 
+   FortActor* BaseEnemyActor::GetClosestFort()
+   {
+      //temporarily lets just look for a fort to destroy
+      std::vector<dtDAL::ActorProxy*> actors;
+      GetGameActorProxy().GetGameManager()->FindActorsByType(*NetDemoActorRegistry::FORT_ACTOR_TYPE, actors);
 
+      osg::Vec3 pos = mAIHelper->mCurrentState.GetPos();
+
+      FortActor* result = NULL;
+      float dist = 1000000.0f;
+
+      for (unsigned i = 0; i < actors.size(); ++i)
+      {
+         FortActor* f = static_cast<FortActor*>(actors[i]->GetActor());
+
+         dtCore::Transform trans;
+         f->GetTransform(trans);
+         osg::Vec3 fortPos = trans.GetTranslation();
+         float newDist = (fortPos - pos).length();
+         if(newDist < dist && f->GetDamageState() != SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::DESTROYED)
+         {
+            dist = newDist;
+            result = f;
+         }
+      }
+
+      return result;
+   }
+
+   dtCore::Transformable* BaseEnemyActor::GetClosestTower()
+   {
+      //temporarily lets just look for a fort to destroy
+      std::vector<dtDAL::ActorProxy*> actors;
+      GetGameActorProxy().GetGameManager()->FindActorsByType(*NetDemoActorRegistry::TOWER_ACTOR_TYPE, actors);
+
+      osg::Vec3 pos = mAIHelper->mCurrentState.GetPos();
+
+      dtCore::Transformable* result = NULL;
+      float dist = 1000000.0f;
+
+      for (unsigned i = 0; i < actors.size(); ++i)
+      {
+         TowerActor* f = static_cast<TowerActor*>(actors[i]->GetActor());
+
+         dtCore::Transform trans;
+         f->GetTransform(trans);
+         osg::Vec3 fortPos = trans.GetTranslation();
+         float newDist = (fortPos - pos).length();
+         if(newDist < dist && f->GetDamageState() != SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::DESTROYED)
+         {
+            dist = newDist;
+            result = f;
+         }
+      }
+
+      return result;
+   }
 
    ///////////////////////////////////////////////////////////////////////////////////
    // PROXY

@@ -30,6 +30,7 @@
 #include <dtGame/basemessages.h>
 #include <dtGame/messagetype.h>
 #include <dtGame/actorupdatemessage.h>
+#include <iostream>
 #include <vector>
 
 namespace NetDemo
@@ -40,9 +41,11 @@ namespace NetDemo
    /////////////////////////////////////////////////////////////
    SpawnComponent::SpawnComponent(const std::string& name)
    : BaseClass(name)
-   , mDifficulty(1)
+   , mNumEnemiesStart(4)
+   , mNumEnemiesCurrent(0)
+   , mMaxEnemies(150)
+   , mDifficulty(5)
    , mWaveNumber(0)
-   , mMaxEnemies(10)
    , mNumPlayers(1)
    , mTimeLeftInWave(0.0f)
    , mGameStatus(&ServerGameStatusActor::ServerGameStatusEnum::UNKNOWN)
@@ -55,7 +58,8 @@ namespace NetDemo
    {
 
    }
-
+   DT_IMPLEMENT_ACCESSOR(SpawnComponent, int, NumEnemiesStart);
+   DT_IMPLEMENT_ACCESSOR(SpawnComponent, int, NumEnemiesCurrent);
    DT_IMPLEMENT_ACCESSOR(SpawnComponent, int, MaxEnemies);
    DT_IMPLEMENT_ACCESSOR(SpawnComponent, int, Difficulty);
    DT_IMPLEMENT_ACCESSOR(SpawnComponent,int, WaveNumber);
@@ -211,6 +215,10 @@ namespace NetDemo
       SetGameStatus(gameStatus);
       SetWaveNumber(waveNumber);
       SetTimeLeftInWave(timeLeftInWave);
+
+      mNumEnemiesCurrent = mNumEnemiesStart + (mNumPlayers * mDifficulty * waveNumber);
+      dtUtil::ClampMax(mNumEnemiesCurrent, mMaxEnemies);
+      //std::cout << "NumEnemies: " << mNumEnemiesCurrent << std::endl;
    }
 
    void SpawnComponent::Tick(float dt)
@@ -226,7 +234,7 @@ namespace NetDemo
          GetGameManager()->FindActorsByType(*NetDemoActorRegistry::ENEMY_HELIX_ACTOR_TYPE, proxies);
          numEnemies += proxies.size();
 
-         if(numEnemies <= mMaxEnemies)
+         if(numEnemies <= mNumEnemiesCurrent)
          {
             //LOG_ALWAYS("Wave in progress");
             EnemyDescriptionActor* desc = NULL;
@@ -257,7 +265,7 @@ namespace NetDemo
             }
          }
 
-      }
+       }
 
    }
 
