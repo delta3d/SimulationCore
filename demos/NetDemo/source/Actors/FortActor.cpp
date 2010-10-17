@@ -145,7 +145,7 @@ namespace NetDemo
 
       // Send out an actor update message. should probably be a partial update
       GetGameActorProxy().NotifyFullActorUpdate();
-      return incomingDamage;
+      return 10.0f * incomingDamage;
    }
 
    ///////////////////////////////////////////////////////////////////////////////////

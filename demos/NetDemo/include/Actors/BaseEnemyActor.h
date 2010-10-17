@@ -48,6 +48,7 @@ namespace dtGame
 
 namespace NetDemo
 {
+   class FortActor;
 
    ////////////////////////////////////////////////////////////////////////////////
    /* This class is for the team's home fort. If it is destroyed, the team looses. 
@@ -120,6 +121,8 @@ namespace NetDemo
             const osg::Vec3& location);
 
 
+         FortActor* GetClosestFort();
+         dtCore::Transformable* GetClosestTower();
 
          dtCore::RefPtr<EnemyAIHelper> mAIHelper;
 

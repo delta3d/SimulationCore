@@ -114,15 +114,11 @@ namespace NetDemo
    //////////////////////////////////////////////////////////////////////
    void EnemyMineActor::FindTarget(float)
    {
-      //temporarily lets just look for a fort to destroy
-      FortActorProxy* fortProxy = NULL;
-      GetGameActorProxy().GetGameManager()->FindActorByType(*NetDemoActorRegistry::FORT_ACTOR_TYPE, fortProxy);
-      if (fortProxy != NULL)
+      FortActor* fort = GetClosestFort();
+      if(fort != NULL)
       {
-         FortActor& fort = *static_cast<FortActor*>(fortProxy->GetActor());
-         mAIHelper->SetCurrentTarget(fort);
+         mAIHelper->SetCurrentTarget(*fort);
       }
-
    }
 
    ///////////////////////////////////////////////////////////////////////////////////

@@ -177,26 +177,22 @@ namespace NetDemo
       //randomly choose a tower to attack
       int attackTower = dtUtil::RandRange(0, 3);
 
-      std::vector<dtDAL::ActorProxy*> towerProxies;
-      GetGameActorProxy().GetGameManager()->FindActorsByType(*NetDemoActorRegistry::TOWER_ACTOR_TYPE, towerProxies);
-      if(attackTower == 0 && !towerProxies.empty())
+      if(attackTower > 0)
       {
-         unsigned index = dtUtil::RandRange(0, towerProxies.size() - 1);
-         TowerActor* tower = static_cast<TowerActor*>(towerProxies[index]->GetActor());
-         if(tower->GetDamageState() != BaseEnemyActorProxy::DamageStateEnum::DESTROYED)
+         dtCore::Transformable* t = GetClosestTower();
+         if(t != NULL)
          {
-            mAIHelper->SetCurrentTarget(*tower);
+            mAIHelper->SetCurrentTarget(*t);
             return;
          }
       }
 
-      FortActorProxy* fortProxy = NULL;
-      GetGameActorProxy().GetGameManager()->FindActorByType(*NetDemoActorRegistry::FORT_ACTOR_TYPE, fortProxy);
-      if (fortProxy != NULL)
+      FortActor* fort = GetClosestFort();
+      if(fort != NULL)
       {
-         FortActor& fort = *static_cast<FortActor*>(fortProxy->GetActor());
-         mAIHelper->SetCurrentTarget(fort);
+         mAIHelper->SetCurrentTarget(*fort);
       }
+
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
