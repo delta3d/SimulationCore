@@ -57,7 +57,7 @@ namespace NetDemo
       , mSendScoreMessage(false)
       , mPointValue(1)
       , mTimeSinceBorn(0.0f)
-      , mTimeToExistAfterDead(2.0f)
+      , mTimeToExistAfterDead(0.5f)
       , mTimeSinceKilled(0.0f)
    {
       /////////////////////////////////////////////////////////////////
@@ -154,10 +154,10 @@ namespace NetDemo
       msg->SetMunitionType("Grenade");  // Other example options are "Bullet" and "High Explosive"
       msg->SetFuseType(0);
       msg->SetWarheadType(0);
-      msg->SetQuantityFired(1);
+      msg->SetQuantityFired(dtUtil::RandRange(1, 3));
       msg->SetSendingActorId(GetGameActorProxy().GetId());
       //msg->SetFinalVelocityVector( finalVelocity );
-      msg->SetRateOfFire(1);
+      msg->SetRateOfFire(5);
 
       gm->SendMessage( *msg );
       gm->SendNetworkMessage( *msg );
@@ -171,7 +171,7 @@ namespace NetDemo
       dtGame::GameActorProxy* gap = GetGameActorProxy().GetGameManager()->FindGameActorById(message.GetSendingActorId());
 
       //if is enemy true it will multiply incoming damage by a 0
-      return incomingDamage * float(!IsEnemyActor(gap));
+      return 2.0f * incomingDamage * float(!IsEnemyActor(gap));
    }
 
 
@@ -224,7 +224,7 @@ namespace NetDemo
          }
 
          // Randomly decide how long to last before exploding. 
-         mTimeToExistAfterDead *= dtUtil::RandFloat(0.3f, 1.5f);
+         mTimeToExistAfterDead *= dtUtil::RandFloat(0.3f, 0.75f);
       }
    }
 

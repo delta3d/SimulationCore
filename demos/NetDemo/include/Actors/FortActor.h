@@ -32,6 +32,7 @@
 
 #include <SimCore/PhysicsTypes.h>
 #include <SimCore/Actors/BasePhysicsVehicleActor.h>
+#include <SimCore/Components/RenderingSupportComponent.h>
 
 namespace dtAudio
 {
@@ -108,6 +109,9 @@ namespace NetDemo
 
       // Private vars
       private:
+
+         bool mLightIsOn;
+         dtCore::RefPtr<SimCore::Components::RenderingSupportComponent::DynamicLight> mMainLight;
 
          ///////////////////////////////////////////////////
          // Sound effects
