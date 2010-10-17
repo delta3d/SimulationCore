@@ -48,6 +48,7 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////////////
    FortActor::FortActor(SimCore::Actors::BasePhysicsVehicleActorProxy &proxy)
       : SimCore::Actors::BasePhysicsVehicleActor(proxy)
+      , mLightIsOn(true)
    {
       SetTerrainPresentDropHeight(0.0);
       // create my unique physics helper.  almost all of the physics is on the helper.
@@ -123,16 +124,15 @@ namespace NetDemo
       if(renderComp != NULL)
       {
          //Add a spot light
-         SimCore::Components::RenderingSupportComponent::DynamicLight* sl =
-            new SimCore::Components::RenderingSupportComponent::DynamicLight();
+         mMainLight = new SimCore::Components::RenderingSupportComponent::DynamicLight();
          
-         sl->mRadius = 150.0f;
-         sl->mIntensity = 1.0f;
-         sl->mColor.set(1.0f, 1.0f, 1.0f);
-         sl->mAttenuation.set(0.001, 0.00035, 0.0008);
-         sl->mTarget = this;
-         sl->mAutoDeleteLightOnTargetNull = true;
-         renderComp->AddDynamicLight(sl);
+         mMainLight->mRadius = 150.0f;
+         mMainLight->mIntensity = 1.0f;
+         mMainLight->mColor.set(1.0f, 1.0f, 1.0f);
+         mMainLight->mAttenuation.set(0.001, 0.00035, 0.0008);
+         mMainLight->mTarget = this;
+         mMainLight->mAutoDeleteLightOnTargetNull = true;
+         renderComp->AddDynamicLight(mMainLight.get());
       }
    }
 
@@ -179,6 +179,12 @@ namespace NetDemo
          {
             GetArticulationHelper()->HandleUpdatedDOFOrientation(*dof, hprChange, hpr);
          }
+      }
+
+      if(mLightIsOn && GetDamageState() == SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::DESTROYED)
+      {
+         mMainLight->mIntensity = 0.0f;
+         mLightIsOn = false;
       }
    }
 

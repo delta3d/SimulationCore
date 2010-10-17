@@ -41,10 +41,10 @@ namespace NetDemo
    /////////////////////////////////////////////////////////////
    SpawnComponent::SpawnComponent(const std::string& name)
    : BaseClass(name)
-   , mNumEnemiesStart(4)
+   , mNumEnemiesStart(2)
    , mNumEnemiesCurrent(0)
    , mMaxEnemies(150)
-   , mDifficulty(5)
+   , mDifficulty(2)
    , mWaveNumber(0)
    , mNumPlayers(1)
    , mTimeLeftInWave(0.0f)
