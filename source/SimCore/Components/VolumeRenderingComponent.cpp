@@ -104,7 +104,8 @@ namespace SimCore
    //////////////////////////////////////////////////////////////////////////
    VolumeRenderingComponent::ShapeVolumeRecord::ShapeVolumeRecord()
       : mId(mCounter)
-      , mShape(VolumeRenderingComponent::SPHERE)
+      , mShapeType(VolumeRenderingComponent::SPHERE)
+      , mRenderMode(SIMPLE_SHAPE_GEOMETRY)
       , mDeleteMe(false)
       , mAutoDeleteAfterMaxTime(false)
       , mMaxTime(0.0f)
@@ -126,8 +127,6 @@ namespace SimCore
    /////////////////////////////////////////////////////////////
    VolumeRenderingComponent::VolumeRenderingComponent(const std::string& name)
    : BaseClass(name) 
-   , mRenderMode(SIMPLE_SHAPE_GEOMETRY)
-   , mMaxRenderedVolumes(500)
    , mRootNode(new osg::Group())
    , mVolumes()
    {
@@ -161,10 +160,8 @@ namespace SimCore
    }
 
    /////////////////////////////////////////////////////////////
-   void VolumeRenderingComponent::Init(RenderMode r, unsigned maxRenderedVolumes)
+   void VolumeRenderingComponent::Init()
    {
-      mRenderMode = r;
-      mMaxRenderedVolumes = maxRenderedVolumes;
    }
 
    ////////////////////////////////////////////////////////////////////////// 
@@ -204,7 +201,7 @@ namespace SimCore
    VolumeRenderingComponent::ShapeRecordID VolumeRenderingComponent::CreateStaticShapeVolume(Shape s, const osg::Vec4& color, const osg::Vec3& center, const osg::Vec3& radius)
    {
       dtCore::RefPtr<ShapeVolumeRecord> svr = new ShapeVolumeRecord();
-      svr->mShape = s;
+      svr->mShapeType = s;
       svr->mColor = color;
       svr->mPosition = center;
       svr->mRadius = radius;
@@ -419,84 +416,90 @@ namespace SimCore
    ////////////////////////////////////////////////////////////////////////// 
    void VolumeRenderingComponent::CreateDrawable(ShapeVolumeRecord& newShape)
    {
-      switch(mRenderMode)
+      switch(newShape.mRenderMode)
       {
-      case SIMPLE_SHAPE_GEOMETRY:
-         {
-            dtCore::RefPtr<osg::Geode> g = new osg::Geode();
-            dtCore::RefPtr<osg::MatrixTransform> matTrans = new osg::MatrixTransform();
-            newShape.mParentNode = matTrans.get();
-            newShape.mParentNode->addChild(g.get());
-            //dtCore::RefPtr<osg::Material> material = new osg::Material;
-            //material->setTransparency(osg::Material::FRONT, newShape.mColor[3]);
-            //material->setAlpha(osg::Material::FRONT, newShape.mColor[3]);
-
-            osg::StateSet* ss = g->getOrCreateStateSet();
-            ss->setMode(GL_BLEND, osg::StateAttribute::ON);
-
-
-            osg::BlendFunc* blendFunc = new osg::BlendFunc();
-            blendFunc->setFunction(osg::BlendFunc::SRC_ALPHA ,osg::BlendFunc::ONE_MINUS_SRC_ALPHA );
-            ss->setAttributeAndModes(blendFunc);
-            ss->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
-
-
-            switch(newShape.mShape)
+         case SIMPLE_SHAPE_GEOMETRY:
             {
-               case SPHERE:
-                  {
-                     dtCore::RefPtr<osg::Sphere> s = new osg::Sphere(newShape.mPosition, newShape.mRadius[0]);
-                     dtCore::RefPtr<osg::ShapeDrawable> shapeDrawable = new osg::ShapeDrawable(s);
-                     shapeDrawable->setColor(newShape.mColor);
-                     g->addDrawable(shapeDrawable);
-                  }
-                  break;
-               case BOX:
-                  {
-                     dtCore::RefPtr<osg::Box> s = new osg::Box(newShape.mPosition, newShape.mRadius[0], newShape.mRadius[1], newShape.mRadius[2]);
-                     dtCore::RefPtr<osg::ShapeDrawable> shapeDrawable = new osg::ShapeDrawable(s);
-                     shapeDrawable->setColor(newShape.mColor);
-                     g->addDrawable(shapeDrawable);
-                  }
-                  break;
-               case CAPSULE:
-                  {
-                     dtCore::RefPtr<osg::Capsule> s = new osg::Capsule(newShape.mPosition, newShape.mRadius[0], newShape.mRadius[1]);
-                     dtCore::RefPtr<osg::ShapeDrawable> shapeDrawable = new osg::ShapeDrawable(s);
-                     shapeDrawable->setColor(newShape.mColor);
-                     g->addDrawable(shapeDrawable);
-                  }
-                  break;
-               case CYLINDER:
-                  {
-                     dtCore::RefPtr<osg::Cylinder> s = new osg::Cylinder(newShape.mPosition, newShape.mRadius[0], newShape.mRadius[1]);
-                     dtCore::RefPtr<osg::ShapeDrawable> shapeDrawable = new osg::ShapeDrawable(s);
-                     shapeDrawable->setColor(newShape.mColor);
-                     g->addDrawable(shapeDrawable);
-                  }
-                  break;
-               case CONE:
-                  {
-                     dtCore::RefPtr<osg::Cone> s = new osg::Cone(newShape.mPosition, newShape.mRadius[0], newShape.mRadius[1]);
-                     dtCore::RefPtr<osg::ShapeDrawable> shapeDrawable = new osg::ShapeDrawable(s);
-                     shapeDrawable->setColor(newShape.mColor);
-                     g->addDrawable(shapeDrawable);
-                  }
-                  break;
-               default:
-                  break;
+               CreateSimpleShape(newShape);
+            }
+            break;
+
+         case PARTICLE_VOLUME:
+            {
+               CreateParticleVolume(newShape);
             }
 
+         default:
+            break;
+      }
+   }
 
-            mRootNode->addChild(newShape.mParentNode.get());
+   ////////////////////////////////////////////////////////////////////////// 
+   void VolumeRenderingComponent::CreateSimpleShape(ShapeVolumeRecord& newShape)
+   {
+      dtCore::RefPtr<osg::Geode> g = new osg::Geode();
+      dtCore::RefPtr<osg::MatrixTransform> matTrans = new osg::MatrixTransform();
+      newShape.mParentNode = matTrans.get();
+      newShape.mParentNode->addChild(g.get());
+
+      osg::StateSet* ss = g->getOrCreateStateSet();
+      ss->setMode(GL_BLEND, osg::StateAttribute::ON);
+
+      osg::BlendFunc* blendFunc = new osg::BlendFunc();
+      blendFunc->setFunction(osg::BlendFunc::SRC_ALPHA ,osg::BlendFunc::ONE_MINUS_SRC_ALPHA );
+      ss->setAttributeAndModes(blendFunc);
+      ss->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
+
+
+      CreateShape(newShape);
+
+      dtCore::RefPtr<osg::ShapeDrawable> shapeDrawable = new osg::ShapeDrawable(newShape.mShape.get());
+      shapeDrawable->setColor(newShape.mColor);
+      g->addDrawable(shapeDrawable);
+
+      mRootNode->addChild(newShape.mParentNode.get());
+   }
+
+   ////////////////////////////////////////////////////////////////////////// 
+   void VolumeRenderingComponent::CreateParticleVolume(ShapeVolumeRecord& newShape)
+   {
+   
+   }
+
+   ////////////////////////////////////////////////////////////////////////// 
+   void VolumeRenderingComponent::CreateShape(ShapeVolumeRecord& newShape)
+   {
+      switch(newShape.mShapeType)
+      {
+      case SPHERE:
+         {
+            newShape.mShape = new osg::Sphere(newShape.mPosition, newShape.mRadius[0]);
          }
          break;
-
+      case BOX:
+         {
+            newShape.mShape = new osg::Box(newShape.mPosition, newShape.mRadius[0], newShape.mRadius[1], newShape.mRadius[2]);
+         }
+         break;
+      case CAPSULE:
+         {
+            newShape.mShape = new osg::Capsule(newShape.mPosition, newShape.mRadius[0], newShape.mRadius[1]);
+         }
+         break;
+      case CYLINDER:
+         {
+            newShape.mShape = new osg::Cylinder(newShape.mPosition, newShape.mRadius[0], newShape.mRadius[1]);
+         }
+         break;
+      case CONE:
+         {
+            newShape.mShape = new osg::Cone(newShape.mPosition, newShape.mRadius[0], newShape.mRadius[1]);
+         }
+         break;
       default:
          break;
       }
    }
-
 
    ////////////////////////////////////////////////////////////////////////// 
    //VolumeRenderingDrawable
