@@ -52,14 +52,14 @@ namespace SimCore
 
          enum Shape{SPHERE, BOX, CAPSULE, CONE, CYLINDER};
 
-         enum RenderMode{SIMPLE_SHAPE_GEOMETRY, PARTICLE_VOLUMES, VOLUMETRIC_RAYCASTING};
+         enum RenderMode{SIMPLE_SHAPE_GEOMETRY, PARTICLE_VOLUME};//, VOLUMETRIC_RAYCASTING};
 
          struct SIMCORE_EXPORT ShapeVolumeRecord: public osg::Referenced
          {
             ShapeVolumeRecord();
 
             ShapeRecordID mId;
-            Shape mShape;
+            Shape mShapeType;
             RenderMode mRenderMode;
 
             bool mDeleteMe;
@@ -77,7 +77,8 @@ namespace SimCore
 
             bool mAutoDeleteOnTargetNull;
             dtCore::ObserverPtr<osg::MatrixTransform> mParentNode; 
-            dtCore::ObserverPtr<dtCore::Transformable> mTarget; 
+            dtCore::ObserverPtr<dtCore::Transformable> mTarget;
+            dtCore::RefPtr<osg::Shape> mShape;
 
             static OpenThreads::Atomic mCounter;
          };
@@ -107,7 +108,7 @@ namespace SimCore
          /// Constructor
          VolumeRenderingComponent(const std::string& name = DEFAULT_NAME);
 
-         void Init(unsigned maxRenderedVolumes);
+         void Init();
 
          /**
          * Handles incoming messages
@@ -148,13 +149,14 @@ namespace SimCore
          void SetPosition(ShapeVolumeRecord* dl);
 
          void CreateDrawable(ShapeVolumeRecord& newShape);
+         void CreateSimpleShape(ShapeVolumeRecord& newShape);
+         void CreateParticleVolume(ShapeVolumeRecord& newShape);
+         void CreateShape(ShapeVolumeRecord& newShape);
 
       private:
 
          void Tick(float dt);  
 
-         unsigned mMaxRenderedVolumes;
-    
          dtCore::RefPtr<osg::Group> mRootNode;
          
          ShapeVolumeArray mVolumes;
