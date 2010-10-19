@@ -21,7 +21,7 @@
 
       <!-- FRAME -->
       <Window Name="Lobby_Frame" Type="NetDemo/GlowFrame">
-         <Property Name="UnifiedSize" Value="{{0.4,0},{0.4,0}}"/>
+         <Property Name="UnifiedSize" Value="{{0.4,0},{0.44,0}}"/>
          <Property Name="UnifiedPosition" Value="{{0.0,0},{0.0,0}}"/>
          <Property Name="ZOrderChangeEnabled" Value="False"/>
          <Property Name="AlwaysOnTop" Value="True"/>
@@ -33,7 +33,7 @@
       <!-- TEXT - SERVER PORT -->
       <Window Name="Lobby_Text_ServerPort" Type="WindowsLook/StaticText">
          <Property Name="UnifiedSize" Value="{{0.10416667,0},{0.053333,0}}"/>
-         <Property Name="UnifiedPosition" Value="{{-0.08,0},{-0.09,0}}"/>
+         <Property Name="UnifiedPosition" Value="{{-0.08,0},{-0.135,0}}"/>
          <Property Name="BackgroundEnabled" Value="False"/>
          <Property Name="FrameEnabled" Value="False"/>
          <Property Name="AlwaysOnTop" Value="True"/>
@@ -47,7 +47,7 @@
       <!-- INPUT - SERVER PORT -->
       <Window Name="Lobby_Input_ServerPort" Type="WindowsLook/Editbox">
          <Property Name="UnifiedSize" Value="{{0.15,0},{0.07,0}}"/>
-         <Property Name="UnifiedPosition" Value="{{0.05,0},{-0.09,0}}"/>
+         <Property Name="UnifiedPosition" Value="{{0.05,0},{-0.135,0}}"/>
          <Property Name="AlwaysOnTop" Value="True"/>
          <Property Name="HorizontalAlignment" Value="Centre"/>
          <Property Name="VerticalAlignment" Value="Centre"/>
@@ -58,7 +58,7 @@
       <!-- TEXT - SERVER IP -->
       <Window Name="Lobby_Text_ServerIP" Type="WindowsLook/StaticText">
          <Property Name="UnifiedSize" Value="{{0.10416667,0},{0.053333,0}}"/>
-         <Property Name="UnifiedPosition" Value="{{-0.08,0},{0.0,0}}"/>
+         <Property Name="UnifiedPosition" Value="{{-0.08,0},{-0.045,0}}"/>
          <Property Name="BackgroundEnabled" Value="False"/>
          <Property Name="FrameEnabled" Value="False"/>
          <Property Name="AlwaysOnTop" Value="True"/>
@@ -72,7 +72,7 @@
       <!-- INPUT - SERVER IP -->
       <Window Name="Lobby_Input_ServerIP" Type="WindowsLook/Editbox">
          <Property Name="UnifiedSize" Value="{{0.15,0},{0.07,0}}"/>
-         <Property Name="UnifiedPosition" Value="{{0.05,0},{0.0,0}}"/>
+         <Property Name="UnifiedPosition" Value="{{0.05,0},{-0.045,0}}"/>
          <Property Name="AlwaysOnTop" Value="True"/>
          <Property Name="HorizontalAlignment" Value="Centre"/>
          <Property Name="VerticalAlignment" Value="Centre"/>
@@ -83,7 +83,7 @@
       <!-- TEXT - VEHICLE TYPE -->
       <Window Name="Lobby_Text_VehicleType" Type="WindowsLook/StaticText">
          <Property Name="UnifiedSize" Value="{{0.10416667,0},{0.053333,0}}"/>
-         <Property Name="UnifiedPosition" Value="{{-0.08,0},{0.09,0}}"/>
+         <Property Name="UnifiedPosition" Value="{{-0.08,0},{0.045,0}}"/>
          <Property Name="BackgroundEnabled" Value="False"/>
          <Property Name="FrameEnabled" Value="False"/>
          <Property Name="AlwaysOnTop" Value="True"/>
@@ -97,7 +97,7 @@
       <!-- LIST - VEHICLE TYPE -->
       <Window Name="Lobby_List_VehicleType" Type="WindowsLook/ItemListbox">
          <Property Name="UnifiedSize" Value="{{0.15,0},{0.07,0}}"/>
-         <Property Name="UnifiedPosition" Value="{{0.05,0},{0.09,0}}"/>
+         <Property Name="UnifiedPosition" Value="{{0.05,0},{0.045,0}}"/>
          <Property Name="AlwaysOnTop" Value="True"/>
          <Property Name="HorizontalAlignment" Value="Centre"/>
          <Property Name="VerticalAlignment" Value="Centre"/>
@@ -118,6 +118,48 @@
             <Property Name="UnifiedPosition" Value="{{0.0,0},{0.5,0}}"/>
             <Property Name="SelectedTextColour" Value="FF00FF00"/>
             <Property Name="Text" Value="Hover"/>
+         </Window>
+         
+      </Window>
+
+      <!-- TEXT - SERVER MODE -->
+      <Window Name="Lobby_Text_ServerMode" Type="WindowsLook/StaticText">
+         <Property Name="UnifiedSize" Value="{{0.10416667,0},{0.053333,0}}"/>
+         <Property Name="UnifiedPosition" Value="{{-0.08,0},{0.135,0}}"/>
+         <Property Name="BackgroundEnabled" Value="False"/>
+         <Property Name="FrameEnabled" Value="False"/>
+         <Property Name="AlwaysOnTop" Value="True"/>
+         <Property Name="HorizontalAlignment" Value="Centre"/>
+         <Property Name="VerticalAlignment" Value="Centre"/>
+         <Property Name="Font" Value="Arial-Bold-24"/>
+         <Property Name="TextColours" Value="FFFFFFFF"/>
+         <Property Name="Text" Value="Mode"/>
+      </Window>
+
+      <!-- LIST - SERVER MODE -->
+      <Window Name="Lobby_List_ServerMode" Type="WindowsLook/ItemListbox">
+         <Property Name="UnifiedSize" Value="{{0.15,0},{0.07,0}}"/>
+         <Property Name="UnifiedPosition" Value="{{0.05,0},{0.135,0}}"/>
+         <Property Name="AlwaysOnTop" Value="True"/>
+         <Property Name="HorizontalAlignment" Value="Centre"/>
+         <Property Name="VerticalAlignment" Value="Centre"/>
+         <Property Name="Font" Value="Arial-Bold-24"/>
+         <Property Name="MultiSelect" Value="False"/>
+
+         <!-- ITEM 0 -->
+         <Window Name="Lobby_ServerMode_0" Type="WindowsLook/ListboxItem">
+            <Property Name="UnifiedSize" Value="{{1.0,0},{0.5,0}}"/>
+            <Property Name="SelectedTextColour" Value="FF00FF00"/>
+            <Property Name="Text" Value="Server"/>
+            <Property Name="Selected" Value="True"/>
+         </Window>
+
+         <!-- ITEM 1 -->
+         <Window Name="Lobby_ServerMode_1" Type="WindowsLook/ListboxItem">
+            <Property Name="UnifiedSize" Value="{{1.0,0},{0.5,0}}"/>
+            <Property Name="UnifiedPosition" Value="{{0.0,0},{0.5,0}}"/>
+            <Property Name="SelectedTextColour" Value="FF00FF00"/>
+            <Property Name="Text" Value="Client"/>
          </Window>
          
       </Window>

@@ -7,7 +7,7 @@
         <comment>Place for prototype actors</comment>
         <copyright>2009</copyright>
         <createTimestamp>2009-05-19T17:43:27.0-05:00</createTimestamp>
-        <lastUpdateTimestamp>2010-10-17T10:55:32-05:00</lastUpdateTimestamp>
+        <lastUpdateTimestamp>2010-10-19T15:07:29-05:00</lastUpdateTimestamp>
         <editorVersion>2.5.0</editorVersion>
         <schemaVersion>1.0</schemaVersion>
     </header>
@@ -108,7 +108,7 @@
             </property>
             <property>
                 <name>Initial Ownership</name>
-                <enumerated>Server Local</enumerated>
+                <enumerated>Server+Published</enumerated>
             </property>
             <property>
                 <name>Local Actor Update Policy</name>
@@ -668,7 +668,7 @@
             </property>
             <property>
                 <name>Initial Ownership</name>
-                <enumerated>Server Local</enumerated>
+                <enumerated>Server+Published</enumerated>
             </property>
             <property>
                 <name>Local Actor Update Policy</name>
@@ -1228,7 +1228,7 @@
             </property>
             <property>
                 <name>Initial Ownership</name>
-                <enumerated>Server Local</enumerated>
+                <enumerated>Server+Published</enumerated>
             </property>
             <property>
                 <name>Local Actor Update Policy</name>
@@ -1788,7 +1788,7 @@
             </property>
             <property>
                 <name>Initial Ownership</name>
-                <enumerated>Server Local</enumerated>
+                <enumerated>Server+Published</enumerated>
             </property>
             <property>
                 <name>Local Actor Update Policy</name>
@@ -2348,7 +2348,7 @@
             </property>
             <property>
                 <name>Initial Ownership</name>
-                <enumerated>Server Local</enumerated>
+                <enumerated>Server+Published</enumerated>
             </property>
             <property>
                 <name>Local Actor Update Policy</name>
@@ -3031,7 +3031,7 @@
             </property>
             <property>
                 <name>Initial Ownership</name>
-                <enumerated>Server Local</enumerated>
+                <enumerated>Server+Published</enumerated>
             </property>
             <property>
                 <name>Local Actor Update Policy</name>
@@ -3595,7 +3595,7 @@
             </property>
             <property>
                 <name>Initial Ownership</name>
-                <enumerated>Server Local</enumerated>
+                <enumerated>Server+Published</enumerated>
             </property>
             <property>
                 <name>Local Actor Update Policy</name>
@@ -4155,7 +4155,7 @@
             </property>
             <property>
                 <name>Initial Ownership</name>
-                <enumerated>Server Local</enumerated>
+                <enumerated>Server+Published</enumerated>
             </property>
             <property>
                 <name>Local Actor Update Policy</name>
@@ -4715,7 +4715,7 @@
             </property>
             <property>
                 <name>Initial Ownership</name>
-                <enumerated>Server Local</enumerated>
+                <enumerated>Server+Published</enumerated>
             </property>
             <property>
                 <name>Local Actor Update Policy</name>
@@ -5275,7 +5275,7 @@
             </property>
             <property>
                 <name>Initial Ownership</name>
-                <enumerated>Server Local</enumerated>
+                <enumerated>Server+Published</enumerated>
             </property>
             <property>
                 <name>Local Actor Update Policy</name>
@@ -6399,7 +6399,7 @@
             </property>
             <property>
                 <name>Initial Ownership</name>
-                <enumerated>Server Local</enumerated>
+                <enumerated>Server+Published</enumerated>
             </property>
             <property>
                 <name>Local Actor Update Policy</name>
@@ -6959,7 +6959,7 @@
             </property>
             <property>
                 <name>Initial Ownership</name>
-                <enumerated>Server Local</enumerated>
+                <enumerated>Server+Published</enumerated>
             </property>
             <property>
                 <name>Local Actor Update Policy</name>
@@ -8083,7 +8083,7 @@
             </property>
             <property>
                 <name>Initial Ownership</name>
-                <enumerated>Server Local</enumerated>
+                <enumerated>Server+Published</enumerated>
             </property>
             <property>
                 <name>Local Actor Update Policy</name>
@@ -8643,7 +8643,7 @@
             </property>
             <property>
                 <name>Initial Ownership</name>
-                <enumerated>Server Local</enumerated>
+                <enumerated>Server+Published</enumerated>
             </property>
             <property>
                 <name>Local Actor Update Policy</name>
@@ -11107,7 +11107,7 @@
             </property>
             <property>
                 <name>Initial Ownership</name>
-                <enumerated>Server Local</enumerated>
+                <enumerated>Server+Published</enumerated>
             </property>
             <property>
                 <name>Local Actor Update Policy</name>
@@ -11230,7 +11230,7 @@
             </property>
             <property>
                 <name>Initial Ownership</name>
-                <enumerated>PROTOTYPE</enumerated>
+                <enumerated>Server+Published</enumerated>
             </property>
             <property>
                 <name>Local Actor Update Policy</name>
@@ -11790,7 +11790,7 @@
             </property>
             <property>
                 <name>Initial Ownership</name>
-                <enumerated>Server Local</enumerated>
+                <enumerated>Server+Published</enumerated>
             </property>
             <property>
                 <name>Local Actor Update Policy</name>
@@ -12350,7 +12350,7 @@
             </property>
             <property>
                 <name>Initial Ownership</name>
-                <enumerated>Server Local</enumerated>
+                <enumerated>Server+Published</enumerated>
             </property>
             <property>
                 <name>Local Actor Update Policy</name>
@@ -12473,7 +12473,7 @@
             </property>
             <property>
                 <name>Initial Ownership</name>
-                <enumerated>Server Local</enumerated>
+                <enumerated>Server+Published</enumerated>
             </property>
             <property>
                 <name>Local Actor Update Policy</name>
@@ -13037,7 +13037,7 @@
             </property>
             <property>
                 <name>Initial Ownership</name>
-                <enumerated>Server Local</enumerated>
+                <enumerated>Server+Published</enumerated>
             </property>
             <property>
                 <name>Local Actor Update Policy</name>
@@ -13597,7 +13597,7 @@
             </property>
             <property>
                 <name>Initial Ownership</name>
-                <enumerated>Server Local</enumerated>
+                <enumerated>Server+Published</enumerated>
             </property>
             <property>
                 <name>Local Actor Update Policy</name>
@@ -14157,7 +14157,7 @@
             </property>
             <property>
                 <name>Initial Ownership</name>
-                <enumerated>Server Local</enumerated>
+                <enumerated>Server+Published</enumerated>
             </property>
             <property>
                 <name>Local Actor Update Policy</name>
@@ -15105,7 +15105,7 @@
             </property>
             <property>
                 <name>Initial Ownership</name>
-                <enumerated>Server Local</enumerated>
+                <enumerated>Server+Published</enumerated>
             </property>
             <property>
                 <name>Local Actor Update Policy</name>
@@ -15665,7 +15665,7 @@
             </property>
             <property>
                 <name>Initial Ownership</name>
-                <enumerated>Server Local</enumerated>
+                <enumerated>Server+Published</enumerated>
             </property>
             <property>
                 <name>Local Actor Update Policy</name>
@@ -16225,7 +16225,7 @@
             </property>
             <property>
                 <name>Initial Ownership</name>
-                <enumerated>Server Local</enumerated>
+                <enumerated>Server+Published</enumerated>
             </property>
             <property>
                 <name>Local Actor Update Policy</name>
@@ -16789,7 +16789,7 @@
             </property>
             <property>
                 <name>Initial Ownership</name>
-                <enumerated>Server Local</enumerated>
+                <enumerated>Server+Published</enumerated>
             </property>
             <property>
                 <name>Local Actor Update Policy</name>
@@ -17349,7 +17349,7 @@
             </property>
             <property>
                 <name>Initial Ownership</name>
-                <enumerated>Server Local</enumerated>
+                <enumerated>Server+Published</enumerated>
             </property>
             <property>
                 <name>Local Actor Update Policy</name>
@@ -17962,7 +17962,7 @@
             </property>
             <property>
                 <name>Initial Ownership</name>
-                <enumerated>Server Local</enumerated>
+                <enumerated>Server+Published</enumerated>
             </property>
             <property>
                 <name>Local Actor Update Policy</name>
@@ -18522,7 +18522,7 @@
             </property>
             <property>
                 <name>Initial Ownership</name>
-                <enumerated>Server Local</enumerated>
+                <enumerated>Server+Published</enumerated>
             </property>
             <property>
                 <name>Local Actor Update Policy</name>
@@ -19082,7 +19082,7 @@
             </property>
             <property>
                 <name>Initial Ownership</name>
-                <enumerated>Server Local</enumerated>
+                <enumerated>Server+Published</enumerated>
             </property>
             <property>
                 <name>Local Actor Update Policy</name>
@@ -19642,7 +19642,7 @@
             </property>
             <property>
                 <name>Initial Ownership</name>
-                <enumerated>Server Local</enumerated>
+                <enumerated>Server+Published</enumerated>
             </property>
             <property>
                 <name>Local Actor Update Policy</name>
@@ -20202,7 +20202,7 @@
             </property>
             <property>
                 <name>Initial Ownership</name>
-                <enumerated>Server Local</enumerated>
+                <enumerated>Server+Published</enumerated>
             </property>
             <property>
                 <name>Local Actor Update Policy</name>
@@ -20762,7 +20762,7 @@
             </property>
             <property>
                 <name>Initial Ownership</name>
-                <enumerated>Server Local</enumerated>
+                <enumerated>Server+Published</enumerated>
             </property>
             <property>
                 <name>Local Actor Update Policy</name>
@@ -21322,7 +21322,7 @@
             </property>
             <property>
                 <name>Initial Ownership</name>
-                <enumerated>Server Local</enumerated>
+                <enumerated>Server+Published</enumerated>
             </property>
             <property>
                 <name>Local Actor Update Policy</name>

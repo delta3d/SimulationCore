@@ -1460,6 +1460,10 @@ namespace SimCore
       {
         const dtGame::ActorUpdateMessage &updateMessage = static_cast<const dtGame::ActorUpdateMessage&>(msg);
         dtGame::GameActorProxy* proxy = GetGameActorProxy().GetGameManager()->FindGameActorById(updateMessage.GetAboutActorId());
+        if (proxy == NULL) // Could be deleted or not fully created from partial
+        {
+           return;
+        }
 
         OceanDataActor* oceanDataActor = NULL;
         proxy->GetActor(oceanDataActor);

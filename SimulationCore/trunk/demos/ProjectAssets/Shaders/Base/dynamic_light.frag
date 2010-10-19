@@ -1,6 +1,6 @@
 
 const int MAX_DYNAMIC_LIGHTS = 15;
-const int NUM_DYNAMIC_LIGHTS_TO_USE = 15;
+const int NUM_DYNAMIC_LIGHTS_TO_USE = 5;
 
 //each dynamic light has 3 associated vec4's
 //the first vec4 is a vec3 position and an intensity

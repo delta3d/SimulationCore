@@ -88,7 +88,6 @@ namespace NetDemo
    /////////////////////////////////////////////////////////////
    void SpawnComponent::ProcessMessage(const dtGame::Message& message)
    {
-      
       if(message.GetMessageType() == dtGame::MessageType::TICK_LOCAL)
       {
          float dt = float(static_cast<const dtGame::TickMessage&>(message).GetDeltaSimTime());

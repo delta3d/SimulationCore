@@ -76,9 +76,15 @@ namespace NetDemo
       if (updateMessage.GetActorType() == NetDemoActorRegistry::PLAYER_STATUS_ACTOR_TYPE &&
          updateMessage.GetSource() == GetGameManager()->GetMachineInfo())
       {
-         // Find the actor in the GM - assume not null, else we're doomed anyway.
+         // Find the actor in the GM
          PlayerStatusActorProxy* playerProxy;
          GetGameManager()->FindGameActorById(updateMessage.GetAboutActorId(), playerProxy);
+
+         if (playerProxy == NULL) // Could be deleted or not fully created from partial
+         {
+            return;
+         }
+
          PlayerStatusActor& playerStatus = playerProxy->GetActorAsPlayerStatus();
 
          // If we don't have a vehicle yet, or our current vehicle is different, then attach to it.

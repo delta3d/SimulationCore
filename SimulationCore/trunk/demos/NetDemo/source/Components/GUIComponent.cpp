@@ -30,6 +30,7 @@
 #include <dtDAL/project.h>
 #include <dtGame/actorupdatemessage.h>
 #include <dtGame/basemessages.h>
+#include <dtGame/gmsettings.h>
 #if CEGUI_VERSION_MAJOR == 0 && CEGUI_VERSION_MINOR < 7
 #include <dtGUI/ceuidrawable.h>
 #endif
@@ -144,6 +145,11 @@ namespace NetDemo
       mListVehicleType = static_cast<CEGUI::ItemListbox*>(wm.getWindow("Lobby_List_VehicleType"));
       mListVehicleType->subscribeEvent(CEGUI::Window::EventMouseLeaves,
          CEGUI::Event::Subscriber(&GUIComponent::OnVehicleTypeSelected, this));
+
+      mServerMode = static_cast<CEGUI::ItemListbox*>(wm.getWindow("Lobby_List_ServerMode"));
+      mServerMode->subscribeEvent(CEGUI::Window::EventMouseLeaves,
+         CEGUI::Event::Subscriber(&GUIComponent::OnServerModeSelected, this));
+
 
       // Default the server IP to what's in the config file.
       dtUtil::ConfigProperties& configParams = GetGameManager()->GetConfiguration();
@@ -586,6 +592,13 @@ namespace NetDemo
    }
 
    /////////////////////////////////////////////////////////////////////////////
+   bool GUIComponent::OnServerModeSelected(const CEGUI::EventArgs& args)
+   {
+      // Handled when you press connect.      
+      return true; // Let CEGUI know the button has been handled.
+   }
+
+   /////////////////////////////////////////////////////////////////////////////
    void GUIComponent::SetButtonFocused(const CEGUI::Window* button)
    {
       if(button != NULL)
@@ -657,14 +670,37 @@ namespace NetDemo
             }
          }
 
+         // Pick the server mode
+         if(mServerMode->getSelectedCount() > 0)
+         {
+            CEGUI::ItemEntry* listItem = mServerMode->getFirstSelectedItem();
+            if(listItem != NULL)
+            {
+               std::string selectedValue(listItem->getText().c_str());
+               //PlayerStatusActor::VehicleTypeEnum* vehicleType = NULL;
+               if(selectedValue == "Client")
+               {
+                  GetGameManager()->GetGMSettings().SetServerRole(false);
+                  GetGameManager()->GetGMSettings().SetClientRole(true);
+               }
+               else // if(selectedValue == "Server") or anything else.
+               {
+                  // as server, we want both GM to be both Server AND Client
+                  GetGameManager()->GetGMSettings().SetServerRole(true);
+                  GetGameManager()->GetGMSettings().SetClientRole(true);
+               }
+            }
+         }
+
 
          dtUtil::ConfigProperties& configParams = GetGameManager()->GetConfiguration();
-         const std::string role = configParams.GetConfigPropertyValue("dtNetGM.Role", "server");
+         //const std::string role = configParams.GetConfigPropertyValue("dtNetGM.Role", "server");
          //const std::string gameName = configParams.GetConfigPropertyValue("dtNetGM.GameName", "NetDemo");
          const std::string hostIP(mInputServerIP->getText().c_str());
          int serverPort = CEGUI::PropertyHelper::stringToInt(mInputServerPort->getText());
 
-         if( ! mAppComp->JoinNetwork(role, serverPort, hostIP))
+         // NOTE - Server Role is now taken from the UI. The config settings for this are ignored.
+         if( ! mAppComp->JoinNetwork(""/*role*/, serverPort, hostIP))
          {
             // Show connection failure prompt.
             inOutAction = Transition::TRANSITION_CONNECTION_FAIL.GetName();
