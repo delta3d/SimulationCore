@@ -387,7 +387,8 @@ namespace SimCore
             }
          }
 
-         NotifyPartialActorUpdate(finalPropNameList);
+         // Even though we are using the partialactorupdate method - it should be treated as a full
+         NotifyPartialActorUpdate(finalPropNameList, false);
       }
 
       /////////////////////////////////////////////////////////////////////

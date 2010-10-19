@@ -156,6 +156,7 @@ namespace NetDemo
          bool OnButtonFocusGain(const CEGUI::EventArgs& args);
          bool OnButtonFocusLost(const CEGUI::EventArgs& args);
          bool OnVehicleTypeSelected(const CEGUI::EventArgs& args);
+         bool OnServerModeSelected(const CEGUI::EventArgs& args);
 
          void SetButtonFocused(const CEGUI::Window* button);
 
@@ -218,6 +219,7 @@ namespace NetDemo
          CEGUI::Editbox* mInputServerPort;
          CEGUI::Editbox* mInputServerIP;
          CEGUI::ItemListbox* mListVehicleType;
+         CEGUI::ItemListbox* mServerMode;
 
          // Button array - for current screen.
          int mCurrentButtonIndex;

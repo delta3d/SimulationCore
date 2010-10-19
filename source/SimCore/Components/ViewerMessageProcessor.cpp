@@ -184,7 +184,7 @@ namespace SimCore
       {
          RefPtr<dtGame::GameActorProxy> ap = dtGame::DefaultMessageProcessor::ProcessRemoteCreateActor(msg);
 
-         if(dynamic_cast<SimCore::Actors:: StealthActorProxy*>(ap.get()) == NULL)
+         if(ap.valid() && dynamic_cast<SimCore::Actors:: StealthActorProxy*>(ap.get()) == NULL)
          {
             //Must dynamic cast here because the GetActor template does a static cast.
             BaseEntity* eap = dynamic_cast<BaseEntity*>(ap->GetActor());
@@ -202,6 +202,11 @@ namespace SimCore
                dtGame::GameActorProxy* ap)
       {
          dtGame::DefaultMessageProcessor::ProcessRemoteUpdateActor(msg, ap);
+
+         if (ap == NULL)
+         {
+            return;
+         }
 
          //Must dynamic cast here because the GetActor template does a static cast.
          SimCore::Actors::IGActor* ig = dynamic_cast<SimCore::Actors::IGActor*>(ap->GetActor());

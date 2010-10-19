@@ -18,6 +18,7 @@
 #include <dtGame/actorupdatemessage.h>
 #include <dtGame/gameactor.h>
 #include <dtGame/gamemanager.h>
+#include <dtGame/gmsettings.h>
 #include <dtGame/basemessages.h>
 #include <dtNetGM/clientnetworkcomponent.h>
 #include <Components/ForwardingServerNetComponent.h>
@@ -39,6 +40,7 @@
 #include "Actors/PlayerStatusActor.h"
 #include "Actors/ServerGameStatusActor.h"
 #include "Components/GameLogicComponent.h"
+#include "Components/SpawnComponent.h"
 #include "NetDemoMessages.h"
 #include "NetDemoMessageTypes.h"
 #include "States.h"
@@ -167,6 +169,10 @@ namespace NetDemo
       else if (NetDemo::MessageType::ENTITY_ACTION == messageType)
       {
          HandleEntityActionMessage(msg);
+      }
+      else if (dtGame::MessageType::INFO_CLIENT_CONNECTED == messageType)
+      {
+         HandleClientConnected(msg);
       }
 
       // Something about Game State changing here
@@ -322,6 +328,25 @@ namespace NetDemo
    }
 
    ////////////////////////////////////////////////////////////////////
+   void GameLogicComponent::HandleClientConnected(const dtGame::Message& msg)
+   {
+      // Whenever a new client is connected, spin through all our locally owned
+      // and published actors and do a NotifyFullActorUpdate() to let other clients 
+      // know what exists.
+      std::vector<dtGame::GameActorProxy*> gameActorProxies;
+      GetGameManager()->GetAllGameActors(gameActorProxies);
+      unsigned numProxies = gameActorProxies.size();
+      for (unsigned int i = 0; i < numProxies; ++i)
+      {
+         dtGame::GameActorProxy* gap = gameActorProxies[i];
+         if (gap->IsPublished() && !gap->IsRemote())
+         {
+            gap->NotifyFullActorUpdate();
+         }
+      }
+   }
+   
+   ////////////////////////////////////////////////////////////////////
    void GameLogicComponent::HandleMapLoaded()
    {
       InitializePlayer();
@@ -347,11 +372,17 @@ namespace NetDemo
    {
       bool success = false;
 
-      if (role == "Server" || role == "server" || role == "SERVER")
+      //if (role == "Server" || role == "server" || role == "SERVER")
+      if (GetGameManager()->GetGMSettings().IsServerRole())
       {
          success = JoinNetworkAsServer(serverPort);
+         if (success)
+         {
+            GetGameManager()->AddComponent(
+               *new SpawnComponent(), dtGame::GameManager::ComponentPriority::NORMAL);
+         }
       }
-      else if (role == "Client" || role == "client" || role == "CLIENT")
+      else // if (role == "Client" || role == "client" || role == "CLIENT")
       {
          success = JoinNetworkAsClient(serverPort, hostIP);
       }
@@ -550,14 +581,6 @@ namespace NetDemo
       }
 
       GetGameManager()->AddActor(*newDrawLandActorProxy, false, true);
-
-      // Create the Team Fort - Assumes 1 team for now. Future - support more than 1 team
-      SimCore::Utils::CreateActorFromPrototypeWithException(*GetGameManager(),
-         "FortPrototype", mServerCreatedFortActor, "Check your additional maps in config.xml (compare to config_example.xml).");
-      GetGameManager()->AddActor(*mServerCreatedFortActor, false, true);
-
-      CreatePrototypes(*NetDemo::NetDemoActorRegistry::TOWER_ACTOR_TYPE);
-      CreatePrototypes(*NetDemo::NetDemoActorRegistry::ENEMY_MOTHERSHIP_ACTOR_TYPE);
    }
 
    //////////////////////////////////////////////////////////////////////////

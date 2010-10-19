@@ -155,6 +155,7 @@ namespace NetDemo
          void HandleActorUpdateMessage(const dtGame::Message& msg);
          void HandleTimerElapsedMessage(const dtGame::Message& msg);
          void HandleEntityActionMessage(const dtGame::Message& msg);
+         void HandleClientConnected(const dtGame::Message& msg);
 
          void CreatePrototypes(const dtDAL::ActorType& type);
 
