@@ -177,9 +177,9 @@ namespace SimCore
          *  strange considering you cannot actually draw a sound, however, this informs the
          *  world that this proxy's actor and billboard should be represented in the scene.
          */
-         virtual const ActorProxy::RenderMode& GetRenderMode()
+         virtual const dtDAL::BaseActorObject::RenderMode& GetRenderMode()
          {
-            return ActorProxy::RenderMode::DRAW_ACTOR_AND_BILLBOARD_ICON;
+            return dtDAL::BaseActorObject::RenderMode::DRAW_ACTOR_AND_BILLBOARD_ICON;
          }
 
          /**

@@ -78,7 +78,7 @@ namespace NetDemo
       SpawnVolumeActorProxy();
       /*virtual*/ void BuildPropertyMap();
 
-      /*virtual*/ const ActorProxy::RenderMode& GetRenderMode();
+      /*virtual*/ const dtDAL::BaseActorObject::RenderMode& GetRenderMode();
 
       EnemyDescriptionActor* FindEnemyById(const EnemyDescriptionId& id);
       EnemyDescriptionActor* FindEnemyByName(const std::string& name);

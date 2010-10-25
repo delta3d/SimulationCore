@@ -91,11 +91,11 @@ namespace SimCore
 
             /**
              * Gets the method by which a particle system is rendered.
-             * @return ActorProxy::RenderMode::DRAW_BILLBOARD_ICON.
+             * @return dtDAL::BaseActorObject::RenderMode::DRAW_BILLBOARD_ICON.
              */
-            virtual const ActorProxy::RenderMode& GetRenderMode() 
+            virtual const dtDAL::BaseActorObject::RenderMode& GetRenderMode() 
             {
-                return ActorProxy::RenderMode::DRAW_BILLBOARD_ICON;
+                return dtDAL::BaseActorObject::RenderMode::DRAW_BILLBOARD_ICON;
             }
 
          protected:

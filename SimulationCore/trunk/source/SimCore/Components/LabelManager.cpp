@@ -333,7 +333,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      bool LabelOptions::operator() (dtDAL::ActorProxy& proxy)
+      bool LabelOptions::operator() (dtDAL::BaseActorObject& proxy)
       {
          if (!mShowLabels)
          {
@@ -442,7 +442,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      dtCore::RefPtr<SimCore::Components::HUDLabel> LabelManager::GetOrCreateLabel(dtDAL::ActorProxy& actor)
+      dtCore::RefPtr<SimCore::Components::HUDLabel> LabelManager::GetOrCreateLabel(dtDAL::BaseActorObject& actor)
       {
          // safely push all the received messages onto the GameManager message queue
          dtCore::RefPtr<SimCore::Components::HUDLabel> label;
@@ -497,7 +497,7 @@ namespace SimCore
       class ApplyLabelTask : public dtUtil::ThreadPoolTask
       {
       public:
-         ApplyLabelTask(LabelManager& labelManager, std::vector<dtDAL::ActorProxy*>& actors, dtCore::Camera& camera, LabelManager::LabelMap& newLabels,
+         ApplyLabelTask(LabelManager& labelManager, std::vector<dtDAL::BaseActorObject*>& actors, dtCore::Camera& camera, LabelManager::LabelMap& newLabels,
                   unsigned low, unsigned high)
          : mLabelManager(labelManager)
          , mActors(actors)
@@ -517,7 +517,7 @@ namespace SimCore
          }
 
          LabelManager& mLabelManager;
-         std::vector<dtDAL::ActorProxy*>& mActors;
+         std::vector<dtDAL::BaseActorObject*>& mActors;
          dtCore::RefPtr<dtCore::Camera> mCamera;
          LabelManager::LabelMap& mNewLabels;
          std::string nameBuffer;
@@ -528,7 +528,7 @@ namespace SimCore
       void LabelManager::Update(float dt)
       {
          // Get all entities from the game manager.
-         typedef std::vector<dtDAL::ActorProxy*> ProxyList;
+         typedef std::vector<dtDAL::BaseActorObject*> ProxyList;
          ProxyList proxies;
 
          // No need to do a find if when labels are off.
@@ -595,7 +595,7 @@ namespace SimCore
          }
       }
 
-      void LabelManager::ApplyLabelToActor(dtDAL::ActorProxy& proxy, dtCore::Camera& deltaCamera,
+      void LabelManager::ApplyLabelToActor(dtDAL::BaseActorObject& proxy, dtCore::Camera& deltaCamera,
                LabelMap& newLabels, std::string& nameBuffer)
       {
          // Declare variables to be used for each loop iteration.
@@ -697,7 +697,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      const std::string LabelManager::AssignLabelColor( const dtDAL::ActorProxy& actor, HUDLabel& label)
+      const std::string LabelManager::AssignLabelColor( const dtDAL::BaseActorObject& actor, HUDLabel& label)
       {
          const SimCore::Actors::BaseEntityActorProxy::ForceEnum* force =
             &SimCore::Actors::BaseEntityActorProxy::ForceEnum::OTHER;
