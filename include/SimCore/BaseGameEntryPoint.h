@@ -43,7 +43,7 @@ namespace dtGame
 
 namespace dtDAL
 {
-   class ActorProxy;
+   class BaseActorObject;
 }
 
 namespace SimCore
@@ -131,7 +131,7 @@ namespace SimCore
 
          osg::ArgumentParser* parser;
 
-         dtCore::RefPtr<dtDAL::ActorProxy> terrainActor;
+         dtCore::RefPtr<dtDAL::BaseActorObject> terrainActor;
 
          std::string mMapName;
          std::string mProjectPath;
