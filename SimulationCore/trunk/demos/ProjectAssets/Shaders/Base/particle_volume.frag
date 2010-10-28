@@ -47,13 +47,9 @@ void main(void)
 
    normal = inverseView3x3 * vNormalMatrix * normal;
 
-   //gl_FragColor = vec4(vec3(noise), 1.0);
-   //gl_FragColor = vec4((1.0 + normal.xyz) * 0.5, 1.0);
    float fogDist = abs(sceneDepth - depth);//, 0.0, 1.0);
    float fogAmt = computeFog(0.0, 0.1, 10.0 * fogDist);
    gl_FragColor = vec4(volumeParticleColor.xyz, fogAmt * noise * noise);
-   //gl_FragColor = vec4(vec3(noise), 1.0);
-
    //gl_FragDepth = depth;
 }
 

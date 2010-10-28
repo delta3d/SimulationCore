@@ -1,4 +1,4 @@
-const int MAX_NUM_PARTICLES = 150;
+const int MAX_NUM_PARTICLES = 1000;
 
 uniform vec4 volumeParticlePos[MAX_NUM_PARTICLES];
 uniform mat4 inverseViewMatrix;
@@ -12,21 +12,11 @@ void main()
 {
    //offset.xyz stores the local offset relative to the volume, offset.w stores the radius
    vOffset = volumeParticlePos[int(gl_Vertex.w)];
-   vec3 center = gl_ModelViewMatrix[3].xyz + vOffset.xyz;
-   vec4 pos = vec4(vOffset.w * gl_Vertex.x, vOffset.w * gl_Vertex.y, vOffset.w * gl_Vertex.z, 1.0);
    
-   //now rotate to align with eye
-   mat4 viewMat = inverseViewMatrix * gl_ModelViewMatrix;
-   
-   mat3 rotateToEye;
-   rotateToEye[1] = normalize(inverseViewMatrix[3].xyz - center);
-   rotateToEye[2] = viewMat[2].xyz;
-   rotateToEye[0] = cross(rotateToEye[1], rotateToEye[2]);
-
-   pos.xyz = rotateToEye * pos.xyz;
-   pos.xyz += vOffset.xyz + gl_ModelViewMatrix[3].xyz;
-
-   vPos = pos;
+   vec4 pos = vec4(vOffset.xyz, 1.0);
+   vec4 ePos = gl_ModelViewMatrix * pos;
+   ePos.xy += gl_Vertex.xy * vOffset.w;
+   vPos = ePos;
    gl_Position = gl_ProjectionMatrix * vPos;
 
    vNormalMatrix = gl_NormalMatrix;
