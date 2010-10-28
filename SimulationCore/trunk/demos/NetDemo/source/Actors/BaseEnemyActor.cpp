@@ -59,6 +59,7 @@ namespace NetDemo
       , mTimeSinceBorn(0.0f)
       , mTimeToExistAfterDead(0.5f)
       , mTimeSinceKilled(0.0f)
+      , mTimeSinceLightsWereUpdated(0.0f)
    {
       /////////////////////////////////////////////////////////////////
       // Set a bunch of initial conditions - Note, some of these may be
@@ -291,6 +292,22 @@ namespace NetDemo
    void BaseEnemyActor::OnTickLocal( const dtGame::TickMessage& tickMessage )
    {
       BaseClass::OnTickLocal( tickMessage );
+
+      //update which dynamic lights we are using
+      mTimeSinceLightsWereUpdated += tickMessage.GetDeltaSimTime();
+      if(mTimeSinceLightsWereUpdated > 1.0f)
+      {
+         SimCore::Components::RenderingSupportComponent* rsComp = NULL;
+
+         GetGameActorProxy().GetGameManager()->GetComponentByName( SimCore::Components::RenderingSupportComponent::DEFAULT_NAME, rsComp);
+
+         if(rsComp != NULL)
+         {
+            rsComp->FindBestLights(*this);
+         }
+
+         mTimeSinceLightsWereUpdated = 0.0f;
+      }
 
       // Set the angular velocity manually because we are abusing the physics engine in all enemies.
       GetDRPublishingActComp()->SetCurrentAngularVelocity(osg::Vec3(0.0f, 0.0f, 0.0f));
