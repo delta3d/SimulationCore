@@ -135,6 +135,7 @@ namespace NetDemo
          float mTimeSinceBorn; // how long I've been in the world - used for some enemies that self-terminate after X seconds
          float mTimeToExistAfterDead; // Once we are dead, we stay alive for this long, and then self-delete. 
          float mTimeSinceKilled; // used to self-delete dead entities after they explode, flame, fall, etc...
+         float mTimeSinceLightsWereUpdated;
    };
 
    ////////////////////////////////////////////////////////////////////////////////
