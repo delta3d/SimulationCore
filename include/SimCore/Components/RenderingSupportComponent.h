@@ -277,7 +277,9 @@ namespace SimCore
 
             void TimeoutAndDeleteLights(float dt);
             void TransformAndSortLights();
-            void UpdateDynamicLightUniforms(osg::Uniform* lightArray, osg::Uniform* spotLightArray);
+            void UpdateDynamicLightUniforms(const LightArray& lights, osg::Uniform* lightArray, osg::Uniform* spotLightArray);
+
+            void FindBestLights(dtCore::Transformable& actor);
 
             osg::Group& GetSceneRoot();
             osg::Group& GetNVGSRoot();

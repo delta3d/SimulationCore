@@ -846,8 +846,36 @@ namespace SimCore
          std::sort(mLights.begin(), mLights.end(), funcCompareLights(pos));
       }
 
+      ///////////////////////////////////////////////////////////////////////////////////
+      void RenderingSupportComponent::FindBestLights(dtCore::Transformable& actor)
+      {
+         LightArray tempLightArray(mLights);
+
+         dtCore::Transform trans;
+         actor.GetTransform(trans);
+         osg::Vec3 pos;
+         trans.GetTranslation(pos);
+         //sort the lights, though a heap may be more efficient here, we will sort so that we can combine lights later
+         std::sort(tempLightArray.begin(), tempLightArray.end(), funcCompareLights(pos));
+
+         //now setup the lighting uniforms necessary for rendering the dynamic lights
+         osg::StateSet* ss = actor.GetOSGNode()->getOrCreateStateSet();
+         //temporary hack
+#ifdef __APPLE__
+         static const std::string DYN_LIGHT_UNIFORM = "dynamicLights[0]";
+         static const std::string SPOT_LIGHT_UNIFORM = "spotLights[0]";
+#else
+         static const std::string DYN_LIGHT_UNIFORM = "dynamicLights";
+         static const std::string SPOT_LIGHT_UNIFORM = "spotLights";
+#endif
+         osg::Uniform* lightArrayUniform = ss->getOrCreateUniform(DYN_LIGHT_UNIFORM, osg::Uniform::FLOAT_VEC4, mMaxDynamicLights * 3);
+         osg::Uniform* spotLightArrayUniform = ss->getOrCreateUniform(SPOT_LIGHT_UNIFORM, osg::Uniform::FLOAT_VEC4, mMaxSpotLights * 4);
+
+         UpdateDynamicLightUniforms(tempLightArray, lightArrayUniform, spotLightArrayUniform);
+      }
+
       ///////////////////////////////////////////////////////////////////////////////////////////////////
-      void RenderingSupportComponent::UpdateDynamicLightUniforms(osg::Uniform* lightArray, osg::Uniform* spotLightArray)
+      void RenderingSupportComponent::UpdateDynamicLightUniforms(const LightArray& lights, osg::Uniform* lightArray, osg::Uniform* spotLightArray)
       {
          unsigned numDynamicLights = 0;
          unsigned numSpotLights = 0;
@@ -861,8 +889,8 @@ namespace SimCore
          unsigned numLights = 0;
          unsigned totalLightSlots = mMaxSpotLights + mMaxDynamicLights;
 
-         LightArray::iterator iter = mLights.begin();
-         LightArray::iterator endIter = mLights.end();
+         LightArray::const_iterator iter = lights.begin();
+         LightArray::const_iterator endIter = lights.end();
 
          // Go over our lights and add them if they have actual intensity.
          for(; iter != endIter && numLights < totalLightSlots; ++iter)
@@ -950,7 +978,7 @@ namespace SimCore
          osg::Uniform* lightArray = ss->getOrCreateUniform(DYN_LIGHT_UNIFORM, osg::Uniform::FLOAT_VEC4, mMaxDynamicLights * 3);
          osg::Uniform* spotLightArray = ss->getOrCreateUniform(SPOT_LIGHT_UNIFORM, osg::Uniform::FLOAT_VEC4, mMaxSpotLights * 4);
 
-         UpdateDynamicLightUniforms(lightArray, spotLightArray);
+         UpdateDynamicLightUniforms(mLights, lightArray, spotLightArray);
       }
 
       ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1089,5 +1117,6 @@ namespace SimCore
       {
          return mMaxSpotLights;
       }
+
    }
 }
