@@ -27,7 +27,14 @@
 #include <SimCore/Actors/SimpleMovingShapeActor.h>
 //#include <SimCore/MultiPassNode.h>
 
-#include <osg/Drawable>
+#include <dtCore/camera.h>
+
+#include <osg/Geometry>
+#include <osg/Camera>
+#include <osg/Texture2D>
+#include <osg/Texture3D>
+
+#include <dtCore/view.h>
 
 #include <vector>
 
@@ -50,12 +57,44 @@ namespace SimCore
 
          typedef unsigned ShapeRecordID;
 
-         enum Shape{SPHERE, BOX, CAPSULE, CONE, CYLINDER};
+         enum Shape{SPHERE, BOX, CAPSULE, CONE, CYLINDER};//, GAUSSIAN_SPHERE};
 
          enum RenderMode{SIMPLE_SHAPE_GEOMETRY, PARTICLE_VOLUME};//, VOLUMETRIC_RAYCASTING};
 
-         struct SIMCORE_EXPORT ShapeVolumeRecord: public osg::Referenced
+         class ShapeVolumeRecord;
+         /// a helper class to do our rendering for us
+         class SIMCORE_EXPORT ParticleVolumeDrawable: public osg::Geometry
          {
+         public:
+            typedef osg::Geometry BaseClass;
+            typedef std::vector<osg::Vec3> PointList; 
+
+            META_Object(SimCore, ParticleVolumeDrawable);
+            ParticleVolumeDrawable();
+            ParticleVolumeDrawable(const ParticleVolumeDrawable& bd, const osg::CopyOp& copyop = osg::CopyOp::SHALLOW_COPY);         
+
+            void Init(unsigned mNumParticles, ShapeVolumeRecord* svr);
+
+            const osg::Vec3& GetPointLocation(unsigned i) const;
+
+            unsigned GetNumParticles() const;
+
+            /*virtual*/ osg::BoundingBox computeBound() const;
+
+            /*virtual*/ void drawImplementation(osg::RenderInfo& renderInfo) const;
+
+         private:
+            void CreateBillboards(unsigned numParticles, float width, float height);
+            void CreateRandomPointsInVolume(Shape s, float numPoints, const osg::Vec3& center, const osg::Vec3& radius, PointList& pointArrayToFill);
+
+            unsigned mNumParticles;
+            PointList mPoints;
+         };
+
+
+         class SIMCORE_EXPORT ShapeVolumeRecord: public osg::Referenced
+         {
+           public:
             ShapeVolumeRecord();
 
             ShapeRecordID mId;
@@ -69,6 +108,10 @@ namespace SimCore
             float mFadeOutTime; 
             float mIntensity;
 
+            //these variables are only for the particle volume types
+            unsigned mNumParticles;
+            float mParticleRadius;
+
             osg::Vec4 mColor;
             osg::Vec3 mPosition;
             osg::Vec3 mRadius;
@@ -80,28 +123,15 @@ namespace SimCore
             dtCore::ObserverPtr<dtCore::Transformable> mTarget;
             dtCore::RefPtr<osg::Shape> mShape;
 
+            //this variables is only for the particle volume types
+            dtCore::RefPtr<ParticleVolumeDrawable> mParticleDrawable;
+
             static OpenThreads::Atomic mCounter;
          };
 
          //////////////////////////////////////////////////////////////////////////
          //ShapeVolumeArray
          typedef std::vector<dtCore::RefPtr<ShapeVolumeRecord> > ShapeVolumeArray;
-
-         /// a helper class to do our rendering for us
-         class SIMCORE_EXPORT VolumeRenderingDrawable: public osg::Drawable
-         {
-         public:
-            typedef osg::Drawable BaseClass;
-
-            META_Object(dtAI, VolumeRenderingDrawable);
-            VolumeRenderingDrawable();
-            VolumeRenderingDrawable(const VolumeRenderingDrawable& bd, const osg::CopyOp& copyop = osg::CopyOp::SHALLOW_COPY);         
-
-            /*virtual*/ osg::BoundingBox computeBound() const;
-
-            /*virtual*/ void drawImplementation(osg::RenderInfo& renderInfo) const;
-
-         };
 
          public:
 
@@ -134,6 +164,8 @@ namespace SimCore
          ShapeVolumeRecord* FindShapeVolumeForActor(const dtCore::UniqueId& actorID);
          //void FindAllShapeVolumesForActor(const dtCore::UniqueId& actorID, std::vector<ShapeVolumeRecord*> pContainerToFill);
 
+         void CreateDepthPrePass(const std::string& textureName, unsigned width, unsigned height);
+
       protected:
 
          /// Destructor
@@ -153,14 +185,26 @@ namespace SimCore
          void CreateParticleVolume(ShapeVolumeRecord& newShape);
          void CreateShape(ShapeVolumeRecord& newShape);
 
+         void AssignParticleVolumeShader(ParticleVolumeDrawable& pvd, osg::Geode& g);
+         void AssignParticleVolumeUniforms(ShapeVolumeRecord& newShape);
+
       private:
 
          void Tick(float dt);  
+         void CreateNoiseTexture();
 
          dtCore::RefPtr<osg::Group> mRootNode;
-         
+
+         dtCore::RefPtr<dtCore::Camera> mDepthCamera;
+         //dtCore::RefPtr<osg::Camera> mDebugCamera;
+         dtCore::RefPtr<dtCore::View> mDepthView;
+         dtCore::RefPtr<osg::Texture2D> mDepthTexture;
+
+
          ShapeVolumeArray mVolumes;
 
+         dtCore::RefPtr<osg::Uniform> mNoiseTextureUniform;
+         dtCore::RefPtr<osg::Texture3D> mNoiseTexture;
 
       };
    }// namespace Components

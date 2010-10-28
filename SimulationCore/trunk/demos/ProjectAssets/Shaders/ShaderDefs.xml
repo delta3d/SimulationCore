@@ -492,5 +492,13 @@
       </shader>
    </shadergroup>
 
+
+   <shadergroup name="VolumeRenderingGroup">
+      <shader name="ParticleVolumeShader" default="yes">
+         <source type="Vertex">Shaders/Base/particle_volume.vert</source>
+         <source type="Fragment">Shaders/Base/particle_volume.frag</source>
+      </shader>    
+   </shadergroup>
+   
 </shaderlist>
 
