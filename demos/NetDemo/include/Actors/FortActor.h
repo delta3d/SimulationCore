@@ -110,6 +110,8 @@ namespace NetDemo
       // Private vars
       private:
 
+		 float mTimeSinceLightsWereUpdated;
+
          bool mLightIsOn;
          dtCore::RefPtr<SimCore::Components::RenderingSupportComponent::DynamicLight> mMainLight;
 

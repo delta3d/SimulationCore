@@ -48,7 +48,8 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////////////
    FortActor::FortActor(SimCore::Actors::BasePhysicsVehicleActorProxy &proxy)
       : SimCore::Actors::BasePhysicsVehicleActor(proxy)
-      , mLightIsOn(true)
+      , mTimeSinceLightsWereUpdated(0.0f)
+	  , mLightIsOn(true)
    {
       SetTerrainPresentDropHeight(0.0);
       // create my unique physics helper.  almost all of the physics is on the helper.
@@ -186,6 +187,22 @@ namespace NetDemo
          mMainLight->mIntensity = 0.0f;
          mLightIsOn = false;
       }
+
+	  //update which dynamic lights we are using
+      mTimeSinceLightsWereUpdated += tickMessage.GetDeltaSimTime();
+      if(mTimeSinceLightsWereUpdated > 1.0f)
+      {
+		 SimCore::Components::RenderingSupportComponent* rsComp = NULL;
+
+         GetGameActorProxy().GetGameManager()->GetComponentByName( SimCore::Components::RenderingSupportComponent::DEFAULT_NAME, rsComp);
+
+         if(rsComp != NULL)
+         {
+            rsComp->FindBestLights(*this);
+         }
+
+         mTimeSinceLightsWereUpdated = 0.0f;
+	  }
    }
 
    //////////////////////////////////////////////////////////////////////
