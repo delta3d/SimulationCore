@@ -54,6 +54,12 @@ namespace SimCore
 
          typedef dtGame::GMComponent BaseClass;
          static const std::string DEFAULT_NAME;
+         static const std::string VOLUME_PARTICLE_POS_UNIFORM;
+         static const std::string VOLUME_PARTICLE_COLOR_UNIFORM;
+         static const std::string VOLUME_PARTICLE_INTENSITY_UNIFORM; 
+         static const std::string VOLUME_PARTICLE_VELOCITY_UNIFORM;
+         static const std::string VOLUME_PARTICLE_RADIUS_UNIFORM;
+
 
          typedef unsigned ShapeRecordID;
 
@@ -101,6 +107,8 @@ namespace SimCore
             Shape mShapeType;
             RenderMode mRenderMode;
 
+            //set the dirty flag to true if the color, radius, velocity, or intensity changes
+            bool mDirtyParams;
             bool mDeleteMe;
             bool mAutoDeleteAfterMaxTime; //using this flag will set the volume to be automatically removed after the number of seconds
             float mMaxTime;
@@ -187,6 +195,8 @@ namespace SimCore
 
          void AssignParticleVolumeShader(ParticleVolumeDrawable& pvd, osg::Geode& g);
          void AssignParticleVolumeUniforms(ShapeVolumeRecord& newShape);
+         void UpdateUniforms();
+         void SetUniformData(ShapeVolumeRecord& s);
 
       private:
 
