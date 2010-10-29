@@ -197,15 +197,6 @@ namespace SimCore
             // NOTE: Direct Fire will need greater damage returned from GetDamageType.
             SetDamage(GetGreaterDamageState(mDamageLevels->GetDamageType(mCurDamageRatio, false)));
             
-            // Notify the entity of an explosive force if one exists
-            //if(force.length2() > 0.0)
-            //{
-            //   std::stringstream ss;
-            //   ss << "Applying force of \"" << force.length() << "\"" << std::endl;
-            //   LOG_DEBUG( ss.str() );
-            //   mEntity->ApplyForce(force, message.GetDetonationLocation());
-            //}
-
             // Give the entity a chance to react and apply forces. Damage has already been applied & published.
             mEntity->RespondToHit(message, munition, force, message.GetDetonationLocation());
          } 
