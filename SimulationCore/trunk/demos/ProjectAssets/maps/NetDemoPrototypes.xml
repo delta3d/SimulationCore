@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <map xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="delta3dMap" xsi:schemaLocation="delta3dMap map.xsd">
     <header>
         <name>NetDemoPrototypes</name>
@@ -7,7 +8,7 @@
         <comment>Place for prototype actors</comment>
         <copyright>2009</copyright>
         <createTimestamp>2009-05-19T17:43:27.0-05:00</createTimestamp>
-        <lastUpdateTimestamp>2010-10-29T12:46:13-05:00</lastUpdateTimestamp>
+        <lastUpdateTimestamp>2010-10-29T15:45:36-05:00</lastUpdateTimestamp>
         <editorVersion>2.5.0</editorVersion>
         <schemaVersion>1.0</schemaVersion>
     </header>
@@ -2379,8 +2380,8 @@
             <property>
                 <name>Fire particles</name>
                 <resourceType>Particles</resourceType>
-                <resourceDisplayName>Particles:nd_BurningBuildingMed.osg</resourceDisplayName>
-                <resource>Particles:nd_BurningBuildingMed.osg</resource>
+                <resourceDisplayName>Particles::nd_BurningBuildingFort.osg</resourceDisplayName>
+                <resource>Particles::nd_BurningBuildingFort.osg</resource>
             </property>
             <property>
                 <name>DrawingModel</name>
@@ -2463,14 +2464,14 @@
             <property>
                 <name>Damaged actor</name>
                 <resourceType>StaticMeshes</resourceType>
-                <resourceDisplayName>StaticMeshes:NetDemo:Forts:Fort.ive</resourceDisplayName>
-                <resource>StaticMeshes:NetDemo:Forts:Fort.ive</resource>
+                <resourceDisplayName>StaticMeshes:NetDemo:Forts:Fort_Damaged.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Forts:Fort_Damaged.ive</resource>
             </property>
             <property>
                 <name>Destroyed actor</name>
                 <resourceType>StaticMeshes</resourceType>
-                <resourceDisplayName>StaticMeshes:NetDemo:Forts:Fort.ive</resourceDisplayName>
-                <resource>StaticMeshes:NetDemo:Forts:Fort.ive</resource>
+                <resourceDisplayName>StaticMeshes:NetDemo:Forts:Fort_Damaged.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Forts:Fort_Damaged.ive</resource>
             </property>
             <property>
                 <name>Muzzle Flash Position</name>
@@ -2521,8 +2522,8 @@
             <property>
                 <name>Engine smoke particles</name>
                 <resourceType>Particles</resourceType>
-                <resourceDisplayName>Particles:smoke.osg</resourceDisplayName>
-                <resource>Particles:smoke.osg</resource>
+                <resourceDisplayName>Particles::nd_BurningBuildingFort.osg</resourceDisplayName>
+                <resource>Particles::nd_BurningBuildingFort.osg</resource>
             </property>
             <property>
                 <name>Material Actor</name>
@@ -11261,8 +11262,8 @@
             <property>
                 <name>Fire particles</name>
                 <resourceType>Particles</resourceType>
-                <resourceDisplayName>Particles:nd_BurningBuildingMed.osg</resourceDisplayName>
-                <resource>Particles:nd_BurningBuildingMed.osg</resource>
+                <resourceDisplayName>Particles::nd_BurningBuildingFort.osg</resourceDisplayName>
+                <resource>Particles::nd_BurningBuildingFort.osg</resource>
             </property>
             <property>
                 <name>DrawingModel</name>
@@ -11345,14 +11346,14 @@
             <property>
                 <name>Damaged actor</name>
                 <resourceType>StaticMeshes</resourceType>
-                <resourceDisplayName>StaticMeshes:NetDemo:Forts:Fort.ive</resourceDisplayName>
-                <resource>StaticMeshes:NetDemo:Forts:Fort.ive</resource>
+                <resourceDisplayName>StaticMeshes:NetDemo:Forts:Fort_Damaged.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Forts:Fort_Damaged.ive</resource>
             </property>
             <property>
                 <name>Destroyed actor</name>
                 <resourceType>StaticMeshes</resourceType>
-                <resourceDisplayName>StaticMeshes:NetDemo:Forts:Fort.ive</resourceDisplayName>
-                <resource>StaticMeshes:NetDemo:Forts:Fort.ive</resource>
+                <resourceDisplayName>StaticMeshes:NetDemo:Forts:Fort_Damaged.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Forts:Fort_Damaged.ive</resource>
             </property>
             <property>
                 <name>Muzzle Flash Position</name>
@@ -11403,8 +11404,8 @@
             <property>
                 <name>Engine smoke particles</name>
                 <resourceType>Particles</resourceType>
-                <resourceDisplayName>Particles:smoke.osg</resourceDisplayName>
-                <resource>Particles:smoke.osg</resource>
+                <resourceDisplayName>Particles::nd_BurningBuildingFort.osg</resourceDisplayName>
+                <resource>Particles::nd_BurningBuildingFort.osg</resource>
             </property>
             <property>
                 <name>Material Actor</name>
@@ -20233,8 +20234,8 @@
             <property>
                 <name>Fire particles</name>
                 <resourceType>Particles</resourceType>
-                <resourceDisplayName>Particles:nd_BurningBuildingMed.osg</resourceDisplayName>
-                <resource>Particles:nd_BurningBuildingMed.osg</resource>
+                <resourceDisplayName>Particles::nd_BurningBuildingFort.osg</resourceDisplayName>
+                <resource>Particles::nd_BurningBuildingFort.osg</resource>
             </property>
             <property>
                 <name>DrawingModel</name>
@@ -20317,14 +20318,14 @@
             <property>
                 <name>Damaged actor</name>
                 <resourceType>StaticMeshes</resourceType>
-                <resourceDisplayName>StaticMeshes:NetDemo:Forts:Fort.ive</resourceDisplayName>
-                <resource>StaticMeshes:NetDemo:Forts:Fort.ive</resource>
+                <resourceDisplayName>StaticMeshes:NetDemo:Forts:Fort_Damaged.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Forts:Fort_Damaged.ive</resource>
             </property>
             <property>
                 <name>Destroyed actor</name>
                 <resourceType>StaticMeshes</resourceType>
-                <resourceDisplayName>StaticMeshes:NetDemo:Forts:Fort.ive</resourceDisplayName>
-                <resource>StaticMeshes:NetDemo:Forts:Fort.ive</resource>
+                <resourceDisplayName>StaticMeshes:NetDemo:Forts:Fort_Damaged.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Forts:Fort_Damaged.ive</resource>
             </property>
             <property>
                 <name>Muzzle Flash Position</name>
@@ -20375,8 +20376,8 @@
             <property>
                 <name>Engine smoke particles</name>
                 <resourceType>Particles</resourceType>
-                <resourceDisplayName>Particles:smoke.osg</resourceDisplayName>
-                <resource>Particles:smoke.osg</resource>
+                <resourceDisplayName>Particles::nd_BurningBuildingFort.osg</resourceDisplayName>
+                <resource>Particles::nd_BurningBuildingFort.osg</resource>
             </property>
             <property>
                 <name>Material Actor</name>
