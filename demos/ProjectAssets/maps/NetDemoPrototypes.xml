@@ -7,7 +7,7 @@
         <comment>Place for prototype actors</comment>
         <copyright>2009</copyright>
         <createTimestamp>2009-05-19T17:43:27.0-05:00</createTimestamp>
-        <lastUpdateTimestamp>2010-10-19T15:07:29-05:00</lastUpdateTimestamp>
+        <lastUpdateTimestamp>2010-10-29T12:46:13-05:00</lastUpdateTimestamp>
         <editorVersion>2.5.0</editorVersion>
         <schemaVersion>1.0</schemaVersion>
     </header>
@@ -2972,8 +2972,8 @@
             <property>
                 <name>Translation</name>
                 <vec3>
-                    <value1>1265.394287</value1>
-                    <value2>1007.076782</value2>
+                    <value1>184.589661</value1>
+                    <value2>1628.175781</value2>
                     <value3>150.000000</value3>
                 </vec3>
             </property>
@@ -12414,8 +12414,8 @@
             <property>
                 <name>Translation</name>
                 <vec3>
-                    <value1>435.496674</value1>
-                    <value2>1674.887451</value2>
+                    <value1>-82.994720</value1>
+                    <value2>2129.302979</value2>
                     <value3>150.000000</value3>
                 </vec3>
             </property>
@@ -16166,8 +16166,8 @@
             <property>
                 <name>Translation</name>
                 <vec3>
-                    <value1>1204.032349</value1>
-                    <value2>1534.484619</value2>
+                    <value1>-510.437073</value1>
+                    <value2>1852.660278</value2>
                     <value3>150.000000</value3>
                 </vec3>
             </property>
