@@ -36,11 +36,14 @@
 #include <SimCore/MessageType.h>
 #include <SimCore/Actors/BaseEntity.h>
 #include <SimCore/Actors/DRPublishingActComp.h>
+#include <SimCore/Actors/MunitionTypeActor.h>
+
 
 //#include <dtUtil/nodeprintout.h>
 #include <osgSim/DOFTransform>
 #include <dtUtil/nodecollector.h>
 
+#include <Components/GameLogicComponent.h>
 
 namespace NetDemo
 {
@@ -143,10 +146,35 @@ namespace NetDemo
    {
       //dtGame::GameActorProxy* gap = GetGameActorProxy().GetGameManager()->FindGameActorById(message.GetSendingActorId());
       //return incomingDamage * float(!IsEnemyActor(gap));
+      float result = incomingDamage;
 
-      // Send out an actor update message. should probably be a partial update
-      GetGameActorProxy().NotifyFullActorUpdate();
-      return 10.0f * incomingDamage;
+      GameLogicComponent* comp = NULL;
+      GetGameActorProxy().GetGameManager()->GetComponentByName( GameLogicComponent::DEFAULT_NAME, comp );
+      if (comp != NULL)
+      {
+         int difficulty = comp->GetGameDifficulty(); // 0 = minimal, 1 = normal, 2 = hard
+         (difficulty == 0)
+            ? result *= 1.0f
+            : result *= difficulty * 3.0f;
+      }
+
+      return result;
+   }
+
+   ////////////////////////////////////////////////////////////////////////////////////
+   void FortActor::RespondToHit(const SimCore::DetonationMessage& message,
+      const SimCore::Actors::MunitionTypeActor& munition, const osg::Vec3& force,
+      const osg::Vec3& location)
+   {
+      // An opportunity to respond after damage was applied to local entities
+      BaseClass::RespondToHit(message, munition, force, location);
+
+      // Baseentity sends an update if our damage state changes, but not if we 
+      // just take a minor amount of damage. So, we do that here.
+      std::vector<dtUtil::RefString> propNames;
+      propNames.push_back(SimCore::Actors::BaseEntityActorProxy::PROPERTY_DAMAGE_STATE);
+      propNames.push_back(SimCore::Actors::BaseEntityActorProxy::PROPERTY_CUR_DAMAGE_RATIO);
+      GetGameActorProxy().NotifyPartialActorUpdate(propNames);
    }
 
    ///////////////////////////////////////////////////////////////////////////////////

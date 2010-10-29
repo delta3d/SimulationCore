@@ -44,7 +44,7 @@ namespace NetDemo
    , mNumEnemiesStart(2)
    , mNumEnemiesCurrent(0)
    , mMaxEnemies(150)
-   , mDifficulty(2)
+   , mDifficulty(1)
    , mWaveNumber(0)
    , mNumPlayers(1)
    , mTimeLeftInWave(0.0f)
@@ -215,9 +215,14 @@ namespace NetDemo
       SetWaveNumber(waveNumber);
       SetTimeLeftInWave(timeLeftInWave);
 
+      int tempDifficulty = (mDifficulty > 0) ? mDifficulty : 1;
       mNumEnemiesCurrent = mNumEnemiesStart + (mNumPlayers * mDifficulty * waveNumber);
+      if (mDifficulty <= 0)
+      {
+         mNumEnemiesCurrent = (int) (mNumEnemiesCurrent / 2.0f);
+      }
+      printf("Num Enemies spawning is: %d, capped at %d.\r\n", mNumEnemiesCurrent, mMaxEnemies);
       dtUtil::ClampMax(mNumEnemiesCurrent, mMaxEnemies);
-      //std::cout << "NumEnemies: " << mNumEnemiesCurrent << std::endl;
    }
 
    void SpawnComponent::Tick(float dt)

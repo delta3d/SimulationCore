@@ -62,6 +62,7 @@ namespace NetDemo
       , mIsConnectedToNetwork(false)
       , mStartTheGameOnNextGameRunning(false)
       , mVehicleType(&PlayerStatusActor::VehicleTypeEnum::FOUR_WHEEL)
+      , mGameDifficulty(1)
    {
       // Register application-specific states.
       AddState(&NetDemoState::STATE_CONNECTING);
@@ -626,7 +627,7 @@ namespace NetDemo
          ServerGameStatusActor &gameStatus = mServerGameStatusProxy->GetActorAsGameStatus();
          gameStatus.SetNumTeams(1);
          gameStatus.SetNumPlayers(1); // we account for ourself already
-         gameStatus.SetGameDifficulty(1);
+         gameStatus.SetGameDifficulty(mGameDifficulty);
          gameStatus.SetGameStatus(ServerGameStatusActor::ServerGameStatusEnum::WAVE_ABOUT_TO_START);
          gameStatus.SetNumEnemiesKilled(0);
          gameStatus.SetWaveNumber(1);
