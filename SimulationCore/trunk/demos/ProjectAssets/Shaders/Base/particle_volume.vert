@@ -1,4 +1,4 @@
-const int MAX_NUM_PARTICLES = 1000;
+const int MAX_NUM_PARTICLES = 500;
 
 uniform vec4 volumeParticlePos[MAX_NUM_PARTICLES];
 uniform mat4 inverseViewMatrix;
