@@ -137,6 +137,16 @@ namespace SimCore
    namespace Components
    {
 
+#ifdef __APPLE__
+   const std::string VolumeRenderingComponent::VOLUME_PARTICLE_POS_UNIFORM = "volumeParticlePos[0]";
+#else
+   const std::string VolumeRenderingComponent::VOLUME_PARTICLE_POS_UNIFORM = "volumeParticlePos";
+#endif
+   const std::string VolumeRenderingComponent::VOLUME_PARTICLE_COLOR_UNIFORM = "volumeParticleColor";
+   const std::string VolumeRenderingComponent::VOLUME_PARTICLE_INTENSITY_UNIFORM = "volumeParticleIntensity";
+   const std::string VolumeRenderingComponent::VOLUME_PARTICLE_VELOCITY_UNIFORM = "volumeParticleVelocity";
+   const std::string VolumeRenderingComponent::VOLUME_PARTICLE_RADIUS_UNIFORM = "volumeParticleRadius";
+
    const std::string VolumeRenderingComponent::DEFAULT_NAME = "VolumeRenderingComponent";
 
    /////////////////////////////////////////////////////////////
@@ -196,6 +206,7 @@ namespace SimCore
       : mId(mCounter)
       , mShapeType(VolumeRenderingComponent::SPHERE)
       , mRenderMode(SIMPLE_SHAPE_GEOMETRY)
+      , mDirtyParams(false)
       , mDeleteMe(false)
       , mAutoDeleteAfterMaxTime(false)
       , mMaxTime(0.0f)
@@ -377,6 +388,7 @@ namespace SimCore
    {
       TimeoutAndDeleteVolumes(dt);
       TransformAndSortVolumes();
+      UpdateUniforms();
    }
 
    ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -655,29 +667,62 @@ namespace SimCore
    ////////////////////////////////////////////////////////////////////////// 
    void VolumeRenderingComponent::AssignParticleVolumeUniforms(ShapeVolumeRecord& newShape)
    {
-      osg::StateSet* ss = newShape.mParticleDrawable->getOrCreateStateSet();
-
-#ifdef __APPLE__
-      static const std::string VOLUME_PARTICLE_POS_UNIFORM = "volumeParticlePos[0]";
-#else
-      static const std::string VOLUME_PARTICLE_POS_UNIFORM = "volumeParticlePos";
-#endif
-      static const std::string VOLUME_PARTICLE_COLOR_UNIFORM = "volumeParticleColor";
-
-      osg::Uniform* particleColor = ss->getOrCreateUniform(VOLUME_PARTICLE_COLOR_UNIFORM, osg::Uniform::FLOAT_VEC4);
-      particleColor->set(newShape.mColor);
-
-      osg::Uniform* particleArray = ss->getOrCreateUniform(VOLUME_PARTICLE_POS_UNIFORM, osg::Uniform::FLOAT_VEC4, newShape.mParticleDrawable->GetNumParticles());
-      
-      for(unsigned i = 0; i < newShape.mParticleDrawable->GetNumParticles(); ++i)
+      if(newShape.mParticleDrawable.valid())
       {
-         osg::Vec3 pos = newShape.mParticleDrawable->GetPointLocation(i);
-         //last variable is the radius, todo- make part of the shape description
-         particleArray->setElement(i, osg::Vec4(pos[0], pos[1], pos[2], newShape.mParticleRadius));
-      }
+         osg::StateSet* ss = newShape.mParticleDrawable->getOrCreateStateSet();
 
+         SetUniformData(newShape);
+
+         osg::Uniform* particleArray = ss->getOrCreateUniform(VOLUME_PARTICLE_POS_UNIFORM, osg::Uniform::FLOAT_VEC4, newShape.mParticleDrawable->GetNumParticles());
+         
+         for(unsigned i = 0; i < newShape.mParticleDrawable->GetNumParticles(); ++i)
+         {
+            osg::Vec3 pos = newShape.mParticleDrawable->GetPointLocation(i);
+            particleArray->setElement(i, osg::Vec4(pos[0], pos[1], pos[2], NRand()));
+         }
+      }
    }
 
+   ////////////////////////////////////////////////////////////////////////// 
+   void VolumeRenderingComponent::UpdateUniforms()
+   {
+      ShapeVolumeArray::iterator iter = mVolumes.begin();
+      ShapeVolumeArray::iterator endIter = mVolumes.end();
+
+      for(;iter != endIter; ++iter)
+      {
+         dtCore::RefPtr<ShapeVolumeRecord> svr = (*iter).get();
+         if(svr.valid() && svr->mShapeType == PARTICLE_VOLUME && svr->mDirtyParams)
+         {
+            SetUniformData(*svr);
+
+            svr->mDirtyParams = false;
+         }
+      }
+   }
+
+   ////////////////////////////////////////////////////////////////////////// 
+   void VolumeRenderingComponent::SetUniformData( ShapeVolumeRecord& s )
+   {
+      if(s.mParticleDrawable.valid())
+      {
+         osg::StateSet* ss = s.mParticleDrawable->getOrCreateStateSet();
+
+         osg::Uniform* particleColor = ss->getOrCreateUniform(VOLUME_PARTICLE_COLOR_UNIFORM, osg::Uniform::FLOAT_VEC4);
+         particleColor->set(s.mColor);
+
+         osg::Uniform* particleIntensity = ss->getOrCreateUniform(VOLUME_PARTICLE_INTENSITY_UNIFORM, osg::Uniform::FLOAT);
+         particleIntensity->set(s.mIntensity);
+
+         osg::Uniform* particleVel = ss->getOrCreateUniform(VOLUME_PARTICLE_VELOCITY_UNIFORM, osg::Uniform::FLOAT_VEC3);
+         particleVel->set(s.mVelocity);
+
+         osg::Uniform* particleRadius = ss->getOrCreateUniform(VOLUME_PARTICLE_RADIUS_UNIFORM, osg::Uniform::FLOAT);
+         particleRadius->set(s.mParticleRadius);
+      }
+   }
+
+   ////////////////////////////////////////////////////////////////////////// 
    void VolumeRenderingComponent::CreateNoiseTexture()
    {
       LOG_INFO("Creating noise texture for VolumeRenderingComponent.");
@@ -742,10 +787,10 @@ namespace SimCore
 
       for(unsigned i = 0; i < numParticles; ++i)
       {
-         v[(i * 4) + 0].set(-w*0.5f,-h*0.5f, 0.0f, i);
-         v[(i * 4) + 1].set( w*0.5f,-h*0.5f, 0.0f, i);
-         v[(i * 4) + 2].set( w*0.5f,h*0.5f, 0.0f, i);
-         v[(i * 4) + 3].set(-w*0.5f,h*0.5f, 0.0f, i);
+         v[(i * 4) + 0].set(-w*1.0f,-h*1.0f, 0.0f, i);
+         v[(i * 4) + 1].set( w*1.0f,-h*1.0f, 0.0f, i);
+         v[(i * 4) + 2].set( w*1.0f,h*1.0f, 0.0f, i);
+         v[(i * 4) + 3].set(-w*1.0f,h*1.0f, 0.0f, i);
 
          t[(i * 4) + 0].set(0.0f,0.0f);
          t[(i * 4) + 1].set(1.0f,0.0f);
@@ -1010,5 +1055,6 @@ namespace SimCore
 
 
    }//namespace Components
+
 }//namespace SimCore
 
