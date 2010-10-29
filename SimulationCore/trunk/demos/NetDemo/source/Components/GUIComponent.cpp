@@ -145,10 +145,12 @@ namespace NetDemo
       mListVehicleType = static_cast<CEGUI::ItemListbox*>(wm.getWindow("Lobby_List_VehicleType"));
       mListVehicleType->subscribeEvent(CEGUI::Window::EventMouseLeaves,
          CEGUI::Event::Subscriber(&GUIComponent::OnVehicleTypeSelected, this));
-
       mServerMode = static_cast<CEGUI::ItemListbox*>(wm.getWindow("Lobby_List_ServerMode"));
       mServerMode->subscribeEvent(CEGUI::Window::EventMouseLeaves,
          CEGUI::Event::Subscriber(&GUIComponent::OnServerModeSelected, this));
+      mDifficulty = static_cast<CEGUI::ItemListbox*>(wm.getWindow("Lobby_List_Difficulty"));
+      mDifficulty->subscribeEvent(CEGUI::Window::EventMouseLeaves,
+         CEGUI::Event::Subscriber(&GUIComponent::OnDifficultySelected, this));
 
 
       // Default the server IP to what's in the config file.
@@ -599,6 +601,13 @@ namespace NetDemo
    }
 
    /////////////////////////////////////////////////////////////////////////////
+   bool GUIComponent::OnDifficultySelected(const CEGUI::EventArgs& args)
+   {
+      // Handled when you press connect.      
+      return true; // Let CEGUI know the button has been handled.
+   }
+
+   /////////////////////////////////////////////////////////////////////////////
    void GUIComponent::SetButtonFocused(const CEGUI::Window* button)
    {
       if(button != NULL)
@@ -688,6 +697,28 @@ namespace NetDemo
                   // as server, we want both GM to be both Server AND Client
                   GetGameManager()->GetGMSettings().SetServerRole(true);
                   GetGameManager()->GetGMSettings().SetClientRole(true);
+               }
+            }
+         }
+
+         // Pick the server mode
+         if(mDifficulty->getSelectedCount() > 0)
+         {
+            CEGUI::ItemEntry* listItem = mDifficulty->getFirstSelectedItem();
+            if(listItem != NULL)
+            {
+               std::string selectedValue(listItem->getText().c_str());
+               if(selectedValue == "Easiest")
+               {
+                  mAppComp->SetGameDifficulty(0);
+               }
+               else if(selectedValue == "Normal")
+               {
+                  mAppComp->SetGameDifficulty(1);
+               }
+               else // if(selectedValue == "Hard") or anything else.
+               {
+                  mAppComp->SetGameDifficulty(2);
                }
             }
          }

@@ -151,6 +151,10 @@ namespace NetDemo
          /// Returns the debug info struct - directly modifiable
          DebugInformation& GetDebugInfo() { return mDebugInformation; } 
 
+         /// Set this BEFORE the server is created.
+         void SetGameDifficulty(int newValue) { mGameDifficulty = newValue; }
+         int GetGameDifficulty() const { return mGameDifficulty; }
+
       protected:
          void HandleActorUpdateMessage(const dtGame::Message& msg);
          void HandleTimerElapsedMessage(const dtGame::Message& msg);
@@ -205,6 +209,8 @@ namespace NetDemo
          PlayerStatusActor::VehicleTypeEnum* mVehicleType;
 
          DebugInformation mDebugInformation;
+
+         int mGameDifficulty;
    };
 
 

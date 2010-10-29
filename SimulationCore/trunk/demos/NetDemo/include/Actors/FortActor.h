@@ -91,6 +91,11 @@ namespace NetDemo
          virtual float ValidateIncomingDamage(float incomingDamage, const SimCore::DetonationMessage& message,
             const SimCore::Actors::MunitionTypeActor& munition);
 
+         /// Overridden from BaseEntity - force a partial update every hit, not just when we take damage
+         virtual void RespondToHit(const SimCore::DetonationMessage& message,
+            const SimCore::Actors::MunitionTypeActor& munition, const osg::Vec3& force,
+            const osg::Vec3& location);
+
       // PUBLIC METHODS
       public:
 
