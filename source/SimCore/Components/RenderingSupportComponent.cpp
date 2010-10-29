@@ -874,6 +874,12 @@ namespace SimCore
          UpdateDynamicLightUniforms(tempLightArray, lightArrayUniform, spotLightArrayUniform);
       }
 
+	  ///////////////////////////////////////////////////////////////////////////////////////////////////
+      void RenderingSupportComponent::UpdateDynamicLightUniforms(osg::Uniform* lightArray, osg::Uniform* spotLightArray)
+      {
+		 UpdateDynamicLightUniforms(mLights, lightArray, spotLightArray);
+	  }
+
       ///////////////////////////////////////////////////////////////////////////////////////////////////
       void RenderingSupportComponent::UpdateDynamicLightUniforms(const LightArray& lights, osg::Uniform* lightArray, osg::Uniform* spotLightArray)
       {
