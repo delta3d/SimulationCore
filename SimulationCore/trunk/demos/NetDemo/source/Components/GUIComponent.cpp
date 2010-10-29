@@ -31,6 +31,7 @@
 #include <dtGame/actorupdatemessage.h>
 #include <dtGame/basemessages.h>
 #include <dtGame/gmsettings.h>
+#include <dtGame/gamemanager.h>
 #if CEGUI_VERSION_MAJOR == 0 && CEGUI_VERSION_MINOR < 7
 #include <dtGUI/ceuidrawable.h>
 #endif
@@ -423,11 +424,27 @@ namespace NetDemo
       }
       else if(actorType == *NetDemoActorRegistry::FORT_ACTOR_TYPE)
       {
-         FortActor* fort = NULL;
-         if (mAppComp->FindActor(actorId, fort))
+         // If one of the forts sent out an update, go through all the forts 
+         // and display the most damaged, but not completed destroyed tower.
+         std::vector<dtDAL::ActorProxy*> fortActors;
+         GetGameManager()->FindActorsByType(*NetDemoActorRegistry::FORT_ACTOR_TYPE, fortActors);
+
+         float curRatio = 0.0f;
+         bool found = false;
+         for (unsigned i = 0; i < fortActors.size(); ++i)
          {
-            mScreenHUD->SetFortDamageRatio(1.0 - fort->GetCurDamageRatio());
+            FortActor* fort = static_cast<FortActor*>(fortActors[i]->GetActor());
+            if(fort != NULL && fort->GetCurDamageRatio() >  curRatio && fort->GetCurDamageRatio() < 1.0f)
+            {
+               curRatio = fort->GetCurDamageRatio();
+               found = true;
+            }
          }
+         if (!found)
+         {
+            curRatio = 1.0f; // no towers found or all dead.  So, show no health
+         }
+         mScreenHUD->SetFortDamageRatio(1.0 - curRatio);
       }
    }
 
