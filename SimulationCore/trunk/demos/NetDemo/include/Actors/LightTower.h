@@ -79,6 +79,8 @@ namespace NetDemo
 
          virtual void SetDamageState(SimCore::Actors::BaseEntityActorProxy::DamageStateEnum& damageState);
 
+         void EnableSpotLight(bool b);
+         void Sleep(float dt);
 
       protected:
       virtual ~LightTower();
@@ -94,6 +96,7 @@ namespace NetDemo
 
       private:
 
+         float mSleepTime, mMaxSleepTime;
          dtCore::RefPtr<SimCore::Components::RenderingSupportComponent::SpotLight> mTargetLight;
          dtCore::RefPtr<SimCore::Components::RenderingSupportComponent::DynamicLight> mMainLight;
 

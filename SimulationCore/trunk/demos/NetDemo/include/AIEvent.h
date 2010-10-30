@@ -46,6 +46,7 @@ namespace NetDemo
      static const AIEvent  AI_EVENT_TOOK_DAMAGE;
      static const AIEvent  AI_EVENT_DAMAGE_CRITICAL;
      static const AIEvent  AI_EVENT_TARGET_KILLED;
+     static const AIEvent  AI_EVENT_NO_TARGET_FOUND;
 
    protected:
      ~AIEvent();
