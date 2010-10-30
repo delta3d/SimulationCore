@@ -255,6 +255,15 @@ namespace NetDemo
          // Mark the AI as 'dead' so we stop 'steering'
          if(IsMobilityDisabled())
          {
+            SimCore::Components::RenderingSupportComponent* rsc = NULL;
+            GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME, rsc);
+
+            if(rsc != NULL)
+            {
+               rsc->RemoveDynamicLight(mMainLight->GetId());
+               rsc->RemoveDynamicLight(mTargetLight->GetId());
+            }
+
             mAIHelper->GetStateMachine().MakeCurrent(&AIStateType::AI_STATE_DIE);
          }
       }
@@ -276,7 +285,7 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////////////
    void LightTower::FindTarget(float)
    {
-      float minDist = 150.0;
+      float minDist = 250.0;
       dtCore::Transformable* enemy = NULL;
 
       std::vector<dtDAL::ActorProxy*> actorArray;

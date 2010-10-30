@@ -243,7 +243,7 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////////////
    void TowerActor::FindTarget(float)
    {
-      float minDist = 150.0;
+      float minDist = 250.0;
       dtCore::Transformable* enemy = NULL;
 
       std::vector<dtDAL::ActorProxy*> actorArray;
