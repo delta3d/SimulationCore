@@ -212,8 +212,15 @@ namespace NetDemo
 
       if(mLightIsOn && GetDamageState() == SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::DESTROYED)
       {
-         mMainLight->mIntensity = 0.0f;
          mLightIsOn = false;
+
+         SimCore::Components::RenderingSupportComponent* rsc = NULL;
+         GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME, rsc);
+
+         if(rsc != NULL)
+         {
+            rsc->RemoveDynamicLight(mMainLight->GetId());
+         }
       }
 
 	  //update which dynamic lights we are using

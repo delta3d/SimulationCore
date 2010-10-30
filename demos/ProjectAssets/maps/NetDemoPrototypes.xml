@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <map xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="delta3dMap" xsi:schemaLocation="delta3dMap map.xsd">
     <header>
         <name>NetDemoPrototypes</name>
@@ -8,7 +7,7 @@
         <comment>Place for prototype actors</comment>
         <copyright>2009</copyright>
         <createTimestamp>2009-05-19T17:43:27.0-05:00</createTimestamp>
-        <lastUpdateTimestamp>2010-10-30T12:08:37-05:00</lastUpdateTimestamp>
+        <lastUpdateTimestamp>2010-10-30T13:16:59-05:00</lastUpdateTimestamp>
         <editorVersion>2.5.0</editorVersion>
         <schemaVersion>1.0</schemaVersion>
     </header>
@@ -2973,8 +2972,8 @@
             <property>
                 <name>Translation</name>
                 <vec3>
-                    <value1>184.589661</value1>
-                    <value2>1628.175781</value2>
+                    <value1>-99.633072</value1>
+                    <value2>890.663696</value2>
                     <value3>150.000000</value3>
                 </vec3>
             </property>
@@ -12415,8 +12414,8 @@
             <property>
                 <name>Translation</name>
                 <vec3>
-                    <value1>-82.994720</value1>
-                    <value2>2129.302979</value2>
+                    <value1>-204.774277</value1>
+                    <value2>1034.736084</value2>
                     <value3>150.000000</value3>
                 </vec3>
             </property>
@@ -16167,8 +16166,8 @@
             <property>
                 <name>Translation</name>
                 <vec3>
-                    <value1>-510.437073</value1>
-                    <value2>1852.660278</value2>
+                    <value1>-348.886383</value1>
+                    <value2>910.707520</value2>
                     <value3>150.000000</value3>
                 </vec3>
             </property>

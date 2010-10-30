@@ -53,6 +53,7 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////////////
    EnemyMothershipActor::EnemyMothershipActor(SimCore::Actors::BasePhysicsVehicleActorProxy &proxy)
       : BaseEnemyActor(proxy)
+      , mTimeToCheckForTarget(0.0f)
    {
       mAIHelper = new EnemyMothershipAIHelper();
    }
@@ -111,23 +112,23 @@ namespace NetDemo
          AddDynamicLight();
 
          //add a shape volume for the beam
-         SimCore::Components::VolumeRenderingComponent* vrc = NULL;
-         GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::VolumeRenderingComponent::DEFAULT_NAME, vrc); 
-         if(vrc != NULL)
-         {
-            SimCore::Components::VolumeRenderingComponent::ShapeVolumeRecord* svr = new SimCore::Components::VolumeRenderingComponent::ShapeVolumeRecord();
-            svr->mPosition.set(0.0f, 0.0f, -20.0f);
-            svr->mColor.set(1.0f, 1.0f, 1.0f, 0.25f);
-            svr->mShapeType = SimCore::Components::VolumeRenderingComponent::CONE;
-            svr->mRadius.set(15.0f, 30.0f, 0.0f);
-            svr->mNumParticles = 150;
-            svr->mParticleRadius = 25.0f;
-            svr->mTarget = this;
-            svr->mAutoDeleteOnTargetNull = true;
-            svr->mRenderMode = SimCore::Components::VolumeRenderingComponent::PARTICLE_VOLUME;
+         //SimCore::Components::VolumeRenderingComponent* vrc = NULL;
+         //GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::VolumeRenderingComponent::DEFAULT_NAME, vrc); 
+         //if(vrc != NULL)
+         //{
+         //   SimCore::Components::VolumeRenderingComponent::ShapeVolumeRecord* svr = new SimCore::Components::VolumeRenderingComponent::ShapeVolumeRecord();
+         //   svr->mPosition.set(0.0f, 0.0f, -20.0f);
+         //   svr->mColor.set(1.0f, 1.0f, 1.0f, 0.25f);
+         //   svr->mShapeType = SimCore::Components::VolumeRenderingComponent::CONE;
+         //   svr->mRadius.set(15.0f, 30.0f, 0.0f);
+         //   svr->mNumParticles = 150;
+         //   svr->mParticleRadius = 25.0f;
+         //   svr->mTarget = this;
+         //   svr->mAutoDeleteOnTargetNull = true;
+         //   svr->mRenderMode = SimCore::Components::VolumeRenderingComponent::PARTICLE_VOLUME;
 
-            vrc->CreateShapeVolume(svr);
-         }
+         //   vrc->CreateShapeVolume(svr);
+         //}
 
       }
    }
@@ -204,32 +205,46 @@ namespace NetDemo
       mAIHelper->Update(tickMessage.GetDeltaSimTime());
 
       BaseClass::OnTickLocal(tickMessage);
+
+      mTimeToCheckForTarget += tickMessage.GetDeltaSimTime();
+      if(mTimeToCheckForTarget > 5.0f)
+      {
+         mTimeToCheckForTarget = 0.0f;
+         FindTarget(0.0f);
+      }
    }
 
    void EnemyMothershipActor::AddDynamicLight()
    {
-      SimCore::Components::RenderingSupportComponent* rsc = NULL;
-      GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME, rsc);
-
-      if(rsc != NULL)
+      //this is kind of a hack but to limit the number of spot lights we only give the first mothership
+      //a spotlight
+      static bool first = true;
+      if(first)
       {
-         SimCore::Components::RenderingSupportComponent::SpotLight* light = new SimCore::Components::RenderingSupportComponent::SpotLight();
-         light->mTarget = this;
-         light->mAutoDeleteLightOnTargetNull = true;
-         light->mIntensity = 1.0f;        
-         light->mAttenuation.set(0.000025f, 0.00005f, 0.00005f);
-         light->mColor.set(0.25f, 0.35f, 0.65f);
-         light->mRadius = 150.0f;
-         light->mFlicker = true;
-         light->mFlickerScale = 0.25f;
-         light->mUseAbsoluteDirection = true;
-         light->mDirection.set(0.0f, 0.0f, -1.0f);
-         light->mSpotExponent = 3.5f;
-         light->mSpotCosCutoff = 0.85f;
-         
-         rsc->AddDynamicLight(light);
-      }
+         first = false;
 
+         SimCore::Components::RenderingSupportComponent* rsc = NULL;
+         GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME, rsc);
+
+         if(rsc != NULL)
+         {
+            SimCore::Components::RenderingSupportComponent::SpotLight* light = new SimCore::Components::RenderingSupportComponent::SpotLight();
+            light->mTarget = this;
+            light->mAutoDeleteLightOnTargetNull = true;
+            light->mIntensity = 1.0f;        
+            light->mAttenuation.set(0.000025f, 0.00005f, 0.00005f);
+            light->mColor.set(0.25f, 0.35f, 0.65f);
+            light->mRadius = 150.0f;
+            light->mFlicker = false;
+            light->mFlickerScale = 0.25f;
+            light->mUseAbsoluteDirection = true;
+            light->mDirection.set(0.0f, 0.0f, -1.0f);
+            light->mSpotExponent = 3.5f;
+            light->mSpotCosCutoff = 0.85f;
+            
+            rsc->AddDynamicLight(light);
+         }
+      }
    }
   
    //////////////////////////////////////////////////////////////////////
