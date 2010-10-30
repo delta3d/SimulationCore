@@ -221,7 +221,7 @@ namespace NetDemo
       {
          mNumEnemiesCurrent = (int) (mNumEnemiesCurrent / 2.0f);
       }
-      printf("Num Enemies spawning is: %d, capped at %d.\r\n", mNumEnemiesCurrent, mMaxEnemies);
+      //printf("Num Enemies spawning is: %d, capped at %d.\r\n", mNumEnemiesCurrent, mMaxEnemies);
       dtUtil::ClampMax(mNumEnemiesCurrent, mMaxEnemies);
    }
 

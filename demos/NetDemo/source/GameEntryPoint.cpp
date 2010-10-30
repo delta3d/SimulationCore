@@ -21,6 +21,7 @@
 #include <SimCore/CollisionGroupEnum.h>
 #include <SimCore/Components/RenderingSupportComponent.h>
 #include <SimCore/Components/ViewerMessageProcessor.h>
+#include <SimCore/Components/VolumeRenderingComponent.h>
 
 #include <dtDAL/project.h>
 
@@ -143,6 +144,11 @@ namespace NetDemo
       GUIComponent* guiComp = new GUIComponent;
       gm.AddComponent(*guiComp, dtGame::GameManager::ComponentPriority::NORMAL);
       guiComp->Initialize();
+
+      SimCore::Components::VolumeRenderingComponent* vrc = new SimCore::Components::VolumeRenderingComponent();
+      gm.AddComponent(*vrc, dtGame::GameManager::ComponentPriority::NORMAL);
+      vrc->Init();
+
 
    }
 

@@ -70,6 +70,8 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////////////
    LightTower::LightTower(SimCore::Actors::BasePhysicsVehicleActorProxy& proxy)
       : SimCore::Actors::BasePhysicsVehicleActor(proxy)
+      , mSleepTime(0.0f)
+      , mMaxSleepTime(2.0f)
       , mTargetLight(new SimCore::Components::RenderingSupportComponent::SpotLight())
       , mMainLight(new SimCore::Components::RenderingSupportComponent::DynamicLight())
    {
@@ -125,7 +127,7 @@ namespace NetDemo
       if(rsc != NULL)
       {
          mTargetLight->mTarget = this;
-         mTargetLight->mIntensity = 1.0f;        
+         mTargetLight->mIntensity = 0.0f;        
          mTargetLight->mAttenuation.set(0.000125f, 0.000025f, 0.000125f);
          mTargetLight->mColor.set(0.85f, 0.75f, 0.7f);
          mTargetLight->mRadius = 25.0f;
@@ -137,13 +139,28 @@ namespace NetDemo
          rsc->AddDynamicLight(mTargetLight);
 
 
-         /*mMainLight->mRadius = 15.0f;
-         mMainLight->mIntensity = 0.5f;
+         mMainLight->mRadius = 15.0f;
+         mMainLight->mIntensity = 1.0f;
          mMainLight->mColor.set(1.0f, 1.0f, 1.0f);
          mMainLight->mAttenuation.set(0.0025, 0.0025, 0.0025);
          mMainLight->mTarget = this;
          mMainLight->mAutoDeleteLightOnTargetNull = true;
-         rsc->AddDynamicLight(mMainLight);*/
+         rsc->AddDynamicLight(mMainLight);
+      }
+   }
+
+   //////////////////////////////////////////////////////////////////////
+   void LightTower::EnableSpotLight(bool b)
+   {
+      if(b)
+      {
+         mTargetLight->mIntensity = 1.0f;
+         mMainLight->mIntensity = 0.0f;
+      }
+      else
+      {
+         mTargetLight->mIntensity = 0.0f;
+         mMainLight->mIntensity = 0.5f;
       }
    }
 
@@ -176,8 +193,23 @@ namespace NetDemo
          mAIHelper->GetPhysicsModel()->SetPhysicsHelper(GetPhysicsHelper());
 
          //redirecting the find target function
-         dtAI::NPCState* state = mAIHelper->GetStateMachine().GetState(&AIStateType::AI_STATE_FIND_TARGET);
-         state->SetUpdate(dtAI::NPCState::UpdateFunctor(this, &LightTower::FindTarget));
+         dtAI::NPCState* stateFindTarget = mAIHelper->GetStateMachine().GetState(&AIStateType::AI_STATE_FIND_TARGET);
+         stateFindTarget->SetUpdate(dtAI::NPCState::UpdateFunctor(this, &LightTower::FindTarget));
+
+         //redirecting the idle to our sleep function
+         dtAI::NPCState* stateIdle = mAIHelper->GetStateMachine().GetState(&AIStateType::AI_STATE_IDLE);
+         stateIdle->SetUpdate(dtAI::NPCState::UpdateFunctor(this, &LightTower::Sleep));
+
+
+         //here we set up the state machine to automatically turn on and off the spot light
+         typedef dtUtil::Command1<void, bool> BooleanCommand;
+         typedef dtUtil::Functor<void, TYPELIST_1(bool)> BooleanFunctor;    
+
+         BooleanCommand* cmd_EnableSpotLight = new BooleanCommand(BooleanFunctor(this, &LightTower::EnableSpotLight), true);
+         BooleanCommand* cmd_DisableSpotLight = new BooleanCommand(BooleanFunctor(this, &LightTower::EnableSpotLight), false);
+
+         stateIdle->AddEntryCommand(cmd_DisableSpotLight);         
+         mAIHelper->GetStateMachine().GetState(&AIStateType::AI_STATE_ATTACK)->AddEntryCommand(cmd_EnableSpotLight);
 
          //calling spawn will start the AI
          mAIHelper->Spawn();
@@ -228,11 +260,23 @@ namespace NetDemo
       }
    }
 
+   ///////////////////////////////////////////////////////////////////////////////////
+   void LightTower::Sleep(float dt)
+   {
+      mSleepTime -= dt;
+
+      if(mSleepTime <= 0.0f)
+      {
+         mSleepTime = mMaxSleepTime;
+         //using this event to wake us up
+         mAIHelper->GetStateMachine().HandleEvent(&AIEvent::AI_EVENT_TOOK_DAMAGE);
+      }
+   }
 
    ///////////////////////////////////////////////////////////////////////////////////
    void LightTower::FindTarget(float)
    {
-      float minDist = 250.0;
+      float minDist = 150.0;
       dtCore::Transformable* enemy = NULL;
 
       std::vector<dtDAL::ActorProxy*> actorArray;
@@ -272,8 +316,10 @@ namespace NetDemo
       {
          mAIHelper->SetCurrentTarget(*enemy);
       }
-
-      //mAIHelper->SetCurrentTarget(*GetGameActorProxy().GetGameManager()->GetApplication().GetCamera());
+      else
+      {
+         mAIHelper->GetStateMachine().HandleEvent(&AIEvent::AI_EVENT_NO_TARGET_FOUND);
+      }
 
    }
 
@@ -358,7 +404,6 @@ namespace NetDemo
    {
       BaseClass::OnTickRemote( tickMessage );
    }
-
 
    //////////////////////////////////////////////////////////////////////
    // PROXY

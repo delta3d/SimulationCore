@@ -57,7 +57,10 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////////////
    TowerActor::TowerActor(SimCore::Actors::BasePhysicsVehicleActorProxy& proxy)
       : SimCore::Actors::BasePhysicsVehicleActor(proxy)
+      , mSleepTime(0.0f)
+      , mMaxSleepTime(2.0f)
    {
+      mSleepTime = mMaxSleepTime * dtUtil::RandPercent();
       SetTerrainPresentDropHeight(0.0);
 
       // create my unique physics helper.  almost all of the physics is on the helper.
@@ -130,12 +133,17 @@ namespace NetDemo
          mAIHelper->GetPhysicsModel()->SetPhysicsHelper(GetPhysicsHelper());
 
          //redirecting the find target function
-         dtAI::NPCState* state = mAIHelper->GetStateMachine().GetState(&AIStateType::AI_STATE_FIND_TARGET);
-         state->SetUpdate(dtAI::NPCState::UpdateFunctor(this, &TowerActor::FindTarget));
+         dtAI::NPCState* stateFindTarget = mAIHelper->GetStateMachine().GetState(&AIStateType::AI_STATE_FIND_TARGET);
+         stateFindTarget->SetUpdate(dtAI::NPCState::UpdateFunctor(this, &TowerActor::FindTarget));
 
          //redirecting the shoot 
-         state = mAIHelper->GetStateMachine().GetState(&AIStateType::AI_STATE_FIRE_LASER);
-         state->SetUpdate(dtAI::NPCState::UpdateFunctor(this, &TowerActor::Shoot));
+         dtAI::NPCState* stateFireLaser = mAIHelper->GetStateMachine().GetState(&AIStateType::AI_STATE_FIRE_LASER);
+         stateFireLaser->SetUpdate(dtAI::NPCState::UpdateFunctor(this, &TowerActor::Shoot));
+
+         //redirecting the idle to our sleep function
+         dtAI::NPCState* stateIdle = mAIHelper->GetStateMachine().GetState(&AIStateType::AI_STATE_IDLE);
+         stateIdle->SetUpdate(dtAI::NPCState::UpdateFunctor(this, &TowerActor::Sleep));
+
 
          //calling spawn will start the AI
          mAIHelper->Spawn();
@@ -235,7 +243,7 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////////////
    void TowerActor::FindTarget(float)
    {
-      float minDist = 250.0;
+      float minDist = 150.0;
       dtCore::Transformable* enemy = NULL;
 
       std::vector<dtDAL::ActorProxy*> actorArray;
@@ -275,8 +283,10 @@ namespace NetDemo
       {
          mAIHelper->SetCurrentTarget(*enemy);
       }
-
-      //mAIHelper->SetCurrentTarget(*GetGameActorProxy().GetGameManager()->GetApplication().GetCamera());
+      else
+      {
+         mAIHelper->GetStateMachine().HandleEvent(&AIEvent::AI_EVENT_NO_TARGET_FOUND);
+      }
 
    }
 
@@ -299,6 +309,20 @@ namespace NetDemo
 
       return (enemyPos - pos).length();
    }
+
+   ///////////////////////////////////////////////////////////////////////////////////
+   void TowerActor::Sleep(float dt)
+   {
+      mSleepTime -= dt;
+
+      if(mSleepTime <= 0.0f)
+      {
+         mSleepTime = mMaxSleepTime;
+         //using this event to wake us up
+         mAIHelper->GetStateMachine().HandleEvent(&AIEvent::AI_EVENT_TOOK_DAMAGE);
+      }
+   }
+
 
    ///////////////////////////////////////////////////////////////////////////////////
    void TowerActor::Shoot(float)
@@ -368,7 +392,6 @@ namespace NetDemo
    {
       BaseClass::OnTickRemote( tickMessage );
    }
-
 
    //////////////////////////////////////////////////////////////////////
    // PROXY

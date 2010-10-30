@@ -39,6 +39,7 @@ namespace NetDemo
    const AIEvent AIEvent::AI_EVENT_TOOK_DAMAGE("AI_EVENT_TOOK_DAMAGE");
    const AIEvent AIEvent::AI_EVENT_DAMAGE_CRITICAL("AI_EVENT_DAMAGE_CRITICAL");
    const AIEvent AIEvent::AI_EVENT_TARGET_KILLED("AI_EVENT_TARGET_KILLED");
+   const AIEvent AIEvent::AI_EVENT_NO_TARGET_FOUND("AI_EVENT_NO_TARGET_FOUND");
 
    AIEvent::AIEvent(const std::string& pName): dtAI::NPCEvent(pName)
    {

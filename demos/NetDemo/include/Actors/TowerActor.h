@@ -77,6 +77,7 @@ namespace NetDemo
 
          virtual void SetDamageState(SimCore::Actors::BaseEntityActorProxy::DamageStateEnum& damageState);
 
+         void Sleep(float dt);
 
       protected:
       virtual ~TowerActor();
@@ -93,6 +94,7 @@ namespace NetDemo
 
       private:
 
+         float mSleepTime, mMaxSleepTime;
          dtCore::RefPtr<TowerAIHelper> mAIHelper;
          dtCore::RefPtr<dtAudio::Sound> mSndCollisionHit;
          dtCore::RefPtr<SimCore::Actors::WeaponActor> mWeapon;

@@ -114,6 +114,9 @@ namespace NetDemo
       BaseClass::AddTransition(&AIEvent::AI_EVENT_FIRE_LASER, &AIStateType::AI_STATE_ATTACK, &AIStateType::AI_STATE_FIRE_LASER);
       BaseClass::AddTransition(&AIEvent::AI_EVENT_TARGET_KILLED, &AIStateType::AI_STATE_ATTACK, &AIStateType::AI_STATE_FIND_TARGET);
       BaseClass::AddTransition(&AIEvent::AI_EVENT_TARGET_KILLED, &AIStateType::AI_STATE_FIRE_LASER, &AIStateType::AI_STATE_FIND_TARGET);
+      
+      BaseClass::AddTransition(&AIEvent::AI_EVENT_NO_TARGET_FOUND, &AIStateType::AI_STATE_FIND_TARGET, &AIStateType::AI_STATE_IDLE);
+      BaseClass::AddTransition(&AIEvent::AI_EVENT_TOOK_DAMAGE, &AIStateType::AI_STATE_IDLE, &AIStateType::AI_STATE_FIND_TARGET);
 
     }
 
