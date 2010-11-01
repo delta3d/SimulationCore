@@ -45,16 +45,24 @@
 #include <Actors/FortActor.h>
 
 #include <SimCore/Components/RenderingSupportComponent.h>
-#include <SimCore/Components/VolumeRenderingComponent.h>
+//#include <SimCore/Components/VolumeRenderingComponent.h>
 
 namespace NetDemo
 {
+	bool EnemyMothershipActor::mHasMainMothership = false;
 
    ///////////////////////////////////////////////////////////////////////////////////
    EnemyMothershipActor::EnemyMothershipActor(SimCore::Actors::BasePhysicsVehicleActorProxy &proxy)
       : BaseEnemyActor(proxy)
       , mTimeToCheckForTarget(0.0f)
+	  , mMainMothership(false)
    {
+	   if(!mHasMainMothership)
+	   {
+		   mMainMothership = true;
+		   mHasMainMothership = true;
+	   }
+
       mAIHelper = new EnemyMothershipAIHelper();
    }
 
@@ -133,9 +141,16 @@ namespace NetDemo
       }
    }
 
+   ///////////////////////////////////////////////////////////////////////////////////
    void EnemyMothershipActor::FindTarget(float)
    {
-      FortActor* fort = GetClosestFort();
+	  FortActor* fort = NULL;
+	  if(mMainMothership)
+	  {
+        SelectFortToAttack();
+	  }
+	
+	  fort = GetCurrentFortUnderAttack();	
 
       if(fort != NULL)
       {
@@ -144,6 +159,37 @@ namespace NetDemo
 
    }
 
+   ///////////////////////////////////////////////////////////////////////////////////
+   void EnemyMothershipActor::SelectFortToAttack()
+   {
+      //temporarily lets just look for a fort to destroy
+      std::vector<dtDAL::ActorProxy*> actors;
+      GetGameActorProxy().GetGameManager()->FindActorsByType(*NetDemoActorRegistry::FORT_ACTOR_TYPE, actors);
+
+      osg::Vec3 pos = mAIHelper->mCurrentState.GetPos();
+
+      FortActor* result = NULL;
+      float dist = 1000000.0f;
+
+      for (unsigned i = 0; i < actors.size(); ++i)
+      {
+         FortActor* f = static_cast<FortActor*>(actors[i]->GetActor());
+
+         dtCore::Transform trans;
+         f->GetTransform(trans);
+         osg::Vec3 fortPos = trans.GetTranslation();
+         float newDist = (fortPos - pos).length();
+         if(newDist < dist && f->GetDamageState() != SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::DESTROYED)
+         {
+            dist = newDist;
+            result = f;
+         }
+      }
+
+	  //set the static fort that everyone will attack
+      mCurrentFortUnderAttack = result;
+   }
+   
    ///////////////////////////////////////////////////////////////////////////////////
    void EnemyMothershipActor::UpdateVehicleTorquesAndAngles(float deltaTime)
    {

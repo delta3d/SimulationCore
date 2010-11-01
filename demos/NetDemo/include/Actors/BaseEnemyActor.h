@@ -34,6 +34,7 @@
 #include <SimCore/PhysicsTypes.h>
 #include <SimCore/Actors/BasePhysicsVehicleActor.h>
 
+#include <Actors/FortActor.h>
 #include <EnemyAIHelper.h>
 
 namespace dtAudio
@@ -48,7 +49,6 @@ namespace dtGame
 
 namespace NetDemo
 {
-   class FortActor;
 
    ////////////////////////////////////////////////////////////////////////////////
    /* This class is for the team's home fort. If it is destroyed, the team looses. 
@@ -102,6 +102,8 @@ namespace NetDemo
          void SetPointValue(int points);
          int GetPointValue() const;
 
+		 FortActor* GetCurrentFortUnderAttack();
+
       protected:
          /// Called update the dofs for your vehicle. Wheels or whatever. Of the updates, this is called second
          /// By default, this does nothing.
@@ -120,11 +122,12 @@ namespace NetDemo
             const SimCore::Actors::MunitionTypeActor& munition, const osg::Vec3& force, 
             const osg::Vec3& location);
 
-
-         FortActor* GetClosestFort();
          dtCore::Transformable* GetClosestTower();
 
          dtCore::RefPtr<EnemyAIHelper> mAIHelper;
+
+		 //only the main mothership sets this
+		 static dtCore::ObserverPtr<FortActor> mCurrentFortUnderAttack;
 
       // Private vars
       private:

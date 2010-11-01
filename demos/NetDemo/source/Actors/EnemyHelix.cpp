@@ -187,7 +187,7 @@ namespace NetDemo
          }
       }
 
-      FortActor* fort = GetClosestFort();
+      FortActor* fort = GetCurrentFortUnderAttack();
       if(fort != NULL)
       {
          mAIHelper->SetCurrentTarget(*fort);
