@@ -555,7 +555,7 @@ namespace NetDemo
 
       if (comp == NULL)
       {
-         LOG_ERROR( "Input Component cannot access the Game App Component." );
+         LOG_INFO("Input Component cannot access the Game App Component. Usually happens when shutting down." );
       }
 
       return comp;
