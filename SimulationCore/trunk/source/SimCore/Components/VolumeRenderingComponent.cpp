@@ -18,6 +18,7 @@
 *
 * Bradley Anderegg
 */
+#include <prefix/SimCorePrefix.h>
 
 
 #include <SimCore/Components/VolumeRenderingComponent.h>
