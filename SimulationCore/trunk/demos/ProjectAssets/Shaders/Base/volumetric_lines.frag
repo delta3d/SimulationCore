@@ -7,9 +7,12 @@ uniform vec4 lineGlowColor;
 uniform float NVG_Enable;
 uniform float Intensity;
 
+varying float vDistance;
 varying vec4 vColor;
 varying vec4 vTex0;
 varying vec4 vTex1;
+
+float computeFragDepth(float);
 
 void main(void)
 {
@@ -29,4 +32,7 @@ void main(void)
    vec3 lightContrib = nvgContrib * (diffuseLight + vec3(ambientRadiance, gl_LightSource[1].ambient.g, gl_LightSource[1].ambient.b));
 
    gl_FragColor = diffuseColor + vec4(lightContrib.xyz, 0.0);
+   
+   float fragDepth = computeFragDepth(vDistance);
+   gl_FragDepth = fragDepth;
 }

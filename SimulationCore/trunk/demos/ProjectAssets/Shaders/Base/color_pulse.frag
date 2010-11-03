@@ -3,7 +3,11 @@ uniform sampler2D pulsePathTexture;
 uniform float pulseOffset;
 uniform vec4 pulseColor;
 
+varying float vDistance;
+
 const float BLIP_WIDTH = 0.5;
+
+float computeFragDepth(float);
 
 void main (void)
 {
@@ -14,4 +18,7 @@ void main (void)
     color.xyz += (pulseColor.xyz * (1.0 - clamp(pathFrag.z,0.0,1.0)));
     color.xyz = clamp(color.xyz, vec3(0.0,0.0,0.0), vec3(1.0,1.0,1.0));
     gl_FragColor = color;
+
+   float fragDepth = computeFragDepth(vDistance);
+   gl_FragDepth = fragDepth;
 }

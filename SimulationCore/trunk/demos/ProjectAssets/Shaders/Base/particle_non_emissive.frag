@@ -8,6 +8,10 @@ uniform float Intensity;
 
 varying vec3 dynLightContrib;
 varying vec4 vertexColor;
+varying float vDistance;
+
+float computeFragDepth(float);
+
 
 void main(void)
 {
@@ -23,6 +27,10 @@ void main(void)
    
    baseColor.xyz *= lightContrib;
    gl_FragColor = baseColor * vertexColor;
+
+   float fragDepth = computeFragDepth(vDistance);
+   gl_FragDepth = fragDepth;
+}
 }
 
 

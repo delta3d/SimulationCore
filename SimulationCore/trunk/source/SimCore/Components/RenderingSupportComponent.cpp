@@ -574,6 +574,12 @@ namespace SimCore
          osg::Uniform* viewInverseUniform = ss->getOrCreateUniform("inverseViewMatrix", osg::Uniform::FLOAT_MAT4);
          osg::Uniform* mvpiUniform = ss->getOrCreateUniform("modelViewProjectionInverse", osg::Uniform::FLOAT_MAT4);
          osg::Uniform* hprUniform = ss->getOrCreateUniform("cameraHPR", osg::Uniform::FLOAT_VEC3);
+         osg::Uniform* nearPlaneUniform = ss->getOrCreateUniform("nearPlane", osg::Uniform::FLOAT);
+         osg::Uniform* farPlaneUniform = ss->getOrCreateUniform("farPlane", osg::Uniform::FLOAT);
+         osg::Uniform* screenDims = ss->getOrCreateUniform("ScreenDimensions", osg::Uniform::FLOAT_VEC2);
+
+         osg::Vec2 dims(pCamera.GetOSGCamera()->getViewport()->width(), pCamera.GetOSGCamera()->getViewport()->height());
+         screenDims->set(dims);
 
          osg::Matrix matView, matViewInverse, matProj, matProjInverse, matViewProj, matViewProjInverse;
 
@@ -588,6 +594,11 @@ namespace SimCore
 
          mvpiUniform->set(matViewProjInverse);
          viewInverseUniform->set(matViewInverse);
+
+         double vfov, aspect, nearp, farp;
+         pCamera.GetPerspectiveParams(vfov, aspect, nearp, farp);
+         nearPlaneUniform->set(float(nearp));
+         farPlaneUniform->set(float(farp));
 
          dtCore::Transform trans;
          pCamera.GetTransform(trans);

@@ -13,6 +13,7 @@ varying vec3 vViewDir;
 varying vec2 vReflectTexCoord;
 varying float vFog;
 varying vec3 vPos;
+varying float vDistance;
 
 void lightContribution(vec3, vec3, vec3, vec3, out vec3);
 void dynamic_light_fragment(vec3, vec3, out vec3);
@@ -60,5 +61,8 @@ void main(void)
    
    //gl_FragColor = vec4(vFogForXDistanceForY.xxx, 1.0);
    gl_FragColor = vec4(mix(color, gl_Fog.color.rgb, vFog), diffuseColor.a);  
+   
+   float fragDepth = computeFragDepth(vDistance);
+   gl_FragDepth = fragDepth;
 }
 

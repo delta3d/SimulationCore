@@ -55,7 +55,7 @@
 #include <osg/Billboard>
 #include <osg/Depth>
 #include <math.h>
-
+#include <iostream>
 #define SQRT2PI 2.506628274631000502415765284811045253006
 #define ONEOVERSQRT2PI (1.0 / SQRT2PI)
 
@@ -120,15 +120,17 @@ static osg::Node* CreateQuad( osg::Texture2D* tex, int renderBin )
    return geode;
 }
 
-static osg::Texture2D* CreateTexture(int width, int height)
+static osg::Texture2D* CreateDepthTexture(int width, int height)
 {
    osg::Texture2D* tex = new osg::Texture2D();
    tex->setTextureSize(width, height);
-   tex->setWrap( osg::Texture::WRAP_S, osg::Texture::REPEAT);
-   tex->setWrap( osg::Texture::WRAP_T, osg::Texture::REPEAT);
-   tex->setInternalFormat(GL_RGBA);
-   tex->setFilter(osg::Texture2D::MIN_FILTER,osg::Texture2D::LINEAR);
-   tex->setFilter(osg::Texture2D::MAG_FILTER,osg::Texture2D::LINEAR);
+   tex->setWrap(osg::Texture::WRAP_S, osg::Texture::CLAMP_TO_EDGE);
+   tex->setWrap(osg::Texture::WRAP_T, osg::Texture::CLAMP_TO_EDGE);
+   tex->setSourceFormat(GL_DEPTH_COMPONENT);
+   tex->setSourceType(GL_FLOAT);
+   tex->setInternalFormat(GL_DEPTH_COMPONENT32);
+   tex->setFilter(osg::Texture2D::MIN_FILTER,osg::Texture2D::NEAREST);
+   tex->setFilter(osg::Texture2D::MAG_FILTER,osg::Texture2D::NEAREST);
    return tex;
 }
 
@@ -147,8 +149,54 @@ namespace SimCore
    const std::string VolumeRenderingComponent::VOLUME_PARTICLE_INTENSITY_UNIFORM = "volumeParticleIntensity";
    const std::string VolumeRenderingComponent::VOLUME_PARTICLE_VELOCITY_UNIFORM = "volumeParticleVelocity";
    const std::string VolumeRenderingComponent::VOLUME_PARTICLE_RADIUS_UNIFORM = "volumeParticleRadius";
+   //const std::string VolumeRenderingComponent::CAMERA_LINEAR_DEPTH_UNIFORM = "writeLinearDepth";
 
    const std::string VolumeRenderingComponent::DEFAULT_NAME = "VolumeRenderingComponent";
+
+
+   //////////////////////////////////////////////////////////////////////////
+   //Draw Callbacks
+   //////////////////////////////////////////////////////////////////////////
+   class VRC_DrawCallback : public osg::Camera::DrawCallback
+   {
+   public:
+
+      enum Phase{ PRE_DRAW, POST_DRAW};
+
+      VRC_DrawCallback(osg::Node& n, Phase p)
+         : mNode(&n)
+         , mPhase(p)
+      {
+
+      }
+
+      ~VRC_DrawCallback(){}
+
+
+      virtual void operator () (const osg::Camera& /*camera*/) const
+      {
+         if(mNode.valid())
+         {
+            osg::StateSet* sceneStateSet = mNode->getOrCreateStateSet();
+            osg::Uniform* sceneDepthUniform = sceneStateSet->getOrCreateUniform("writeLinearDepth", osg::Uniform::BOOL);
+
+            if(mPhase == PRE_DRAW)
+            {
+               sceneDepthUniform->set(true);
+            }
+            else
+            {
+               sceneDepthUniform->set(false);
+            }
+         }
+      }
+
+   private:
+
+      dtCore::ObserverPtr<osg::Node> mNode;
+      Phase mPhase;
+
+   };
 
    /////////////////////////////////////////////////////////////
    //useful functors
@@ -648,14 +696,6 @@ namespace SimCore
       if(sp != NULL)
       {
          sm.AssignShaderFromPrototype(*sp, g);
-
-         osg::Uniform* tex = new osg::Uniform(osg::Uniform::SAMPLER_2D, "depthTexture");
-         tex->set(0);
-         mRootNode->getOrCreateStateSet()->addUniform(tex);
-         mRootNode->getOrCreateStateSet()->setTextureAttributeAndModes(0, mDepthTexture.get(), osg::StateAttribute::ON);
-
-         mRootNode->getOrCreateStateSet()->addUniform(mNoiseTextureUniform.get());
-         mRootNode->getOrCreateStateSet()->setTextureAttributeAndModes(1, mNoiseTexture.get(), osg::StateAttribute::ON);
       }
       else
       {
@@ -671,6 +711,13 @@ namespace SimCore
          osg::StateSet* ss = newShape.mParticleDrawable->getOrCreateStateSet();
 
          SetUniformData(newShape);
+
+         mRootNode->getOrCreateStateSet()->addUniform(mDepthTextureUniform.get());
+         mRootNode->getOrCreateStateSet()->setTextureAttributeAndModes(0, mDepthTexture.get(), osg::StateAttribute::ON);
+
+         mRootNode->getOrCreateStateSet()->addUniform(mNoiseTextureUniform.get());
+         mRootNode->getOrCreateStateSet()->setTextureAttributeAndModes(1, mNoiseTexture.get(), osg::StateAttribute::ON);
+
 
          osg::Uniform* particleArray = ss->getOrCreateUniform(VOLUME_PARTICLE_POS_UNIFORM, osg::Uniform::FLOAT_VEC4, newShape.mParticleDrawable->GetNumParticles());
          
@@ -984,10 +1031,15 @@ namespace SimCore
    ///////////////////////////////////////////////////////////////////////////////////
    void VolumeRenderingComponent::CreateDepthPrePass(const std::string& textureName, unsigned width, unsigned height)
    {
-
       osg::Camera* sceneCam = GetGameManager()->GetApplication().GetCamera()->GetOSGCamera();
 
-      mDepthCamera= new dtCore::Camera();
+      mDepthCamera = new dtCore::Camera();
+
+      VRC_DrawCallback* vrcPre = new VRC_DrawCallback(*GetGameManager()->GetScene().GetSceneNode(), VRC_DrawCallback::PRE_DRAW);
+      VRC_DrawCallback* vrcPost = new VRC_DrawCallback(*GetGameManager()->GetScene().GetSceneNode(), VRC_DrawCallback::POST_DRAW);
+      
+      mDepthCamera->GetOSGCamera()->setPreDrawCallback(vrcPre);
+      mDepthCamera->GetOSGCamera()->setPostDrawCallback(vrcPost);
       mDepthCamera->SetWindow(GetGameManager()->GetApplication().GetCamera()->GetWindow());
 
       GetGameManager()->GetApplication().GetCamera()->AddChild(mDepthCamera.get());
@@ -998,8 +1050,7 @@ namespace SimCore
       GetGameManager()->GetApplication().AddView(*mDepthView);
 
       //the rear view texture is used as the render target for the rear view mirror
-      mDepthTexture = CreateTexture(width, height);
-      mDepthTexture->setInternalFormat(GL_DEPTH_COMPONENT);
+      mDepthTexture = CreateDepthTexture(width, height);
 
       mDepthCamera->GetOSGCamera()->setReferenceFrame(osg::Transform::RELATIVE_RF);
 
@@ -1019,14 +1070,17 @@ namespace SimCore
       mDepthCamera->GetOSGCamera()->setCullMask(SimCore::Components::RenderingSupportComponent::ADDITIONAL_CAMERA_CULL_MASK);
       mDepthCamera->GetOSGCamera()->setClearColor(osg::Vec4(0.0, 0.0, 1.0, 1.0));
 
+      mDepthTextureUniform = new osg::Uniform(osg::Uniform::SAMPLER_2D, "depthTexture");
+      mDepthTextureUniform->set(0);
+
       //the mDebugCamera just renders the result of the mRearViewTexture onto the screen
-      /*mDebugCamera = new osg::Camera();
-      mDebugCamera->setRenderOrder(osg::Camera::POST_RENDER, 1);
-      mDebugCamera->setClearMask(GL_NONE);
-      mDebugCamera->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
-      mDebugCamera->setProjectionMatrixAsOrtho2D(-10.0, 10.0, -10.0, 10.0);
-      mDebugCamera->setViewport(128, 10, 256, 256);*/
-      //mDebugCamera->setGraphicsContext(new osgViewer::GraphicsWindowEmbedded());
+      //mDebugCamera = new osg::Camera();
+      //mDebugCamera->setRenderOrder(osg::Camera::POST_RENDER, 1);
+      //mDebugCamera->setClearMask(GL_NONE);
+      //mDebugCamera->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
+      //mDebugCamera->setProjectionMatrixAsOrtho2D(-10.0, 10.0, -10.0, 10.0);
+      //mDebugCamera->setViewport(128, 10, 256, 256);
+      ////mDebugCamera->setGraphicsContext(new osgViewer::GraphicsWindowEmbedded());
 
       //osg::Node* quad = CreateQuad(mDepthTexture.get(), 50);
       //mDebugCamera->addChild(quad);

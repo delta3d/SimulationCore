@@ -3,6 +3,7 @@ uniform mat4 inverseViewMatrix;
 varying vec3 vNormal;
 varying vec3 vLightDir;
 varying float vFog;
+varying float vDistance;
 varying vec3 vPos;
 
 void calculateDistance(mat4, vec4, out float);
@@ -21,7 +22,6 @@ void main()
 
    vLightDir = normalize(inverseView3x3 * gl_LightSource[0].position.xyz);
 
-   float distance;
-   calculateDistance(gl_ModelViewMatrix, gl_Vertex, distance);
-   vFog = computeFog(gl_Fog.end * 0.15, gl_Fog.end, distance);  
+   calculateDistance(gl_ModelViewMatrix, gl_Vertex, vDistance);
+   vFog = computeFog(gl_Fog.end * 0.15, gl_Fog.end, vDistance);  
 }

@@ -20,6 +20,7 @@ void computeTerrainColor(vec3, vec4, float, out vec3);
 void alphaMix(vec3, vec3, float, float, out vec4);
 void dynamic_light_fragment(vec3, vec3, out vec3);
 void spot_light_fragment(vec3, vec3, out vec3);
+float computeFragDepth(float);
 
 void main(void)
 {   
@@ -56,6 +57,8 @@ void main(void)
    {
       //Mix the final color with the fog and don't forget the alpha
       alphaMix(color, gl_Fog.color.rgb, vFog, baseColor.a, gl_FragColor);
+      
+      float fragDepth = computeFragDepth(vDistance);
+      gl_FragDepth = fragDepth;
    }
-   //gl_FragColor.rgb = vec4(vNormal, 1.0); 
 }

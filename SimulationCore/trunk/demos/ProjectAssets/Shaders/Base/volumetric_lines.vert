@@ -1,6 +1,9 @@
+varying float vDistance;
 varying vec4 vColor;
 varying vec4 vTex0;
 varying vec4 vTex1;
+
+void calculateDistance(mat4, vec4, out float);
 
 void main(void)
 {
@@ -12,6 +15,8 @@ void main(void)
     // used in finding the opposite segment vertex position.
     vec4 endpos = vec4(0.0,0.0,0.0,1.0);
     endpos.xyz = gl_Vertex.xyz + (gl_Normal * gl_Color.w);
+
+    calculateDistance(gl_ModelViewMatrix, gl_Vertex, vDistance);
 
     vec4 posstart = gl_ModelViewMatrix * gl_Vertex;
     vec4 posend   = gl_ModelViewMatrix * endpos;
