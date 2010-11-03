@@ -82,6 +82,7 @@ namespace SimCore
       , mZDepth(0.0f)
       , mSized(false)
       {
+         SetDeleteWindowOnDestruct(true); // else labels never go away 
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -90,6 +91,7 @@ namespace SimCore
       , mZDepth(0.0f)
       , mSized(false)
       {
+         SetDeleteWindowOnDestruct(true); // else labels never go away 
       }
 
       //////////////////////////////////////////////////////////////////////////
