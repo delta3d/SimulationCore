@@ -5,6 +5,7 @@ varying vec3 vLightDir;
 varying vec3 vViewDir;
 varying vec2 vReflectTexCoord;
 varying float vFog;
+varying float vDistance;
 varying vec3 vPos;
 
 void sphereMap(vec3, vec3, out vec2);
@@ -32,9 +33,8 @@ void main()
    
    vViewDir = normalize((gl_ModelViewMatrix * gl_Vertex).xyz * inverseView3x3);
    
-   float distance;
-   calculateDistance(gl_ModelViewMatrix, gl_Vertex, distance);
-   vFog = computeFog(gl_Fog.end * 0.15, gl_Fog.end, distance);
+   calculateDistance(gl_ModelViewMatrix, gl_Vertex, vDistance);
+   vFog = computeFog(gl_Fog.end * 0.15, gl_Fog.end, vDistance);
    //Calculates a set of spherical texture coordinates for sampling from a spherical environment map.
    sphereMap(vViewDir, vNormal, vReflectTexCoord);
 }

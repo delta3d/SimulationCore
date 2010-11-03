@@ -1,24 +1,46 @@
 uniform sampler2D depthTexture;
 uniform sampler3D noiseTexture;
 uniform float osg_SimulationTime;
+uniform float nearPlane;
+uniform float farPlane;
 
 uniform vec4 volumeParticleColor;
 uniform float volumeParticleRadius;
 uniform float volumeParticleIntensity;
 uniform vec3 volumeParticleVelocity;
+uniform vec2 ScreenDimensions;
 
 varying vec4 vWorldPos;
 varying vec4 vOffset;
 varying vec2 vTexCoords;
 varying vec3 vLightContrib;
-varying vec3 vLightDir;
-varying vec3 vNormal;
+varying vec4 vViewPosCenter;
+varying vec4 vViewPosVert;
 
 
-float computeFog(float startFog, float endFog, float fogDistance)
+float computeFog(vec3 viewPosCenter, vec3 viewPosCurrent, float radius, vec2 screenCoord)
 {
-   float fogTemp = pow(2.0, (fogDistance - startFog) / (endFog - startFog)) - 1.0;
-   return clamp(fogTemp, 0.0, 1.0);
+   float opacity = 0.0;
+   float density = 0.05;
+   float ds = 0.0;
+   float fMin = 0.0;
+   float sphereDepth = 0.0;
+   float dist = length(viewPosCenter.xy - viewPosCurrent.xy);
+   if(dist < radius)
+   {
+      float vpLength = length(viewPosCurrent);
+      fMin = nearPlane * vpLength / viewPosCurrent.z;
+      float w = sqrt(radius * radius - dist * dist);
+      float f = vpLength - w;
+      float b = vpLength + w;
+      float sceneDepth = texture2D(depthTexture, screenCoord).r;
+      sceneDepth = nearPlane + sceneDepth * farPlane;
+      ds = min(sceneDepth, b) - max(fMin, f);
+      sphereDepth = (1.0 - dist / radius) * ds;
+      opacity = 1.0 - exp(-density * sphereDepth);
+   }
+
+   return opacity;
 }
 
 void main(void)
@@ -32,8 +54,6 @@ void main(void)
 
    if(r > 1.0) discard;
 
-   float sceneDepth = texture2D(depthTexture, gl_FragCoord.xy).r;
-
    vec3 noiseCoords =  normal + (vOffset.xyz) + (osg_SimulationTime * volumeParticleVelocity);
    float noise  = abs( (texture3D(noiseTexture, noiseCoords)).a );
    
@@ -42,14 +62,17 @@ void main(void)
     else
         noise -= r;
 
-   vec4 pixelPos = vec4(vWorldPos.xyz + (vNormal * vec3(volumeParticleRadius)), 1.0);
+   vec4 pixelPos = vec4(vWorldPos.xyz + (normal * vec3(volumeParticleRadius)), 1.0);
    vec4 clipSpacePos = gl_ModelViewProjectionMatrix * pixelPos;
    float depth = abs(clipSpacePos.z / clipSpacePos.w);
 
+   float sceneDepth = texture2D(depthTexture, gl_FragCoord.xy / ScreenDimensions).r;
+   //sceneDepth = nearPlane + sceneDepth * farPlane;
 
-   float fogDist = 0.1;//abs(sceneDepth - depth);//, 0.0, 1.0);
-   float fogAmt = computeFog(0.05, 0.1, 10.0 * fogDist);
+   float fogAmt = computeFog(vViewPosCenter.xyz, vViewPosVert.xyz, volumeParticleRadius, gl_FragCoord.xy / ScreenDimensions);
    gl_FragColor = min(r + r + noise, 1.0) * vec4(vLightContrib * volumeParticleColor.xyz, fogAmt * volumeParticleColor.w * volumeParticleIntensity * noise);
+   //gl_FragColor = vec4(volumeParticleColor.xyz, fogAmt);
    //gl_FragDepth = depth;
+   //gl_FragColor = vec4(vec3(fogAmt / 10.0), 1.0);
 }
 

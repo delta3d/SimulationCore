@@ -59,6 +59,7 @@ namespace SimCore
          static const std::string VOLUME_PARTICLE_INTENSITY_UNIFORM; 
          static const std::string VOLUME_PARTICLE_VELOCITY_UNIFORM;
          static const std::string VOLUME_PARTICLE_RADIUS_UNIFORM;
+         //static const std::string CAMERA_LINEAR_DEPTH_UNIFORM;
 
 
          typedef unsigned ShapeRecordID;
@@ -207,15 +208,16 @@ namespace SimCore
          dtCore::RefPtr<osg::Group> mRootNode;
 
          dtCore::RefPtr<dtCore::Camera> mDepthCamera;
-         //dtCore::RefPtr<osg::Camera> mDebugCamera;
+         dtCore::RefPtr<osg::Camera> mDebugCamera;
          dtCore::RefPtr<dtCore::View> mDepthView;
-         dtCore::RefPtr<osg::Texture2D> mDepthTexture;
 
+         dtCore::RefPtr<osg::Texture2D> mDepthTexture;
+         dtCore::RefPtr<osg::Uniform> mDepthTextureUniform;
+
+         dtCore::RefPtr<osg::Texture3D> mNoiseTexture;
+         dtCore::RefPtr<osg::Uniform> mNoiseTextureUniform;
 
          ShapeVolumeArray mVolumes;
-
-         dtCore::RefPtr<osg::Uniform> mNoiseTextureUniform;
-         dtCore::RefPtr<osg::Texture3D> mNoiseTexture;
 
       };
    }// namespace Components

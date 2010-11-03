@@ -11,6 +11,9 @@ uniform mat4 inverseViewMatrix;
 varying vec3 dynLightContrib;
 varying vec3 worldNormal;
 varying vec4 vertexColor;
+varying float vDistance;
+
+void calculateDistance(mat4, vec4, out float);
 
 void main()
 {
@@ -19,6 +22,8 @@ void main()
    vertexColor = gl_Color;
    
    dynLightContrib = vec3(0.0, 0.0, 0.0);
+
+   calculateDistance(gl_ModelViewMatrix, gl_Vertex, vDistance);
    
    vec3 worldPos = (inverseViewMatrix * gl_ModelViewMatrix * gl_Vertex).xyz;
 

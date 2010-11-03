@@ -8,6 +8,9 @@ uniform float NVG_Enable;
 uniform float Intensity;
 
 varying vec4 vertexColor;
+varying float vDistance;
+
+float computeFragDepth(float);
 
 void main(void)
 {
@@ -25,6 +28,9 @@ void main(void)
    vec4 vertexColorContrib = vec4(vertexColor + NVG_Enable);
 
    gl_FragColor = baseColor * vertexColorContrib;
+   
+   float fragDepth = computeFragDepth(vDistance);
+   gl_FragDepth = fragDepth;
 }
 
 

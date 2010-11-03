@@ -8,13 +8,14 @@ uniform float NVG_Enable;
 varying vec3 vNormal;
 varying vec3 vLightDir;
 varying float vFog;
+varying float vDistance;
 varying vec3 vPos;
 
 void lightContribution(vec3, vec3, vec3, vec3, out vec3);
 void alphaMix(vec3, vec3, float, float, out vec4);
 void dynamic_light_fragment(vec3, vec3, out vec3);
 void spot_light_fragment(vec3, vec3, out vec3);
-
+float computeFragDepth(float);
 
 void main(void)
 {
@@ -43,5 +44,7 @@ void main(void)
    vec3 color = clamp(lightContrib * vec3(diffuseColor), 0.0, 1.0);
    
    gl_FragColor = vec4(mix(color, gl_Fog.color.rgb, vFog), diffuseColor.a);  
+   float fragDepth = computeFragDepth(vDistance);
+   gl_FragDepth = fragDepth;
 }
 

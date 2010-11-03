@@ -29,6 +29,7 @@
 #include <dtCore/keyboard.h>
 #include <dtGame/basemessages.h>
 #include <SimCore/Components/RenderingSupportComponent.h>
+#include <SimCore/Components/VolumeRenderingComponent.h>
 #include <SimCore/Components/MunitionsComponent.h>
 #include <SimCore/Components/DefaultFlexibleArticulationHelper.h>
 #include <SimCore/CollisionGroupEnum.h>
@@ -138,6 +139,26 @@ namespace NetDemo
          mMainLight->mAutoDeleteLightOnTargetNull = true;
          renderComp->AddDynamicLight(mMainLight.get());
       }
+
+      //add a shape volume for the beam
+      //SimCore::Components::VolumeRenderingComponent* vrc = NULL;
+      //GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::VolumeRenderingComponent::DEFAULT_NAME, vrc); 
+      //if(vrc != NULL)
+      //{
+      //   SimCore::Components::VolumeRenderingComponent::ShapeVolumeRecord* svr = new SimCore::Components::VolumeRenderingComponent::ShapeVolumeRecord();
+      //   svr->mPosition.set(0.0f, 20.0f, 0.0f);
+      //   svr->mColor.set(1.0f, 1.0f, 1.0f, 0.5f);
+      //   svr->mShapeType = SimCore::Components::VolumeRenderingComponent::ELLIPSOID;
+      //   svr->mRadius.set(50.0f, 15.0f, 10.0f);
+      //   svr->mNumParticles = 150;
+      //   svr->mParticleRadius = 10.0f;
+      //   svr->mVelocity.set(0.25, 0.25, 0.25);
+      //   svr->mTarget = this;
+      //   svr->mAutoDeleteOnTargetNull = true;
+      //   svr->mRenderMode = SimCore::Components::VolumeRenderingComponent::PARTICLE_VOLUME;
+
+      //   vrc->CreateShapeVolume(svr);
+      //}
    }
 
    ///////////////////////////////////////////////////////////////////////////////////

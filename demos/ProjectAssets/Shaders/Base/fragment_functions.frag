@@ -11,6 +11,19 @@
 /////////////////////////////////////////////////////////////////////
 ///////////General Functions Used By Fragment Fog Shaders////////////
 /////////////////////////////////////////////////////////////////////
+uniform bool writeLinearDepth;
+uniform float nearPlane;
+uniform float farPlane;
+
+float computeFragDepth(float distance)
+{
+   float fragDepth = gl_FragCoord.z;
+   if(writeLinearDepth)
+   {
+      fragDepth = (distance - nearPlane) / (farPlane - nearPlane);
+   }
+   return fragDepth;
+}
 
 void alphaMix(vec3 color1, vec3 color2, float fogContrib, float alpha, out vec4 mixColor)
 {

@@ -4,6 +4,7 @@ uniform mat4 osg_ViewMatrixInverse;
 varying vec3 vNormal;
 varying vec3 vLightDir;
 varying float vFog;
+varying float vDistance;
 varying vec3 vPos;
 varying vec4 vModelVertPos;
 varying vec2 vDiffuseUVs;
@@ -23,6 +24,8 @@ void main()
    
    // Compute the UVs and varyings for camo diffuse and damage overlay.
 	calculateCamoAndDamageUVs();
+
+   calculateDistance(gl_ModelViewMatrix, gl_Vertex, vDistance);
 
    //moves the position, normal, and light direction into world space   
    //vPos = (inverseViewMatrix * gl_ModelViewMatrix * gl_Vertex).xyz;
