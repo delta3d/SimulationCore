@@ -63,7 +63,7 @@ namespace SimCore
 
          typedef unsigned ShapeRecordID;
 
-         enum Shape{SPHERE, BOX, CAPSULE, CONE, CYLINDER};//, GAUSSIAN_SPHERE};
+         enum Shape{SPHERE, ELLIPSOID, BOX, CAPSULE, CONE, CYLINDER};
 
          enum RenderMode{SIMPLE_SHAPE_GEOMETRY, PARTICLE_VOLUME};//, VOLUMETRIC_RAYCASTING};
 
@@ -93,6 +93,7 @@ namespace SimCore
             void CreateBillboards(unsigned numParticles, float width, float height);
             void CreateRandomPointsInVolume(Shape s, float numPoints, const osg::Vec3& center, const osg::Vec3& radius, PointList& pointArrayToFill);
 
+            float mParticleRadius;
             unsigned mNumParticles;
             PointList mPoints;
          };

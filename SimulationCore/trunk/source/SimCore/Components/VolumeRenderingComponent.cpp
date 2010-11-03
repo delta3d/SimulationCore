@@ -575,8 +575,6 @@ namespace SimCore
    {
 
       dtCore::RefPtr<osg::Geode> g = new osg::Geode();
-      //dtCore::RefPtr<osg::Billboard> g = new osg::Billboard();
-      //g->setMode(osg::Billboard::POINT_ROT_WORLD);
 
       dtCore::RefPtr<osg::MatrixTransform> matTrans = new osg::MatrixTransform();
       newShape.mParentNode = matTrans.get();
@@ -590,7 +588,7 @@ namespace SimCore
       ss->setAttribute(depthSS);
 
       osg::BlendFunc* blendFunc = new osg::BlendFunc();
-      blendFunc->setFunction(osg::BlendFunc::SRC_ALPHA ,osg::BlendFunc::ONE_MINUS_SRC_ALPHA );
+      blendFunc->setFunction(osg::BlendFunc::SRC_ALPHA ,osg::BlendFunc::ONE_MINUS_SRC_ALPHA);
       ss->setAttributeAndModes(blendFunc);
       ss->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
 
@@ -750,7 +748,8 @@ namespace SimCore
    ////////////////////////////////////////////////////////////////////////// 
    //ParticleVolumeDrawable
    VolumeRenderingComponent::ParticleVolumeDrawable::ParticleVolumeDrawable()
-      : mNumParticles(150)
+      : mParticleRadius(1.0f)
+      , mNumParticles(150)
    {
       setUseDisplayList(false);
    }
@@ -771,6 +770,7 @@ namespace SimCore
    ////////////////////////////////////////////////////////////////////////// 
    void VolumeRenderingComponent::ParticleVolumeDrawable::Init(unsigned numPoints, ShapeVolumeRecord* svr)
    {
+      mParticleRadius = svr->mParticleRadius;
       mNumParticles = numPoints;
 
       CreateBillboards(mNumParticles, 1.0f, 1.0f);
@@ -812,10 +812,12 @@ namespace SimCore
       pointArrayToFill.reserve(numPoints);
  
       osg::Vec3 p1, p2;// Box vertices, Sphere center, Cylinder/Cone e`nds
-      float radius1 = 0.0f;// Outer radius
-      float radius2 = 0.0f;// Inner radius
-      float radius1Sqr = 0.0f;// Used for fast Within test of spheres,
-      float radius2Sqr = 0.0f;// and for mag. of u and v vectors for plane.
+      float radius1 = 0.0f;
+      float radius2 = 0.0f;
+      float radius3 = 0.0f;
+      float radius1Sqr = 0.0f;
+      float radius2Sqr = 0.0f;
+      float radius3Sqr = 0.0f;
 
 
       switch(s)
@@ -853,13 +855,19 @@ namespace SimCore
             }
          }
          break;
-         /*
-         case VolumeRenderingComponent::GAUSSIAN_SPHERE:
+      case VolumeRenderingComponent::ELLIPSOID:
          {
+            //todo- need better equation here
+            p1.set(center);
 
+            for(unsigned i = 0; i < numPoints; ++i)
+            {
+               osg::Vec3 pos(radius[0] * dtUtil::RandPercent(), radius[1] * dtUtil::RandPercent(), radius[2] * dtUtil::RandPercent());
+
+               mPoints.push_back(p1 + pos);
+            }
          }
          break;
-         */
       case VolumeRenderingComponent::BOX:
          { 
             p1.set(center); 
@@ -1036,7 +1044,14 @@ namespace SimCore
    ////////////////////////////////////////////////////////////////////////// 
    osg::BoundingBox VolumeRenderingComponent::ParticleVolumeDrawable::computeBound() const
    {
-      return osg::BoundingBox();
+      osg::BoundingBox bb;
+      for(unsigned i = 0; i < mNumParticles; ++i)
+      {
+         osg::BoundingSphere bs;
+         bs.set(mPoints[i], mParticleRadius);
+         bb.expandBy(bs);
+      }
+      return bb;
    }
 
    ////////////////////////////////////////////////////////////////////////// 
