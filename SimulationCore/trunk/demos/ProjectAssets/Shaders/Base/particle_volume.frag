@@ -21,14 +21,14 @@ varying vec4 vViewPosVert;
 float computeFog(vec3 viewPosCenter, vec3 viewPosCurrent, float radius, vec2 screenCoord)
 {
    float opacity = 0.0;
-   float density = 0.05;
+   float density = 0.95;
    float ds = 0.0;
    float fMin = 0.0;
    float sphereDepth = 0.0;
    float dist = length(viewPosCenter.xy - viewPosCurrent.xy);
    if(dist < radius)
    {
-      float vpLength = length(viewPosCurrent);
+      float vpLength = radius + length(viewPosCurrent);
       fMin = nearPlane * vpLength / viewPosCurrent.z;
       float w = sqrt(radius * radius - dist * dist);
       float f = vpLength - w;
@@ -73,6 +73,6 @@ void main(void)
    gl_FragColor = min(r + r + noise, 1.0) * vec4(vLightContrib * volumeParticleColor.xyz, fogAmt * volumeParticleColor.w * volumeParticleIntensity * noise);
    //gl_FragColor = vec4(volumeParticleColor.xyz, fogAmt);
    //gl_FragDepth = depth;
-   //gl_FragColor = vec4(vec3(fogAmt / 10.0), 1.0);
+   //gl_FragColor = vec4(vec3(fogAmt / 0.010), 1.0);
 }
 
