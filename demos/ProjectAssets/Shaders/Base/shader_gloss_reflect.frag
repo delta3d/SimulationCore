@@ -5,7 +5,7 @@ uniform sampler2D diffuseTexture;
 uniform float diffuseRadiance;
 uniform float ambientRadiance;
 uniform float NVG_Enable;
-
+uniform bool writeLinearDepth;
 
 varying vec3 vNormal;
 varying vec3 vLightDir;
@@ -22,6 +22,16 @@ float computeFragDepth(float);
 
 void main(void)
 {
+   float fragDepth = computeFragDepth(vDistance);
+   gl_FragDepth = fragDepth;
+
+   //currently we only write a linear depth when doing a depth pre-pass
+   //as an optimization we return immediately afterwards
+   if(writeLinearDepth)
+   {
+      return;
+   }
+   
    vec4 diffuseColor = texture2D(diffuseTexture, gl_TexCoord[0].st);
    vec3 glossMap = vec3(texture2D(glossTexture,gl_TexCoord[0].st)); 
    vec3 reflectMap = vec3(texture2D(reflectTexture,vReflectTexCoord));
@@ -61,8 +71,5 @@ void main(void)
    
    //gl_FragColor = vec4(vFogForXDistanceForY.xxx, 1.0);
    gl_FragColor = vec4(mix(color, gl_Fog.color.rgb, vFog), diffuseColor.a);  
-   
-   float fragDepth = computeFragDepth(vDistance);
-   gl_FragDepth = fragDepth;
 }
 

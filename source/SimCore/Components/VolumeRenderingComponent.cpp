@@ -302,8 +302,12 @@ namespace SimCore
    {
       BaseClass::OnAddedToGM();
 
-      osg::Camera* cam = GetGameManager()->GetApplication().GetCamera()->GetOSGCamera();
-      CreateDepthPrePass("sceneDepth", cam->getViewport()->width(), cam->getViewport()->height());
+      double vfov, aspect, nearp, farp;
+      GetGameManager()->GetApplication().GetCamera()->GetPerspectiveParams(vfov, aspect, nearp, farp);
+
+      CreateDepthPrePass("sceneDepth", 1024 * aspect, 1024);
+
+      //CreateDepthPrePass("sceneDepth", 16, 16);
       GetGameManager()->GetScene().GetSceneNode()->addChild(mRootNode.get());
 
       mRootNode->setNodeMask(RenderingSupportComponent::MAIN_CAMERA_ONLY_FEATURE_NODE_MASK);
@@ -634,8 +638,8 @@ namespace SimCore
 
       osg::Depth* depthSS = new osg::Depth();
       depthSS->setWriteMask(false);
-      //ss->setAttribute(depthSS);
-      ss->setMode(GL_DEPTH_TEST, osg::StateAttribute::OFF);
+      ss->setAttribute(depthSS);
+      //ss->setMode(GL_DEPTH_TEST, osg::StateAttribute::OFF);
 
       osg::BlendFunc* blendFunc = new osg::BlendFunc();
       blendFunc->setFunction(osg::BlendFunc::SRC_ALPHA ,osg::BlendFunc::ONE_MINUS_SRC_ALPHA);
