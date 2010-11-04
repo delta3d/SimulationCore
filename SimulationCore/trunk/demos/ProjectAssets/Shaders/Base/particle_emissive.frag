@@ -4,7 +4,7 @@ uniform sampler2D diffuseTexture;
 uniform float diffuseRadiance;
 uniform float ambientRadiance;
 uniform float NVG_Enable;
-
+uniform bool writeLinearDepth;
 uniform float Intensity;
 
 varying vec4 vertexColor;
@@ -14,6 +14,14 @@ float computeFragDepth(float);
 
 void main(void)
 {
+   float fragDepth = computeFragDepth(vDistance);
+   gl_FragDepth = fragDepth;
+
+   if(writeLinearDepth)
+   {
+      return;
+   }
+
    vec4 baseColor = texture2D(diffuseTexture, gl_TexCoord[0].st); 
    
    //intensify the red component if night vision is enabled
@@ -28,9 +36,6 @@ void main(void)
    vec4 vertexColorContrib = vec4(vertexColor + NVG_Enable);
 
    gl_FragColor = baseColor * vertexColorContrib;
-   
-   float fragDepth = computeFragDepth(vDistance);
-   gl_FragDepth = fragDepth;
 }
 
 

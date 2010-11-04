@@ -26,6 +26,18 @@ float computeFragDepth(float);
 
 void main(void)
 {   
+   vec3 ecPosition3 = viewPos.xyz / viewPos.w;
+   float dist = length(ecPosition3);
+   float fragDepth = computeFragDepth(dist);
+   gl_FragDepth = fragDepth;
+
+   //currently we only write a linear depth when doing a depth pre-pass
+   //as an optimization we return immediately afterwards
+   if(writeLinearDepth)
+   {
+      return;
+   }
+
    //Compute the Light Contribution
    vec3 lightContrib;
    lightContribution(vNormal, vLightDirection, gl_LightSource[0].diffuse.xyz, gl_LightSource[0].ambient.xyz, lightContrib);
@@ -51,12 +63,5 @@ void main(void)
    color = clamp(color, 0.0, 1.0);
 
    //Mix the final color with the fog and don't forget the alpha
-   alphaMix(color, gl_Fog.color.rgb, vFog, baseColor.a, gl_FragColor);
-   
-   vec3 ecPosition3 = viewPos.xyz / viewPos.w;
-   float dist = length(ecPosition3);
-
-   float fragDepth = computeFragDepth(dist);
-   gl_FragDepth = fragDepth;
-   
+   alphaMix(color, gl_Fog.color.rgb, vFog, baseColor.a, gl_FragColor);   
 }
