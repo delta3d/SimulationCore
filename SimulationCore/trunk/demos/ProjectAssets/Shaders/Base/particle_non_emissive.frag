@@ -31,6 +31,4 @@ void main(void)
    float fragDepth = computeFragDepth(vDistance);
    gl_FragDepth = fragDepth;
 }
-}
-
 

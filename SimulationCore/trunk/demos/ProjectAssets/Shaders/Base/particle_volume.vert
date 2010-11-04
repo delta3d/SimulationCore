@@ -45,13 +45,13 @@ void main()
    float diffuseContrib = max(dot(normal, lightDir), 0.0);
    float upContrib = max(dot(Up, lightDir), 0.0);
 
-   vLightContrib = gl_LightSource[0].ambient + (gl_LightSource[0].diffuse.rgb * (diffuseContrib + upContrib));
+   vLightContrib = gl_LightSource[0].ambient.rgb + (gl_LightSource[0].diffuse.rgb * (diffuseContrib + upContrib));
 
 
-   dynamic_light_fragment(normal, vWorldPos, dynamicLightContrib);
-   dynamic_light_fragment(Up, vWorldPos, dynamicLightContribUp);
-   spot_light_fragment(normal, center_pos, spotLightContrib);
-   spot_light_fragment(Up, vWorldPos, spotLightContribUp);
+   dynamic_light_fragment(normal, vWorldPos.xyz, dynamicLightContrib);
+   dynamic_light_fragment(Up, vWorldPos.xyz, dynamicLightContribUp);
+   spot_light_fragment(normal, vWorldPos.xyz, spotLightContrib);
+   spot_light_fragment(Up, vWorldPos.xyz, spotLightContribUp);
    
    vLightContrib = vLightContrib + (0.5 * (dynamicLightContrib + dynamicLightContribUp)) + (0.5 * (spotLightContrib + spotLightContribUp));
    vLightContrib = clamp(vLightContrib, 0.0, 1.0);
