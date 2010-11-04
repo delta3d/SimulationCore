@@ -34,7 +34,7 @@ float computeFog(vec3 viewPosCenter, vec3 viewPosCurrent, float radius, vec2 scr
       float f = vpLength - w;
       float b = vpLength + w;
       float sceneDepth = texture2D(depthTexture, screenCoord).r;
-      sceneDepth = nearPlane + sceneDepth * farPlane;
+      sceneDepth *= (farPlane - nearPlane);
       ds = min(sceneDepth, b) - max(fMin, f);
       sphereDepth = (1.0 - dist / radius) * ds;
       opacity = 1.0 - exp(-density * sphereDepth);

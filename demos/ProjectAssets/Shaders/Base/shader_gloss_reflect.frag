@@ -18,7 +18,7 @@ varying float vDistance;
 void lightContribution(vec3, vec3, vec3, vec3, out vec3);
 void dynamic_light_fragment(vec3, vec3, out vec3);
 void spot_light_fragment(vec3, vec3, out vec3);
-
+float computeFragDepth(float);
 
 void main(void)
 {
