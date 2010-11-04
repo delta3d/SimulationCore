@@ -10,6 +10,7 @@ varying vec3 vWeights; // [0] is blur, [1] is medium, and [2] is fine
 varying float vFog;
 varying float vDistance;
 varying vec3 vPos;
+varying vec4 viewPos;
 varying vec3 worldNormal;
 
 uniform mat4 inverseViewMatrix;
@@ -52,6 +53,7 @@ void main()
    //Finally, mix the results with the fog amount and compute the gl_Position
    computeTerrainFog(gl_Fog.end, vDistance, vFog);
 
+   viewPos = gl_ModelViewMatrix * gl_Vertex;
    gl_Position = ftransform();
    
    //our position and normal is in local space and we want it it

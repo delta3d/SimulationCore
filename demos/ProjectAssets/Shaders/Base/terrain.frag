@@ -5,6 +5,7 @@
 
 uniform sampler2D baseTexture;
 uniform sampler2D secondaryTexture; 
+uniform bool writeLinearDepth;
 
 varying vec3 vNormal;
 varying vec3 vLightDirection;
@@ -12,6 +13,7 @@ varying vec3 vWeights;
 varying float vFog;
 varying float vDistance;
 varying vec3 vPos;
+varying vec4 viewPos;
 varying vec3 worldNormal;
 
 void lightContribution(vec3, vec3, vec3, vec3, out vec3);
@@ -48,17 +50,13 @@ void main(void)
    vec3 color = lightContrib * (vec3(baseColor) + vec3(detailBlend)); 
    color = clamp(color, 0.0, 1.0);
 
-   //Discard the fragment outside some bound so that we don't get the jagged edges where the terrain ends
-   if( vDistance > 10000.0)
-   {
-      //discard;
-   }
-   else
-   {
-      //Mix the final color with the fog and don't forget the alpha
-      alphaMix(color, gl_Fog.color.rgb, vFog, baseColor.a, gl_FragColor);
-      
-      float fragDepth = computeFragDepth(vDistance);
-      gl_FragDepth = fragDepth;
-   }
+   //Mix the final color with the fog and don't forget the alpha
+   alphaMix(color, gl_Fog.color.rgb, vFog, baseColor.a, gl_FragColor);
+   
+   vec3 ecPosition3 = viewPos.xyz / viewPos.w;
+   float dist = length(ecPosition3);
+
+   float fragDepth = computeFragDepth(dist);
+   gl_FragDepth = fragDepth;
+   
 }
