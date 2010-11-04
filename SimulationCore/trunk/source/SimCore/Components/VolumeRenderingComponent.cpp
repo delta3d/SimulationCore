@@ -147,6 +147,7 @@ namespace SimCore
 #endif
    const std::string VolumeRenderingComponent::VOLUME_PARTICLE_COLOR_UNIFORM = "volumeParticleColor";
    const std::string VolumeRenderingComponent::VOLUME_PARTICLE_INTENSITY_UNIFORM = "volumeParticleIntensity";
+   const std::string VolumeRenderingComponent::VOLUME_PARTICLE_DENSITY_UNIFORM = "volumeParticleDensity";
    const std::string VolumeRenderingComponent::VOLUME_PARTICLE_VELOCITY_UNIFORM = "volumeParticleVelocity";
    const std::string VolumeRenderingComponent::VOLUME_PARTICLE_RADIUS_UNIFORM = "volumeParticleRadius";
    //const std::string VolumeRenderingComponent::CAMERA_LINEAR_DEPTH_UNIFORM = "writeLinearDepth";
@@ -262,6 +263,7 @@ namespace SimCore
       , mFadeOut(false)
       , mFadeOutTime(0.0f)
       , mIntensity(1.0f)
+      , mDensity(0.5f)
       , mNumParticles(150)
       , mParticleRadius(5.0f)
       , mColor(1.0f, 1.0f, 1.0f, 0.5f)
@@ -765,6 +767,9 @@ namespace SimCore
 
          osg::Uniform* particleIntensity = ss->getOrCreateUniform(VOLUME_PARTICLE_INTENSITY_UNIFORM, osg::Uniform::FLOAT);
          particleIntensity->set(s.mIntensity);
+
+         osg::Uniform* particleDensity = ss->getOrCreateUniform(VOLUME_PARTICLE_DENSITY_UNIFORM, osg::Uniform::FLOAT);
+         particleDensity->set(s.mDensity);
 
          osg::Uniform* particleVel = ss->getOrCreateUniform(VOLUME_PARTICLE_VELOCITY_UNIFORM, osg::Uniform::FLOAT_VEC3);
          particleVel->set(s.mVelocity);

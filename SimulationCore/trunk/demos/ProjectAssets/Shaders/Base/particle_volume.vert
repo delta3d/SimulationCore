@@ -5,7 +5,6 @@ uniform float volumeParticleRadius;
 
 uniform mat4 inverseViewMatrix;
 
-varying vec4 vWorldPos;
 varying vec4 vOffset;
 varying vec2 vTexCoords;
 varying vec3 vLightContrib;
@@ -25,13 +24,13 @@ void main()
    
    vViewPosVert = vViewPosCenter;
    vViewPosVert.xy += gl_Vertex.xy * volumeParticleRadius;
-   vWorldPos = inverseViewMatrix * vViewPosVert;
+   vec4 worldPos = inverseViewMatrix * vViewPosVert;
    gl_Position = gl_ProjectionMatrix * vViewPosVert;
  
    vTexCoords = gl_MultiTexCoord0.xy;
 
    //Compute the Light Contribution
-   vec3 normal = normalize(vWorldPos.xyz - center_pos);
+   vec3 normal = normalize(worldPos.xyz - center_pos);
    vLightContrib = vec3(1.0, 1.0, 1.0);
 
    vec3 dynamicLightContrib;
@@ -48,10 +47,10 @@ void main()
    vLightContrib = gl_LightSource[0].ambient.rgb + (gl_LightSource[0].diffuse.rgb * (diffuseContrib + upContrib));
 
 
-   dynamic_light_fragment(normal, vWorldPos.xyz, dynamicLightContrib);
-   dynamic_light_fragment(Up, vWorldPos.xyz, dynamicLightContribUp);
-   spot_light_fragment(normal, vWorldPos.xyz, spotLightContrib);
-   spot_light_fragment(Up, vWorldPos.xyz, spotLightContribUp);
+   dynamic_light_fragment(normal, worldPos.xyz, dynamicLightContrib);
+   dynamic_light_fragment(Up, worldPos.xyz, dynamicLightContribUp);
+   spot_light_fragment(normal, worldPos.xyz, spotLightContrib);
+   spot_light_fragment(Up, worldPos.xyz, spotLightContribUp);
    
    vLightContrib = vLightContrib + (0.5 * (dynamicLightContrib + dynamicLightContribUp)) + (0.5 * (spotLightContrib + spotLightContribUp));
    vLightContrib = clamp(vLightContrib, 0.0, 1.0);
