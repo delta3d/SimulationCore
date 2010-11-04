@@ -57,6 +57,7 @@ namespace SimCore
          static const std::string VOLUME_PARTICLE_POS_UNIFORM;
          static const std::string VOLUME_PARTICLE_COLOR_UNIFORM;
          static const std::string VOLUME_PARTICLE_INTENSITY_UNIFORM; 
+         static const std::string VOLUME_PARTICLE_DENSITY_UNIFORM; 
          static const std::string VOLUME_PARTICLE_VELOCITY_UNIFORM;
          static const std::string VOLUME_PARTICLE_RADIUS_UNIFORM;
          //static const std::string CAMERA_LINEAR_DEPTH_UNIFORM;
@@ -117,6 +118,7 @@ namespace SimCore
             bool mFadeOut;      
             float mFadeOutTime; 
             float mIntensity;
+            float mDensity;
 
             //these variables are only for the particle volume types
             unsigned mNumParticles;
