@@ -81,7 +81,8 @@ namespace SimCore
 #else
          GetOrCreateOSGTexture(rttTex, mainGUI, *w, textureWidth, textureHeight);
 #endif
-         osg::Vec2 viewDims(w->getPixelSize().d_width, w->getPixelSize().d_height);
+         //osg::Vec2 viewDims(w->getPixelSize().d_width, w->getPixelSize().d_height);
+         osg::Vec2 viewDims(textureWidth, textureHeight);
 #if CEGUI_VERSION_MAJOR == 0 && CEGUI_VERSION_MINOR < 7
          mCamera = new dtCore::Camera();
 
@@ -98,6 +99,12 @@ namespace SimCore
          mCamera = mainGUI.CreateCameraForRenderTargetTexture(*rttTex, viewDims);
 #endif
 
+         dtCore::Transform xform;
+         xform.SetRotation(0.0, -90.0f, 0.0f);
+         xform.SetTranslation(0.0, 0.0, 1.0f);
+         mCamera->SetTransform(xform);
+
+         //sceneNode.addChild( mCamera->GetOSGCamera() );
          mScene = new dtCore::Scene("SubScene_"+GetName());
          SetSceneNode(&sceneNode);
          mView = new dtCore::View("rttView");
@@ -254,7 +261,7 @@ namespace SimCore
             outTexture = texture->GetOSGTexture();
 #else
             osg::Vec2 texSize(textureWidth, textureHeight);
-            outTexture = mainGUI.CreateRenderTargetTexture(widget, NULL/*&texSize*/, imagesetName);
+            outTexture = mainGUI.CreateRenderTargetTexture(widget, &texSize, imagesetName);
 #endif
          }
       }

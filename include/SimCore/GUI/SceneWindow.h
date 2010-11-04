@@ -93,13 +93,17 @@ namespace SimCore
             float GetViewWidth() const;
             osg::Vec2 GetViewArea() const;
 
-            void GetOrCreateOSGTexture(dtCore::RefPtr<osg::Texture2D>& outTexture,
+            void GetOrCreateOSGTexture(
+                  dtCore::RefPtr<osg::Texture2D>& outTexture,
 #if CEGUI_VERSION_MAJOR == 0 && CEGUI_VERSION_MINOR < 7
-               CEGUI::Window& widget,
 #else
-               dtGUI::GUI& mainGUI, CEGUI::Window& widget,
+                  dtGUI::GUI& mainGUI,
 #endif
-               int textureWidth = 256, int textureHeight = 256 );
+                  CEGUI::Window& widget,
+                  int textureWidth = 256,
+                  int textureHeight = 256 );
+
+
             static osg::Geode* CreateQuad( osg::Texture2D *tex, int renderBin );
 
             void SetSceneNode(osg::Group* node);
