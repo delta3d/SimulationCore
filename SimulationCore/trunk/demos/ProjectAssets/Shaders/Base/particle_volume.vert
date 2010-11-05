@@ -11,6 +11,8 @@ varying vec3 vLightContrib;
 varying vec4 vViewPosCenter;
 varying vec4 vViewPosVert;
 
+varying vec3 vNormal;
+
 void lightContribution(vec3, vec3, vec3, vec3, out vec3);
 void dynamic_light_fragment(vec3, vec3, out vec3);
 void spot_light_fragment(vec3, vec3, out vec3);
@@ -29,30 +31,29 @@ void main()
  
    vTexCoords = gl_MultiTexCoord0.xy;
 
+
+   // Create a normal that faces the camera (in view space), change to world space
+   mat3 inverseView3x3 = mat3(inverseViewMatrix[0].xyz, inverseViewMatrix[1].xyz, inverseViewMatrix[2].xyz);
+   vec3 outwardNormal = inverseView3x3 * vec3(0.0, 0.0, 1.0);
+   // Create a normal facing diagonally out at each vertex.
+   vNormal = normalize(worldPos.xyz - center_pos);
+   // Now combine the two to get a slightly angled, 45 degrees away. 
+   vNormal = (vNormal + outwardNormal)/2.0;
+   vNormal = normalize(vNormal);
+ 
    //Compute the Light Contribution
-   vec3 normal = normalize(worldPos.xyz - center_pos);
    vLightContrib = vec3(1.0, 1.0, 1.0);
 
+   vec3 vLightDir = normalize(inverseView3x3 * gl_LightSource[0].position.xyz);
+   lightContribution(vNormal, vLightDir, vec3(gl_LightSource[0].diffuse), vec3(gl_LightSource[0].ambient), vLightContrib);
+
+
    vec3 dynamicLightContrib;
-   vec3 dynamicLightContribUp;
    vec3 spotLightContrib;
-   vec3 spotLightContribUp;
-   vec3 Up = vec3(0.0, 0.0, 1.0);
-
-   vec3 lightDir = normalize((inverseViewMatrix * gl_LightSource[0].position).xyz);
-
-   float diffuseContrib = max(dot(normal, lightDir), 0.0);
-   float upContrib = max(dot(Up, lightDir), 0.0);
-
-   vLightContrib = gl_LightSource[0].ambient.rgb + (gl_LightSource[0].diffuse.rgb * (diffuseContrib + upContrib));
-
-
-   dynamic_light_fragment(normal, worldPos.xyz, dynamicLightContrib);
-   dynamic_light_fragment(Up, worldPos.xyz, dynamicLightContribUp);
-   spot_light_fragment(normal, worldPos.xyz, spotLightContrib);
-   spot_light_fragment(Up, worldPos.xyz, spotLightContribUp);
+   dynamic_light_fragment(vNormal, worldPos.xyz, dynamicLightContrib);
+   spot_light_fragment(vNormal, worldPos.xyz, spotLightContrib);
    
-   vLightContrib = vLightContrib + (0.5 * (dynamicLightContrib + dynamicLightContribUp)) + (0.5 * (spotLightContrib + spotLightContribUp));
+   vLightContrib = vLightContrib + (dynamicLightContrib) + (spotLightContrib);
    vLightContrib = clamp(vLightContrib, 0.0, 1.0);
 }
 
