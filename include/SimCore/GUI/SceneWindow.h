@@ -66,9 +66,9 @@ namespace SimCore
             SceneWindow( CEGUI::Window& window );
 
 #if CEGUI_VERSION_MAJOR == 0 && CEGUI_VERSION_MINOR < 7
-            virtual void InitializeCamera( osg::Group& sceneNode,
+            virtual void InitializeCamera(
 #else
-            virtual void InitializeCamera(dtGUI::GUI& mainGUI, osg::Group& sceneNode,
+            virtual void InitializeCamera(dtGUI::GUI& mainGUI,
 #endif
                int textureWidth = 256, int textureHeight = 256 );
 
@@ -106,6 +106,7 @@ namespace SimCore
 
             static osg::Geode* CreateQuad( osg::Texture2D *tex, int renderBin );
 
+            // Sets the scene graph that the camera is rendering.
             void SetSceneNode(osg::Group* node);
             osg::Group* GetSceneNode();
             const osg::Group* GetSceneNode() const;

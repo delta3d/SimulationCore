@@ -68,9 +68,9 @@ namespace SimCore
 
       //////////////////////////////////////////////////////////////////////////
 #if CEGUI_VERSION_MAJOR == 0 && CEGUI_VERSION_MINOR < 7
-      void SceneWindow::InitializeCamera( osg::Group& sceneNode,
+      void SceneWindow::InitializeCamera(
 #else
-      void SceneWindow::InitializeCamera( dtGUI::GUI& mainGUI, osg::Group& sceneNode,
+      void SceneWindow::InitializeCamera( dtGUI::GUI& mainGUI,
 #endif
          int textureWidth, int textureHeight )
       {
@@ -99,14 +99,17 @@ namespace SimCore
          mCamera = mainGUI.CreateCameraForRenderTargetTexture(*rttTex, viewDims);
 #endif
 
-         mSceneNode = &sceneNode;
-
          dtCore::Transform xform;
          xform.SetRotation(0.0, -90.0f, 0.0f);
          xform.SetTranslation(0.0, 0.0, 1.0f);
          mCamera->SetTransform(xform);
 
-         sceneNode.addChild( mCamera->GetOSGCamera() );
+         if (mSceneNode.valid())
+         {
+            // Reset the set scene node if it was set before call this init function.
+            SetSceneNode(mSceneNode);
+         }
+
          SetWindowUnits( mWindowUnits, false );
       }
 
@@ -312,16 +315,19 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void SceneWindow::SetSceneNode(osg::Group* node)
       {
+         // Don't change this code to check for the node being the same as mSceneNode
+         // becaues it will break the init camera function.
+
          if (mSceneNode .valid() && mCamera.valid())
          {
-            mSceneNode->removeChild(mCamera->GetOSGCamera());
+            mCamera->GetOSGCamera()->removeChild(mSceneNode);
          }
 
          mSceneNode = node;
 
-         if (mSceneNode .valid() && mCamera.valid())
+         if (mSceneNode.valid() && mCamera.valid())
          {
-            mSceneNode->addChild(mCamera->GetOSGCamera());
+            mCamera->GetOSGCamera()->addChild(mSceneNode);
          }
       }
 
