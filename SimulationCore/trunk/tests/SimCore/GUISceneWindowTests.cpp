@@ -71,21 +71,16 @@ void SceneWindowTests::TestSceneWindowProperties()
    dtCore::RefPtr<osg::Group> hudLayer = new osg::Group;
    CPPUNIT_ASSERT( hudLayer->getNumChildren() == 0 );
 #if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
-   mSceneWin->InitializeCamera( *hudLayer );
+   mSceneWin->InitializeCamera();
 #else
-   mSceneWin->InitializeCamera( GetGlobalGUI(), *hudLayer );
+   mSceneWin->InitializeCamera(GetGlobalGUI());
 #endif
+
+   hudLayer->addChild(mSceneWin->GetCamera().GetOSGCamera());
    CPPUNIT_ASSERT( hudLayer->getNumChildren() == 1 );
 
-   try
-   {
-      mSceneWin->GetCamera();
-      constSceneWin->GetCamera();
-   }
-   catch( ... )
-   {
-      CPPUNIT_ASSERT_MESSAGE("SceneWindow might have a NULL camera node.",false);
-   }
+   CPPUNIT_ASSERT_NO_THROW_MESSAGE("SceneWindow might have a NULL camera node.", mSceneWin->GetCamera());
+   CPPUNIT_ASSERT_NO_THROW_MESSAGE("SceneWindow might have a NULL camera node.", constSceneWin->GetCamera());
 
    CPPUNIT_ASSERT( mSceneWin->IsVisible() );
    mSceneWin->SetVisible( false );
