@@ -110,9 +110,6 @@ namespace SimCore
             osg::Group* GetSceneNode();
             const osg::Group* GetSceneNode() const;
 
-            dtCore::View& GetView();
-            const dtCore::View& GetView() const;
-
          protected:
             virtual ~SceneWindow();
 
@@ -121,8 +118,7 @@ namespace SimCore
             unsigned mLastVisibilityMask;
             osg::Vec4 mWindowUnits;
             dtCore::RefPtr<dtCore::Camera> mCamera;
-            dtCore::RefPtr<dtCore::Scene> mScene;
-            dtCore::RefPtr<dtCore::View> mView;
+            dtCore::RefPtr<osg::Group> mSceneNode;
       };
    }
 }

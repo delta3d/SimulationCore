@@ -99,18 +99,14 @@ namespace SimCore
          mCamera = mainGUI.CreateCameraForRenderTargetTexture(*rttTex, viewDims);
 #endif
 
+         mSceneNode = &sceneNode;
+
          dtCore::Transform xform;
          xform.SetRotation(0.0, -90.0f, 0.0f);
          xform.SetTranslation(0.0, 0.0, 1.0f);
          mCamera->SetTransform(xform);
 
-         //sceneNode.addChild( mCamera->GetOSGCamera() );
-         mScene = new dtCore::Scene("SubScene_"+GetName());
-         SetSceneNode(&sceneNode);
-         mView = new dtCore::View("rttView");
-         mView->SetCamera(mCamera.get());
-         mView->SetScene(mScene.get());
-
+         sceneNode.addChild( mCamera->GetOSGCamera() );
          SetWindowUnits( mWindowUnits, false );
       }
 
@@ -316,31 +312,29 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void SceneWindow::SetSceneNode(osg::Group* node)
       {
-         mScene->SetSceneNode(node);
+         if (mSceneNode .valid() && mCamera.valid())
+         {
+            mSceneNode->removeChild(mCamera->GetOSGCamera());
+         }
+
+         mSceneNode = node;
+
+         if (mSceneNode .valid() && mCamera.valid())
+         {
+            mSceneNode->addChild(mCamera->GetOSGCamera());
+         }
       }
 
       //////////////////////////////////////////////////////////////////////////
       osg::Group* SceneWindow::GetSceneNode()
       {
-         return mScene->GetSceneNode();
+         return mSceneNode;
       }
 
       //////////////////////////////////////////////////////////////////////////
       const osg::Group* SceneWindow::GetSceneNode() const
       {
-         return mScene->GetSceneNode();
-      }
-
-      //////////////////////////////////////////////////////////////////////////
-      dtCore::View& SceneWindow::GetView()
-      {
-         return *mView;
-      }
-
-      //////////////////////////////////////////////////////////////////////////
-      const dtCore::View& SceneWindow::GetView() const
-      {
-         return *mView;
+         return mSceneNode;
       }
 
    }
