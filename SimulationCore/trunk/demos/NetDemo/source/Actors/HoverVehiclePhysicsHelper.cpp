@@ -64,12 +64,11 @@ namespace NetDemo
    static float testCorrection = 0.01f;
    //static float testForceBoost = 0.25f;
    static float testJumpBoost = 1.6 * -dtPhysics::DEFAULT_GRAVITY_Z; //dtAgeiaPhysX::DEFAULT_GRAVITY_Z;
-   static float testQuicknessAdjustment = 2.8f; // 1.0 gives you a sluggish feel
+   static float testQuicknessAdjustment = 2.0f; // 1.0 gives you a sluggish feel
 
    ////////////////////////////////////////////////////////////////////////////////////
    void HoverVehiclePhysicsHelper::DoJump(float deltaTime)
    {
-
       //po->AddLocalForce(boostDirection * boostForce);
    }
 
@@ -80,24 +79,16 @@ namespace NetDemo
       dtPhysics::PhysicsObject* physicsObject = GetMainPhysicsObject();
 
       deltaTime = (deltaTime > 0.2) ? 0.2 : deltaTime;  // cap at 0.2 second to avoid rare 'freak' outs.
-      //float weight = GetVehicleBaseWeight();
       float weight = physicsObject->GetMass();
 
       // First thing we do is try to make sure we are hovering...
-      //dtPhysics::PhysicsObject* physicsObject = GetPhysicsObject();  // Tick Local protects us from NULL.
-      //NxVec3 velocity = physicsObject->getLinearVelocity();
-      //NxVec3 pos = physicsObject->getGlobalPosition();
-      //NxVec3 posLookAhead = pos + velocity * 0.5; // where would our vehicle be in the future?
       osg::Vec3 velocity = physicsObject->GetBodyWrapper()->GetLinearVelocity();
       osg::Vec3 pos = physicsObject->GetTranslation();
       osg::Vec3 posLookAhead = pos + velocity * 0.4; // where would our vehicle be in the future?
       float speed = dtUtil::Min(velocity.length(), 300.0f);  // cap for silly values - probably init values
-      //float speed = dtUtil::Min(velocity.magnitude(), 300.0f);  // cap for silly values - probably init values
 
       // Adjust position so that we are 'hovering' above the ground. The look ahead position
       // massively helps smooth out the bouncyness
-      //osg::Vec3 location(pos.x, pos.y, pos.z);
-      //osg::Vec3 locationLookAhead(posLookAhead.x, posLookAhead.y, posLookAhead.z);
       osg::Vec3 direction( 0.0f, 0.0f, -1.0f);
       float distanceToHit = 0.0;
       float futureAdjustment = ComputeEstimatedForceCorrection(posLookAhead, direction, distanceToHit);
@@ -109,17 +100,12 @@ namespace NetDemo
       // Add an 'up' impulse based on the weight of the vehicle, our current time slice, and the adjustment.
       // Use current position and estimated future position to help smooth out the force.
       float finalAdjustment = currentAdjustment * (1.0f - modulation) + futureAdjustment * (modulation);
-      float upForce = weight * finalAdjustment;// * deltaTime;
-      ////std::cout << " **** Up Force [" << upForce << "]." << std::endl;
-      //NxVec3 dir(0.0, 0.0, 1.0);
-      //physicsObject->addForce(dir * (upForce), NX_SMOOTH_IMPULSE);
+      float upForce = weight * finalAdjustment;
       osg::Vec3 dir(0.0, 0.0, 1.0);
-      //physicsObject->GetBodyWrapper()->AddForce(dir * upForce);
       physicsObject->ApplyImpulse(dir * upForce * deltaTime);
 
       // Get the forward vector and the perpendicular side (right) vector.
       dtGame::GameActor* actor = NULL;
-      //GetPhysicsGameActorProxy()->GetActor( actor );
       GetGameActorProxy()->GetActor( actor );
       osg::Matrix matrix;
       dtCore::Transformable::GetAbsoluteMatrix( actor->GetOSGNode(), matrix);
@@ -137,30 +123,22 @@ namespace NetDemo
       // FORWARD
       if(accelForward)
       {
-         //NxVec3 dir(lookDir[0], lookDir[1], lookDir[2]);
-         //physicsObject->addForce(dir * (weight * speedModifier * deltaTime), NX_SMOOTH_IMPULSE);
          physicsObject->AddForce(lookDir * (weight * speedModifier));
       }
       // REVERSE
       else if(accelReverse)
       {
-         //NxVec3 dir(-lookDir[0], -lookDir[1], -lookDir[2]);
-         //physicsObject->addForce(dir * (weight * strafeModifier * deltaTime), NX_SMOOTH_IMPULSE);
          physicsObject->AddForce(-lookDir * (weight * strafeModifier));
       }
 
       // LEFT
       if(accelLeft)
       {
-         //NxVec3 dir(-rightDir[0], -rightDir[1], -rightDir[2]);
-         //physicsObject->addForce(dir * (weight * strafeModifier * deltaTime), NX_SMOOTH_IMPULSE);
          physicsObject->AddForce(-rightDir * (weight * strafeModifier));
       }
       // RIGHT
       else if(accelRight)
       {
-         //NxVec3 dir(rightDir[0], rightDir[1], rightDir[2]);
-         //physicsObject->addForce(dir * (weight * strafeModifier * deltaTime), NX_SMOOTH_IMPULSE);
          physicsObject->AddForce(rightDir * (weight * strafeModifier));
       }
 
@@ -168,7 +146,8 @@ namespace NetDemo
       // prevents you from achieving unheard of velocities.
       if(speed > 0.001)
       {
-         float windResistance = testQuicknessAdjustment * speed * testCorrection;
+         float windResistance = speed / (GetVehicleMaxForwardMPH() + 0.1f);
+         float standardSlowDown = GetVehicleMaxForwardMPH() * 0.005f;
 
          // If we aren't doing any movement, then add an extra flavor in there so that we 'coast' to a stop.
          // The slower we're going, the more the 'flavor' boost kicks in, else we get linearly less slowdown.
@@ -176,15 +155,14 @@ namespace NetDemo
          if(!accelForward && !accelReverse && !accelLeft && !accelRight &&
             distanceToHit < (mGroundClearance + GetSphereRadius()))
          {
-            if(speed < 4.0f) // if we're almost stopped, shut us down fast
-               windResistance *= 4.0f * (GetVehicleMaxForwardMPH() + 0.2f)/ (speed + 0.2f);
-            else
-               windResistance *= (GetVehicleMaxForwardMPH() + 0.2f)/ (speed + 0.2f);
+            if(speed < 5.0f) // if we're almost stopped, shut us down fast
+               windResistance *= 4.0f;// * (GetVehicleMaxForwardMPH() + 0.2f)/ (speed + 0.2f);
          }
 
          // Slow us down! Wind or coast effect
-         //physicsObject->addForce(-velocity * (weight * windResistance * deltaTime), NX_SMOOTH_IMPULSE);
-         physicsObject->AddForce(-velocity * (weight * windResistance));
+         osg::Vec3 smallZVelocity(velocity);
+         smallZVelocity.z() /= 3.0f; // ignore most of the z.
+         physicsObject->AddForce(-velocity * weight * (windResistance + standardSlowDown));
       }
 
    }

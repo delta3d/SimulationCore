@@ -107,6 +107,7 @@ namespace NetDemo
          SimCore::Components::RenderingSupportComponent::DEFAULT_NAME, renderComp);
       if(renderComp != NULL)
       {
+         /* -- The vehicle light is applied elsewhere
          //Add a spot light
          SimCore::Components::RenderingSupportComponent::SpotLight* sl =
             new SimCore::Components::RenderingSupportComponent::SpotLight();
@@ -122,6 +123,7 @@ namespace NetDemo
          sl->mUseAbsoluteDirection = false;
 
          renderComp->AddDynamicLight(sl);
+         */
       }
 
       if(!IsRemote())
@@ -210,6 +212,25 @@ namespace NetDemo
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
+   void HoverVehicleActor::SetTransform(const dtCore::Transform& xform, dtCore::Transformable::CoordSysEnum cs)
+   {
+      // If this set transform is ONLY a change in rotation, it is from the motion model and we 
+      // need to prevent the base class from pushing the new transform to the physics engine. 
+      // Otherwise, it messes up the DR publishing. 
+      dtCore::Transform currentXForm;
+      GetTransform(currentXForm, cs);
+      bool clearPushTransformToPhysics = (currentXForm.GetTranslation() == xform.GetTranslation());
+      
+      BaseClass::SetTransform(xform, cs);
+
+      if (clearPushTransformToPhysics)
+      {
+         SetPushTransformToPhysics(false);
+      }
+   }
+
+
+   ///////////////////////////////////////////////////////////////////////////////////
    void HoverVehicleActor::PostPhysicsUpdate()
    {
       // Mostly copied from BasePhysicsVehicleActor - we do NOT want want our vehicle to 'roll', so we
@@ -223,8 +244,8 @@ namespace NetDemo
          dtPhysics::PhysicsObject* physicsObject = GetPhysicsHelper()->GetMainPhysicsObject();
 
          //TODO: Ask if the object is activated.  If not, the transform should not be pushed.
-         if (!GetPushTransformToPhysics())
-         {
+         //if (!GetPushTransformToPhysics())
+         //{
             if(physicsObject != NULL)
             {
                // Take rotation from physics and apply to current xform - IE NO ROTATION!
@@ -237,7 +258,7 @@ namespace NetDemo
                SetTransform(currentXForm);
                SetPushTransformToPhysics(false);
             }
-         }
+         //}
       }
    }
 
