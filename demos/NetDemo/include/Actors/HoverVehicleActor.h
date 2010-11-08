@@ -71,6 +71,9 @@ namespace NetDemo
 
          virtual void PostPhysicsUpdate();
 
+         /// Overridden so we can undo our rotation only thing for the physics. 
+         virtual void SetTransform(const dtCore::Transform& xform, dtCore::Transformable::CoordSysEnum cs = dtCore::Transformable::ABS_CS);
+
          virtual void OnTickLocal(const dtGame::TickMessage& tickMessage);
          virtual void OnTickRemote(const dtGame::TickMessage& tickMessage);
 
