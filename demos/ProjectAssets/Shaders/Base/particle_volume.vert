@@ -2,6 +2,7 @@ const int MAX_NUM_PARTICLES = 150;
 
 uniform vec4 volumeParticlePos[MAX_NUM_PARTICLES];
 uniform float volumeParticleRadius;
+uniform float volumeParticleDensity;
 
 uniform mat4 inverseViewMatrix;
 
@@ -11,6 +12,7 @@ varying vec3 vLightContrib;
 varying vec4 vViewPosCenter;
 varying vec4 vViewPosVert;
 
+varying vec3 vPos;
 varying vec3 vNormal;
 
 void lightContribution(vec3, vec3, vec3, vec3, out vec3);
@@ -26,7 +28,8 @@ void main()
    
    vViewPosVert = vViewPosCenter;
    vViewPosVert.xy += gl_Vertex.xy * volumeParticleRadius;
-   vec4 worldPos = inverseViewMatrix * vViewPosVert;
+
+   vPos = (inverseViewMatrix * vViewPosVert).xyz;
    gl_Position = gl_ProjectionMatrix * vViewPosVert;
  
    vTexCoords = gl_MultiTexCoord0.xy;
@@ -36,24 +39,36 @@ void main()
    mat3 inverseView3x3 = mat3(inverseViewMatrix[0].xyz, inverseViewMatrix[1].xyz, inverseViewMatrix[2].xyz);
    vec3 outwardNormal = inverseView3x3 * vec3(0.0, 0.0, 1.0);
    // Create a normal facing diagonally out at each vertex.
-   vNormal = normalize(worldPos.xyz - center_pos);
-   // Now combine the two to get a slightly angled, 45 degrees away. 
+   vNormal = normalize(vPos.xyz - center_pos);
+   // Make 2 sets of normals: facing 45 degrees toward and 45 degrees away from the eye.  
+   vec3 awayNormal = (vNormal - outwardNormal)/2.0;
    vNormal = (vNormal + outwardNormal)/2.0;
    vNormal = normalize(vNormal);
  
    //Compute the Light Contribution
-   vLightContrib = vec3(1.0, 1.0, 1.0);
-
-   vec3 vLightDir = normalize(inverseView3x3 * gl_LightSource[0].position.xyz);
-   lightContribution(vNormal, vLightDir, vec3(gl_LightSource[0].diffuse), vec3(gl_LightSource[0].ambient), vLightContrib);
-
-
    vec3 dynamicLightContrib;
    vec3 spotLightContrib;
-   dynamic_light_fragment(vNormal, worldPos.xyz, dynamicLightContrib);
-   spot_light_fragment(vNormal, worldPos.xyz, spotLightContrib);
-   
-   vLightContrib = vLightContrib + (dynamicLightContrib) + (spotLightContrib);
+   vLightContrib = vec3(1.0, 1.0, 1.0);
+   vec3 vLightDir = normalize(inverseView3x3 * gl_LightSource[0].position.xyz);
+   vec3 sunLightContrib = vec3(1.0, 1.0, 1.0);
+
+   // Calc light from sun, from dynamic area, and dynamic spot lights
+   lightContribution(vNormal, vLightDir, vec3(gl_LightSource[0].diffuse), vec3(gl_LightSource[0].ambient), sunLightContrib);
+   // Blend part of the sunLightContrib with part of the real sun value (without normals)
+   // based on the density of the particle. At 0.20 density, it'd be a 50/50 mix.
+   sunLightContrib = mix(gl_LightSource[0].diffuse, sunLightContrib,
+         (min(1.0, volumeParticleDensity*4.0)));
+   dynamic_light_fragment(vNormal, vPos.xyz, dynamicLightContrib);
+   spot_light_fragment(vNormal, vPos.xyz, spotLightContrib);
+   vec3 frontSideLightContrib = sunLightContrib + dynamicLightContrib + spotLightContrib;
+
+   // Do the same for the backside AWAYNORMAL - backside light is damped by the density
+   dynamic_light_fragment(awayNormal, vPos.xyz, dynamicLightContrib);
+   spot_light_fragment(awayNormal, vPos.xyz, spotLightContrib);
+   vec3 backsideLightContrib = (1.0-volumeParticleDensity) * (sunLightContrib + dynamicLightContrib + spotLightContrib);
+
+   // Use the best of the two
+   vLightContrib = max(frontSideLightContrib, backsideLightContrib);  
    vLightContrib = clamp(vLightContrib, 0.0, 1.0);
 }
 

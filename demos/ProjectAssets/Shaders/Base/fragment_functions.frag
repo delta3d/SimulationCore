@@ -14,6 +14,7 @@
 uniform bool writeLinearDepth;
 uniform float nearPlane;
 uniform float farPlane;
+uniform sampler2D depthTexture;
 
 float computeFragDepth(float distance)
 {
@@ -43,7 +44,7 @@ void lightContribution(vec3 normal, vec3 lightDir, vec3 diffuseLightSource, vec3
    float diffuseSurfaceContrib = max(dot(normal, lightDir),0.0);
    float fUpContribution = max(dot(vec3(0.0, 0.0, 1.0), lightDir), -0.1);
    fUpContribution = (fUpContribution + 0.1) / 1.1;  // we use a bit past horizontal, else it darkens too soon.
-   float diffuseContrib = fUpContribution * 0.42 + diffuseSurfaceContrib * 0.62;
+   float diffuseContrib = fUpContribution * 0.52 + diffuseSurfaceContrib * 0.52;
 
    // Lit Color (Diffuse plus Ambient)
    vec3 diffuseLight = diffuseLightSource * diffuseContrib;
@@ -56,3 +57,27 @@ void computeSpecularContribution(vec3 lightDir, vec3 normal, vec3 viewDir, vec3 
    float reflectContrib = max(0.0,dot(reflectVec, -viewDir));
    specularContribution = vec3(glossMap.r) * (pow(reflectContrib, 16.0));
 }
+
+/////////////////////////////////////////////////////////////////////
+// Determines the opacity of a spherical soft particle (drawn as a billboard). 
+// The center is fully opaque (1.0), the edges are fully transparent (0.0)
+// This technique is derived from the article, "Spherical Billboards for 
+// Rendering Volumetric Data" in Shader X5.
+/////////////////////////////////////////////////////////////////////
+float softParticleOpacity(vec3 viewPosCenter, vec3 viewPosCurrent, 
+      float radius, vec2 screenCoord, float density)
+{
+   float dist = length(viewPosCenter.xy - viewPosCurrent.xy);
+   float vpLength = radius + length(viewPosCurrent);
+   float fMin = nearPlane * vpLength / viewPosCurrent.z;
+   float w = sqrt(radius * radius - dist * dist);
+   float f = vpLength - w;
+   float b = vpLength + w;
+   float sceneDepth = texture2D(depthTexture, screenCoord).r * (farPlane - nearPlane);
+   float ds = min(sceneDepth, b) - max(fMin, f);
+   float sphereDepth = (1.0 - dist / radius) * ds;
+   float opacity = 1.0 - exp(-density * sphereDepth);
+
+   return opacity;
+}
+
