@@ -249,7 +249,7 @@ namespace SimCore
    /////////////////////////////////////////////////////////////
    //ShapeVolumeRecord
    /////////////////////////////////////////////////////////////
-   OpenThreads::Atomic VolumeRenderingComponent::ShapeVolumeRecord::mCounter = 0;
+   OpenThreads::Atomic VolumeRenderingComponent::ShapeVolumeRecord::mCounter;
    
    //////////////////////////////////////////////////////////////////////////
    VolumeRenderingComponent::ShapeVolumeRecord::ShapeVolumeRecord()
