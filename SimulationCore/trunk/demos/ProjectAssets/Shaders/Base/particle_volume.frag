@@ -1,4 +1,3 @@
-uniform sampler2D depthTexture;
 uniform sampler3D noiseTexture;
 uniform float osg_SimulationTime;
 uniform float nearPlane;
@@ -17,48 +16,35 @@ varying vec3 vLightContrib;
 varying vec4 vViewPosCenter;
 varying vec4 vViewPosVert;
 
+varying vec3 vPos;
+varying vec3 vNormal;
 
-float computeFog(vec3 viewPosCenter, vec3 viewPosCurrent, float radius, vec2 screenCoord)
-{
-   float opacity = 0.0;
-   float dist = length(viewPosCenter.xy - viewPosCurrent.xy);
-   if(dist < radius)
-   {
-      float vpLength = radius + length(viewPosCurrent);
-      float fMin = nearPlane * vpLength / viewPosCurrent.z;
-      float w = sqrt(radius * radius - dist * dist);
-      float f = vpLength - w;
-      float b = vpLength + w;
-      float sceneDepth = texture2D(depthTexture, screenCoord).r;
-      sceneDepth *= (farPlane - nearPlane);
-      float ds = min(sceneDepth, b) - max(fMin, f);
-      float sphereDepth = (1.0 - dist / radius) * ds;
-      opacity = 1.0 - exp(-volumeParticleDensity * sphereDepth);
-   }
+float softParticleOpacity(vec3 viewPosCenter, vec3 viewPosCurrent, 
+      float radius, vec2 screenCoord, float density);
 
-   return opacity;
-}
 
 void main(void)
 {
 
-   vec3 normal;
-   normal.xy = vTexCoords.xy * 2.0 - vec2(1.0, 1.0);
-   float r = dot(normal.xy, normal.xy);
-   normal.z = -sqrt(1.0 - r);
-   normal = vec3(normal.x, normal.z, normal.y);
+   vec2 radiusPosition = vTexCoords.xy * 2.0 - vec2(1.0, 1.0);
+   // use r*r (vice r) using a dot, which drops the square root of length(). Works well.
+   float r = dot(radiusPosition.xy, radiusPosition.xy); 
+   if(r > 1.0) discard; // Eliminate processing on boundary pixels
 
-   if(r > 1.0) discard;
-
-   vec3 noiseCoords =  normal + (vOffset.xyz) + (osg_SimulationTime * volumeParticleVelocity);
-   float noise  = abs( (texture3D(noiseTexture, noiseCoords)).a );
+   vec3 noiseCoords = vNormal*volumeParticleRadius/4.0 + (vOffset.xyz) + (osg_SimulationTime * volumeParticleVelocity);
+   float noise = (texture3D(noiseTexture, noiseCoords)).a;
    
-    if(noise < r)
-        discard;
-    else
-        noise -= r;
+   float partialAlpha = volumeParticleColor.w * volumeParticleIntensity * (noise * pow(1.0-r, 0.333));
+   if(partialAlpha < 0.1) //noise < r
+      discard; // make right at the end disappear - but softly. 
 
-   float fogAmt = computeFog(vViewPosCenter.xyz, vViewPosVert.xyz, volumeParticleRadius, gl_FragCoord.xy / ScreenDimensions);
-   gl_FragColor = min(r + r + noise, 1.0) * vec4(vLightContrib * volumeParticleColor.xyz, fogAmt * volumeParticleColor.w * volumeParticleIntensity * noise);
+   // soft particles avoid sharp cuts into main geometry
+   float opacity = softParticleOpacity(vViewPosCenter.xyz, vViewPosVert.xyz, 
+         volumeParticleRadius, gl_FragCoord.xy / ScreenDimensions, volumeParticleDensity);
+
+   // use some noise in final color to keep it interesting (straight noise makes it too dark).
+   vec3 finalColor = (0.6 + 0.6*noise) * vLightContrib * volumeParticleColor.xyz;
+   float finalAlpha = opacity * partialAlpha;
+   gl_FragColor = vec4(finalColor,finalAlpha);
 }
 
