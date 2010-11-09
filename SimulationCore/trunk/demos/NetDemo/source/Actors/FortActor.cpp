@@ -126,7 +126,7 @@ namespace NetDemo
       SimCore::Components::RenderingSupportComponent* renderComp;
       GetGameActorProxy().GetGameManager()->GetComponentByName(
          SimCore::Components::RenderingSupportComponent::DEFAULT_NAME, renderComp);
-      if(false && renderComp != NULL)
+      if(renderComp != NULL)
       {
          //Add a spot light
          mMainLight = new SimCore::Components::RenderingSupportComponent::DynamicLight();
