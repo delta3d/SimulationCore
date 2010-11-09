@@ -94,6 +94,9 @@ void PagedTerrainPhysicsActorTests::setUp()
    dtCore::System::GetInstance().Config();
    dtCore::System::GetInstance().Step();
 
+   CPPUNIT_ASSERT(mApp->GetCamera());
+
+
    dtCore::System::GetInstance().Step();
 }
 

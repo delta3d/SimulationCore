@@ -41,7 +41,7 @@
 #include <dtCore/scene.h>
 #include <dtCore/camera.h>
 #include <dtCore/deltadrawable.h>
-#include <dtCore/globals.h>
+#include <dtUtil/datapathutils.h>
 #include <dtCore/system.h>
 #include <dtCore/transform.h>
 
@@ -292,6 +292,11 @@ namespace SimCore
       {
          osg::Camera* camera = pCamera.GetOSGCamera();
          osgViewer::Renderer* renderer = static_cast<osgViewer::Renderer*>(camera->getRenderer());
+         if (renderer == NULL)
+         {
+            return;
+         }
+
          osgUtil::SceneView* sceneView = renderer->getSceneView(0);
 
          mCullVisitor->setRenderStage(sceneView->getRenderStage());
@@ -528,6 +533,14 @@ namespace SimCore
       void RenderingSupportComponent::SetEnableCullVisitor(bool pEnable)
       {
          mEnableCullVisitor = pEnable;
+         if (GetGameManager() != NULL)
+         {
+            InitializeCullVisitor(*GetGameManager()->GetApplication().GetCamera());
+         }
+         else
+         {
+            LOG_WARNING("Code enabled the paged terrain cull visitor, but the RenderingSupportComponent has not been added to the GM.");
+         }
 
          if (pEnable && mEnableStaticTerrainPhysics)
          {
@@ -606,17 +619,11 @@ namespace SimCore
          osg::Vec3 hpr;
          trans.GetRotation(hpr);
          hprUniform->set(hpr);
-
-         //we we are setup to use the cullvisitor then initialize it
-         if(mEnableCullVisitor)
-         {
-            InitializeCullVisitor(pCamera);
-         }
       }
 
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      void RenderingSupportComponent::ProcessMessage(const dtGame::Message &msg)
+      void RenderingSupportComponent::ProcessMessage(const dtGame::Message& msg)
       {
          if(msg.GetMessageType() == dtGame::MessageType::TICK_LOCAL)
          {
@@ -1107,7 +1114,7 @@ namespace SimCore
 
             csmPath += "/CSM/data";
 
-            dtCore::SetEnvironment("CSM_DATA", csmPath);
+            dtUtil::SetEnvironment("CSM_DATA", csmPath);
          }
       }
 
