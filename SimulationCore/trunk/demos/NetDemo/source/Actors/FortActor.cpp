@@ -126,7 +126,7 @@ namespace NetDemo
       SimCore::Components::RenderingSupportComponent* renderComp;
       GetGameActorProxy().GetGameManager()->GetComponentByName(
          SimCore::Components::RenderingSupportComponent::DEFAULT_NAME, renderComp);
-      if(renderComp != NULL)
+      if(false && renderComp != NULL)
       {
          //Add a spot light
          mMainLight = new SimCore::Components::RenderingSupportComponent::DynamicLight();
@@ -141,24 +141,26 @@ namespace NetDemo
       }
 
       //add a shape volume for the beam
-      //SimCore::Components::VolumeRenderingComponent* vrc = NULL;
-      //GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::VolumeRenderingComponent::DEFAULT_NAME, vrc); 
-      //if(vrc != NULL)
-      //{
-      //   SimCore::Components::VolumeRenderingComponent::ShapeVolumeRecord* svr = new SimCore::Components::VolumeRenderingComponent::ShapeVolumeRecord();
-      //   svr->mPosition.set(0.0f, 20.0f, 0.0f);
-      //   svr->mColor.set(1.0f, 1.0f, 1.0f, 0.5f);
-      //   svr->mShapeType = SimCore::Components::VolumeRenderingComponent::ELLIPSOID;
-      //   svr->mRadius.set(50.0f, 15.0f, 10.0f);
-      //   svr->mNumParticles = 150;
-      //   svr->mParticleRadius = 10.0f;
-      //   svr->mVelocity.set(0.25, 0.25, 0.25);
-      //   svr->mTarget = this;
-      //   svr->mAutoDeleteOnTargetNull = true;
-      //   svr->mRenderMode = SimCore::Components::VolumeRenderingComponent::PARTICLE_VOLUME;
+      SimCore::Components::VolumeRenderingComponent* vrc = NULL;
+      GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::VolumeRenderingComponent::DEFAULT_NAME, vrc); 
+      /*
+      if(vrc != NULL)
+      {
+         SimCore::Components::VolumeRenderingComponent::ShapeVolumeRecord* svr = new SimCore::Components::VolumeRenderingComponent::ShapeVolumeRecord();
+         svr->mPosition.set(10.0f, 95.0f, 1.0f);
+         svr->mColor.set(0.75f, 1.0f, 0.75f, 1.0f);
+         svr->mShapeType = SimCore::Components::VolumeRenderingComponent::ELLIPSOID;
+         svr->mRadius.set(40.0f, 25.0f, 10.0f);
+         svr->mNumParticles = 200;
+         svr->mParticleRadius = 4.5f;
+         svr->mVelocity.set(0.07, 0.07, 0.07);
+         svr->mDensity = 0.15f;
+         svr->mTarget = this;
+         svr->mAutoDeleteOnTargetNull = true;
+         svr->mRenderMode = SimCore::Components::VolumeRenderingComponent::PARTICLE_VOLUME;
 
-      //   vrc->CreateShapeVolume(svr);
-      //}
+         vrc->CreateShapeVolume(svr);
+      } */
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
