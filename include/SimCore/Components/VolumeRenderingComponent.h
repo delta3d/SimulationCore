@@ -60,12 +60,13 @@ namespace SimCore
          static const std::string VOLUME_PARTICLE_DENSITY_UNIFORM; 
          static const std::string VOLUME_PARTICLE_VELOCITY_UNIFORM;
          static const std::string VOLUME_PARTICLE_RADIUS_UNIFORM;
+         static const std::string VOLUME_PARTICLE_NOISE_SCALE_UNIFORM;
          //static const std::string CAMERA_LINEAR_DEPTH_UNIFORM;
 
 
          typedef unsigned ShapeRecordID;
 
-         enum Shape{SPHERE, ELLIPSOID, BOX, CAPSULE, CONE, CYLINDER};
+         enum Shape{SPHERE, ELLIPSOID, BOX, CONE, CYLINDER};
 
          enum RenderMode{SIMPLE_SHAPE_GEOMETRY, PARTICLE_VOLUME};//, VOLUMETRIC_RAYCASTING};
 
@@ -75,7 +76,7 @@ namespace SimCore
          {
          public:
             typedef osg::Geometry BaseClass;
-            typedef std::vector<osg::Vec3> PointList; 
+            typedef std::vector<osg::Vec4> PointList; 
 
             META_Object(SimCore, ParticleVolumeDrawable);
             ParticleVolumeDrawable();
@@ -83,9 +84,21 @@ namespace SimCore
 
             void Init(unsigned mNumParticles, ShapeVolumeRecord* svr);
 
-            const osg::Vec3& GetPointLocation(unsigned i) const;
+            const osg::Vec4& GetPointLocation(unsigned i) const;
+            void SetPointLocation(unsigned i, const osg::Vec4& newOffset);
+
+            float GetParticleRadius() const;
+            void SetParticleRadius(float f);
 
             unsigned GetNumParticles() const;
+            
+            //temporarily we will not support the primitive functor
+            virtual bool supports(const osg::PrimitiveFunctor&) const { return false; }
+            //not sure if these will give desired results
+            virtual bool supports(const osg::Drawable::AttributeFunctor&) const { return false; }
+            virtual bool supports(const osg::Drawable::ConstAttributeFunctor&) const { return false; }
+            virtual bool supports(const osg::PrimitiveIndexFunctor&) const { return false; }
+
 
             /*virtual*/ osg::BoundingBox computeBound() const;
 
@@ -115,10 +128,12 @@ namespace SimCore
             bool mDeleteMe;
             bool mAutoDeleteAfterMaxTime; //using this flag will set the volume to be automatically removed after the number of seconds
             float mMaxTime;
-            bool mFadeOut;      
-            float mFadeOutTime; 
+            bool mFadeOut;
+            float mFadeOutTime;
             float mIntensity;
             float mDensity;
+            float mVelocity;
+            float mNoiseScale;
 
             //these variables are only for the particle volume types
             unsigned mNumParticles;
@@ -127,7 +142,7 @@ namespace SimCore
             osg::Vec4 mColor;
             osg::Vec3 mPosition;
             osg::Vec3 mRadius;
-            osg::Vec3 mVelocity;
+            osg::Vec3 mScale;
             osg::Matrix mTransform;
 
             bool mAutoDeleteOnTargetNull;
@@ -169,14 +184,15 @@ namespace SimCore
 
          void RemoveShapeVolume(ShapeRecordID id);
 
-         void RegisterActor(Actors::SimpleMovingShapeActorProxy& newActor);
-         void UnregisterActor(const dtCore::UniqueId& actorID);
-
          ShapeVolumeRecord* FindShapeVolumeById(ShapeRecordID id);
          ShapeVolumeRecord* FindShapeVolumeForActor(const dtCore::UniqueId& actorID);
          //void FindAllShapeVolumesForActor(const dtCore::UniqueId& actorID, std::vector<ShapeVolumeRecord*> pContainerToFill);
 
-         void CreateDepthPrePass(const std::string& textureName, unsigned width, unsigned height);
+         void CreateDepthPrePass(unsigned width, unsigned height);
+
+         void MoveVolume(ShapeVolumeRecord& svr, const osg::Vec3& moveBy);
+         void ExpandVolume(ShapeVolumeRecord& svr, const osg::Vec3& expandBy);
+         void ComputeParticleRadius(ShapeVolumeRecord& svr);
 
       protected:
 
@@ -201,12 +217,12 @@ namespace SimCore
          void AssignParticleVolumeUniforms(ShapeVolumeRecord& newShape);
          void UpdateUniforms();
          void SetUniformData(ShapeVolumeRecord& s);
-
       private:
 
          void Tick(float dt);  
          void CreateNoiseTexture();
 
+         unsigned mMaxParticlesPerDrawable;
          dtCore::RefPtr<osg::Group> mRootNode;
 
          dtCore::RefPtr<dtCore::Camera> mDepthCamera;

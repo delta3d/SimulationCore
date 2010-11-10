@@ -7,7 +7,8 @@ uniform vec4 volumeParticleColor;
 uniform float volumeParticleRadius;
 uniform float volumeParticleIntensity;
 uniform float volumeParticleDensity;
-uniform vec3 volumeParticleVelocity;
+uniform float volumeParticleVelocity;
+uniform float volumeParticleNoiseScale;
 uniform vec2 ScreenDimensions;
 
 varying vec4 vOffset;
@@ -15,6 +16,7 @@ varying vec2 vTexCoords;
 varying vec3 vLightContrib;
 varying vec4 vViewPosCenter;
 varying vec4 vViewPosVert;
+varying vec3 vParticleOffset;
 
 varying vec3 vPos;
 varying vec3 vNormal;
@@ -31,20 +33,24 @@ void main(void)
    float r = dot(radiusPosition.xy, radiusPosition.xy); 
    if(r > 1.0) discard; // Eliminate processing on boundary pixels
 
-   vec3 noiseCoords = vNormal*volumeParticleRadius/4.0 + (vOffset.xyz) + (osg_SimulationTime * volumeParticleVelocity);
+   //to compute the noise texture coordinates, the x,y are relative to the x,y location relative to the center of the particle
+   //the w component of the particle offset is a random number used to offset this so they are not all the same
+   //we mod the w component by a small number to offset the speed as well
+   float particleNoiseScaleOffset = mod(vOffset.w, 0.13);
+   vec2 particleNoiseOffset = vec2(sin(vOffset.w), -cos(vOffset.w));
+   vec3 noiseCoords = vec3((particleNoiseScaleOffset + volumeParticleNoiseScale) * vec2(radiusPosition.xy + particleNoiseOffset), osg_SimulationTime * (particleNoiseScaleOffset + 0.1));
    float noise = (texture3D(noiseTexture, noiseCoords)).a;
    
-   float partialAlpha = volumeParticleColor.w * volumeParticleIntensity * (noise * pow(1.0-r, 0.333));
-   if(partialAlpha < 0.1) //noise < r
-      discard; // make right at the end disappear - but softly. 
+   if(noise < r) discard;
+   else noise -= r;
 
    // soft particles avoid sharp cuts into main geometry
    float opacity = softParticleOpacity(vViewPosCenter.xyz, vViewPosVert.xyz, 
          volumeParticleRadius, gl_FragCoord.xy / ScreenDimensions, volumeParticleDensity);
 
    // use some noise in final color to keep it interesting (straight noise makes it too dark).
-   vec3 finalColor = (0.6 + 0.6*noise) * vLightContrib * volumeParticleColor.xyz;
-   float finalAlpha = opacity * partialAlpha;
+   vec3 finalColor = (0.6 + 0.6 * noise) * vLightContrib * volumeParticleColor.xyz;
+   float finalAlpha = opacity * volumeParticleColor.w * volumeParticleIntensity * noise;
    gl_FragColor = vec4(finalColor,finalAlpha);
 }
 
