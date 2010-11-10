@@ -150,6 +150,7 @@ namespace SimCore
    const std::string VolumeRenderingComponent::VOLUME_PARTICLE_DENSITY_UNIFORM = "volumeParticleDensity";
    const std::string VolumeRenderingComponent::VOLUME_PARTICLE_VELOCITY_UNIFORM = "volumeParticleVelocity";
    const std::string VolumeRenderingComponent::VOLUME_PARTICLE_RADIUS_UNIFORM = "volumeParticleRadius";
+   const std::string VolumeRenderingComponent::VOLUME_PARTICLE_NOISE_SCALE_UNIFORM = "volumeParticleNoiseScale";
    //const std::string VolumeRenderingComponent::CAMERA_LINEAR_DEPTH_UNIFORM = "writeLinearDepth";
 
    const std::string VolumeRenderingComponent::DEFAULT_NAME = "VolumeRenderingComponent";
@@ -255,7 +256,7 @@ namespace SimCore
    VolumeRenderingComponent::ShapeVolumeRecord::ShapeVolumeRecord()
       : mId(mCounter)
       , mShapeType(VolumeRenderingComponent::SPHERE)
-      , mRenderMode(SIMPLE_SHAPE_GEOMETRY)
+      , mRenderMode(PARTICLE_VOLUME)
       , mDirtyParams(false)
       , mDeleteMe(false)
       , mAutoDeleteAfterMaxTime(false)
@@ -264,12 +265,13 @@ namespace SimCore
       , mFadeOutTime(0.0f)
       , mIntensity(1.0f)
       , mDensity(0.5f)
+      , mVelocity(0.0f)
+      , mNoiseScale(0.85f)
       , mNumParticles(150)
       , mParticleRadius(5.0f)
       , mColor(1.0f, 1.0f, 1.0f, 0.5f)
       , mPosition(0.0f, 0.0f, 0.0f)
       , mRadius(0.0f, 0.0f, 0.0f)
-      , mVelocity(0.0f, 0.0f, 0.0f)
       , mTransform()
       , mTarget(NULL)
    {
@@ -281,6 +283,7 @@ namespace SimCore
    /////////////////////////////////////////////////////////////
    VolumeRenderingComponent::VolumeRenderingComponent(const std::string& name)
    : BaseClass(name) 
+   , mMaxParticlesPerDrawable(150)
    , mRootNode(new osg::Group())
    , mVolumes()
    {
@@ -297,6 +300,12 @@ namespace SimCore
    void VolumeRenderingComponent::CleanUp()
    {
       mVolumes.clear();
+      
+      unsigned numChildren = mRootNode->getNumChildren();
+      if(numChildren > 0)
+      {
+         mRootNode->removeChildren(0, numChildren);
+      }
    }
 
    /////////////////////////////////////////////////////////////
@@ -307,7 +316,7 @@ namespace SimCore
       double vfov, aspect, nearp, farp;
       GetGameManager()->GetApplication().GetCamera()->GetPerspectiveParams(vfov, aspect, nearp, farp);
 
-      CreateDepthPrePass("sceneDepth", 1024 * aspect, 1024);
+      CreateDepthPrePass(1024 * aspect, 1024);
 
       //CreateDepthPrePass("sceneDepth", 16, 16);
       GetGameManager()->GetScene().GetSceneNode()->addChild(mRootNode.get());
@@ -328,16 +337,6 @@ namespace SimCore
    {
    }
 
-   ////////////////////////////////////////////////////////////////////////// 
-   void VolumeRenderingComponent::RegisterActor(Actors::SimpleMovingShapeActorProxy& newActor)
-   {
-   }
-
-   ////////////////////////////////////////////////////////////////////////// 
-   void VolumeRenderingComponent::UnregisterActor(const dtCore::UniqueId& actorID)
-   {
-      
-   }
    
    ////////////////////////////////////////////////////////////////////////// 
    void VolumeRenderingComponent::RemoveShapeVolume(ShapeRecordID id)
@@ -398,34 +397,6 @@ namespace SimCore
       {
          float dt = float(static_cast<const dtGame::TickMessage&>(message).GetDeltaSimTime());
          Tick(dt);
-      }
-      else if (dtGame::MessageType::INFO_ACTOR_UPDATED == message.GetMessageType())
-      {
-         const dtGame::ActorUpdateMessage& updateMessage = static_cast<const dtGame::ActorUpdateMessage&> (message);
-         
-         dtDAL::ActorProxy* actor = GetGameManager()->FindActorById(updateMessage.GetAboutActorId());
-         if (actor == NULL)
-         {
-            return;
-         }
-
-         const dtDAL::ActorType& type = actor->GetActorType();
-
-         if (type == *SimCore::Actors::EntityActorRegistry::ENVIRONMENT_PROCESS_MOVING_SHAPE_ACTOR_TYPE)
-         {
-            Actors::SimpleMovingShapeActorProxy* proxy =
-               static_cast<Actors::SimpleMovingShapeActorProxy*>(actor);
-            RegisterActor(*proxy);
-         }
-
-      }
-      else if (message.GetMessageType() == dtGame::MessageType::INFO_ACTOR_DELETED)
-      {
-         // TODO Write unit tests for the delete message.
-         UnregisterActor(message.GetAboutActorId());
-      }
-      else if(message.GetMessageType() == dtGame::MessageType::INFO_MAP_LOADED)
-      {
       }
       else if(message.GetMessageType() == dtGame::MessageType::INFO_MAP_UNLOADED)
       {
@@ -555,6 +526,146 @@ namespace SimCore
    }
 
    ////////////////////////////////////////////////////////////////////////// 
+   void VolumeRenderingComponent::MoveVolume(ShapeVolumeRecord& svr, const osg::Vec3& moveBy)
+   {
+      dtCore::Transform xform;
+      osg::Matrix mat = svr.mParentNode->getMatrix();
+      xform.Get(mat);
+      xform.Move(moveBy);
+
+      svr.mParentNode->setMatrix(mat);
+   }
+
+   ////////////////////////////////////////////////////////////////////////// 
+   void VolumeRenderingComponent::ExpandVolume(ShapeVolumeRecord& svr, const osg::Vec3& expandBy)
+   {
+      if(svr.mParticleDrawable.valid())
+      {
+         osg::StateSet* ss = svr.mParticleDrawable->getOrCreateStateSet();
+         osg::Uniform* particleArray = ss->getOrCreateUniform(VOLUME_PARTICLE_POS_UNIFORM, osg::Uniform::FLOAT_VEC4, svr.mParticleDrawable->GetNumParticles());
+
+         switch(svr.mShapeType)
+         {
+         case BOX:
+         case ELLIPSOID:
+            {
+               osg::Vec3 oldRadius = svr.mRadius;
+               osg::Vec3 newRadius = oldRadius + expandBy;
+
+               for(unsigned i = 0; i < svr.mParticleDrawable->GetNumParticles(); ++i)
+               {
+                  //move the offset
+                  osg::Vec4 pos4 = svr.mParticleDrawable->GetPointLocation(i);
+                  osg::Vec3 pos(pos4[0], pos4[1], pos4[2]);
+                  osg::Vec3 vecFromCenter = (pos - svr.mPosition);
+                  osg::Vec3 percentFromRadius(vecFromCenter[0] / oldRadius[0], vecFromCenter[1] / oldRadius[1], vecFromCenter[2] / oldRadius[2]);
+                  osg::Vec3 newOffset(percentFromRadius[0] * newRadius[0], percentFromRadius[1] * newRadius[1], percentFromRadius[2] * newRadius[2]);
+                  pos = svr.mPosition + newOffset;
+
+                  osg::Vec4 newPos(pos[0], pos[1], pos[2], pos4[3]);
+                  svr.mParticleDrawable->SetPointLocation(i, newPos);
+                  particleArray->setElement(i, newPos);
+               }
+               svr.mRadius = newRadius;
+            }
+            break;
+               
+         case SPHERE:
+            {
+               float oldRadius = svr.mRadius[0];
+               float newRadius = svr.mRadius[0] + expandBy[0];
+               for(unsigned i = 0; i < svr.mParticleDrawable->GetNumParticles(); ++i)
+               {
+                  //move the offset
+                  osg::Vec4 pos4 = svr.mParticleDrawable->GetPointLocation(i);
+                  osg::Vec3 pos(pos4[0], pos4[1], pos4[2]);
+                  osg::Vec3 vecFromCenter = (pos - svr.mPosition);
+                  float percentFromRadius = vecFromCenter.normalize() / oldRadius;
+                  osg::Vec3 newOffset = vecFromCenter * (newRadius * percentFromRadius);
+                  pos = svr.mPosition + newOffset;
+
+                  osg::Vec4 newPos(pos[0], pos[1], pos[2], pos4[3]);
+                  svr.mParticleDrawable->SetPointLocation(i, newPos);
+                  particleArray->setElement(i, newPos);
+               }
+               svr.mRadius[0] = newRadius;
+            }
+            break;
+         case CYLINDER:
+            {
+               LOG_WARNING("Functionality Unimplemented");
+            }
+            break;
+         case CONE:
+            {
+               LOG_WARNING("Functionality Unimplemented");
+            }
+            break;
+         default:
+            break;
+         }
+         
+         particleArray->dirty(); 
+      }
+      svr.mParticleDrawable->dirtyBound();
+   }
+
+   ////////////////////////////////////////////////////////////////////////// 
+   void VolumeRenderingComponent::ComputeParticleRadius(ShapeVolumeRecord& svr)
+   {
+      if(svr.mParticleDrawable.valid())
+      {
+         float particleVolume = 0.0f; 
+         float multiplier = 1.0f;
+
+         switch(svr.mShapeType)
+         {
+         case BOX:
+         case ELLIPSOID:
+            {
+               float volume = svr.mRadius[0] * svr.mRadius[1] * svr.mRadius[2];
+               particleVolume = volume / svr.mNumParticles;
+               multiplier = 6.5f;
+            }
+            break;
+
+         case SPHERE:
+            {
+               float volume = (3.0f / 4.0f) * osg::PI * svr.mRadius[0] * svr.mRadius[0] * svr.mRadius[0];
+               particleVolume = volume / svr.mNumParticles;
+               multiplier = 3.5f;
+            }
+            break;
+         case CYLINDER:
+            {
+               float volume = osg::PI * svr.mRadius[0] * svr.mRadius[0] * svr.mRadius[1];
+               particleVolume = volume / svr.mNumParticles;
+               multiplier = 4.5f;
+            }
+            break;
+         case CONE:
+            {
+               float volume = (1.0f / 3.0f) * osg::PI * svr.mRadius[0] * svr.mRadius[0] * svr.mRadius[1];
+               particleVolume = volume / svr.mNumParticles;
+               multiplier = 4.5f;
+            }
+            break;
+         default:
+            break;
+         }
+
+         osg::StateSet* ss = svr.mParticleDrawable->getOrCreateStateSet();
+         osg::Uniform* particleRadiusUniform = ss->getOrCreateUniform(VOLUME_PARTICLE_RADIUS_UNIFORM, osg::Uniform::FLOAT);
+
+         float particleRadius = multiplier * std::powf( (3.0f * particleVolume) / (4.0f * osg::PI), 1.0f / 3.0f);
+         particleRadiusUniform->set(particleRadius);
+
+         particleRadiusUniform->dirty(); 
+      }
+      svr.mParticleDrawable->dirtyBound();
+   }
+
+   ////////////////////////////////////////////////////////////////////////// 
    void VolumeRenderingComponent::RemoveVolume(ShapeVolumeArray::iterator iter)
    {
       mVolumes.erase(iter);
@@ -666,6 +777,7 @@ namespace SimCore
    {
       switch(newShape.mShapeType)
       {
+      case ELLIPSOID:
       case SPHERE:
          {
             newShape.mShape = new osg::Sphere(newShape.mPosition, newShape.mRadius[0]);
@@ -674,11 +786,6 @@ namespace SimCore
       case BOX:
          {
             newShape.mShape = new osg::Box(newShape.mPosition, newShape.mRadius[0], newShape.mRadius[1], newShape.mRadius[2]);
-         }
-         break;
-      case CAPSULE:
-         {
-            newShape.mShape = new osg::Capsule(newShape.mPosition, newShape.mRadius[0], newShape.mRadius[1]);
          }
          break;
       case CYLINDER:
@@ -731,8 +838,8 @@ namespace SimCore
          
          for(unsigned i = 0; i < newShape.mParticleDrawable->GetNumParticles(); ++i)
          {
-            osg::Vec3 pos = newShape.mParticleDrawable->GetPointLocation(i);
-            particleArray->setElement(i, osg::Vec4(pos[0], pos[1], pos[2], NRand()));
+            osg::Vec4 pos = newShape.mParticleDrawable->GetPointLocation(i);
+            particleArray->setElement(i, pos);
          }
       }
    }
@@ -771,9 +878,13 @@ namespace SimCore
          osg::Uniform* particleDensity = ss->getOrCreateUniform(VOLUME_PARTICLE_DENSITY_UNIFORM, osg::Uniform::FLOAT);
          particleDensity->set(s.mDensity);
 
-         osg::Uniform* particleVel = ss->getOrCreateUniform(VOLUME_PARTICLE_VELOCITY_UNIFORM, osg::Uniform::FLOAT_VEC3);
+         osg::Uniform* particleVel = ss->getOrCreateUniform(VOLUME_PARTICLE_VELOCITY_UNIFORM, osg::Uniform::FLOAT);
          particleVel->set(s.mVelocity);
 
+         osg::Uniform* particleNoiseScale = ss->getOrCreateUniform(VOLUME_PARTICLE_NOISE_SCALE_UNIFORM, osg::Uniform::FLOAT);
+         particleNoiseScale->set(s.mNoiseScale);
+
+         s.mParticleDrawable->SetParticleRadius(s.mParticleRadius);
          osg::Uniform* particleRadius = ss->getOrCreateUniform(VOLUME_PARTICLE_RADIUS_UNIFORM, osg::Uniform::FLOAT);
          particleRadius->set(s.mParticleRadius);
       }
@@ -783,7 +894,7 @@ namespace SimCore
    void VolumeRenderingComponent::CreateNoiseTexture()
    {
       LOG_INFO("Creating noise texture for VolumeRenderingComponent.");
-      dtUtil::NoiseTexture noise3d(6, 2, 0.7, 0.5, 16, 16, 16);
+      dtUtil::NoiseTexture noise3d(6, 2, 0.7, 0.5, 64, 64, 128);
       dtCore::RefPtr<osg::Image> img = noise3d.MakeNoiseTexture(GL_ALPHA);
       LOG_INFO("Finished creating noise texture for VolumeRenderingComponent.");
 
@@ -909,7 +1020,8 @@ namespace SimCore
                   pos = p1 + pos * (radius2 + dtUtil::RandPercent() * (radius1 - radius2));
                }
 
-               mPoints.push_back(pos);
+               osg::Vec4 pos4(pos[0], pos[1], pos[2], NRand());
+               mPoints.push_back(pos4);
             }
          }
          break;
@@ -920,9 +1032,11 @@ namespace SimCore
 
             for(unsigned i = 0; i < numPoints; ++i)
             {
-               osg::Vec3 pos(radius[0] * dtUtil::RandPercent(), radius[1] * dtUtil::RandPercent(), radius[2] * dtUtil::RandPercent());
+               osg::Vec3 pos(2.0f * radius[0] * (0.5f - dtUtil::RandPercent()), 2.0f * radius[1] * (0.5f - dtUtil::RandPercent()), 2.0f * radius[2] * (0.5f - dtUtil::RandPercent()));
 
-               mPoints.push_back(p1 + pos);
+               pos += p1;
+               osg::Vec4 pos4(pos[0], pos[1], pos[2], NRand());
+               mPoints.push_back(pos4);
             }
          }
          break;
@@ -943,13 +1057,10 @@ namespace SimCore
                pos[0] = p1[0] + (p2[0]-p1[0]) * dtUtil::RandPercent();
                pos[1] = p1[1] + (p2[1]-p1[1]) * dtUtil::RandPercent();
                pos[2] = p1[2] + (p2[2]-p1[2]) * dtUtil::RandPercent();
-               
-               mPoints.push_back(pos);
+
+               osg::Vec4 pos4(pos[0], pos[1], pos[2], NRand());
+               mPoints.push_back(pos4);
             }
-         }
-         break;
-      case VolumeRenderingComponent::CAPSULE:
-         {
          }
          break;
       case VolumeRenderingComponent::CYLINDER:
@@ -973,7 +1084,7 @@ namespace SimCore
             else
             {
                radius1 = radius[0];
-               radius2 = radius[0];
+               radius2 = radius[1];
             }
 
             radius1Sqr = radius1*radius1;
@@ -1029,7 +1140,8 @@ namespace SimCore
                pos += u * x;
                pos += v * y;
 
-               mPoints.push_back(pos);
+               osg::Vec4 pos4(pos[0], pos[1], pos[2], NRand());
+               mPoints.push_back(pos4);
             }            
            }
          break;
@@ -1040,7 +1152,7 @@ namespace SimCore
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
-   void VolumeRenderingComponent::CreateDepthPrePass(const std::string& textureName, unsigned width, unsigned height)
+   void VolumeRenderingComponent::CreateDepthPrePass(unsigned width, unsigned height)
    {
       osg::Camera* sceneCam = GetGameManager()->GetApplication().GetCamera()->GetOSGCamera();
 
@@ -1113,14 +1225,15 @@ namespace SimCore
       for(unsigned i = 0; i < mNumParticles; ++i)
       {
          osg::BoundingSphere bs;
-         bs.set(mPoints[i], mParticleRadius);
+         osg::Vec4 pos = mPoints[i];
+         bs.set(osg::Vec3(pos[0], pos[1], pos[2]), mParticleRadius);
          bb.expandBy(bs);
       }
       return bb;
    }
 
    ////////////////////////////////////////////////////////////////////////// 
-   const osg::Vec3& VolumeRenderingComponent::ParticleVolumeDrawable::GetPointLocation(unsigned i) const
+   const osg::Vec4& VolumeRenderingComponent::ParticleVolumeDrawable::GetPointLocation(unsigned i) const
    {
       if(i < mNumParticles)
       {
@@ -1128,10 +1241,31 @@ namespace SimCore
       }
       else
       {
-         static const osg::Vec3 defaultVec;
+         static const osg::Vec4 defaultVec;
 
          return defaultVec;
       }
+   }
+
+   ////////////////////////////////////////////////////////////////////////// 
+   void VolumeRenderingComponent::ParticleVolumeDrawable::SetPointLocation(unsigned i, const osg::Vec4& newOffset)
+   {
+      if(i < mNumParticles)
+      {
+         mPoints[i].set(newOffset[0], newOffset[1], newOffset[2], newOffset[3]);
+      }
+   }
+
+   ////////////////////////////////////////////////////////////////////////// 
+   float VolumeRenderingComponent::ParticleVolumeDrawable::GetParticleRadius() const
+   {
+      return mParticleRadius;
+   }
+
+   ////////////////////////////////////////////////////////////////////////// 
+   void VolumeRenderingComponent::ParticleVolumeDrawable::SetParticleRadius(float f)
+   {
+      mParticleRadius = f;
    }
 
 

@@ -11,9 +11,9 @@ varying vec2 vTexCoords;
 varying vec3 vLightContrib;
 varying vec4 vViewPosCenter;
 varying vec4 vViewPosVert;
-
 varying vec3 vPos;
 varying vec3 vNormal;
+//varying vec3 vParticleOffset;
 
 void lightContribution(vec3, vec3, vec3, vec3, out vec3);
 void dynamic_light_fragment(vec3, vec3, out vec3);
@@ -21,6 +21,7 @@ void spot_light_fragment(vec3, vec3, out vec3);
 
 void main()
 {
+   //vParticleOffset = vec3(gl_Vertex.w, gl_Vertex.w*1.4, gl_Vertex.w*0.5);
    vOffset = volumeParticlePos[int(gl_Vertex.w)];
    
    vViewPosCenter = gl_ModelViewMatrix * vec4(vOffset.xyz, 1.0);
@@ -48,15 +49,15 @@ void main()
    //Compute the Light Contribution
    vec3 dynamicLightContrib;
    vec3 spotLightContrib;
-   vLightContrib = vec3(1.0, 1.0, 1.0);
+   vLightContrib = vec3(0.0, 0.0, 0.0);
    vec3 vLightDir = normalize(inverseView3x3 * gl_LightSource[0].position.xyz);
-   vec3 sunLightContrib = vec3(1.0, 1.0, 1.0);
+   vec3 sunLightContrib = vec3(0.0, 0.0, 0.0);
 
    // Calc light from sun, from dynamic area, and dynamic spot lights
    lightContribution(vNormal, vLightDir, vec3(gl_LightSource[0].diffuse), vec3(gl_LightSource[0].ambient), sunLightContrib);
    // Blend part of the sunLightContrib with part of the real sun value (without normals)
    // based on the density of the particle. At 0.20 density, it'd be a 50/50 mix.
-   sunLightContrib = mix(gl_LightSource[0].diffuse, sunLightContrib,
+   sunLightContrib = mix(gl_LightSource[0].diffuse.rgb, sunLightContrib,
          (min(1.0, volumeParticleDensity*4.0)));
    dynamic_light_fragment(vNormal, vPos.xyz, dynamicLightContrib);
    spot_light_fragment(vNormal, vPos.xyz, spotLightContrib);
