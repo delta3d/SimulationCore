@@ -24,8 +24,6 @@
 #include <SimCore/Export.h>
 #include <dtGame/gmcomponent.h>
 #include <dtCore/observerptr.h>
-#include <SimCore/Actors/SimpleMovingShapeActor.h>
-//#include <SimCore/MultiPassNode.h>
 
 #include <dtCore/camera.h>
 
@@ -146,6 +144,9 @@ namespace SimCore
             osg::Matrix mTransform;
 
             bool mAutoDeleteOnTargetNull;
+
+            std::string mShaderGroup;
+            std::string mShaderName;
             dtCore::ObserverPtr<osg::MatrixTransform> mParentNode; 
             dtCore::ObserverPtr<dtCore::Transformable> mTarget;
             dtCore::RefPtr<osg::Shape> mShape;
@@ -213,7 +214,7 @@ namespace SimCore
          void CreateParticleVolume(ShapeVolumeRecord& newShape);
          void CreateShape(ShapeVolumeRecord& newShape);
 
-         void AssignParticleVolumeShader(ParticleVolumeDrawable& pvd, osg::Geode& g);
+         void AssignParticleVolumeShader(ShapeVolumeRecord& svr, osg::Geode& g);
          void AssignParticleVolumeUniforms(ShapeVolumeRecord& newShape);
          void UpdateUniforms();
          void SetUniformData(ShapeVolumeRecord& s);

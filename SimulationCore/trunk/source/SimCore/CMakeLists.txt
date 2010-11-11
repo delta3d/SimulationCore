@@ -157,6 +157,7 @@ set( LIB_SOURCES_4
    "${SOURCE_PATH}/Components/VolumeRenderingComponent.cpp"
    "${SOURCE_PATH}/Components/WeaponEffectsManager.cpp"
    "${SOURCE_PATH}/Components/WeatherComponent.cpp"
+   "${SOURCE_PATH}/Components/VolumeRenderingComponent.cpp"
    )
 set( LIB_SOURCES_5 
    "${SOURCE_PATH}/GUI/AnimationController.cpp"

@@ -28,6 +28,10 @@
 #include <SimCore/Export.h>
 #include <dtGame/gameactorproxy.h>
 #include <dtUtil/getsetmacros.h>
+#include <SimCore/Components/VolumeRenderingComponent.h>
+#include <dtGame/deadreckoninghelper.h>
+#include <osg/MatrixTransform>
+
 
 namespace SimCore
 {
@@ -40,12 +44,38 @@ namespace SimCore
       public:
          typedef dtGame::GameActorProxy BaseClass;
 
+         class SIMCORE_EXPORT SimpleShapeDRHelper : public dtGame::DeadReckoningHelper
+         {
+            public:
+               typedef dtGame::DeadReckoningHelper BaseClass;
+
+               SimpleShapeDRHelper();
+
+               virtual bool DoDR(dtGame::GameActor& gameActor, dtCore::Transform& xform, dtUtil::Log* pLogger, dtGame::BaseGroundClamper::GroundClampRangeType*& gcType);
+
+               virtual void CalculateSmoothingTimes(const dtCore::Transform& xform);
+
+               DeadReckoningHelper::DRVec3Util mDRScale;
+         };
+
+         static const dtUtil::RefString PROPERTY_LAST_KNOWN_DIMENSIONS;
+         static const dtUtil::RefString PROPERTY_DIMENSIONS_VELOCITY_VECTOR;
+
          SimpleMovingShapeActorProxy();
 
          virtual void BuildActorComponents();
 
+         void SetLastKnownDimension(const osg::Vec3& r);
+         const osg::Vec3& GetLastKnownDimension() const;
+
+         void SetLastKnownDimensionVelocity(const osg::Vec3& r);
+         const osg::Vec3& GetLastKnownDimensionVelocity() const;
+
          DT_DECLARE_ACCESSOR(dtCore::UniqueId, Owner);
          DT_DECLARE_ACCESSOR(int, Index);
+
+         void SetCurrentDimensions(const osg::Vec3& dim);
+         const osg::Vec3& GetCurrentDimensions() const;
 
       protected:
          virtual ~SimpleMovingShapeActorProxy();
@@ -56,6 +86,14 @@ namespace SimCore
 
          virtual void CreateActor();
          virtual void BuildPropertyMap();
+
+      private:
+
+         osg::Vec3 mDimensions;
+         dtCore::RefPtr<SimpleShapeDRHelper> mDRHelper;
+         dtCore::RefPtr<SimCore::Components::VolumeRenderingComponent::ShapeVolumeRecord> mShapeVolume;
+
+
       };
 
    }
