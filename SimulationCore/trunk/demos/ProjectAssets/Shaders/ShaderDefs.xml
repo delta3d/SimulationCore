@@ -514,7 +514,13 @@
          <source type="Vertex">Shaders/Base/particle_volume.vert</source>
          <source type="Fragment">Shaders/Base/particle_volume.frag</source>
          <source type="Fragment">Shaders/Base/fragment_functions.frag</source>
-      </shader>    
+      </shader>
+      <shader name="FireVolumeShader" default="no">
+         <source type="Vertex">Shaders/Base/fragment_functions.frag</source>
+         <source type="Vertex">Shaders/Base/fire_volume.vert</source>
+         <source type="Fragment">Shaders/Base/fire_volume.frag</source>
+         <source type="Fragment">Shaders/Base/fragment_functions.frag</source>
+      </shader>
    </shadergroup>
    
 </shaderlist>
