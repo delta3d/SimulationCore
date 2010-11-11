@@ -273,7 +273,13 @@ namespace SimCore
       , mPosition(0.0f, 0.0f, 0.0f)
       , mRadius(0.0f, 0.0f, 0.0f)
       , mTransform()
+      , mAutoDeleteOnTargetNull(false)
+      , mShaderGroup("VolumeRenderingGroup")
+      , mShaderName("ParticleVolumeShader")
+      , mParentNode(NULL)
       , mTarget(NULL)
+      , mShape(NULL)
+      , mParticleDrawable(NULL)
    {
       ++mCounter;
       mTransform.makeIdentity();
@@ -765,7 +771,7 @@ namespace SimCore
       newShape.mParticleDrawable->Init(newShape.mNumParticles, &newShape);
       g->addDrawable(newShape.mParticleDrawable.get());
 
-      AssignParticleVolumeShader(*newShape.mParticleDrawable, *g);
+      AssignParticleVolumeShader(newShape, *g);
       AssignParticleVolumeUniforms(newShape);
 
       mRootNode->addChild(newShape.mParentNode.get());
@@ -804,10 +810,10 @@ namespace SimCore
    }
 
    ////////////////////////////////////////////////////////////////////////// 
-   void VolumeRenderingComponent::AssignParticleVolumeShader(ParticleVolumeDrawable& pvd, osg::Geode& g)
+   void VolumeRenderingComponent::AssignParticleVolumeShader(ShapeVolumeRecord& svr, osg::Geode& g)
    {
       dtCore::ShaderManager& sm = dtCore::ShaderManager::GetInstance();
-      dtCore::ShaderProgram* sp = sm.FindShaderPrototype("ParticleVolumeShader", "VolumeRenderingGroup");
+      dtCore::ShaderProgram* sp = sm.FindShaderPrototype(svr.mShaderName, svr.mShaderGroup);
       if(sp != NULL)
       {
          sm.AssignShaderFromPrototype(*sp, g);
