@@ -104,7 +104,7 @@ namespace NetDemo
 
       dtPhysics::PhysicsObject *physObj = GetPhysicsHelper()->GetMainPhysicsObject();
       physObj->SetTransform(ourTransform);
-      physObj->CreateFromProperties(GetNonDamagedFileNode());
+      physObj->CreateFromProperties(&GetScaleMatrixTransform());
 
       if(!IsRemote())
       {
@@ -143,24 +143,24 @@ namespace NetDemo
       //add a shape volume for the beam
       SimCore::Components::VolumeRenderingComponent* vrc = NULL;
       GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::VolumeRenderingComponent::DEFAULT_NAME, vrc); 
-      /*
+      
       if(vrc != NULL)
       {
          SimCore::Components::VolumeRenderingComponent::ShapeVolumeRecord* svr = new SimCore::Components::VolumeRenderingComponent::ShapeVolumeRecord();
          svr->mPosition.set(10.0f, 95.0f, 1.0f);
-         svr->mColor.set(0.75f, 1.0f, 0.75f, 1.0f);
+         svr->mColor.set(1.0f, 1.0f, 1.0f, 1.0f);
          svr->mShapeType = SimCore::Components::VolumeRenderingComponent::ELLIPSOID;
          svr->mRadius.set(40.0f, 25.0f, 10.0f);
-         svr->mNumParticles = 200;
-         svr->mParticleRadius = 4.5f;
-         svr->mVelocity.set(0.07, 0.07, 0.07);
+         svr->mNumParticles = 150;
+         svr->mParticleRadius = 24.5f;
+         svr->mVelocity = 0.07;
          svr->mDensity = 0.15f;
          svr->mTarget = this;
          svr->mAutoDeleteOnTargetNull = true;
          svr->mRenderMode = SimCore::Components::VolumeRenderingComponent::PARTICLE_VOLUME;
 
          vrc->CreateShapeVolume(svr);
-      } */
+      } 
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
