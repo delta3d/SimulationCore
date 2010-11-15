@@ -58,6 +58,8 @@ set(LIB_SOURCES_2
    "${SOURCE_PATH}/Actors/SpawnVolumeActor.cpp"
    "${SOURCE_PATH}/Actors/TowerActor.cpp"
    "${SOURCE_PATH}/Actors/LightTower.cpp"
+   "${SOURCE_PATH}/Actors/FireBallActor.cpp"
+   "${SOURCE_PATH}/Actors/FireBallTowerActor.cpp"
    )
    
 set(LIB_SOURCES_3 

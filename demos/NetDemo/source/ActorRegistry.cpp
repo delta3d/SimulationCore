@@ -26,6 +26,8 @@
 #include <Actors/EnemyDescriptionActor.h>
 #include <Actors/PropelledVehicleActor.h>
 #include <Actors/TowerActor.h>
+#include <Actors/FireBallTowerActor.h>
+#include <Actors/FireBallActor.h>
 #include <Actors/LightTower.h>
 #include <dtCore/shadermanager.h>
 #include <dtCore/scene.h>
@@ -77,6 +79,14 @@ namespace NetDemo
       new dtDAL::ActorType("LightTower", "NetDemo", "A light tower with a tracking spot light, for a front line of defense.",
       SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE.get()));
 
+   RefPtr<dtDAL::ActorType> NetDemoActorRegistry::FIREBALL_TOWER_ACTOR_TYPE(
+      new dtDAL::ActorType("FireBallTower", "NetDemo", "A tower which shoots a powerful fireball for a last line of defense.",
+      SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE.get()));
+
+   RefPtr<dtDAL::ActorType> NetDemoActorRegistry::FIREBALL_ACTOR_TYPE(
+      new dtDAL::ActorType("FireBall", "NetDemo", "A blazing fireball shot through the fireball tower.",
+      SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE.get()));
+
    ///////////////////////////////////////////////////////////////////////////
    extern "C" NETDEMO_EXPORT dtDAL::ActorPluginRegistry* CreatePluginRegistry()
    {
@@ -109,6 +119,8 @@ namespace NetDemo
       mActorFactory->RegisterType<EnemyDescriptionActorProxy>(ENEMY_DESCRIPTION_TYPE.get());
       mActorFactory->RegisterType<EnemyMothershipActorProxy>(ENEMY_MOTHERSHIP_ACTOR_TYPE.get());
       mActorFactory->RegisterType<LightTowerProxy>(LIGHT_TOWER_ACTOR_TYPE.get());
+      mActorFactory->RegisterType<FireBallTowerActorProxy>(FIREBALL_TOWER_ACTOR_TYPE.get());
+      mActorFactory->RegisterType<FireBallActorProxy>(FIREBALL_ACTOR_TYPE.get());
 
    }
 }

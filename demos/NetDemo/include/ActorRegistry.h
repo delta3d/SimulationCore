@@ -48,6 +48,8 @@ namespace NetDemo
          static dtCore::RefPtr<dtDAL::ActorType> ENEMY_MOTHERSHIP_ACTOR_TYPE;
          static dtCore::RefPtr<dtDAL::ActorType> ENEMY_HELIX_ACTOR_TYPE;
          static dtCore::RefPtr<dtDAL::ActorType> LIGHT_TOWER_ACTOR_TYPE;
+         static dtCore::RefPtr<dtDAL::ActorType> FIREBALL_TOWER_ACTOR_TYPE;
+         static dtCore::RefPtr<dtDAL::ActorType> FIREBALL_ACTOR_TYPE;
 
          static dtCore::RefPtr<dtDAL::ActorType> PROPELLED_VEHICLE_ACTOR_TYPE;
          /// Constructor
