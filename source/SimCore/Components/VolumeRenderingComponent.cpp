@@ -663,7 +663,7 @@ namespace SimCore
          osg::StateSet* ss = svr.mParticleDrawable->getOrCreateStateSet();
          osg::Uniform* particleRadiusUniform = ss->getOrCreateUniform(VOLUME_PARTICLE_RADIUS_UNIFORM, osg::Uniform::FLOAT);
 
-         float particleRadius = multiplier * std::powf( (3.0f * particleVolume) / (4.0f * osg::PI), 1.0f / 3.0f);
+         float particleRadius = multiplier * std::pow( (3.0f * particleVolume) / (4.0f * float(osg::PI)), 1.0f / 3.0f);
          particleRadiusUniform->set(particleRadius);
 
          particleRadiusUniform->dirty(); 
