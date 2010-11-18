@@ -13,11 +13,11 @@ varying vec4 vColor;
 varying vec4 vTex0;
 varying vec4 vTex1;
 
-float computeFragDepth(float);
+float computeFragDepth(float, float);
 
 void main(void)
 {
-    float fragDepth = computeFragDepth(vDistance);
+    float fragDepth = computeFragDepth(vDistance, gl_FragCoord.z);
     gl_FragDepth = fragDepth;
 
     //currently we only write a linear depth when doing a depth pre-pass

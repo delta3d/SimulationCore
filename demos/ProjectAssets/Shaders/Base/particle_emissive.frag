@@ -10,11 +10,11 @@ uniform float Intensity;
 varying vec4 vertexColor;
 varying float vDistance;
 
-float computeFragDepth(float);
+float computeFragDepth(float, float);
 
 void main(void)
 {
-   float fragDepth = computeFragDepth(vDistance);
+   float fragDepth = computeFragDepth(vDistance, gl_FragCoord.z);
    gl_FragDepth = fragDepth;
 
    if(writeLinearDepth)

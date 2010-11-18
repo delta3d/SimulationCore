@@ -22,13 +22,13 @@ void computeTerrainColor(vec3, vec4, float, out vec3);
 void alphaMix(vec3, vec3, float, float, out vec4);
 void dynamic_light_fragment(vec3, vec3, out vec3);
 void spot_light_fragment(vec3, vec3, out vec3);
-float computeFragDepth(float);
+float computeFragDepth(float, float);
 
 void main(void)
 {   
    vec3 ecPosition3 = viewPos.xyz / viewPos.w;
    float dist = length(ecPosition3);
-   float fragDepth = computeFragDepth(dist);
+   float fragDepth = computeFragDepth(dist, gl_FragCoord.z);
    gl_FragDepth = fragDepth;
 
    //currently we only write a linear depth when doing a depth pre-pass
