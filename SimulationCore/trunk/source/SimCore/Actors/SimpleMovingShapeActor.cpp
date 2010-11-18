@@ -47,12 +47,31 @@ namespace SimCore
             
          bool useAcceleration = GetDeadReckoningAlgorithm() == dtGame::DeadReckoningAlgorithm::VELOCITY_AND_ACCELERATION;
 
+         if (IsUpdated())
+         {
+            //CalculateSmoothingTimes(xform);
+          
+            // If doing Cubic splines, we have to pre-compute some values
+            if (GetUseCubicSplineTransBlend() && GetDeadReckoningAlgorithm() == dtGame::DeadReckoningAlgorithm::VELOCITY_AND_ACCELERATION)
+            {  // Use Accel
+               mDRScale.RecomputeTransSplineValues(mDRScale.mAcceleration);
+            }
+            else if (GetUseCubicSplineTransBlend()) // No accel
+            {
+               osg::Vec3 zeroAccel;
+               mDRScale.RecomputeTransSplineValues(zeroAccel);
+            }
+         }
+
          osg::Vec3 pos;
          mDRScale.DeadReckonThePosition(pos, pLogger, gameActor, 
-            useAcceleration, 1.0f / 60.0f/*mCurTimeDelta*/, GetUseCubicSplineTransBlend());
+            useAcceleration, mDRScale.mLastUpdatedTime, GetUseCubicSplineTransBlend());
          
-         SimpleMovingShapeActorProxy& s = static_cast<SimpleMovingShapeActorProxy&>(gameActor.GetGameActorProxy());
-         s.SetCurrentDimensions(pos);
+         if(mDRScale.mUpdated)
+         {
+            SimpleMovingShapeActorProxy& s = static_cast<SimpleMovingShapeActorProxy&>(gameActor.GetGameActorProxy());
+            s.SetCurrentDimensions(pos);
+         }
          return true;
       }
 
@@ -88,6 +107,21 @@ namespace SimCore
          }
       }
 
+      //////////////////////////////////////////////////////////////////////////
+      void SimpleMovingShapeActorProxy::SimpleShapeDRHelper::IncrementTimeSinceUpdate( float simTimeDelta, float curSimulationTime )
+      {
+         BaseClass::IncrementTimeSinceUpdate(simTimeDelta, curSimulationTime);
+
+         if(mDRScale.mUpdated)
+         {
+            mDRScale.SetLastUpdatedTime(curSimulationTime - simTimeDelta);
+            mDRScale.mElapsedTimeSinceUpdate = 0.0f;
+         }
+
+         float transElapsedTime = mDRScale.mElapsedTimeSinceUpdate + simTimeDelta;
+         if (transElapsedTime < 0.0) transElapsedTime = 0.0f;
+         mDRScale.mElapsedTimeSinceUpdate = transElapsedTime;
+      }
 
       //////////////////////////////////////////////////////////////////////////
       const dtUtil::RefString SimpleMovingShapeActorProxy::PROPERTY_LAST_KNOWN_DIMENSIONS("Last Known Dimension");
@@ -227,6 +261,7 @@ namespace SimCore
 
             if(vrc != NULL)
             {
+               mShapeVolume->mRadius = mDimensions;
                vrc->ComputeParticleRadius(*mShapeVolume);
             }
          }
