@@ -55,6 +55,9 @@ namespace SimCore
 
                virtual void CalculateSmoothingTimes(const dtCore::Transform& xform);
 
+               virtual void IncrementTimeSinceUpdate(float simTimeDelta, float curSimulationTime);
+
+
                DeadReckoningHelper::DRVec3Util mDRScale;
          };
 
