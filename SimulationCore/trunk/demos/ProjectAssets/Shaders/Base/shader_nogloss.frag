@@ -15,7 +15,7 @@ void lightContribution(vec3, vec3, vec3, vec3, out vec3);
 void alphaMix(vec3, vec3, float, float, out vec4);
 void dynamic_light_fragment(vec3, vec3, out vec3);
 void spot_light_fragment(vec3, vec3, out vec3);
-float computeFragDepth(float);
+float computeFragDepth(float, float);
 
 void main(void)
 {
@@ -48,7 +48,7 @@ void main(void)
       gl_FragColor = vec4(mix(color, gl_Fog.color.rgb, vFog), diffuseColor.a);  
    }
 
-   float fragDepth = computeFragDepth(vDistance);
+   float fragDepth = computeFragDepth(vDistance, gl_FragCoord.z);
    gl_FragDepth = fragDepth;
 }
 

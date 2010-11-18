@@ -21,7 +21,7 @@ void lightContribution(vec3, vec3, vec3, vec3, out vec3);
 void alphaMix(vec3, vec3, float, float, out vec4);
 void dynamic_light_fragment(vec3, vec3, out vec3);
 void spot_light_fragment(vec3, vec3, out vec3);
-float computeFragDepth(float);
+float computeFragDepth(float, float);
 
 
 // EXTERNAL FUNCTIONS
@@ -30,7 +30,7 @@ vec4 getCamoAndDamageColor();
 
 void main(void)
 {
-   float fragDepth = computeFragDepth(vDistance);
+   float fragDepth = computeFragDepth(vDistance, gl_FragCoord.z);
    gl_FragDepth = fragDepth;
 
    //currently we only write a linear depth when doing a depth pre-pass

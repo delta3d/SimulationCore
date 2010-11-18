@@ -16,9 +16,9 @@ uniform float nearPlane;
 uniform float farPlane;
 uniform sampler2D depthTexture;
 
-float computeFragDepth(float distance)
+float computeFragDepth(float distance, float fragZ)
 {
-   float fragDepth = gl_FragCoord.z;
+   float fragDepth = fragZ;
    if(writeLinearDepth)
    {
       fragDepth = (distance - nearPlane) / (farPlane - nearPlane);
