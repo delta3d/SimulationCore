@@ -201,7 +201,7 @@ namespace SimCore
 
             CPPUNIT_ASSERT_MESSAGE("the fading volume intensity should have decreased some more.", volume3->mIntensity < oldIntensity);
 
-            //mVolumeRenderingComponent->TimeoutAndDeleteVolumes(2.0f);
+            mVolumeRenderingComponent->TimeoutAndDeleteVolumes(2.0f);
 
             CPPUNIT_ASSERT(mVolumeRenderingComponent->FindShapeVolumeById(volume1->GetId()) == NULL);
             CPPUNIT_ASSERT(mVolumeRenderingComponent->FindShapeVolumeById(volume2->GetId()) == NULL);
