@@ -205,16 +205,16 @@ namespace SimCore
    /////////////////////////////////////////////////////////////
    struct findVolumeById
    {
-      findVolumeById(VolumeRenderingComponent::ShapeRecordID id): mId(id){}
+      findVolumeById(VolumeRenderingComponent::ShapeRecordId id): mId(id){}
 
       template<class T>
       bool operator()(T ptr)
       {
-         return ptr->mId == mId;
+         return ptr->GetId() == mId;
       }
    private:
 
-      VolumeRenderingComponent::ShapeRecordID mId;
+      VolumeRenderingComponent::ShapeRecordId mId;
    };
 
    struct findVolumeByUniqueId
@@ -254,8 +254,7 @@ namespace SimCore
    
    //////////////////////////////////////////////////////////////////////////
    VolumeRenderingComponent::ShapeVolumeRecord::ShapeVolumeRecord()
-      : mId(mCounter)
-      , mShapeType(VolumeRenderingComponent::SPHERE)
+      : mShapeType(VolumeRenderingComponent::SPHERE)
       , mRenderMode(PARTICLE_VOLUME)
       , mDirtyParams(false)
       , mDeleteMe(false)
@@ -270,9 +269,9 @@ namespace SimCore
       , mNoiseScale(0.85f)
       , mNumParticles(50)
       , mParticleRadius(5.0f)
-      , mColor(1.0f, 1.0f, 1.0f, 0.5f)
+      , mColor(1.0f, 1.0f, 1.0f, 1.0f)
       , mPosition(0.0f, 0.0f, 0.0f)
-      , mRadius(1.0f, 1.0f, 1.0f)
+      , mRadius(1.0f, 0.0f, 0.0f)
       , mTransform()
       , mShaderGroup("VolumeRenderingGroup")
       , mShaderName("ParticleVolumeShader")
@@ -280,10 +279,17 @@ namespace SimCore
       , mTarget(NULL)
       , mShape(NULL)
       , mParticleDrawable(NULL)
+      , mId(mCounter)
    {
       ++mCounter;
       mTransform.makeIdentity();
 
+   }
+
+   /////////////////////////////////////////////////////////////
+   VolumeRenderingComponent::ShapeRecordId VolumeRenderingComponent::ShapeVolumeRecord::GetId() const
+   {
+      return mId;
    }
 
    /////////////////////////////////////////////////////////////
@@ -345,19 +351,25 @@ namespace SimCore
 
    
    ////////////////////////////////////////////////////////////////////////// 
-   void VolumeRenderingComponent::RemoveShapeVolume(ShapeRecordID id)
+   void VolumeRenderingComponent::RemoveShapeVolume(ShapeVolumeRecord* svr)
    {
-      mVolumes.erase(std::remove_if(mVolumes.begin(), mVolumes.end(), findVolumeById(id)), mVolumes.end());
+      if(svr != NULL)
+      {
+         mRootNode->removeChild(svr->mParentNode.get());
+         svr->mParticleDrawable = NULL;
+         svr->mShape = NULL;
+         mVolumes.erase(std::remove_if(mVolumes.begin(), mVolumes.end(), findVolumeById(svr->GetId())), mVolumes.end());
+      }
    }
 
    ////////////////////////////////////////////////////////////////////////// 
-   VolumeRenderingComponent::ShapeRecordID VolumeRenderingComponent::CreateShapeVolume(dtCore::RefPtr<ShapeVolumeRecord> svr)
+   VolumeRenderingComponent::ShapeRecordId VolumeRenderingComponent::CreateShapeVolume(dtCore::RefPtr<ShapeVolumeRecord> svr)
    {
       if (svr != NULL)
       {
          mVolumes.push_back(svr);
          CreateDrawable(*svr);
-         return svr->mId;
+         return svr->GetId();
       }
       else
       {
@@ -367,7 +379,7 @@ namespace SimCore
    }
 
    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// 
-   VolumeRenderingComponent::ShapeRecordID VolumeRenderingComponent::CreateStaticShapeVolume(Shape s, const osg::Vec4& color, const osg::Vec3& center, const osg::Vec3& radius)
+   VolumeRenderingComponent::ShapeRecordId VolumeRenderingComponent::CreateStaticShapeVolume(Shape s, const osg::Vec4& color, const osg::Vec3& center, const osg::Vec3& radius)
    {
       dtCore::RefPtr<ShapeVolumeRecord> svr = new ShapeVolumeRecord();
       svr->mShapeType = s;
@@ -678,7 +690,7 @@ namespace SimCore
    }
 
    ////////////////////////////////////////////////////////////////////////// 
-   VolumeRenderingComponent::ShapeVolumeRecord* VolumeRenderingComponent::FindVolume(ShapeRecordID id)
+   VolumeRenderingComponent::ShapeVolumeRecord* VolumeRenderingComponent::FindVolume(ShapeRecordId id)
    {
       ShapeVolumeArray::iterator iter = std::find_if(mVolumes.begin(), mVolumes.end(), findVolumeById(id));
       if(iter != mVolumes.end())
@@ -690,7 +702,7 @@ namespace SimCore
    }
 
    ////////////////////////////////////////////////////////////////////////// 
-   VolumeRenderingComponent::ShapeVolumeRecord* VolumeRenderingComponent::FindShapeVolumeById(ShapeRecordID id)
+   VolumeRenderingComponent::ShapeVolumeRecord* VolumeRenderingComponent::FindShapeVolumeById(ShapeRecordId id)
    {
       return FindVolume(id);
    }
@@ -924,7 +936,7 @@ namespace SimCore
    //ParticleVolumeDrawable
    VolumeRenderingComponent::ParticleVolumeDrawable::ParticleVolumeDrawable()
       : mParticleRadius(1.0f)
-      , mNumParticles(150)
+      , mNumParticles(0)
    {
       setUseDisplayList(false);
    }

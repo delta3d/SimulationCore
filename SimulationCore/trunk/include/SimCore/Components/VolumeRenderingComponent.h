@@ -49,6 +49,29 @@ namespace SimCore
        * The volume rendering component allows the user to create simple shapes (sphere, box, etc.) using the internal ShapeVolumeRecord class
        * which simulate volumes of fog or clouds (or by overriding the shader any sort of volume) by randomly placing particles within the volume
        * that are billboards rendered as soft particles.
+       *
+       * Here is an example of using this component
+       *   
+       *   SimCore::Components::VolumeRenderingComponent* vrc = NULL;
+       *   GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::VolumeRenderingComponent::DEFAULT_NAME, vrc); 
+       *
+       *  if(vrc != NULL)
+       *  {
+       *     SimCore::Components::VolumeRenderingComponent::ShapeVolumeRecord* svr = new SimCore::Components::VolumeRenderingComponent::ShapeVolumeRecord();
+       *     svr->mPosition.set(0.0f, 0.0f, -18.0f);
+       *     svr->mColor.set(1.0f, 1.0f, 1.0f, 1.0f);
+       *     svr->mShapeType = SimCore::Components::VolumeRenderingComponent::CONE;
+       *     svr->mRadius.set(10.0f, 20.0f, 0.0f);
+       *     svr->mNumParticles = 50;
+       *     svr->mParticleRadius = 15.0f;
+       *     svr->mVelocity = 0.5f;
+       *     svr->mDensity = 0.08f;
+       *     svr->mTarget = GetActor();
+       *     svr->mAutoDeleteOnTargetNull = true;
+       *
+       *     vrc->CreateShapeVolume(svr);
+       *   }
+       *
        */
 
       class SIMCORE_EXPORT VolumeRenderingComponent : public dtGame::GMComponent
@@ -71,7 +94,7 @@ namespace SimCore
 
 
          //a typedef for the id used by the shape volume record class
-         typedef unsigned ShapeRecordID;
+         typedef unsigned ShapeRecordId;
 
          //the shape type enumeration, set on the shape volume record class
          enum Shape{SPHERE, ELLIPSOID, BOX, CONE, CYLINDER};
@@ -130,9 +153,6 @@ namespace SimCore
            public:
             ShapeVolumeRecord();
 
-            //this is the id used to look up the volumes, alternatively one can hold onto a ref or observer pointer
-            ShapeRecordID mId;
-            
             //the shape type determines the shape and dictates how the radius params are interpreted
             //the shape types available are SPHERE, ELLIPSOID, BOX, CONE, and CYLINDER
             Shape mShapeType;
@@ -235,8 +255,15 @@ namespace SimCore
             //this is created for you by the component
             dtCore::RefPtr<ParticleVolumeDrawable> mParticleDrawable;
 
-            //this is a static counter used internally to give each volume an id
-            static OpenThreads::Atomic mCounter;
+            //use this to get the static counted id
+            ShapeRecordId GetId() const;
+
+            private:
+               //this is the id used to look up the volumes, alternatively one can hold onto a ref or observer pointer
+               ShapeRecordId mId;
+
+               //this is a static counter used internally to give each volume an id
+               static OpenThreads::Atomic mCounter;
          };
 
          //////////////////////////////////////////////////////////////////////////
@@ -264,16 +291,16 @@ namespace SimCore
 
          //this function is used to add a shape volume to the component using a pre-created shape volume record class
          //see the shape record volume class above to figure out what params to set
-         ShapeRecordID CreateShapeVolume(dtCore::RefPtr<ShapeVolumeRecord> svr);
+         ShapeRecordId CreateShapeVolume(dtCore::RefPtr<ShapeVolumeRecord> svr);
 
          //just a helper class that will create a shape volume for you with minimal parameters
-         ShapeRecordID CreateStaticShapeVolume(Shape s, const osg::Vec4& color, const osg::Vec3& center, const osg::Vec3& radius);
+         ShapeRecordId CreateStaticShapeVolume(Shape s, const osg::Vec4& color, const osg::Vec3& center, const osg::Vec3& radius);
 
          //used to remove a shape volume from the system
-         void RemoveShapeVolume(ShapeRecordID id);
+         void RemoveShapeVolume(ShapeVolumeRecord* svr);
 
          //used to find a shape volume by Id
-         ShapeVolumeRecord* FindShapeVolumeById(ShapeRecordID id);
+         ShapeVolumeRecord* FindShapeVolumeById(ShapeRecordId id);
 
          //this function will find a shape volume whose target has the provided actor id, useful for finding a volume
          //attached to a specific actor
@@ -294,6 +321,8 @@ namespace SimCore
          //a function used internally to create a linear pre depth pass
          void CreateDepthPrePass(unsigned width, unsigned height);
 
+         //an internal function made public for unit testing
+         void TimeoutAndDeleteVolumes(float dt);
       protected:
 
          /// Destructor
@@ -302,9 +331,8 @@ namespace SimCore
          
          void UpdateVolumes(float dt);
          void RemoveVolume(ShapeVolumeArray::iterator iter);
-         ShapeVolumeRecord* FindVolume(ShapeRecordID id);
+         ShapeVolumeRecord* FindVolume(ShapeRecordId id);
 
-         void TimeoutAndDeleteVolumes(float dt);
          void TransformAndSortVolumes();
          void SetPosition(ShapeVolumeRecord* dl);
 
