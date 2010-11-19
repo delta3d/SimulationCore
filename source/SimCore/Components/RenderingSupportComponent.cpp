@@ -226,6 +226,12 @@ namespace SimCore
 
          osgUtil::RenderBin* terrainBin = new osgUtil::RenderBin(osgUtil::RenderBin::SORT_FRONT_TO_BACK);
          osgUtil::RenderBin::addRenderBinPrototype("TerrainBin", terrainBin);
+
+         if (mEnableCullVisitor)
+         {
+            // Force a reset so it won't break if you call SetEnableCullVisitor before adding it to the GM.
+            InitializeCullVisitor(*GetGameManager()->GetApplication().GetCamera());
+         }
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -532,20 +538,24 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////////////////////
       void RenderingSupportComponent::SetEnableCullVisitor(bool pEnable)
       {
+         bool valueChangingToTrue = pEnable && !mEnableCullVisitor;
          mEnableCullVisitor = pEnable;
-         if (GetGameManager() != NULL)
+         if (valueChangingToTrue)
          {
-            InitializeCullVisitor(*GetGameManager()->GetApplication().GetCamera());
-         }
-         else
-         {
-            LOG_WARNING("Code enabled the paged terrain cull visitor, but the RenderingSupportComponent has not been added to the GM.");
-         }
+            if (GetGameManager() != NULL)
+            {
+               InitializeCullVisitor(*GetGameManager()->GetApplication().GetCamera());
+            }
+            else
+            {
+               LOG_WARNING("Code enabled the paged terrain cull visitor, but the RenderingSupportComponent has not been added to the GM.");
+            }
 
-         if (pEnable && mEnableStaticTerrainPhysics)
-         {
-            LOG_WARNING("Turning on the terrain Cull Visitor, but Static Terrain Physics was already enabled. Disabling Static Terrain Physics, .");
-            SetEnableStaticTerrainPhysics(false);
+            if (mEnableStaticTerrainPhysics)
+            {
+               LOG_WARNING("Turning on the terrain Cull Visitor, but Static Terrain Physics was already enabled. Disabling Static Terrain Physics, .");
+               SetEnableStaticTerrainPhysics(false);
+            }
          }
       }
 
