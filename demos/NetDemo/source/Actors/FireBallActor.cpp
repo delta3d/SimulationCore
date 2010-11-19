@@ -55,6 +55,7 @@ namespace NetDemo
    //////////////////////////////////////////////////////////
    FireBallActor::FireBallActor(SimCore::Actors::BasePhysicsVehicleActorProxy &proxy)
       : SimCore::Actors::BasePhysicsVehicleActor(proxy)
+      , mVelocity(10.0f)
    {
       SetTerrainPresentDropHeight(0.0);
       // create my unique physics helper.  almost all of the physics is on the helper.
@@ -149,12 +150,6 @@ namespace NetDemo
 
          vrc->CreateShapeVolume(mShapeVolume);
       }
-
-      if(GetPhysicsHelper() != NULL && GetPhysicsHelper()->GetMainPhysicsObject() != NULL)
-      {
-         osg::Vec3 up(0.0, 0.0, 150.0);
-         GetPhysicsHelper()->GetMainPhysicsObject()->ApplyImpulse(mVelocity);
-      }
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
@@ -193,9 +188,7 @@ namespace NetDemo
       GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::VolumeRenderingComponent::DEFAULT_NAME, vrc); 
       if(vrc != NULL)
       {
-         vrc->RemoveShapeVolume(mShapeVolume->mId);
-
-         mShapeVolume->mParentNode->removeChildren(0, mShapeVolume->mParentNode->getNumChildren());
+         vrc->RemoveShapeVolume(mShapeVolume.get());
       }
 
       GetGameActorProxy().GetGameManager()->DeleteActor(GetGameActorProxy());
@@ -208,12 +201,34 @@ namespace NetDemo
 
 
       dtCore::Transform ourTransform;
+      dtCore::Transform targetTransform;
+      osg::Vec3 currentDirection, currentPosition;
+
       GetTransform(ourTransform);
-      ourTransform.Move(mVelocity * tickMessage.GetDeltaSimTime());
+      ourTransform.GetTranslation(currentPosition);
+      
+      if(mTarget.valid())
+      {
+         osg::Vec3 targetPos;
+         mTarget->GetTransform(targetTransform);
+         targetTransform.GetTranslation(targetPos);
+         currentDirection = targetPos - currentPosition;
+         currentDirection.normalize();
+      }
+      else //if our target has been deleted just go straight
+      {
+         ourTransform.GetRow(1, currentDirection);
+      }
 
       if(GetPhysicsHelper() != NULL && GetPhysicsHelper()->GetMainPhysicsObject() != NULL)
       {
-         GetPhysicsHelper()->GetMainPhysicsObject()->ApplyImpulse(mVelocity);
+         osg::Vec3 up(0.0f, 0.0f, 0.0f);
+         GetPhysicsHelper()->GetMainPhysicsObject()->ApplyImpulse(up + (currentDirection * mVelocity));
+
+         GetPhysicsHelper()->GetMainPhysicsObject()->AddForce(mForces);
+         
+         //these get reset every frame
+         mForces.set(0.0f, 0.0f, 0.0f);
 
          std::vector<dtPhysics::CollisionContact> contacts;
          dtPhysics::PhysicsWorld::GetInstance().GetContacts(*GetPhysicsHelper()->GetMainPhysicsObject(), contacts);
@@ -242,13 +257,13 @@ namespace NetDemo
    }
 
    //////////////////////////////////////////////////////////
-   void FireBallActor::SetVelocity( const osg::Vec3& vel )
+   void FireBallActor::SetVelocity(float vel)
    {
       mVelocity = vel;
    }
 
    //////////////////////////////////////////////////////////
-   const osg::Vec3& FireBallActor::GetVelocity() const
+   float FireBallActor::GetVelocity() const
    {
       return mVelocity;
    }
@@ -269,6 +284,18 @@ namespace NetDemo
       dtCore::Transform xform;
       GetTransform(xform);
       return xform.GetTranslation();
+   }
+
+   //////////////////////////////////////////////////////////
+   void FireBallActor::AddForce(const osg::Vec3& f)
+   {
+      mForces += f;
+   }
+
+   //////////////////////////////////////////////////////////
+   void FireBallActor::SetTarget(dtCore::Transformable& t)
+   {
+      mTarget = &t;
    }
 
    //////////////////////////////////////////////////////////

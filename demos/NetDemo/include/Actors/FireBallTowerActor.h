@@ -88,11 +88,12 @@ namespace NetDemo
          void FindTarget(float);
          void Shoot(float);
          float GetDistance(const dtCore::Transformable& t) const;
-         void SetTarget(const BaseEnemyActor* t);
+         void SetTarget(BaseEnemyActor* t);
 
       private:
 
          float mSleepTime, mMaxSleepTime, mTimeSinceLastFire;
+         dtCore::ObserverPtr<dtCore::Transformable> mTarget;
          dtCore::RefPtr<TowerAIHelper> mAIHelper;
    };
 
