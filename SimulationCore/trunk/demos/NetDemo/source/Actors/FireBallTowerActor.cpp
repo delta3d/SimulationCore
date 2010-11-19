@@ -197,7 +197,7 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////////////
    void FireBallTowerActor::FindTarget(float)
    {
-      float minDist = 250.0;
+      float minDist = 200.0;
       dtCore::Transformable* enemy = NULL;
 
       std::vector<dtDAL::ActorProxy*> actorArray;
@@ -235,6 +235,7 @@ namespace NetDemo
 
       if(enemy != NULL)
       {
+         mTarget = enemy;
          mAIHelper->SetCurrentTarget(*enemy);
       }
       else
@@ -245,8 +246,9 @@ namespace NetDemo
    }
 
    //////////////////////////////////////////////////////////////////////
-   void FireBallTowerActor::SetTarget(const BaseEnemyActor* enemy)
+   void FireBallTowerActor::SetTarget(BaseEnemyActor* enemy)
    {
+      mTarget = enemy;
       mAIHelper->SetCurrentTarget(*enemy);
    }
    //////////////////////////////////////////////////////////////////////
@@ -298,7 +300,7 @@ namespace NetDemo
                float fireBallSpeed = 2.5f;
 
                dtCore::Transform xform;
-               osg::Vec3 pos, enemyPos;
+               osg::Vec3 pos, enemyPos; 
                GetTransform(xform);
                xform.GetTranslation(pos);
 
@@ -315,8 +317,16 @@ namespace NetDemo
                      osg::Vec3 pos = dtUtil::MatrixUtil::GetRow3(dofMat, 3);
                      osg::Vec3 dir = dtUtil::MatrixUtil::GetRow3(dofMat, 1);
                      
-                     fireball->SetVelocity(dir * fireBallSpeed);
-                     fireball->SetPosition(pos + (dir * 3.0 * fireBallSpeed));
+                     fireball->SetVelocity(fireBallSpeed);
+                     fireball->SetPosition(osg::Vec3(0.0f, 0.0f, 1.0f) + pos + (dir * 7.5));
+
+                     osg::Vec3 up(0.0, 0.0, 2500.0);
+                     fireball->AddForce(up);// + (dir * fireBallSpeed));
+
+                     if(mTarget.valid())
+                     {
+                        fireball->SetTarget(*mTarget);
+                     }
                   }
                }
                

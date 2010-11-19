@@ -50,14 +50,18 @@ namespace NetDemo
          virtual void OnTickLocal( const dtGame::TickMessage& tickMessage );
          virtual void OnTickRemote( const dtGame::TickMessage& tickMessage );
 
-         void SetVelocity(const osg::Vec3& vel);
-         const osg::Vec3& GetVelocity() const;
+         //the force gets reset every frame
+         void AddForce(const osg::Vec3& f);
+
+         void SetVelocity(float vel);
+         float GetVelocity() const;
 
          void SetPosition(const osg::Vec3& pos);
          const osg::Vec3& GetPosition() const;
 
          void DoExplosion(float);
 
+         void SetTarget(dtCore::Transformable& t);
 
       protected:
 
@@ -67,7 +71,10 @@ namespace NetDemo
 
       private:
 
-         osg::Vec3 mVelocity;
+         float mVelocity;
+         osg::Vec3 mForces;
+
+         dtCore::ObserverPtr<dtCore::Transformable> mTarget;
          dtCore::RefPtr<SimCore::Components::VolumeRenderingComponent::ShapeVolumeRecord> mShapeVolume;
          dtCore::RefPtr<SimCore::Components::RenderingSupportComponent::DynamicLight> mDynamicLight;
 
