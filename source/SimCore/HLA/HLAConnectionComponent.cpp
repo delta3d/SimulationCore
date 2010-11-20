@@ -39,6 +39,8 @@
 #include <dtActors/coordinateconfigactor.h>
 
 #include <dtGame/exceptionenum.h>
+#include <dtGame/gamemanager.h>
+#include <dtGame/gmsettings.h>
 #include <dtABC/application.h>
 
 #include <dtDAL/project.h>
@@ -246,6 +248,26 @@ namespace SimCore
 
          try
          {
+            // Set the client & server roles, which are different based on network type.
+            // For HLA, use CLIENT AND SERVER
+            if (*mConnectionType == ConnectionType::TYPE_HLA)
+            {
+               GetGameManager()->GetGMSettings().SetServerRole(true);
+               GetGameManager()->GetGMSettings().SetClientRole(true);
+            }
+            else if (*mConnectionType == ConnectionType::TYPE_CLIENTSERVER)
+            {
+               // For ClientServer, as the Stealth Viewer, we are only a CLIENT
+               GetGameManager()->GetGMSettings().SetServerRole(false);
+               GetGameManager()->GetGMSettings().SetClientRole(true);
+            }
+            else if (*mConnectionType == ConnectionType::TYPE_DIS)
+            {
+               // For DIS, as the Stealth Viewer, we are CLIENT AND SERVER
+               GetGameManager()->GetGMSettings().SetServerRole(true);
+               GetGameManager()->GetGMSettings().SetClientRole(true);
+            }
+
             SimCore::Utils::LoadMaps(*GetGameManager(), mapName);
             mState = &HLAConnectionComponent::ConnectionState::STATE_CONNECTING;
          }
