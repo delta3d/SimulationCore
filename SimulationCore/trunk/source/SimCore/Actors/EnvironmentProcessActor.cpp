@@ -24,10 +24,15 @@
 
 #include <prefix/SimCorePrefix.h>
 #include <SimCore/Actors/EnvironmentProcessActor.h>
+#include <SimCore/Actors/SimpleMovingShapeActor.h>
+#include <SimCore/Actors/EntityActorRegistry.h>
 #include <dtGame/gameactor.h>
 #include <dtGame/gamemanager.h>
+#include <dtGame/gamemanager.inl>
 #include <dtDAL/propertymacros.h>
 #include <dtDAL/namedgroupparameter.inl> //needed for Get and Set Value methods.
+
+#include <dtGame/deadreckoninghelper.h>
 
 #include <climits>
 #include <algorithm>
@@ -54,8 +59,10 @@ namespace SimCore
       : mSequenceNumber(USHRT_MAX)
       , mLastUpdateSequenceNumber(USHRT_MAX)
       , mRecords()
+      , mChangeMarker(false)
       {
          SetClassName("SimCore::Actors::EnvironmentProcessActorProxy");
+         printf("%s\n","Created Environment Process");
       }
 
       ////////////////////////////////////////////
@@ -72,10 +79,15 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////////
       void EnvironmentProcessActorProxy::BuildPropertyMap()
       {
+         BaseClass::BuildPropertyMap();
          static const dtUtil::RefString GROUPNAME("EnvironmentProcess");
 
          typedef dtDAL::PropertyRegHelper<EnvironmentProcessActorProxy&, EnvironmentProcessActorProxy> PropRegHelperType;
          PropRegHelperType propRegHelper(*this, this, GROUPNAME);
+
+         DT_REGISTER_PROPERTY_WITH_LABEL(Active, "Active",
+                  "Whether this environment process is active.",
+                  PropRegHelperType, propRegHelper);
 
          // Sequence number needs to be updated first so that it's already update when the records are updated.
          // so it thus must be defined first.
@@ -89,8 +101,16 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////
-      DT_IMPLEMENT_ACCESSOR(EnvironmentProcessActorProxy, int, SequenceNumber);
+      DT_IMPLEMENT_ACCESSOR(EnvironmentProcessActorProxy, bool, Active);
+      DT_IMPLEMENT_ACCESSOR_GETTER(EnvironmentProcessActorProxy, int, SequenceNumber);
       DT_IMPLEMENT_ACCESSOR(EnvironmentProcessActorProxy, int, LastUpdateSequenceNumber);
+
+      ////////////////////////////////////////////
+      void EnvironmentProcessActorProxy::SetSequenceNumber(int nextValue)
+      {
+         mSequenceNumber = nextValue;
+         OnRecordsChange(mRecords);
+      }
 
       ////////////////////////////////////////////
       const EnvironmentProcessActorProxy::CreatedActorList& EnvironmentProcessActorProxy::GetCreatedActors()
@@ -106,7 +126,7 @@ namespace SimCore
          iend = mCreatedActors.end();
          for (; i != iend; ++i)
          {
-            SimpleMovingShapeActorProxy& curActor = *(i->second);
+            SimpleMovingShapeActorProxy& curActor = **i;
             if (curActor.IsInGM())
             {
                GetGameManager()->DeleteActor(curActor);
@@ -119,30 +139,100 @@ namespace SimCore
       ////////////////////////////////////////////
       void EnvironmentProcessActorProxy::OnRecordsChange(const RecordList& records)
       {
-         if (mLastUpdateSequenceNumber != mSequenceNumber || mSequenceNumber == USHRT_MAX)
+         if (mChangeMarker && (mLastUpdateSequenceNumber != mSequenceNumber || mSequenceNumber == USHRT_MAX))
          {
+            mCreatedActorsBuffer2.reserve(records.size());
+
             std::for_each(records.begin(), records.end(), dtUtil::MakeFunctor(&EnvironmentProcessActorProxy::OnRecordChange, this));
             mLastUpdateSequenceNumber = mSequenceNumber;
+            mCreatedActors.swap(mCreatedActorsBuffer2);
+
+            CreatedActorList::iterator i, iend;
+            i = mCreatedActorsBuffer2.begin();
+            iend = mCreatedActorsBuffer2.end();
+            for (; i != iend; ++i)
+            {
+               GetGameManager()->DeleteActor(**i);
+            }
+            mCreatedActorsBuffer2.clear();
+            mChangeMarker = false;
          }
       }
+
+      class RemoveIndexFunc
+      {
+      public:
+         RemoveIndexFunc(unsigned index)
+         : mIndex(index)
+         {
+         }
+
+         bool operator()(SimpleMovingShapeActorProxy* actor)
+         {
+            return unsigned(actor->GetIndex()) == mIndex;
+         }
+      private:
+         unsigned mIndex;
+      };
 
       ////////////////////////////////////////////
       void EnvironmentProcessActorProxy::OnRecordChange(const dtCore::RefPtr<dtDAL::NamedGroupParameter>& record)
       {
-         int index = record->GetValue(PARAM_INDEX, -1);
-         int typeCode = record->GetValue(PARAM_TYPE_CODE, -1);
+         unsigned index = record->GetValue(PARAM_INDEX, 0U);
+         unsigned typeCode = record->GetValue(PARAM_TYPE_CODE, 0U);
 
-         const osg::Vec3d defaultLoc;
-         const osg::Vec3 defaultVec3;
+         if (typeCode == GaussianPuffRecordType || typeCode == GaussianPuffRecordEXType)
+         {
+            const osg::Vec3d defaultLoc;
+            const osg::Vec3 defaultVec3;
 
-         record->GetValue(PARAM_LOCATION, defaultLoc);
-         record->GetValue(PARAM_ORIGINATION_LOCATION, defaultLoc);
-         record->GetValue(PARAM_DIMENSION, defaultVec3);
-         record->GetValue(PARAM_DIMENSION_RATE, defaultVec3);
-         record->GetValue(PARAM_ORIENTATION, defaultVec3);
-         record->GetValue(PARAM_VELOCITY, defaultVec3);
-         record->GetValue(PARAM_ANGULAR_VELOCITY, defaultVec3);
-         record->GetValue(PARAM_CENTROID_HEIGHT, 0.0f);
+            dtCore::RefPtr<SimpleMovingShapeActorProxy> puff;
+
+            if (!mCreatedActors.empty())
+            {
+               RemoveIndexFunc riFunc(index);
+
+               CreatedActorList::iterator found = std::remove_if(mCreatedActors.begin(), mCreatedActors.end(), riFunc);
+
+               if (found != mCreatedActors.end())
+               {
+                  puff = *found;
+                  mCreatedActors.erase(found);
+                  mCreatedActorsBuffer2.push_back(puff);
+               }
+            }
+
+            if (!puff.valid())
+            {
+               GetGameManager()->CreateActor(*EntityActorRegistry::ENVIRONMENT_PROCESS_MOVING_SHAPE_ACTOR_TYPE, puff);
+               puff->SetOwner(GetId());
+               puff->SetIndex(index);
+            }
+
+            dtGame::DeadReckoningHelper* drAC = NULL;
+            puff->GetGameActor().GetComponent(drAC);
+
+            osg::Vec3d tempVec3d;
+            osg::Vec3 tempVec3;
+
+            tempVec3d = record->GetValue(PARAM_LOCATION, defaultLoc);
+            drAC->SetLastKnownTranslation(tempVec3d);
+
+            //record->GetValue(PARAM_ORIGINATION_LOCATION, defaultLoc);
+
+            tempVec3 = record->GetValue(PARAM_DIMENSION, defaultVec3);
+            puff->SetLastKnownDimension(tempVec3);
+            tempVec3 = record->GetValue(PARAM_DIMENSION_RATE, defaultVec3);
+            puff->SetLastKnownDimensionVelocity(tempVec3);
+            tempVec3 = record->GetValue(PARAM_ORIENTATION, defaultVec3);
+            drAC->SetLastKnownRotation(tempVec3);
+            tempVec3 = record->GetValue(PARAM_VELOCITY, defaultVec3);
+            drAC->SetLastKnownVelocity(tempVec3);
+            tempVec3 = record->GetValue(PARAM_ANGULAR_VELOCITY, defaultVec3);
+            drAC->SetLastKnownAngularVelocity(tempVec3);
+
+            //record->GetValue(PARAM_CENTROID_HEIGHT, 0.0f);
+         }
 
       }
 
@@ -175,6 +265,7 @@ namespace SimCore
          mRecords.reserve(groupParam.GetParameterCount());
          AddRecordFunc addFunc(mRecords);
          groupParam.ForEachParameter(addFunc);
+         mChangeMarker = true;
 
          OnRecordsChange(mRecords);
       }
