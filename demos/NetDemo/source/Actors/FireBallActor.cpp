@@ -55,6 +55,8 @@ namespace NetDemo
    //////////////////////////////////////////////////////////
    FireBallActor::FireBallActor(SimCore::Actors::BasePhysicsVehicleActorProxy &proxy)
       : SimCore::Actors::BasePhysicsVehicleActor(proxy)
+      , mMaxTime(5.0f)
+      , mCurrentTime(0.0f)
       , mVelocity(10.0f)
    {
       SetTerrainPresentDropHeight(0.0);
@@ -106,6 +108,8 @@ namespace NetDemo
       physObj->CreateFromProperties(NULL);
 
       BaseClass::OnEnteredWorld();
+
+      mCurrentTime = mMaxTime;
 
       // Add a dynamic light to our fort
       SimCore::Components::RenderingSupportComponent* renderComp;
@@ -199,42 +203,48 @@ namespace NetDemo
    {
       BaseClass::OnTickLocal( tickMessage );
 
-
-      dtCore::Transform ourTransform;
-      dtCore::Transform targetTransform;
-      osg::Vec3 currentDirection, currentPosition;
-
-      GetTransform(ourTransform);
-      ourTransform.GetTranslation(currentPosition);
-      
-      if(mTarget.valid())
+      mCurrentTime -= tickMessage.GetDeltaSimTime();
+      if(mCurrentTime <= 0.0f)
       {
-         osg::Vec3 targetPos;
-         mTarget->GetTransform(targetTransform);
-         targetTransform.GetTranslation(targetPos);
-         currentDirection = targetPos - currentPosition;
-         currentDirection.normalize();
+         DoExplosion(0.0f);
       }
-      else //if our target has been deleted just go straight
+      else
       {
-         ourTransform.GetRow(1, currentDirection);
-      }
+         dtCore::Transform ourTransform;
+         dtCore::Transform targetTransform;
+         osg::Vec3 currentDirection, currentPosition;
 
-      if(GetPhysicsHelper() != NULL && GetPhysicsHelper()->GetMainPhysicsObject() != NULL)
-      {
-         osg::Vec3 up(0.0f, 0.0f, 0.0f);
-         GetPhysicsHelper()->GetMainPhysicsObject()->ApplyImpulse(up + (currentDirection * mVelocity));
-
-         GetPhysicsHelper()->GetMainPhysicsObject()->AddForce(mForces);
+         GetTransform(ourTransform);
+         ourTransform.GetTranslation(currentPosition);
          
-         //these get reset every frame
-         mForces.set(0.0f, 0.0f, 0.0f);
-
-         std::vector<dtPhysics::CollisionContact> contacts;
-         dtPhysics::PhysicsWorld::GetInstance().GetContacts(*GetPhysicsHelper()->GetMainPhysicsObject(), contacts);
-         if(!contacts.empty())
+         if(mTarget.valid())
          {
-            DoExplosion(0.0f);
+            osg::Vec3 targetPos;
+            mTarget->GetTransform(targetTransform);
+            targetTransform.GetTranslation(targetPos);
+            currentDirection = targetPos - currentPosition;
+            currentDirection.normalize();
+         }
+         else //if our target has been deleted just go straight
+         {
+            ourTransform.GetRow(1, currentDirection);
+         }
+
+         if(GetPhysicsHelper() != NULL && GetPhysicsHelper()->GetMainPhysicsObject() != NULL)
+         {
+            GetPhysicsHelper()->GetMainPhysicsObject()->ApplyImpulse(currentDirection * mVelocity);
+
+            GetPhysicsHelper()->GetMainPhysicsObject()->AddForce(mForces);
+            
+            //these get reset every frame
+            mForces.set(0.0f, 0.0f, 0.0f);
+
+            std::vector<dtPhysics::CollisionContact> contacts;
+            dtPhysics::PhysicsWorld::GetInstance().GetContacts(*GetPhysicsHelper()->GetMainPhysicsObject(), contacts);
+            if(!contacts.empty())
+            {
+               DoExplosion(0.0f);
+            }
          }
       }
 
@@ -296,6 +306,18 @@ namespace NetDemo
    void FireBallActor::SetTarget(dtCore::Transformable& t)
    {
       mTarget = &t;
+   }
+
+   //////////////////////////////////////////////////////////
+   void FireBallActor::SetMaxTime(float t)
+   {
+      mMaxTime = t;
+   }
+
+   //////////////////////////////////////////////////////////
+   float FireBallActor::GetMaxTime() const
+   {
+      return mMaxTime;
    }
 
    //////////////////////////////////////////////////////////

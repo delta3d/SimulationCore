@@ -59,6 +59,9 @@ namespace NetDemo
          void SetPosition(const osg::Vec3& pos);
          const osg::Vec3& GetPosition() const;
 
+         void SetMaxTime(float t);
+         float GetMaxTime() const;
+
          void DoExplosion(float);
 
          void SetTarget(dtCore::Transformable& t);
@@ -68,9 +71,9 @@ namespace NetDemo
          /// Destructor
          virtual ~FireBallActor();
 
-
       private:
 
+         float mMaxTime, mCurrentTime;
          float mVelocity;
          osg::Vec3 mForces;
 

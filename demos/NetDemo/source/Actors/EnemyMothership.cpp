@@ -95,6 +95,32 @@ namespace NetDemo
    {
       BaseClass::OnEnteredWorld();
 
+      //adding a blue light to us
+      AddDynamicLight();
+
+      //////add a shape volume for the beam
+      //SimCore::Components::VolumeRenderingComponent* vrc = NULL;
+      //GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::VolumeRenderingComponent::DEFAULT_NAME, vrc); 
+      //
+      //if(vrc != NULL)
+      //{
+      //   SimCore::Components::VolumeRenderingComponent::ShapeVolumeRecord* svr = new SimCore::Components::VolumeRenderingComponent::ShapeVolumeRecord();
+      //   svr->mPosition.set(0.0f, 0.0f, -18.0f);
+      //   svr->mColor.set(1.0f, 1.0f, 1.0f, 1.0f);
+      //   svr->mShapeType = SimCore::Components::VolumeRenderingComponent::CONE;
+      //   svr->mRadius.set(10.0f, 20.0f, 0.0f);
+      //   svr->mNumParticles = 50;
+      //   svr->mParticleRadius = 15.0f;
+      //   svr->mVelocity = 0.5f;
+      //   svr->mDensity = 0.08f;
+      //   svr->mTarget = this;
+      //   svr->mAutoDeleteOnTargetNull = true;
+      //   svr->mShaderName = "LightVolumeShader";
+      //   svr->mRenderMode = SimCore::Components::VolumeRenderingComponent::PARTICLE_VOLUME;
+
+      //   vrc->CreateShapeVolume(svr);
+      //}
+
       if (!IsRemote()) //only run locally
       {
          mAIHelper->Init(NULL);
@@ -115,33 +141,8 @@ namespace NetDemo
 
          //calling spawn will start the AI
          mAIHelper->Spawn();
-
-         //adding a blue light to us
-         AddDynamicLight();
-
-         ////add a shape volume for the beam
-         SimCore::Components::VolumeRenderingComponent* vrc = NULL;
-         GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::VolumeRenderingComponent::DEFAULT_NAME, vrc); 
-         /*
-         if(vrc != NULL)
-         {
-            SimCore::Components::VolumeRenderingComponent::ShapeVolumeRecord* svr = new SimCore::Components::VolumeRenderingComponent::ShapeVolumeRecord();
-            svr->mPosition.set(0.0f, 0.0f, -18.0f);
-            svr->mColor.set(0.35f, 0.35f, 0.95f, 1.0f);
-            svr->mShapeType = SimCore::Components::VolumeRenderingComponent::CONE;
-            svr->mRadius.set(20.0f, 30.0f, 0.0f);
-            svr->mNumParticles = 90;
-            svr->mParticleRadius = 10.0f;
-            svr->mVelocity.set(0.0, 0.0, 0.5);
-            svr->mDensity = 0.08f;
-            svr->mTarget = this;
-            svr->mAutoDeleteOnTargetNull = true;
-            svr->mRenderMode = SimCore::Components::VolumeRenderingComponent::PARTICLE_VOLUME;
-
-            vrc->CreateShapeVolume(svr);
-         }
-         */
       }
+         
    }
 
    ///////////////////////////////////////////////////////////////////////////////////

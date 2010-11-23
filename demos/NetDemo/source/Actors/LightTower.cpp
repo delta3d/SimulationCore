@@ -412,6 +412,26 @@ namespace NetDemo
    void LightTower::OnTickRemote( const dtGame::TickMessage& tickMessage )
    {
       BaseClass::OnTickRemote( tickMessage );
+
+      //orient the light
+      dtUtil::NodeCollector* nodes = GetNodeCollector();
+      osgSim::DOFTransform* dof = nodes->GetDOFTransform("dof_turret_01");
+      if (dof != NULL && mTargetLight != NULL)
+      {
+         osg::Vec3 hpr, hprLast;
+         hpr = dof->getCurrentHPR();
+
+         hpr[0] = osg::RadiansToDegrees(hpr[0]);
+         hpr[1] = osg::RadiansToDegrees(hpr[1]);
+         hpr[2] = osg::RadiansToDegrees(hpr[2]);
+
+         osg::Matrix mat;
+         dtUtil::MatrixUtil::HprToMatrix(mat, hpr);
+         osg::Vec3 dir = dtUtil::MatrixUtil::GetRow3(mat, 1);
+
+         mTargetLight->mDirection.set(dir);
+      }
+
    }
 
    //////////////////////////////////////////////////////////////////////
