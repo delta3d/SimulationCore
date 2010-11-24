@@ -147,12 +147,12 @@ namespace NetDemo
       if(vrc != NULL)
       {
          SimCore::Components::VolumeRenderingComponent::ShapeVolumeRecord* svr = new SimCore::Components::VolumeRenderingComponent::ShapeVolumeRecord();
-         svr->mPosition.set(10.0f, 95.0f, 1.0f);
+         svr->mPosition.set(1.0f, 30.0f, 1.0f);
          svr->mColor.set(1.0f, 1.0f, 1.0f, 1.0f);
          svr->mShapeType = SimCore::Components::VolumeRenderingComponent::ELLIPSOID;
-         svr->mRadius.set(40.0f, 25.0f, 10.0f);
+         svr->mRadius.set(30.0f, 30.0f, 2.5f);
          svr->mNumParticles = 150;
-         svr->mParticleRadius = 24.5f;
+         svr->mParticleRadius = 8.0f;
          svr->mVelocity = 0.07;
          svr->mDensity = 0.15f;
          svr->mTarget = this;
@@ -233,7 +233,7 @@ namespace NetDemo
          }
       }
 
-      if(mLightIsOn && GetDamageState() == SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::DESTROYED)
+      if(mLightIsOn && mMainLight.valid() && GetDamageState() == SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::DESTROYED)
       {
          mLightIsOn = false;
 
