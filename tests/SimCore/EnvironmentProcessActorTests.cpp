@@ -117,7 +117,7 @@ namespace SimCore
             rec1->SetValue(EnvironmentProcessActorProxy::PARAM_CENTROID_HEIGHT, testHeight);
 
             rec2->SetValue(EnvironmentProcessActorProxy::PARAM_INDEX, 8U);
-            rec2->SetValue(EnvironmentProcessActorProxy::PARAM_TYPE_CODE, unsigned(EnvironmentProcessActorProxy::SphereRecord2Type));
+            rec2->SetValue(EnvironmentProcessActorProxy::PARAM_TYPE_CODE, unsigned(EnvironmentProcessActorProxy::BoundingSphereRecordType));
             rec2->SetValue(EnvironmentProcessActorProxy::PARAM_LOCATION, testPos1);
             rec2->SetValue(EnvironmentProcessActorProxy::PARAM_RADIUS, testHeight);
             rec2->SetValue(EnvironmentProcessActorProxy::PARAM_RADIUS_RATE, testRate);

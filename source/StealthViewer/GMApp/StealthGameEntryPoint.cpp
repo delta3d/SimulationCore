@@ -62,6 +62,7 @@
 #include <SimCore/Components/MunitionsComponent.h>
 #include <SimCore/Components/RenderingSupportComponent.h>
 #include <SimCore/Components/ControlStateComponent.h>
+#include <SimCore/Components/VolumeRenderingComponent.h>
 #include <SimCore/Tools/GPS.h>
 #include <SimCore/Tools/Compass.h>
 #include <SimCore/Tools/Compass360.h>
@@ -369,17 +370,13 @@ namespace StealthGM
       //   LOG_ERROR("Failed to find the stealth actor");
       //   gameManager.GetApplication().Quit();
       //}
-#ifdef AGEIA_PHYSICS
-      dtCore::RefPtr<dtAgeiaPhysX::NxAgeiaWorldComponent> ageiaComponent = new dtAgeiaPhysX::NxAgeiaWorldComponent();
-      gameManager.AddComponent(*ageiaComponent, dtGame::GameManager::ComponentPriority::NORMAL);
-#else
       dtCore::RefPtr<dtPhysics::PhysicsWorld> physicsWorld = new dtPhysics::PhysicsWorld(gameManager.GetConfiguration());
       //dtCore::RefPtr<dtPhysics::PhysicsWorld> physicsWorld = new dtPhysics::PhysicsWorld(dtPhysics::PhysicsWorld::ODE_ENGINE);
       physicsWorld->Init();
       dtCore::RefPtr<dtPhysics::PhysicsComponent> physicsComponent = new dtPhysics::PhysicsComponent(*physicsWorld, false);
       gameManager.AddComponent(*physicsComponent, dtGame::GameManager::ComponentPriority::NORMAL);
       SimCore::CollisionGroup::SetupDefaultGroupCollisions(*physicsComponent);
-#endif
+
       //mStealth->SetName("Stealth");
       //mStealth->SetTransform(stealthStart);
       //gameManager.AddActor(mStealth->GetGameActorProxy(), false, false);
@@ -399,6 +396,12 @@ namespace StealthGM
       renderingSupportComponent->SetEnableCullVisitor(false);
 
       gameManager.AddComponent(*renderingSupportComponent, dtGame::GameManager::ComponentPriority::NORMAL);
+
+      //this enables night vision
+      dtCore::RefPtr<SimCore::Components::VolumeRenderingComponent> volumeRenderingComponent
+         = new SimCore::Components::VolumeRenderingComponent();
+
+      gameManager.AddComponent(*volumeRenderingComponent, dtGame::GameManager::ComponentPriority::NORMAL);
 
       if(!IsUIRunning())
       {

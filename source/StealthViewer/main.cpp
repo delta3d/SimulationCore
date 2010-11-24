@@ -50,7 +50,7 @@ static char* appArgv[appArgc] =
    "--enablePlayback", "1",
 };
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
    // Log to log file, and not to console
    //dtUtil::Log::GetInstance().SetOutputStreamBit(dtUtil::Log::TO_FILE);
@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
 
       //Now that everything is initialized, show the main window.
       //Construct the application...
-      std::string appLibName("StealthGMApp");
+      const std::string appLibName("StealthGMApp");
       StealthQt::MainWindow mainWindow(appArgc, appArgv, appLibName);
 
       dtCore::System::GetInstance().SetShutdownOnWindowClose(false);
