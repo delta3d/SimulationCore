@@ -67,7 +67,8 @@ namespace SimCore
          mDRScale.DeadReckonThePosition(pos, pLogger, gameActor, 
             useAcceleration, mDRScale.mLastUpdatedTime, GetUseCubicSplineTransBlend());
          
-         if(mDRScale.mUpdated)
+         if (mDRScale.mUpdated && GetEffectiveUpdateMode(gameActor.IsRemote())
+                  == DeadReckoningHelper::UpdateMode::CALCULATE_AND_MOVE_ACTOR)
          {
             SimpleMovingShapeActorProxy& s = static_cast<SimpleMovingShapeActorProxy&>(gameActor.GetGameActorProxy());
             s.SetCurrentDimensions(pos);
@@ -177,10 +178,10 @@ namespace SimCore
             mShapeVolume->mColor.set(1.0f, 1.0f, 1.0f, 1.0f);
             mShapeVolume->mShapeType = SimCore::Components::VolumeRenderingComponent::ELLIPSOID;
             mShapeVolume->mRadius.set(1.0f, 1.0f, 1.0f);
-            mShapeVolume->mNumParticles = 35;
+            mShapeVolume->mNumParticles = 150;
             mShapeVolume->mParticleRadius = 5.0f;
             mShapeVolume->mVelocity = 0.15f;
-            mShapeVolume->mDensity = 0.08f;
+            mShapeVolume->mDensity = 0.035f;
             mShapeVolume->mTarget = &GetGameActor();
             mShapeVolume->mAutoDeleteOnTargetNull = true;
             mShapeVolume->mRenderMode = SimCore::Components::VolumeRenderingComponent::PARTICLE_VOLUME;
@@ -261,7 +262,6 @@ namespace SimCore
 
             if(vrc != NULL)
             {
-               mShapeVolume->mRadius = mDimensions;
                vrc->ComputeParticleRadius(*mShapeVolume);
             }
          }
