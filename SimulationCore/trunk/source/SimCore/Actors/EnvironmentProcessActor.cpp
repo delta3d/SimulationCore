@@ -37,6 +37,10 @@
 #include <climits>
 #include <algorithm>
 
+//DELETE ME
+#include <iostream>
+#include <osg/io_utils>
+
 namespace SimCore
 {
    namespace Actors
@@ -207,6 +211,7 @@ namespace SimCore
                GetGameManager()->CreateActor(*EntityActorRegistry::ENVIRONMENT_PROCESS_MOVING_SHAPE_ACTOR_TYPE, puff);
                puff->SetOwner(GetId());
                puff->SetIndex(index);
+               GetGameManager()->AddActor(*puff, IsRemote(), false);
             }
 
             dtGame::DeadReckoningHelper* drAC = NULL;
@@ -222,8 +227,10 @@ namespace SimCore
 
             tempVec3 = record->GetValue(PARAM_DIMENSION, defaultVec3);
             puff->SetLastKnownDimension(tempVec3);
+            std::cout << "Dimension" << tempVec3 << std::endl;
             tempVec3 = record->GetValue(PARAM_DIMENSION_RATE, defaultVec3);
             puff->SetLastKnownDimensionVelocity(tempVec3);
+            std::cout << "Dimension Rate" << tempVec3 << std::endl;
             tempVec3 = record->GetValue(PARAM_ORIENTATION, defaultVec3);
             drAC->SetLastKnownRotation(tempVec3);
             tempVec3 = record->GetValue(PARAM_VELOCITY, defaultVec3);
