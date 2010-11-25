@@ -33,27 +33,20 @@ void main(void)
    float r = dot(radiusPosition.xy, radiusPosition.xy); 
    if(r > 1.0) discard; // Eliminate processing on boundary pixels
 
-   vec3 noiseCoords = 0.5 /** (0.25 - vOffset.w)*/ * vec3(vec2(radiusPosition.xy), 1.0);
-   noiseCoords.xy += vPos.xy / 150.0;
+   vec3 noiseCoords = 0.610 * vec3(vec2(radiusPosition.xy), 1.0);
+   //noiseCoords.xy += vPos.xy / 150.0;
+   //noiseCoords.z = mod(osg_SimulationTime, 5.0) + vOffset.z * (0.00015 * osg_SimulationTime);
+   noiseCoords.z = 1000.0 + mod(volumeParticleVelocity * osg_SimulationTime, 1000.0)+ vOffset.z;// * (10000.0 + mod(osg_SimulationTime, 5000.0));
    float noise = (texture3D(noiseTexture, noiseCoords)).a;
-   noise = 20.0 * pow(noise, 15.0);
+   noise = 2.5 * pow(noise, 8.0);
    
-   //if(noise < 2.5 * vOffset.w * r) discard;
-   //else noise -= pow(r, 2.0);
-
    // soft particles avoid sharp cuts into main geometry
    float opacity = softParticleOpacity(vViewPosCenter.xyz, vViewPosVert.xyz, 
-         volumeParticleRadius, gl_FragCoord.xy / ScreenDimensions, volumeParticleDensity);
+         volumeParticleRadius, gl_FragCoord.xy / ScreenDimensions, 0.1 * volumeParticleDensity);
 
    vec3 finalColor = volumeParticleColor.xyz;
-   //vec3 lightNormal = vec3(particleNoiseOffset.x, particleNoiseOffset.y, 0.0);
-   //lightNormal = normalize(lightNormal);
-   //float lightValue = dot(vNormal, lightNormal);
-   //finalColor *= lightValue;
-   float fadeOut = 1.0 - length(vLightContrib);
-   //fadeOut = pow(fadeOut, 3.0);
-   float finalAlpha = 0.1 * opacity * volumeParticleColor.w * volumeParticleIntensity * noise * fadeOut * length(finalColor);
+   float fadeOut = (0.5 + (1.0 - length(vLightContrib)) / 1.5);
+   float finalAlpha = opacity * volumeParticleColor.w * volumeParticleIntensity * noise * fadeOut * length(finalColor);
    gl_FragColor = vec4(finalColor,finalAlpha);
-   //gl_FragColor = vec4(vec3(noise), 1.0);
 }
 
