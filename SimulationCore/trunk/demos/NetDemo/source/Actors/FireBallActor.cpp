@@ -55,7 +55,7 @@ namespace NetDemo
    //////////////////////////////////////////////////////////
    FireBallActor::FireBallActor(SimCore::Actors::BasePhysicsVehicleActorProxy &proxy)
       : SimCore::Actors::BasePhysicsVehicleActor(proxy)
-      , mMaxTime(5.0f)
+      , mMaxTime(3.0f)
       , mCurrentTime(0.0f)
       , mVelocity(10.0f)
    {
@@ -69,7 +69,7 @@ namespace NetDemo
       dtCore::RefPtr<dtPhysics::PhysicsObject> physicsObject = new dtPhysics::PhysicsObject("FireBallBody");
       helper->AddPhysicsObject(*physicsObject);
       physicsObject->SetPrimitiveType(dtPhysics::PrimitiveType::SPHERE);
-      physicsObject->SetMass(3.0f);
+      physicsObject->SetMass(30.0f);
       physicsObject->SetExtents(osg::Vec3(1.5f, 1.5f, 1.5f));
       physicsObject->SetMechanicsType(dtPhysics::MechanicsType::DYNAMIC);
       physicsObject->SetNotifyCollisions(true);
@@ -122,7 +122,7 @@ namespace NetDemo
          mDynamicLight->mRadius = 5.0f;
          mDynamicLight->mIntensity = 1.0f;
          mDynamicLight->mColor.set(1.0f, 1.0f, 0.0f);
-         mDynamicLight->mAttenuation.set(0.0025, 0.00015, 0.008);
+         mDynamicLight->mAttenuation.set(0.0015, 0.000075, 0.005);
          mDynamicLight->mTarget = this;
          mDynamicLight->mFlicker = true;
          mDynamicLight->mFlickerScale = 1.0f;
@@ -130,7 +130,7 @@ namespace NetDemo
          mDynamicLight->mFadeOutTime = 0.5f;
          mDynamicLight->mAutoDeleteLightOnTargetNull = true;
          renderComp->AddDynamicLight(mDynamicLight.get());
-      }
+      } 
 
       //add a shape volume for the beam
       SimCore::Components::VolumeRenderingComponent* vrc = NULL;
@@ -141,14 +141,16 @@ namespace NetDemo
          mShapeVolume->mPosition.set(0.0f, 0.0f, 0.0f);
          mShapeVolume->mColor.set(1.0f, 0.2f, 0.15f, 1.0f);
          mShapeVolume->mShapeType = SimCore::Components::VolumeRenderingComponent::SPHERE;
-         mShapeVolume->mRadius.set(0.1f, 0.0f, 0.0f);
-         mShapeVolume->mNumParticles = 10;
+         mShapeVolume->mRadius.set(0.15f, 0.0f, 0.0f);
+         mShapeVolume->mNumParticles = 5;
          mShapeVolume->mParticleRadius = 1.5f;
-         mShapeVolume->mDensity = 0.25f;
+         mShapeVolume->mDensity = 0.025f;
          mShapeVolume->mNoiseScale = 0.85f;
-         mShapeVolume->mVelocity = 0.15f;
+         mShapeVolume->mVelocity = 1.15f;
          mShapeVolume->mTarget = this;
          mShapeVolume->mAutoDeleteOnTargetNull = true;
+         mShapeVolume->mAutoDeleteAfterMaxTime = true;
+         mShapeVolume->mMaxTime = GetMaxTime();
          mShapeVolume->mShaderName = "FireVolumeShader";
          mShapeVolume->mRenderMode = SimCore::Components::VolumeRenderingComponent::PARTICLE_VOLUME;
 
@@ -248,16 +250,17 @@ namespace NetDemo
          }
       }
 
-      //SimCore::Components::VolumeRenderingComponent* vrc = NULL;
-      //GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::VolumeRenderingComponent::DEFAULT_NAME, vrc); 
-      //if(vrc != NULL && mShapeVolume.valid())
-      //{
-      //   osg::Vec3 vel(2.10f, 0.0f, 2.0f);
-      //   vel *= tickMessage.GetDeltaSimTime();
+      SimCore::Components::VolumeRenderingComponent* vrc = NULL;
+      GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::VolumeRenderingComponent::DEFAULT_NAME, vrc); 
+      if(vrc != NULL && mShapeVolume.valid() && mShapeVolume->mParticleDrawable.valid())
+      {
+         osg::Vec3 vel(0.475f, 0.0f, 0.0f);
+         vel *= tickMessage.GetDeltaSimTime();
 
-      //   vrc->ExpandVolume(*mShapeVolume, vel);
-      //   vrc->ComputeParticleRadius(*mShapeVolume);
-      //}
+         mShapeVolume->mRadius[0] += vel[0];
+         vrc->ExpandVolume(*mShapeVolume, vel);
+         //vrc->ComputeParticleRadius(*mShapeVolume);
+      }
    }
 
    //////////////////////////////////////////////////////////////////////

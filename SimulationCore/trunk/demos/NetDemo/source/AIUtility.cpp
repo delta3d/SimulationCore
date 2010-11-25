@@ -400,7 +400,7 @@ namespace NetDemo
       dtUtil::Clamp(remainingFallTime, 0.00001f, mTimeToTarget);
       remainingFallTime /= mTimeToTarget;
 
-      float gConstant = 0.1f;
+      float gConstant = 0.5f;
       float sgnHeightDiff = BaseClass::Sgn(heightDiff);
       float lift = remainingFallTime * sgnHeightDiff;
       if(!dtUtil::IsFinite(lift)) 
