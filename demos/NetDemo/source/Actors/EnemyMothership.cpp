@@ -105,13 +105,13 @@ namespace NetDemo
       if(vrc != NULL)
       {
          SimCore::Components::VolumeRenderingComponent::ShapeVolumeRecord* svr = new SimCore::Components::VolumeRenderingComponent::ShapeVolumeRecord();
-         svr->mPosition.set(0.0f, 0.0f, -15.0f);
+         svr->mPosition.set(0.0f, 0.0f, -18.0f);
          svr->mColor.set(0.45f, 0.63f, 1.0f, 0.25f);
          svr->mShapeType = SimCore::Components::VolumeRenderingComponent::CONE;
-         svr->mRadius.set(10.0f, 20.0f, 0.0f);
-         svr->mNumParticles = 150;
+         svr->mRadius.set(5.0f, 30.0f, 0.0f);
+         svr->mNumParticles = 45;
          svr->mParticleRadius = 20.0f;
-         svr->mVelocity = 0.5f;
+         svr->mVelocity = 0.25f;
          svr->mDensity = 0.08f;
          svr->mTarget = this;
          svr->mAutoDeleteOnTargetNull = true;

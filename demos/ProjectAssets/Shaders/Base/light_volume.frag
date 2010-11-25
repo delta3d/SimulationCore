@@ -42,7 +42,7 @@ void main(void)
    
    // soft particles avoid sharp cuts into main geometry
    float opacity = softParticleOpacity(vViewPosCenter.xyz, vViewPosVert.xyz, 
-         volumeParticleRadius, gl_FragCoord.xy / ScreenDimensions, 0.1 * volumeParticleDensity);
+         volumeParticleRadius, gl_FragCoord.xy / ScreenDimensions, volumeParticleDensity);
 
    vec3 finalColor = volumeParticleColor.xyz;
    float fadeOut = (0.5 + (1.0 - length(vLightContrib)) / 1.5);

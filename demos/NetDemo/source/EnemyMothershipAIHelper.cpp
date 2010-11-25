@@ -58,10 +58,15 @@ namespace NetDemo
 
    void EnemyMothershipAIHelper::ComputeTargetOffset()
    {
+      static bool side = true;
+      side = !side;
+
       mTargetOffset = osg::Vec3(
          dtUtil::RandFloat(-35.0f, 25.0f),
-         dtUtil::RandFloat(150.0f, 250.0f),
+         dtUtil::RandFloat(75.0f, 170.0f),
          dtUtil::RandFloat(50.0f, 100.0f) );
+
+      if(side) mTargetOffset[0] = -mTargetOffset[0];
    }
 
    void EnemyMothershipAIHelper::OnInit(const EnemyDescriptionActor* desc)
@@ -147,7 +152,7 @@ namespace NetDemo
          pos += mTargetOffset;
          mDefaultTargeter->Push(pos);
 
-         if(GetDistance(pos) < 20.0f)
+         if(GetDistance(pos) < 50.0f)
          {
             ComputeTargetOffset();
          }

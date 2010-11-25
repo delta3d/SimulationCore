@@ -54,9 +54,11 @@
 
 #include <ActorRegistry.h>
 #include <Actors/FortActor.h>
+#include <Actors/FireBallActor.h>
 
 #include <Components/WeaponComponent.h>
 
+#include <dtPhysics/physicshelper.h>
 
 #include <osgSim/DOFTransform>
 
@@ -182,6 +184,7 @@ namespace NetDemo
          dtCore::Transformable* t = GetClosestTower();
          if(t != NULL)
          {
+            mTarget = t;
             mAIHelper->SetCurrentTarget(*t);
             return;
          }
@@ -190,6 +193,7 @@ namespace NetDemo
       FortActor* fort = GetCurrentFortUnderAttack();
       if(fort != NULL)
       {
+         mTarget = fort;
          mAIHelper->SetCurrentTarget(*fort);
       }
 
@@ -243,7 +247,7 @@ namespace NetDemo
       }
    }
    ///////////////////////////////////////////////////////////////////////////////////
-   void EnemyHelixActor::Shoot(float)
+   void EnemyHelixActor::Shoot(float timeLeft)
    {
       if(mWeapon.valid())
       {
@@ -253,45 +257,50 @@ namespace NetDemo
          osgSim::DOFTransform* dof = nodes->GetDOFTransform("dof_hotspot_01");
          if (dof != NULL)
          {
-            osg::Vec3 hpr = dof->getCurrentHPR();      
-            osg::Vec3 hprLast = hpr;
+            mTimeSinceLastFire = 0.0f;
 
-            ////TODO- This doesn't seem to work, how do we orient the laser?
-            osg::Vec3 current_xyz, current_hpr;
-            dtCore::Transform current_trans;
-            GetTransform(current_trans);
-            current_trans.Get(current_xyz, current_hpr);
-
-            EnemyHelixAIHelper* helix = dynamic_cast<EnemyHelixAIHelper*>(mAIHelper.get());
-            if(helix != NULL)
+            //create a fireball actor
+            dtCore::RefPtr<FireBallActorProxy> proxy;
+            GetGameActorProxy().GetGameManager()->CreateActor(*NetDemoActorRegistry::FIREBALL_ACTOR_TYPE, proxy);
+            if(proxy.valid())
             {
-               osg::Vec2 angle = helix->GetWeaponAngle();
-
-               //hpr[0] = angle[0]  - osg::PI_2;
-               hpr[1] = -angle[1] + (0.95 * osg::PI_2);
-
-               //hpr[0] -= current_hpr[0];
-               hpr[1] -= current_hpr[1];
-
-               if(dtUtil::IsFinite(hpr[0]) && dtUtil::IsFinite(hpr[1]))
+               FireBallActor* fireball = NULL;
+               proxy->GetActor(fireball);
+               if(fireball != NULL)
                {
-                  //std::cout << "HPR: " << hpr[0] << ", " << hpr[1] << ", " << hpr[2] << std::endl;
-                  dof->setCurrentHPR(hpr);
 
-                  if(GetArticulationHelper() != NULL)
+                  float fireBallSpeed = 37.0f;
+
+                  dtCore::Transform xform;
+                  osg::Vec3 pos, enemyPos; 
+                  GetTransform(xform);
+                  xform.GetTranslation(pos);
+
+                  osg::Vec3 dir;
+                  xform.GetRow(1, dir);
+                  dir.normalize();
+
+                  fireball->SetVelocity(fireBallSpeed);
+                  fireball->SetMaxTime(1.5f + (2.0 - timeLeft));
+                  fireball->SetPosition(pos + (dir * 12.5f));
+
+                  if(GetPhysicsHelper() != NULL && GetPhysicsHelper()->GetMainPhysicsObject() != NULL)
                   {
-                     GetArticulationHelper()->HandleUpdatedDOFOrientation(*dof, hpr - hprLast, hpr);
+                     fireball->AddForce(GetPhysicsHelper()->GetMainPhysicsObject()->GetLinearVelocity());
                   }
+
+                  if(mTarget.valid())
+                  {
+                     fireball->SetTarget(*mTarget);
+                  }
+
+                  GetGameActorProxy().GetGameManager()->AddActor(*proxy, false, true);
                }
             }
-         }
-
-         mWeapon->SetTriggerHeld(true);
-         mWeapon->Fire();
-
+         }         
          //mAIHelper->GetStateMachine().MakeCurrent(&AIStateType::AI_STATE_ATTACK);
       }
-   }
+  } 
 
    //////////////////////////////////////////////////////////////////////
    void EnemyHelixActor::OnTickLocal( const dtGame::TickMessage& tickMessage )
@@ -307,18 +316,19 @@ namespace NetDemo
 
 
       EnemyHelixAIHelper* helix = dynamic_cast<EnemyHelixAIHelper*>(mAIHelper.get());
-      if(helix != NULL && helix->GetTriggerState())
+      if(mTimeSinceLastFire > 1.366f &&
+         helix != NULL && helix->GetTriggerState())
       {
-         Shoot(0.0f);
+         Shoot(mTimeSinceLastFire);
       }
       else
       {
          osg::Vec3 angleToTarget = mAIHelper->mGoalState.GetPos() - mAIHelper->mCurrentState.GetPos();
          angleToTarget.normalize();
          float angle = angleToTarget * mAIHelper->mCurrentState.GetForward();
-         if(angle > 0.75f)
+         if(mTimeSinceLastFire > 0.86f && angle > 0.975f)
          {
-            Shoot(0.0f);
+            Shoot(mTimeSinceLastFire);
          }
       }
 
@@ -332,9 +342,10 @@ namespace NetDemo
 
       BaseClass::OnTickLocal(tickMessage);
 
+      mTimeSinceLastFire += tickMessage.GetDeltaSimTime();
       mWeapon->SetTriggerHeld(false);
    }
-  
+
    //////////////////////////////////////////////////////////////////////
    // PROXY
    //////////////////////////////////////////////////////////////////////
