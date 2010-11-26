@@ -68,9 +68,9 @@ namespace NetDemo
    //TurretGoalState
    //////////////////////////////////////////////////////////////////////////
    TurretGoalState::TurretGoalState()
-   : mMinAngle(-180.0f, -30.0f)
-   , mMaxAngle(180.0f, 30.0f)
-   , mMaxVel(1.5f, 1.5f)
+   : mMinAngle(-180.0f, -60.0f)
+   , mMaxAngle(180.0f, 45.0f)
+   , mMaxVel(2.5f, 2.0f)
    , mAngleToTarget()
    {
    }
@@ -247,8 +247,8 @@ namespace NetDemo
       //TODO- FIX STEERINGPIPELINE.H 
       //mGoalState.SetMaxVel(osg::Vec2(1.0f, 1.5f));
 
-      float lookAhead = 0.65f;
-      float timeToTarget = 0.05f;
+      float lookAhead = 0.05f;
+      float timeToTarget = 0.025f;
       TurretAlign* t_align = new TurretAlign(lookAhead, timeToTarget);
       mBehaviors.push_back(t_align);
    }
