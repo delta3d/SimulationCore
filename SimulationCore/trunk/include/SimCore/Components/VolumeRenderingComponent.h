@@ -330,13 +330,13 @@ namespace SimCore
          void CleanUp();
          
          void UpdateVolumes(float dt);
-         void RemoveVolume(ShapeVolumeArray::iterator iter);
          ShapeVolumeRecord* FindVolume(ShapeRecordId id);
 
          void TransformAndSortVolumes();
          void SetPosition(ShapeVolumeRecord* dl);
 
          void CreateDrawable(ShapeVolumeRecord& newShape);
+         void RemoveDrawable(ShapeVolumeRecord& svr);
          void CreateSimpleShape(ShapeVolumeRecord& newShape);
          void CreateParticleVolume(ShapeVolumeRecord& newShape);
          void CreateShape(ShapeVolumeRecord& newShape);

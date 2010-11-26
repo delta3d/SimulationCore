@@ -355,9 +355,7 @@ namespace SimCore
    {
       if(svr != NULL)
       {
-         mRootNode->removeChild(svr->mParentNode.get());
-         svr->mParticleDrawable = NULL;
-         svr->mShape = NULL;
+         RemoveDrawable(*svr);
          mVolumes.erase(std::remove_if(mVolumes.begin(), mVolumes.end(), findVolumeById(svr->GetId())), mVolumes.end());
       }
    }
@@ -480,6 +478,7 @@ namespace SimCore
                }
                else
                {
+                  RemoveDrawable(*svr);
                   svr->mDeleteMe = true;
                   //std::cout << "Auto delete on Max Time" << std::ensvr;
                   continue;
@@ -491,6 +490,7 @@ namespace SimCore
             svr->mIntensity -= (dt / svr->mFadeOutTime);
             if(svr->mIntensity <= 0.0f)
             {
+               RemoveDrawable(*svr);
                svr->mDeleteMe = true;
                //std::cout << "Auto delete on fade out" << std::ensvr;
                continue;
@@ -684,9 +684,11 @@ namespace SimCore
    }
 
    ////////////////////////////////////////////////////////////////////////// 
-   void VolumeRenderingComponent::RemoveVolume(ShapeVolumeArray::iterator iter)
+   void VolumeRenderingComponent::RemoveDrawable(ShapeVolumeRecord& svr)
    {
-      mVolumes.erase(iter);
+      mRootNode->removeChild(svr.mParentNode.get());
+      svr.mParticleDrawable = NULL;
+      svr.mShape = NULL;
    }
 
    ////////////////////////////////////////////////////////////////////////// 
