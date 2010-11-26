@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <map xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="delta3dMap" xsi:schemaLocation="delta3dMap map.xsd">
     <header>
         <name>NetDemoActors</name>
@@ -8,7 +7,7 @@
         <comment></comment>
         <copyright></copyright>
         <createTimestamp>2009-05-19T13:51:40-05:00</createTimestamp>
-        <lastUpdateTimestamp>2010-10-19T15:09:19-05:00</lastUpdateTimestamp>
+        <lastUpdateTimestamp>2010-11-26T16:51:46-05:00</lastUpdateTimestamp>
         <editorVersion>2.5.0</editorVersion>
         <schemaVersion>1.0</schemaVersion>
     </header>
@@ -259,8 +258,12 @@
                 <boolean>true</boolean>
             </property>
             <property>
+                <name>Init System Clock</name>
+                <boolean>true</boolean>
+            </property>
+            <property>
                 <name>Time and Date</name>
-                <string>2010-10-19T15:09:19-05:00</string>
+                <string>2010-07-11T19:09:19+00:00</string>
             </property>
             <property>
                 <name>Wind</name>
