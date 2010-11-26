@@ -34,6 +34,7 @@
 #include <SimCore/Actors/DRPublishingActComp.h>
 #include <SimCore/ApplyShaderVisitor.h>
 #include <SimCore/CollisionGroupEnum.h>
+#include <SimCore/Actors/BaseEntity.h>
 
 //#include <dtUtil/nodeprintout.h>
 #include <osgSim/DOFTransform>
@@ -46,6 +47,7 @@
 #include <Actors/EnemyHelix.h>
 #include <Actors/EnemyMine.h>
 #include <Components/WeaponComponent.h>
+#include <Components/GameLogicComponent.h>
 
 //for debug printouts
 #include <iostream>
@@ -102,6 +104,36 @@ namespace NetDemo
       drPublishingActComp->SetMaxUpdateSendRate(1.5f);
       //drPublishingActComp->SetPublishLinearVelocity(false);
       //drPublishingActComp->SetPublishAngularVelocity(false);
+   }
+   
+   ///////////////////////////////////////////////////////////////////////////////////
+   float TowerActor::ValidateIncomingDamage(float incomingDamage, const SimCore::DetonationMessage& message, 
+      const SimCore::Actors::MunitionTypeActor& munition)
+   {
+      //dtGame::GameActorProxy* gap = GetGameActorProxy().GetGameManager()->FindGameActorById(message.GetSendingActorId());
+      //return incomingDamage * float(!IsEnemyActor(gap));
+      float result = incomingDamage;
+
+      GameLogicComponent* comp = NULL;
+      GetGameActorProxy().GetGameManager()->GetComponentByName( GameLogicComponent::DEFAULT_NAME, comp );
+      if (comp != NULL)
+      {
+         int difficulty = comp->GetGameDifficulty(); // 0 = minimal, 1 = normal, 2 = hard
+         if(difficulty == 0)
+         {
+            result *= 0.25f;
+         }
+         else if(difficulty == 1)
+         {
+            result *= difficulty * 0.35f;
+         }
+         else
+         {
+            result *= 0.5;
+         }
+      }
+
+      return result;
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
@@ -227,7 +259,7 @@ namespace NetDemo
          BaseClass::SetDamageState(damageState);
 
          // Mark the AI as 'dead' so we stop 'steering'
-         if(IsMobilityDisabled())
+         if(damageState == SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::DESTROYED)
          {
             mAIHelper->GetStateMachine().MakeCurrent(&AIStateType::AI_STATE_DIE);
 

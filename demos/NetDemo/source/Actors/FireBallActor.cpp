@@ -143,14 +143,16 @@ namespace NetDemo
          mShapeVolume->mShapeType = SimCore::Components::VolumeRenderingComponent::SPHERE;
          mShapeVolume->mRadius.set(0.15f, 0.0f, 0.0f);
          mShapeVolume->mNumParticles = 5;
-         mShapeVolume->mParticleRadius = 1.5f;
-         mShapeVolume->mDensity = 0.025f;
+         mShapeVolume->mParticleRadius = 2.15f;
+         mShapeVolume->mDensity = 0.25f;
          mShapeVolume->mNoiseScale = 0.85f;
          mShapeVolume->mVelocity = 1.15f;
          mShapeVolume->mTarget = this;
          mShapeVolume->mAutoDeleteOnTargetNull = true;
          mShapeVolume->mAutoDeleteAfterMaxTime = true;
          mShapeVolume->mMaxTime = GetMaxTime();
+         mShapeVolume->mFadeOut = true;
+         mShapeVolume->mFadeOutTime = 0.5f;
          mShapeVolume->mShaderName = "FireVolumeShader";
          mShapeVolume->mRenderMode = SimCore::Components::VolumeRenderingComponent::PARTICLE_VOLUME;
 
@@ -254,11 +256,12 @@ namespace NetDemo
       GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::VolumeRenderingComponent::DEFAULT_NAME, vrc); 
       if(vrc != NULL && mShapeVolume.valid() && mShapeVolume->mParticleDrawable.valid())
       {
-         osg::Vec3 vel(0.475f, 0.0f, 0.0f);
-         vel *= tickMessage.GetDeltaSimTime();
+         osg::Vec3 vel(2.475f, 0.0f, 0.0f);
+         vel[0] *= tickMessage.GetDeltaSimTime();
 
          mShapeVolume->mRadius[0] += vel[0];
-         vrc->ExpandVolume(*mShapeVolume, vel);
+         mShapeVolume->mDirtyParams = true;
+         //vrc->ExpandVolume(*mShapeVolume, vel);
          //vrc->ComputeParticleRadius(*mShapeVolume);
       }
    }

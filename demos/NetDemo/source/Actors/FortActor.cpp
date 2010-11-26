@@ -176,9 +176,18 @@ namespace NetDemo
       if (comp != NULL)
       {
          int difficulty = comp->GetGameDifficulty(); // 0 = minimal, 1 = normal, 2 = hard
-         (difficulty == 0)
-            ? result *= 1.0f
-            : result *= difficulty * 3.0f;
+         if(difficulty == 0)
+         {
+            result *= 0.5f;
+         }
+         else if(difficulty == 1)
+         {
+            result *= difficulty * 1.5f;
+         }
+         else
+         {
+            result *= 2.0;
+         }
       }
 
       return result;

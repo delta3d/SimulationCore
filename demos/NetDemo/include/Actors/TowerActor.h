@@ -77,6 +77,11 @@ namespace NetDemo
 
          virtual void SetDamageState(SimCore::Actors::BaseEntityActorProxy::DamageStateEnum& damageState);
 
+         /// Overridden from BaseEntity - can reduce, increase, or ignore incoming damage.
+         virtual float ValidateIncomingDamage(float incomingDamage, const SimCore::DetonationMessage& message,
+            const SimCore::Actors::MunitionTypeActor& munition);
+
+
          void Sleep(float dt);
 
       protected:

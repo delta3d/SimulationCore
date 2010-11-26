@@ -62,8 +62,8 @@ namespace NetDemo
       side = !side;
 
       mTargetOffset = osg::Vec3(
-         dtUtil::RandFloat(-35.0f, 25.0f),
-         dtUtil::RandFloat(75.0f, 170.0f),
+         dtUtil::RandFloat(15.0f, 25.0f),
+         dtUtil::RandFloat(90.0f, 170.0f),
          dtUtil::RandFloat(50.0f, 100.0f) );
 
       if(side) mTargetOffset[0] = -mTargetOffset[0];

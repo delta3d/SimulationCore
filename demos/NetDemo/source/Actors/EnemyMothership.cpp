@@ -105,14 +105,14 @@ namespace NetDemo
       if(vrc != NULL)
       {
          SimCore::Components::VolumeRenderingComponent::ShapeVolumeRecord* svr = new SimCore::Components::VolumeRenderingComponent::ShapeVolumeRecord();
-         svr->mPosition.set(0.0f, 0.0f, -18.0f);
+         svr->mPosition.set(0.0f, 0.0f, -16.0f);
          svr->mColor.set(0.45f, 0.63f, 1.0f, 0.25f);
          svr->mShapeType = SimCore::Components::VolumeRenderingComponent::CONE;
-         svr->mRadius.set(5.0f, 30.0f, 0.0f);
-         svr->mNumParticles = 45;
-         svr->mParticleRadius = 20.0f;
-         svr->mVelocity = 0.25f;
-         svr->mDensity = 0.08f;
+         svr->mRadius.set(0.25f, 20.0f, 0.0f);
+         svr->mNumParticles = 35;
+         svr->mParticleRadius = 13.5f;
+         svr->mVelocity = 0.125f;
+         svr->mDensity = 0.15f;
          svr->mTarget = this;
          svr->mAutoDeleteOnTargetNull = true;
          svr->mShaderName = "LightVolumeShader";
@@ -287,7 +287,7 @@ namespace NetDemo
             light->mUseAbsoluteDirection = true;
             light->mDirection.set(0.0f, 0.0f, -1.0f);
             light->mSpotExponent = 3.5f;
-            light->mSpotCosCutoff = 0.85f;
+            light->mSpotCosCutoff = 0.925f;
             
             rsc->AddDynamicLight(light);
          }

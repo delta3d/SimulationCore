@@ -281,8 +281,8 @@ namespace NetDemo
                   dir.normalize();
 
                   fireball->SetVelocity(fireBallSpeed);
-                  fireball->SetMaxTime(1.5f + (2.0 - timeLeft));
-                  fireball->SetPosition(pos + (dir * 12.5f));
+                  fireball->SetMaxTime(2.5f);
+                  fireball->SetPosition(pos + (dir * 10.5f));
 
                   if(GetPhysicsHelper() != NULL && GetPhysicsHelper()->GetMainPhysicsObject() != NULL)
                   {
@@ -316,7 +316,7 @@ namespace NetDemo
 
 
       EnemyHelixAIHelper* helix = dynamic_cast<EnemyHelixAIHelper*>(mAIHelper.get());
-      if(mTimeSinceLastFire > 1.366f &&
+      if(mTimeSinceLastFire > 1.866f &&
          helix != NULL && helix->GetTriggerState())
       {
          Shoot(mTimeSinceLastFire);
@@ -326,7 +326,7 @@ namespace NetDemo
          osg::Vec3 angleToTarget = mAIHelper->mGoalState.GetPos() - mAIHelper->mCurrentState.GetPos();
          angleToTarget.normalize();
          float angle = angleToTarget * mAIHelper->mCurrentState.GetForward();
-         if(mTimeSinceLastFire > 0.86f && angle > 0.975f)
+         if(mTimeSinceLastFire > 1.36f && angle > 0.975f)
          {
             Shoot(mTimeSinceLastFire);
          }
