@@ -179,7 +179,7 @@ namespace NetDemo
       //randomly choose a tower to attack
       int attackTower = dtUtil::RandRange(0, 3);
 
-      if(attackTower > 0)
+      if(attackTower > 1)
       {
          dtCore::Transformable* t = GetClosestTower();
          if(t != NULL)

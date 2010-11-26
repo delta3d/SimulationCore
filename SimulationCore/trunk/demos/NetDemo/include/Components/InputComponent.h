@@ -124,6 +124,7 @@ namespace NetDemo
          void DetachFromCurrentVehicle();
 
          void AttachToVehicle(SimCore::Actors::Platform* vehicle);
+         void SetEnableHeadlight(bool b);
          void EnableMotionModels();
 
          void AddTopDownNode(float height, const dtUtil::RefString& nodeName);
