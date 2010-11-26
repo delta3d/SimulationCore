@@ -65,6 +65,7 @@ namespace SimCore
          : BaseClass(proxy)
          , mEnableCloudPlane(true)
          , mEnableLensFlare(false)
+         , mInitSystemClock(false)
          , mCurrTime()
          , mWind()
          , mCloudPlane(new dtCore::CloudPlane(1500.0f, "Cloud Plane","./Textures/CloudTexture9.dds"))
@@ -414,8 +415,7 @@ namespace SimCore
 
       std::string IGEnvironmentActor::GetTimeAndDateString() const
       {
-         dtUtil::DateTime dt;
-         dt.SetToLocalTime();
+         dtUtil::DateTime dt = GetDateTime();
          return dt.ToString();
       }
 
@@ -482,6 +482,18 @@ namespace SimCore
       }
 
       /////////////////////////////////////////////////////////////
+      bool IGEnvironmentActor::GetInitializeSystemClock() const
+      {
+         return mInitSystemClock;
+      }
+
+      /////////////////////////////////////////////////////////////
+      void IGEnvironmentActor::SetInitializeSystemClock(bool enable)
+      {
+         mInitSystemClock = enable;
+      }
+
+      /////////////////////////////////////////////////////////////
       // Actor Proxy Code
       /////////////////////////////////////////////////////////////
       IGEnvironmentActorProxy::IGEnvironmentActorProxy()
@@ -511,6 +523,11 @@ namespace SimCore
             dtDAL::BooleanActorProperty::SetFuncType(env, &IGEnvironmentActor::SetFogEnabled),
             dtDAL::BooleanActorProperty::GetFuncType(env, &IGEnvironmentActor::IsFogEnabled),
             "Toggles fog on and off"));
+
+         AddProperty(new dtDAL::BooleanActorProperty("Init System Clock", "Set the system clock to this time and date on startup",
+            dtDAL::BooleanActorProperty::SetFuncType(env, &IGEnvironmentActor::SetInitializeSystemClock),
+            dtDAL::BooleanActorProperty::GetFuncType(env, &IGEnvironmentActor::GetInitializeSystemClock),
+            "Set the system clock to this time and date on startup"));
 
          AddProperty(new dtDAL::StringActorProperty("Time and Date", "Time and Date",
             dtDAL::StringActorProperty::SetFuncType(env, &IGEnvironmentActor::SetTimeAndDateString),
