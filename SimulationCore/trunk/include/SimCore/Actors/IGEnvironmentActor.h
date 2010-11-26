@@ -144,6 +144,9 @@ namespace SimCore
 
          virtual osg::Vec3d GetSunPosition() const;
 
+         bool GetInitializeSystemClock() const;
+         void SetInitializeSystemClock(bool enable);
+
       protected:
 
          // Destructor
@@ -161,7 +164,7 @@ namespace SimCore
 
       private:
 
-         bool mEnableCloudPlane, mEnableLensFlare;
+         bool mEnableCloudPlane, mEnableLensFlare, mInitSystemClock;
          time_t mCurrTime;
          osg::Vec3 mWind;
          dtCore::RefPtr<dtCore::CloudPlane> mCloudPlane;

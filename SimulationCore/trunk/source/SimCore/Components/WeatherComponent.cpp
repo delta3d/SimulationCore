@@ -336,13 +336,22 @@ namespace SimCore
                return;
             }
 
+            //NOTE: we added the ability to override the system clock using the environment actor
+            //to avoid users having an unexpected start time because they didnt set the date time
+            //on the environment actor we add a property called InitializeSystemClock on the IGEnvironmentActor
+
             // This sets the time the very first time a map changes to NOON. Without this,
             // the game ends up in some weird time zone offset from the current time clock. It's confusing.
+            
             dtUtil::DateTime dt(mEnvironmentActor->GetDateTime());
-            dt.SetToLocalTime(); // try to sync up the month/day/year first.
-            dt.SetHour(12);
-            dt.SetMinute(0);
-            dt.SetSecond(0.0f);
+
+            if(!mEnvironmentActor->GetInitializeSystemClock())
+            {
+               dt.SetToLocalTime(); // try to sync up the month/day/year first.
+               dt.SetHour(12);
+               dt.SetMinute(0);
+               dt.SetSecond(0.0f);
+            }
 
             LOGN_DEBUG("WeatherComponent.cpp", "Setting Sim Clock Time to Noon");
             dtCore::System::GetInstance().SetSimulationClockTime(dtCore::Timer_t(dt.GetTime()) * 1000000LL);
