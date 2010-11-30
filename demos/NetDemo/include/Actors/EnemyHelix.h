@@ -101,8 +101,6 @@ namespace NetDemo
       protected:
          virtual ~EnemyHelixActorProxy();
          void CreateActor();
-         virtual void OnEnteredWorld();
-         virtual void OnRemovedFromWorld();
    };
 
 }

@@ -72,7 +72,7 @@ namespace SimCore
       const std::string HLAConnectionComponent::DEFAULT_NAME("HLAConnectionComponent");
 
       ///////////////////////////////////////////////////////////////////////
-      HLAConnectionComponent::HLAConnectionComponent(const std::string &name)
+      HLAConnectionComponent::HLAConnectionComponent(const std::string& name)
          : dtGame::GMComponent(name)
          , mRidFile("RTI.rid") // default to an RTI.rid file so that there is something to find.
          , mConnectionType(&ConnectionType::TYPE_NONE)
@@ -98,7 +98,7 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////
-      void HLAConnectionComponent::ProcessMessage(const dtGame::Message &msg)
+      void HLAConnectionComponent::ProcessMessage(const dtGame::Message& msg)
       {
          // The connect process starts by loading a map. Once that is done, THEN we
          // can connect to the network.

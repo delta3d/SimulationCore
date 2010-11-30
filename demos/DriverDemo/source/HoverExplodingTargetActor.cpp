@@ -18,7 +18,7 @@
 //#ifdef AGEIA_PHYSICS
 #include <HoverExplodingTargetActor.h>
 #include <HoverVehiclePhysicsHelper.h>
-#include <dtPhysics/physicshelper.h>
+#include <dtPhysics/physicsactcomp.h>
 #include <dtDAL/enginepropertytypes.h>
 #include <dtABC/application.h>
 #include <dtAudio/audiomanager.h>
@@ -65,11 +65,6 @@ namespace DriverDemo
    {
       SetDefaultScale(osg::Vec3(2.0f, 2.0f, 2.0f));
 
-      // create my unique physics helper.  almost all of the physics is on the helper.
-      // The actor just manages properties and key presses mostly.
-      HoverTargetPhysicsHelper *helper = new HoverTargetPhysicsHelper(proxy);
-      SetPhysicsHelper(helper);
-
       SetEntityType("HoverExplodingTarget"); // Used for HLA mostly. 
       SetMunitionDamageTableName("StandardDamageType"); // Used for Munitions Damage.
    }
@@ -77,22 +72,6 @@ namespace DriverDemo
    ///////////////////////////////////////////////////////////////////////////////////
    HoverExplodingTargetActor::~HoverExplodingTargetActor(void)
    {
-   }
-
-   ///////////////////////////////////////////////////////////////////////////////////
-   void HoverExplodingTargetActor::BuildActorComponents()
-   {
-      BaseClass::BuildActorComponents();
-
-      SimCore::Actors::DRPublishingActComp* drPublishingActComp = GetDRPublishingActComp();
-      if (drPublishingActComp == NULL)
-      {
-         LOG_ERROR("CRITICAL ERROR - No DR Publishing Actor Component on the Hover Target.");
-         return;
-      }
-      drPublishingActComp->SetMaxUpdateSendRate(3.0f);
-      drPublishingActComp->SetMaxTranslationError(0.02f);
-      drPublishingActComp->SetMaxRotationError(1.0f);
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
@@ -105,7 +84,7 @@ namespace DriverDemo
       osg::Vec3 startVec;
       if (!IsRemote()) // Local - we vary it's starting position.
       {
-         //startVec = GetPhysicsHelper()->GetVehicleStartingPosition();
+         //startVec = GetPhysicsActComp()->GetVehicleStartingPosition();
          startVec[0] += dtUtil::RandFloat(-10.0, 10.0);
          startVec[1] += dtUtil::RandFloat(-10.0, 10.0);
          startVec[2] += dtUtil::RandFloat(0.0, 4.0);
@@ -126,8 +105,8 @@ namespace DriverDemo
       }
 
       // Create our physics object
-      GetTargetPhysicsHelper()->CreateTarget(ourTransform, GetOSGNode());
-      //GetTargetPhysicsHelper()->CreateTarget(startVec, IsRemote());
+      GetTargetPhysicsActComp()->CreateTarget(ourTransform, GetOSGNode());
+      //GetTargetPhysicsActComp()->CreateTarget(startVec, IsRemote());
 
       SimCore::Actors::BasePhysicsVehicleActor::OnEnteredWorld();
 
@@ -136,7 +115,7 @@ namespace DriverDemo
       {
          // THIS LINE MUST BE AFTER Super::OnEnteredWorld()! Undo the kinematic flag on remote entities. Lets us
          // apply velocities to remote hover vehicles so that they will impact us and make us bounce back
-         //GetTargetPhysicsHelper()->GetMainPhysicsObject()->clearBodyFlag(NX_BF_KINEMATIC);
+         //GetTargetPhysicsActComp()->GetMainPhysicsObject()->clearBodyFlag(NX_BF_KINEMATIC);
       }
       // LOCAL - Finish initial startup conditions
       else
@@ -185,7 +164,7 @@ namespace DriverDemo
          }
 
          // Do all our movement!
-         GetTargetPhysicsHelper()->ApplyTargetHoverForces(deltaTime, mGoalLocation);
+         GetTargetPhysicsActComp()->ApplyTargetHoverForces(deltaTime, mGoalLocation);
       }
       else
       {
@@ -401,6 +380,31 @@ namespace DriverDemo
       //RegisterForMessages(dtGame::MessageType::INFO_GAME_EVENT);
 
       SimCore::Actors::BasePhysicsVehicleActorProxy::OnEnteredWorld();
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////////
+   void HoverExplodingTargetActorProxy::BuildActorComponents()
+   {
+      dtGame::GameActor* owner = NULL;
+      GetActor(owner);
+
+
+      // create my unique physics helper.  almost all of the physics is on the helper.
+      // The actor just manages properties and key presses mostly.
+      owner->AddComponent(*new HoverTargetPhysicsActComp(*this));
+
+      BaseClass::BuildActorComponents();
+
+      SimCore::Actors::DRPublishingActComp* drPublishingActComp = NULL;
+      owner->GetComponent(drPublishingActComp);
+      if (drPublishingActComp == NULL)
+      {
+         LOG_ERROR("CRITICAL ERROR - No DR Publishing Actor Component.");
+         return;
+      }
+      drPublishingActComp->SetMaxUpdateSendRate(3.0f);
+      drPublishingActComp->SetMaxTranslationError(0.02f);
+      drPublishingActComp->SetMaxRotationError(1.0f);
    }
 
 } // namespace

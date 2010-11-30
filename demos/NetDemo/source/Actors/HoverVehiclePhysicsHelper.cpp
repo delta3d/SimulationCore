@@ -21,7 +21,7 @@
 #include <SimCore/CollisionGroupEnum.h>
 #include <dtPhysics/primitivetype.h>
 #include <dtPhysics/palphysicsworld.h>
-#include <dtPhysics/physicshelper.h>
+#include <dtPhysics/physicsactcomp.h>
 #include <dtPhysics/physicsobject.h>
 #include <dtPhysics/bodywrapper.h>
 #include <dtPhysics/palphysicsworld.h>
@@ -35,8 +35,8 @@ namespace NetDemo
    //void FindMatrix(osg::Node* node, osg::Matrix& wcMatrix);
 
    ////////////////////////////////////////////////////////////////////////////////////
-   HoverVehiclePhysicsHelper::HoverVehiclePhysicsHelper(dtGame::GameActorProxy &proxy)
-      : dtPhysics::PhysicsHelper(proxy)
+   HoverVehiclePhysicsActComp::HoverVehiclePhysicsActComp(dtGame::GameActorProxy &proxy)
+      : dtPhysics::PhysicsActComp(proxy)
       , mVehicleMaxForwardMPH(120.0f)
       , mVehicleMaxStrafeMPH(40.0f)
       //, mVehicleBaseWeight(1000.0f)
@@ -53,7 +53,7 @@ namespace NetDemo
    }
 
    ////////////////////////////////////////////////////////////////////////////////////
-   HoverVehiclePhysicsHelper::~HoverVehiclePhysicsHelper(){}
+   HoverVehiclePhysicsActComp::~HoverVehiclePhysicsActComp(){}
 
    //////////////////////////////////////////////////////////////////////////////////////
    //                                  Vehicle Method                                  //
@@ -67,13 +67,13 @@ namespace NetDemo
    static float testQuicknessAdjustment = 2.0f; // 1.0 gives you a sluggish feel
 
    ////////////////////////////////////////////////////////////////////////////////////
-   void HoverVehiclePhysicsHelper::DoJump(float deltaTime)
+   void HoverVehiclePhysicsActComp::DoJump(float deltaTime)
    {
       //po->AddLocalForce(boostDirection * boostForce);
    }
 
    ////////////////////////////////////////////////////////////////////////////////////
-   void HoverVehiclePhysicsHelper::UpdateVehicle(float deltaTime,
+   void HoverVehiclePhysicsActComp::UpdateVehicle(float deltaTime,
       bool accelForward, bool accelReverse, bool accelLeft, bool accelRight)
    {
       dtPhysics::PhysicsObject* physicsObject = GetMainPhysicsObject();
@@ -168,7 +168,7 @@ namespace NetDemo
    }
 
    ////////////////////////////////////////////////////////////////////////////////
-   float HoverVehiclePhysicsHelper::ComputeEstimatedForceCorrection(const osg::Vec3 &location,
+   float HoverVehiclePhysicsActComp::ComputeEstimatedForceCorrection(const osg::Vec3 &location,
       const osg::Vec3 &direction, float &distanceToHit)
    {
       static const int GROUPS_FLAGS = (1 << SimCore::CollisionGroup::GROUP_TERRAIN);
@@ -204,7 +204,7 @@ namespace NetDemo
    //////////////////////////////////////////////////////////////////////////////////////
 
    ////////////////////////////////////////////////////////////////////////////////////
-   bool HoverVehiclePhysicsHelper::CreateVehicle(const dtCore::Transform& transformForRot,
+   bool HoverVehiclePhysicsActComp::CreateVehicle(const dtCore::Transform& transformForRot,
       osgSim::DOFTransform* bodyNode)
    {
       dtPhysics::PhysicsObject *physObj = GetMainPhysicsObject();
@@ -220,31 +220,30 @@ namespace NetDemo
    //////////////////////////////////////////////////////////////////////////////////////
 
    ////////////////////////////////////////////////////////////////////////////////////
-   void HoverVehiclePhysicsHelper::BuildPropertyMap(std::vector<dtCore::RefPtr<dtDAL::ActorProperty> >& toFillIn)
+   void HoverVehiclePhysicsActComp::BuildPropertyMap()
    {
-      //NxAgeiaPhysicsHelper::BuildPropertyMap(toFillIn);
-      dtPhysics::PhysicsHelper::BuildPropertyMap(toFillIn);
+      BaseClass::BuildPropertyMap();
 
       static const dtUtil::RefString VEHICLEGROUP = "Vehicle Physics";
 
-      toFillIn.push_back(new dtDAL::FloatActorProperty("Max Forward MPH", "Max Forward MPH",
-         dtDAL::FloatActorProperty::SetFuncType(this, &HoverVehiclePhysicsHelper::SetVehicleMaxForwardMPH),
-         dtDAL::FloatActorProperty::GetFuncType(this, &HoverVehiclePhysicsHelper::GetVehicleMaxForwardMPH),
+      AddProperty(new dtDAL::FloatActorProperty("Max Forward MPH", "Max Forward MPH",
+         dtDAL::FloatActorProperty::SetFuncType(this, &HoverVehiclePhysicsActComp::SetVehicleMaxForwardMPH),
+         dtDAL::FloatActorProperty::GetFuncType(this, &HoverVehiclePhysicsActComp::GetVehicleMaxForwardMPH),
          "The theoretical max speed this vehicle can go (using forward thrust) in any direction under normal conditions.", VEHICLEGROUP));
 
-      toFillIn.push_back(new dtDAL::FloatActorProperty("Max Strafe Or ReverseMPH", "Max Strafe Or ReverseMPH",
-         dtDAL::FloatActorProperty::SetFuncType(this, &HoverVehiclePhysicsHelper::SetVehicleMaxStrafeMPH),
-         dtDAL::FloatActorProperty::GetFuncType(this, &HoverVehiclePhysicsHelper::GetVehicleMaxStrafeMPH),
+      AddProperty(new dtDAL::FloatActorProperty("Max Strafe Or ReverseMPH", "Max Strafe Or ReverseMPH",
+         dtDAL::FloatActorProperty::SetFuncType(this, &HoverVehiclePhysicsActComp::SetVehicleMaxStrafeMPH),
+         dtDAL::FloatActorProperty::GetFuncType(this, &HoverVehiclePhysicsActComp::GetVehicleMaxStrafeMPH),
          "The theoretical max speed this vehicle would go using just reverse or strafe thrust under normal conditions.", VEHICLEGROUP));
 
-      toFillIn.push_back(new dtDAL::FloatActorProperty("Ground Clearance", "Ground Clearance",
-         dtDAL::FloatActorProperty::SetFuncType(this, &HoverVehiclePhysicsHelper::SetGroundClearance),
-         dtDAL::FloatActorProperty::GetFuncType(this, &HoverVehiclePhysicsHelper::GetGroundClearance),
+      AddProperty(new dtDAL::FloatActorProperty("Ground Clearance", "Ground Clearance",
+         dtDAL::FloatActorProperty::SetFuncType(this, &HoverVehiclePhysicsActComp::SetGroundClearance),
+         dtDAL::FloatActorProperty::GetFuncType(this, &HoverVehiclePhysicsActComp::GetGroundClearance),
          "The height we should try to leave beneath our vehicle (cause we hover...).", VEHICLEGROUP));
 
-      toFillIn.push_back(new dtDAL::FloatActorProperty("ForceBoostFactor", "Force Boost Factor",
-         dtDAL::FloatActorProperty::SetFuncType(this, &HoverVehiclePhysicsHelper::SetForceBoostFactor),
-         dtDAL::FloatActorProperty::GetFuncType(this, &HoverVehiclePhysicsHelper::GetForceBoostFactor),
+      AddProperty(new dtDAL::FloatActorProperty("ForceBoostFactor", "Force Boost Factor",
+         dtDAL::FloatActorProperty::SetFuncType(this, &HoverVehiclePhysicsActComp::SetForceBoostFactor),
+         dtDAL::FloatActorProperty::GetFuncType(this, &HoverVehiclePhysicsActComp::GetForceBoostFactor),
          "Multiplied times the max speeds to determine force to apply (ex. 0.25).", VEHICLEGROUP));
 
    }

@@ -40,7 +40,7 @@
 //#include <SimCore/Components/MunitionsComponent.h>
 #include <SimCore/Messages.h>
 #include <SimCore/MessageType.h>
-#include <dtPhysics/physicshelper.h>
+#include <dtPhysics/physicsactcomp.h>
 #include <dtPhysics/physicsobject.h>
 #include <dtPhysics/bodywrapper.h>
 #include <dtPhysics/palphysicsworld.h>
@@ -82,7 +82,7 @@ namespace NetDemo
          //mAIHelper->Init();
 
          //this will allow the AI to actually move us
-         mAIHelper->GetPhysicsModel()->SetPhysicsHelper(GetPhysicsHelper());
+         mAIHelper->GetPhysicsModel()->SetPhysicsActComp(GetPhysicsActComp());
          
          //redirecting the find target function
          dtAI::NPCState* state = mAIHelper->GetStateMachine().GetState(&AIStateType::AI_STATE_FIND_TARGET);

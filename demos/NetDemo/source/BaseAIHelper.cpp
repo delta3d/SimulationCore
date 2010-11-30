@@ -35,7 +35,7 @@
 
 //these headers should be refactored out of here
 #include <dtGame/gameactor.h>
-#include <dtPhysics/physicshelper.h>
+#include <dtPhysics/physicsactcomp.h>
 #include <dtPhysics/physicsobject.h>
 #include <dtPhysics/bodywrapper.h>
 
@@ -109,7 +109,7 @@ namespace NetDemo
          mPhysicsModel->SetState(mCurrentState, mat);
 
          //update the linear and angular velocities
-         dtPhysics::PhysicsObject* physicsObject = GetPhysicsModel()->GetPhysicsHelper()->GetMainPhysicsObject();
+         dtPhysics::PhysicsObject* physicsObject = GetPhysicsModel()->GetPhysicsActComp()->GetMainPhysicsObject();
          mCurrentState.SetVel(physicsObject->GetLinearVelocity());
          //mCurrentState.SetAngularVel(physicsObject->GetAngularVelocity());
       }
@@ -138,9 +138,9 @@ namespace NetDemo
             
             //LOG_ALWAYS("Clamping entity range");
             //we changed the actual position, we had better notify physics
-            if(mPhysicsModel->GetPhysicsHelper() != NULL && mPhysicsModel->GetPhysicsHelper()->GetMainPhysicsObject() != NULL)
+            if(mPhysicsModel->GetPhysicsActComp() != NULL && mPhysicsModel->GetPhysicsActComp()->GetMainPhysicsObject() != NULL)
             {
-               dtPhysics::PhysicsObject* physicsObject = mPhysicsModel->GetPhysicsHelper()->GetMainPhysicsObject();
+               dtPhysics::PhysicsObject* physicsObject = mPhysicsModel->GetPhysicsActComp()->GetMainPhysicsObject();
                physicsObject->SetTransform(trans);
 
                physicsObject->GetBodyWrapper()->ResetForces();
@@ -232,10 +232,10 @@ namespace NetDemo
       trans.Get(mat);
 
       mPhysicsModel->SetState(mCurrentState, mat);
-      //if(mPhysicsModel->GetPhysicsHelper() != NULL
-      //   && mPhysicsModel->GetPhysicsHelper()->GetMainPhysicsObject() != NULL)
+      //if(mPhysicsModel->GetPhysicsActComp() != NULL
+      //   && mPhysicsModel->GetPhysicsActComp()->GetMainPhysicsObject() != NULL)
       //{
-      //   mPhysicsModel->GetPhysicsHelper()->GetMainPhysicsObject()->SetTransform(trans);
+      //   mPhysicsModel->GetPhysicsActComp()->GetMainPhysicsObject()->SetTransform(trans);
       //}
    }
 

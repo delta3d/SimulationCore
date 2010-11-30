@@ -40,7 +40,7 @@
 #include <dtUtil/matrixutil.h>
 #include <dtUtil/log.h>
 
-#include <dtPhysics/physicshelper.h>
+#include <dtPhysics/physicsactcomp.h>
 #include <dtPhysics/physicsobject.h>
 #include <dtPhysics/bodywrapper.h>
 
@@ -88,9 +88,9 @@ namespace NetDemo
       mStateMachine.Update(dt);
       mSteeringModel->Step(dt, *this);
       
-      if(GetPhysicsModel()->GetPhysicsHelper() != NULL)
+      if(GetPhysicsModel()->GetPhysicsActComp() != NULL)
       {
-         dtPhysics::PhysicsObject* physicsObject = GetPhysicsModel()->GetPhysicsHelper()->GetMainPhysicsObject();
+         dtPhysics::PhysicsObject* physicsObject = GetPhysicsModel()->GetPhysicsActComp()->GetMainPhysicsObject();
 
          if(physicsObject != NULL)
          {

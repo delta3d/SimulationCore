@@ -35,14 +35,14 @@ namespace osgSim
 
 namespace SimCore
 {
-   class SIMCORE_EXPORT FourWheelVehiclePhysicsHelper : public SimCore::BaseWheeledVehiclePhysicsHelper
+   class SIMCORE_EXPORT FourWheelVehiclePhysicsActComp : public SimCore::BaseWheeledVehiclePhysicsActComp
    {
    public:
-      typedef SimCore::BaseWheeledVehiclePhysicsHelper BaseClass;
+      typedef SimCore::BaseWheeledVehiclePhysicsActComp BaseClass;
       enum WheelLocation {FRONT_LEFT = 0, FRONT_RIGHT, BACK_LEFT, BACK_RIGHT};
 
    public:
-      FourWheelVehiclePhysicsHelper(dtGame::GameActorProxy& proxy);
+      FourWheelVehiclePhysicsActComp(dtGame::GameActorProxy& proxy);
 
 
       // ///////////////////////////////////////////////////////////////////////////////////
@@ -66,7 +66,7 @@ namespace SimCore
 
       //////////////////////////////////////////////////////////////////
       // Build the property list for the actor
-      virtual void BuildPropertyMap(std::vector<dtCore::RefPtr<dtDAL::ActorProperty> >& toFillIn);
+      virtual void BuildPropertyMap();
 
 
       DT_DECLARE_ACCESSOR(bool, IsVehicleFourWheelDrive);
@@ -146,7 +146,7 @@ namespace SimCore
       virtual void CleanUp();
 
    protected:
-      virtual ~FourWheelVehiclePhysicsHelper();
+      virtual ~FourWheelVehiclePhysicsActComp();
 
       static const float ACC_GRAVITY;
 

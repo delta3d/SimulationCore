@@ -197,6 +197,7 @@ namespace DriverDemo
    ////////////////////////////////////////////////////////////////////////////////
    void DriverHUD::SetupGUI( SimCore::Components::HUDGroup& hudOverlay, unsigned int designedResWidth, unsigned int designedResHeight )
    {
+      hudOverlay.GetCEGUIWindow()->setMouseInputPropagationEnabled(true);
       // Create the layer on which tools will render.
       // This is added first since the main HUD will need
       // to be drawn over the tools' GUIs.

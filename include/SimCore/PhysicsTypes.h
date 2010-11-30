@@ -51,6 +51,6 @@ typedef int CollisionMask;
 #include <dtPhysics/physicstypes.h>
 #include <dtPhysics/physicsobject.h>
 #include <dtPhysics/physicscomponent.h>
-#include <dtPhysics/physicshelper.h>
+#include <dtPhysics/physicsactcomp.h>
 #endif
 #endif /* PHYSICSTYPES_H_ */

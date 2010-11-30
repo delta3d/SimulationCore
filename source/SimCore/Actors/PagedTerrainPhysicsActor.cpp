@@ -118,11 +118,7 @@ namespace SimCore
                   if(d->supports(mFunctor))
                   {
                      osg::NodePath nodePath = getNodePath();
-#ifdef AGEIA_PHYSICS
-                     mFunctor.mMatrix = osg::computeLocalToWorld(nodePath);
-#else
                      mFunctor.SetMatrix(osg::computeLocalToWorld(nodePath));
-#endif
                      osg::StateSet* tempStateSet = d->getStateSet();
                      osg::ref_ptr<osg::IntArray> mOurList;
                      if (tempStateSet != NULL)
@@ -253,32 +249,18 @@ namespace SimCore
          {
             mFinalizeTerrainIter = mTerrainMap.begin();
             SetName(PagedTerrainPhysicsActor::DEFAULT_NAME);
-#ifdef AGEIA_PHYSICS
-            mPhysicsHelper = new dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper(proxy);
-            mPhysicsHelper->SetBaseInterfaceClass(this);
-            mPhysicsHelper->SetAgeiaFlags(dtAgeiaPhysX::AGEIA_FLAGS_POST_UPDATE);
-#else
-            mPhysicsHelper = new dtPhysics::PhysicsHelper(proxy);
-#endif
             mLoadedTerrainYet = false;
          }
 
          //////////////////////////////////////////////////////////////////////
          PagedTerrainPhysicsActor::~PagedTerrainPhysicsActor(void)
          {
-#ifdef AGEIA_PHYSICS
-            mPhysicsHelper->ReleaseAllPhysXObjects();
-#endif
             mTerrainMap.clear();
          }
 
          //////////////////////////////////////////////////////////////////////
          void PagedTerrainPhysicsActor::OnEnteredWorld()
          {
-            dtPhysics::PhysicsComponent* physicsComponent;
-            GetGameActorProxy().GetGameManager()->GetComponentByName(dtPhysics::PhysicsComponent::DEFAULT_NAME, physicsComponent);
-            if (physicsComponent != NULL)
-               physicsComponent->RegisterHelper(*mPhysicsHelper);
          }
 
          //////////////////////////////////////////////////////////////////////
@@ -332,7 +314,9 @@ namespace SimCore
          //////////////////////////////////////////////////////////////////////
          void PagedTerrainPhysicsActor::ClearAllTerrainPhysics()
          {
-            mPhysicsHelper->ClearAllPhysicsObjects();
+            dtPhysics::PhysicsActComp* ac;
+            GetComponent(ac);
+            ac->ClearAllPhysicsObjects();
             mTerrainMap.clear();
          }
 
@@ -358,7 +342,9 @@ namespace SimCore
                   // Remove physics stuff if its loaded.
                   if (currentNode->IsFilled())
                   {
-                     mPhysicsHelper->RemovePhysicsObject(*currentNode->GetPhysicsObject());
+                     dtPhysics::PhysicsActComp* ac;
+                     GetComponent(ac);
+                     ac->RemovePhysicsObject(*currentNode->GetPhysicsObject());
                   }
                   mTerrainMap.erase(mFinalizeTerrainIter++);
                   continue;
@@ -419,7 +405,9 @@ namespace SimCore
 
                if(currentNode->GetGeodePointer() != NULL && currentNode->IsFilled())
                {
-                  mPhysicsHelper->RemovePhysicsObject(currentNode->GetUniqueID().ToString());
+                  dtPhysics::PhysicsActComp* ac;
+                  GetComponent(ac);
+                  ac->RemovePhysicsObject(currentNode->GetUniqueID().ToString());
 
                   currentNode->SetPhysicsObject(BuildTerrainAsStaticMesh( currentNode->GetGeodePointer(),
                      currentNode->GetUniqueID().ToString(), false));
@@ -432,129 +420,6 @@ namespace SimCore
       // Terrain tile loading
       //////////////////////////////////////////////////////////////////////
 
-#ifdef AGEIA_PHYSICS
-         //////////////////////////////////////////////////////////////////////
-         dtPhysics::PhysicsObject* PagedTerrainPhysicsActor::BuildTerrainAsStaticMesh(osg::Node* nodeToParse,
-            const std::string& nameOfNode, bool buildGeodesSeparately)
-         {
-            dtAgeiaPhysX::NxAgeiaWorldComponent* worldComponent =  NULL;
-            GetGameActorProxy().GetGameManager()->GetComponentByName("NxAgeiaWorldComponent", worldComponent);
-
-            if(worldComponent == NULL)
-            {
-               LOG_ERROR("worldComponent Is not initialized, make sure a new one \
-                         was made before loading a map in, or setting physics objects");
-               return NULL;
-            }
-
-            mLoadedTerrainYet = true;
-
-            // Some geometries are really large to load as one big mess, so we load each geode separately
-            // Note, in this case, we don't have a single physics object to return...
-            if (buildGeodesSeparately)
-            {
-               mNumNodesLoaded = 0;
-               mNumVertsLoaded = 0;
-               LOG_ALWAYS("Starting to load physics geometry for terrain.");
-
-               // For each geode it finds, it calls AddTerrainGeode();
-               GeodeTriangleVisitor geodeVisitor(*this, nameOfNode);
-               nodeToParse->accept(geodeVisitor);
-
-               std::string numNodesString, numVertsString;
-               dtUtil::MakeIndexString(mNumNodesLoaded, numNodesString);
-               dtUtil::MakeIndexString(mNumVertsLoaded, numVertsString);
-               LOG_ALWAYS("Finished loading physics geometry. Found [" + numNodesString + "] nodes with [" + numVertsString + "] verts.");
-               return NULL;
-            }
-
-            // For normal geometries, we go through the node and find all children and check the drawables
-            // for material codes and everything. Then we treat all the triangles as one big soup.
-            // For large pieces, the physics engine could choke here.
-            else
-            {
-               // MOST of this is copied from the NxAgeiaPhysicsHelper::SetCollisionStaticMesh
-               // It could be refactored massively if we could replace the visitor.
-               DrawableTriangleVisitor<dtAgeiaPhysX::TriangleRecorder> mv(*this);
-               nodeToParse->accept(mv);
-
-               // our visitor should be all filled out now.
-               int vertSize = mv.mFunctor.mVertices.size();
-               int facesSize = mv.mFunctor.mTriangles.size()*3;
-               mNumVertsLoaded = vertSize;
-               if (vertSize <= 0 || facesSize <= 0)
-               {
-                  LOG_WARNING("Physics will ignore the geode with 0 verts.");
-                  return NULL;
-               }
-
-               // It's odd, but the verts and triangles match the perfect memory
-               // footprint of what we need for PhysX. We just need to C cast it.
-               NxVec3* Verts = (NxVec3*) &mv.mFunctor.mVertices.front();
-               NxU32* Faces = (NxU32*) &mv.mFunctor.mTriangles.front();
-
-               // Build physical model
-               NxTriangleMeshDesc heightfieldDesc;
-               heightfieldDesc.numVertices        = vertSize;
-               heightfieldDesc.numTriangles       = facesSize / 3;
-               heightfieldDesc.pointStrideBytes   = sizeof(NxVec3);
-               heightfieldDesc.triangleStrideBytes= 3*sizeof(NxU32);
-               heightfieldDesc.points             = Verts;
-               heightfieldDesc.triangles          = Faces;
-               // The next 2 lines are to make this into a height field
-               //heightfieldDesc.heightFieldVerticalAxis   = NX_Z;
-               //heightfieldDesc.heightFieldVerticalExtent = -3000;
-               heightfieldDesc.flags              = NX_MF_HARDWARE_MESH;
-
-               NxTriangleMeshShapeDesc heightfieldShapeDesc;
-               // makes the sharp angles be smoothed, so that wheels will roll over better
-               //heightfieldShapeDesc.meshFlags = NX_MESH_SMOOTH_SPHERE_COLLISIONS;
-               heightfieldShapeDesc.name = nameOfNode.c_str();
-
-               SimCore::MMemoryWriteBuffer buf;
-               bool status = worldComponent->GetCooker().NxCookTriangleMesh(heightfieldDesc, buf);
-               if(status == false)
-               {
-                  std::stringstream ss;
-                  ss << "Cooking - Failed to build mesh. Actor[" + nameOfNode + "], NumVerts[" << vertSize << "].";
-                  LOG_ERROR(ss.str());
-                  return NULL;
-               }
-
-               NxActorDesc     actorDesc;
-               heightfieldShapeDesc.meshData = worldComponent->GetPhysicsSDK().createTriangleMesh(SimCore::MMemoryReadBuffer(buf.data));
-               actorDesc.shapes.pushBack(&heightfieldShapeDesc);
-               actorDesc.userData = (void *) mPhysicsHelper.get();
-               actorDesc.group = SimCore::CollisionGroup::GROUP_TERRAIN;
-
-               dtPhysics::PhysicsObject *actor = worldComponent->GetPhysicsScene(std::string("Default")).createActor(actorDesc);
-               mPhysicsHelper->AddPhysXObject(*actor, nameOfNode.c_str());
-               return actor;
-            } //  !buildGeodesSeparately
-         }
-
-         //////////////////////////////////////////////////////////////////////
-         dtPhysics::PhysicsObject* PagedTerrainPhysicsActor::AddTerrainNode(osg::Node* node,
-            const std::string& nameOfNode)
-         {
-            mNumNodesLoaded ++;
-            std::string numNodesString;
-            dtUtil::MakeIndexString(mNumNodesLoaded, numNodesString);
-            numNodesString = nameOfNode + " " + numNodesString;
-
-            // Create our physics object
-            dtPhysics::PhysicsObject* actor = NULL;
-            actor = mPhysicsHelper->SetCollisionStaticMesh(node, NxVec3(0.0f, 0.0f, 0.0f), false,
-               numNodesString, dtAgeiaPhysX::NxAgeiaWorldComponent::DEFAULT_SCENE_NAME,
-               nameOfNode, SimCore::CollisionGroup::GROUP_TERRAIN);
-            mNumVertsLoaded += mPhysicsHelper->GetNumVertsOnLastGeometry();
-            //dtPhysics::PhysicsObject* actor = mPhysicsHelper->SetCollisionMeshHeightField(node, SimCore::CollisionGroup::GROUP_TERRAIN,
-            //   dtAgeiaPhysX::NxAgeiaWorldComponent::DEFAULT_SCENE_NAME, numNodesString,0);
-
-            return actor;
-         }
-
-#else
          //////////////////////////////////////////////////////////////////////
          dtPhysics::PhysicsObject* PagedTerrainPhysicsActor::BuildTerrainAsStaticMesh(osg::Node* nodeToParse,
             const std::string& nameOfNode, bool buildGeodesSeparately)
@@ -593,7 +458,9 @@ namespace SimCore
                if (!dtv.mFunctor.mVertices.empty())
                {
                   dtCore::RefPtr<dtPhysics::PhysicsObject> newTile = new dtPhysics::PhysicsObject(nameOfNode);
-                  mPhysicsHelper->AddPhysicsObject(*newTile);
+                  dtPhysics::PhysicsActComp* ac;
+                  GetComponent(ac);
+                  ac->AddPhysicsObject(*newTile);
                   newTile->SetName(nameOfNode);
                   newTile->SetMechanicsType(dtPhysics::MechanicsType::STATIC);
                   newTile->SetPrimitiveType(dtPhysics::PrimitiveType::TERRAIN_MESH);
@@ -630,7 +497,9 @@ namespace SimCore
             numNodesString = nameOfNode + " " + numNodesString;
 
             dtCore::RefPtr<dtPhysics::PhysicsObject> newTile = new dtPhysics::PhysicsObject(nameOfNode);
-            mPhysicsHelper->AddPhysicsObject(*newTile);
+            dtPhysics::PhysicsActComp* ac;
+            GetComponent(ac);
+            ac->AddPhysicsObject(*newTile);
             newTile->SetName(nameOfNode);
             newTile->SetMechanicsType(dtPhysics::MechanicsType::STATIC);
             newTile->SetPrimitiveType(dtPhysics::PrimitiveType::TERRAIN_MESH);
@@ -642,7 +511,6 @@ namespace SimCore
 
             return newTile.get();
          }
-#endif
 
          //////////////////////////////////////////////////////////////////////
          bool PagedTerrainPhysicsActor::PassThisGeometry(int fid, int smc,
@@ -700,18 +568,23 @@ namespace SimCore
          }
 
          //////////////////////////////////////////////////////////////////////
+         void PagedTerrainPhysicsActorProxy::BuildActorComponents()
+         {
+            dtGame::GameActor* owner = NULL;
+            GetActor(owner);
+
+            BaseClass::BuildActorComponents();
+
+            if (!owner->HasComponent(dtPhysics::PhysicsActComp::TYPE))
+            {
+               owner->AddComponent(*new dtPhysics::PhysicsActComp(*this));
+            }
+         }
+
+         //////////////////////////////////////////////////////////////////////
          void PagedTerrainPhysicsActorProxy::BuildPropertyMap()
          {
             dtGame::GameActorProxy::BuildPropertyMap();
-            PagedTerrainPhysicsActor* actor = NULL;
-            GetActor(actor);
-            std::vector<dtCore::RefPtr<dtDAL::ActorProperty> >  toFillIn;
-            toFillIn.reserve(15U);
-            actor->GetPhysicsHelper()->BuildPropertyMap(toFillIn);
-            for(unsigned int i = 0 ; i < toFillIn.size(); ++i)
-            {
-               AddProperty(toFillIn[i].get());
-            }
          }
 
          //////////////////////////////////////////////////////////////////////

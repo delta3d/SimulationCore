@@ -60,12 +60,12 @@ namespace SimCore
 #endif
    };
 
-   class SIMCORE_EXPORT BaseWheeledVehiclePhysicsHelper : public dtPhysics::PhysicsHelper
+   class SIMCORE_EXPORT BaseWheeledVehiclePhysicsActComp : public dtPhysics::PhysicsActComp
    {
    public:
-      typedef dtPhysics::PhysicsHelper BaseClass;
+      typedef dtPhysics::PhysicsActComp BaseClass;
 
-      BaseWheeledVehiclePhysicsHelper(dtGame::GameActorProxy& proxy);
+      BaseWheeledVehiclePhysicsActComp(dtGame::GameActorProxy& proxy);
 
       //////////////////////////////////////////////////////////////////////////////////////
       //                               Vehicle Initialization                             //
@@ -104,7 +104,7 @@ namespace SimCore
 
       //////////////////////////////////////////////////////////////////
       // Build the property list for the actor
-      virtual void   BuildPropertyMap(std::vector<dtCore::RefPtr<dtDAL::ActorProperty> >& toFillIn);
+      virtual void   BuildPropertyMap();
 
       float       GetEngineTorque() const                {return mEngineTorque;}
       float       GetMaxBrakeTorque() const              {return mMaxBrakeTorque;}
@@ -158,7 +158,7 @@ namespace SimCore
       virtual void CleanUp();
    protected:
 
-      virtual ~BaseWheeledVehiclePhysicsHelper();
+      virtual ~BaseWheeledVehiclePhysicsActComp();
 
       float CalcSpringRate(float freq, float vehMass, float wheelbase, float leverArm) const;
 

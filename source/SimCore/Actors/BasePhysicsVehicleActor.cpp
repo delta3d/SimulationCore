@@ -74,7 +74,7 @@ namespace SimCore
       {
          // If you subclass this actor, you MUST do something like the following in the constructor.
          // The actor can't do it's job without having a physics helper! Might even crash!!!
-         //mPhysicsHelper = new dtPhysics::PhysicsHelper(proxy);
+         //mPhysicsActComp = new dtPhysics::PhysicsActComp(proxy);
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
@@ -82,21 +82,6 @@ namespace SimCore
       {
       }
 
-      ///////////////////////////////////////////////////////////////////////////////////
-      void BasePhysicsVehicleActor::BuildActorComponents()
-      {
-         BaseClass::BuildActorComponents();
-
-         // DEFAULT the Dead Reckoning Algorithm to Velocity And Acceleration. It's a prop so will 
-         // be overwriten from the map, unless this is a new vehicle object. 
-         // For a default, static would be dumb. Velocity might be OK. 
-         if (!HasComponent(dtGame::DeadReckoningHelper::TYPE))
-         {
-            GetDeadReckoningHelper().SetDeadReckoningAlgorithm(dtGame::DeadReckoningAlgorithm::VELOCITY_AND_ACCELERATION);
-         }
-      }
-
-      ///////////////////////////////////////////////////////////////////////////////////
       void BasePhysicsVehicleActor::OnEnteredWorld()
       {
          // This makes the results smoother when sending updates at a high rate.
@@ -105,25 +90,20 @@ namespace SimCore
 
          BaseClass::OnEnteredWorld();
 
-         // Register with the Physics Component
-         dtPhysics::PhysicsComponent* physicsComp = NULL;
-         GetGameActorProxy().GetGameManager()->GetComponentByName(dtPhysics::PhysicsComponent::DEFAULT_NAME, physicsComp);
-         physicsComp->RegisterHelper(*mPhysicsHelper.get());
-
          if(IsRemote()) // Remote
          {
-            GetPhysicsHelper()->SetPrePhysicsCallback(
-                     dtPhysics::PhysicsHelper::UpdateCallback(this, &BasePhysicsVehicleActor::PrePhysicsUpdate));
+            GetPhysicsActComp()->SetPrePhysicsCallback(
+                     dtPhysics::PhysicsActComp::UpdateCallback(this, &BasePhysicsVehicleActor::PrePhysicsUpdate));
          }
          else // Local
          {
             // Post on local. Pre on both.
-            GetPhysicsHelper()->SetPostPhysicsCallback(
-               dtPhysics::PhysicsHelper::UpdateCallback(this, &BasePhysicsVehicleActor::PostPhysicsUpdate));
-            GetPhysicsHelper()->SetPrePhysicsCallback(
-               dtPhysics::PhysicsHelper::UpdateCallback(this, &BasePhysicsVehicleActor::PrePhysicsUpdate));
+            GetPhysicsActComp()->SetPostPhysicsCallback(
+               dtPhysics::PhysicsActComp::UpdateCallback(this, &BasePhysicsVehicleActor::PostPhysicsUpdate));
+            GetPhysicsActComp()->SetPrePhysicsCallback(
+               dtPhysics::PhysicsActComp::UpdateCallback(this, &BasePhysicsVehicleActor::PrePhysicsUpdate));
 
-            dtPhysics::PhysicsObject* po = GetPhysicsHelper()->GetMainPhysicsObject();
+            dtPhysics::PhysicsObject* po = GetPhysicsActComp()->GetMainPhysicsObject();
             if (po->GetMechanicsType() == dtPhysics::MechanicsType::DYNAMIC)
             {
                // Disable gravity until the map has loaded terrain under our feet...
@@ -138,9 +118,6 @@ namespace SimCore
       void BasePhysicsVehicleActor::OnRemovedFromWorld()
       {
          BaseClass::OnRemovedFromWorld();
-         dtPhysics::PhysicsComponent* physicsComp = NULL;
-         GetGameActorProxy().GetGameManager()->GetComponentByName(dtPhysics::PhysicsComponent::DEFAULT_NAME, physicsComp);
-         physicsComp->UnregisterHelper(*mPhysicsHelper.get());
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
@@ -148,7 +125,7 @@ namespace SimCore
       {
          // DEBUG: std::cout << "Terrain loaded." << std::endl;
 
-         dtPhysics::PhysicsObject* physicsObject = GetPhysicsHelper()->GetMainPhysicsObject();
+         dtPhysics::PhysicsObject* physicsObject = GetPhysicsActComp()->GetMainPhysicsObject();
          if( physicsObject == NULL )
          {
             // DEBUG: std::cout << "\tVehicle physics object not loaded :(\n" << std::endl;
@@ -194,11 +171,11 @@ namespace SimCore
       {
          if (isImpulse)
          {
-            GetPhysicsHelper()->GetMainPhysicsObject()->ApplyImpulse(force);
+            GetPhysicsActComp()->GetMainPhysicsObject()->ApplyImpulse(force);
          }
          else
          {
-            GetPhysicsHelper()->GetMainPhysicsObject()->AddForce(force);
+            GetPhysicsActComp()->GetMainPhysicsObject()->AddForce(force);
          }
       }
 
@@ -215,7 +192,7 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////
       void BasePhysicsVehicleActor::OnTickLocal(const dtGame::TickMessage& tickMessage)
       {
-         dtPhysics::PhysicsObject* physicsObject = GetPhysicsHelper()->GetMainPhysicsObject();
+         dtPhysics::PhysicsObject* physicsObject = GetPhysicsActComp()->GetMainPhysicsObject();
 
          if(physicsObject == NULL)
          {
@@ -265,7 +242,7 @@ namespace SimCore
 
 
          // ANGULAR VELOCITY - uses physics engine
-         dtPhysics::PhysicsObject* physObj = mPhysicsHelper->GetMainPhysicsObject();
+         dtPhysics::PhysicsObject* physObj = GetPhysicsActComp()->GetMainPhysicsObject();
          if (physObj != NULL)
          {
             osg::Vec3 physAngularVelocity;
@@ -315,7 +292,7 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////
       void BasePhysicsVehicleActor::PrePhysicsUpdate()
       {
-         dtPhysics::PhysicsObject* physicsObject = GetPhysicsHelper()->GetMainPhysicsObject();
+         dtPhysics::PhysicsObject* physicsObject = GetPhysicsActComp()->GetMainPhysicsObject();
 
          // The PRE physics update is only trapped if we are remote. It updates the physics
          // engine and moves the vehicle to where we think it is now (based on Dead Reckoning)
@@ -346,11 +323,11 @@ namespace SimCore
       void BasePhysicsVehicleActor::PostPhysicsUpdate()
       {
          // This is ONLY called if we are LOCAL (we put the check here just in case... )
-         if (!IsRemote() && GetPhysicsHelper() != NULL)
+         if (!IsRemote() && GetPhysicsActComp() != NULL)
          {
             // The base behavior is that we want to pull the translation and rotation off the object
             // in our physics scene and apply it to our 3D object in the visual scene.
-            dtPhysics::PhysicsObject* physicsObject = GetPhysicsHelper()->GetMainPhysicsObject();
+            dtPhysics::PhysicsObject* physicsObject = GetPhysicsActComp()->GetMainPhysicsObject();
 
             //TODO: Ask if the object is activated.  If not, the transform should not be pushed.
 
@@ -392,9 +369,9 @@ namespace SimCore
          // This behavior is semi duplicated in the four wheel vehicle helper.
          // It has been moved here to allow vehicles to have separate behavior. Eventually,
          // we need a base vehicle helper and it should be moved there.
-         // The code in PhysicsHelper::RepositionVehicle can be refactored out
+         // The code in PhysicsActComp::RepositionVehicle can be refactored out
 
-         dtPhysics::PhysicsObject* physObj = GetPhysicsHelper()->GetMainPhysicsObject();
+         dtPhysics::PhysicsObject* physObj = GetPhysicsActComp()->GetMainPhysicsObject();
 
          float xyOffset = deltaTime;
          float zOffset = deltaTime * 5.0f;
@@ -422,7 +399,7 @@ namespace SimCore
          }
          else
          {
-            return GetPhysicsHelper()->GetMainPhysicsObject()->GetLinearVelocity().length()
+            return GetPhysicsActComp()->GetMainPhysicsObject()->GetLinearVelocity().length()
                   * METERSPS_TO_MILESPH;
          }
       }
@@ -452,7 +429,7 @@ namespace SimCore
       bool BasePhysicsVehicleActor::GetTerrainPoint(
          const osg::Vec3& location, osg::Vec3& outPoint )
       {
-         dtPhysics::PhysicsObject* physObject = GetPhysicsHelper()->GetMainPhysicsObject();
+         dtPhysics::PhysicsObject* physObject = GetPhysicsActComp()->GetMainPhysicsObject();
 
          if( physObject == NULL )
          {
@@ -467,7 +444,7 @@ namespace SimCore
          ray.SetDirection(osg::Vec3(0.0f, 0.0f, -20000.0f));
          static const dtPhysics::CollisionGroupFilter GROUPS_FLAGS = (1 << SimCore::CollisionGroup::GROUP_TERRAIN);
          ray.SetCollisionGroupFilter(GROUPS_FLAGS);
-         GetPhysicsHelper()->TraceRay(ray, hits);
+         GetPhysicsActComp()->TraceRay(ray, hits);
          if (!hits.empty())
          {
             const dtPhysics::RayCast::Report* closestReport = NULL;
@@ -494,15 +471,11 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////
-      void BasePhysicsVehicleActor::SetPhysicsHelper(dtPhysics::PhysicsHelper* newHelper)
+      dtPhysics::PhysicsActComp* BasePhysicsVehicleActor::GetPhysicsActComp() const
       {
-         mPhysicsHelper = newHelper;
-      }
-
-      //////////////////////////////////////////////////////////////////////
-      dtPhysics::PhysicsHelper* BasePhysicsVehicleActor::GetPhysicsHelper() const
-      {
-         return mPhysicsHelper.get();
+         dtPhysics::PhysicsActComp* ac = NULL;
+         GetComponent(ac);
+         return ac;
       }
 
       //////////////////////////////////////////////////////////////////////
@@ -544,14 +517,6 @@ namespace SimCore
 
          BasePhysicsVehicleActor& actor = static_cast<BasePhysicsVehicleActor &>(GetGameActor());
 
-         // Add all the properties from the physics helper class
-         std::vector<dtCore::RefPtr<dtDAL::ActorProperty> >  toFillIn;
-         actor.GetPhysicsHelper()->BuildPropertyMap(toFillIn);
-         for(unsigned int i = 0 ; i < toFillIn.size(); ++i)
-         {
-            AddProperty(toFillIn[i].get());
-         }
-
          AddProperty(new dtDAL::BooleanActorProperty("Perform_Above_Ground_Safety_Check",
             "Perform above ground safety check",
             dtDAL::BooleanActorProperty::SetFuncType(&actor, &BasePhysicsVehicleActor::SetPerformAboveGroundSafetyCheck),
@@ -585,10 +550,38 @@ namespace SimCore
          {
             BasePhysicsVehicleActor* actor = NULL;
             GetActor(actor);
-            depProp = actor->GetPhysicsHelper()->GetDeprecatedProperty(name);
+            depProp = actor->GetPhysicsActComp()->GetDeprecatedProperty(name);
          }
          return depProp;
       }
+
+      ///////////////////////////////////////////////////////////////////////////////////
+      void BasePhysicsVehicleActorProxy::BuildActorComponents()
+      {
+         dtGame::GameActor* owner = NULL;
+         GetActor(owner);
+
+         BaseClass::BuildActorComponents();
+
+         // DEFAULT the Dead Reckoning Algorithm to Velocity And Acceleration. It's a prop so will
+         // be overwriten from the map, unless this is a new vehicle object.
+         // For a default, static would be dumb. Velocity might be OK.
+         dtCore::RefPtr<dtGame::DeadReckoningHelper> drAC;
+         owner->GetComponent(drAC);
+         if (drAC.valid())
+         {
+            // default to velocity only.  Humans walk.
+            drAC->SetDeadReckoningAlgorithm(dtGame::DeadReckoningAlgorithm::VELOCITY_AND_ACCELERATION);
+         }
+
+         // Create the default if a subclass didn't create one.
+         if (!owner->HasComponent(dtPhysics::PhysicsActComp::TYPE))
+         {
+            owner->AddComponent(*new dtPhysics::PhysicsActComp(*this));
+         }
+      }
+
+      ///////////////////////////////////////////////////////////////////////////////////
 
    } // namespace
 }// namespace

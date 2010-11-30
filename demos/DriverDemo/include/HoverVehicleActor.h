@@ -65,9 +65,6 @@ namespace DriverDemo
       // INHERITED PUBLIC
       public:
 
-         /// Override this to add your own components or to init values on the ones that are already added.
-         virtual void BuildActorComponents();
-
          // Called when the actor has been added to the game manager.
          // You can respond to OnEnteredWorld on either the proxy or actor or both.
          virtual void OnEnteredWorld();
@@ -84,8 +81,8 @@ namespace DriverDemo
          /// Reset to starting position In additional to base behavior, it turns off sounds.
          virtual void ResetVehicle();
 
-         HoverVehiclePhysicsHelper* GetHoverPhysicsHelper() {
-            return static_cast<HoverVehiclePhysicsHelper*> (GetPhysicsHelper());}
+         HoverVehiclePhysicsActComp* GetHoverPhysicsActComp() {
+            return static_cast<HoverVehiclePhysicsActComp*> (GetPhysicsActComp());}
 
          //void SetSound_effect_collision_hit(const std::string& value){SOUND_EFFECT_COLLISION_HIT=value;}
          //void SetVehicleInsideModel(const std::string &value)  {VEHICLE_INSIDE_MODEL = value;}
@@ -139,6 +136,8 @@ namespace DriverDemo
       public:
          HoverVehicleActorProxy();
          virtual void BuildPropertyMap();
+         /// Override this to add your own components or to init values on the ones that are already added.
+         virtual void BuildActorComponents();
 
       protected:
          virtual ~HoverVehicleActorProxy();

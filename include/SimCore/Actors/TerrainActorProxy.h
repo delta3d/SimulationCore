@@ -102,8 +102,8 @@ namespace SimCore
             {}
 
 #endif
-            dtPhysics::PhysicsHelper& GetHelper() { return *mHelper; }
-            const dtPhysics::PhysicsHelper& GetHelper() const { return *mHelper; }
+            dtPhysics::PhysicsActComp& GetHelper() { return *mHelper; }
+            const dtPhysics::PhysicsActComp& GetHelper() const { return *mHelper; }
 
          protected:
 
@@ -117,7 +117,7 @@ namespace SimCore
 #if AGEIA_PHYSICS
             dtCore::RefPtr<dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper> mHelper;
 #else
-            dtCore::RefPtr<dtPhysics::PhysicsHelper> mHelper;
+            dtCore::RefPtr<dtPhysics::PhysicsActComp> mHelper;
 #endif
 
             TerrainPhysicsMode* mTerrainPhysicsMode;
@@ -132,6 +132,7 @@ namespace SimCore
       class SIMCORE_EXPORT TerrainActorProxy : public dtGame::GameActorProxy
       {
          public:
+            typedef dtGame::GameActorProxy BaseClass;
 
             /**
              * Constructor
@@ -142,6 +143,9 @@ namespace SimCore
              * Adds the properties to the actor.
              */
             virtual void BuildPropertyMap();
+
+            /// overridden to initialize the physics.
+            virtual void BuildActorComponents();
 
             /// Creates the actor we are encapsulating
             virtual void CreateActor() { SetActor(*new TerrainActor(*this)); }

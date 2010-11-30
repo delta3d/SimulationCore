@@ -72,28 +72,13 @@ namespace SimCore
          * receives a tick.
          * @param tickMessage A message containing tick related information.
          */
-         virtual void TickLocal(const dtGame::Message& tickMessage);
+         virtual void OnTickLocal(const dtGame::TickMessage& tickMessage);
 
       protected:
          /// destructor
          virtual ~MunitionParticlesActor(void);
 
-   #ifdef AGEIA_PHYSICS
-         /// Corresponds to the AGEIA_FLAGS_PRE_UPDATE flag
-         virtual void AgeiaPrePhysicsUpdate(){}
-
-         /// Corresponds to the AGEIA_FLAGS_POST_UPDATE
-         virtual void AgeiaPostPhysicsUpdate();
-
-         /// Corresponds to the AGEIA_FLAGS_GET_COLLISION_REPORT
-         virtual void AgeiaCollisionReport(dtAgeiaPhysX::ContactReport& contactReport, dtPhysics::PhysicsObject& ourSelf, dtPhysics::PhysicsObject& whatWeHit) {}
-
-         // You would have to make a new raycast to get this report,
-         // so no flag associated with it.
-         virtual void AgeiaRaycastReport(const NxRaycastHit& hit, const dtPhysics::PhysicsObject& ourSelf, const dtPhysics::PhysicsObject& whatWeHit);
-   #else
          void PostPhysicsUpdate();
-   #endif
       public:
 
          // Set the weapon that owns this shooter.
@@ -132,9 +117,10 @@ namespace SimCore
       class SIMCORE_EXPORT MunitionParticlesActorProxy : public PhysicsParticleSystemActorProxy
       {
       public:
+         typedef PhysicsParticleSystemActorProxy BaseClass;
          MunitionParticlesActorProxy();
          virtual void BuildPropertyMap();
-
+         virtual void BuildActorComponents();
       protected:
          virtual ~MunitionParticlesActorProxy();
          void CreateActor();

@@ -35,7 +35,7 @@
 #include <dtDAL/enginepropertytypes.h>
 
 #include <dtPhysics/physicsobject.h>
-#include <dtPhysics/physicshelper.h>
+#include <dtPhysics/physicsactcomp.h>
 #include <dtPhysics/bodywrapper.h>
 
 #include <dtGame/gameactor.h>

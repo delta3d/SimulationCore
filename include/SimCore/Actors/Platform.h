@@ -135,6 +135,11 @@ namespace SimCore
             virtual void BuildInvokables();
 
             /**
+             * Override method to add actor components needed by this class.
+             */
+            virtual void BuildActorComponents();
+
+            /**
              * Returns the icon to be shown in the level editor
              * for this proxy (PARTICLE_SYSTEM)
              * @return mBillboardIcon
@@ -318,12 +323,7 @@ namespace SimCore
             /// Toggles engine smoke on and off
             DT_DECLARE_ACCESSOR(bool, EngineSmokeOn);
 
-            /**
-             * Override method to add actor components needed by this class.
-             */
-            virtual void BuildActorComponents();
-
-            unsigned GetHeadlightId() const{ return mHeadLightID;}
+           unsigned GetHeadlightId() const{ return mHeadLightID;}
 
          protected:
 

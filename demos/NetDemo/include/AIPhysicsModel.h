@@ -32,7 +32,7 @@
 
 namespace dtPhysics
 {
-   class PhysicsHelper;
+   class PhysicsActComp;
 }
 
 namespace NetDemo
@@ -47,8 +47,8 @@ namespace NetDemo
 
      virtual void Update(float dt, BaseAIControllable& aiAgent);
 
-     void SetPhysicsHelper(dtPhysics::PhysicsHelper* newHelper);
-     dtPhysics::PhysicsHelper* GetPhysicsHelper();
+     void SetPhysicsActComp(dtPhysics::PhysicsActComp* newHelper);
+     dtPhysics::PhysicsActComp* GetPhysicsActComp();
 
      void SetState(BaseAIGameState& BaseAIGameState, const osg::Matrix& matIn);
      void GetState(const BaseAIGameState& stateIn, osg::Matrix& result) const;
@@ -80,7 +80,7 @@ namespace NetDemo
 
      BaseAIGameState* mCurrentState;
      BaseAIGoalState* mGoalState;
-     dtCore::RefPtr<dtPhysics::PhysicsHelper> mPhysicsHelper;
+     dtCore::RefPtr<dtPhysics::PhysicsActComp> mPhysicsActComp;
 
    };
 

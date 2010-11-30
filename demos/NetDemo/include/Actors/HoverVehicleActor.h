@@ -62,8 +62,6 @@ namespace NetDemo
 
       // INHERITED PUBLIC
       public:
-         /// Override this to add your own components or to init values on the ones that are already added.
-         virtual void BuildActorComponents();
 
          // Called when the actor has been added to the game manager.
          // You can respond to OnEnteredWorld on either the proxy or actor or both.
@@ -84,8 +82,8 @@ namespace NetDemo
          /// Reset to starting position In additional to base behavior, it turns off sounds.
          virtual void ResetVehicle();
 
-         HoverVehiclePhysicsHelper* GetHoverPhysicsHelper() {
-            return static_cast<HoverVehiclePhysicsHelper*> (GetPhysicsHelper()); }
+         HoverVehiclePhysicsActComp* GetHoverPhysicsActComp() {
+            return static_cast<HoverVehiclePhysicsActComp*> (GetPhysicsActComp()); }
 
          /// These methods are kind of odd. Some vehicles have a distinct turret (no up/down, just rotate) that is
          /// separate from the vehicle. On others, the turret is hard attached to the vehicle.
@@ -125,6 +123,8 @@ namespace NetDemo
       public:
          HoverVehicleActorProxy();
          virtual void BuildPropertyMap();
+         /// Override this to add your own components or to init values on the ones that are already added.
+         virtual void BuildActorComponents();
 
       protected:
          virtual ~HoverVehicleActorProxy();

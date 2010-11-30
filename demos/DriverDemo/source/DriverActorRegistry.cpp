@@ -18,7 +18,7 @@
 #include <HoverVehicleActor.h>
 #include <HoverTargetActor.h>
 #include <HoverExplodingTargetActor.h>
-#include <dtPhysics/physicshelper.h>
+#include <dtPhysics/physicsactcomp.h>
 //#include <NxAgeiaWorldComponent.h>
 //#endif
 

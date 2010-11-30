@@ -44,10 +44,6 @@
 
 #include <SimCore/CollisionGroupEnum.h>
 
-#ifdef AGEIA_PHYSICS
-#include <NxAgeiaWorldComponent.h>
-//#include <SimCore/Actors/NxAgeiaFourWheelVehicleActor.h>
-#endif
 
 namespace SimCore
 {
@@ -56,7 +52,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////
       // Actor code
       //////////////////////////////////////////////////////////
-      HumanWithPhysicsActor::HumanWithPhysicsActor(dtGame::GameActorProxy &proxy) :
+      HumanWithPhysicsActor::HumanWithPhysicsActor(dtGame::GameActorProxy& proxy) :
          Human(proxy)
       // With 30, this is about 12.66 MPH, which is a decently fast sustainable run. The fastest human sprint
       , mMoveRateConstant(30.0f, 30.0f, 0.0f)
@@ -70,24 +66,6 @@ namespace SimCore
       // for 2 hours. Note, this multiplies times the frame speed using the motion model, but it should be
       // irrelevant of FPS.
       {
-#ifdef AGEIA_PHYSICS
-         mPhysicsHelper = new dtAgeiaPhysX::NxAgeiaCharacterHelper(proxy);
-         mPhysicsHelper->SetBaseInterfaceClass(this);
-         mPhysicsHelper->SetCharacterInterfaceClass(this);
-         mPhysicsHelper->SetAgeiaFlags(dtAgeiaPhysX::AGEIA_CHARACTER | dtAgeiaPhysX::AGEIA_FLAGS_POST_UPDATE);
-#else
-         mPhysicsHelper = new dtPhysics::PhysicsHelper(proxy);
-         mPhysicsHelper->SetPrePhysicsCallback(dtPhysics::PhysicsHelper::UpdateCallback(this, &HumanWithPhysicsActor::PrePhysicsUpdate));
-
-         dtCore::RefPtr<dtPhysics::PhysicsObject> physicsObject = new dtPhysics::PhysicsObject("Body");
-         physicsObject->SetPrimitiveType(dtPhysics::PrimitiveType::CYLINDER);
-         physicsObject->SetMechanicsType(dtPhysics::MechanicsType::KINEMATIC);
-         physicsObject->SetCollisionGroup(SimCore::CollisionGroup::GROUP_HUMAN_LOCAL);
-         physicsObject->SetMass(100.0f);
-         physicsObject->SetExtents(osg::Vec3(1.8f, 0.5f, 0.0f));
-         mPhysicsHelper->AddPhysicsObject(*physicsObject);
-
-#endif
       }
 
       ////////////////////////////////////////////////////////////
@@ -96,120 +74,11 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////
-      void HumanWithPhysicsActor::BuildActorComponents()
-      {
-         BaseClass::BuildActorComponents();
-
-         // We don't want the human to lean sideways, regardless of what is sent. It looks stupid
-         GetDeadReckoningHelper().SetForceUprightRotation(true);
-         // default to velocity only.  Humans walk.
-         GetDeadReckoningHelper().SetDeadReckoningAlgorithm(dtGame::DeadReckoningAlgorithm::VELOCITY_ONLY);
-      }
-
-      ////////////////////////////////////////////////////////////
       void HumanWithPhysicsActor::OnTickLocal(const dtGame::TickMessage& tickMessage)
       {
          mNotifyChangePosition = false;
          mNotifyChangeOrient = false;
          mNotifyChangeVelocity = false;
-
-#ifdef AGEIA_PHYSICS
-         if(IsRemote())
-            return;
-
-         float ElapsedTime = (float)static_cast<const dtGame::TickMessage&>(tickMessage).GetDeltaSimTime();
-
-         if(mMaxUpdateSendRate == 0)
-         {
-            LOG_ERROR("Not sending out dead reckoning, the mMaxUpdateSendRate is set to 0");
-            return;
-         }
-
-         mMaxUpdateSendRate += ElapsedTime;
-
-         if(mSecsSinceLastUpdateSent > 1.0f / mMaxUpdateSendRate)
-         {
-            mSecsSinceLastUpdateSent = 0.0f;
-         }
-         else
-         {
-            return;
-         }
-
-         if( mPhysicsHelper != NULL )
-         {
-            if( mPhysicsHelper->GetActor() != NULL && mPhysicsHelper->GetActor()->readBodyFlag(NX_BF_DISABLE_GRAVITY))
-            {
-               std::vector<dtDAL::ActorProxy*> toFill;
-               GetGameActorProxy().GetGameManager()->FindActorsByClassName(PagedTerrainPhysicsActor::DEFAULT_NAME, toFill);
-               if(toFill.size())
-               {
-                  PagedTerrainPhysicsActor* landActor = dynamic_cast<PagedTerrainPhysicsActor*>((*toFill.begin())->GetActor());
-                  if(landActor != NULL)
-                  {
-                     if(landActor->HasSomethingBeenLoaded())
-                     {
-                        mPhysicsHelper->GetActor()->clearBodyFlag(NX_BF_DISABLE_GRAVITY);
-                     }
-                  }
-               }
-            }
-
-            if(mPhysicsHelper->GetActor() != NULL)
-            {
-               float amountChange = GetMaxTranslationError();//0.5f;
-               float glmat[16];
-               dtPhysics::PhysicsObject* physxObj = mPhysicsHelper->GetActor();
-               NxMat33 rotation = physxObj->getGlobalOrientation();
-               rotation.getColumnMajorStride4(glmat);
-               glmat[12] = physxObj->getGlobalPosition()[0];
-               glmat[13] = physxObj->getGlobalPosition()[1];
-               glmat[14] = physxObj->getGlobalPosition()[2];
-               glmat[15] = 1.0f;
-
-               osg::Matrix currentMatrix(glmat);
-               osg::Vec3 globalOrientation;
-               dtUtil::MatrixUtil::MatrixToHpr(globalOrientation, currentMatrix);
-               osg::Vec3 nxVecTemp;
-               nxVecTemp.set( mPhysicsHelper->GetActor()->getGlobalPosition().x,
-                              mPhysicsHelper->GetActor()->getGlobalPosition().y,
-                              mPhysicsHelper->GetActor()->getGlobalPosition().z);
-
-               const osg::Vec3 &translationVec = GetDeadReckoningHelper().GetCurrentDeadReckonedTranslation();
-               const osg::Vec3 &orientationVec = GetDeadReckoningHelper().GetCurrentDeadReckonedRotation();
-
-               mNotifyChangePosition = dtUtil::Equivalent(*((osg::Vec3*)(&nxVecTemp)), translationVec, amountChange);
-               mNotifyChangeOrient = !dtUtil::Equivalent(globalOrientation, orientationVec, osg::Vec3::value_type(3.0f));
-
-               GetDeadReckoningHelper().SetDeadReckoningAlgorithm(dtGame::DeadReckoningAlgorithm::VELOCITY_ONLY);
-
-               const osg::Vec3 &turnVec = GetDeadReckoningHelper().GetLastKnownAngularVelocity();
-               const osg::Vec3 &velocityVec = GetLastKnownVelocity();
-
-               osg::Vec3 angularVelocity(physxObj->getAngularVelocity().x, physxObj->getAngularVelocity().y, physxObj->getAngularVelocity().z);
-               osg::Vec3 linearVelocity(physxObj->getLinearVelocity().x, physxObj->getLinearVelocity().y, physxObj->getLinearVelocity().z);
-
-               float velocityDiff = (velocityVec - linearVelocity).length();
-               bool velocityNearZero = linearVelocity.length() < 0.1;
-               mNotifyChangeVelocity = velocityDiff > 0.2 || (velocityNearZero && velocityVec.length() > 0.1 );
-
-               if( mNotifyChangeVelocity )
-               {
-                  if( velocityNearZero )
-                  {
-                     // DEBUG:
-                     /*std::cout << "\tStopping"
-                        << "\n\tDifference:\t" << velocityDiff
-                        << "\n\tOld velocity:\t" << velocityVec
-                        << "\n\tNew velocity:\t" << linearVelocity << std::endl;//*/
-
-                     linearVelocity.set(0.0,0.0,0.0);
-                  }
-                  SetLastKnownVelocity(linearVelocity);
-               }
-            }
-         }
-#endif
 
          //TODO: CURRENTLY NO LOCAL BEHAVIOR WITH dtPhysics in local mode
 
@@ -228,9 +97,9 @@ namespace SimCore
       void HumanWithPhysicsActor::SetLastKnownTranslation(const osg::Vec3 &vec)
       {
 #ifdef AGEIA_PHYSICS
-         if(mPhysicsHelper != NULL)
+         if(mPhysicsActComp != NULL)
          {
-            float zValue = mPhysicsHelper->GetCharacterExtents()[2];
+            float zValue = mPhysicsActComp->GetCharacterExtents()[2];
 
             // Note this should really be zValue /= 2. However, jsaf doesnt use
             // the float value for w/e reason. so it has to round the number,
@@ -253,8 +122,8 @@ namespace SimCore
       {
          osg::Vec3 position = pos;
 #ifdef AGEIA_PHYSICS
-         if(mPhysicsHelper != NULL)
-            position[2] -= (mPhysicsHelper->GetCharacterExtents()[2]);
+         if(mPhysicsActComp != NULL)
+            position[2] -= (mPhysicsActComp->GetCharacterExtents()[2]);
 #endif
          osg::Vec3 distanceMoved = pos - GetLastKnownTranslation();
 
@@ -280,45 +149,6 @@ namespace SimCore
       ////////////////////////////////////////////////////////////
       void HumanWithPhysicsActor::SetMovementTransform(const osg::Vec3& movement)
       {
-#ifdef AGEIA_PHYSICS
-         if( mPhysicsHelper->GetActor() != NULL && mPhysicsHelper->GetActor()->readBodyFlag(NX_BF_DISABLE_GRAVITY))
-         {
-            return;
-         }
-
-         mSentOverTransform = movement;
-
-         NxVec3 displacementVector;
-         osg::Vec3 currentTransform = mSentOverTransform;
-         displacementVector.x = currentTransform[0] - mPreviousTransform[0];
-         displacementVector.y = currentTransform[1] - mPreviousTransform[1];
-         displacementVector.z = currentTransform[2] - mPreviousTransform[2];
-         mPreviousTransform = currentTransform;
-
-         dtGame::GMComponent *comp =
-            GetGameActorProxy().GetGameManager()->GetComponentByName(dtAgeiaPhysX::NxAgeiaWorldComponent::DEFAULT_NAME);
-
-         dtAgeiaPhysX::NxAgeiaWorldComponent &ageiaComp =
-            static_cast<dtAgeiaPhysX::NxAgeiaWorldComponent&>(*comp);
-         NxVec3 gravity = ageiaComp.GetGravity(mPhysicsHelper->GetSceneName());
-
-         displacementVector.x *= mMoveRateConstant[0];
-         displacementVector.y *= mMoveRateConstant[1];
-
-         // Changed by Eddie. This Z value should be set from the gravity of the world,
-         // not hardcoded to -9.8, as this would overwrite the value supplied by the user
-         // This still isn't entirely correct, as gravity can be set in any direction,
-         // and should be applied to all values of the displacement vector,
-         // not just the Z
-         displacementVector.z = gravity[2];//-9.8f;
-         //displacementVector.z = 0.0;
-
-         //printf("%f %f %f\n", displacementVector.x, displacementVector.y, displacementVector.z);
-
-         // Note time needs to be send in here correctly.
-         mPhysicsHelper->UpdatePhysicsCharacterController(displacementVector, 1.0f/60.0f, 0);
-#endif
-
          //TODO: CURRENTLY NO LOCAL BEHAVIOR WITH dtPhysics in local mode
 
       }
@@ -335,13 +165,6 @@ namespace SimCore
          
          osg::Vec3 xyz;
          transform.GetTranslation(xyz);
-
-#ifdef AGEIA_PHYSICS
-         osg::Vec3 offset = mPhysicsHelper->GetDimensions();
-         mPhysicsHelper->ForcefullyMoveCharacterPos(NxVec3(xyz[0], xyz[1], xyz[2] + ( offset[2] / 2 ) ) );
-#else
-         
-#endif
       }
 
       ////////////////////////////////////////////////////////////
@@ -350,21 +173,6 @@ namespace SimCore
          dtCore::Transform xform;
          xform.SetTranslation( position );
          SetTransform(xform);
-         
-#ifdef AGEIA_PHYSICS
-         if( ! mPhysicsHelper.valid() )
-         {
-            return;
-         }
-
-         mPhysicsHelper->ForcefullyMoveCharacterPos(NxVec3(position.x(), position.y(), position.z()));
-
-         if(!IsRemote())
-         {
-            if (mPhysicsHelper->GetActor() != NULL)
-               mPhysicsHelper->GetActor()->raiseBodyFlag(NX_BF_DISABLE_GRAVITY);
-         }
-#endif
       }
 
       ////////////////////////////////////////////////////////////
@@ -384,24 +192,11 @@ namespace SimCore
       {
          Human::OnEnteredWorld();
 
-#ifdef AGEIA_PHYSICS
-         // We don't want remote players to kick the HMMWV around, so we put them in a different group.
-         if (IsRemote())
-            mPhysicsHelper->SetCollisionGroup(CollisionGroup::GROUP_HUMAN_REMOTE);
+         GetPhysicsActComp()->SetPrePhysicsCallback(dtPhysics::PhysicsActComp::UpdateCallback(this, &HumanWithPhysicsActor::PrePhysicsUpdate));
 
-         mPhysicsHelper->SetDimensions(osg::Vec3(0.5, 0.5, 1.0));
-         mPhysicsHelper->InitializeCharacter();
-         dtCore::Transform transform;
-         GetTransform(transform);
-         osg::Vec3 xyz;
-         transform.GetTranslation(xyz);
-
-         SetPosition(xyz);
-         dynamic_cast<dtAgeiaPhysX::NxAgeiaWorldComponent*>(GetGameActorProxy().GetGameManager()->GetComponentByName("NxAgeiaWorldComponent"))->RegisterAgeiaHelper(*mPhysicsHelper.get());
-#else
          if (IsRemote())
          {
-            dtPhysics::PhysicsObject* po = mPhysicsHelper->GetMainPhysicsObject();
+            dtPhysics::PhysicsObject* po = GetPhysicsActComp()->GetMainPhysicsObject();
             po->SetCollisionGroup(CollisionGroup::GROUP_HUMAN_REMOTE);
 
             // If the developer didn't set the origin offset to something.
@@ -414,82 +209,24 @@ namespace SimCore
                po->SetOriginOffset(osg::Vec3(0.0f, 0.0f, (extents.x() / 2.0f) + extents.y()));
             }
 
-            dtPhysics::PhysicsComponent* comp = NULL;
-            GetGameActorProxy().GetGameManager()->GetComponentByName(dtPhysics::PhysicsComponent::DEFAULT_NAME, comp);
-            if (comp != NULL)
-            {
-               comp->RegisterHelper(*mPhysicsHelper);
-            }
-
 
             po->CreateFromProperties();
          }
-#endif
 
       }
 
-#ifdef AGEIA_PHYSICS
-      //////////////////////////////////////////////////////////////////////////////
-      void HumanWithPhysicsActor::AgeiaPrePhysicsUpdate()
-      {
-      }
-
-      //////////////////////////////////////////////////////////////////////////////
-      void HumanWithPhysicsActor::AgeiaPostPhysicsUpdate()
-      {
-         if(!IsRemote())
-         {
-            dtCore::Transform xform;
-            GetTransform(xform);
-            const NxExtendedVec3* pos = mPhysicsHelper->GetCharacterPos();
-            xform.SetTranslation(pos->x, pos->y, pos->z);
-            SetTransform(xform);
-            xform.GetTranslation(mPreviousTransform);
-         }
-      }
-
-      //////////////////////////////////////////////////////////////////////////////
-      void HumanWithPhysicsActor::AgeiaCollisionReport(dtAgeiaPhysX::ContactReport& contactReport, dtPhysics::PhysicsObject& ourSelf, dtPhysics::PhysicsObject& whatWeHit)
-      {
-
-      }
-
-      //////////////////////////////////////////////////////////////////////////////
-      NxControllerAction HumanWithPhysicsActor::AgeiaCharacterShapeReport(const NxControllerShapeHit& shapeHit)
-      {
-         if(shapeHit.shape->getActor().userData != NULL)
-         {
-            dtPhysics::PhysicsHelper* physicsHelper =
-               (dtPhysics::PhysicsHelper*)(shapeHit.shape->getActor().userData);
-            //NxAgeiaFourWheelVehicleActor *hitTarget = NULL;
-            if (physicsHelper != NULL)
-            {
-               //hitTarget = dynamic_cast<NxAgeiaFourWheelVehicleActor*>(physicsHelper->GetPhysicsGameActorProxy().GetActor());
-               //if(hitTarget != NULL)
-               //{
-                  // we hit a vehicle lets do something with the character
-               //}
-            }
-         }
-         return NX_ACTION_NONE;
-      }
-
-      //////////////////////////////////////////////////////////////////////////////
-      NxControllerAction HumanWithPhysicsActor::AgeiaCharacterControllerReport(const NxControllersHit& controllerHit)
-      {
-         return NX_ACTION_NONE;
-      }
-#else
       ////////////////////////////////////////////////////////////////////
-      dtPhysics::PhysicsHelper* HumanWithPhysicsActor::GetPhysicsHelper()
+      dtPhysics::PhysicsActComp* HumanWithPhysicsActor::GetPhysicsActComp()
       {
-         return mPhysicsHelper.get();
+         dtPhysics::PhysicsActComp* physAC = NULL;
+         GetComponent(physAC);
+         return physAC;
       }
 
       ////////////////////////////////////////////////////////////////////
       void HumanWithPhysicsActor::PrePhysicsUpdate()
       {
-         dtPhysics::PhysicsObject* physObj = mPhysicsHelper->GetMainPhysicsObject();
+         dtPhysics::PhysicsObject* physObj = GetPhysicsActComp()->GetMainPhysicsObject();
          if (physObj != NULL)
          {
             dtCore::Transform xform;
@@ -497,8 +234,6 @@ namespace SimCore
             physObj->SetTransformAsVisual(xform);
          }
       }
-
-#endif
 
       //////////////////////////////////////////////////////////
       // Proxy code
@@ -521,24 +256,39 @@ namespace SimCore
          SetActor(*p);
       }
 
-      //////////////////////////////////////////////////////////////////////////
-      void HumanWithPhysicsActorProxy::BuildPropertyMap()
+      //////////////////////////////////////////////////////////////////////
+      void HumanWithPhysicsActorProxy::BuildActorComponents()
       {
-         HumanActorProxy::BuildPropertyMap();
+         dtGame::GameActor* owner = NULL;
+         GetActor(owner);
 
-         HumanWithPhysicsActor* actor = NULL;
-         GetActor(actor);
-         std::vector<dtCore::RefPtr<dtDAL::ActorProperty> >  toFillIn;
-         actor->GetPhysicsHelper()->BuildPropertyMap(toFillIn);
+         if (!owner->HasComponent(dtPhysics::PhysicsActComp::TYPE))
+         {
+            dtCore::RefPtr<dtPhysics::PhysicsActComp> physAC = new dtPhysics::PhysicsActComp(*this);
 
-         for(unsigned int i = 0 ; i < toFillIn.size(); ++i)
-            AddProperty(toFillIn[i].get());
-      }
+            dtCore::RefPtr<dtPhysics::PhysicsObject> physicsObject = new dtPhysics::PhysicsObject("Body");
+            physicsObject->SetPrimitiveType(dtPhysics::PrimitiveType::CYLINDER);
+            physicsObject->SetMechanicsType(dtPhysics::MechanicsType::KINEMATIC);
+            physicsObject->SetCollisionGroup(SimCore::CollisionGroup::GROUP_HUMAN_LOCAL);
+            physicsObject->SetMass(100.0f);
+            physicsObject->SetExtents(osg::Vec3(1.8f, 0.5f, 0.0f));
+            physAC->AddPhysicsObject(*physicsObject);
 
-      //////////////////////////////////////////////////////////////////////////
-      void HumanWithPhysicsActorProxy::BuildInvokables()
-      {
-         HumanActorProxy::BuildInvokables();
+            owner->AddComponent(*physAC);
+         }
+
+         BaseClass::BuildActorComponents();
+
+         dtCore::RefPtr<dtGame::DeadReckoningHelper> drAC;
+         owner->GetComponent(drAC);
+         if (drAC.valid())
+         {
+            // We don't want the human to lean sideways, regardless of what is sent. It looks stupid
+            drAC->SetForceUprightRotation(true);
+            // default to velocity only.  Humans walk.
+            drAC->SetDeadReckoningAlgorithm(dtGame::DeadReckoningAlgorithm::VELOCITY_ONLY);
+         }
+
       }
 
    }

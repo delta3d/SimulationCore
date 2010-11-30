@@ -60,9 +60,6 @@ namespace SimCore
             /// Destructor
             virtual ~HumanWithPhysicsActor();
 
-            /// Overridden to force upright rotations on the Dead Reckoning Helper
-            void BuildActorComponents();
-
             /**
             * This method is an invokable called when an object is local and
             * receives a tick.
@@ -85,44 +82,11 @@ namespace SimCore
             // You can respond to OnEnteredWorld on either the proxy or actor or both.
             virtual void OnEnteredWorld();
 
-#ifdef AGEIA_PHYSICS
-
-            //////////////////////////////////////////////////////////////////////////////
-            //Ageia Callbacks
-            /// Corresponds to the AGEIA_FLAGS_PRE_UPDATE flag
-            virtual void AgeiaPrePhysicsUpdate();
-
-            /// Corresponds to the AGEIA_FLAGS_POST_UPDATE
-            virtual void AgeiaPostPhysicsUpdate();
-
-            /// Corresponds to the AGEIA_FLAGS_GET_COLLISION_REPORT
-            virtual void AgeiaCollisionReport(dtAgeiaPhysX::ContactReport& contactReport, dtPhysics::PhysicsObject& ourSelf, dtPhysics::PhysicsObject& whatWeHit);
-
-            // You would have to make a new raycast to get this report,
-            // so no flag associated with it.
-            virtual void AgeiaRaycastReport(const NxRaycastHit& hit, const dtPhysics::PhysicsObject& ourSelf, const dtPhysics::PhysicsObject& whatWeHit){}
-
-            // Shape report, used for character interactions for objects in the world.
-            virtual NxControllerAction AgeiaCharacterShapeReport(const NxControllerShapeHit& shapeHit);
-
-            // controller hit, used for character interactions with other characterz...
-            virtual NxControllerAction AgeiaCharacterControllerReport(const NxControllersHit& controllerHit);
-            //////////////////////////////////////////////////////////////////////////////
-
-            dtAgeiaPhysX::NxAgeiaCharacterHelper* GetPhysicsHelper() {return mPhysicsHelper.get();}
-
-         private:
-            /// our helper
-            dtCore::RefPtr<dtAgeiaPhysX::NxAgeiaCharacterHelper> mPhysicsHelper;
-#else
             void PrePhysicsUpdate();
             // returns the physics helper for use
-            dtPhysics::PhysicsHelper* GetPhysicsHelper();
+            dtPhysics::PhysicsActComp* GetPhysicsActComp();
 
          private:
-            dtCore::RefPtr<dtPhysics::PhysicsHelper> mPhysicsHelper;
-            dtCore::RefPtr<dtPhysics::CharacterController> mCharacterController;
-#endif
 
          public:
             void SetMovementTransform(const osg::Vec3& movement);
@@ -151,14 +115,11 @@ namespace SimCore
             /// Destructor
             virtual ~HumanWithPhysicsActorProxy();
 
-            /// Builds the properties associated with this player
-            virtual void BuildPropertyMap();
-
-            /// Builds the invokables associated with this player
-            virtual void BuildInvokables();
-
             /// Instantiates the actor this proxy encapsulated
             virtual void CreateActor();
+
+            /// Overridden to force upright rotations on the Dead Reckoning Helper
+            void BuildActorComponents();
       };
    }
 }

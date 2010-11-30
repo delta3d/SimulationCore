@@ -68,8 +68,6 @@ namespace SimCore
       , mStopMode(true)
       , mCruiseMode(false)
       {
-         SetPhysicsHelper( new SimCore::FourWheelVehiclePhysicsHelper(proxy));
-
          SetEntityType("WheeledVehicle"); // Used for HLA mapping mostly
          SetMunitionDamageTableName("VehicleDamageTable"); // Used for Munitions Damage.
       }
@@ -113,25 +111,9 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
-      void FourWheelVehicleActor::BuildActorComponents()
+      SimCore::FourWheelVehiclePhysicsActComp* FourWheelVehicleActor::GetFourWheelPhysicsActComp() const
       {
-         BaseClass::BuildActorComponents();
-
-         SimCore::Actors::DRPublishingActComp* drPublishingActComp = GetDRPublishingActComp();
-         if (drPublishingActComp == NULL)
-         {
-            LOG_ERROR("CRITICAL ERROR - No DR Publishing Actor Component on the Hover Target.");
-            return;
-         }
-         drPublishingActComp->SetMaxUpdateSendRate(3.0f);
-         drPublishingActComp->SetMaxTranslationError(0.002f);
-         drPublishingActComp->SetMaxRotationError(0.5f);
-      }
-
-      ///////////////////////////////////////////////////////////////////////////////////
-      SimCore::FourWheelVehiclePhysicsHelper* FourWheelVehicleActor::GetFourWheelPhysicsHelper() const
-      {
-         return static_cast<SimCore::FourWheelVehiclePhysicsHelper*> (GetPhysicsHelper());
+         return static_cast<SimCore::FourWheelVehiclePhysicsActComp*> (GetPhysicsActComp());
       }
 
       DT_IMPLEMENT_ACCESSOR(FourWheelVehicleActor, int,   NumUpdatesUntilFullSteeringAngle);
@@ -196,10 +178,10 @@ namespace SimCore
 
          if (nodeCollector != NULL)
          {
-            wheels[SimCore::FourWheelVehiclePhysicsHelper::FRONT_LEFT] = nodeCollector->GetDOFTransform("dof_wheel_lt_01");
-            wheels[SimCore::FourWheelVehiclePhysicsHelper::FRONT_RIGHT]= nodeCollector->GetDOFTransform("dof_wheel_rt_01");
-            wheels[SimCore::FourWheelVehiclePhysicsHelper::BACK_LEFT]  = nodeCollector->GetDOFTransform("dof_wheel_lt_02");
-            wheels[SimCore::FourWheelVehiclePhysicsHelper::BACK_RIGHT] = nodeCollector->GetDOFTransform("dof_wheel_rt_02");
+            wheels[SimCore::FourWheelVehiclePhysicsActComp::FRONT_LEFT] = nodeCollector->GetDOFTransform("dof_wheel_lt_01");
+            wheels[SimCore::FourWheelVehiclePhysicsActComp::FRONT_RIGHT]= nodeCollector->GetDOFTransform("dof_wheel_rt_01");
+            wheels[SimCore::FourWheelVehiclePhysicsActComp::BACK_LEFT]  = nodeCollector->GetDOFTransform("dof_wheel_lt_02");
+            wheels[SimCore::FourWheelVehiclePhysicsActComp::BACK_RIGHT] = nodeCollector->GetDOFTransform("dof_wheel_rt_02");
          }
 
          for (size_t i = 0 ; i < 4; ++i)
@@ -244,7 +226,7 @@ namespace SimCore
          }
          else
          {
-            FourWheelVehiclePhysicsHelper* helper = GetFourWheelPhysicsHelper();
+            FourWheelVehiclePhysicsActComp* helper = GetFourWheelPhysicsActComp();
             osg::Matrix bodyOffset;
             bodyOffset.makeIdentity();
             helper->GetLocalMatrix(*chassis, bodyOffset);
@@ -254,7 +236,7 @@ namespace SimCore
 
             helper->GetMainPhysicsObject()->SetVisualToBodyTransform(offsetXform);
 
-            GetFourWheelPhysicsHelper()->CreateVehicle(ourTransform, *chassis, wheels);
+            GetFourWheelPhysicsActComp()->CreateVehicle(ourTransform, *chassis, wheels);
             helper->GetMainPhysicsObject()->SetTransformAsVisual(ourTransform);
          }
 
@@ -332,15 +314,15 @@ namespace SimCore
                tick = (maxpitchBend - minpitchBend) / dif;
                pitchBend = maxpitchBend  - (dis * tick) + mLastGearChange * .1;
             }
-            else if (GetMPH() < GetFourWheelPhysicsHelper()->GetVehicleTopSpeed())
+            else if (GetMPH() < GetFourWheelPhysicsActComp()->GetVehicleTopSpeed())
             {
                if (mLastGearChange != FOURTH_GEAR  && mSndAcceleration != NULL)
                {
                   mSndAcceleration->Play();
                }
                mLastGearChange = FOURTH_GEAR;
-               dis = GetFourWheelPhysicsHelper()->GetVehicleTopSpeed() - GetMPH();
-               dif = GetFourWheelPhysicsHelper()->GetVehicleTopSpeed() - GetGearChangeHigh();
+               dis = GetFourWheelPhysicsActComp()->GetVehicleTopSpeed() - GetMPH();
+               dif = GetFourWheelPhysicsActComp()->GetVehicleTopSpeed() - GetGearChangeHigh();
                tick = (maxpitchBend - minpitchBend) / dif;
                pitchBend = maxpitchBend  - (dis * tick) + mLastGearChange * .1;
             }
@@ -426,7 +408,7 @@ namespace SimCore
          if (keyboard == NULL)
             return;
 
-         dtPhysics::PhysicsObject* po = GetPhysicsHelper()->GetMainPhysicsObject();
+         dtPhysics::PhysicsObject* po = GetPhysicsActComp()->GetMainPhysicsObject();
          if (po == NULL)
          {
             // We have no physics so return.  I assume this is because of an error in init, which
@@ -434,8 +416,8 @@ namespace SimCore
             return;
          }
 
-         GetFourWheelPhysicsHelper()->CalcMPH();
-         float curMPH = GetFourWheelPhysicsHelper()->GetMPH();
+         GetFourWheelPhysicsActComp()->CalcMPH();
+         float curMPH = GetFourWheelPhysicsActComp()->GetMPH();
 
          float accelFactor = 1.0f/(float(mLastGearChange) * 0.6f + 0.4f);
          float accel = 0.0f;
@@ -547,9 +529,9 @@ namespace SimCore
             mCruiseMode = false;
             mCurrentSteeringAngleNormalized = 0.0f;
          }
-         GetFourWheelPhysicsHelper()->Control(accel, mCurrentSteeringAngleNormalized, brake);
+         GetFourWheelPhysicsActComp()->Control(accel, mCurrentSteeringAngleNormalized, brake);
 
-         osg::Vec3 dragVec = GetFourWheelPhysicsHelper()->ComputeAeroDynDrag(po->GetLinearVelocity());
+         osg::Vec3 dragVec = GetFourWheelPhysicsActComp()->ComputeAeroDynDrag(po->GetLinearVelocity());
          po->AddForce(dragVec);
       }
 
@@ -560,7 +542,7 @@ namespace SimCore
          // See nxageiaFourWheelActor::RepositionVehicle() for more info.
 
          BasePhysicsVehicleActor::RepositionVehicle(deltaTime);
-         //GetFourWheelPhysicsHelper()->RepositionVehicle(deltaTime);
+         //GetFourWheelPhysicsActComp()->RepositionVehicle(deltaTime);
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
@@ -574,7 +556,7 @@ namespace SimCore
          }
          else
          {
-            result = dtUtil::Abs(GetFourWheelPhysicsHelper()->GetMPH());
+            result = dtUtil::Abs(GetFourWheelPhysicsActComp()->GetMPH());
          }
          return result;
       }
@@ -583,14 +565,14 @@ namespace SimCore
       float FourWheelVehicleActor::GetBrakeTorque()
       {
          // TODO this is wrong. it should return the current brake torque
-         return GetFourWheelPhysicsHelper()->GetMaxBrakeTorque();
+         return GetFourWheelPhysicsActComp()->GetMaxBrakeTorque();
       }
 
       ////////////////////////////////////////////////////////////////////////
       void FourWheelVehicleActor::PostPhysicsUpdate()
       {
          BaseClass::PostPhysicsUpdate();
-         GetFourWheelPhysicsHelper()->UpdateWheelTransforms();
+         GetFourWheelPhysicsActComp()->UpdateWheelTransforms();
       }
 
       //////////////////////////////////////////////////////////////////////
@@ -681,6 +663,31 @@ namespace SimCore
          RegisterForMessages(dtGame::MessageType::INFO_GAME_EVENT);
 
          BasePhysicsVehicleActorProxy::OnEnteredWorld();
+      }
+
+      ///////////////////////////////////////////////////////////////////////////////////
+      void FourWheelVehicleActorProxy::BuildActorComponents()
+      {
+         dtGame::GameActor* owner = NULL;
+         GetActor(owner);
+
+         if (!owner->HasComponent(dtPhysics::PhysicsActComp::TYPE))
+         {
+            owner->AddComponent(*new SimCore::FourWheelVehiclePhysicsActComp(*this));
+         }
+
+         BaseClass::BuildActorComponents();
+
+         SimCore::Actors::DRPublishingActComp* drPublishingActComp = NULL;
+         owner->GetComponent(drPublishingActComp);
+         if (drPublishingActComp == NULL)
+         {
+            LOG_ERROR("CRITICAL ERROR - No DR Publishing Actor Component.");
+            return;
+         }
+         drPublishingActComp->SetMaxUpdateSendRate(3.0f);
+         drPublishingActComp->SetMaxTranslationError(0.002f);
+         drPublishingActComp->SetMaxRotationError(0.5f);
       }
 
    } // namespace

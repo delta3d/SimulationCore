@@ -145,7 +145,7 @@ void PagedTerrainPhysicsActorTests::TestFunction()
 
    dtCore::System::GetInstance().Step();
 
-   CPPUNIT_ASSERT(ourActor->GetPhysicsHelper() != NULL);
+   CPPUNIT_ASSERT(ourActor->GetComponent(dtPhysics::PhysicsActComp::TYPE) != NULL);
    CPPUNIT_ASSERT(ourActor->PassThisGeometry(957,0,0,0) == false);
    CPPUNIT_ASSERT(ourActor->PassThisGeometry(1,0,0,0) == true);
    CPPUNIT_ASSERT(ourActor->HasSomethingBeenLoaded() == false);

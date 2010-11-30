@@ -1,5 +1,5 @@
 /* -*-c++-*-
-* Driver Demo - HoverVehiclePhysicsHelper (.cpp & .h) - Using 'The MIT License'
+* Driver Demo - HoverVehiclePhysicsActComp (.cpp & .h) - Using 'The MIT License'
 * Copyright (C) 2008, Alion Science and Technology Corporation
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,7 +26,7 @@
 #define _HOVER_VEHICLE_PHYSICS_HELPER_
 
 #include <DriverExport.h>
-#include <dtPhysics/physicshelper.h>
+#include <dtPhysics/physicsactcomp.h>
 //#include <NxAgeiaPhysicsHelper.h>
 //#include <NxAgeiaWorldComponent.h>
 #include <SimCore/PhysicsTypes.h>
@@ -35,13 +35,13 @@
 namespace DriverDemo
 {
    //#define NUM_BRAKE_LEVELS_FOR_TABLE 10
-   class DRIVER_DEMO_EXPORT HoverVehiclePhysicsHelper : public dtPhysics::PhysicsHelper
+   class DRIVER_DEMO_EXPORT HoverVehiclePhysicsActComp : public dtPhysics::PhysicsActComp
    {
       public:
-         HoverVehiclePhysicsHelper(dtGame::GameActorProxy &proxy);
+         HoverVehiclePhysicsActComp(dtGame::GameActorProxy &proxy);
 
       protected:
-         virtual ~HoverVehiclePhysicsHelper();
+         virtual ~HoverVehiclePhysicsActComp();
 
       private:
 
@@ -85,7 +85,7 @@ namespace DriverDemo
 
          //////////////////////////////////////////////////////////////////
          // Build the property list for the actor
-         virtual void BuildPropertyMap(std::vector<dtCore::RefPtr<dtDAL::ActorProperty> >& toFillIn);
+         virtual void BuildPropertyMap();
 
          float GetVehicleMaxForwardMPH() {return mVehicleMaxForwardMPH;}
          void SetVehicleMaxForwardMPH(float value) {mVehicleMaxForwardMPH = value;}

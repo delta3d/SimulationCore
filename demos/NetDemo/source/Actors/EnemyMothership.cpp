@@ -32,7 +32,7 @@
 #include <SimCore/CollisionGroupEnum.h>
 #include <SimCore/Messages.h>
 #include <SimCore/MessageType.h>
-#include <dtPhysics/physicshelper.h>
+#include <dtPhysics/physicsactcomp.h>
 #include <dtPhysics/physicsobject.h>
 #include <dtPhysics/bodywrapper.h>
 #include <dtPhysics/palphysicsworld.h>
@@ -126,7 +126,7 @@ namespace NetDemo
          mAIHelper->Init(NULL);
 
          //this will allow the AI to actually move us
-         mAIHelper->GetPhysicsModel()->SetPhysicsHelper(GetPhysicsHelper());
+         mAIHelper->GetPhysicsModel()->SetPhysicsActComp(GetPhysicsActComp());
 
          //we set our transform for the first time so the AI knows what it is
          //the other enemy helpers get created with an enemy description actor
@@ -212,11 +212,11 @@ namespace NetDemo
       // take the position and throw away the rotation.
 
       // This is ONLY called if we are LOCAL (we put the check here just in case... )
-      if (!IsRemote() && GetPhysicsHelper() != NULL)
+      if (!IsRemote() && GetPhysicsActComp() != NULL)
       {
          // The base behavior is that we want to pull the translation and rotation off the object
          // in our physics scene and apply it to our 3D object in the visual scene.
-         dtPhysics::PhysicsObject* physicsObject = GetPhysicsHelper()->GetMainPhysicsObject();
+         dtPhysics::PhysicsObject* physicsObject = GetPhysicsActComp()->GetMainPhysicsObject();
 
          //TODO: Ask if the object is activated.  If not, the transform should not be pushed.
          if (!GetPushTransformToPhysics())

@@ -741,7 +741,7 @@ namespace NetDemo
          }
 
 
-         dtUtil::ConfigProperties& configParams = GetGameManager()->GetConfiguration();
+         //dtUtil::ConfigProperties& configParams = GetGameManager()->GetConfiguration();
          //const std::string role = configParams.GetConfigPropertyValue("dtNetGM.Role", "server");
          //const std::string gameName = configParams.GetConfigPropertyValue("dtNetGM.GameName", "NetDemo");
          const std::string hostIP(mInputServerIP->getText().c_str());

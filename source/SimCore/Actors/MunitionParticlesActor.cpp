@@ -89,10 +89,10 @@ namespace SimCore
          {
             dtPhysics::PhysicsObject* physObject = reinterpret_cast<dtPhysics::PhysicsObject*>(hit.m_pBody->GetUserData());
 
-            dtPhysics::PhysicsHelper* physicsHelper = NULL;
+            dtPhysics::PhysicsActComp* physicsHelper = NULL;
             if (physObject != NULL)
             {
-               physicsHelper = dynamic_cast<dtPhysics::PhysicsHelper*>(physObject->GetUserData());
+               physicsHelper = dynamic_cast<dtPhysics::PhysicsActComp*>(physObject->GetUserData());
             }
 
             dtCore::DeltaDrawable* hitTarget = NULL;
@@ -179,23 +179,19 @@ namespace SimCore
       , mCurrentTracerRoundNumber(0)
       , mFrequencyOfTracers(10)
       {
-#ifndef AGEIA_PHYSICS
-         mPhysicsHelper->SetDefaultCollisionGroup(SimCore::CollisionGroup::GROUP_BULLET);
-#endif
       }
 
       ////////////////////////////////////////////////////////////////////
       MunitionParticlesActor::~MunitionParticlesActor()
       {
-         ResetParticleSystem();
       }
 
       ////////////////////////////////////////////////////////////////////
-      void MunitionParticlesActor::TickLocal(const dtGame::Message &tickMessage)
+      void MunitionParticlesActor::OnTickLocal(const dtGame::TickMessage& tickMessage)
       {
-         float ElapsedTime = (float)static_cast<const dtGame::TickMessage&>(tickMessage).GetDeltaSimTime();
+         float ElapsedTime = tickMessage.GetDeltaSimTime();
 
-         std::list<dtCore::RefPtr<PhysicsParticle> >::iterator iter = mOurParticleList.begin();
+         ParticleList::iterator iter = mOurParticleList.begin();
          for (;iter!= mOurParticleList.end();)
          {
             MunitionsPhysicsParticle* munitionsParticle = dynamic_cast<MunitionsPhysicsParticle*>((*iter).get());
@@ -208,7 +204,7 @@ namespace SimCore
             if ((*iter)->ShouldBeRemoved())
             {
                RemoveParticle(*(*iter));
-               std::list<dtCore::RefPtr<PhysicsParticle> >::iterator toDelete = iter;
+               ParticleList::iterator toDelete = iter;
                ++iter;
                mOurParticleList.erase(toDelete);
                continue;
@@ -221,73 +217,6 @@ namespace SimCore
             ResolveISectorCollision(*munitionsParticle);
          }
       }
-
-   #ifdef AGEIA_PHYSICS
-      ////////////////////////////////////////////////////////////////////
-      bool MunitionParticlesActor::ResolveISectorCollision(MunitionsPhysicsParticle& particleToCheck)
-      {
-         dtPhysics::PhysicsObject* physicsObject = particleToCheck.GetPhysicsObject();
-         if(physicsObject != NULL && mWeapon.valid())
-         {
-            osg::Vec3 lastposition = particleToCheck.GetLastPosition();
-
-            osg::Vec3 currentPosition = osg::Vec3( physicsObject->getGlobalPosition()[0],
-                     physicsObject->getGlobalPosition()[1],
-                     physicsObject->getGlobalPosition()[2]);
-
-            if(currentPosition != lastposition)
-            {
-
-               NxRay ourRay;
-               ourRay.orig = NxVec3(lastposition[0],lastposition[1],lastposition[2]);
-               ourRay.dir = NxVec3(currentPosition[0] - lastposition[0], currentPosition[1] - lastposition[1],currentPosition[2] - lastposition[2]);
-               float rayLength = ourRay.dir.normalize();
-               NxRaycastHit   mOurHit;
-
-               // Drop a ray through the world to see what we hit. Make sure we don't hit ourselves.  And,
-               // Make sure we DO hit the terrain appropriately.
-               MunitionRaycastReport myReport(mWeapon.valid() ? mWeapon->GetOwner() : NULL);
-
-               // CR: Create the bit mask once rather than every time the method is called.
-               static const int GROUPS_FLAGS =
-                  (1 << GROUP_TERRAIN)
-                  | (1 << GROUP_WATER)
-                  | (1 << GROUP_VEHICLE_WATER)
-                  | (1 << GROUP_HUMAN_LOCAL)
-                  | (1 << GROUP_HUMAN_REMOTE);
-               NxU32 numHits = physicsObject->getScene().raycastAllShapes(
-                        ourRay, myReport, NX_ALL_SHAPES, GROUPS_FLAGS );
-               if(numHits > 0 && myReport.mGotAHit)
-               {
-                  if (myReport.mClosestHit.distance <= rayLength)
-                  {
-                     particleToCheck.FlagToDelete();
-                     dtAgeiaPhysX::ContactReport report;
-                     report.nxVec3crContactNormal = myReport.mClosestHit.worldNormal;
-                     NxVec3 contactPoint(myReport.mClosestHit.worldImpact);
-                     report.lsContactPoints.push_back(contactPoint);
-
-                     if(myReport.mClosestHitsHelper != NULL)
-                        mWeapon->ReceiveContactReport( report, &myReport.mClosestHitsHelper->GetPhysicsGameActorProxy());
-                     else
-                        mWeapon->ReceiveContactReport( report, NULL);
-                     return true;
-                  }
-               }
-            }
-
-            particleToCheck.SetLastPosition( osg::Vec3(  physicsObject->getGlobalPosition()[0],
-                     physicsObject->getGlobalPosition()[1],
-                     physicsObject->getGlobalPosition()[2])) ;
-         }
-         return false;
-      }
-
-      ////////////////////////////////////////////////////////////////////
-      void MunitionParticlesActor::AgeiaRaycastReport(const NxRaycastHit& hit, const dtPhysics::PhysicsObject& ourSelf, const dtPhysics::PhysicsObject& whatWeHit)
-      {
-      }
-   #else
       ////////////////////////////////////////////////////////////////////
       bool MunitionParticlesActor::ResolveISectorCollision(MunitionsPhysicsParticle& particleToCheck)
       {
@@ -334,7 +263,7 @@ namespace SimCore
 
                   if (report.mClosestHitsObject != NULL && report.mClosestHitsObject->GetUserData() != NULL)
                   {
-                     mWeapon->ReceiveContactReport(contactReport, dynamic_cast<dtPhysics::PhysicsHelper*>(report.mClosestHitsObject->GetUserData())->GetGameActorProxy());
+                     mWeapon->ReceiveContactReport(contactReport, dynamic_cast<dtPhysics::PhysicsActComp*>(report.mClosestHitsObject->GetUserData())->GetGameActorProxy());
                   }
                   else
                   {
@@ -353,8 +282,6 @@ namespace SimCore
          return false;
       }
 
-   #endif
-
       ////////////////////////////////////////////////////////////////////
       void MunitionParticlesActor::Fire()
       {
@@ -364,6 +291,11 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////
       void MunitionParticlesActor::AddParticle()
       {
+         if (!GetGameActorProxy().IsInGM())
+         {
+            LOG_ERROR("Firing when the actor is being deleted.");
+         }
+
          bool isTracer = GetSystemToUseTracers() && mCurrentTracerRoundNumber >= mFrequencyOfTracers;
 
          //we obtain the rendering support component so that the particle effect can add a dynamic light effect
@@ -408,7 +340,7 @@ namespace SimCore
          SimCore::CollisionGroupType collisionGroupToSendIn = 0;
          if (!mSelfInteracting)
          {
-            collisionGroupToSendIn = mPhysicsHelper->GetDefaultCollisionGroup();
+            collisionGroupToSendIn = mPhysicsActComp->GetDefaultCollisionGroup();
          }
 
          particle->mObj = new dtCore::Transformable(id.ToString().c_str());
@@ -469,9 +401,9 @@ namespace SimCore
          dtCore::RefPtr<dtPhysics::PhysicsObject> newObject = new dtPhysics::PhysicsObject(id.ToString());
          newObject->SetCollisionGroup(collisionGroupToSendIn);
          newObject->SetMechanicsType(dtPhysics::MechanicsType::DYNAMIC);
-         newObject->SetMass(mPhysicsHelper->GetMass());
-         newObject->SetPrimitiveType(mPhysicsHelper->GetDefaultPrimitiveType());
-         newObject->SetExtents(mPhysicsHelper->GetDimensions());
+         newObject->SetMass(mPhysicsActComp->GetMass());
+         newObject->SetPrimitiveType(mPhysicsActComp->GetDefaultPrimitiveType());
+         newObject->SetExtents(mPhysicsActComp->GetDimensions());
          newObject->SetTransform(xform);
          newObject->SetNotifyCollisions(true);
          newObject->CreateFromProperties(particle->mObj->GetOSGNode());
@@ -510,8 +442,9 @@ namespace SimCore
 
          AddChild(particle->mObj.get());
          //GetGameActorProxy().GetGameManager()->GetScene().AddDrawable(particle->mObj.get());
+         mPhysicsActComp->AddPhysicsObject(*newActor);
 
-         //newActor->userData = mPhysicsHelper.get();
+         //newActor->userData = mPhysicsActComp.get();
          particle->SetPhysicsObject(newActor);
 
          ++mAmountOfParticlesThatHaveSpawnedTotal;
@@ -595,6 +528,23 @@ namespace SimCore
 
       ////////////////////////////////////////////////////////////////////
       MunitionParticlesActorProxy::~MunitionParticlesActorProxy(){}
+
+      ////////////////////////////////////////////////////////////////////
+      void MunitionParticlesActorProxy::BuildActorComponents()
+      {
+         dtGame::GameActor* owner = NULL;
+         GetActor(owner);
+
+         BaseClass::BuildActorComponents();
+
+         dtPhysics::PhysicsActComp* physAC = NULL;
+         owner->GetComponent(physAC);
+         if (physAC != NULL)
+         {
+            physAC->SetDefaultCollisionGroup(SimCore::CollisionGroup::GROUP_BULLET);
+         }
+      }
+
       ////////////////////////////////////////////////////////////////////
       void MunitionParticlesActorProxy::CreateActor()
       {
