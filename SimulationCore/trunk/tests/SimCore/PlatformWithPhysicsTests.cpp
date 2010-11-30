@@ -52,7 +52,7 @@
 
 #ifndef AGEIA_PHYSICS
 #include <dtPhysics/physicscomponent.h>
-#include <dtPhysics/physicshelper.h>
+#include <dtPhysics/physicsactcomp.h>
 #include <dtPhysics/physicsobject.h>
 #include <dtPhysics/bodywrapper.h>
 #endif
@@ -130,8 +130,8 @@ namespace SimCore
 
             void TestPhysicsDefaults()
             {
-               CPPUNIT_ASSERT(mPlatformWithPhysics->GetPhysicsHelper() != NULL);
-               dtPhysics::PhysicsObject* po = mPlatformWithPhysics->GetPhysicsHelper()->GetMainPhysicsObject();
+               CPPUNIT_ASSERT(mPlatformWithPhysics->GetPhysicsActComp() != NULL);
+               dtPhysics::PhysicsObject* po = mPlatformWithPhysics->GetPhysicsActComp()->GetMainPhysicsObject();
                CPPUNIT_ASSERT_EQUAL(dtPhysics::MechanicsType::DYNAMIC, po->GetMechanicsType());
                CPPUNIT_ASSERT_EQUAL(dtPhysics::PrimitiveType::CONVEX_HULL, po->GetPrimitiveType());
                CPPUNIT_ASSERT_EQUAL(dtPhysics::CollisionGroup(SimCore::CollisionGroup::GROUP_VEHICLE_GROUND), po->GetCollisionGroup());
@@ -145,8 +145,8 @@ namespace SimCore
             void TestInit()
             {
 #ifndef AGEIA_PHYSICS
-               CPPUNIT_ASSERT(mPlatformWithPhysics->GetPhysicsHelper() != NULL);
-               dtPhysics::PhysicsObject* po = mPlatformWithPhysics->GetPhysicsHelper()->GetMainPhysicsObject();
+               CPPUNIT_ASSERT(mPlatformWithPhysics->GetPhysicsActComp() != NULL);
+               dtPhysics::PhysicsObject* po = mPlatformWithPhysics->GetPhysicsActComp()->GetMainPhysicsObject();
                CPPUNIT_ASSERT(po->GetBodyWrapper() == NULL);
                mGM->AddActor(*mPlatformWithPhysicsActorProxy, false, false);
 

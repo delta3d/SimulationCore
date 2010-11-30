@@ -33,7 +33,7 @@
 #ifdef AGEIA_PHYSICS
 #include <NxAgeiaPhysicsHelper.h>
 #else
-#include <dtPhysics/physicshelper.h>
+#include <dtPhysics/physicsactcomp.h>
 #include <dtPhysics/collisioncontact.h>
 #endif
 

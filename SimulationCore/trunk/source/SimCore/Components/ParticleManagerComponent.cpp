@@ -368,7 +368,8 @@ namespace SimCore
                std::vector<dtDAL::ActorProxy*>::iterator toFillInIter = toFill.begin();
                for (; toFillInIter != toFill.end(); ++toFillInIter)
                {
-                   PhysicsParticleSystemActor* currentParticleSystem = static_cast<PhysicsParticleSystemActor*>((*toFillInIter)->GetActor());
+                   SimCore::Actors::PhysicsParticleSystemActor* currentParticleSystem = NULL;
+                   (*toFillInIter)->GetActor(currentParticleSystem);
                    currentParticleSystem->SetOverTimeForceVecMin(mWind);
                    currentParticleSystem->SetOverTimeForceVecMax(mWind);
                }

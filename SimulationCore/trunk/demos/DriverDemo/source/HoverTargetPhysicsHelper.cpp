@@ -20,7 +20,7 @@
 #include <SimCore/PhysicsTypes.h>
 #include <dtPhysics/primitivetype.h>
 #include <dtPhysics/palphysicsworld.h>
-#include <dtPhysics/physicshelper.h>
+#include <dtPhysics/physicsactcomp.h>
 #include <dtPhysics/physicsobject.h>
 #include <dtPhysics/bodywrapper.h>
 #include <dtPhysics/palphysicsworld.h>
@@ -30,8 +30,8 @@ namespace DriverDemo
 {
 
    ////////////////////////////////////////////////////////////////////////////////////
-   HoverTargetPhysicsHelper::HoverTargetPhysicsHelper(dtGame::GameActorProxy& proxy)
-   : dtPhysics::PhysicsHelper(proxy)
+   HoverTargetPhysicsActComp::HoverTargetPhysicsActComp(dtGame::GameActorProxy& proxy)
+   : dtPhysics::PhysicsActComp(proxy)
    , mGroundClearance(4.0)
    {
       // non properties
@@ -44,7 +44,7 @@ namespace DriverDemo
    }
 
    ////////////////////////////////////////////////////////////////////////////////////
-   HoverTargetPhysicsHelper::~HoverTargetPhysicsHelper(){}
+   HoverTargetPhysicsActComp::~HoverTargetPhysicsActComp(){}
 
    //////////////////////////////////////////////////////////////////////////////////////
    //                                  Vehicle Meths                                   //
@@ -56,7 +56,7 @@ namespace DriverDemo
 //   static float testQuicknessAdjustment = 2.8f; // 1.0 gives you a sluggish feel
 
    ////////////////////////////////////////////////////////////////////////////////
-   void HoverTargetPhysicsHelper::ApplyTargetHoverForces(float deltaTime, osg::Vec3 &goalLocation)
+   void HoverTargetPhysicsActComp::ApplyTargetHoverForces(float deltaTime, osg::Vec3 &goalLocation)
    {
       dtPhysics::PhysicsObject* physicsObject = GetMainPhysicsObject();  // Tick Local protects us from NULL.
       deltaTime = (deltaTime > 0.2) ? 0.2 : deltaTime;  // cap at 0.2 second to avoid rare 'freak' outs.
@@ -106,14 +106,14 @@ namespace DriverDemo
    }
 
    ////////////////////////////////////////////////////////////////////////////////
-   void HoverTargetPhysicsHelper::ApplyForceFromLastFrame(float deltaTime)
+   void HoverTargetPhysicsActComp::ApplyForceFromLastFrame(float deltaTime)
    {
       dtPhysics::PhysicsObject* physicsObject = GetMainPhysicsObject();  // Tick Local protects us from NULL.
       physicsObject->ApplyImpulse(mTotalForceAppliedLastTime);
    }
 
    ////////////////////////////////////////////////////////////////////////////////
-   float HoverTargetPhysicsHelper::ComputeEstimatedForceCorrection(const osg::Vec3& location,
+   float HoverTargetPhysicsActComp::ComputeEstimatedForceCorrection(const osg::Vec3& location,
       const osg::Vec3&  direction, float& distanceToHit)
    {
       static const int GROUPS_FLAGS = (1 << SimCore::CollisionGroup::GROUP_TERRAIN);
@@ -155,7 +155,7 @@ namespace DriverDemo
    //////////////////////////////////////////////////////////////////////////////////////
 
    ////////////////////////////////////////////////////////////////////////////////////
-   bool HoverTargetPhysicsHelper::CreateTarget(const dtCore::Transform& transformForRot,
+   bool HoverTargetPhysicsActComp::CreateTarget(const dtCore::Transform& transformForRot,
       osg::Node* bodyNode)
    {
       dtPhysics::PhysicsObject *physObj = GetMainPhysicsObject();
@@ -171,7 +171,7 @@ namespace DriverDemo
       //}
       // REMOTE- Configure Physics
       //else // -- Flags set in the base class.
-      //GetPhysicsHelper()->SetAgeiaFlags(dtAgeiaPhysX::AGEIA_FLAGS_PRE_UPDATE | dtAgeiaPhysX::AGEIA_FLAGS_POST_UPDATE);
+      //GetPhysicsActComp()->SetAgeiaFlags(dtAgeiaPhysX::AGEIA_FLAGS_PRE_UPDATE | dtAgeiaPhysX::AGEIA_FLAGS_POST_UPDATE);
 
       return true;
    }
@@ -181,21 +181,20 @@ namespace DriverDemo
    //////////////////////////////////////////////////////////////////////////////////////
 
    ////////////////////////////////////////////////////////////////////////////////////
-   void HoverTargetPhysicsHelper::BuildPropertyMap(std::vector<dtCore::RefPtr<dtDAL::ActorProperty> >& toFillIn)
+   void HoverTargetPhysicsActComp::BuildPropertyMap()
    {
-      dtPhysics::PhysicsHelper::BuildPropertyMap(toFillIn);
-
+      BaseClass::BuildPropertyMap();
       const std::string GROUP = "Vehicle Property Values";
 
-      toFillIn.push_back(new dtDAL::FloatActorProperty("Ground Clearance", "Ground Clearance",
-               dtDAL::FloatActorProperty::SetFuncType(this, &HoverTargetPhysicsHelper::SetGroundClearance),
-               dtDAL::FloatActorProperty::GetFuncType(this, &HoverTargetPhysicsHelper::GetGroundClearance),
+      AddProperty(new dtDAL::FloatActorProperty("Ground Clearance", "Ground Clearance",
+               dtDAL::FloatActorProperty::SetFuncType(this, &HoverTargetPhysicsActComp::SetGroundClearance),
+               dtDAL::FloatActorProperty::GetFuncType(this, &HoverTargetPhysicsActComp::GetGroundClearance),
          "The height we should try to leave beneath our vehicle (cause we hover...).", GROUP));
 
    }
 
    ////////////////////////////////////////////////////////////////////////////////////
-   float HoverTargetPhysicsHelper::GetSphereRadius()
+   float HoverTargetPhysicsActComp::GetSphereRadius()
    {
       dtPhysics::PhysicsObject* physicsObject = GetMainPhysicsObject();
       if (physicsObject != NULL)
@@ -209,13 +208,13 @@ namespace DriverDemo
    }
 
    ////////////////////////////////////////////////////////////////////////////////////
-   float HoverTargetPhysicsHelper::GetGroundClearance() const
+   float HoverTargetPhysicsActComp::GetGroundClearance() const
    {
       return mGroundClearance;
    }
 
    ////////////////////////////////////////////////////////////////////////////////////
-   void HoverTargetPhysicsHelper::SetGroundClearance(float value)
+   void HoverTargetPhysicsActComp::SetGroundClearance(float value)
    {
       mGroundClearance = value;
    }

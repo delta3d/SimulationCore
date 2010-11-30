@@ -37,7 +37,7 @@
 #include <SimCore/Actors/WeaponActor.h>
 #include <SimCore/CollisionGroupEnum.h>
 
-#include <dtPhysics/physicshelper.h>
+#include <dtPhysics/physicsactcomp.h>
 #include <dtPhysics/physicsobject.h>
 #include <dtPhysics/bodywrapper.h>
 #include <dtPhysics/palphysicsworld.h>
@@ -91,7 +91,7 @@ namespace NetDemo
          //mAIHelper->Init();
 
          //this will allow the AI to actually move us
-         mAIHelper->GetPhysicsModel()->SetPhysicsHelper(GetPhysicsHelper());
+         mAIHelper->GetPhysicsModel()->SetPhysicsActComp(GetPhysicsActComp());
          
          //redirecting the find target function
          dtAI::NPCState* state = mAIHelper->GetStateMachine().GetState(&AIStateType::AI_STATE_FIND_TARGET);
@@ -219,11 +219,11 @@ namespace NetDemo
       // take the position and throw away the rotation.
 
       // This is ONLY called if we are LOCAL (we put the check here just in case... )
-      if (!IsRemote() && GetPhysicsHelper() != NULL)
+      if (!IsRemote() && GetPhysicsActComp() != NULL)
       {
          // The base behavior is that we want to pull the translation and rotation off the object
          // in our physics scene and apply it to our 3D object in the visual scene.
-         dtPhysics::PhysicsObject* physicsObject = GetPhysicsHelper()->GetMainPhysicsObject();
+         dtPhysics::PhysicsObject* physicsObject = GetPhysicsActComp()->GetMainPhysicsObject();
 
          //TODO: Ask if the object is activated.  If not, the transform should not be pushed.
          if (!GetPushTransformToPhysics())
@@ -284,12 +284,14 @@ namespace NetDemo
                   fireball->SetMaxTime(2.5f);
                   fireball->SetPosition(pos + (dir * 10.5f));
 
-                  if(GetPhysicsHelper() != NULL && GetPhysicsHelper()->GetMainPhysicsObject() != NULL)
+                  dtPhysics::PhysicsActComp* physAC = NULL;
+                  GetComponent(physAC);
+                  if (physAC != NULL && physAC->GetMainPhysicsObject() != NULL)
                   {
-                     fireball->AddForce(GetPhysicsHelper()->GetMainPhysicsObject()->GetLinearVelocity());
+                     fireball->AddForce(physAC->GetMainPhysicsObject()->GetLinearVelocity());
                   }
 
-                  if(mTarget.valid())
+                  if (mTarget.valid())
                   {
                      fireball->SetTarget(*mTarget);
                   }
@@ -374,17 +376,5 @@ namespace NetDemo
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
-   void EnemyHelixActorProxy::OnEnteredWorld()
-   {
-      BaseClass::OnEnteredWorld();
-   }
 
-   ///////////////////////////////////////////////////////////////////////////////////
-   void EnemyHelixActorProxy::OnRemovedFromWorld()
-   {
-      BaseClass::OnRemovedFromWorld();
-
-      EnemyHelixActor& actor = static_cast<EnemyHelixActor&>(GetGameActor());      
-      actor.OnRemovedFromWorld();
-   }
 } // namespace

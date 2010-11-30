@@ -233,6 +233,20 @@ namespace SimCore
             dtDAL::MakeFunctor(*actor, &Platform::TickTimerMessage)));
       }
 
+      /////////////////////////////////////////////////////////////////////////////
+      void PlatformActorProxy::BuildActorComponents()
+      {
+         dtGame::GameActor* owner = NULL;
+         GetActor(owner);
+
+         BaseClass::BuildActorComponents();
+
+         // Setup the body paint component.
+         owner->AddComponent(*new SimCore::ActComps::CamoPaintStateActComp);
+
+         owner->AddComponent(*new SimCore::ActComps::WeaponSwapActComp());
+      }
+
       ////////////////////////////////////////////////////////////////////////////////////
       void PlatformActorProxy::CreateActor()
       {
@@ -819,6 +833,22 @@ namespace SimCore
       {
          BaseClass::OnEnteredWorld();
 
+         dtCore::RefPtr<SimCore::ActComps::CamoPaintStateActComp> camoPaintComp;
+         GetComponent(camoPaintComp);
+
+         if (camoPaintComp.valid() && camoPaintComp->GetParentNode() == NULL)
+         {
+            camoPaintComp->SetParentNode(&GetScaleMatrixTransform());
+            camoPaintComp->SetHiderNode(mSwitchNode.get());
+         }
+
+         dtCore::RefPtr<SimCore::ActComps::WeaponSwapActComp> weaponSwapper;
+         GetComponent(weaponSwapper);
+         if (weaponSwapper.valid())
+         {
+            weaponSwapper->SetNodeCollector(GetNodeCollector());
+         }
+
          GetGameActorProxy().RegisterForMessagesAboutSelf(dtGame::MessageType::INFO_TIMER_ELAPSED, "TimeElapsedForSoundIdle");
 
          if (IsRemote())
@@ -1044,26 +1074,6 @@ namespace SimCore
          const BasicVisibilityOptions& basicOptions = options.GetBasicOptions();
          bool baseVal = BaseClass::ShouldBeVisible(options);
          return baseVal && basicOptions.mPlatforms;
-      }
-
-      /////////////////////////////////////////////////////////////////////////////
-      void Platform::BuildActorComponents()
-      {
-         BaseClass::BuildActorComponents();
-
-         // Setup the body paint component.
-         dtCore::RefPtr<SimCore::ActComps::CamoPaintStateActComp> camoPaintComp
-            = new SimCore::ActComps::CamoPaintStateActComp;
-         AddComponent(*camoPaintComp);
-
-         camoPaintComp->SetParentNode(&GetScaleMatrixTransform());
-         camoPaintComp->SetHiderNode(mSwitchNode.get());
-
-
-         dtCore::RefPtr<SimCore::ActComps::WeaponSwapActComp> weaponSwapper = new SimCore::ActComps::WeaponSwapActComp();
-         weaponSwapper->SetNodeCollector(GetNodeCollector());
-
-         AddComponent(*weaponSwapper);
       }
 
    }

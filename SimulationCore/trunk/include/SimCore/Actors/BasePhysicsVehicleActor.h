@@ -29,7 +29,7 @@
 #include <SimCore/Actors/Platform.h>
 #include <SimCore/Actors/VehicleInterface.h>
 #include <SimCore/PhysicsTypes.h>
-#include <dtPhysics/physicshelper.h>
+#include <dtPhysics/physicsactcomp.h>
 
 namespace dtAudio
 {
@@ -43,18 +43,18 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////
       /* This class provides the basic physics behavior for vehicles. It makes some assumptions
        * about the types of things a vehicle would need, but also allows you to override just about
-       * everything. This class can be used to wildy divergent vehicles (from a formal 4 wheel
+       * everything. This class can be used to build wildy divergent vehicles (from a formal 4 wheel
        * jeep to a hover craft to a 2 wheel bicycle).
        * This class is abstract. Makes no sense to have a base instantiation...
        */
       class SIMCORE_EXPORT BasePhysicsVehicleActor : public Platform,
-                                                       public VehicleInterface
+                                                     public VehicleInterface
       {
          public:
             typedef Platform BaseClass;
 
             /// Constructor
-            BasePhysicsVehicleActor (PlatformActorProxy &proxy);
+            BasePhysicsVehicleActor (PlatformActorProxy& proxy);
 
          protected:
             /// Destructor
@@ -75,11 +75,6 @@ namespace SimCore
             * @param tickMessage A message containing tick related information.
             */
             virtual void OnTickRemote(const dtGame::TickMessage& tickMessage);
-
-            /** 
-             * Override from base class - sets default DR Algorithm to Velocity Only
-             */
-            void BuildActorComponents();
 
             /**
              * Called when the actor has been added to the game manager.
@@ -115,8 +110,7 @@ namespace SimCore
             /// Turns it up and moves up
             virtual void RepositionVehicle(float deltaTime);
 
-            void SetPhysicsHelper(dtPhysics::PhysicsHelper* newHelper);
-            dtPhysics::PhysicsHelper* GetPhysicsHelper() const;
+            dtPhysics::PhysicsActComp* GetPhysicsActComp() const;
 
             void SetHasDriver(bool hasDriver);
             bool GetHasDriver() const;
@@ -174,8 +168,6 @@ namespace SimCore
          // Private vars
          private:
 
-            dtCore::RefPtr<dtPhysics::PhysicsHelper> mPhysicsHelper;
-
 
             ///////////////////////////////////////////////////
             // properties
@@ -206,10 +198,18 @@ namespace SimCore
       class SIMCORE_EXPORT BasePhysicsVehicleActorProxy : public PlatformActorProxy
       {
          public:
+            typedef PlatformActorProxy BaseClass;
+
             BasePhysicsVehicleActorProxy();
             virtual void BuildPropertyMap();
 
             virtual dtCore::RefPtr<dtDAL::ActorProperty> GetDeprecatedProperty(const std::string& name);
+
+            /**
+             * Override from base class - sets default DR Algorithm to Velocity Only
+             * and creates default physics actor component.
+             */
+            virtual void BuildActorComponents();
 
          protected:
             virtual ~BasePhysicsVehicleActorProxy();

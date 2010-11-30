@@ -57,8 +57,6 @@ namespace SimCore
 
          // INHERITED PUBLIC
          public:
-            /// Override this to add your own components or to init values on the ones that are already added.
-            virtual void BuildActorComponents();
 
             // Called when the actor has been added to the game manager.
             // You can respond to OnEnteredWorld on either the proxy or actor or both.
@@ -71,7 +69,7 @@ namespace SimCore
             /// Reset to starting position In additional to base behavior, it turns off sounds.
             virtual void ResetVehicle();
 
-            SimCore::FourWheelVehiclePhysicsHelper* GetFourWheelPhysicsHelper() const;
+            SimCore::FourWheelVehiclePhysicsActComp* GetFourWheelPhysicsActComp() const;
 
             /// The number of updates to go from straight to full turn angle
             DT_DECLARE_ACCESSOR(int, NumUpdatesUntilFullSteeringAngle);
@@ -145,6 +143,7 @@ namespace SimCore
          public:
             FourWheelVehicleActorProxy();
             virtual void BuildPropertyMap();
+            virtual void BuildActorComponents();
 
          protected:
             virtual ~FourWheelVehicleActorProxy();

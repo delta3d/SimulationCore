@@ -58,8 +58,6 @@ namespace DriverDemo
 
       // INHERITED PUBLIC
       public:
-         /// Override this to add your own components or to init values on the ones that are already added.
-         virtual void BuildActorComponents();
 
          // Called when the actor has been added to the game manager.
          // You can respond to OnEnteredWorld on either the proxy or actor or both.
@@ -82,8 +80,8 @@ namespace DriverDemo
          float ComputeEstimatedForceCorrection(const osg::Vec3 &location,
             const osg::Vec3 &direction, float &distanceToHit);
 
-         HoverTargetPhysicsHelper* GetTargetPhysicsHelper() {
-            return static_cast<HoverTargetPhysicsHelper*> (GetPhysicsHelper());
+         HoverTargetPhysicsActComp* GetTargetPhysicsActComp() {
+            return static_cast<HoverTargetPhysicsActComp*> (GetPhysicsActComp());
          }
 
          virtual void DoExplosion();
@@ -136,6 +134,8 @@ namespace DriverDemo
       public:
          HoverExplodingTargetActorProxy();
          virtual void BuildPropertyMap();
+         /// Override this to add your own components or to init values on the ones that are already added.
+         virtual void BuildActorComponents();
 
       protected:
          virtual ~HoverExplodingTargetActorProxy();

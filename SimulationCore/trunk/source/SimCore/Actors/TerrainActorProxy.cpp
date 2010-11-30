@@ -124,6 +124,28 @@ namespace SimCore
          return mBillBoardIcon.get();
       }
 
+      ///////////////////////////////////////////////////////////////////
+      void TerrainActorProxy::BuildActorComponents()
+      {
+         dtGame::GameActor* owner = NULL;
+         GetActor(owner);
+
+         BaseClass::BuildActorComponents();
+
+         dtCore::RefPtr<dtPhysics::PhysicsActComp> physAC = new dtPhysics::PhysicsActComp(*this);
+
+         owner->AddComponent(*physAC);
+
+         // Adding this physics object AFTER the build actor components because we don't want the properties to be
+         // accessible.
+         // Add our initial body.
+         dtPhysics::PhysicsObject* pobj = new dtPhysics::PhysicsObject("Terrain");
+         pobj->SetPrimitiveType(dtPhysics::PrimitiveType::TERRAIN_MESH);
+         pobj->SetMechanicsType(dtPhysics::MechanicsType::STATIC);
+         pobj->SetCollisionGroup(SimCore::CollisionGroup::GROUP_TERRAIN);
+         physAC->AddPhysicsObject(*pobj);
+      }
+
       ///////////////////////////////////////////////////////////////
       void TerrainActor::RemovedFromScene(dtCore::Scene* scene)
       {
@@ -134,24 +156,10 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////
       TerrainActor::TerrainActor(dtGame::GameActorProxy& proxy)
       : IGActor(proxy)
-#ifdef AGEIA_PHYSICS
-      , mHelper(new dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper(proxy))
-#else
-      , mHelper(new dtPhysics::PhysicsHelper(proxy))
-#endif
       , mTerrainPhysicsMode(&SimCore::TerrainPhysicsMode::DEFERRED)
       , mNeedToLoad(false)
       , mLoadTerrainMeshWithCaching(false)
       {
-#ifdef AGEIA_PHYSICS
-         mHelper->SetBaseInterfaceClass(this);
-#else
-         dtPhysics::PhysicsObject* pobj = new dtPhysics::PhysicsObject("Terrain");
-         pobj->SetPrimitiveType(dtPhysics::PrimitiveType::TERRAIN_MESH);
-         pobj->SetMechanicsType(dtPhysics::MechanicsType::STATIC);
-         pobj->SetCollisionGroup(SimCore::CollisionGroup::GROUP_TERRAIN);
-         mHelper->AddPhysicsObject(*pobj);
-#endif
       }
 
       /////////////////////////////////////////////////////////////////////////////
@@ -163,6 +171,8 @@ namespace SimCore
       void TerrainActor::OnEnteredWorld()
       {
          dtGame::GameActor::OnEnteredWorld();
+
+         GetComponent(mHelper);
 
          if (mTerrainPhysicsMode == &SimCore::TerrainPhysicsMode::IMMEDIATE)
          {
@@ -179,25 +189,13 @@ namespace SimCore
                osg::Vec3 pos;
                xform.GetTranslation(pos);
 
-#ifdef AGEIA_PHYSICS
-               NxVec3 vec(pos.x(), pos.y(), pos.z());
-#else
                osg::Vec3 vec = pos;
-#endif
                mCollisionResourceString = dtUtil::FindFileInPathList( mCollisionResourceString.c_str() );
                if(!mCollisionResourceString.empty())
                {
 
-#ifdef AGEIA_PHYSICS
-                  mHelper->SetCollisionMeshFromFile(mCollisionResourceString, vec);
-
-                  mHelper->SetAgeiaUserData(mHelper.get());
-
-                  mHelper->SetAgeiaFlags(dtAgeiaPhysX::AGEIA_FLAGS_POST_UPDATE);
-#else  
                   LoadMeshFromFile(mCollisionResourceString, std::string());
 
-#endif
                   loadSuccess = true;
                }
 
@@ -211,11 +209,7 @@ namespace SimCore
                      if(dtUtil::FileUtils::GetInstance().DirExists(fullDirPath))
                      {
                         dtUtil::FileExtensionList extensionList;
-#ifdef AGEIA_PHYSICS
-                        extensionList.push_back(".physx");
-#else
                         extensionList.push_back(".dtphys");
-#endif
 
                         const dtUtil::DirectoryContents& filesInDir = dtUtil::FileUtils::GetInstance().DirGetFiles(fullDirPath, extensionList);
                         dtUtil::DirectoryContents::const_iterator iter = filesInDir.begin();
@@ -253,17 +247,10 @@ namespace SimCore
                }
                if(!loadSuccess && mTerrainNode.valid())
                {
-#ifdef AGEIA_PHYSICS               
-                  //if we didn't find a pre-baked static mesh but we did have a renderable terrain node
-                  //then just bake a static collision mesh with that and spit out a warning
-                  mHelper->SetCollisionStaticMesh(mTerrainNode.get(), vec);
-                  LOG_WARNING("No pre-baked collision mesh found, creating collision geometry from terrain mesh.");           
-#else                             
                   //if we didn't find a pre-baked static mesh but we did have a renderable terrain node
                   //then just bake a static collision mesh with that and spit out a warning
                   mHelper->GetMainPhysicsObject()->SetTransform(xform);
                   mHelper->GetMainPhysicsObject()->CreateFromProperties(mTerrainNode.get());
-#endif
                   loadSuccess = true;
                }
 
@@ -285,7 +272,6 @@ namespace SimCore
 
             //Set the helper name to match the actor name.
             mHelper->SetName(GetName());
-            comp->RegisterHelper(*mHelper);
          }
       }
 
@@ -342,17 +328,6 @@ namespace SimCore
          if(dtUtil::FileUtils::GetInstance().FileExists(fileToLoad))
          {
 
-#ifdef AGEIA_PHYSICS
-            NxVec3 vec(0, 0, 0);
-            mHelper->SetCollisionMeshFromFile(fileToLoad, vec,
-               dtAgeiaPhysX::NxAgeiaPhysicsHelper::DEFAULT_SCENE_NAME,
-               materialType);
-
-            mHelper->SetAgeiaUserData(mHelper.get(), materialType);
-
-            mHelper->SetAgeiaFlags(dtAgeiaPhysX::AGEIA_FLAGS_POST_UPDATE);
-
-#else
             std::string filename = dtUtil::FindFileInPathList(fileToLoad);
             if(!filename.empty())
             {
@@ -388,7 +363,6 @@ namespace SimCore
                   LOG_ERROR("Unable to load physics mesh file '" + fileToLoad + "'.");
                }
             }
-#endif
          }
          else
          {

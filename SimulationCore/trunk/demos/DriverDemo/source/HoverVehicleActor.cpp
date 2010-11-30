@@ -17,7 +17,7 @@
 //#ifdef AGEIA_PHYSICS
 #include <HoverVehicleActor.h>
 #include <HoverVehiclePhysicsHelper.h>
-#include <dtPhysics/physicshelper.h>
+#include <dtPhysics/physicsactcomp.h>
 #include <dtPhysics/physicsmaterials.h>
 //#include <NxAgeiaWorldComponent.h>
 //#include <NxAgeiaRaycastReport.h>
@@ -54,11 +54,6 @@ namespace DriverDemo
    , mVehicleIsTurret(true)
    {
 
-      // create my unique physics helper.  almost all of the physics is on the helper.
-      // The actor just manages properties and key presses mostly.
-      HoverVehiclePhysicsHelper *helper = new HoverVehiclePhysicsHelper(proxy);
-      SetPhysicsHelper(helper);
-
       SetEntityType("HoverVehicle"); // Used for HLA mapping mostly
       SetMunitionDamageTableName("VehicleDamageType"); // Used for Munitions Damage.
    }
@@ -66,25 +61,6 @@ namespace DriverDemo
    ///////////////////////////////////////////////////////////////////////////////////
    HoverVehicleActor::~HoverVehicleActor(void)
    {
-   }
-
-   ///////////////////////////////////////////////////////////////////////////////////
-   void HoverVehicleActor::BuildActorComponents()
-   {
-      BaseClass::BuildActorComponents();
-
-      SimCore::Actors::DRPublishingActComp* drPublishingActComp = GetDRPublishingActComp();
-      if (drPublishingActComp == NULL)
-      {
-         LOG_ERROR("CRITICAL ERROR - No DR Publishing Actor Component on the Hover Target.");
-         return;
-      }
-
-      drPublishingActComp->SetMaxUpdateSendRate(5.0f);
-      //drPublishingActComp->SetPublishLinearVelocity(true);
-      //drPublishingActComp->SetPublishAngularVelocity(false);
-      drPublishingActComp->SetMaxTranslationError(0.001f);
-      drPublishingActComp->SetMaxRotationError(0.5f);
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
@@ -98,9 +74,9 @@ namespace DriverDemo
       //std::cout << " --------- NODE PRINT OUT FOR HOVER VEHICLE --------- " << std::endl;
       //std::cout << nodes.c_str() << std::endl;
 
-      GetHoverPhysicsHelper()->CreateVehicle(ourTransform,
+      GetHoverPhysicsActComp()->CreateVehicle(ourTransform,
          GetNodeCollector()->GetDOFTransform("dof_chassis"));
-      //dtPhysics::PhysicsObject* physActor = GetPhysicsHelper()->GetMainPhysicsObject();
+      //dtPhysics::PhysicsObject* physActor = GetPhysicsActComp()->GetMainPhysicsObject();
 
       SimCore::Actors::BasePhysicsVehicleActor::OnEnteredWorld();
 
@@ -108,7 +84,7 @@ namespace DriverDemo
       /*
       if(IsRemote() && physActor != NULL)
       {
-         GetHoverPhysicsHelper()->SetAgeiaFlags(dtAgeiaPhysX::AGEIA_FLAGS_GET_COLLISION_REPORT |
+         GetHoverPhysicsActComp()->SetAgeiaFlags(dtAgeiaPhysX::AGEIA_FLAGS_GET_COLLISION_REPORT |
             dtAgeiaPhysX::AGEIA_FLAGS_POST_UPDATE | dtAgeiaPhysX::AGEIA_FLAGS_PRE_UPDATE);
          // THIS LINE MUST BE AFTER Super::OnEnteredWorld()! Undo the kinematic flag on remote entities. Lets us
          // apply velocities to remote hover vehicles so that they will impact us and make us bounce back
@@ -207,7 +183,7 @@ namespace DriverDemo
 
       }
 
-      GetHoverPhysicsHelper()->UpdateVehicle(deltaTime,
+      GetHoverPhysicsActComp()->UpdateVehicle(deltaTime,
          accelForward, accelReverse, accelLeft, accelRight);
 
       // Jump button
@@ -216,7 +192,7 @@ namespace DriverDemo
          mTimeTillJumpReady -= deltaTime;
          if (keyboard->GetKeyState(' ') && mTimeTillJumpReady < 0.0f)
          {
-            GetHoverPhysicsHelper()->DoJump(deltaTime);
+            GetHoverPhysicsActComp()->DoJump(deltaTime);
             mTimeTillJumpReady = 3.0f;
          }
       }
@@ -229,11 +205,11 @@ namespace DriverDemo
       // take the position and throw away the rotation.
 
       // This is ONLY called if we are LOCAL (we put the check here just in case... )
-      if (!IsRemote() && GetPhysicsHelper() != NULL)
+      if (!IsRemote() && GetPhysicsActComp() != NULL)
       {
          // The base behavior is that we want to pull the translation and rotation off the object
          // in our physics scene and apply it to our 3D object in the visual scene.
-         dtPhysics::PhysicsObject* physicsObject = GetPhysicsHelper()->GetMainPhysicsObject();
+         dtPhysics::PhysicsObject* physicsObject = GetPhysicsActComp()->GetMainPhysicsObject();
 
          //TODO: Ask if the object is activated.  If not, the transform should not be pushed.
          if (!GetPushTransformToPhysics())
@@ -258,7 +234,7 @@ namespace DriverDemo
    ///////////////////////////////////////////////////////////////////////////////////
    void HoverVehicleActor::AgeiaPrePhysicsUpdate()
    {
-      dtPhysics::PhysicsObject* physObject = GetPhysicsHelper()->GetMainPhysicsObject();
+      dtPhysics::PhysicsObject* physObject = GetPhysicsActComp()->GetMainPhysicsObject();
 
       // The PRE physics update is only trapped if we are remote. It updates the physics
       // engine and moves the vehicle to where we think it is now (based on Dead Reckoning)
@@ -343,6 +319,34 @@ namespace DriverDemo
    void HoverVehicleActorProxy::OnEnteredWorld()
    {
       SimCore::Actors::BasePhysicsVehicleActorProxy::OnEnteredWorld();
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////////
+   void HoverVehicleActorProxy::BuildActorComponents()
+   {
+      dtGame::GameActor* owner = NULL;
+      GetActor(owner);
+
+      if (!owner->HasComponent(dtPhysics::PhysicsActComp::TYPE))
+      {
+         owner->AddComponent(*new HoverVehiclePhysicsActComp(*this));
+      }
+
+      BaseClass::BuildActorComponents();
+
+      SimCore::Actors::DRPublishingActComp* drPublishingActComp = NULL;
+      owner->GetComponent(drPublishingActComp);
+      if (drPublishingActComp == NULL)
+      {
+         LOG_ERROR("CRITICAL ERROR - No DR Publishing Actor Component.");
+         return;
+      }
+      drPublishingActComp->SetMaxUpdateSendRate(5.0f);
+      //drPublishingActComp->SetPublishLinearVelocity(true);
+      //drPublishingActComp->SetPublishAngularVelocity(false);
+      drPublishingActComp->SetMaxTranslationError(0.001f);
+      drPublishingActComp->SetMaxRotationError(0.5f);
+      drPublishingActComp->SetPublishAngularVelocity(false);
    }
 
 } // namespace

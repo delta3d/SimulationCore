@@ -17,7 +17,7 @@
 //#ifdef AGEIA_PHYSICS
 #include <HoverTargetActor.h>
 #include <HoverVehiclePhysicsHelper.h>
-#include <dtPhysics/physicshelper.h>
+#include <dtPhysics/physicsactcomp.h>
 #include <dtDAL/enginepropertytypes.h>
 #include <dtABC/application.h>
 #include <dtAudio/audiomanager.h>
@@ -58,11 +58,6 @@ namespace DriverDemo
 
       SetDefaultScale(osg::Vec3(2.0f, 2.0f, 2.0f));
 
-      // create my unique physics helper.  almost all of the physics is on the helper.
-      // The actor just manages properties and key presses mostly.
-      HoverTargetPhysicsHelper* helper = new HoverTargetPhysicsHelper(proxy);
-      SetPhysicsHelper(helper);
-
       SetEntityType("HoverTarget"); // Used for HLA mostly.  
       SetMunitionDamageTableName("StandardDamageType"); // Used for Munitions Damage.
    }
@@ -70,22 +65,6 @@ namespace DriverDemo
    ///////////////////////////////////////////////////////////////////////////////////
    HoverTargetActor::~HoverTargetActor(void)
    {
-   }
-
-   ///////////////////////////////////////////////////////////////////////////////////
-   void HoverTargetActor::BuildActorComponents()
-   {
-      BaseClass::BuildActorComponents();
-
-      SimCore::Actors::DRPublishingActComp* drPublishingActComp = GetDRPublishingActComp();
-      if (drPublishingActComp == NULL)
-      {
-         LOG_ERROR("CRITICAL ERROR - No DR Publishing Actor Component.");
-         return;
-      }
-      drPublishingActComp->SetMaxUpdateSendRate(3.0f);
-      drPublishingActComp->SetMaxTranslationError(0.02f);
-      drPublishingActComp->SetMaxRotationError(1.0f);
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
@@ -118,9 +97,9 @@ namespace DriverDemo
       }
 
       // Create our physics object
-      GetTargetPhysicsHelper()->CreateTarget(ourTransform, GetOSGNode());
+      GetTargetPhysicsActComp()->CreateTarget(ourTransform, GetOSGNode());
          //GetNodeCollector()->GetDOFTransform("dof_chassis"));
-      //GetTargetPhysicsHelper()->CreateTarget(startVec, IsRemote());
+      //GetTargetPhysicsActComp()->CreateTarget(startVec, IsRemote());
 
       SimCore::Actors::BasePhysicsVehicleActor::OnEnteredWorld();
 
@@ -129,7 +108,7 @@ namespace DriverDemo
       {
          // THIS LINE MUST BE AFTER Super::OnEnteredWorld()! Undo the kinematic flag on remote entities. Lets us
          // apply velocities to remote hover vehicles so that they will impact us and make us bounce back
-         //GetTargetPhysicsHelper()->GetMainPhysicsObject()->clearBodyFlag(NX_BF_KINEMATIC);
+         //GetTargetPhysicsActComp()->GetMainPhysicsObject()->clearBodyFlag(NX_BF_KINEMATIC);
       }
       // LOCAL - Finish initial startup conditions
       else
@@ -195,11 +174,11 @@ namespace DriverDemo
       {
          if (CheckAndUpdatePerformanceThrottle(deltaTime))
          {
-            GetTargetPhysicsHelper()->ApplyTargetHoverForces(deltaTime, mGoalLocation);
+            GetTargetPhysicsActComp()->ApplyTargetHoverForces(deltaTime, mGoalLocation);
          }
          else
          {
-            GetTargetPhysicsHelper()->ApplyForceFromLastFrame(deltaTime);
+            GetTargetPhysicsActComp()->ApplyForceFromLastFrame(deltaTime);
          }
       }
       else
@@ -255,6 +234,31 @@ namespace DriverDemo
       //RegisterForMessages(dtGame::MessageType::INFO_GAME_EVENT);
 
       SimCore::Actors::BasePhysicsVehicleActorProxy::OnEnteredWorld();
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////////
+   void HoverTargetActorProxy::BuildActorComponents()
+   {
+      dtGame::GameActor* owner = NULL;
+      GetActor(owner);
+
+      if (!owner->HasComponent(dtPhysics::PhysicsActComp::TYPE))
+      {
+         owner->AddComponent(*new HoverTargetPhysicsActComp(*this));
+      }
+
+      BaseClass::BuildActorComponents();
+
+      SimCore::Actors::DRPublishingActComp* drPublishingActComp = NULL;
+      owner->GetComponent(drPublishingActComp);
+      if (drPublishingActComp == NULL)
+      {
+         LOG_ERROR("CRITICAL ERROR - No DR Publishing Actor Component.");
+         return;
+      }
+      drPublishingActComp->SetMaxUpdateSendRate(3.0f);
+      drPublishingActComp->SetMaxTranslationError(0.02f);
+      drPublishingActComp->SetMaxRotationError(1.0f);
    }
 
 } // namespace

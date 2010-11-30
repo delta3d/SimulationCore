@@ -38,13 +38,13 @@
 
 namespace SimCore
 {
-   const float FourWheelVehiclePhysicsHelper::ACC_GRAVITY = 9.80665;  // @fixme We assume SI metric: meter, kilogram, second.
+   const float FourWheelVehiclePhysicsActComp::ACC_GRAVITY = 9.80665;  // @fixme We assume SI metric: meter, kilogram, second.
 
    // forward declaration
    void GetLocalMatrix(osgSim::DOFTransform* node, osg::Matrix& wcMatrix);
 
    /// Constructor that provides default values for properties and initial values for state variables.
-   FourWheelVehiclePhysicsHelper::FourWheelVehiclePhysicsHelper(dtGame::GameActorProxy& proxy)
+   FourWheelVehiclePhysicsActComp::FourWheelVehiclePhysicsActComp(dtGame::GameActorProxy& proxy)
    : BaseClass(proxy)
    , mIsVehicleFourWheelDrive(false)
    , mFrontTrackAdjustment(0.0f)
@@ -88,7 +88,7 @@ namespace SimCore
    }
 
    /// Destructor (currently does nothing)
-   FourWheelVehiclePhysicsHelper::~FourWheelVehiclePhysicsHelper()
+   FourWheelVehiclePhysicsActComp::~FourWheelVehiclePhysicsActComp()
    {
 
    }
@@ -97,59 +97,59 @@ namespace SimCore
    //                               Utility Calculations                               //
    // ///////////////////////////////////////////////////////////////////////////////////
 
-   float FourWheelVehiclePhysicsHelper::GetWheelRotation( WheelLocation index ) const
+   float FourWheelVehiclePhysicsActComp::GetWheelRotation( WheelLocation index ) const
    {
       return mAxleRotation[(int(index) < 2) ? 0 : 1];
    }
 
    /// Returns the current vertical displacement of the chosen wheel.
-   float FourWheelVehiclePhysicsHelper::GetWheelJounce( WheelLocation index ) const
+   float FourWheelVehiclePhysicsActComp::GetWheelJounce( WheelLocation index ) const
    {
       return 0.0;
    }
 
-   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsHelper, bool, IsVehicleFourWheelDrive);
-   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsHelper, float, FrontTrackAdjustment);
-   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsHelper, float, RearTrackAdjustment);
+   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsActComp, bool, IsVehicleFourWheelDrive);
+   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsActComp, float, FrontTrackAdjustment);
+   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsActComp, float, RearTrackAdjustment);
 
-   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsHelper, float, FrontWheelMass);
-   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsHelper, float, FrontWheelRadius);
-   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsHelper, float, FrontWheelWidth);
-   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsHelper, float, FrontSuspensionTravel);
-   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsHelper, float, FrontSuspensionRestLength);
-   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsHelper, float, FrontSuspensionSpringFreq);
-   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsHelper, float, FrontSuspensionDamperFactor);
+   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsActComp, float, FrontWheelMass);
+   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsActComp, float, FrontWheelRadius);
+   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsActComp, float, FrontWheelWidth);
+   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsActComp, float, FrontSuspensionTravel);
+   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsActComp, float, FrontSuspensionRestLength);
+   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsActComp, float, FrontSuspensionSpringFreq);
+   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsActComp, float, FrontSuspensionDamperFactor);
 
-   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsHelper, float, FrontTireSlip);
-   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsHelper, float, FrontTireValue);
-   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsHelper, float, FrontTireAsymptoteSlip);
-   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsHelper, float, FrontTireAsymptoteValue);
+   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsActComp, float, FrontTireSlip);
+   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsActComp, float, FrontTireValue);
+   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsActComp, float, FrontTireAsymptoteSlip);
+   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsActComp, float, FrontTireAsymptoteValue);
 
-   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsHelper, float, FrontTireStiffness);
-   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsHelper, float, FrontTireRestitution);
+   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsActComp, float, FrontTireStiffness);
+   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsActComp, float, FrontTireRestitution);
 
-   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsHelper, float, RearWheelMass);
-   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsHelper, float, RearWheelRadius);
-   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsHelper, float, RearWheelWidth);
-   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsHelper, float, RearSuspensionTravel);
-   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsHelper, float, RearSuspensionRestLength);
-   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsHelper, float, RearSuspensionSpringFreq);
-   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsHelper, float, RearSuspensionDamperFactor);
+   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsActComp, float, RearWheelMass);
+   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsActComp, float, RearWheelRadius);
+   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsActComp, float, RearWheelWidth);
+   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsActComp, float, RearSuspensionTravel);
+   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsActComp, float, RearSuspensionRestLength);
+   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsActComp, float, RearSuspensionSpringFreq);
+   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsActComp, float, RearSuspensionDamperFactor);
 
-   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsHelper, float, RearTireSlip);
-   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsHelper, float, RearTireValue);
-   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsHelper, float, RearTireAsymptoteSlip);
-   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsHelper, float, RearTireAsymptoteValue);
+   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsActComp, float, RearTireSlip);
+   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsActComp, float, RearTireValue);
+   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsActComp, float, RearTireAsymptoteSlip);
+   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsActComp, float, RearTireAsymptoteValue);
 
-   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsHelper, float, RearTireStiffness);
-   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsHelper, float, RearTireRestitution);
+   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsActComp, float, RearTireStiffness);
+   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsActComp, float, RearTireRestitution);
 
    // ///////////////////////////////////////////////////////////////////////////////////
    //                                  Vehicle Methods                                 //
    // ///////////////////////////////////////////////////////////////////////////////////
 
    /// Updates vehicle position and rotation.
-   void FourWheelVehiclePhysicsHelper::UpdateVehicle(float deltaTime)
+   void FourWheelVehiclePhysicsActComp::UpdateVehicle(float deltaTime)
    {
       //float mph = GetMPH();
 
@@ -183,19 +183,19 @@ namespace SimCore
    }
 
    /////////////////////////////////////////////////////////
-   void FourWheelVehiclePhysicsHelper::Steer(float normalizedWheelAngle)
+   void FourWheelVehiclePhysicsActComp::Steer(float normalizedWheelAngle)
    {
       mCurrentNormalizedSteering = normalizedWheelAngle;
    }
 
    /////////////////////////////////////////////////////////
-   void FourWheelVehiclePhysicsHelper::ApplyBrake(float normalizedBrakes)
+   void FourWheelVehiclePhysicsActComp::ApplyBrake(float normalizedBrakes)
    {
       mCurrentNormalizedBrakes = normalizedBrakes;
    }
 
    /////////////////////////////////////////////////////////
-   void FourWheelVehiclePhysicsHelper::ApplyAccelerator(float pedal)
+   void FourWheelVehiclePhysicsActComp::ApplyAccelerator(float pedal)
    {
       mAccelerator = pedal;
    }
@@ -214,7 +214,7 @@ namespace SimCore
    /// @retval                  true if model was created
    /// @retval                  false if model wasn't created because of some error.
 
-   bool FourWheelVehiclePhysicsHelper::CreateVehicle(const dtCore::Transform& transformForRot,
+   bool FourWheelVehiclePhysicsActComp::CreateVehicle(const dtCore::Transform& transformForRot,
             const osg::Node& bodyNode, osgSim::DOFTransform* wheels[4])
    {
       // Make sure we have valid nodes for geometry of all four wheels.
@@ -247,7 +247,7 @@ namespace SimCore
          float wheelbase       = frontLeverArm + rearLeverArm;
          if (wheelbase <= 0.0)
          {
-            LOGN_ERROR("FourWheelVehiclePhysicsHelper.cpp", "Wheelbase must be greater than zero. "
+            LOGN_ERROR("FourWheelVehiclePhysicsActComp.cpp", "Wheelbase must be greater than zero. "
                      "A zero wheel base can be a result of wheels being configured in the wrong order in the array.");
             //Prevent NAN and INF
             wheelbase = 1.0;
@@ -294,8 +294,8 @@ namespace SimCore
 //
 //      }
 
-      BaseWheeledVehiclePhysicsHelper::TireParameters tp;
-      BaseWheeledVehiclePhysicsHelper::SuspensionParameters sp;
+      BaseWheeledVehiclePhysicsActComp::TireParameters tp;
+      BaseWheeledVehiclePhysicsActComp::SuspensionParameters sp;
 
       tp.mWidth = GetFrontWheelWidth();
       tp.mRadius = GetFrontWheelRadius();
@@ -340,7 +340,7 @@ namespace SimCore
    }
 
    //////////////////////////////////////////////////////////////////////////////////////
-   void FourWheelVehiclePhysicsHelper::CleanUp()
+   void FourWheelVehiclePhysicsActComp::CleanUp()
    {
       BaseClass::CleanUp();
       for (unsigned i = 0; i < 4; ++i)
@@ -359,32 +359,32 @@ namespace SimCore
    ///
    /// @param toFillIn    vector of dtDAL::ActorProperty for this vehicle
 
-   void FourWheelVehiclePhysicsHelper::BuildPropertyMap(std::vector<dtCore::RefPtr<dtDAL::ActorProperty> >& toFillIn)
+   void FourWheelVehiclePhysicsActComp::BuildPropertyMap()
    {
 
       static const dtUtil::RefString FOUR_WHEEL_GROUP("Four Wheel Vehicle");
 
-      toFillIn.push_back(new dtDAL::BooleanActorProperty("Four Wheel Drive", "Four Wheel Drive",
-               dtDAL::BooleanActorProperty::SetFuncType(this, &FourWheelVehiclePhysicsHelper::SetIsVehicleFourWheelDrive),
-               dtDAL::BooleanActorProperty::GetFuncType(this, &FourWheelVehiclePhysicsHelper::GetIsVehicleFourWheelDrive),
+      AddProperty(new dtDAL::BooleanActorProperty("Four Wheel Drive", "Four Wheel Drive",
+               dtDAL::BooleanActorProperty::SetFuncType(this, &FourWheelVehiclePhysicsActComp::SetIsVehicleFourWheelDrive),
+               dtDAL::BooleanActorProperty::GetFuncType(this, &FourWheelVehiclePhysicsActComp::GetIsVehicleFourWheelDrive),
                "", FOUR_WHEEL_GROUP));
 
-      toFillIn.push_back(new dtDAL::FloatActorProperty("FrontTrackAdjustment", "Front Wheel Track Adjustment",
-               dtDAL::FloatActorProperty::SetFuncType(this, &FourWheelVehiclePhysicsHelper::SetFrontTrackAdjustment),
-               dtDAL::FloatActorProperty::GetFuncType(this, &FourWheelVehiclePhysicsHelper::GetFrontTrackAdjustment),
+      AddProperty(new dtDAL::FloatActorProperty("FrontTrackAdjustment", "Front Wheel Track Adjustment",
+               dtDAL::FloatActorProperty::SetFuncType(this, &FourWheelVehiclePhysicsActComp::SetFrontTrackAdjustment),
+               dtDAL::FloatActorProperty::GetFuncType(this, &FourWheelVehiclePhysicsActComp::GetFrontTrackAdjustment),
                "Track is the distance along the axle of a wheel from the centerline of a vehicle."
                "Setting this moves the front wheels closer or farther from the centerline.",
                FOUR_WHEEL_GROUP));
 
-      toFillIn.push_back(new dtDAL::FloatActorProperty("RearTrackAdjustment", "Rear Wheel Track Adjustment",
-               dtDAL::FloatActorProperty::SetFuncType(this, &FourWheelVehiclePhysicsHelper::SetRearTrackAdjustment),
-               dtDAL::FloatActorProperty::GetFuncType(this, &FourWheelVehiclePhysicsHelper::GetRearTrackAdjustment),
+      AddProperty(new dtDAL::FloatActorProperty("RearTrackAdjustment", "Rear Wheel Track Adjustment",
+               dtDAL::FloatActorProperty::SetFuncType(this, &FourWheelVehiclePhysicsActComp::SetRearTrackAdjustment),
+               dtDAL::FloatActorProperty::GetFuncType(this, &FourWheelVehiclePhysicsActComp::GetRearTrackAdjustment),
                "Track is the distance along the axle of a wheel from the centerline of a vehicle."
                "Setting this moves the rear wheels closer or farther from the centerline.",
                FOUR_WHEEL_GROUP));
 
       static const dtUtil::RefString WHEELGROUP("Wheel Physics");
-      typedef dtDAL::PropertyRegHelper<FourWheelVehiclePhysicsHelper&, FourWheelVehiclePhysicsHelper> PropRegType;
+      typedef dtDAL::PropertyRegHelper<FourWheelVehiclePhysicsActComp&, FourWheelVehiclePhysicsActComp> PropRegType;
       PropRegType propRegHelper(*this, this, WHEELGROUP);
 
       DT_REGISTER_PROPERTY_WITH_LABEL(FrontWheelMass, "Front Wheel Mass","This is not used for dtPhysics."
@@ -489,6 +489,6 @@ namespace SimCore
                "Note that values close to or above 1 may cause stability problems and/or increasing energy."
                , PropRegType, propRegHelper);
 
-      BaseClass::BuildPropertyMap(toFillIn);
+      BaseClass::BuildPropertyMap();
    }
 } // end namespace

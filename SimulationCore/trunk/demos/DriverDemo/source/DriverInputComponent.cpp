@@ -231,11 +231,10 @@ namespace DriverDemo
          {
             DriverDemo::GameAppComponent* gameAppComponent;
             GetGameManager()->GetComponentByName(DriverDemo::GameAppComponent::DEFAULT_NAME, gameAppComponent);
-            if(gameAppComponent != NULL)
+            if (gameAppComponent != NULL)
             {
-               // WE'RE TOTALLY HOSED IF SOMEONE DELETES OUR VEHICLE AT THIS POINT!
-               GetLogger().LogMessage(dtUtil::Log::LOG_ERROR, __FUNCTION__, __LINE__,
-                  "Someone deleted our vehicle! OMG! How rude! We're in big trouble!!! Ignore this if in the process of shutting down.");
+               GetLogger().LogMessage(dtUtil::Log::LOG_DEBUG, __FUNCTION__, __LINE__,
+                  "Vehicle deleted.  This is normal during shutdown.");
                mVehicle = NULL;
             }
          }

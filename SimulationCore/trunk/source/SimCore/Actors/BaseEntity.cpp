@@ -325,15 +325,32 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
-      void BaseEntityActorProxy::Init(const dtDAL::ActorType& actorType)
+      void BaseEntityActorProxy::BuildActorComponents()
       {
-         BaseClass::Init(actorType);
-      }
+         BaseClass::BuildActorComponents();
 
-      ////////////////////////////////////////////////////////////////////////////////////
-      void BaseEntityActorProxy::BuildInvokables()
-      {
-         BaseClass::BuildInvokables();
+         dtGame::GameActor* owner = NULL;
+         GetActor(owner);
+
+         // DEAD RECKONING - ACT COMPONENT
+         if (!owner->HasComponent(dtGame::DeadReckoningHelper::TYPE)) // not added by a subclass
+         {
+            dtCore::RefPtr<dtGame::DeadReckoningHelper> deadReckoningHelper = new dtGame::DeadReckoningHelper();
+
+            // attempt to fix the z-fighting on treads and wheels that are
+            // very close to the ground. We move the vehicle up about 3-4 inches...
+            deadReckoningHelper->SetGroundOffset(0.09);
+
+            owner->AddComponent(*deadReckoningHelper);
+         }
+
+
+         // DEAD RECKONING - PUBLISHING ACTOR COMPONENT
+         if (!owner->HasComponent(DRPublishingActComp::TYPE)) // not added by a subclass
+         {
+            dtCore::RefPtr<SimCore::Actors::DRPublishingActComp> drPublishingActComp = new DRPublishingActComp();
+            owner->AddComponent(*drPublishingActComp);  // Add AFTER the DRhelper.
+         }
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
@@ -346,13 +363,6 @@ namespace SimCore
             RegisterForMessages(dtGame::MessageType::TICK_LOCAL, dtGame::GameActorProxy::TICK_LOCAL_INVOKABLE);
 
          }
-         // We don't use remote ticks
-         //else
-         //{
-             //RegisterForMessages(dtGame::MessageType::TICK_REMOTE, dtGame::GameActorProxy::TICK_REMOTE_INVOKABLE);
-             // Turn this on to print out debug info in ProcessMessage();
-             //RegisterForMessagesAboutSelf(dtGame::MessageType::INFO_ACTOR_UPDATED, dtGame::GameActorProxy::PROCESS_MSG_INVOKABLE);
-         //}
 
       }
 
@@ -411,7 +421,6 @@ namespace SimCore
          , mFrozen(false)
          , mAutoRegisterWithMunitionsComponent(true)
          , mScaleMatrixNode(new osg::MatrixTransform)
-         , mDeadReckoningHelper(NULL)
          , mDamageState(&BaseEntityActorProxy::DamageStateEnum::NO_DAMAGE)
          , mDefaultScale(1.0f, 1.0f, 1.0f)
          , mScaleMagnification(1.0f, 1.0f, 1.0f)
@@ -457,47 +466,12 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
-      void BaseEntity::BuildActorComponents()
-      {
-         BaseClass::BuildActorComponents();
-
-         // DEAD RECKONING - ACT COMPONENT
-         if (!HasComponent(dtGame::DeadReckoningHelper::TYPE)) // not added by a subclass
-         {
-            mDeadReckoningHelper = new dtGame::DeadReckoningHelper();
-
-            // Flying was replaced with GroundClampType, and the default is already 'KeepAbove'
-            //////mDeadReckoningHelper->SetFlying(false); // Causes ground clamping by default
-            //mDeadReckoningHelper->SetGroundClampType(dtGame::GroundClampTypeEnum::KEEP_ABOVE);
-
-            // attempt to fix the z-fighting on treads and wheels that are
-            // very close to the ground. We move the vehicle up about 3-4 inches...
-            mDeadReckoningHelper->SetGroundOffset(0.09);
-
-            AddComponent(*mDeadReckoningHelper);
-         }
-         else
-         {
-            GetComponent(mDeadReckoningHelper);
-         }
-
-
-         // DEAD RECKONING - PUBLISHING ACTOR COMPONENT
-         if (!HasComponent(DRPublishingActComp::TYPE)) // not added by a subclass
-         {
-            mDRPublishingActComp = new DRPublishingActComp();
-            AddComponent(*mDRPublishingActComp);  // Add AFTER the DRhelper.
-         }
-         else
-         {
-            GetComponent(mDRPublishingActComp);
-         }
-      }
-
-      ////////////////////////////////////////////////////////////////////////////////////
       void BaseEntity::OnEnteredWorld()
       {
          GetOSGNode()->setName(GetName());
+
+         dtGame::DeadReckoningHelper* drHelper;
+         GetComponent(drHelper);
 
          if (!IsRemote())
          {
@@ -505,10 +479,10 @@ namespace SimCore
             GetTransform(xform);
             osg::Vec3 pos;
             xform.GetTranslation(pos);
-            GetDeadReckoningHelper().SetLastKnownTranslation(pos);
+            drHelper->SetLastKnownTranslation(pos);
             osg::Vec3 rot;
             xform.GetRotation(rot);
-            GetDeadReckoningHelper().SetLastKnownRotation(rot);
+            drHelper->SetLastKnownRotation(rot);
 
             // Local entities usually need the ability to take damage. So, register with the munitions component.
             if (mAutoRegisterWithMunitionsComponent)
@@ -527,7 +501,7 @@ namespace SimCore
                   SimCore::Components::DamageHelper* helper = munitionsComp->GetHelperByEntityId(GetUniqueId());
                   if (helper != NULL)
                   {
-                     helper->SetEntityDimensions(GetDeadReckoningHelper().GetModelDimensions());
+                     helper->SetEntityDimensions(drHelper->GetModelDimensions());
                   }
                }
             }
@@ -541,11 +515,11 @@ namespace SimCore
          std::string useCubicSplines = configParams.GetConfigPropertyValue("SimCore.DR.UseCubicSpline", "");
          if (useCubicSplines == "true" || useCubicSplines == "TRUE" || useCubicSplines == "1")
          {
-            GetDeadReckoningHelper().SetUseCubicSplineTransBlend(true);
+            drHelper->SetUseCubicSplineTransBlend(true);
          }
          else if (useCubicSplines == "false" || useCubicSplines == "FALSE" || useCubicSplines == "0")
          {
-            GetDeadReckoningHelper().SetUseCubicSplineTransBlend(false);
+            drHelper->SetUseCubicSplineTransBlend(false);
          }
 
          // Always Use Max Smoothing Time (as opposed to averaged update rate)
@@ -554,11 +528,11 @@ namespace SimCore
          std::string useFixedTimeBlends = configParams.GetConfigPropertyValue("SimCore.DR.UseFixedTimeBlends", "");
          if (useFixedTimeBlends == "true" || useFixedTimeBlends == "TRUE" || useFixedTimeBlends == "1")
          {
-            GetDeadReckoningHelper().SetUseFixedSmoothingTime(true);
+            drHelper->SetUseFixedSmoothingTime(true);
          }
          else if (useFixedTimeBlends == "false" || useFixedTimeBlends == "FALSE" || useFixedTimeBlends == "0")
          {
-            GetDeadReckoningHelper().SetUseFixedSmoothingTime(false);
+            drHelper->SetUseFixedSmoothingTime(false);
          }
 
          // The MaxTransSmoothingTime is usually set, but there are very obscure cases where it might
@@ -568,10 +542,10 @@ namespace SimCore
          // Previously, it set the smoothing time to 0.0 so that local actors would not smooth
          // their DR pos & rot to potentially make a cleaner comparison with less publishes.
          // Turning local smoothing on allows better vis & debugging of DR values (ex the DRGhostActor).
-         if (GetDeadReckoningHelper().GetMaxTranslationSmoothingTime() == 0.0f)
-            GetDeadReckoningHelper().SetMaxTranslationSmoothingTime(0.5f);
-         if (GetDeadReckoningHelper().GetMaxRotationSmoothingTime() == 0.0f)
-            GetDeadReckoningHelper().SetMaxRotationSmoothingTime(0.5f);
+         if (drHelper->GetMaxTranslationSmoothingTime() == 0.0f)
+            drHelper->SetMaxTranslationSmoothingTime(0.5f);
+         if (drHelper->GetMaxRotationSmoothingTime() == 0.0f)
+            drHelper->SetMaxRotationSmoothingTime(0.5f);
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
@@ -601,7 +575,31 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////
       DRPublishingActComp* BaseEntity::GetDRPublishingActComp()
       {
-         return mDRPublishingActComp.get();
+         DRPublishingActComp* drPubAC = NULL;
+         GetComponent(drPubAC);
+         return drPubAC;
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////
+      dtGame::DeadReckoningHelper& BaseEntity::GetDeadReckoningHelper()
+      {
+         dtGame::DeadReckoningHelper* drAC = NULL;
+         GetComponent(drAC);
+         return *drAC;
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////
+      const dtGame::DeadReckoningHelper& BaseEntity::GetDeadReckoningHelper() const
+      {
+         const dtGame::DeadReckoningHelper* drAC = NULL;
+         GetComponent(drAC);
+         return *drAC;
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////
+      bool BaseEntity::IsDeadReckoningHelperValid() const
+      {
+         return HasComponent(dtGame::DeadReckoningHelper::TYPE);
       }
 
       ////////////////////////////////////////////////////////////////////////////////////

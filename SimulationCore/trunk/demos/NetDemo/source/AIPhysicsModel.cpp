@@ -24,10 +24,10 @@
 */
 
 #include <AIPhysicsModel.h>
-#include <dtPhysics/physicshelper.h>
+#include <dtPhysics/physicsactcomp.h>
 
 #include <dtGame/gameactor.h>
-#include <dtPhysics/physicshelper.h>
+#include <dtPhysics/physicsactcomp.h>
 #include <dtPhysics/physicsobject.h>
 #include <dtPhysics/bodywrapper.h>
 #include <dtUtil/mathdefines.h>
@@ -49,14 +49,14 @@ namespace NetDemo
 
    }
 
-   void AIPhysicsModel::SetPhysicsHelper(dtPhysics::PhysicsHelper* newHelper)
+   void AIPhysicsModel::SetPhysicsActComp(dtPhysics::PhysicsActComp* newHelper)
    {
-      mPhysicsHelper = newHelper;
+      mPhysicsActComp = newHelper;
    }
 
-   dtPhysics::PhysicsHelper* AIPhysicsModel::GetPhysicsHelper()
+   dtPhysics::PhysicsActComp* AIPhysicsModel::GetPhysicsActComp()
    {
-      return mPhysicsHelper.get();
+      return mPhysicsActComp.get();
    }
 
    void AIPhysicsModel::Init()
@@ -89,9 +89,9 @@ namespace NetDemo
 
       OrthoNormalize(*mCurrentState);
 
-      if(mPhysicsHelper.valid())
+      if(mPhysicsActComp.valid())
       {
-         dtPhysics::PhysicsObject* physicsObject = GetPhysicsHelper()->GetMainPhysicsObject();
+         dtPhysics::PhysicsObject* physicsObject = GetPhysicsActComp()->GetMainPhysicsObject();
 
          if(physicsObject != NULL)
          {

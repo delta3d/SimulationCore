@@ -12,12 +12,9 @@
 */
 #include <prefix/SimCorePrefix.h>
 
-//#ifdef AGEIA_PHYSICS
 #include <Actors/BaseEnemyActor.h>
-#include <dtPhysics/physicshelper.h>
+#include <dtPhysics/physicsactcomp.h>
 #include <dtPhysics/physicsobject.h>
-//#include <NxAgeiaWorldComponent.h>
-//#include <NxAgeiaRaycastReport.h>
 #include <dtDAL/enginepropertytypes.h>
 #include <dtABC/application.h>
 #include <dtAudio/audiomanager.h>
@@ -66,20 +63,6 @@ namespace NetDemo
       // changed if the actor is loaded from a map or when received as a remote actor
       /////////////////////////////////////////////////////////////////
 
-      // create my unique physics helper.  almost all of the physics is on the helper.
-      // The actor just manages properties and key presses mostly.
-      dtPhysics::PhysicsHelper *helper = new dtPhysics::PhysicsHelper(proxy);
-      //helper->SetBaseInterfaceClass(this);
-      SetPhysicsHelper(helper);
-
-      dtCore::RefPtr<dtPhysics::PhysicsObject> physicsObject = new dtPhysics::PhysicsObject("VehicleBody");
-      helper->AddPhysicsObject(*physicsObject);
-      helper->SetMass(500.0f);
-      physicsObject->SetPrimitiveType(dtPhysics::PrimitiveType::CONVEX_HULL);
-      physicsObject->SetMass(100.0f);
-      //physicsObject->SetExtents(osg::Vec3(1.5f, 1.5f, 1.5f));
-      physicsObject->SetMechanicsType(dtPhysics::MechanicsType::STATIC);
-
       // Preset some Entity values
       SetForceAffiliation(SimCore::Actors::BaseEntityActorProxy::ForceEnum::OPPOSING); // Shows up 'red' in Stealth Viewer
       SetEntityType("Enemy");
@@ -98,22 +81,6 @@ namespace NetDemo
 
 
    ///////////////////////////////////////////////////////////////////////////////////
-   void BaseEnemyActor::BuildActorComponents()
-   {
-      BaseClass::BuildActorComponents();
-
-      SimCore::Actors::DRPublishingActComp* drPublishingActComp = GetDRPublishingActComp();
-      if (drPublishingActComp == NULL)
-      {
-         LOG_ERROR("CRITICAL ERROR - No DR Publishing Actor Component.");
-         return;
-      }
-      drPublishingActComp->SetMaxUpdateSendRate(4.0f);
-      //drPublishingActComp->SetPublishLinearVelocity(true);
-      //drPublishingActComp->SetPublishAngularVelocity(false);
-   }
-
-   ///////////////////////////////////////////////////////////////////////////////////
    void BaseEnemyActor::OnEnteredWorld()
    {
       dtCore::Transform ourTransform;
@@ -121,7 +88,7 @@ namespace NetDemo
 
       // TODO - Maybe use sphere instead???
 
-      dtPhysics::PhysicsObject *physObj = GetPhysicsHelper()->GetMainPhysicsObject();
+      dtPhysics::PhysicsObject *physObj = GetPhysicsActComp()->GetMainPhysicsObject();
       physObj->CreateFromProperties(GetNonDamagedFileNode());
       physObj->SetTransform(ourTransform);
       physObj->SetActive(true);
@@ -443,6 +410,40 @@ namespace NetDemo
    void BaseEnemyActorProxy::OnEnteredWorld()
    {
       BaseClass::OnEnteredWorld();
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////////
+   void BaseEnemyActorProxy::BuildActorComponents()
+   {
+      dtGame::GameActor* owner = NULL;
+      GetActor(owner);
+
+      dtCore::RefPtr<dtPhysics::PhysicsActComp> physAC = new dtPhysics::PhysicsActComp(*this);
+
+      // Add our initial body.
+      dtCore::RefPtr<dtPhysics::PhysicsObject> physicsObject = new dtPhysics::PhysicsObject("VehicleBody");
+      physAC->AddPhysicsObject(*physicsObject);
+      physAC->SetMass(500.0f);
+      physicsObject->SetPrimitiveType(dtPhysics::PrimitiveType::CONVEX_HULL);
+      physicsObject->SetMass(100.0f);
+      //physicsObject->SetExtents(osg::Vec3(1.5f, 1.5f, 1.5f));
+      physicsObject->SetMechanicsType(dtPhysics::MechanicsType::STATIC);
+
+      owner->AddComponent(*physAC);
+
+      BaseClass::BuildActorComponents();
+
+
+      SimCore::Actors::DRPublishingActComp* drPublishingActComp = NULL;
+      owner->GetComponent(drPublishingActComp);
+      if (drPublishingActComp == NULL)
+      {
+         LOG_ERROR("CRITICAL ERROR - No DR Publishing Actor Component.");
+         return;
+      }
+      drPublishingActComp->SetMaxUpdateSendRate(4.0f);
+      //drPublishingActComp->SetPublishLinearVelocity(false);
+      //drPublishingActComp->SetPublishAngularVelocity(false);
    }
 
 } // namespace

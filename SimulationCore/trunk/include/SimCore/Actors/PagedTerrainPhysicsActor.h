@@ -28,7 +28,7 @@
 #include <Stream.h>
 #include <PhysicsGlobals.h>
 #else
-#include <dtPhysics/physicshelper.h>
+#include <dtPhysics/physicsactcomp.h>
 #endif
 
 #include <SimCore/PhysicsTypes.h>
@@ -109,14 +109,11 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////
       //class NxAgeiaTerraPageListener;
       class SIMCORE_EXPORT PagedTerrainPhysicsActor : public dtGame::GameActor
-#ifdef AGEIA_PHYSICS
-      , public dtAgeiaPhysX::NxAgeiaPhysicsInterface
-#endif
       {
          public:
             static const std::string DEFAULT_NAME;
             /// Constructor
-            PagedTerrainPhysicsActor(dtGame::GameActorProxy &proxy);
+            PagedTerrainPhysicsActor(dtGame::GameActorProxy& proxy);
 
          protected:
             /// Destructor
@@ -124,22 +121,6 @@ namespace SimCore
 
 
          public:
-#ifdef AGEIA_PHYSICS
-
-            /// Corresponds to the AGEIA_FLAGS_PRE_UPDATE flag
-            virtual void AgeiaPrePhysicsUpdate(){}
-
-            /// Corresponds to the AGEIA_FLAGS_POST_UPDATE
-            virtual void AgeiaPostPhysicsUpdate(){}
-
-            /// Corresponds to the AGEIA_FLAGS_GET_COLLISION_REPORT
-            virtual void AgeiaCollisionReport(dtAgeiaPhysX::ContactReport& contactReport,
-                     NxActor& ourSelf, NxActor& whatWeHit) {}
-
-            // You would have to make a new raycast to get this report,
-            // so no flag associated with it.
-            virtual void AgeiaRaycastReport(const NxRaycastHit& hit, const NxActor& ourSelf, const NxActor& whatWeHit){}
-#endif
 
             // internally called functions when a terrain tile is loaded into the system
             // Used to be called ParseTerrainNode
@@ -178,12 +159,7 @@ namespace SimCore
             /// called to act on the flags.
             bool FinalizeTerrain(int numberOfFrames);
 
-            // public accessor to get the variable
-            dtPhysics::PhysicsHelper* GetPhysicsHelper() const {return mPhysicsHelper.get();}
-
          private:
-            // our physics helper
-            dtCore::RefPtr<dtPhysics::PhysicsHelper> mPhysicsHelper;
             // shouldnt be called, only for debugging purposes.
             // reloads all terrain to physics during runtimne
             void ReloadTerrainPhysics();
@@ -207,8 +183,11 @@ namespace SimCore
       class SIMCORE_EXPORT PagedTerrainPhysicsActorProxy : public dtGame::GameActorProxy
       {
          public:
+            typedef dtGame::GameActorProxy BaseClass;
+
             PagedTerrainPhysicsActorProxy();
             virtual void BuildPropertyMap();
+            virtual void BuildActorComponents();
 
          protected:
             virtual ~PagedTerrainPhysicsActorProxy();

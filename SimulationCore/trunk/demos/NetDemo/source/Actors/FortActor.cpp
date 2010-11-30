@@ -16,7 +16,7 @@
 
 //#ifdef AGEIA_PHYSICS
 #include <Actors/FortActor.h>
-#include <dtPhysics/physicshelper.h>
+#include <dtPhysics/physicsactcomp.h>
 #include <dtPhysics/physicsobject.h>
 //#include <NxAgeiaWorldComponent.h>
 //#include <NxAgeiaRaycastReport.h>
@@ -56,19 +56,6 @@ namespace NetDemo
 	  , mLightIsOn(true)
    {
       SetTerrainPresentDropHeight(0.0);
-      // create my unique physics helper.  almost all of the physics is on the helper.
-      // The actor just manages properties and key presses mostly.
-      dtPhysics::PhysicsHelper *helper = new dtPhysics::PhysicsHelper(proxy);
-      //helper->SetBaseInterfaceClass(this);
-      SetPhysicsHelper(helper);
-
-      // Add our initial body.
-      dtCore::RefPtr<dtPhysics::PhysicsObject> physicsObject = new dtPhysics::PhysicsObject("VehicleBody");
-      helper->AddPhysicsObject(*physicsObject);
-      physicsObject->SetPrimitiveType(dtPhysics::PrimitiveType::CONVEX_HULL);
-      physicsObject->SetMass(30000.0f);
-      //physicsObject->SetExtents(osg::Vec3(1.5f, 1.5f, 1.5f));
-      physicsObject->SetMechanicsType(dtPhysics::MechanicsType::STATIC);
 
       SetEntityType("Fort");
       SetMunitionDamageTableName("StandardDamageType");
@@ -80,29 +67,13 @@ namespace NetDemo
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
-   void FortActor::BuildActorComponents()
-   {
-      BaseClass::BuildActorComponents();
-
-      SimCore::Actors::DRPublishingActComp* drPublishingActComp = GetDRPublishingActComp();
-      if (drPublishingActComp == NULL)
-      {
-         LOG_ERROR("CRITICAL ERROR - No DR Publishing Actor Component.");
-         return;
-      }
-      drPublishingActComp->SetMaxUpdateSendRate(2.0f);
-      //drPublishingActComp->SetPublishLinearVelocity(false);
-      //drPublishingActComp->SetPublishAngularVelocity(false);
-   }
-
-   ///////////////////////////////////////////////////////////////////////////////////
    void FortActor::OnEnteredWorld()
    {
       dtCore::Transform ourTransform;
       GetTransform(ourTransform);
 
 
-      dtPhysics::PhysicsObject *physObj = GetPhysicsHelper()->GetMainPhysicsObject();
+      dtPhysics::PhysicsObject *physObj = GetPhysicsActComp()->GetMainPhysicsObject();
       physObj->SetTransform(ourTransform);
       physObj->CreateFromProperties(&GetScaleMatrixTransform());
 
@@ -311,6 +282,38 @@ namespace NetDemo
    void FortActorProxy::OnEnteredWorld()
    {
       BaseClass::OnEnteredWorld();
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////////
+   void FortActorProxy::BuildActorComponents()
+   {
+      dtGame::GameActor* owner = NULL;
+      GetActor(owner);
+
+      BaseClass::BuildActorComponents();
+
+
+      dtPhysics::PhysicsActComp* physAC = NULL;
+      owner->GetComponent(physAC);
+      // Add our initial body.
+      dtCore::RefPtr<dtPhysics::PhysicsObject> physicsObject = new dtPhysics::PhysicsObject("VehicleBody");
+      physAC->AddPhysicsObject(*physicsObject);
+      physicsObject->SetPrimitiveType(dtPhysics::PrimitiveType::CONVEX_HULL);
+      physicsObject->SetMass(30000.0f);
+      //physicsObject->SetExtents(osg::Vec3(1.5f, 1.5f, 1.5f));
+      physicsObject->SetMechanicsType(dtPhysics::MechanicsType::STATIC);
+
+
+      SimCore::Actors::DRPublishingActComp* drPublishingActComp = NULL;
+      owner->GetComponent(drPublishingActComp);
+      if (drPublishingActComp == NULL)
+      {
+         LOG_ERROR("CRITICAL ERROR - No DR Publishing Actor Component.");
+         return;
+      }
+      drPublishingActComp->SetMaxUpdateSendRate(2.0f);
+      //drPublishingActComp->SetPublishLinearVelocity(false);
+      //drPublishingActComp->SetPublishAngularVelocity(false);
    }
 
 } // namespace

@@ -53,26 +53,13 @@ namespace NetDemo
    //////////////////////////////////////////////////////////
    // Actor code
    //////////////////////////////////////////////////////////
-   FireBallActor::FireBallActor(SimCore::Actors::BasePhysicsVehicleActorProxy &proxy)
+   FireBallActor::FireBallActor(SimCore::Actors::BasePhysicsVehicleActorProxy& proxy)
       : SimCore::Actors::BasePhysicsVehicleActor(proxy)
       , mMaxTime(3.0f)
       , mCurrentTime(0.0f)
       , mVelocity(10.0f)
    {
       SetTerrainPresentDropHeight(0.0);
-      // create my unique physics helper.  almost all of the physics is on the helper.
-      // The actor just manages properties and key presses mostly.
-      dtPhysics::PhysicsHelper* helper = new dtPhysics::PhysicsHelper(proxy);
-      SetPhysicsHelper(helper);
-
-      // Add our initial body.
-      dtCore::RefPtr<dtPhysics::PhysicsObject> physicsObject = new dtPhysics::PhysicsObject("FireBallBody");
-      helper->AddPhysicsObject(*physicsObject);
-      physicsObject->SetPrimitiveType(dtPhysics::PrimitiveType::SPHERE);
-      physicsObject->SetMass(30.0f);
-      physicsObject->SetExtents(osg::Vec3(1.5f, 1.5f, 1.5f));
-      physicsObject->SetMechanicsType(dtPhysics::MechanicsType::DYNAMIC);
-      physicsObject->SetNotifyCollisions(true);
 
       SetEntityType("Fort");
       SetMunitionDamageTableName("StandardDamageType");
@@ -85,25 +72,11 @@ namespace NetDemo
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
-   void FireBallActor::BuildActorComponents()
-   {
-      BaseClass::BuildActorComponents();
-
-      SimCore::Actors::DRPublishingActComp* drPublishingActComp = GetDRPublishingActComp();
-      if (drPublishingActComp == NULL)
-      {
-         LOG_ERROR("CRITICAL ERROR - No DR Publishing Actor Component.");
-         return;
-      }
-      drPublishingActComp->SetMaxUpdateSendRate(2.0f);
-   }
-
-   ///////////////////////////////////////////////////////////////////////////////////
    void FireBallActor::OnEnteredWorld()
    {
       dtCore::Transform ourTransform;
       GetTransform(ourTransform);
-      dtPhysics::PhysicsObject *physObj = GetPhysicsHelper()->GetMainPhysicsObject();
+      dtPhysics::PhysicsObject* physObj = GetPhysicsActComp()->GetMainPhysicsObject();
       physObj->SetTransform(ourTransform);     
       physObj->CreateFromProperties(NULL);
 
@@ -234,17 +207,19 @@ namespace NetDemo
             ourTransform.GetRow(1, currentDirection);
          }
 
-         if(GetPhysicsHelper() != NULL && GetPhysicsHelper()->GetMainPhysicsObject() != NULL)
+         dtPhysics::PhysicsActComp* physAC = NULL;
+         GetComponent(physAC);
+         if (physAC != NULL && physAC->GetMainPhysicsObject() != NULL)
          {
-            GetPhysicsHelper()->GetMainPhysicsObject()->ApplyImpulse(currentDirection * mVelocity);
+            physAC->GetMainPhysicsObject()->ApplyImpulse(currentDirection * mVelocity);
 
-            GetPhysicsHelper()->GetMainPhysicsObject()->AddForce(mForces);
+            physAC->GetMainPhysicsObject()->AddForce(mForces);
             
             //these get reset every frame
             mForces.set(0.0f, 0.0f, 0.0f);
 
             std::vector<dtPhysics::CollisionContact> contacts;
-            dtPhysics::PhysicsWorld::GetInstance().GetContacts(*GetPhysicsHelper()->GetMainPhysicsObject(), contacts);
+            dtPhysics::PhysicsWorld::GetInstance().GetContacts(*physAC->GetMainPhysicsObject(), contacts);
             if(!contacts.empty())
             {
                DoExplosion(0.0f);
@@ -295,7 +270,7 @@ namespace NetDemo
    }
 
    //////////////////////////////////////////////////////////
-   const osg::Vec3& FireBallActor::GetPosition() const
+   const osg::Vec3 FireBallActor::GetPosition() const
    {
       dtCore::Transform xform;
       GetTransform(xform);
@@ -348,5 +323,37 @@ namespace NetDemo
       GetActor(fa);
 
       SimCore::Actors::BasePhysicsVehicleActorProxy::BuildPropertyMap();
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////////
+   void FireBallActorProxy::BuildActorComponents()
+   {
+      dtGame::GameActor* owner = NULL;
+      GetActor(owner);
+
+      BaseClass::BuildActorComponents();
+
+
+      dtPhysics::PhysicsActComp* physAC = NULL;
+      owner->GetComponent(physAC);
+      // Add our initial body.
+      dtCore::RefPtr<dtPhysics::PhysicsObject> physicsObject = new dtPhysics::PhysicsObject("FireBallBody");
+      physAC->AddPhysicsObject(*physicsObject);
+      physicsObject->SetPrimitiveType(dtPhysics::PrimitiveType::SPHERE);
+      physicsObject->SetMass(30.0f);
+      physicsObject->SetExtents(osg::Vec3(1.5f, 1.5f, 1.5f));
+      physicsObject->SetMechanicsType(dtPhysics::MechanicsType::DYNAMIC);
+      physicsObject->SetNotifyCollisions(true);
+
+      SimCore::Actors::DRPublishingActComp* drPublishingActComp = NULL;
+      owner->GetComponent(drPublishingActComp);
+      if (drPublishingActComp == NULL)
+      {
+         LOG_ERROR("CRITICAL ERROR - No DR Publishing Actor Component.");
+         return;
+      }
+      drPublishingActComp->SetMaxUpdateSendRate(2.0f);
+      //drPublishingActComp->SetPublishLinearVelocity(false);
+      //drPublishingActComp->SetPublishAngularVelocity(false);
    }
 }

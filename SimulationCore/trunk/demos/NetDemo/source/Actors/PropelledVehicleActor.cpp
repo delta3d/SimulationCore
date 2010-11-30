@@ -156,7 +156,7 @@ namespace NetDemo
 //         return;
 //      //float currentMPH = GetMPH(); // speed, not a velocity with direction
 //
-//      dtPhysics::PhysicsObject* po = GetPhysicsHelper()->GetMainPhysicsObject();
+//      dtPhysics::PhysicsObject* po = GetPhysicsActComp()->GetMainPhysicsObject();
 //      osg::Vec3 dragVec = mHelper->ComputeAeroDynDrag(po->GetLinearVelocity());
 //      po->AddForce(dragVec);
 //
@@ -210,7 +210,7 @@ namespace NetDemo
 //
 //         if (keyboard->GetKeyState('f') || keyboard->GetKeyState('F'))
 //         {
-//            //dtPhysics::PhysicsObject* po = GetPhysicsHelper()->GetMainPhysicsObject();
+//            //dtPhysics::PhysicsObject* po = GetPhysicsActComp()->GetMainPhysicsObject();
 //
 //
 //

@@ -39,8 +39,6 @@ namespace NetDemo
          /// Constructor
          FireBallActor(SimCore::Actors::BasePhysicsVehicleActorProxy &proxy);
 
-         virtual void BuildActorComponents();
-
          // Called when the actor has been added to the game manager.
          // You can respond to OnEnteredWorld on either the proxy or actor or both.
          virtual void OnEnteredWorld();
@@ -57,7 +55,7 @@ namespace NetDemo
          float GetVelocity() const;
 
          void SetPosition(const osg::Vec3& pos);
-         const osg::Vec3& GetPosition() const;
+         const osg::Vec3 GetPosition() const;
 
          void SetMaxTime(float t);
          float GetMaxTime() const;
@@ -86,6 +84,7 @@ namespace NetDemo
    class NETDEMO_EXPORT FireBallActorProxy : public SimCore::Actors::BasePhysicsVehicleActorProxy
    {
       public:
+         typedef SimCore::Actors::BasePhysicsVehicleActorProxy BaseClass;
 
          /// Constructor
          FireBallActorProxy();
@@ -96,6 +95,7 @@ namespace NetDemo
          /// Creates the actor
          void CreateActor() { SetActor(*new FireBallActor(*this)); }
 
+         virtual void BuildActorComponents();
 
       protected:
 

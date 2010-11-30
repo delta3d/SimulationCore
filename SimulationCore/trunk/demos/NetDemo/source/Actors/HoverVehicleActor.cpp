@@ -15,7 +15,7 @@
 //#ifdef AGEIA_PHYSICS
 #include <Actors/HoverVehicleActor.h>
 #include <Actors/HoverVehiclePhysicsHelper.h>
-#include <dtPhysics/physicshelper.h>
+#include <dtPhysics/physicsactcomp.h>
 //#include <NxAgeiaWorldComponent.h>
 //#include <NxAgeiaRaycastReport.h>
 #include <dtDAL/enginepropertytypes.h>
@@ -51,12 +51,6 @@ namespace NetDemo
       : SimCore::Actors::BasePhysicsVehicleActor(proxy)
    , mVehicleIsTurret(true)
    {
-      // Create physics helper - almost all of the physics is on the helper.
-      // The actor just manages properties and key presses mostly.
-      HoverVehiclePhysicsHelper* helper = new HoverVehiclePhysicsHelper(proxy);
-      //helper->SetBaseInterfaceClass(this);
-      SetPhysicsHelper(helper);
-
       SetEntityType("HoverVehicle");
       SetMunitionDamageTableName("StandardDamageType");
    }
@@ -65,26 +59,6 @@ namespace NetDemo
    HoverVehicleActor::~HoverVehicleActor(void)
    {
    }
-
-   ///////////////////////////////////////////////////////////////////////////////////
-   void HoverVehicleActor::BuildActorComponents()
-   {
-      BaseClass::BuildActorComponents();
-
-      SimCore::Actors::DRPublishingActComp* drPublishingActComp = GetDRPublishingActComp();
-      if (drPublishingActComp == NULL)
-      {
-         LOG_ERROR("CRITICAL ERROR - No DR Publishing Actor Component.");
-         return;
-      }
-      drPublishingActComp->SetMaxUpdateSendRate(5.0f);
-      //drPublishingActComp->SetPublishLinearVelocity(true);
-      //drPublishingActComp->SetPublishAngularVelocity(false);
-      drPublishingActComp->SetMaxTranslationError(0.001f);
-      drPublishingActComp->SetMaxRotationError(0.5f);
-      drPublishingActComp->SetPublishAngularVelocity(false);
-   }
-
    ///////////////////////////////////////////////////////////////////////////////////
    void HoverVehicleActor::OnEnteredWorld()
    {
@@ -96,9 +70,9 @@ namespace NetDemo
       //std::cout << " --------- NODE PRINT OUT FOR HOVER VEHICLE --------- " << std::endl;
       //std::cout << nodes.c_str() << std::endl;
 
-      GetHoverPhysicsHelper()->CreateVehicle(ourTransform,
+      GetHoverPhysicsActComp()->CreateVehicle(ourTransform,
          GetNodeCollector()->GetDOFTransform("dof_chassis"));
-      //dtPhysics::PhysicsObject *physObj = GetHoverPhysicsHelper()->GetMainPhysicsObject();
+      //dtPhysics::PhysicsObject *physObj = GetHoverPhysicsActComp()->GetMainPhysicsObject();
 
       SimCore::Actors::BasePhysicsVehicleActor::OnEnteredWorld();
 
@@ -198,7 +172,7 @@ namespace NetDemo
 
       }
 
-      GetHoverPhysicsHelper()->UpdateVehicle(deltaTime,
+      GetHoverPhysicsActComp()->UpdateVehicle(deltaTime,
          accelForward, accelReverse, accelLeft, accelRight);
 
       // Jump button
@@ -206,7 +180,7 @@ namespace NetDemo
       {
          if (keyboard->GetKeyState(' '))
          {
-            //GetHoverPhysicsHelper()->Boost(deltaTime);
+            //GetHoverPhysicsActComp()->Boost(deltaTime);
          }
       }
    }
@@ -237,11 +211,11 @@ namespace NetDemo
       // take the position and throw away the rotation.
 
       // This is ONLY called if we are LOCAL (we put the check here just in case... )
-      if (!IsRemote() && GetPhysicsHelper() != NULL)
+      if (!IsRemote() && GetPhysicsActComp() != NULL)
       {
          // The base behavior is that we want to pull the translation and rotation off the object
          // in our physics scene and apply it to our 3D object in the visual scene.
-         dtPhysics::PhysicsObject* physicsObject = GetPhysicsHelper()->GetMainPhysicsObject();
+         dtPhysics::PhysicsObject* physicsObject = GetPhysicsActComp()->GetMainPhysicsObject();
 
          //TODO: Ask if the object is activated.  If not, the transform should not be pushed.
          //if (!GetPushTransformToPhysics())
@@ -313,6 +287,35 @@ namespace NetDemo
    void HoverVehicleActorProxy::OnEnteredWorld()
    {
       SimCore::Actors::BasePhysicsVehicleActorProxy::OnEnteredWorld();
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////////
+   void HoverVehicleActorProxy::BuildActorComponents()
+   {
+      dtGame::GameActor* owner = NULL;
+      GetActor(owner);
+
+      if (!owner->HasComponent(dtPhysics::PhysicsActComp::TYPE))
+      {
+         owner->AddComponent(*new HoverVehiclePhysicsActComp(*this));
+      }
+
+      BaseClass::BuildActorComponents();
+
+      SimCore::Actors::DRPublishingActComp* drPublishingActComp = NULL;
+      owner->GetComponent(drPublishingActComp);
+      if (drPublishingActComp == NULL)
+      {
+         LOG_ERROR("CRITICAL ERROR - No DR Publishing Actor Component.");
+         return;
+      }
+
+      drPublishingActComp->SetMaxUpdateSendRate(5.0f);
+      //drPublishingActComp->SetPublishLinearVelocity(true);
+      //drPublishingActComp->SetPublishAngularVelocity(false);
+      drPublishingActComp->SetMaxTranslationError(0.001f);
+      drPublishingActComp->SetMaxRotationError(0.5f);
+      drPublishingActComp->SetPublishAngularVelocity(false);
    }
 
 } // namespace

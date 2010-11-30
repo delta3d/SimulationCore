@@ -47,16 +47,8 @@ namespace SimCore
       /////////////////////////////////////////////////////////////////////////
       PlatformWithPhysics::PlatformWithPhysics(PlatformActorProxy& proxy)
       : Platform(proxy)
+      , mLoadGeomFromNode(false)
       {
-         mPhysicsHelper = new dtPhysics::PhysicsHelper(proxy);
-         dtCore::RefPtr<dtPhysics::PhysicsObject> physObj= new dtPhysics::PhysicsObject(DEFAULT_NAME);
-         physObj->SetPrimitiveType(dtPhysics::PrimitiveType::CONVEX_HULL);
-         physObj->SetMechanicsType(dtPhysics::MechanicsType::DYNAMIC);
-         physObj->SetMass(500.0f);
-         physObj->SetCollisionGroup(SimCore::CollisionGroup::GROUP_VEHICLE_GROUND);
-         mPhysicsHelper->AddPhysicsObject(*physObj);
-         mPhysicsHelper->SetPrePhysicsCallback(dtPhysics::PhysicsHelper::UpdateCallback(this, &PlatformWithPhysics::PrePhysicsUpdate));
-         mLoadGeomFromNode = false;
       }
 
       /////////////////////////////////////////////////////////////////////////
@@ -95,32 +87,29 @@ namespace SimCore
       /////////////////////////////////////////////////////////////////////////
       void PlatformWithPhysics::OnEnteredWorld()
       {
+         dtPhysics::PhysicsActComp* physAC = NULL;
+         GetComponent(physAC);
+         physAC->SetPrePhysicsCallback(dtPhysics::PhysicsActComp::UpdateCallback(this, &PlatformWithPhysics::PrePhysicsUpdate));
          // this is for static world geometry
          Platform::OnEnteredWorld();
          if(mLoadGeomFromNode)
          {
             SetName(BUILDING_DEFAULT_NAME);
-            mPhysicsHelper->GetMainPhysicsObject()->CreateFromProperties(mNodeForGeometry.get());
-            mPhysicsHelper->GetMainPhysicsObject()->SetMechanicsType(dtPhysics::MechanicsType::STATIC);
+            physAC->GetMainPhysicsObject()->CreateFromProperties(mNodeForGeometry.get());
+            physAC->GetMainPhysicsObject()->SetMechanicsType(dtPhysics::MechanicsType::STATIC);
 
             osg::Matrix bodyOffset;
-            bodyOffset.setTrans(-mPhysicsHelper->GetMainPhysicsObject()->GetOriginOffset());
+            bodyOffset.setTrans(-physAC->GetMainPhysicsObject()->GetOriginOffset());
             dtCore::Transform offsetXform;
             offsetXform.Set(bodyOffset);
 
-            mPhysicsHelper->GetMainPhysicsObject()->SetVisualToBodyTransform(offsetXform);
+            physAC->GetMainPhysicsObject()->SetVisualToBodyTransform(offsetXform);
          }
          else // this is for objects moving around, in our case vehicles
          {
             LoadCollision();
          }
 
-         dtPhysics::PhysicsComponent *comp = NULL;
-         GetGameActorProxy().GetGameManager()->GetComponentByName(dtPhysics::PhysicsComponent::DEFAULT_NAME, comp);
-         if(comp != NULL)
-         {
-            comp->RegisterHelper(*mPhysicsHelper);
-         }
       }
 
 
@@ -153,12 +142,14 @@ namespace SimCore
          }
          else
          {
-            dtCore::RefPtr<dtPhysics::PhysicsObject> physObj = mPhysicsHelper->GetPhysicsObject(DEFAULT_NAME);
+            dtPhysics::PhysicsActComp* physAC = NULL;
+            GetComponent(physAC);
+            dtCore::RefPtr<dtPhysics::PhysicsObject> physObj = physAC->GetPhysicsObject(DEFAULT_NAME);
 
             if (physObj.valid())
             {
                // it's re-added below, don't worry.
-               mPhysicsHelper->RemovePhysicsObject(*physObj);
+               physAC->RemovePhysicsObject(*physObj);
             }
             else
             {
@@ -176,7 +167,7 @@ namespace SimCore
                physObj->SetMechanicsType(dtPhysics::MechanicsType::KINEMATIC);
             }
 
-            mPhysicsHelper->AddPhysicsObject(*physObj);
+            physAC->AddPhysicsObject(*physObj);
 
             dtCore::Transform offsetXform;
             offsetXform.SetTranslation(-physObj->GetOriginOffset());
@@ -197,9 +188,11 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////
-      dtPhysics::PhysicsHelper* PlatformWithPhysics::GetPhysicsHelper()
+      dtPhysics::PhysicsActComp* PlatformWithPhysics::GetPhysicsActComp()
       {
-         return mPhysicsHelper.get();
+         dtPhysics::PhysicsActComp* physAC = NULL;
+         GetComponent(physAC);
+         return physAC;
       }
 
       ////////////////////////////////////////////////////////////////////
@@ -207,7 +200,7 @@ namespace SimCore
       {
          if(!mLoadGeomFromNode)
          {
-            dtPhysics::PhysicsObject* physObj = mPhysicsHelper->GetPhysicsObject(DEFAULT_NAME);
+            dtPhysics::PhysicsObject* physObj = GetPhysicsActComp()->GetPhysicsObject(DEFAULT_NAME);
             if (physObj != NULL)
             {
                dtCore::Transform xform;
@@ -229,12 +222,6 @@ namespace SimCore
       void PlatformWithPhysicsActorProxy::BuildPropertyMap()
       {
          PlatformActorProxy::BuildPropertyMap();
-         PlatformWithPhysics* actor = NULL;
-         GetActor(actor);
-         std::vector<dtCore::RefPtr<dtDAL::ActorProperty> >  toFillIn;
-         actor->GetPhysicsHelper()->BuildPropertyMap(toFillIn);
-         for(unsigned int i = 0 ; i < toFillIn.size(); ++i)
-            AddProperty(toFillIn[i].get());
       }
 
       /////////////////////////////////////////////////////////////////////////
@@ -253,6 +240,29 @@ namespace SimCore
          PlatformActorProxy::OnEnteredWorld();
       }
 
+      /////////////////////////////////////////////////////////////////////////
+      void PlatformWithPhysicsActorProxy::BuildActorComponents()
+      {
+         BaseClass::BuildActorComponents();
+
+         dtGame::GameActor* owner = NULL;
+         GetActor(owner);
+
+         if (!owner->HasComponent(dtPhysics::PhysicsActComp::TYPE))
+         {
+            dtCore::RefPtr<dtPhysics::PhysicsActComp> physActComp = new dtPhysics::PhysicsActComp(*this);
+
+            dtCore::RefPtr<dtPhysics::PhysicsObject> physObj = new dtPhysics::PhysicsObject(PlatformWithPhysics::DEFAULT_NAME);
+            physObj->SetPrimitiveType(dtPhysics::PrimitiveType::CONVEX_HULL);
+            physObj->SetMechanicsType(dtPhysics::MechanicsType::DYNAMIC);
+            physObj->SetMass(500.0f);
+            physObj->SetCollisionGroup(SimCore::CollisionGroup::GROUP_VEHICLE_GROUND);
+            physActComp->AddPhysicsObject(*physObj);
+
+            owner->AddComponent(*physActComp);
+         }
+      }
+
       //////////////////////////////////////////////////////////////////////////
       dtCore::RefPtr<dtDAL::ActorProperty> PlatformWithPhysicsActorProxy::GetDeprecatedProperty(const std::string& name)
       {
@@ -262,7 +272,7 @@ namespace SimCore
          {
             PlatformWithPhysics* actor = NULL;
             GetActor(actor);
-            depProp = actor->GetPhysicsHelper()->GetDeprecatedProperty(name);
+            depProp = actor->GetPhysicsActComp()->GetDeprecatedProperty(name);
          }
          return depProp;
       }

@@ -47,8 +47,8 @@ namespace SimCore
    static const float AIR_DENSITY = 1.204f;    // density of air in kg/m^3 at 20C
 
    /// Constructor
-   BaseWheeledVehiclePhysicsHelper::BaseWheeledVehiclePhysicsHelper(dtGame::GameActorProxy& proxy)
-   : dtPhysics::PhysicsHelper(proxy)
+   BaseWheeledVehiclePhysicsActComp::BaseWheeledVehiclePhysicsActComp(dtGame::GameActorProxy& proxy)
+   : dtPhysics::PhysicsActComp(proxy)
    , mVehicle(NULL)
    , mEngineTorque(1000.0f)
    , mMaxBrakeTorque(100.0f)
@@ -66,13 +66,13 @@ namespace SimCore
    }
 
    /// Destructor
-   BaseWheeledVehiclePhysicsHelper::~BaseWheeledVehiclePhysicsHelper()
+   BaseWheeledVehiclePhysicsActComp::~BaseWheeledVehiclePhysicsActComp()
    {
       delete mVehicle;
    }
 
    /// A workaround for the transform inefficiency
-   void BaseWheeledVehiclePhysicsHelper::GetLocalMatrix(const osg::Node& node, osg::Matrix& wcMatrix)
+   void BaseWheeledVehiclePhysicsActComp::GetLocalMatrix(const osg::Node& node, osg::Matrix& wcMatrix)
    {
       if(node.getNumParents() > 0)
       {
@@ -85,7 +85,7 @@ namespace SimCore
    }
 
    /////////////////////////////////////////////////////////////////////////////////////
-   osg::Vec3 BaseWheeledVehiclePhysicsHelper::ComputeAeroDynDrag(const osg::Vec3& linearVelocity)
+   osg::Vec3 BaseWheeledVehiclePhysicsActComp::ComputeAeroDynDrag(const osg::Vec3& linearVelocity)
    {
       osg::Vec3 workVec = linearVelocity;
       float magnitude = workVec.normalize();
@@ -95,7 +95,7 @@ namespace SimCore
    }
 
    /////////////////////////////////////////////////////////////////////////////////////
-   void BaseWheeledVehiclePhysicsHelper::CleanUp()
+   void BaseWheeledVehiclePhysicsActComp::CleanUp()
    {
       delete mVehicle;
       mVehicle = NULL;
@@ -106,7 +106,7 @@ namespace SimCore
    //                               Vehicle Initialization                             //
    // ///////////////////////////////////////////////////////////////////////////////////
 
-   WheelType BaseWheeledVehiclePhysicsHelper::AddWheel(const osg::Vec3& position, osg::Transform& node,
+   WheelType BaseWheeledVehiclePhysicsActComp::AddWheel(const osg::Vec3& position, osg::Transform& node,
             TireParameters& tireParams, SuspensionParameters& suspensionParams, bool powered, bool steered, bool braked)
    {
       WheelType wheel;
@@ -161,7 +161,7 @@ namespace SimCore
    }
 
    /////////////////////////////////////////////////////////
-   bool BaseWheeledVehiclePhysicsHelper::CreateChassis(const dtCore::Transform& transformForRot, const osg::Node& bodyNode)
+   bool BaseWheeledVehiclePhysicsActComp::CreateChassis(const dtCore::Transform& transformForRot, const osg::Node& bodyNode)
    {
       osg::Matrix BodyMatrix;
       GetLocalMatrix(bodyNode, BodyMatrix);
@@ -182,49 +182,49 @@ namespace SimCore
    }
 
    ////////////////////////////////////////////////////////
-   float BaseWheeledVehiclePhysicsHelper::GetChassisMass() const
+   float BaseWheeledVehiclePhysicsActComp::GetChassisMass() const
    {
       return GetMainPhysicsObject()->GetMass();
    }
 
    ////////////////////////////////////////////////////////
-   float BaseWheeledVehiclePhysicsHelper::GetAeroDynDragCoefficient() const
+   float BaseWheeledVehiclePhysicsActComp::GetAeroDynDragCoefficient() const
    {
       return mAeroDynDragCoefficient;
    }
 
    ////////////////////////////////////////////////////////
-   void BaseWheeledVehiclePhysicsHelper::SetAeroDynDragCoefficient(float drag)
+   void BaseWheeledVehiclePhysicsActComp::SetAeroDynDragCoefficient(float drag)
    {
       mAeroDynDragCoefficient = drag;
    }
 
    ////////////////////////////////////////////////////////
-   float BaseWheeledVehiclePhysicsHelper::GetAeroDynDragArea() const
+   float BaseWheeledVehiclePhysicsActComp::GetAeroDynDragArea() const
    {
       return mAeroDynDragArea;
    }
 
    ////////////////////////////////////////////////////////
-   void BaseWheeledVehiclePhysicsHelper::SetAeroDynDragArea(float area)
+   void BaseWheeledVehiclePhysicsActComp::SetAeroDynDragArea(float area)
    {
       mAeroDynDragArea = area;
    }
 
    ////////////////////////////////////////////////////////
-   float BaseWheeledVehiclePhysicsHelper::GetMPH() const
+   float BaseWheeledVehiclePhysicsActComp::GetMPH() const
    {
       return mLastMPH;
    }
 
    ////////////////////////////////////////////////////////
-   void BaseWheeledVehiclePhysicsHelper::SetMPH(float newMPH)
+   void BaseWheeledVehiclePhysicsActComp::SetMPH(float newMPH)
    {
       mLastMPH = newMPH;
    }
 
    ////////////////////////////////////////////////////////
-   void BaseWheeledVehiclePhysicsHelper::CalcMPH()
+   void BaseWheeledVehiclePhysicsActComp::CalcMPH()
    {
       static const float METERSPS_TO_MILESPH = 2.236936291;
       const dtPhysics::PhysicsObject* po = GetMainPhysicsObject();
@@ -251,7 +251,7 @@ namespace SimCore
    }
 
    ////////////////////////////////////////////////////////
-   void BaseWheeledVehiclePhysicsHelper::Control(float acceleration, float normalizedWheelAngle, float normalizedBrakes)
+   void BaseWheeledVehiclePhysicsActComp::Control(float acceleration, float normalizedWheelAngle, float normalizedBrakes)
    {
       if (mVehicle == NULL)
       {
@@ -283,7 +283,7 @@ namespace SimCore
 
    }
 
-   void BaseWheeledVehiclePhysicsHelper::FinalizeInitialization()
+   void BaseWheeledVehiclePhysicsActComp::FinalizeInitialization()
    {
       if (mVehicle != NULL)
       {
@@ -292,7 +292,7 @@ namespace SimCore
    }
 
    //////////////////////////////////////////////////////////////////////////////////////
-   void BaseWheeledVehiclePhysicsHelper::UpdateWheelTransforms()
+   void BaseWheeledVehiclePhysicsActComp::UpdateWheelTransforms()
    {
       std::vector<WheelType>::iterator i, iend;
       i = mWheels.begin();
@@ -332,7 +332,7 @@ namespace SimCore
    }
 
    //////////////////////////////////////////////////////////////////////////////////////
-   float BaseWheeledVehiclePhysicsHelper::CalcSpringRate(float freq, float vehMass, float wheelbase, float leverArm) const
+   float BaseWheeledVehiclePhysicsActComp::CalcSpringRate(float freq, float vehMass, float wheelbase, float leverArm) const
    {
       float lumpedMass = leverArm / wheelbase * 0.5f * vehMass;
       float temp = osg::PI * 2.0f * freq;
@@ -340,7 +340,7 @@ namespace SimCore
    }
 
    //////////////////////////////////////////////////////////////////////////////////////
-   float BaseWheeledVehiclePhysicsHelper::CalcDamperCoeficient(float dampingFactor, float vehMass, float springRate, float wheelbase, float leverArm) const
+   float BaseWheeledVehiclePhysicsActComp::CalcDamperCoeficient(float dampingFactor, float vehMass, float springRate, float wheelbase, float leverArm) const
    {
       float lumpedMass = leverArm / wheelbase * 0.5f * vehMass;
       return dampingFactor * 2.0f * std::sqrt ( springRate * lumpedMass );
@@ -354,46 +354,46 @@ namespace SimCore
    ///
    /// @param toFillIn    dtDAL::ActorProperty for this vehicle
 
-   void BaseWheeledVehiclePhysicsHelper::BuildPropertyMap(std::vector<dtCore::RefPtr<dtDAL::ActorProperty> >& toFillIn)
+   void BaseWheeledVehiclePhysicsActComp::BuildPropertyMap()
    {
-      dtPhysics::PhysicsHelper::BuildPropertyMap(toFillIn);
+      dtPhysics::PhysicsActComp::BuildPropertyMap();
 
       static const dtUtil::RefString VEHICLEGROUP("Vehicle Physics");
 
-      toFillIn.push_back(new dtDAL::FloatActorProperty("Engine Torque", "Engine Torque",
-               dtDAL::FloatActorProperty::SetFuncType(this, &BaseWheeledVehiclePhysicsHelper::SetEngineTorque),
-               dtDAL::FloatActorProperty::GetFuncType(this, &BaseWheeledVehiclePhysicsHelper::GetEngineTorque),
+      AddProperty(new dtDAL::FloatActorProperty("Engine Torque", "Engine Torque",
+               dtDAL::FloatActorProperty::SetFuncType(this, &BaseWheeledVehiclePhysicsActComp::SetEngineTorque),
+               dtDAL::FloatActorProperty::GetFuncType(this, &BaseWheeledVehiclePhysicsActComp::GetEngineTorque),
                "Maximum torque developed by engine", VEHICLEGROUP));
 
-      toFillIn.push_back(new dtDAL::FloatActorProperty("Max Break Torque", "Max Break Torque",
-               dtDAL::FloatActorProperty::SetFuncType(this, &BaseWheeledVehiclePhysicsHelper::SetMaxBrakeTorque),
-               dtDAL::FloatActorProperty::GetFuncType(this, &BaseWheeledVehiclePhysicsHelper::GetMaxBrakeTorque),
+      AddProperty(new dtDAL::FloatActorProperty("Max Break Torque", "Max Break Torque",
+               dtDAL::FloatActorProperty::SetFuncType(this, &BaseWheeledVehiclePhysicsActComp::SetMaxBrakeTorque),
+               dtDAL::FloatActorProperty::GetFuncType(this, &BaseWheeledVehiclePhysicsActComp::GetMaxBrakeTorque),
                "Maximum torque developed by engine", VEHICLEGROUP));
 
-      toFillIn.push_back(new dtDAL::FloatActorProperty("Max Steer Angle", "Max Steer Angle",
-               dtDAL::FloatActorProperty::SetFuncType(this, &BaseWheeledVehiclePhysicsHelper::SetMaxSteerAngle),
-               dtDAL::FloatActorProperty::GetFuncType(this, &BaseWheeledVehiclePhysicsHelper::GetMaxSteerAngle),
+      AddProperty(new dtDAL::FloatActorProperty("Max Steer Angle", "Max Steer Angle",
+               dtDAL::FloatActorProperty::SetFuncType(this, &BaseWheeledVehiclePhysicsActComp::SetMaxSteerAngle),
+               dtDAL::FloatActorProperty::GetFuncType(this, &BaseWheeledVehiclePhysicsActComp::GetMaxSteerAngle),
                "The maximum angle the wheel can steer (rotate about its vertical axis) in degrees.", VEHICLEGROUP));
 
-      toFillIn.push_back(new dtDAL::FloatActorProperty("Top Speed (MPH)", "Top Speed (MPH)",
-               dtDAL::FloatActorProperty::SetFuncType(this, &BaseWheeledVehiclePhysicsHelper::SetVehicleTopSpeed),
-               dtDAL::FloatActorProperty::GetFuncType(this, &BaseWheeledVehiclePhysicsHelper::GetVehicleTopSpeed),
+      AddProperty(new dtDAL::FloatActorProperty("Top Speed (MPH)", "Top Speed (MPH)",
+               dtDAL::FloatActorProperty::SetFuncType(this, &BaseWheeledVehiclePhysicsActComp::SetVehicleTopSpeed),
+               dtDAL::FloatActorProperty::GetFuncType(this, &BaseWheeledVehiclePhysicsActComp::GetVehicleTopSpeed),
                "Top speed of vehicle", VEHICLEGROUP));
 
-      toFillIn.push_back(new dtDAL::FloatActorProperty("mVehicleTopSpeedReverse", "mVehicleTopSpeedReverse",
-               dtDAL::FloatActorProperty::SetFuncType(this, &BaseWheeledVehiclePhysicsHelper::SetVehicleTopSpeedReverse),
-               dtDAL::FloatActorProperty::GetFuncType(this, &BaseWheeledVehiclePhysicsHelper::GetVehicleTopSpeedReverse),
+      AddProperty(new dtDAL::FloatActorProperty("mVehicleTopSpeedReverse", "mVehicleTopSpeedReverse",
+               dtDAL::FloatActorProperty::SetFuncType(this, &BaseWheeledVehiclePhysicsActComp::SetVehicleTopSpeedReverse),
+               dtDAL::FloatActorProperty::GetFuncType(this, &BaseWheeledVehiclePhysicsActComp::GetVehicleTopSpeedReverse),
                "Top speed in reverse", VEHICLEGROUP));
 
-      toFillIn.push_back(new dtDAL::FloatActorProperty("AeroDynDragCoefficient", "Aero Dynamic Drag Coefficient",
-               dtDAL::FloatActorProperty::SetFuncType(this, &BaseWheeledVehiclePhysicsHelper::SetAeroDynDragCoefficient),
-               dtDAL::FloatActorProperty::GetFuncType(this, &BaseWheeledVehiclePhysicsHelper::GetAeroDynDragCoefficient),
+      AddProperty(new dtDAL::FloatActorProperty("AeroDynDragCoefficient", "Aero Dynamic Drag Coefficient",
+               dtDAL::FloatActorProperty::SetFuncType(this, &BaseWheeledVehiclePhysicsActComp::SetAeroDynDragCoefficient),
+               dtDAL::FloatActorProperty::GetFuncType(this, &BaseWheeledVehiclePhysicsActComp::GetAeroDynDragCoefficient),
                "The Coefficient of friction to use for aerodynamic friction.  Anything from just over 0.0 to a  bit over 1.0 will work.",
                VEHICLEGROUP));
 
-      toFillIn.push_back(new dtDAL::FloatActorProperty("AeroDynDragArea", "Aerodynamic Drag Area",
-               dtDAL::FloatActorProperty::SetFuncType(this, &BaseWheeledVehiclePhysicsHelper::SetAeroDynDragArea),
-               dtDAL::FloatActorProperty::GetFuncType(this, &BaseWheeledVehiclePhysicsHelper::GetAeroDynDragArea),
+      AddProperty(new dtDAL::FloatActorProperty("AeroDynDragArea", "Aerodynamic Drag Area",
+               dtDAL::FloatActorProperty::SetFuncType(this, &BaseWheeledVehiclePhysicsActComp::SetAeroDynDragArea),
+               dtDAL::FloatActorProperty::GetFuncType(this, &BaseWheeledVehiclePhysicsActComp::GetAeroDynDragArea),
                "The area in square meters to use when computing aerodynamic drag, i.e. the surface area on the front/back of the vehicle.",
                VEHICLEGROUP));
    }

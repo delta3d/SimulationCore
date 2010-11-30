@@ -28,7 +28,7 @@
 #include <DemoExport.h>
 
 #include <dtGame/gameactor.h>
-//#include <HoverVehiclePhysicsHelper.h>
+//#include <HoverVehiclePhysicsActComp.h>
 //#include <SimCore/PhysicsTypes.h>
 //#include <SimCore/Actors/BasePhysicsVehicleActor.h>
 //#include <SimCore/Actors/PlayerActor.h>

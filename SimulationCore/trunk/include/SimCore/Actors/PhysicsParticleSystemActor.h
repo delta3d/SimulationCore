@@ -30,7 +30,7 @@
 #ifdef AGEIA_PHYSICS
 #include <NxAgeiaPrimitivePhysicsHelper.h>
 #else
-#include <dtPhysics/physicshelper.h>
+#include <dtPhysics/physicsactcomp.h>
 #include <dtPhysics/physicsobject.h>
 #endif
 //#include <dtCore/object.h>
@@ -45,54 +45,59 @@ namespace dtCore
 {
    class Transformable;
 }
-class PhysicsParticle;
 
-
-///////////////////////////////////////////////////////////////////////////////////
-class SIMCORE_EXPORT PhysicsParticleSystemActor: public dtGame::GameActor
-#ifdef AGEIA_PHYSICS
-, public dtAgeiaPhysX::NxAgeiaPhysicsInterface
-#endif
+namespace SimCore
 {
 
-   public:
-      /// constructor for NxAgeiaBaseActor
-      PhysicsParticleSystemActor(dtGame::GameActorProxy& proxy);
+   namespace Actors
+   {
+      class PhysicsParticle;
 
-      /**
-      * This method is an invokable called when an object is local and
-      * receives a tick.
-      * @param tickMessage A message containing tick related information.
-      */
-      virtual void TickLocal(const dtGame::Message &tickMessage);
-
-      /**
-      * This method is an invokable called when an object is remote and
-      * receives a tick.
-      * @param tickMessage A message containing tick related information.
-      */
-      virtual void TickRemote(const dtGame::Message &tickMessage);
-
-      // Called when the actor has been added to the game manager.
-      // You can respond to OnEnteredWorld on either the proxy or actor or both.
-      virtual void OnEnteredWorld();
-
-      class SIMCORE_EXPORT TwoDOrThreeDTypeEnum : public dtUtil::Enumeration
+      ///////////////////////////////////////////////////////////////////////////////////
+      class SIMCORE_EXPORT PhysicsParticleSystemActor: public dtGame::GameActor
+#ifdef AGEIA_PHYSICS
+      , public dtAgeiaPhysX::NxAgeiaPhysicsInterface
+#endif
       {
-         DECLARE_ENUM(TwoDOrThreeDTypeEnum);
+
       public:
-         static TwoDOrThreeDTypeEnum TWO_D;
-         static TwoDOrThreeDTypeEnum THREE_D;
+         /// constructor for NxAgeiaBaseActor
+         PhysicsParticleSystemActor(dtGame::GameActorProxy& proxy);
 
-      private:
-         TwoDOrThreeDTypeEnum(const std::string &name);
-      };
+         /**
+          * This method is an invokable called when an object is local and
+          * receives a tick.
+          * @param tickMessage A message containing tick related information.
+          */
+         virtual void OnTickLocal(const dtGame::TickMessage& tickMessage);
 
-      //////////////////////////////////////////////////////////////////
-      /// /brief only accurate to 100ths place
-      static float GetRandBetweenTwoFloats(float max, float min);
+         /**
+          * This method is an invokable called when an object is remote and
+          * receives a tick.
+          * @param tickMessage A message containing tick related information.
+          */
+         virtual void OnTickRemote(const dtGame::TickMessage& tickMessage);
 
-      protected:
+         // Called when the actor has been added to the game manager.
+         // You can respond to OnEnteredWorld on either the proxy or actor or both.
+         virtual void OnEnteredWorld();
+
+         class SIMCORE_EXPORT TwoDOrThreeDTypeEnum : public dtUtil::Enumeration
+         {
+            DECLARE_ENUM(TwoDOrThreeDTypeEnum);
+         public:
+            static TwoDOrThreeDTypeEnum TWO_D;
+            static TwoDOrThreeDTypeEnum THREE_D;
+
+         private:
+            TwoDOrThreeDTypeEnum(const std::string &name);
+         };
+
+         //////////////////////////////////////////////////////////////////
+         /// /brief only accurate to 100ths place
+         static float GetRandBetweenTwoFloats(float max, float min);
+
+         protected:
          // Loads a particle so that the cache works correctly
          void LoadParticleResource(PhysicsParticle &particle, const std::string &resourceFile);
 
@@ -118,7 +123,7 @@ class SIMCORE_EXPORT PhysicsParticleSystemActor: public dtGame::GameActor
          virtual void PostPhysicsUpdate();
 #endif
 
-      public:
+         public:
 
          /// turn it on or off from spawning...
          void ToggleEmitter(bool value) {mIsCurrentlyOn = value; mSystemsTimeTotalTimeLength = 0;}
@@ -137,7 +142,7 @@ class SIMCORE_EXPORT PhysicsParticleSystemActor: public dtGame::GameActor
 
          //////////////////////////////////////////////////////////////////
          /// Sets and Gets for Properties
-         void SetTwoDOrThreeDTypeEnum(TwoDOrThreeDTypeEnum &value)   {mParticleEnumForObjectType = &value;}
+         void SetTwoDOrThreeDTypeEnum(TwoDOrThreeDTypeEnum& value)   {mParticleEnumForObjectType = &value;}
          void SetParticleEmitterRateMin(float value)                 {mParticleEmitterRateMin=value;}
          void SetParticleEmitterRateMax(float value)                 {mParticleEmitterRateMax=value;}
          void SetParticleLengthofStay(float value)                   {mParticleLengthOfStay=value;}
@@ -194,20 +199,21 @@ class SIMCORE_EXPORT PhysicsParticleSystemActor: public dtGame::GameActor
 
 
 #ifdef AGEIA_PHYSICS
-         dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper& GetPhysicsHelper() { return *mPhysicsHelper; }
+         dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper& GetPhysicsActComp() { return *mPhysicsActComp; }
 #else
-         dtPhysics::PhysicsHelper& GetPhysicsHelper() { return *mPhysicsHelper; }
+         dtPhysics::PhysicsActComp& GetPhysicsActComp() { return *mPhysicsActComp; }
 #endif
-      protected:
+         protected:
 
          //////////////////////////////////////////////////////////////////
          virtual void AddParticle();
          //////////////////////////////////////////////////////////////////
          virtual void RemoveParticle(PhysicsParticle& whichOne);
 
+         typedef std::list<dtCore::RefPtr<PhysicsParticle> > ParticleList;
          // Data members should NEVER be protected, but this one can't be changed yet.
-         std::list<dtCore::RefPtr<PhysicsParticle> > mOurParticleList;
-      //private:
+         ParticleList mOurParticleList;
+         //private:
          TwoDOrThreeDTypeEnum*   mParticleEnumForObjectType;      /// The Type of object actor this should be.
          std::string             mPathOfFileToLoad[5];
          float                   mSpawnerParticleTimer;
@@ -240,74 +246,75 @@ class SIMCORE_EXPORT PhysicsParticleSystemActor: public dtGame::GameActor
          osg::Vec3               mForceVectorMax;
 
 #ifdef AGEIA_PHYSICS
-         dtCore::RefPtr<dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper> mPhysicsHelper;
+         dtCore::RefPtr<dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper> mPhysicsActComp;
 #else
-         dtCore::RefPtr<dtPhysics::PhysicsHelper> mPhysicsHelper;
+         dtCore::RefPtr<dtPhysics::PhysicsActComp> mPhysicsActComp;
 #endif
-   };
+      };
 
-   ////////////////////////////////////////////////////////
-   // PROXY
-   ////////////////////////////////////////////////////////
-   class SIMCORE_EXPORT PhysicsParticleSystemActorProxy : public dtGame::GameActorProxy
-   {
-   public:
-      PhysicsParticleSystemActorProxy();
-      virtual void BuildPropertyMap();
+      ////////////////////////////////////////////////////////
+      // PROXY
+      ////////////////////////////////////////////////////////
+      class SIMCORE_EXPORT PhysicsParticleSystemActorProxy : public dtGame::GameActorProxy
+      {
+      public:
+         typedef dtGame::GameActorProxy BaseClass;
 
-      virtual dtCore::RefPtr<dtDAL::ActorProperty> GetDeprecatedProperty(const std::string& name);
+         PhysicsParticleSystemActorProxy();
+         virtual void BuildPropertyMap();
 
-   protected:
-      virtual ~PhysicsParticleSystemActorProxy();
-      void CreateActor();
-      virtual void OnEnteredWorld();
-      virtual void OnRemovedFromWorld();
-   };
+         virtual dtCore::RefPtr<dtDAL::ActorProperty> GetDeprecatedProperty(const std::string& name);
 
-   /////////////////////////////////////////////////////////////////////////////////////////////////////////
-   class SIMCORE_EXPORT PhysicsParticle : public osg::Referenced
-   {
-   public:
-      PhysicsParticle(const std::string& name, float ParticleLengthOfTimeOut = 10.0f,
-               float InverseDeletionAlphaTime = 3.0f, float alphaInTime = 0.0f);
+         virtual void BuildActorComponents();
 
-      void UpdateTime(float elapsedTime);
-      bool ShouldBeRemoved();
+      protected:
+         virtual ~PhysicsParticleSystemActorProxy();
+         void CreateActor();
+         virtual void OnEnteredWorld();
+         virtual void OnRemovedFromWorld();
+      };
 
-      void HitReceived();
+      /////////////////////////////////////////////////////////////////////////////////////////////////////////
+      class SIMCORE_EXPORT PhysicsParticle : public osg::Referenced
+      {
+      public:
+         PhysicsParticle(const std::string& name, float ParticleLengthOfTimeOut = 10.0f,
+                  float InverseDeletionAlphaTime = 3.0f, float alphaInTime = 0.0f);
 
-      void UpdateAlphaAmount();
-      void FlagToDelete();
+         void UpdateTime(float elapsedTime);
+         bool ShouldBeRemoved();
 
-      bool IsFlaggedToDelete();
+         void HitReceived();
 
-      const std::string& GetName() const;
+         void UpdateAlphaAmount();
+         void FlagToDelete();
 
-      // Get the physics actor - just a pointer, so there is some danger here
-      dtPhysics::PhysicsObject* GetPhysicsObject();
-      // Set the physics actor - just a pointer, so there is some danger here
-      void SetPhysicsObject(dtPhysics::PhysicsObject* physObj);
+         bool IsFlaggedToDelete();
 
-      dtCore::RefPtr<dtCore::Transformable> mObj;
+         const std::string& GetName() const;
 
-   protected:
-      virtual ~PhysicsParticle() {}
+         // Get the physics actor - just a pointer, so there is some danger here
+         dtPhysics::PhysicsObject* GetPhysicsObject();
+         // Set the physics actor - just a pointer, so there is some danger here
+         void SetPhysicsObject(dtPhysics::PhysicsObject* physObj);
 
-   private:
-      float mSpawnTimer;
-      float mParticleLengthOfTimeOut;        // how long till it goes away
-      float mInverseDeletionAlphaTime;       // when it ends alphaing out before going away
-      float mAlphaInStartTime;               // when it starts alphaing out before going away
-      bool  mBeenHit;                        // if its been hit start the time out sequence
-      bool  mNeedsToBeDeleted ;
-      std::string mName;                     // name of the particle.. for removal.
-      std::string mFileToLoad;
-#ifdef AGEIA_PHYSICS
-      // Note - we hold the actual pointer to the nxactor, because the helper holds the real reference
-      dtPhysics::PhysicsObject* mPhysicsObject; // The Nx actor created by the physics helper. We hold it so we can find it later
-#else
-      dtCore::RefPtr<dtPhysics::PhysicsObject> mPhysicsObject;
-#endif
-   };
+         dtCore::RefPtr<dtCore::Transformable> mObj;
 
+      protected:
+         virtual ~PhysicsParticle() {}
+
+      private:
+         float mSpawnTimer;
+         float mParticleLengthOfTimeOut;        // how long till it goes away
+         float mInverseDeletionAlphaTime;       // when it ends alphaing out before going away
+         float mAlphaInStartTime;               // when it starts alphaing out before going away
+         bool  mBeenHit;                        // if its been hit start the time out sequence
+         bool  mNeedsToBeDeleted ;
+         std::string mName;                     // name of the particle.. for removal.
+         std::string mFileToLoad;
+         dtCore::RefPtr<dtPhysics::PhysicsObject> mPhysicsObject;
+      };
+
+   }
+}
 #endif

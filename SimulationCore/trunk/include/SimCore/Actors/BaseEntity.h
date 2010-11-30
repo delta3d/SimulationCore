@@ -147,17 +147,11 @@ namespace SimCore
              */
             virtual void BuildPropertyMap();
 
-            /**
-             * This is a virtual method on the proxy called from the base actor proxy.
-             * It is overridden here to call init dr helper.  If you override this, make sure to call
-             * the super version or the actorproxy won't have any properties and create actor won't get called.
-             */
-            virtual void Init(const dtDAL::ActorType& actorType);
 
             virtual void OnRemovedFromWorld();
 
-            /// Build the invokables
-            virtual void BuildInvokables();
+            /// Override this to add your own components or to init values on the ones that are already added.
+            virtual void BuildActorComponents();
 
          protected:
             virtual ~BaseEntityActorProxy();
@@ -176,9 +170,6 @@ namespace SimCore
          public:
 
             BaseEntity(dtGame::GameActorProxy& proxy);
-
-            /// Override this to add your own components or to init values on the ones that are already added.
-            virtual void BuildActorComponents();
 
             virtual void OnEnteredWorld();
 
@@ -320,9 +311,9 @@ namespace SimCore
             virtual void ProcessMessage(const dtGame::Message& message);
 
             //this was made public so the proxy could call it.. -bga
-            dtGame::DeadReckoningHelper& GetDeadReckoningHelper() { return *mDeadReckoningHelper; }
-            const dtGame::DeadReckoningHelper& GetDeadReckoningHelper() const { return *mDeadReckoningHelper; }
-            bool IsDeadReckoningHelperValid() const { return (mDeadReckoningHelper.valid()); }
+            dtGame::DeadReckoningHelper& GetDeadReckoningHelper();
+            const dtGame::DeadReckoningHelper& GetDeadReckoningHelper() const;
+            bool IsDeadReckoningHelperValid() const;
 
             /**
              * This function is intended for use by entities that implement physics
@@ -413,14 +404,6 @@ namespace SimCore
             dtCore::RefPtr<osg::MatrixTransform> mScaleMatrixNode;
 
             //////////////// DeadReckoning related values
-            // Note that the LastKnown values are stored on the DR helper, but the CURRENT
-            // values are part of the entity. See the get/set methods for info.
-            dtCore::RefPtr<dtGame::DeadReckoningHelper> mDeadReckoningHelper;
-            
-            //This is stored on both the entity and the helper because the
-            //two values are not always the same.
-            //dtGame::DeadReckoningAlgorithm* mDRAlgorithm;
-
             /// The particle systems used for fire and smoke
             dtCore::RefPtr<dtCore::ParticleSystem> mSmokePlumesSystem, mFlamesSystem;
 
@@ -436,9 +419,6 @@ namespace SimCore
             osg::Vec3 mScaleMagnification;
 
             unsigned mFireLightID;
-
-            // held onto since we use this fairly often.
-            dtCore::RefPtr<DRPublishingActComp> mDRPublishingActComp;
       };
 
    }
