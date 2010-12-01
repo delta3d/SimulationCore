@@ -90,8 +90,10 @@ namespace SimCore
          virtual void CreateActor();
          virtual void BuildPropertyMap();
 
+         unsigned ComputeNumParticles(const osg::Vec3& dims);
       private:
 
+         bool mIsCreated;
          osg::Vec3 mDimensions;
          dtCore::RefPtr<SimpleShapeDRHelper> mDRHelper;
          dtCore::RefPtr<SimCore::Components::VolumeRenderingComponent::ShapeVolumeRecord> mShapeVolume;

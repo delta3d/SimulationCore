@@ -1152,5 +1152,22 @@ namespace SimCore
          return mMaxSpotLights;
       }
 
+      ///////////////////////////////////////////////////////////////////////////////////
+      osg::Group* RenderingSupportComponent::GetSceneRoot()
+      {
+         return mSceneRoot.get();
+      }
+
+      ///////////////////////////////////////////////////////////////////////////////////
+      osg::Group* RenderingSupportComponent::GetNVGSRoot()
+      {
+         return mNVGSRoot.get();
+      }
+
+      ///////////////////////////////////////////////////////////////////////////////////
+      osg::Group* RenderingSupportComponent::GetGUIRoot()
+      {
+         return mGUIRoot.get();
+      }
    }
 }
