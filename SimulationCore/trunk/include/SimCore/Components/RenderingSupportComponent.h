@@ -283,9 +283,9 @@ namespace SimCore
 
             void FindBestLights(dtCore::Transformable& actor);
 
-            osg::Group& GetSceneRoot();
-            osg::Group& GetNVGSRoot();
-            osg::Group& GetGUIRoot();
+            osg::Group* GetSceneRoot();
+            osg::Group* GetNVGSRoot();
+            osg::Group* GetGUIRoot();
 
          protected:
             /// Destructor

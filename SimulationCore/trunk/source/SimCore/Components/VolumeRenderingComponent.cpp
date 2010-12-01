@@ -643,7 +643,7 @@ namespace SimCore
             {
                float volume = svr.mRadius[0] * svr.mRadius[1] * svr.mRadius[2];
                particleVolume = volume / svr.mNumParticles;
-               multiplier = 6.5f;
+               multiplier = 3.5f;
             }
             break;
 

@@ -132,6 +132,7 @@ namespace SimCore
       SimpleMovingShapeActorProxy::SimpleMovingShapeActorProxy()
       : mOwner("")
       , mIndex(0)
+      , mIsCreated(false)
       {
          SetClassName("SimCore::Actors::SimpleMovingShapeActorProxy");
       }
@@ -167,28 +168,7 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////
       void SimpleMovingShapeActorProxy::OnEnteredWorld()
       {
-         ////add a shape volume for the beam
-         SimCore::Components::VolumeRenderingComponent* vrc = NULL;
-         GetGameManager()->GetComponentByName(SimCore::Components::VolumeRenderingComponent::DEFAULT_NAME, vrc); 
-
-         if(vrc != NULL)
-         {
-            mShapeVolume = new SimCore::Components::VolumeRenderingComponent::ShapeVolumeRecord();
-            mShapeVolume->mPosition.set(0.0f, 0.0f, 0.0f);
-            mShapeVolume->mColor.set(1.0f, 1.0f, 1.0f, 1.0f);
-            mShapeVolume->mShapeType = SimCore::Components::VolumeRenderingComponent::ELLIPSOID;
-            mShapeVolume->mRadius.set(1.0f, 1.0f, 1.0f);
-            mShapeVolume->mNumParticles = 150;
-            mShapeVolume->mParticleRadius = 5.0f;
-            mShapeVolume->mVelocity = 0.15f;
-            mShapeVolume->mDensity = 0.035f;
-            mShapeVolume->mTarget = &GetGameActor();
-            mShapeVolume->mAutoDeleteOnTargetNull = true;
-            mShapeVolume->mRenderMode = SimCore::Components::VolumeRenderingComponent::PARTICLE_VOLUME;
-
-            vrc->CreateShapeVolume(mShapeVolume);
-         }
-
+         mShapeVolume = new SimCore::Components::VolumeRenderingComponent::ShapeVolumeRecord();
       }
 
       ////////////////////////////////////////////////////////////////////////////
@@ -254,15 +234,38 @@ namespace SimCore
 
          if(mShapeVolume.valid())
          {
-            mShapeVolume->mRadius = dim;
-            mShapeVolume->mDirtyParams = true;
-
             SimCore::Components::VolumeRenderingComponent* vrc = NULL;
             GetGameManager()->GetComponentByName(SimCore::Components::VolumeRenderingComponent::DEFAULT_NAME, vrc); 
 
+            //std::cout << "Setting Current Dimensions: " << dim << std::endl;
             if(vrc != NULL)
             {
-               vrc->ComputeParticleRadius(*mShapeVolume);
+
+               if(!mIsCreated)
+               {
+                  mIsCreated = true;
+
+                  mShapeVolume->mPosition.set(0.0f, 0.0f, 0.0f);
+                  mShapeVolume->mColor.set(1.0f, 1.0f, 1.0f, 1.0f);
+                  mShapeVolume->mShapeType = SimCore::Components::VolumeRenderingComponent::ELLIPSOID;
+                  mShapeVolume->mRadius = mDimensions;
+                  mShapeVolume->mNumParticles = ComputeNumParticles(mDimensions);
+                  mShapeVolume->mParticleRadius = 2.0f;
+                  mShapeVolume->mVelocity = 0.15f;
+                  mShapeVolume->mDensity = 0.015f;
+                  mShapeVolume->mTarget = &GetGameActor();
+                  mShapeVolume->mAutoDeleteOnTargetNull = true;
+                  mShapeVolume->mRenderMode = SimCore::Components::VolumeRenderingComponent::PARTICLE_VOLUME;
+
+                  vrc->CreateShapeVolume(mShapeVolume);
+                  vrc->ComputeParticleRadius(*mShapeVolume);
+               }
+               else
+               {
+                  mShapeVolume->mRadius = mDimensions;
+                  mShapeVolume->mDirtyParams = true;
+                  vrc->ComputeParticleRadius(*mShapeVolume);
+               }
             }
          }
       }
@@ -271,6 +274,16 @@ namespace SimCore
       const osg::Vec3& SimpleMovingShapeActorProxy::GetCurrentDimensions() const
       {
          return mDimensions;
+      }
+
+      ////////////////////////////////////////////////////////////////////////////
+      unsigned SimpleMovingShapeActorProxy::ComputeNumParticles( const osg::Vec3& dims )
+      {
+         float totalSize = dims[0] * dims[1] * dims[2];
+         unsigned numParticles = unsigned(totalSize / 20.0f);;
+         if(numParticles > 150) numParticles = 150;
+         else if (numParticles < 5) numParticles = 5;
+         return numParticles;
       }
    }
 
