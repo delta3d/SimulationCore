@@ -44,7 +44,7 @@ void main(void)
 
    //float fireNoiseColor2 = max(1.0 - abs(sin(20.0 * fireNoiseColor * radiusPosition.x) - cos(20.0 * fireNoiseColor * radiusPosition.y)), 0.0);
    float fireNoiseColor2 = (1.5 + r) * fireNoiseColor;
-   fireNoiseColor2 -= int(fireNoiseColor2);
+   fireNoiseColor2 -= floor(fireNoiseColor2);
 
    vec3 fireColorCenter = vec3(0.5, 0.5, 0.75);
    vec3 fireColorStart = vec3(1.0, 1.0, 0.0);
