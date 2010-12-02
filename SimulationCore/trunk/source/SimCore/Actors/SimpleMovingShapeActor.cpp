@@ -27,7 +27,8 @@
 #include <dtGame/gameactor.h>
 #include <dtGame/deadreckoninghelper.h>
 #include <dtDAL/propertymacros.h>
-
+#include <dtUtil/mathdefines.h>
+#include <iostream>
 namespace SimCore
 {
 
@@ -36,6 +37,7 @@ namespace SimCore
 
       //////////////////////////////////////////////////////////////////////////
       SimpleMovingShapeActorProxy::SimpleShapeDRHelper::SimpleShapeDRHelper()
+         : mCurTimeDelta(0.0f)
       {
 
       }
@@ -67,9 +69,10 @@ namespace SimCore
          mDRScale.DeadReckonThePosition(pos, pLogger, gameActor, 
             useAcceleration, mDRScale.mLastUpdatedTime, GetUseCubicSplineTransBlend());
          
-         if (mDRScale.mUpdated && GetEffectiveUpdateMode(gameActor.IsRemote())
+         if (GetEffectiveUpdateMode(gameActor.IsRemote())
                   == DeadReckoningHelper::UpdateMode::CALCULATE_AND_MOVE_ACTOR)
          {
+            //std::cout << "DIMS: " << pos << std::endl;
             SimpleMovingShapeActorProxy& s = static_cast<SimpleMovingShapeActorProxy&>(gameActor.GetGameActorProxy());
             s.SetCurrentDimensions(pos);
          }
@@ -117,10 +120,14 @@ namespace SimCore
          {
             mDRScale.SetLastUpdatedTime(curSimulationTime - simTimeDelta);
             mDRScale.mElapsedTimeSinceUpdate = 0.0f;
+            mCurTimeDelta = 0.0f;
+            mDRScale.mUpdated = false;
          }
 
          float transElapsedTime = mDRScale.mElapsedTimeSinceUpdate + simTimeDelta;
          if (transElapsedTime < 0.0) transElapsedTime = 0.0f;
+         
+         mCurTimeDelta = dtUtil::Max(transElapsedTime - mDRScale.mElapsedTimeSinceUpdate, 0.0f);
          mDRScale.mElapsedTimeSinceUpdate = transElapsedTime;
       }
 
@@ -231,6 +238,7 @@ namespace SimCore
       void SimpleMovingShapeActorProxy::SetCurrentDimensions( const osg::Vec3& dim )
       {
          mDimensions = dim;
+         unsigned numParticles = ComputeNumParticles(mDimensions);
 
          if(mShapeVolume.valid())
          {
@@ -246,19 +254,48 @@ namespace SimCore
                   mIsCreated = true;
 
                   mShapeVolume->mPosition.set(0.0f, 0.0f, 0.0f);
-                  mShapeVolume->mColor.set(1.0f, 1.0f, 1.0f, 1.0f);
+                  mShapeVolume->mColor.set(1.0f, 1.0f, 1.0f, 0.5f);
                   mShapeVolume->mShapeType = SimCore::Components::VolumeRenderingComponent::ELLIPSOID;
                   mShapeVolume->mRadius = mDimensions;
-                  mShapeVolume->mNumParticles = ComputeNumParticles(mDimensions);
+                  mShapeVolume->mNumParticles = numParticles;
                   mShapeVolume->mParticleRadius = 2.0f;
-                  mShapeVolume->mVelocity = 0.15f;
-                  mShapeVolume->mDensity = 0.015f;
+                  mShapeVolume->mVelocity = 0.05f;
+                  //if there are fewer particles they should be more dense
+                  mShapeVolume->mDensity = 0.005f + ((150 - mShapeVolume->mNumParticles) * 0.001f);
                   mShapeVolume->mTarget = &GetGameActor();
                   mShapeVolume->mAutoDeleteOnTargetNull = true;
                   mShapeVolume->mRenderMode = SimCore::Components::VolumeRenderingComponent::PARTICLE_VOLUME;
 
                   vrc->CreateShapeVolume(mShapeVolume);
                   vrc->ComputeParticleRadius(*mShapeVolume);
+
+                  std::cout << std::endl << "Creating new plume:" << std::endl;
+                  std::cout << "radius: " << mShapeVolume->mRadius << std::endl;
+                  std::cout << "num particles: " << mShapeVolume->mNumParticles << std::endl;
+                  std::cout << "particle radius: " << mShapeVolume->mParticleRadius << std::endl;
+                  std::cout << "density: " << mShapeVolume->mDensity << std::endl << std::endl;
+               }
+               else if(numParticles >= (1.5f * mShapeVolume->mNumParticles))
+               {
+                  //remove and re-create
+                  vrc->RemoveShapeVolume(mShapeVolume.get());
+
+                  mShapeVolume->mRadius = mDimensions;
+                  mShapeVolume->mNumParticles = numParticles;
+                  mShapeVolume->mDensity = 0.005f + ((150 - mShapeVolume->mNumParticles) * 0.001f);
+                  mShapeVolume->mTarget = &GetGameActor();
+                  mShapeVolume->mAutoDeleteOnTargetNull = true;
+
+                  vrc->CreateShapeVolume(mShapeVolume);
+                  vrc->ComputeParticleRadius(*mShapeVolume);
+
+
+                  std::cout << std::endl << "Modifying plume:" << std::endl;
+                  std::cout << "radius: " << mShapeVolume->mRadius << std::endl;
+                  std::cout << "num particles: " << mShapeVolume->mNumParticles << std::endl;
+                  std::cout << "particle radius: " << mShapeVolume->mParticleRadius << std::endl;
+                  std::cout << "density: " << mShapeVolume->mDensity << std::endl << std::endl;
+
                }
                else
                {
@@ -280,9 +317,9 @@ namespace SimCore
       unsigned SimpleMovingShapeActorProxy::ComputeNumParticles( const osg::Vec3& dims )
       {
          float totalSize = dims[0] * dims[1] * dims[2];
-         unsigned numParticles = unsigned(totalSize / 20.0f);;
+         unsigned numParticles = unsigned(totalSize / 25.0f);
          if(numParticles > 150) numParticles = 150;
-         else if (numParticles < 5) numParticles = 5;
+         else if (numParticles < 15) numParticles = 15;
          return numParticles;
       }
    }

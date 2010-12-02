@@ -57,8 +57,9 @@ namespace SimCore
 
                virtual void IncrementTimeSinceUpdate(float simTimeDelta, float curSimulationTime);
 
-
+               float mCurTimeDelta;
                DeadReckoningHelper::DRVec3Util mDRScale;
+
          };
 
          static const dtUtil::RefString PROPERTY_LAST_KNOWN_DIMENSIONS;
