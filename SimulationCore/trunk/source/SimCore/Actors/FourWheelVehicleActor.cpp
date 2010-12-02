@@ -23,7 +23,6 @@
 * @author David Guthrie
 */
 #include <prefix/SimCorePrefix.h>
-#ifndef AGEIA_PHYSICS
 #include <SimCore/Actors/FourWheelVehicleActor.h>
 #include <dtDAL/propertymacros.h>
 #include <dtABC/application.h>
@@ -172,7 +171,7 @@ namespace SimCore
 
          LoadSound(mSoundEffectAcceleration, mSndAcceleration);
 
-         osgSim::DOFTransform* wheels[4];
+         osgSim::DOFTransform* wheels[6];
 
          dtUtil::NodeCollector* nodeCollector = GetNodeCollector();
 
@@ -182,8 +181,10 @@ namespace SimCore
             wheels[SimCore::FourWheelVehiclePhysicsActComp::FRONT_RIGHT]= nodeCollector->GetDOFTransform("dof_wheel_rt_01");
             wheels[SimCore::FourWheelVehiclePhysicsActComp::BACK_LEFT]  = nodeCollector->GetDOFTransform("dof_wheel_lt_02");
             wheels[SimCore::FourWheelVehiclePhysicsActComp::BACK_RIGHT] = nodeCollector->GetDOFTransform("dof_wheel_rt_02");
+            wheels[SimCore::FourWheelVehiclePhysicsActComp::BACK_LEFT2]  = nodeCollector->GetDOFTransform("dof_wheel_lt_03");
+            wheels[SimCore::FourWheelVehiclePhysicsActComp::BACK_RIGHT2] = nodeCollector->GetDOFTransform("dof_wheel_rt_03");
          }
-
+         // Only check the first 4 for validity
          for (size_t i = 0 ; i < 4; ++i)
          {
             if (wheels[i] == NULL)
@@ -264,10 +265,14 @@ namespace SimCore
          // if the vehicle is moving
 
          if (mSndVehicleIdleLoop == NULL)
+         {
             return;
+         }
 
          if (mSndVehicleIdleLoop->IsPlaying() == false)
+         {
             mSndVehicleIdleLoop->Play();
+         }
 
          if (GetMPH() > 1.0f)
          {
@@ -383,20 +388,26 @@ namespace SimCore
          if (mSndIgnition != NULL)
          {
             if (!mSndIgnition->IsPlaying())
+            {
                mSndIgnition->Play();
+            }
          }
 
          if (mSndBrake != NULL)
          {
             if (mSndBrake->IsPlaying())
+            {
                mSndBrake->Stop();
+            }
          }
 
          if (mSndVehicleIdleLoop != NULL)
          {
             mSndVehicleIdleLoop->SetPitch(1.0f);
             if (!mSndVehicleIdleLoop->IsPlaying())
+            {
                mSndVehicleIdleLoop->Play();
+            }
          }
       }
 
@@ -406,7 +417,9 @@ namespace SimCore
          BaseClass::UpdateVehicleTorquesAndAngles(deltaTime);
          dtCore::Keyboard *keyboard = GetGameActorProxy().GetGameManager()->GetApplication().GetKeyboard();
          if (keyboard == NULL)
+         {
             return;
+         }
 
          dtPhysics::PhysicsObject* po = GetPhysicsActComp()->GetMainPhysicsObject();
          if (po == NULL)
@@ -538,9 +551,6 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////
       void FourWheelVehicleActor::RepositionVehicle(float deltaTime)
       {
-         // Note - this should be refactored. There should be a base physics vehicle HELPER.
-         // See nxageiaFourWheelActor::RepositionVehicle() for more info.
-
          BasePhysicsVehicleActor::RepositionVehicle(deltaTime);
          //GetFourWheelPhysicsActComp()->RepositionVehicle(deltaTime);
       }
@@ -692,4 +702,3 @@ namespace SimCore
 
    } // namespace
 }// namespace
-#endif

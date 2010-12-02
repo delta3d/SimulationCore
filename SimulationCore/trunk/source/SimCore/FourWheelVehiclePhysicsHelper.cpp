@@ -82,6 +82,7 @@ namespace SimCore
    , mFrontMaxJounce(0.0f)
    , mRearMaxJounce(0.0f)
    , mFourWheelDrive(false)
+   , mDoubleBackWheels(false)
    {
       mAxleRotation[0] = 0.0f;
       mAxleRotation[1] = 0.0f;
@@ -215,25 +216,33 @@ namespace SimCore
    /// @retval                  false if model wasn't created because of some error.
 
    bool FourWheelVehiclePhysicsActComp::CreateVehicle(const dtCore::Transform& transformForRot,
-            const osg::Node& bodyNode, osgSim::DOFTransform* wheels[4])
+            const osg::Node& bodyNode, osgSim::DOFTransform* wheels[6])
    {
       // Make sure we have valid nodes for geometry of all four wheels.
       for (int i = 0 ; i < 4; ++i)
       {
          if (wheels[i] == NULL)
+         {
             return false;
+         }
+      }
+
+      if (wheels[4] != NULL && wheels[5] != NULL)
+      {
+          mDoubleBackWheels = true;
       }
 
       float frontDamping = 0.0f, rearDamping = 0.0f, frontSpring = 0.0f, rearSpring = 0.0f;
-      osg::Matrix WheelMatrix[4];
-      osg::Vec3   WheelVec[4];
+      osg::Matrix WheelMatrix[6];
+      osg::Vec3   WheelVec[6];
 
       osg::Matrix bodyOffset;
       GetLocalMatrix(bodyNode, bodyOffset);
       //To allow the developer to shift the center of mass.
       bodyOffset.setTrans(bodyOffset.getTrans() - GetMainPhysicsObject()->GetOriginOffset());
 
-      for(int i = 0; i < 4; i++)
+      unsigned wheelCount = mDoubleBackWheels ? 6U : 4U;
+      for(unsigned i = 0; i < wheelCount; i++)
       {
          GetLocalMatrix(*(wheels[i]), WheelMatrix[i]);
          WheelVec[i] = WheelMatrix[i].getTrans() - bodyOffset.getTrans();
@@ -244,6 +253,12 @@ namespace SimCore
 
          float frontLeverArm   =  WheelVec[FRONT_LEFT][1]; // Y distance from front wheels to center of gravity
          float rearLeverArm    = -WheelVec[BACK_LEFT][1];  // Y distance from rear wheels to center of gravity
+
+         if (mDoubleBackWheels)
+         {
+            rearLeverArm =  (rearLeverArm + (-WheelVec[BACK_LEFT2][1])) / 2.0f;  // average distance to rear wheels.
+         }
+
          float wheelbase       = frontLeverArm + rearLeverArm;
          if (wheelbase <= 0.0)
          {
@@ -270,10 +285,22 @@ namespace SimCore
          WheelVec[BACK_LEFT][2] += mRearMaxJounce;
          WheelVec[BACK_RIGHT][2] += mRearMaxJounce;
 
+         if (mDoubleBackWheels)
+         {
+             WheelVec[BACK_LEFT2][2] += mRearMaxJounce;
+             WheelVec[BACK_RIGHT2][2] += mRearMaxJounce;
+         }
+
          WheelVec[FRONT_LEFT][0] -= mFrontTrackAdjustment;
          WheelVec[FRONT_RIGHT][0] += mFrontTrackAdjustment;
          WheelVec[BACK_LEFT][0] -= mRearTrackAdjustment;
          WheelVec[BACK_RIGHT][0] += mRearTrackAdjustment;
+
+         if (mDoubleBackWheels)
+         {
+             WheelVec[BACK_LEFT2][0] -= mRearTrackAdjustment;
+             WheelVec[BACK_RIGHT2][0] += mRearTrackAdjustment;
+         }
       }
 
       CreateChassis(transformForRot, bodyNode);
@@ -326,6 +353,13 @@ namespace SimCore
 
       sp.mDamperCoef = rearDamping;
       sp.mSpringRate = rearSpring;
+
+      if (mDoubleBackWheels)
+      {
+         sp.mDamperCoef /= 2.0f;
+         sp.mSpringRate /= 2.0f;
+      }
+
       sp.mRestLength = GetRearSuspensionRestLength();
       sp.mTravel = GetRearSuspensionTravel();
       sp.mRollInfluence = 0.1f;
@@ -333,6 +367,11 @@ namespace SimCore
       mWheels[BACK_LEFT]    = AddWheel(WheelVec[BACK_LEFT], *static_cast<osg::Transform*>(wheels[BACK_LEFT]->getParent(0)), tp, sp, true, false, true);
       mWheels[BACK_RIGHT]   = AddWheel(WheelVec[BACK_RIGHT], *static_cast<osg::Transform*>(wheels[BACK_RIGHT]->getParent(0)), tp, sp, true, false, true);
 
+      if (mDoubleBackWheels)
+      {
+          mWheels[BACK_LEFT2]    = AddWheel(WheelVec[BACK_LEFT2], *static_cast<osg::Transform*>(wheels[BACK_LEFT2]->getParent(0)), tp, sp, true, false, true);
+          mWheels[BACK_RIGHT2]   = AddWheel(WheelVec[BACK_RIGHT2], *static_cast<osg::Transform*>(wheels[BACK_RIGHT2]->getParent(0)), tp, sp, true, false, true);
+      }
 
       FinalizeInitialization();
 
@@ -343,7 +382,7 @@ namespace SimCore
    void FourWheelVehiclePhysicsActComp::CleanUp()
    {
       BaseClass::CleanUp();
-      for (unsigned i = 0; i < 4; ++i)
+      for (unsigned i = 0; i < 6; ++i)
       {
          mWheels[i].mTransform = NULL;
          // The wheel should be deleted by baseclass when it deletes the underlying vehicle.
