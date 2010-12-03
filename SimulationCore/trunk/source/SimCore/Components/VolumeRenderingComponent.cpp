@@ -165,8 +165,10 @@ namespace SimCore
 
       enum Phase{ PRE_DRAW, POST_DRAW};
 
-      VRC_DrawCallback(osg::Node& n, Phase p)
-         : mNode(&n)
+      VRC_DrawCallback(osg::Camera* sceneCam, osg::Camera* depthCam, osg::Node& n, Phase p)
+         : mSceneCamera(sceneCam)
+         , mDepthCamera(depthCam)
+         , mNode(&n)
          , mPhase(p)
       {
 
@@ -184,6 +186,12 @@ namespace SimCore
 
             if(mPhase == PRE_DRAW)
             {
+               if(mSceneCamera.valid() && mDepthCamera.valid())
+               {
+                  //the view matrix is inherited but not the projection, so we set it here every frame
+                  mDepthCamera->setProjectionMatrix(mSceneCamera->getProjectionMatrix());
+               }
+
                sceneDepthUniform->set(true);
             }
             else
@@ -195,6 +203,8 @@ namespace SimCore
 
    private:
 
+      dtCore::ObserverPtr<osg::Camera> mSceneCamera;
+      dtCore::ObserverPtr<osg::Camera> mDepthCamera;
       dtCore::ObserverPtr<osg::Node> mNode;
       Phase mPhase;
 
@@ -1179,8 +1189,8 @@ namespace SimCore
 
       mDepthCamera = new dtCore::Camera();
 
-      VRC_DrawCallback* vrcPre = new VRC_DrawCallback(*GetGameManager()->GetScene().GetSceneNode(), VRC_DrawCallback::PRE_DRAW);
-      VRC_DrawCallback* vrcPost = new VRC_DrawCallback(*GetGameManager()->GetScene().GetSceneNode(), VRC_DrawCallback::POST_DRAW);
+      VRC_DrawCallback* vrcPre = new VRC_DrawCallback(sceneCam, mDepthCamera->GetOSGCamera(), *GetGameManager()->GetScene().GetSceneNode(), VRC_DrawCallback::PRE_DRAW);
+      VRC_DrawCallback* vrcPost = new VRC_DrawCallback(sceneCam, mDepthCamera->GetOSGCamera(), *GetGameManager()->GetScene().GetSceneNode(), VRC_DrawCallback::POST_DRAW);
       
       mDepthCamera->GetOSGCamera()->setPreDrawCallback(vrcPre);
       mDepthCamera->GetOSGCamera()->setPostDrawCallback(vrcPost);
