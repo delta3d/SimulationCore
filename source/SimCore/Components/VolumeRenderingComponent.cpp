@@ -498,6 +498,7 @@ namespace SimCore
          else if(svr->mFadeOut)
          {
             svr->mIntensity -= (dt / svr->mFadeOutTime);
+            svr->mDirtyParams = true;
             if(svr->mIntensity <= 0.0f)
             {
                RemoveDrawable(*svr);
@@ -884,7 +885,7 @@ namespace SimCore
       for(;iter != endIter; ++iter)
       {
          dtCore::RefPtr<ShapeVolumeRecord> svr = (*iter).get();
-         if(svr.valid() && svr->mShapeType == PARTICLE_VOLUME && svr->mDirtyParams)
+         if(svr.valid() && svr->mRenderMode == PARTICLE_VOLUME && svr->mDirtyParams)
          {
             SetUniformData(*svr);
 
