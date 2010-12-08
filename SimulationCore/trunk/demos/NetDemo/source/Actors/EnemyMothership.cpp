@@ -113,7 +113,7 @@ namespace NetDemo
          svr->mParticleRadius = 13.5f;
          svr->mVelocity = 0.125f;
          svr->mDensity = 0.15f;
-         svr->mTarget = this;
+         svr->mTarget = GetOSGNode();
          svr->mAutoDeleteOnTargetNull = true;
          svr->mShaderName = "LightVolumeShader";
          svr->mRenderMode = SimCore::Components::VolumeRenderingComponent::PARTICLE_VOLUME;

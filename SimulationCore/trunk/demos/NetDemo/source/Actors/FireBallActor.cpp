@@ -120,7 +120,7 @@ namespace NetDemo
          mShapeVolume->mDensity = 0.25f;
          mShapeVolume->mNoiseScale = 0.85f;
          mShapeVolume->mVelocity = 1.15f;
-         mShapeVolume->mTarget = this;
+         mShapeVolume->mTarget = GetOSGNode();
          mShapeVolume->mAutoDeleteOnTargetNull = true;
          mShapeVolume->mAutoDeleteAfterMaxTime = true;
          mShapeVolume->mMaxTime = GetMaxTime();
