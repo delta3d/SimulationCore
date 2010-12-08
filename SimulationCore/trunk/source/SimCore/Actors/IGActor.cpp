@@ -33,6 +33,7 @@
 #include <dtCore/scene.h>
 
 #include <dtGame/gamemanager.h>
+#include <dtGame/deadreckoninghelper.h>
 
 #include <SimCore/Components/ParticleManagerComponent.h>
 #include <SimCore/VisibilityOptions.h>
@@ -169,9 +170,14 @@ namespace SimCore
          }
 
          osg::Group* group = NULL;
-         dtCore::RefPtr<dtUtil::NodeCollector> nc = new dtUtil::NodeCollector(GetOSGNode(),
-                  dtUtil::NodeCollector::MatrixTransformFlag |
-                  dtUtil::NodeCollector::DOFTransformFlag);
+
+         if (GetNodeCollector() == NULL)
+         {
+            LoadNodeCollector();
+         }
+
+         dtUtil::NodeCollector* nc = GetNodeCollector();
+
          group = nc->GetMatrixTransform(nodeName);
 
          if (group == NULL)
@@ -241,5 +247,34 @@ namespace SimCore
             nodeToUse.setCullCallback(HIDE_NODE_CALLBACK.get());
          }
       }
-    }
+
+      ////////////////////////////////////////////////////////////////////////////////////
+      void IGActor::LoadNodeCollector()
+      {
+         mNodeCollector = new dtUtil::NodeCollector(GetOSGNode(),
+                  dtUtil::NodeCollector::AllNodeTypes);
+         dtGame::DeadReckoningHelper* drAC = NULL;
+         GetComponent(drAC);
+         drAC->SetNodeCollector(*mNodeCollector);
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////
+      void IGActor::SetNodeCollector(dtUtil::NodeCollector* newNC)
+      {
+         mNodeCollector = newNC;
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////
+      dtUtil::NodeCollector* IGActor::GetNodeCollector()
+      {
+         return mNodeCollector.get();
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////
+      const dtUtil::NodeCollector* IGActor::GetNodeCollector() const
+      {
+         return mNodeCollector.get();
+      }
+
+   }
 }

@@ -30,6 +30,8 @@
 #include <SimCore/Actors/PlayerActor.h>
 #include <SimCore/Actors/TerrainActorProxy.h>
 #include <SimCore/Actors/DRPublishingActComp.h>
+#include <SimCore/Actors/FourWheelVehicleActor.h>
+#include <SimCore/ActComps/TrailerHitchActComp.h>
 #include <SimCore/Components/GameState/GameStateChangeMessage.h>
 #include <SimCore/MessageType.h>
 #include <SimCore/Messages.h>
@@ -45,14 +47,12 @@
 #include "NetDemoMessageTypes.h"
 #include "States.h"
 
-// Temp - delete this unless you are using COuts.
-//#include <iostream>
-
 namespace NetDemo
 {
    const std::string GameLogicComponent::TIMER_UPDATE_TERRAIN("FORCE_UPDATE_OF_TERRAIN");
    const std::string GameLogicComponent::HOVER_VEHICLE_PROTOTYPE("NetDemo.DefaultHoverVehiclePrototype");
    const std::string GameLogicComponent::WHEELED_VEHICLE_PROTOTYPE("NetDemo.DefaultWheeledVehiclePrototype");
+   const std::string GameLogicComponent::WHEELED_VEHICLE_TRAILER_PROTOTYPE("NetDemo.DefaultWheeledVehicleTrailerPrototype");
 
    //////////////////////////////////////////////////////////////////////////
    GameLogicComponent::GameLogicComponent(const std::string& name)
@@ -666,9 +666,27 @@ namespace NetDemo
             }
             else if (mPlayerStatus->GetVehiclePreference() == PlayerStatusActor::VehicleTypeEnum::FOUR_WHEEL)
             {
-               std::string vehiclePrototype = GetGameManager()->GetConfiguration().GetConfigPropertyValue(WHEELED_VEHICLE_PROTOTYPE,"Dune Buggy");
+               std::string vehiclePrototype = GetGameManager()->GetConfiguration().GetConfigPropertyValue(WHEELED_VEHICLE_PROTOTYPE, "Truck");
+
                SimCore::Utils::CreateActorFromPrototypeWithException(*GetGameManager(),
                         vehiclePrototype, mPlayerOwnedVehicle, "Check your additional maps in config.xml (compare to config_example.xml).");
+
+               std::string trailerPrototype = GetGameManager()->GetConfiguration().GetConfigPropertyValue(WHEELED_VEHICLE_TRAILER_PROTOTYPE, "");
+               if (!trailerPrototype.empty())
+               {
+                  dtCore::RefPtr<SimCore::Actors::FourWheelVehicleActorProxy> trailer;
+                  SimCore::Utils::CreateActorFromPrototypeWithException(*GetGameManager(),
+                           trailerPrototype, trailer, "Check your additional maps in config.xml (compare to config_example.xml).");
+
+                  dtCore::RefPtr<SimCore::ActComps::TrailerHitchActComp> trailerAC = new SimCore::ActComps::TrailerHitchActComp();
+
+                  mPlayerOwnedVehicle->GetGameActor().AddComponent(*trailerAC);
+
+                  trailerAC->SetHitchType(SimCore::ActComps::HitchTypeEnum::HITCH_TYPE_5TH_WHEEL);
+                  trailerAC->SetTrailerActorId(trailer->GetId());
+
+                  GetGameManager()->AddActor(*trailer, false, true);
+               }
             }
 
             SimCore::Actors::BasePhysicsVehicleActor* vehicleActor = NULL;

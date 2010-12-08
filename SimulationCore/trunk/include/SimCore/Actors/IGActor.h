@@ -26,6 +26,7 @@
 #include <SimCore/Export.h>
 
 #include <dtGame/gameactor.h>
+#include <dtUtil/nodecollector.h>
 
 #include <osg/CopyOp>
 
@@ -122,12 +123,27 @@ namespace SimCore
 
             static void SetNodeVisible(bool, osg::Node& nodeToUse);
 
+            /**
+            * /brief    Purpose :  to load the dofs for the dofcontainer class
+            *           Outs     : filled in mNodeCollector memb vars
+            */
+            virtual void LoadNodeCollector();
+
+            /// Get the node utility class for hotspots and dofs
+            dtUtil::NodeCollector*  GetNodeCollector();
+            /// Get the node utility class for hotspots and dofs
+            const dtUtil::NodeCollector*  GetNodeCollector() const;
+
          protected:
 
             /// Destructor
             virtual ~IGActor();
 
+            void SetNodeCollector(dtUtil::NodeCollector* newNC);
+
          private:
+            dtCore::RefPtr<dtUtil::NodeCollector> mNodeCollector;
+
             bool mIsVisible;
        };
    }
