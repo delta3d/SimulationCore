@@ -31,6 +31,8 @@
 #include <dtUtil/enumeration.h>
 #include <dtCore/uniqueid.h>
 
+#include <SimCore/Export.h>
+
 #include <SimCore/Actors/IGActor.h>
 
 class palLink;
@@ -52,7 +54,7 @@ namespace SimCore
    namespace ActComps
    {
 
-      class HitchTypeEnum : public dtUtil::Enumeration
+      class SIMCORE_EXPORT HitchTypeEnum : public dtUtil::Enumeration
       {
          DECLARE_ENUM(HitchTypeEnum);
       public:
@@ -71,7 +73,7 @@ namespace SimCore
        * another actor that happens to be a trailer :-).  This actor component should be added the
        * tractor.  It can also be added to a trailer if that trailer can pull another trailer.
        */
-      class TrailerHitchActComp : public dtGame::ActorComponent
+      class SIMCORE_EXPORT TrailerHitchActComp : public dtGame::ActorComponent
       {
       public:
          typedef dtGame::ActorComponent BaseClass;
