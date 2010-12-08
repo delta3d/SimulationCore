@@ -22,6 +22,7 @@
  * David Guthrie
  */
 
+#include <prefix/SimCorePrefix.h>
 #include <SimCore/ActComps/TrailerHitchActComp.h>
 
 #include <dtPhysics/palphysicsworld.h>
