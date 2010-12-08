@@ -244,7 +244,7 @@ namespace SimCore
 
             //the mTarget is used like a parent to the effect, setting this will allow your volume to move with
             //another node, if mAutoDeleteOnTargetNull is true then this volume will be removed when the target is set to null
-            dtCore::ObserverPtr<dtCore::Transformable> mTarget;
+            dtCore::ObserverPtr<osg::Node> mTarget;
 
             //this is the osg shape and is not used unless the render mode is SIMPLE_SHAPE_GEOMETRY
             //this is created for you by the component
@@ -301,10 +301,6 @@ namespace SimCore
 
          //used to find a shape volume by Id
          ShapeVolumeRecord* FindShapeVolumeById(ShapeRecordId id);
-
-         //this function will find a shape volume whose target has the provided actor id, useful for finding a volume
-         //attached to a specific actor
-         ShapeVolumeRecord* FindShapeVolumeForActor(const dtCore::UniqueId& actorID);
 
          //a volume can be moved by setting the mPosition and updatingt the dirty flag, but this is a helper
          //function which will move the volume for you

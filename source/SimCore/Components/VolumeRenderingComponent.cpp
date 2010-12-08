@@ -227,27 +227,6 @@ namespace SimCore
       VolumeRenderingComponent::ShapeRecordId mId;
    };
 
-   struct findVolumeByUniqueId
-   {
-      findVolumeByUniqueId(const dtCore::UniqueId& id): mId(id){}
-
-      template<class T>
-      bool operator()(T ptr)
-      {
-         bool result = false; 
-
-         if(ptr->mTarget.valid())
-         {
-            result = (ptr->mTarget->GetUniqueId() == mId);
-         }
-         
-         return result;
-      }
-   private:
-
-      dtCore::UniqueId mId;
-   };
-
    struct removeVolumesFunc
    {
       template<class T>
@@ -398,18 +377,6 @@ namespace SimCore
    }
 
    ////////////////////////////////////////////////////////////////////////// 
-   VolumeRenderingComponent::ShapeVolumeRecord* VolumeRenderingComponent::FindShapeVolumeForActor(const dtCore::UniqueId& actorID)
-   {
-      ShapeVolumeArray::iterator iter = std::find_if(mVolumes.begin(), mVolumes.end(), findVolumeByUniqueId(actorID));
-      if(iter != mVolumes.end())
-      {
-         return (*iter).get();
-      }
-
-      return NULL;
-   }
-
-   ////////////////////////////////////////////////////////////////////////// 
    /*void VolumeRenderingComponent::FindAllShapeVolumesForActor( const dtCore::UniqueId& actorID, std::vector<ShapeVolumeRecord*> pContainerToFill )
    {
 
@@ -544,13 +511,18 @@ namespace SimCore
    {
       if(svr != NULL && svr->mTarget.valid())
       {
-         dtCore::Transform xform;
+         /*dtCore::Transform xform;
          svr->mTarget->GetTransform(xform);
-         xform.Move(svr->mPosition);
+         xform.Move(svr->mPosition);*/
 
-         osg::Matrix mat;
-         xform.Get(mat);
-         svr->mParentNode->setMatrix(mat);
+         osg::NodePathList nodePathList = svr->mTarget->getParentalNodePaths();
+
+         if(!nodePathList.empty())
+         {
+            osg::Matrix mat = osg::computeLocalToWorld(nodePathList[0]);
+            mat.translate(svr->mPosition);
+            svr->mParentNode->setMatrix(mat);
+         }
       }
    }
 

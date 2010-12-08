@@ -126,7 +126,7 @@ namespace NetDemo
          svr->mParticleRadius = 8.0f;
          svr->mVelocity = 0.07;
          svr->mDensity = 0.15f;
-         svr->mTarget = this;
+         svr->mTarget = GetOSGNode();
          svr->mAutoDeleteOnTargetNull = true;
          svr->mRenderMode = SimCore::Components::VolumeRenderingComponent::PARTICLE_VOLUME;
 
