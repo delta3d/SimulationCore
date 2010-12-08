@@ -317,6 +317,8 @@ namespace SimCore
          Attach();
       }
 
+      DT_IMPLEMENT_ACCESSOR(TrailerHitchActComp, bool, CascadeDeletes);
+
    }
 
 }
