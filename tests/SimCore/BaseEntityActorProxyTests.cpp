@@ -401,6 +401,10 @@ void BaseEntityActorProxyTests::TestHuman()
    SimCore::Actors::Human* human;
    hap->GetActor(human);
 
+   CPPUNIT_ASSERT(human->GetNodeCollector() == NULL);
+   human->LoadNodeCollector();
+   CPPUNIT_ASSERT(human->GetNodeCollector() != NULL);
+
    dtCore::RefPtr<SimCore::VisibilityOptions> visOpts = new SimCore::VisibilityOptions;
    SimCore::BasicVisibilityOptions basicVisOpts;
    basicVisOpts.SetAllTrue();

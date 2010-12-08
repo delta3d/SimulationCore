@@ -198,15 +198,11 @@ namespace SimCore
             virtual void OnShaderGroupChanged();
 
             /**
-            * /brief    Purpose :  to load the dofs for the dofcontainer class
-            *           Outs     : filled in mNodeCollector memb vars
-            */
-            void LoadNodeCollector(osg::Node* dofModel);
-
-            /// Get the node utility class for hotspots and dofs
-            dtUtil::NodeCollector*  GetNodeCollector();
-            /// Get the node utility class for hotspots and dofs
-            const dtUtil::NodeCollector*  GetNodeCollector() const;
+             * Overridden to handle the model switching
+             * /brief    Purpose :  to load the dofs for the dofcontainer class
+             *           Outs     : filled in mNodeCollector memb vars
+             */
+            virtual void LoadNodeCollector();
 
             /**
              * Called when this entity is added to the game manager.
@@ -344,8 +340,7 @@ namespace SimCore
             void LoadSFXEngineIdleLoop();
 
             /// Does the work of loading a model file name into a node, assigning it to a parent group, and populating the node collector.
-            bool LoadModelNodeInternal(osg::Group& modelNode, const std::string& fileName, const std::string& copiedNodeName,
-                     bool populateNodeCollector);
+            bool LoadModelNodeInternal(osg::Group& modelNode, const std::string& fileName, const std::string& copiedNodeName);
 
             // Allows a sub-class to set the engine smoke value without doing all the engine
             // smoke 'stuff'.
@@ -383,9 +378,6 @@ namespace SimCore
 
             /// Internal method that causes the set damage state to actually happen.  Should prevent unnecessary changes to CollisionBox
             void InternalSetDamageState(PlatformActorProxy::DamageStateEnum &damageState);
-
-            /// The entities main dof container that objects get moved around with
-            dtCore::RefPtr<dtUtil::NodeCollector> mNodeCollector;
 
             /// The name of the munition damage table as found in Configs/MunitionsConfig.xml
             std::string mMunitionTableName;

@@ -331,8 +331,9 @@ int main (int argc, char* argv[])
             timeDelta << "] >>> " << std::endl;
       }
       else
-         std::cerr << " <<< SLOW TEST RESULTS ::: ALL TESTS RAN FAST!!! WOOT! ::: TotalTime[" << timeDelta << "] >>> " << std::endl;
-
+      {
+         std::cerr << " <<< Total Run Time " << timeDelta << " >>> " << std::endl;
+      }
    }
    catch (std::invalid_argument &ie)
    {

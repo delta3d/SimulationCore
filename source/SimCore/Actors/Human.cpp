@@ -529,6 +529,9 @@ namespace SimCore
             transform.removeChildren(0, transform.getNumChildren());
             mModelNode = NULL;
 
+            // remove any cached node collectors.
+            SetNodeCollector(NULL);
+
             if (!fileName.empty() && mAnimationHelper->LoadModel(fileName))
             {
                mModelNode = dtAnim::Cal3DDatabase::GetInstance().GetNodeBuilder().CreateNode(mAnimationHelper->GetModelWrapper());
@@ -571,6 +574,7 @@ namespace SimCore
                SetupPlannerHelper();
                UpdatePlanAndAnimations();
                UpdateWeapon();
+               LoadNodeCollector();
             }
          }
       }

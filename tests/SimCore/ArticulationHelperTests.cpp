@@ -116,7 +116,12 @@ namespace SimCore
             static const std::string DOF_WEAPON_METRIC_ELEVATION;
             static const std::string DOF_WEAPON_METRIC_ELEVATION_RATE;
 
-            TestArticHelper() {}
+            TestArticHelper()
+            : mTurretAzimuth(0.5f)
+            , mTurretAzimuthRate(0.1f)
+            , mWeaponElevation(13.6f)
+            , mWeaponElevationRate(-1.1f)
+            {}
 
             // Inherited Override Functions
             virtual dtCore::RefPtr<dtDAL::NamedGroupParameter> BuildGroupProperty();

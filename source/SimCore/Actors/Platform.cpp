@@ -631,8 +631,7 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////
       bool Platform::LoadModelNodeInternal(osg::Group& modelNode,
                const std::string& fileName,
-               const std::string& copiedNodeName,
-               bool populateNodeCollector)
+               const std::string& copiedNodeName)
       {
          if (fileName == modelNode.getName())
          {
@@ -645,7 +644,7 @@ namespace SimCore
             oss << "Platform forced a reload of model files: File [" << fileName      <<
                    "], Actor Type[" << GetGameActorProxy().GetActorType().GetName() <<
                    "], Name[" << GetName() << "], Id[" << GetUniqueId().ToString()  <<
-                   "].";
+                   "].  Old model name ["<< modelNode.getName() << "]." ;
 
             mLogger->LogMessage(dtUtil::Log::LOG_WARNING,
                                 __FUNCTION__, __LINE__, oss.str().c_str());
@@ -668,10 +667,6 @@ namespace SimCore
          modelNode.addChild(copiedNode.get());
          modelNode.setUserData(cachedOriginalNode.get());
 
-         if (populateNodeCollector)
-         {
-            LoadNodeCollector(copiedNode.get());
-         }
          return true;
       }
 
@@ -684,19 +679,23 @@ namespace SimCore
             bool loadedNewModel = false;
             if(state == PlatformActorProxy::DamageStateEnum::NO_DAMAGE)
             {
-               loadedNewModel = LoadModelNodeInternal(*mNonDamagedFileNode, fileName, state.GetName(), true);
+               if (fileName != mNonDamagedFileNode->getName())
+               {
+                  loadedNewModel = LoadModelNodeInternal(*mNonDamagedFileNode, fileName, state.GetName());
+                  LoadNodeCollector();
+               }
             }
             else if(state == PlatformActorProxy::DamageStateEnum::SLIGHT_DAMAGE)
             {
-               loadedNewModel = LoadModelNodeInternal(*mDamagedFileNode, fileName, state.GetName(), false);
+               loadedNewModel = LoadModelNodeInternal(*mDamagedFileNode, fileName, state.GetName());
             }
             else if(state == PlatformActorProxy::DamageStateEnum::MODERATE_DAMAGE)
             {
-               loadedNewModel = LoadModelNodeInternal(*mDamagedFileNode, fileName, state.GetName(), false);
+               loadedNewModel = LoadModelNodeInternal(*mDamagedFileNode, fileName, state.GetName());
             }
             else if(state == PlatformActorProxy::DamageStateEnum::DESTROYED)
             {
-               loadedNewModel = LoadModelNodeInternal(*mDestroyedFileNode, fileName, state.GetName(), false);
+               loadedNewModel = LoadModelNodeInternal(*mDestroyedFileNode, fileName, state.GetName());
             }
             else
             {
@@ -716,7 +715,7 @@ namespace SimCore
             {
                mNonDamagedFileNode->removeChild(0,mNonDamagedFileNode->getNumChildren());
                mNonDamagedFileNode->setUserData(NULL);
-               mNodeCollector = NULL;
+               SetNodeCollector(NULL);
                if (mArticHelper.valid())
                {
                   mArticHelper->UpdateDOFReferences(NULL);
@@ -932,13 +931,17 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////
       void Platform::UpdateEngineIdleSoundEffect()
       {
-         if(mSndIdleLoop == NULL)
-            return;
-
-         if(GetDamageState() == BaseEntityActorProxy::DamageStateEnum::DESTROYED)
+         if (mSndIdleLoop == NULL)
          {
-            if(mSndIdleLoop->IsPlaying())
+            return;
+         }
+
+         if (GetDamageState() == BaseEntityActorProxy::DamageStateEnum::DESTROYED)
+         {
+            if (mSndIdleLoop->IsPlaying())
+            {
                mSndIdleLoop->Stop();
+            }
             return;
          }
 
@@ -955,7 +958,7 @@ namespace SimCore
 
          osg::Vec3 distanceVector = ourXYZ - cameraXYZ;
          float distanceFormula = distanceVector.length2();
-         if( (mMaxIdleSoundDistance * mMaxIdleSoundDistance ) <  distanceFormula)
+         if ( (mMaxIdleSoundDistance * mMaxIdleSoundDistance ) <  distanceFormula)
          {
             mSndIdleLoop->Stop();
          }
@@ -968,7 +971,7 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////
       void Platform::SetArticulatedParametersArray(const dtDAL::NamedGroupParameter& newValue)
       {
-         if( mArticHelper.valid() && GetNodeCollector() != NULL)
+         if ( mArticHelper.valid() && GetNodeCollector() != NULL)
          {
             mArticHelper->HandleArticulatedParametersArray(
                newValue, *GetNodeCollector(), GetDeadReckoningHelper() );
@@ -978,7 +981,7 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////
       dtCore::RefPtr<dtDAL::NamedGroupParameter> Platform::GetArticulatedParametersArray()
       {
-         if( mArticHelper.valid() )
+         if ( mArticHelper.valid() )
          {
             return mArticHelper->BuildGroupProperty();
          }
@@ -987,30 +990,19 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
-      void Platform::LoadNodeCollector(osg::Node* dofModel)
+      void Platform::LoadNodeCollector()
       {
-         mNodeCollector = new dtUtil::NodeCollector(dofModel, dtUtil::NodeCollector::AllNodeTypes);
-         GetDeadReckoningHelper().SetNodeCollector(*mNodeCollector);
+         dtCore::RefPtr<dtUtil::NodeCollector> nc =  new dtUtil::NodeCollector(mNonDamagedFileNode.get(), dtUtil::NodeCollector::AllNodeTypes);
+         SetNodeCollector(nc);
+         GetDeadReckoningHelper().SetNodeCollector(*nc);
          // Update the articulation helper with DOFs of the current model.
          if (!mArticHelper.valid())
          {
             mArticHelper = new SimCore::Components::DefaultArticulationHelper;
          }
 
-         mArticHelper->UpdateDOFReferences( mNodeCollector.get() );
+         mArticHelper->UpdateDOFReferences(nc.get());
          // TODO set node collector on weapon swapper.
-      }
-
-      ////////////////////////////////////////////////////////////////////////////////////
-      dtUtil::NodeCollector* Platform::GetNodeCollector()
-      {
-         return mNodeCollector.get();
-      }
-
-      ////////////////////////////////////////////////////////////////////////////////////
-      const dtUtil::NodeCollector* Platform::GetNodeCollector() const
-      {
-         return mNodeCollector.get();
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
@@ -1019,7 +1011,7 @@ namespace SimCore
          mArticHelper = articHelper;
          if (mArticHelper.valid())
          {
-            mArticHelper->UpdateDOFReferences( mNodeCollector.get() );
+            mArticHelper->UpdateDOFReferences( GetNodeCollector() );
 
             // Check the config property for reversing the heading value. This is an issue because
             // in most HLA federations, the heading direction for articulations is reversed.
