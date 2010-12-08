@@ -169,7 +169,7 @@ namespace SimCore
 
             dtCore::RefPtr<dtCore::Transformable> tformable = new dtCore::Transformable;
             volume2->mAutoDeleteOnTargetNull = true;
-            volume2->mTarget = tformable.get();
+            volume2->mTarget = tformable->GetOSGNode();
 
             volume3->mFadeOut = true;
             volume3->mIntensity = 1.0f;
