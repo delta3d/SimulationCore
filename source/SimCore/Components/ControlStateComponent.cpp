@@ -428,6 +428,14 @@ namespace SimCore
                // for rendering flash effects on the remote vehicle.
                if( dofName == DOF_NAME_WEAPON )
                {
+                  //this fixes a bug where the hmmwv may have a weapon loaded from the model
+                  //but the hotspot does not get removed because the control state component
+                  //thinks there is no weapon because IT didn't add one
+                  if(nodeCollector->GetDOFTransform(DOF_NAME_WEAPON_HOTSPOT) != NULL)
+                  {
+                     nodeCollector->RemoveDOFTransform(DOF_NAME_WEAPON_HOTSPOT);
+                  }
+                
                   // clear all children of dof before adding the gun.
                   dof->removeChildren(0, dof->getNumChildren());
 
