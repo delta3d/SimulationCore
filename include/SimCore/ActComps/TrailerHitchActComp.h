@@ -59,9 +59,9 @@ namespace SimCore
          DECLARE_ENUM(HitchTypeEnum);
       public:
 
-         // A spherical joint that allows rotation in any direction.
+         /// A spherical joint that allows rotation in any direction.
          static HitchTypeEnum HITCH_TYPE_SPHERICAL;
-         // A joint that allows twist and some pitch, but no roll.
+         /// A joint that allows twist and some pitch, but no roll.
          static HitchTypeEnum HITCH_TYPE_5TH_WHEEL;
 
       private:
