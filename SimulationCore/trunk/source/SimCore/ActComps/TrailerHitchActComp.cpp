@@ -54,17 +54,21 @@ namespace SimCore
       HitchTypeEnum::HitchTypeEnum(const std::string& name)
       : dtUtil::Enumeration(name)
       {
+         AddInstance(this);
       }
 
       const dtUtil::RefString TrailerHitchActComp::TYPE("TrailerHitch");
+
+      const dtUtil::RefString TrailerHitchActComp::FRONT_HITCH_DOF_NAME_DEFAULT = "dof_hitch_front";
+      const dtUtil::RefString TrailerHitchActComp::REAR_HITCH_DOF_NAME_DEFAULT = "dof_hitch_rear";
 
       TrailerHitchActComp::TrailerHitchActComp()
       : BaseClass(TYPE)
       , mRotationMaxYaw(60.0f)
       , mRotationMaxCone(20.0f)
       , mHitchType(&HitchTypeEnum::HITCH_TYPE_SPHERICAL)
-      , mHitchNodeNameTractor("dof_hitch_rear")
-      , mHitchNodeNameTrailer("dof_hitch_front")
+      , mHitchNodeNameTractor(TrailerHitchActComp::REAR_HITCH_DOF_NAME_DEFAULT)
+      , mHitchNodeNameTrailer(TrailerHitchActComp::FRONT_HITCH_DOF_NAME_DEFAULT)
       , mTrailerActorId("")
       , mCascadeDeletes(true)
       , mHitchJoint(NULL)
@@ -116,22 +120,33 @@ namespace SimCore
       void TrailerHitchActComp::OnEnteredWorld()
       {
          // This will do nothing unless everything is set.
-         Attach();
+         dtGame::GameActor* ga = NULL;
+         GetOwner(ga);
+         // remote versions should be dead-reckoned together, or otherwise moved another way.
+         if (ga != NULL && !ga->IsRemote())
+         {
+            Attach();
+         }
       }
 
       //////////////////////////////////////////////////
       void TrailerHitchActComp::OnRemovedFromWorld()
       {
+         dtGame::GameActor* ga = NULL;
+         GetOwner(ga);
+
          if (mCascadeDeletes && mTrailerActor.valid())
          {
-            dtGame::GameActor* ga = NULL;
-            GetOwner(ga);
             if (ga != NULL)
             {
                ga->GetGameActorProxy().GetGameManager()->DeleteActor(mTrailerActor->GetGameActorProxy());
             }
          }
-         Detach();
+         // remote versions should be dead-reckoned together, or otherwise moved another way.
+         if (ga != NULL && !ga->IsRemote())
+         {
+            Detach();
+         }
       }
 
       //////////////////////////////////////////////////
@@ -182,7 +197,12 @@ namespace SimCore
             // Move the trailer so it is exactly the right position.
             trailerWorld.Set(newTrailerTransform);
             mTrailerActor->SetTransform(trailerWorld);
-            physicsObjects.second->SetTransformAsVisual(trailerWorld);
+            dtPhysics::PhysicsActComp* physACTrailer = NULL;
+            mTrailerActor->GetComponent(physACTrailer);
+            if (physACTrailer != NULL)
+            {
+               physACTrailer->SetMultiBodyTransformAsVisual(trailerWorld);
+            }
 
             palFactory* factory = dtPhysics::PhysicsWorld::GetInstance().GetPalFactory();
             if (*mHitchType == HitchTypeEnum::HITCH_TYPE_SPHERICAL)

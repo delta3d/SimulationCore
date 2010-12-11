@@ -78,6 +78,9 @@ namespace SimCore
       public:
          typedef dtGame::ActorComponent BaseClass;
 
+         static const dtUtil::RefString FRONT_HITCH_DOF_NAME_DEFAULT;
+         static const dtUtil::RefString REAR_HITCH_DOF_NAME_DEFAULT;
+
          static const dtUtil::RefString TYPE;
 
          TrailerHitchActComp();
