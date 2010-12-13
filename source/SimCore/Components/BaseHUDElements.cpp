@@ -50,10 +50,11 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       // Base HUD Element Exceptions Code
       //////////////////////////////////////////////////////////////////////////
-      IMPLEMENT_ENUM(BaseHUDElementException);
-      BaseHUDElementException BaseHUDElementException::INIT_ERROR("INIT_ERROR");
+      BaseHUDElementException::BaseHUDElementException(const std::string& message, const std::string& filename, unsigned int linenum)
+      : dtUtil::Exception(message, filename, linenum)
+      {}
 
-
+      BaseHUDElementException::~BaseHUDElementException() {}
 
       //////////////////////////////////////////////////////////////////////////
       // HUD Alignment Enumeration Code
@@ -147,7 +148,7 @@ namespace SimCore
          {
             std::ostringstream oss;
             oss << "CEGUI while setting up BaseHUD: " << e.getMessage().c_str();
-            throw dtUtil::Exception(BaseHUDElementException::INIT_ERROR,oss.str(), __FILE__, __LINE__);
+            throw BaseHUDElementException(oss.str(), __FILE__, __LINE__);
          }
       }
 
