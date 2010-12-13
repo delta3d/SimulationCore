@@ -1477,10 +1477,7 @@ namespace SimCore
                      && mMunitionEffects.size() > unsigned(mMaxMunitionEffects) ) )
                {
                   // Ensure that the munition is still not held by the scene.
-                  if( mGM.valid() )
-                  {
-                     mGM->GetScene().RemoveDrawable( iter->get() );
-                  }
+                  (*iter)->Emancipate();
 
                   MunitionEffectArray::iterator toDelete = iter;
 
@@ -1528,7 +1525,8 @@ namespace SimCore
             unsigned limit = mMunitionEffects.size();
             for( unsigned tracer = 0; tracer < limit; ++tracer )
             {
-               mGM->GetScene().RemoveDrawable( mMunitionEffects[tracer].get() );
+               mMunitionEffects[tracer]->Emancipate();
+               mGM->GetScene().RemoveChild( mMunitionEffects[tracer].get() );
             }
          }
 

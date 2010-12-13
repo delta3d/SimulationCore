@@ -190,8 +190,7 @@ void HUDElementsTests::tearDown()
          mGM->DeleteAllActors(true);
 
 #if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
-      if (mApp.valid() && mGUI.valid())
-         mApp->GetScene()->RemoveDrawable( mGUI.get() );
+      mGUI->Emancipate();
 
       mMainGUIWindow = NULL;
 #endif

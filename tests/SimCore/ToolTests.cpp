@@ -162,8 +162,8 @@ void ToolTests::tearDown()
    mPlayerActor = NULL;
 
 #if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
-   if (mApp.valid() && mGUI.valid())
-      mApp->GetScene()->RemoveDrawable( mGUI.get() );
+   if (mGUI.valid())
+      mGUI->Emancipate();
 #endif
 
    mGUI = NULL;
