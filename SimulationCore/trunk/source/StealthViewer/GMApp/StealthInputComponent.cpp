@@ -252,10 +252,6 @@ namespace StealthGM
             {
                cam.Emancipate();
             }
-            else if (cam.GetSceneParent() != NULL)
-            {
-               cam.GetSceneParent()->RemoveDrawable(&cam);
-            }
 
             GetStealthActor()->AddChild(app.GetCamera());
 

@@ -457,10 +457,6 @@ namespace StealthGM
       {
          dtCore::Camera& camera = *view.GetCamera();
          camera.Emancipate();
-         if (camera.GetSceneParent() != NULL)
-         {
-            camera.GetSceneParent()->RemoveDrawable(&camera);
-         }
          camera.SetWindow(NULL);
       }
 

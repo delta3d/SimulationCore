@@ -323,7 +323,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void ParticleManagerComponentTests::RemoveParticlesFromScene( dtCore::ParticleSystem& ps )
       {
-         mGM->GetScene().RemoveDrawable(&ps);
+         ps.Emancipate();
       }
 
 
