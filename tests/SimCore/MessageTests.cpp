@@ -454,7 +454,7 @@ class MessageTests : public CPPUNIT_NS::TestFixture
             dtCore::AppSleep(10);
             dtCore::System::GetInstance().Step();
 
-            CPPUNIT_ASSERT_MESSAGE("The player should no longer be attached to the T80", playerActor->GetParent() == NULL);
+            CPPUNIT_ASSERT_MESSAGE("The player should no longer be attached to the T80", playerActor->GetParent() == &mGM->GetScene());
             dtCore::Transform xform;
             playerActor->GetTransform(xform, dtCore::Transformable::ABS_CS);
             osg::Vec3 playerPos;
