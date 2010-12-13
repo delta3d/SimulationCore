@@ -220,7 +220,7 @@ namespace SimCore
          {
             std::ostringstream oss;
             oss << "CEGUI exception caught: " << e.getMessage().c_str();
-            throw dtUtil::Exception(dtGame::ExceptionEnum::GAME_APPLICATION_CONFIG_ERROR,
+            throw dtGame::GameApplicationConfigException(
                oss.str(), __FILE__, __LINE__);
          }
       }

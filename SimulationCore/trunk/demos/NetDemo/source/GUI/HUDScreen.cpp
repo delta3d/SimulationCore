@@ -245,7 +245,7 @@ namespace NetDemo
 
             if (mLogicComp->GetDebugInfo().mShowDebugWindow)
             {
-               CEGUI::WindowManager& wm = *CEGUI::WindowManager::getSingletonPtr();
+               //CEGUI::WindowManager& wm = *CEGUI::WindowManager::getSingletonPtr();
                std::string tempValue;
                osg::Vec4 highlightColor(0.2, 1.0, 0.2, 1.0);
                osg::Vec4 normalColor(1.0, 1.0, 1.0, 1.0);

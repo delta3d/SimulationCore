@@ -366,7 +366,7 @@ namespace SimCore
          {
             dtCore::RefPtr<dtCore::Transformable> xformable = new dtCore::Transformable;
 
-            mGM->GetScene().AddDrawable(xformable.get());
+            mGM->GetScene().AddChild(xformable.get());
 
             testLight.mTarget = xformable.get();
 

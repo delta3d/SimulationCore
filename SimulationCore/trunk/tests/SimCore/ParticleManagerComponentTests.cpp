@@ -313,7 +313,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void ParticleManagerComponentTests::AddParticlesToScene( dtCore::ParticleSystem& ps )
       {
-         mGM->GetScene().AddDrawable(&ps);
+         mGM->GetScene().AddChild(&ps);
          dtCore::RefPtr<dtGame::Message> msg;
          mGM->GetMessageFactory().CreateMessage(dtGame::MessageType::INFO_ACTOR_UPDATED,msg);
          msg->SetAboutActorId(ps.GetUniqueId());

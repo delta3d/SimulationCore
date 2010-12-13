@@ -26,7 +26,6 @@
 
 #include <SimCore/Export.h>
 #include <dtCore/base.h>
-#include <dtUtil/enumeration.h>
 
 #ifdef None
 #undef None
@@ -41,6 +40,10 @@
 
 #include <dtCore/deltawin.h>
 #include <dtCore/deltadrawable.h>
+
+#include <dtUtil/exception.h>
+#include <dtUtil/enumeration.h>
+
 #include <osg/ref_ptr>
 #include <osg/Projection>
 #include <osg/Group>
@@ -49,18 +52,12 @@ namespace SimCore
 {
    namespace Components
    {
-      class BaseHUDElementException : public dtUtil::Enumeration
+      class SIMCORE_EXPORT BaseHUDElementException : public dtUtil::Exception
       {
-         DECLARE_ENUM(BaseHUDElementException);
-         public:
-            static BaseHUDElementException INIT_ERROR;
-         private:
-            BaseHUDElementException(const std::string &name) : dtUtil::Enumeration(name)
-            {
-               AddInstance(this);
-            }
+      public:
+         BaseHUDElementException(const std::string& message, const std::string& filename, unsigned int linenum);
+         virtual ~BaseHUDElementException();
       };
-
 
       class SIMCORE_EXPORT HUDAlignment : public dtUtil::Enumeration
       {

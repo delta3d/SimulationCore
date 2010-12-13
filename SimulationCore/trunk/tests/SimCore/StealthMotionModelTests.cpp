@@ -74,10 +74,10 @@ class StealthMotionModelTests : public CPPUNIT_NS::TestFixture
 
          mApp = &GetGlobalApplication();
 
-         mApp->GetScene()->AddDrawable(mTerrain.get());
+         mApp->GetScene()->AddChild(mTerrain.get());
 
          mTarget = new dtCore::Transformable();
-         mApp->GetScene()->AddDrawable(mTarget.get());
+         mApp->GetScene()->AddChild(mTarget.get());
 
          mMotionModel = new SimCore::StealthMotionModel();
          mMotionModel->SetScene(*mApp->GetScene());
@@ -191,7 +191,7 @@ class StealthMotionModelTests : public CPPUNIT_NS::TestFixture
          mTerrainAlternate->SetBuildDistance(1000.f);
          mTerrainAlternate->SetSegmentDivisions(32);
          mTerrainAlternate->SetVerticalScale(3.0f);
-         mApp->GetScene()->AddDrawable(mTerrainAlternate.get());
+         mApp->GetScene()->AddChild(mTerrainAlternate.get());
          dtCore::System::GetInstance().Step();
 
 
