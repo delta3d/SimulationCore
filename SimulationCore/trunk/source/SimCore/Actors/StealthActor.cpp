@@ -193,11 +193,7 @@ namespace SimCore
          if (gameActor != NULL)
          {
             //we don't support named parts at his level.
-            if (GetSceneParent() != NULL)
-            {
-              GetSceneParent()->RemoveDrawable(this);
-            }
-            else if (GetParent() != NULL)
+            if (GetParent() != NULL)
             {
               Emancipate();
             }
@@ -277,7 +273,7 @@ namespace SimCore
             }
             else
             {
-               GetGameActorProxy().GetGameManager()->GetScene().AddDrawable(this);
+               GetGameActorProxy().GetGameManager()->GetScene().AddChild(this);
             }
 
             SetTransform(originalTransform, dtCore::Transformable::ABS_CS);

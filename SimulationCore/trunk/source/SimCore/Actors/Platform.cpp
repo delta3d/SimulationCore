@@ -134,65 +134,65 @@ namespace SimCore
          AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::STATIC_MESH,
             PROPERTY_MESH_NON_DAMAGED_ACTOR,
             PROPERTY_MESH_NON_DAMAGED_ACTOR,
-            dtDAL::MakeFunctor(*this, &PlatformActorProxy::LoadNonDamagedFile),
+            dtDAL::ResourceActorProperty::SetFuncType(this, &PlatformActorProxy::LoadNonDamagedFile),
             "This is the model for a non damaged actor"));
 
          AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::STATIC_MESH,
             PROPERTY_MESH_DAMAGED_ACTOR,
             PROPERTY_MESH_DAMAGED_ACTOR,
-            dtDAL::MakeFunctor(*this, &PlatformActorProxy::LoadDamagedFile),
+            dtDAL::ResourceActorProperty::SetFuncType(this, &PlatformActorProxy::LoadDamagedFile),
             "This is the model for a damaged actor"));
 
          AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::STATIC_MESH,
             PROPERTY_MESH_DESTROYED_ACTOR,
             PROPERTY_MESH_DESTROYED_ACTOR,
-            dtDAL::MakeFunctor(*this, &PlatformActorProxy::LoadDestroyedFile),
+            dtDAL::ResourceActorProperty::SetFuncType(this, &PlatformActorProxy::LoadDestroyedFile),
             "This is the model for a destroyed actor"));
 
          static const dtUtil::RefString PROPERTY_MUZZLE_FLASH_POSITION("Muzzle Flash Position");
          AddProperty(new dtDAL::Vec3ActorProperty(PROPERTY_MUZZLE_FLASH_POSITION,
             PROPERTY_MUZZLE_FLASH_POSITION,
-            dtDAL::MakeFunctor(plat, &Platform::SetMuzzleFlashPosition),
-            dtDAL::MakeFunctorRet(plat, &Platform::GetMuzzleFlashPosition),
+            dtDAL::Vec3ActorProperty::SetFuncType(&plat, &Platform::SetMuzzleFlashPosition),
+            dtDAL::Vec3ActorProperty::GetFuncType(&plat, &Platform::GetMuzzleFlashPosition),
             "Sets the muzzle flash position on an entity"));
 
          static const dtUtil::RefString PROPERTY_ARTICULATION_PARAM_ARRAY("Articulated Parameters Array");
          AddProperty(new dtDAL::GroupActorProperty(PROPERTY_ARTICULATION_PARAM_ARRAY,
             PROPERTY_ARTICULATION_PARAM_ARRAY,
-            dtDAL::MakeFunctor(plat, &Platform::SetArticulatedParametersArray),
-            dtDAL::MakeFunctorRet(plat, &Platform::GetArticulatedParametersArray),
+            dtDAL::GroupActorProperty::SetFuncType(&plat, &Platform::SetArticulatedParametersArray),
+            dtDAL::GroupActorProperty::GetFuncType(&plat, &Platform::GetArticulatedParametersArray),
             "The list of articulated parameters for modifying DOF's", ""));
 
          AddProperty(new dtDAL::BooleanActorProperty(PROPERTY_HEAD_LIGHTS_ENABLED,
             PROPERTY_HEAD_LIGHTS_ENABLED,
-            dtDAL::MakeFunctor(plat, &Platform::SetHeadLightsEnabled),
-            dtDAL::MakeFunctorRet(plat, &Platform::IsHeadLightsEnabled),
+            dtDAL::BooleanActorProperty::SetFuncType(&plat, &Platform::SetHeadLightsEnabled),
+            dtDAL::BooleanActorProperty::GetFuncType(&plat, &Platform::IsHeadLightsEnabled),
             "Determines if the entity has it head lights on or not."));
 
          static const dtUtil::RefString PROPERTY_SEAT_CONFIG_TABLE_NAME("VehiclesSeatConfigActorNameTable");
          AddProperty(new dtDAL::StringActorProperty(PROPERTY_SEAT_CONFIG_TABLE_NAME,
             PROPERTY_SEAT_CONFIG_TABLE_NAME,
-            dtDAL::MakeFunctor(plat, &Platform::SetVehiclesSeatConfigActorName),
-            dtDAL::MakeFunctorRet(plat, &Platform::GetVehiclesSeatConfigActorName),
+            dtDAL::StringActorProperty::SetFuncType(&plat, &Platform::SetVehiclesSeatConfigActorName),
+            dtDAL::StringActorProperty::GetFuncType(&plat, &Platform::GetVehiclesSeatConfigActorName),
             "The Vehicle seat config option to coincide with the use of portals.",""));
 
          static const dtUtil::RefString PROPERTY_ENTITY_TYPE("EntityType");
          AddProperty(new dtDAL::StringActorProperty(PROPERTY_ENTITY_TYPE,
             PROPERTY_ENTITY_TYPE,
-            dtDAL::MakeFunctor(plat, &Platform::SetEntityType),
-            dtDAL::MakeFunctorRet(plat, &Platform::GetEntityType),
+            dtDAL::StringActorProperty::SetFuncType(&plat, &Platform::SetEntityType),
+            dtDAL::StringActorProperty::GetFuncType(&plat, &Platform::GetEntityType),
             "The type of the entity, such as HMMWVDrivingSim. Used to determine what behaviors this entity can have at runtime, such as embark, gunner, commander, ...", ""));
 
          static const dtUtil::RefString SOUND_PROPERTY_TYPE("Sounds");
 
          AddProperty(new dtDAL::FloatActorProperty("MaxDistanceIdleSound", "MaxDistanceIdleSound",
-            dtDAL::MakeFunctor(plat, &Platform::SetMaxDistanceIdleSound),
-            dtDAL::MakeFunctorRet(plat, &Platform::GetMaxDistanceIdleSound),
+            dtDAL::FloatActorProperty::SetFuncType(&plat, &Platform::SetMaxDistanceIdleSound),
+            dtDAL::FloatActorProperty::GetFuncType(&plat, &Platform::GetMaxDistanceIdleSound),
             "Distance for the sound", SOUND_PROPERTY_TYPE));
 
          AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::SOUND,
-            "mSFXSoundIdleEffect", "mSFXSoundIdleEffect", dtDAL::MakeFunctor(plat,
-            &Platform::SetSFXEngineIdleLoop),
+            "mSFXSoundIdleEffect", "mSFXSoundIdleEffect",
+            dtDAL::ResourceActorProperty::SetFuncType(&plat, &Platform::SetSFXEngineIdleLoop),
             "What is the filepath / string of the sound effect", SOUND_PROPERTY_TYPE));
 
          DT_REGISTER_PROPERTY_WITH_NAME_AND_LABEL(EngineSmokePos, PROPERTY_ENGINE_SMOKE_POSITION, "Engine Smoke Position",
@@ -211,7 +211,7 @@ namespace SimCore
 
          dtCore::RefPtr<dtDAL::ResourceActorProperty> rp = new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::PARTICLE_SYSTEM,
             "Engine smoke particles", "Engine smoke particles",
-            dtDAL::MakeFunctor(plat, &Platform::SetEngineSmokeFile),
+            dtDAL::ResourceActorProperty::SetFuncType(&plat, &Platform::SetEngineSmokeFile),
             "This is the file for engine smoke particles", "Platform");
 
          dtDAL::ResourceDescriptor rdEngine("Particles:smoke.osg");
@@ -227,10 +227,10 @@ namespace SimCore
          Platform* actor = static_cast<Platform*>(GetActor());
 
          AddInvokable(*new dtGame::Invokable(Platform::INVOKABLE_TICK_CONTROL_STATE,
-            dtDAL::MakeFunctor(*actor, &Platform::TickControlState)));
+            dtUtil::MakeFunctor(&Platform::TickControlState, actor)));
 
          AddInvokable(*new dtGame::Invokable("TimeElapsedForSoundIdle",
-            dtDAL::MakeFunctor(*actor, &Platform::TickTimerMessage)));
+            dtUtil::MakeFunctor(&Platform::TickTimerMessage, actor)));
       }
 
       /////////////////////////////////////////////////////////////////////////////
@@ -660,7 +660,7 @@ namespace SimCore
          dtCore::RefPtr<osg::Node> copiedNode;
          if (!LoadFile(fileName, cachedOriginalNode, copiedNode, true))
          {
-            throw dtUtil::Exception(dtGame::ExceptionEnum::INVALID_PARAMETER,
+            throw dtGame::InvalidParameterException(
                      std::string("Model file could not be loaded: ") + fileName, __FILE__, __LINE__);
          }
          copiedNode->setName(copiedNodeName);
@@ -699,7 +699,7 @@ namespace SimCore
             }
             else
             {
-               throw dtUtil::Exception(dtGame::ExceptionEnum::INVALID_PARAMETER,
+               throw dtGame::InvalidParameterException(
                         "Damage state is not supported", __FILE__, __LINE__);
             }
 
@@ -738,7 +738,7 @@ namespace SimCore
             }
             else
             {
-               throw dtUtil::Exception(dtGame::ExceptionEnum::INVALID_PARAMETER,
+               throw dtGame::InvalidParameterException(
                "Damage state is not supported", __FILE__, __LINE__);
             }
          }
