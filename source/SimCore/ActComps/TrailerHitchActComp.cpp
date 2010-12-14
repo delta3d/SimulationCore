@@ -66,7 +66,7 @@ namespace SimCore
       : BaseClass(TYPE)
       , mRotationMaxYaw(60.0f)
       , mRotationMaxCone(20.0f)
-      , mHitchType(&HitchTypeEnum::HITCH_TYPE_SPHERICAL)
+      , mHitchType(&HitchTypeEnum::HITCH_TYPE_5TH_WHEEL)
       , mHitchNodeNameTractor(TrailerHitchActComp::REAR_HITCH_DOF_NAME_DEFAULT)
       , mHitchNodeNameTrailer(TrailerHitchActComp::FRONT_HITCH_DOF_NAME_DEFAULT)
       , mTrailerActorId("")
