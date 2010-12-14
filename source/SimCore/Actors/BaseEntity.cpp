@@ -49,7 +49,7 @@
 #include <SimCore/Components/MunitionsComponent.h>
 #include <SimCore/Components/DamageHelper.h>
 #include <SimCore/Actors/MunitionTypeActor.h>
-#include <SimCore/Actors/DRPublishingActComp.h>
+#include <dtGame/drpublishingactcomp.h>
 #include <SimCore/Messages.h>
 #include <SimCore/VisibilityOptions.h>
 #include <SimCore/Components/ParticleManagerComponent.h>
@@ -329,11 +329,8 @@ namespace SimCore
       {
          BaseClass::BuildActorComponents();
 
-         dtGame::GameActor* owner = NULL;
-         GetActor(owner);
-
          // DEAD RECKONING - ACT COMPONENT
-         if (!owner->HasComponent(dtGame::DeadReckoningHelper::TYPE)) // not added by a subclass
+         if (!HasComponent(dtGame::DeadReckoningHelper::TYPE)) // not added by a subclass
          {
             dtCore::RefPtr<dtGame::DeadReckoningHelper> deadReckoningHelper = new dtGame::DeadReckoningHelper();
 
@@ -341,15 +338,15 @@ namespace SimCore
             // very close to the ground. We move the vehicle up about 3-4 inches...
             deadReckoningHelper->SetGroundOffset(0.09);
 
-            owner->AddComponent(*deadReckoningHelper);
+            AddComponent(*deadReckoningHelper);
          }
 
 
          // DEAD RECKONING - PUBLISHING ACTOR COMPONENT
-         if (!owner->HasComponent(DRPublishingActComp::TYPE)) // not added by a subclass
+         if (!HasComponent(dtGame::DRPublishingActComp::TYPE)) // not added by a subclass
          {
-            dtCore::RefPtr<SimCore::Actors::DRPublishingActComp> drPublishingActComp = new DRPublishingActComp();
-            owner->AddComponent(*drPublishingActComp);  // Add AFTER the DRhelper.
+            dtCore::RefPtr<dtGame::DRPublishingActComp> drPublishingActComp = new dtGame::DRPublishingActComp();
+            AddComponent(*drPublishingActComp);  // Add AFTER the DRhelper.
          }
       }
 
@@ -573,9 +570,9 @@ namespace SimCore
 
 
       ////////////////////////////////////////////////////////////////////////////////////
-      DRPublishingActComp* BaseEntity::GetDRPublishingActComp()
+      dtGame::DRPublishingActComp* BaseEntity::GetDRPublishingActComp()
       {
-         DRPublishingActComp* drPubAC = NULL;
+         dtGame::DRPublishingActComp* drPubAC = NULL;
          GetComponent(drPubAC);
          return drPubAC;
       }

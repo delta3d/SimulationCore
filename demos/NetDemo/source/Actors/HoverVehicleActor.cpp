@@ -37,7 +37,7 @@
 #include <SimCore/Components/DefaultFlexibleArticulationHelper.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
 #include <SimCore/Actors/TerrainActorProxy.h>
-#include <SimCore/Actors/DRPublishingActComp.h>
+#include <dtGame/drpublishingactcomp.h>
 #include <SimCore/CollisionGroupEnum.h>
 
 #include <dtUtil/nodeprintout.h>
@@ -292,18 +292,15 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////////////
    void HoverVehicleActorProxy::BuildActorComponents()
    {
-      dtGame::GameActor* owner = NULL;
-      GetActor(owner);
-
-      if (!owner->HasComponent(dtPhysics::PhysicsActComp::TYPE))
+      if (!HasComponent(dtPhysics::PhysicsActComp::TYPE))
       {
-         owner->AddComponent(*new HoverVehiclePhysicsActComp(*this));
+         AddComponent(*new HoverVehiclePhysicsActComp(*this));
       }
 
       BaseClass::BuildActorComponents();
 
-      SimCore::Actors::DRPublishingActComp* drPublishingActComp = NULL;
-      owner->GetComponent(drPublishingActComp);
+      dtGame::DRPublishingActComp* drPublishingActComp = NULL;
+      GetComponent(drPublishingActComp);
       if (drPublishingActComp == NULL)
       {
          LOG_ERROR("CRITICAL ERROR - No DR Publishing Actor Component.");

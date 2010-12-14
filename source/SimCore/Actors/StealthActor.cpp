@@ -150,7 +150,7 @@ namespace SimCore
                GetGameActorProxy().UnregisterForMessagesAboutOtherActor(dtGame::MessageType::INFO_ACTOR_UPDATED, entityParent->GetUniqueId(), "UpdateFromParent");
             }
 
-            GetDeadReckoningHelper().SetDeadReckoningAlgorithm(*mOldDRA);
+            GetComponent<dtGame::DeadReckoningHelper>()->SetDeadReckoningAlgorithm(*mOldDRA);
             Emancipate();
          }
       }
@@ -181,10 +181,16 @@ namespace SimCore
                entity->SetDrawingModel(true);
                entity->SetPlayerAttached(true);
             }
-            mOldDRA = &GetDeadReckoningHelper().GetDeadReckoningAlgorithm();
+            dtGame::DeadReckoningHelper* drHelper = NULL;
+            GetComponent(drHelper);
 
-            GetDeadReckoningHelper().SetDeadReckoningAlgorithm(
-               entity->GetDeadReckoningHelper().GetDeadReckoningAlgorithm());
+            mOldDRA = &drHelper->GetDeadReckoningAlgorithm();
+
+            dtGame::DeadReckoningHelper* drHelperEntity = NULL;
+            ga.GetComponent(drHelperEntity);
+
+            drHelper->SetDeadReckoningAlgorithm(
+               drHelperEntity->GetDeadReckoningAlgorithm());
 
          }
 
@@ -284,18 +290,21 @@ namespace SimCore
       void StealthActor::UpdateFromParent(const dtGame::Message& msg)
       {
          const dtGame::ActorUpdateMessage& aum = static_cast<const dtGame::ActorUpdateMessage&>(msg);
-         dtGame::GameActorProxy* gap = GetGameActorProxy().GetGameManager()->FindGameActorById(aum.GetAboutActorId());
-         if(gap == NULL)
+         dtGame::GameActorProxy* parent = GetGameActorProxy().GetGameManager()->FindGameActorById(aum.GetAboutActorId());
+         if(parent == NULL)
+         {
             return;
+         }
 
-         BaseEntity* entity = dynamic_cast<BaseEntity*>(gap->GetActor());
-         if(entity == NULL)
-            return;
+         dtGame::DeadReckoningHelper* drHelper = NULL;
+         GetComponent(drHelper);
+         dtGame::DeadReckoningHelper* drHelperParent = NULL;
+         parent->GetComponent(drHelperParent);
 
-         GetDeadReckoningHelper().SetDeadReckoningAlgorithm(entity->GetDeadReckoningHelper().GetDeadReckoningAlgorithm());
-         GetDeadReckoningHelper().SetLastKnownVelocity(entity->GetDeadReckoningHelper().GetLastKnownVelocity());
-         GetDeadReckoningHelper().SetLastKnownAngularVelocity(entity->GetDeadReckoningHelper().GetLastKnownAngularVelocity());
-         GetDeadReckoningHelper().SetLastKnownAcceleration(entity->GetDeadReckoningHelper().GetLastKnownAcceleration());
+         drHelper->SetDeadReckoningAlgorithm(drHelperParent->GetDeadReckoningAlgorithm());
+         drHelper->SetLastKnownVelocity(drHelperParent->GetLastKnownVelocity());
+         drHelper->SetLastKnownAngularVelocity(drHelperParent->GetLastKnownAngularVelocity());
+         drHelper->SetLastKnownAcceleration(drHelperParent->GetLastKnownAcceleration());
 
          GetGameActorProxy().NotifyFullActorUpdate();
       }

@@ -376,7 +376,7 @@ namespace SimCore
             mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::PLAYER_ACTOR_TYPE, curProxy);
 
             curEntity = dynamic_cast<SimCore::Actors::BaseEntity*> (&(curProxy->GetGameActor()));
-            curEntity->GetDeadReckoningHelper().SetAutoRegisterWithGMComponent(false);
+            curProxy->GetComponent<dtGame::DeadReckoningHelper>()->SetAutoRegisterWithGMComponent(false);
             listToFill.push_back( curEntity );
 
             if(putInGameManager)
@@ -1157,7 +1157,7 @@ namespace SimCore
          CPPUNIT_ASSERT_MESSAGE( "The entity's damage state should be NO_DAMAGE",
             entity->GetDamageState() == SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::NO_DAMAGE );
 
-         entity->GetDeadReckoningHelper().SetDeadReckoningAlgorithm( dtGame::DeadReckoningAlgorithm::VELOCITY_ONLY );
+         entity->GetComponent<dtGame::DeadReckoningHelper>()->SetDeadReckoningAlgorithm( dtGame::DeadReckoningAlgorithm::VELOCITY_ONLY );
 
          // Clear message count since actor was added to the GM
          dtCore::System::GetInstance().Step();
@@ -1187,7 +1187,7 @@ namespace SimCore
          // it won't move smoothly, it will blip statically.
          // --- Ensure the dead reckoning has NOT been changed
          CPPUNIT_ASSERT_MESSAGE( "DamageHelper should NOT have set the entity's Dead Reckoning Algorithm upon KILL damage.",
-            entity->GetDeadReckoningHelper().GetDeadReckoningAlgorithm() == dtGame::DeadReckoningAlgorithm::VELOCITY_ONLY );
+            entity->GetComponent<dtGame::DeadReckoningHelper>()->GetDeadReckoningAlgorithm() == dtGame::DeadReckoningAlgorithm::VELOCITY_ONLY );
 
          // --- Ensure that the entity is burning.
          CPPUNIT_ASSERT( entity->IsFlamesPresent() );
@@ -1424,7 +1424,7 @@ namespace SimCore
          entityAP->GetGameActor().GetTransform(xform);
          xform.SetTranslation(tankLocation);
          SimCore::Actors::BaseEntity* curEntity = dynamic_cast<SimCore::Actors::BaseEntity*> (&(entityAP->GetGameActor()));
-         curEntity->GetDeadReckoningHelper().SetAutoRegisterWithGMComponent(false);
+         curEntity->GetComponent<dtGame::DeadReckoningHelper>()->SetAutoRegisterWithGMComponent(false);
          mGM->AddActor(*entityAP, false, false);
 
          dtCore::AppSleep(10);

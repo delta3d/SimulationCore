@@ -42,7 +42,7 @@
 
 #include <SimCore/Components/RenderingSupportComponent.h>
 #include <SimCore/ApplyShaderVisitor.h>
-#include <SimCore/Actors/DRPublishingActComp.h>
+#include <dtGame/drpublishingactcomp.h>
 #include <dtGame/deadreckoninghelper.h>
 #include <dtGame/messagetype.h>
 #include <dtGame/message.h>
@@ -64,22 +64,6 @@ namespace NetDemo
    ////////////////////////////////////////////////////////////////////////
    PropelledVehicleActor::~PropelledVehicleActor()
    {
-   }
-
-   ///////////////////////////////////////////////////////////////////////////////////
-   void PropelledVehicleActor::BuildActorComponents()
-   {
-      BaseClass::BuildActorComponents();
-
-      SimCore::Actors::DRPublishingActComp* drPublishingActComp = GetDRPublishingActComp();
-      if (drPublishingActComp == NULL)
-      {
-         LOG_ERROR("CRITICAL ERROR - No DR Publishing Actor Component.");
-         return;
-      }
-      drPublishingActComp->SetMaxUpdateSendRate(5.0f);
-      drPublishingActComp->SetMaxTranslationError(0.0001f);
-      drPublishingActComp->SetMaxRotationError(0.5f);
    }
 
    ////////////////////////////////////////////////////////////////////////
@@ -118,9 +102,12 @@ namespace NetDemo
       GetTransform(xform);
       xform.GetTranslation(mDRTestingRealLocation);
 
+      dtGame::DeadReckoningHelper* drHelper = NULL;
+      GetComponent(drHelper);
+
       // Get the DR position. The DR pos is set in Tick Remote, so we pull it after that.
-      osg::Vec3 testingDRLoc = GetDeadReckoningHelper().GetCurrentDeadReckonedTranslation();
-      float testingDRSpeed = GetDeadReckoningHelper().GetLastKnownVelocity().length();
+      osg::Vec3 testingDRLoc = drHelper->GetCurrentDeadReckonedTranslation();
+      float testingDRSpeed = drHelper->GetLastKnownVelocity().length();
 
       // Compare the DR loc to the real loc.
       float difference = (mDRTestingRealLocation - testingDRLoc).length();
@@ -356,5 +343,21 @@ namespace NetDemo
          sl->mAutoDeleteLightOnTargetNull = true;
          renderComp->AddDynamicLight(sl);
       }
+   }
+   ///////////////////////////////////////////////////////////////////////////////////
+   void PropelledVehicleActorProxy::BuildActorComponents()
+   {
+      BaseClass::BuildActorComponents();
+
+      dtGame::DRPublishingActComp* drPublishingActComp = NULL;
+      GetComponent(drPublishingActComp);
+      if (drPublishingActComp == NULL)
+      {
+         LOG_ERROR("CRITICAL ERROR - No DR Publishing Actor Component.");
+         return;
+      }
+      drPublishingActComp->SetMaxUpdateSendRate(5.0f);
+      drPublishingActComp->SetMaxTranslationError(0.0001f);
+      drPublishingActComp->SetMaxRotationError(0.5f);
    }
 }

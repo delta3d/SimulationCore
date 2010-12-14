@@ -41,7 +41,7 @@
 #include <SimCore/Actors/TerrainActorProxy.h>
 #include <SimCore/Actors/MunitionTypeActor.h>
 #include <SimCore/Actors/BasePhysicsVehicleActor.h>
-#include <SimCore/Actors/DRPublishingActComp.h>
+#include <dtGame/drpublishingactcomp.h>
 #include <SimCore/CollisionGroupEnum.h>
 #include <SimCore/Components/MunitionsComponent.h>
 #include <SimCore/Messages.h>
@@ -385,18 +385,14 @@ namespace DriverDemo
    ///////////////////////////////////////////////////////////////////////////////////
    void HoverExplodingTargetActorProxy::BuildActorComponents()
    {
-      dtGame::GameActor* owner = NULL;
-      GetActor(owner);
-
-
       // create my unique physics helper.  almost all of the physics is on the helper.
       // The actor just manages properties and key presses mostly.
-      owner->AddComponent(*new HoverTargetPhysicsActComp(*this));
+      AddComponent(*new HoverTargetPhysicsActComp(*this));
 
       BaseClass::BuildActorComponents();
 
-      SimCore::Actors::DRPublishingActComp* drPublishingActComp = NULL;
-      owner->GetComponent(drPublishingActComp);
+      dtGame::DRPublishingActComp* drPublishingActComp = NULL;
+      GetComponent(drPublishingActComp);
       if (drPublishingActComp == NULL)
       {
          LOG_ERROR("CRITICAL ERROR - No DR Publishing Actor Component.");

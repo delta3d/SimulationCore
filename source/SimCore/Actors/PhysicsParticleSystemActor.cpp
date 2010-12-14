@@ -658,17 +658,12 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////
       void PhysicsParticleSystemActorProxy::BuildActorComponents()
       {
-
          BaseClass::BuildActorComponents();
-
-         dtGame::GameActor* owner = NULL;
-         GetActor(owner);
-
-         if (!owner->HasComponent(dtPhysics::PhysicsActComp::TYPE))
+         if (!HasComponent(dtPhysics::PhysicsActComp::TYPE))
          {
             dtCore::RefPtr<dtPhysics::PhysicsActComp> physAC = new dtPhysics::PhysicsActComp(*this);
             physAC->SetDefaultCollisionGroup(SimCore::CollisionGroup::GROUP_PARTICLE);
-            owner->AddComponent(*physAC);
+            AddComponent(*physAC);
          }
       }
 

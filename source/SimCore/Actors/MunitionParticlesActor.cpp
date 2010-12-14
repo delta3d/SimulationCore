@@ -532,13 +532,10 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////
       void MunitionParticlesActorProxy::BuildActorComponents()
       {
-         dtGame::GameActor* owner = NULL;
-         GetActor(owner);
-
          BaseClass::BuildActorComponents();
 
          dtPhysics::PhysicsActComp* physAC = NULL;
-         owner->GetComponent(physAC);
+         GetComponent(physAC);
          if (physAC != NULL)
          {
             physAC->SetDefaultCollisionGroup(SimCore::CollisionGroup::GROUP_BULLET);

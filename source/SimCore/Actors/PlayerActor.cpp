@@ -78,6 +78,20 @@ namespace SimCore
          RegisterForMessagesAboutSelf(SimCore::MessageType::GPS, "Enable Tool");
       }
 
+      //////////////////////////////////////////////////////////////////////////
+      void PlayerActorProxy::BuildActorComponents()
+      {
+         BaseClass::BuildActorComponents();
+
+         dtGame::DeadReckoningHelper* drHelper = NULL;
+         GetComponent(drHelper);
+         if (drHelper != NULL)
+         {
+            // Initiaze Dead reckoning offset values after DR Act Component added
+            drHelper->SetGroundOffset(3.0f);
+         }
+      }
+
       //////////////////////////////////////////////////////////
       void PlayerActorProxy::CreateActor()
       {
@@ -123,15 +137,6 @@ namespace SimCore
       void PlayerActor::SetEnabledTool(SimCore::MessageType& tool)
       {
          mActiveTool = &tool;
-      }
-
-      //////////////////////////////////////////////////////////////////////////
-      void PlayerActor::BuildActorComponents()
-      {
-         BaseClass::BuildActorComponents(); 
-
-         // Initiaze Dead reckoning offset values after DR Act Component added
-         GetDeadReckoningHelper().SetGroundOffset(3.0f);
       }
    }
 }

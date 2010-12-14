@@ -244,11 +244,7 @@ namespace SimCore
       void PlatformWithPhysicsActorProxy::BuildActorComponents()
       {
          BaseClass::BuildActorComponents();
-
-         dtGame::GameActor* owner = NULL;
-         GetActor(owner);
-
-         if (!owner->HasComponent(dtPhysics::PhysicsActComp::TYPE))
+         if (!HasComponent(dtPhysics::PhysicsActComp::TYPE))
          {
             dtCore::RefPtr<dtPhysics::PhysicsActComp> physActComp = new dtPhysics::PhysicsActComp(*this);
 
@@ -259,7 +255,7 @@ namespace SimCore
             physObj->SetCollisionGroup(SimCore::CollisionGroup::GROUP_VEHICLE_GROUND);
             physActComp->AddPhysicsObject(*physObj);
 
-            owner->AddComponent(*physActComp);
+            AddComponent(*physActComp);
          }
       }
 

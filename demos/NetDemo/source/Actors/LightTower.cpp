@@ -44,7 +44,7 @@
 //#include <SimCore/Components/MunitionsComponent.h>
 #include <SimCore/Components/DefaultFlexibleArticulationHelper.h>
 #include <SimCore/Actors/WeaponActor.h>
-#include <SimCore/Actors/DRPublishingActComp.h>
+#include <dtGame/drpublishingactcomp.h>
 #include <SimCore/ApplyShaderVisitor.h>
 #include <SimCore/CollisionGroupEnum.h>
 
@@ -445,14 +445,11 @@ namespace NetDemo
 
    void LightTowerProxy::BuildActorComponents()
    {
-      dtGame::GameActor* owner = NULL;
-      GetActor(owner);
-
       BaseClass::BuildActorComponents();
 
 
       dtPhysics::PhysicsActComp* physAC = NULL;
-      owner->GetComponent(physAC);
+      GetComponent(physAC);
       // Add our initial body.
       dtCore::RefPtr<dtPhysics::PhysicsObject> physicsObject = new dtPhysics::PhysicsObject("VehicleBody");
       physAC->AddPhysicsObject(*physicsObject);
@@ -461,8 +458,8 @@ namespace NetDemo
       //physicsObject->SetExtents(osg::Vec3(1.5f, 1.5f, 1.5f));
       physicsObject->SetMechanicsType(dtPhysics::MechanicsType::STATIC);
 
-      SimCore::Actors::DRPublishingActComp* drPublishingActComp = NULL;
-      owner->GetComponent(drPublishingActComp);
+      dtGame::DRPublishingActComp* drPublishingActComp = NULL;
+      GetComponent(drPublishingActComp);
       if (drPublishingActComp == NULL)
       {
          LOG_ERROR("CRITICAL ERROR - No DR Publishing Actor Component.");

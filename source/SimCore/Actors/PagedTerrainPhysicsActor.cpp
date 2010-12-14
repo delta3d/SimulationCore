@@ -570,14 +570,11 @@ namespace SimCore
          //////////////////////////////////////////////////////////////////////
          void PagedTerrainPhysicsActorProxy::BuildActorComponents()
          {
-            dtGame::GameActor* owner = NULL;
-            GetActor(owner);
-
             BaseClass::BuildActorComponents();
 
-            if (!owner->HasComponent(dtPhysics::PhysicsActComp::TYPE))
+            if (!HasComponent(dtPhysics::PhysicsActComp::TYPE))
             {
-               owner->AddComponent(*new dtPhysics::PhysicsActComp(*this));
+               AddComponent(*new dtPhysics::PhysicsActComp(*this));
             }
          }
 

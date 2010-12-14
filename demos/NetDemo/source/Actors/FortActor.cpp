@@ -36,7 +36,7 @@
 #include <SimCore/Messages.h>
 #include <SimCore/MessageType.h>
 #include <SimCore/Actors/BaseEntity.h>
-#include <SimCore/Actors/DRPublishingActComp.h>
+#include <dtGame/drpublishingactcomp.h>
 #include <SimCore/Actors/MunitionTypeActor.h>
 
 
@@ -287,14 +287,11 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////////////
    void FortActorProxy::BuildActorComponents()
    {
-      dtGame::GameActor* owner = NULL;
-      GetActor(owner);
-
       BaseClass::BuildActorComponents();
 
 
       dtPhysics::PhysicsActComp* physAC = NULL;
-      owner->GetComponent(physAC);
+      GetComponent(physAC);
       // Add our initial body.
       dtCore::RefPtr<dtPhysics::PhysicsObject> physicsObject = new dtPhysics::PhysicsObject("VehicleBody");
       physAC->AddPhysicsObject(*physicsObject);
@@ -304,8 +301,8 @@ namespace NetDemo
       physicsObject->SetMechanicsType(dtPhysics::MechanicsType::STATIC);
 
 
-      SimCore::Actors::DRPublishingActComp* drPublishingActComp = NULL;
-      owner->GetComponent(drPublishingActComp);
+      dtGame::DRPublishingActComp* drPublishingActComp = NULL;
+      GetComponent(drPublishingActComp);
       if (drPublishingActComp == NULL)
       {
          LOG_ERROR("CRITICAL ERROR - No DR Publishing Actor Component.");
