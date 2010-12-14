@@ -69,7 +69,6 @@ set(LIB_SOURCES_2
    "${SOURCE_PATH}/Actors/DayTimeActor.cpp"
    "${SOURCE_PATH}/Actors/DetonationActor.cpp"
    "${SOURCE_PATH}/Actors/DRGhostActor.cpp"
-   "${SOURCE_PATH}/Actors/DRPublishingActComp.cpp"
    "${SOURCE_PATH}/Actors/DynamicLightPrototypeActor.cpp"
    "${SOURCE_PATH}/Actors/DynamicParticleSystem.cpp"
    "${SOURCE_PATH}/Actors/EntityActorRegistry.cpp"

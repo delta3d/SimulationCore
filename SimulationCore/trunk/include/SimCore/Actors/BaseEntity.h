@@ -35,6 +35,7 @@ namespace dtGame
    class DeadReckoningComponent;
    //class DeadReckoningAlgorithm;
    class DeadReckoningHelper;
+   class DRPublishingActComp;
 }
 
 namespace SimCore
@@ -44,8 +45,6 @@ namespace SimCore
    namespace Actors
    {
       class MunitionTypeActor;
-      class DRPublishingActComp;
-
 
       ///////////////////////////////////////////////////////////////
       class SIMCORE_EXPORT BaseEntityActorProxy : public dtGame::GameActorProxy
@@ -310,10 +309,10 @@ namespace SimCore
 
             virtual void ProcessMessage(const dtGame::Message& message);
 
-            //this was made public so the proxy could call it.. -bga
-            dtGame::DeadReckoningHelper& GetDeadReckoningHelper();
-            const dtGame::DeadReckoningHelper& GetDeadReckoningHelper() const;
-            bool IsDeadReckoningHelperValid() const;
+            // Call GetComponent() instead to get this.
+            DEPRECATE_FUNC dtGame::DeadReckoningHelper& GetDeadReckoningHelper();
+            DEPRECATE_FUNC const dtGame::DeadReckoningHelper& GetDeadReckoningHelper() const;
+            DEPRECATE_FUNC bool IsDeadReckoningHelperValid() const;
 
             /**
              * This function is intended for use by entities that implement physics
@@ -362,7 +361,7 @@ namespace SimCore
             void CauseFullUpdate();
 
             /// Accessor for the dr publishing component. Allows setting properties, changing behaviors, forcing updates, unit tests, etc. 
-            DRPublishingActComp* GetDRPublishingActComp();
+            DEPRECATE_FUNC dtGame::DRPublishingActComp* GetDRPublishingActComp();
 
             /**
              * Get the bounding sphere information for this Entity.

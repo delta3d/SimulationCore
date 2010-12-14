@@ -127,14 +127,11 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////
       void TerrainActorProxy::BuildActorComponents()
       {
-         dtGame::GameActor* owner = NULL;
-         GetActor(owner);
-
          BaseClass::BuildActorComponents();
 
          dtCore::RefPtr<dtPhysics::PhysicsActComp> physAC = new dtPhysics::PhysicsActComp(*this);
 
-         owner->AddComponent(*physAC);
+         AddComponent(*physAC);
 
          // Adding this physics object AFTER the build actor components because we don't want the properties to be
          // accessible.

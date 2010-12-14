@@ -152,17 +152,14 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////
       void SimpleMovingShapeActorProxy::BuildActorComponents()
       {
-         dtGame::GameActor* ga = NULL;
-         GetActor(ga);
-
          // DEAD RECKONING - ACT COMPONENT
-         if (!ga->HasComponent(dtGame::DeadReckoningHelper::TYPE)) // not added by a subclass
+         if (!HasComponent(dtGame::DeadReckoningHelper::TYPE)) // not added by a subclass
          {
             // TODO, use a subclassed dr actor comp that makes the shape dr too.
             mDRHelper = new SimpleShapeDRHelper();
             mDRHelper->SetDeadReckoningAlgorithm(dtGame::DeadReckoningAlgorithm::VELOCITY_ONLY);
             mDRHelper->SetGroundClampType(dtGame::GroundClampTypeEnum::NONE);
-            ga->AddComponent(*mDRHelper);
+            AddComponent(*mDRHelper);
          }
 
          BaseClass::BuildActorComponents();

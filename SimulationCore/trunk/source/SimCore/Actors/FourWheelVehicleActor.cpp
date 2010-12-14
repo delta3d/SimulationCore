@@ -45,7 +45,7 @@
 #include <SimCore/Actors/TerrainActorProxy.h>
 #include <SimCore/Actors/InteriorActor.h>
 #include <SimCore/Actors/PortalActor.h>
-#include <SimCore/Actors/DRPublishingActComp.h>
+#include <dtGame/drpublishingactcomp.h>
 #include <SimCore/PhysicsTypes.h>
 
 namespace SimCore
@@ -678,18 +678,15 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////
       void FourWheelVehicleActorProxy::BuildActorComponents()
       {
-         dtGame::GameActor* owner = NULL;
-         GetActor(owner);
-
-         if (!owner->HasComponent(dtPhysics::PhysicsActComp::TYPE))
+         if (!HasComponent(dtPhysics::PhysicsActComp::TYPE))
          {
-            owner->AddComponent(*new SimCore::FourWheelVehiclePhysicsActComp(*this));
+            AddComponent(*new SimCore::FourWheelVehiclePhysicsActComp(*this));
          }
 
          BaseClass::BuildActorComponents();
 
-         SimCore::Actors::DRPublishingActComp* drPublishingActComp = NULL;
-         owner->GetComponent(drPublishingActComp);
+         dtGame::DRPublishingActComp* drPublishingActComp = NULL;
+         GetComponent(drPublishingActComp);
          if (drPublishingActComp == NULL)
          {
             LOG_ERROR("CRITICAL ERROR - No DR Publishing Actor Component.");

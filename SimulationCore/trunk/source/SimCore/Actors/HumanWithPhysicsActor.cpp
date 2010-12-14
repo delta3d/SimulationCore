@@ -259,10 +259,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////
       void HumanWithPhysicsActorProxy::BuildActorComponents()
       {
-         dtGame::GameActor* owner = NULL;
-         GetActor(owner);
-
-         if (!owner->HasComponent(dtPhysics::PhysicsActComp::TYPE))
+         if (!HasComponent(dtPhysics::PhysicsActComp::TYPE))
          {
             dtCore::RefPtr<dtPhysics::PhysicsActComp> physAC = new dtPhysics::PhysicsActComp(*this);
 
@@ -274,13 +271,13 @@ namespace SimCore
             physicsObject->SetExtents(osg::Vec3(1.8f, 0.5f, 0.0f));
             physAC->AddPhysicsObject(*physicsObject);
 
-            owner->AddComponent(*physAC);
+            AddComponent(*physAC);
          }
 
          BaseClass::BuildActorComponents();
 
          dtCore::RefPtr<dtGame::DeadReckoningHelper> drAC;
-         owner->GetComponent(drAC);
+         GetComponent(drAC);
          if (drAC.valid())
          {
             // We don't want the human to lean sideways, regardless of what is sent. It looks stupid

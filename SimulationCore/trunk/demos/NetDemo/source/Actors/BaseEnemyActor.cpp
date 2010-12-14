@@ -26,7 +26,7 @@
 #include <SimCore/Messages.h>
 #include <SimCore/MessageType.h>
 #include <SimCore/Actors/BaseEntity.h>
-#include <SimCore/Actors/DRPublishingActComp.h>
+#include <dtGame/drpublishingactcomp.h>
 #include <SimCore/Components/RenderingSupportComponent.h>
 //#include <SimCore/Components/MunitionsComponent.h>
 #include <SimCore/CollisionGroupEnum.h>
@@ -415,9 +415,6 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////////////
    void BaseEnemyActorProxy::BuildActorComponents()
    {
-      dtGame::GameActor* owner = NULL;
-      GetActor(owner);
-
       dtCore::RefPtr<dtPhysics::PhysicsActComp> physAC = new dtPhysics::PhysicsActComp(*this);
 
       // Add our initial body.
@@ -429,13 +426,13 @@ namespace NetDemo
       //physicsObject->SetExtents(osg::Vec3(1.5f, 1.5f, 1.5f));
       physicsObject->SetMechanicsType(dtPhysics::MechanicsType::STATIC);
 
-      owner->AddComponent(*physAC);
+      AddComponent(*physAC);
 
       BaseClass::BuildActorComponents();
 
 
-      SimCore::Actors::DRPublishingActComp* drPublishingActComp = NULL;
-      owner->GetComponent(drPublishingActComp);
+      dtGame::DRPublishingActComp* drPublishingActComp = NULL;
+      GetComponent(drPublishingActComp);
       if (drPublishingActComp == NULL)
       {
          LOG_ERROR("CRITICAL ERROR - No DR Publishing Actor Component.");

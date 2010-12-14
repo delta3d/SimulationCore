@@ -63,7 +63,7 @@
 #include <SimCore/Actors/DetonationActor.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
 #include <SimCore/Actors/ViewerMaterialActor.h>
-#include <SimCore/Actors/DRPublishingActComp.h>
+#include <dtGame/drpublishingactcomp.h>
 #include <SimCore/Components/TimedDeleterComponent.h>
 #include <SimCore/Components/ViewerMessageProcessor.h>
 #include <SimCore/Components/RenderingSupportComponent.h>
@@ -784,7 +784,7 @@ void BaseEntityActorProxyTests::TestBaseEntityActorUpdates(SimCore::Actors::Base
    //double oldTime = dtCore::System::GetInstance().GetSimTimeSinceStartup();
 
    float initialTimeUntilNextFullUpdate = entityActor.GetDRPublishingActComp()->GetTimeUntilNextFullUpdate();
-   float defaultValue = SimCore::Actors::DRPublishingActComp::TIME_BETWEEN_UPDATES;
+   float defaultValue = dtGame::DRPublishingActComp::TIME_BETWEEN_UPDATES;
    bool initialValueIsInRange = 
       (initialTimeUntilNextFullUpdate < defaultValue * 1.5001f) && 
       (initialTimeUntilNextFullUpdate > defaultValue * 0.4999f);
@@ -794,7 +794,7 @@ void BaseEntityActorProxyTests::TestBaseEntityActorUpdates(SimCore::Actors::Base
       initialValueIsInRange);
    //CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(
    //      "The time until next update should be seeded to the time between complete updates.",
-   //      SimCore::Actors::DRPublishingActComp::TIME_BETWEEN_UPDATES,
+   //      dtGame::DRPublishingActComp::TIME_BETWEEN_UPDATES,
    //      entityActor.GetDRPublishingActComp()->GetTimeUntilNextFullUpdate(), 1e-3f);
 
    dtCore::System::GetInstance().Step();

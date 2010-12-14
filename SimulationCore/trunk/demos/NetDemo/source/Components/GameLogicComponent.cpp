@@ -29,7 +29,7 @@
 #include <SimCore/Actors/WeaponActor.h>
 #include <SimCore/Actors/PlayerActor.h>
 #include <SimCore/Actors/TerrainActorProxy.h>
-#include <SimCore/Actors/DRPublishingActComp.h>
+#include <dtGame/drpublishingactcomp.h>
 #include <SimCore/Actors/FourWheelVehicleActor.h>
 #include <SimCore/ActComps/TrailerHitchActComp.h>
 #include <SimCore/Components/GameState/GameStateChangeMessage.h>
@@ -571,12 +571,12 @@ namespace NetDemo
       newDrawLandActorProxy->SetName("Terrain"); // has to be named 'Terrain' or it won't do ground clamping and other stuff
       mCurrentTerrainDrawActor = dynamic_cast<SimCore::Actors::TerrainActor*>
          (newDrawLandActorProxy->GetActor());
-      dtCore::RefPtr<SimCore::Actors::DRPublishingActComp> drpac = NULL;
+      dtCore::RefPtr<dtGame::DRPublishingActComp> drpac = NULL;
       mCurrentTerrainDrawActor->GetComponent(drpac);
       if (!drpac.valid())
       {
          // Add a DR publishing component to the terrain so it sends heartbeats.
-         drpac = new SimCore::Actors::DRPublishingActComp(false);
+         drpac = new dtGame::DRPublishingActComp(false);
          mCurrentTerrainDrawActor->AddComponent(*drpac);
          drpac->SetMaxUpdateSendRate(0.01f);
       }

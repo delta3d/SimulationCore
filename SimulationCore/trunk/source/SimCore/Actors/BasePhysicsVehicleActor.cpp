@@ -23,7 +23,7 @@
 */
 #include <prefix/SimCorePrefix.h>
 #include <SimCore/Actors/BasePhysicsVehicleActor.h>
-#include <SimCore/Actors/DRPublishingActComp.h>
+#include <dtGame/drpublishingactcomp.h>
 
 
 #include <dtPhysics/physicscomponent.h>
@@ -558,16 +558,13 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////
       void BasePhysicsVehicleActorProxy::BuildActorComponents()
       {
-         dtGame::GameActor* owner = NULL;
-         GetActor(owner);
-
          BaseClass::BuildActorComponents();
 
          // DEFAULT the Dead Reckoning Algorithm to Velocity And Acceleration. It's a prop so will
          // be overwriten from the map, unless this is a new vehicle object.
          // For a default, static would be dumb. Velocity might be OK.
          dtCore::RefPtr<dtGame::DeadReckoningHelper> drAC;
-         owner->GetComponent(drAC);
+         GetComponent(drAC);
          if (drAC.valid())
          {
             // default to velocity only.  Humans walk.
@@ -575,9 +572,9 @@ namespace SimCore
          }
 
          // Create the default if a subclass didn't create one.
-         if (!owner->HasComponent(dtPhysics::PhysicsActComp::TYPE))
+         if (!HasComponent(dtPhysics::PhysicsActComp::TYPE))
          {
-            owner->AddComponent(*new dtPhysics::PhysicsActComp(*this));
+            AddComponent(*new dtPhysics::PhysicsActComp(*this));
          }
       }
 

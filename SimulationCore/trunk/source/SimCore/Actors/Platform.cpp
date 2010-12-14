@@ -27,7 +27,7 @@
 #include <SimCore/ActComps/CamoPaintStateActComp.h>
 #include <SimCore/ActComps/WeaponSwapActComp.h>
 #include <SimCore/Actors/Platform.h>
-#include <SimCore/Actors/DRPublishingActComp.h>
+#include <dtGame/drpublishingactcomp.h>
 #include <SimCore/Components/DefaultArticulationHelper.h>
 #include <SimCore/Components/RenderingSupportComponent.h>
 #include <SimCore/VisibilityOptions.h>
@@ -236,15 +236,12 @@ namespace SimCore
       /////////////////////////////////////////////////////////////////////////////
       void PlatformActorProxy::BuildActorComponents()
       {
-         dtGame::GameActor* owner = NULL;
-         GetActor(owner);
-
          BaseClass::BuildActorComponents();
 
          // Setup the body paint component.
-         owner->AddComponent(*new SimCore::ActComps::CamoPaintStateActComp);
+         AddComponent(*new SimCore::ActComps::CamoPaintStateActComp);
 
-         owner->AddComponent(*new SimCore::ActComps::WeaponSwapActComp());
+         AddComponent(*new SimCore::ActComps::WeaponSwapActComp());
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
@@ -568,6 +565,8 @@ namespace SimCore
             paintActComp->SetPaintState(stateNum);
          }
 
+         dtGame::DeadReckoningHelper* drHelper = NULL;
+         GetComponent(drHelper);
 
          //compute the model dimensions for this damage state model, since the dimensions will differ from
          //the other damage states
@@ -575,10 +574,10 @@ namespace SimCore
          //factor in any particle system attached to us with our bounding volume
          if (modelToCalcDims != NULL)
          {
-            GetDeadReckoningHelper().SetModelDimensions(ComputeDimensions(*modelToCalcDims));
+            drHelper->SetModelDimensions(ComputeDimensions(*modelToCalcDims));
          }
 
-         GetDeadReckoningHelper().SetUseModelDimensions(setUseDimensions);
+         drHelper->SetUseModelDimensions(setUseDimensions);
 
          BaseClass::SetDamageState(damageState);
       }
@@ -1049,8 +1048,9 @@ namespace SimCore
 
       ////////////////////////////////////////////////////////////////////////////////////
       void Platform::OnTickLocal(const dtGame::TickMessage& tickMessage)
-      {         
-         DRPublishingActComp* drPublishingComp = GetDRPublishingActComp();
+      {
+         dtGame::DRPublishingActComp* drPublishingComp = NULL;
+         GetComponent(drPublishingComp);
          if (drPublishingComp != NULL && mArticHelper.valid() && mArticHelper->IsDirty())
          {
             drPublishingComp->ForceUpdateAtNextOpportunity();

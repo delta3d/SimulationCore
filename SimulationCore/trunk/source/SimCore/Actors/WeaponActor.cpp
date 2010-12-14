@@ -357,12 +357,11 @@ namespace SimCore
 
                // Add the vehicles current velocity to the weapon.
                osg::Vec3 vehicleVelocity;
-               BaseEntityActorProxy *entityProxy = dynamic_cast<BaseEntityActorProxy*>(mOwner.get());
+               BaseEntityActorProxy* entityProxy = dynamic_cast<BaseEntityActorProxy*>(mOwner.get());
                //std::cout << "Weapon Actor shooting. Attempting to set parent velocity." << std::endl;
                if (entityProxy != NULL)
                {
-                  const BaseEntity &entity = static_cast<const BaseEntity&>(entityProxy->GetGameActor());
-                  vehicleVelocity = entity.GetDeadReckoningHelper().GetLastKnownVelocity();
+                  vehicleVelocity = entityProxy->GetComponent<dtGame::DeadReckoningHelper>()->GetLastKnownVelocity();
                   //std::cout << "      NOW SETTING PARENT VELOCITY TO [" << vehicleVelocity << "]." << std::endl;
                   particleSystem->SetParentsWorldRelativeVelocityVector(vehicleVelocity);
                }
