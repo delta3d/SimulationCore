@@ -218,7 +218,7 @@ namespace SimCore
             screenXYZ *= 0.5;
 
             float bufferZ = 0.0f;
-            glReadPixels(cam->getViewport()->width() * screenXYZ.x(), cam->getViewport()->height() * screenXYZ.y(), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &bufferZ);
+            glReadPixels(GLint(cam->getViewport()->width() * screenXYZ.x()), GLint(cam->getViewport()->height() * screenXYZ.y()), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &bufferZ);
 
             bool occluded = bufferZ < 1;
 

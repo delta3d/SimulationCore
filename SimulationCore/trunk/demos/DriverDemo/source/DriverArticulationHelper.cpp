@@ -173,8 +173,9 @@ namespace DriverDemo
    {
       if( mEntity.valid() )
       {
-         dtGame::DeadReckoningHelper& drHelper = mEntity->GetDeadReckoningHelper();
-         drHelper.AddToDeadReckonDOF( dofName, position, velocity );
+         dtGame::DeadReckoningHelper* drHelper = NULL;
+         mEntity->GetComponent(drHelper);
+         drHelper->AddToDeadReckonDOF( dofName, position, velocity );
       }
    }
 

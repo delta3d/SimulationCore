@@ -61,6 +61,7 @@ namespace SimCore
       AtmosphereActorProxy::AtmosphereActorProxy()
       {
          SetClassName("SimCore::Actors::AtmosphereActor");
+         SetHideDTCorePhysicsProps(true);
       }
 
       //////////////////////////////////////////////////////////

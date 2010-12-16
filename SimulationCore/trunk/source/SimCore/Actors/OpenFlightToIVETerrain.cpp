@@ -208,7 +208,8 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////
       OpenFlightToIVETerrainActorProxy::OpenFlightToIVETerrainActorProxy()
       {
-
+         SetClassName("SimCore::Actors::OpenFlightToIVETerrainActor");
+         SetHideDTCorePhysicsProps(true);
       }
 
       ///////////////////////////////////////////////////////////////////////////////

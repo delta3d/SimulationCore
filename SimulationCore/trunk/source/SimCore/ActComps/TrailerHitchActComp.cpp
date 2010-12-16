@@ -29,10 +29,13 @@
 #include <dtPhysics/physicsactcomp.h>
 #include <dtPhysics/physicsobject.h>
 #include <dtPhysics/bodywrapper.h>
+#include <dtGame/deadreckoninghelper.h>
+
 #include <pal/palFactory.h>
 #include <pal/palLinks.h>
 
 #include <dtUtil/nodecollector.h>
+#include <dtUtil/matrixutil.h>
 #include <dtDAL/propertymacros.h>
 
 #include <dtGame/gamemanager.h>
@@ -70,7 +73,9 @@ namespace SimCore
       , mHitchNodeNameTractor(TrailerHitchActComp::REAR_HITCH_DOF_NAME_DEFAULT)
       , mHitchNodeNameTrailer(TrailerHitchActComp::FRONT_HITCH_DOF_NAME_DEFAULT)
       , mTrailerActorId("")
+      , mCurrentHitchRotHPR(osg::Vec3(0.0f, 0.0f, 0.0f))
       , mCascadeDeletes(true)
+      , mUseCurrentHitchRotToMoveTrailerWhenRemote(false)
       , mHitchJoint(NULL)
       {
       }
@@ -122,11 +127,7 @@ namespace SimCore
          // This will do nothing unless everything is set.
          dtGame::GameActor* ga = NULL;
          GetOwner(ga);
-         // remote versions should be dead-reckoned together, or otherwise moved another way.
-         if (ga != NULL && !ga->IsRemote())
-         {
-            Attach();
-         }
+         Attach();
       }
 
       //////////////////////////////////////////////////
@@ -155,6 +156,10 @@ namespace SimCore
          if (mHitchJoint == NULL && GetIsInGM() && !mTrailerActorId.ToString().empty())
          {
             mTrailerActor = LookupTrailer();
+            if (!mTrailerActor.valid())
+            {
+               return;
+            }
 
             std::pair<dtPhysics::PhysicsObject*, dtPhysics::PhysicsObject* > physicsObjects = GetPhysicsObjects();
 
@@ -170,69 +175,92 @@ namespace SimCore
                return;
             }
 
-            std::pair<osg::Group*, osg::Group* > nodes = GetHitchNodes();
-            if (nodes.first == NULL || nodes.second == NULL)
+            osg::Vec3d hitchWorldPos = WarpTrailerToTractor();
+
+            if (!mTrailerActor->IsRemote())
             {
-               LOG_WARNING("Unable to attach trailer, either the tractor or trailer hitch nodes cannot be found.");
-               return;
+               palFactory* factory = dtPhysics::PhysicsWorld::GetInstance().GetPalFactory();
+               if (*mHitchType == HitchTypeEnum::HITCH_TYPE_SPHERICAL)
+               {
+                  palSphericalLink* psl = factory->CreateSphericalLink(
+                           &physicsObjects.first->GetBodyWrapper()->GetPalBodyBase(), &physicsObjects.second->GetBodyWrapper()->GetPalBodyBase(),
+                           Float(hitchWorldPos.x()), Float(hitchWorldPos.y()), Float(hitchWorldPos.z()));
+
+                  psl->SetLimits(osg::DegreesToRadians(mRotationMaxCone), osg::DegreesToRadians(mRotationMaxYaw));
+
+                  mHitchJoint = psl;
+               }
+               else if (*mHitchType == HitchTypeEnum::HITCH_TYPE_5TH_WHEEL)
+               {
+                  float rotationMaxConeRad = osg::DegreesToRadians(mRotationMaxCone);
+                  float rotationMaxYawRad = osg::DegreesToRadians(mRotationMaxYaw);
+
+                  palGenericLink* pgl = factory->CreateGenericLink(
+                           &physicsObjects.first->GetBodyWrapper()->GetPalBodyBase(), &physicsObjects.second->GetBodyWrapper()->GetPalBodyBase(),
+                           palVector3(Float(hitchWorldPos.x()), Float(hitchWorldPos.y()), Float(hitchWorldPos.z())),
+                           palVector3(-FLT_EPSILON, -FLT_EPSILON, -FLT_EPSILON), palVector3(FLT_EPSILON, FLT_EPSILON, FLT_EPSILON), // Lock the linear motion.
+                           palVector3(-rotationMaxConeRad, 0.0f, -rotationMaxYawRad),
+                           palVector3(rotationMaxConeRad, 0.0f, rotationMaxYawRad));
+
+                  mHitchJoint = pgl;
+               }
             }
-
-            // We have all the data we need, now to do the actual work.
-            osg::Matrix tractorHitchMat, trailerHitchMat;
-            dtCore::Transformable::GetAbsoluteMatrix(nodes.first->getParent(0), tractorHitchMat);
-            dtCore::Transformable::GetAbsoluteMatrix(nodes.second->getParent(0), trailerHitchMat);
-
-            dtCore::Transform trailerWorld;
-            mTrailerActor->GetTransform(trailerWorld);
-
-            osg::Matrix trailerWorldMat;
-            trailerWorld.Get(trailerWorldMat);
-
-            osg::Matrix trailerHitchMatInv;
-            trailerHitchMatInv.invert(trailerHitchMat);
-
-            osg::Matrix trailerRelToHitch =  trailerWorldMat * trailerHitchMatInv;
-            osg::Matrix newTrailerTransform =  trailerRelToHitch * tractorHitchMat;
-
-            // Move the trailer so it is exactly the right position.
-            trailerWorld.Set(newTrailerTransform);
-            mTrailerActor->SetTransform(trailerWorld);
-            dtPhysics::PhysicsActComp* physACTrailer = NULL;
-            mTrailerActor->GetComponent(physACTrailer);
-            if (physACTrailer != NULL)
+            else if (mUseCurrentHitchRotToMoveTrailerWhenRemote)
             {
-               physACTrailer->SetMultiBodyTransformAsVisual(trailerWorld);
-            }
+               dtGame::GameActor* ga = NULL;
+               GetOwner(ga);
+               // adding as a child so it will stay in the right place
+               // between updates to the hitch rotation.
+               ga->AddChild(mTrailerActor.get());
 
-            palFactory* factory = dtPhysics::PhysicsWorld::GetInstance().GetPalFactory();
-            if (*mHitchType == HitchTypeEnum::HITCH_TYPE_SPHERICAL)
-            {
-               osg::Vec3f hitchWorldPos = tractorHitchMat.getTrans();
-               palSphericalLink* psl = factory->CreateSphericalLink(
-                        &physicsObjects.first->GetBodyWrapper()->GetPalBodyBase(), &physicsObjects.second->GetBodyWrapper()->GetPalBodyBase(),
-                        hitchWorldPos.x(), hitchWorldPos.y(), hitchWorldPos.z());
-
-               psl->SetLimits(osg::DegreesToRadians(mRotationMaxCone), osg::DegreesToRadians(mRotationMaxYaw));
-
-               mHitchJoint = psl;
-            }
-            else if (*mHitchType == HitchTypeEnum::HITCH_TYPE_5TH_WHEEL)
-            {
-               osg::Vec3f hitchWorldPos = tractorHitchMat.getTrans();
-
-               float rotationMaxConeRad = osg::DegreesToRadians(mRotationMaxCone);
-               float rotationMaxYawRad = osg::DegreesToRadians(mRotationMaxYaw);
-
-               palGenericLink* pgl = factory->CreateGenericLink(
-                        &physicsObjects.first->GetBodyWrapper()->GetPalBodyBase(), &physicsObjects.second->GetBodyWrapper()->GetPalBodyBase(),
-                        palVector3(hitchWorldPos.x(), hitchWorldPos.y(), hitchWorldPos.z()),
-                        palVector3(-FLT_EPSILON, -FLT_EPSILON, -FLT_EPSILON), palVector3(FLT_EPSILON, FLT_EPSILON, FLT_EPSILON), // Lock the linear motion.
-                        palVector3(-rotationMaxConeRad, 0.0f, -rotationMaxYawRad),
-                        palVector3(rotationMaxConeRad, 0.0f, rotationMaxYawRad));
-
-               mHitchJoint = pgl;
+               dtGame::DeadReckoningHelper* drHelper = NULL;
+               mTrailerActor->GetComponent(drHelper);
+               // The actor is attached with an attach angle, so
+               // turn off the DR.
+               drHelper->SetDeadReckoningAlgorithm(dtGame::DeadReckoningAlgorithm::NONE);
             }
          }
+      }
+
+      //////////////////////////////////////////////////
+      void TrailerHitchActComp::CalcTransformsForTractorHitchAndTrailerVisual(dtCore::Transform& tractorHitchTransform, dtCore::Transform& trailerTransform)
+      {
+         if (!mTrailerActor.valid())
+         {
+            LOG_WARNING("Unable to calculate relevant transforms for attaching a trailer for a tractor without a trailer actor");
+         }
+
+         std::pair<osg::Group*, osg::Group* > nodes = GetHitchNodes();
+         if (nodes.first == NULL || nodes.second == NULL)
+         {
+            LOG_WARNING("Unable to attach trailer, either the tractor or trailer hitch nodes cannot be found.");
+            return;
+         }
+
+         // We have all the data we need, now to do the actual work.
+         osg::Matrix tractorHitchMat, trailerHitchMat;
+         dtCore::Transformable::GetAbsoluteMatrix(nodes.first->getParent(0), tractorHitchMat);
+         dtCore::Transformable::GetAbsoluteMatrix(nodes.second->getParent(0), trailerHitchMat);
+
+         dtCore::Transform trailerWorld;
+
+         mTrailerActor->GetTransform(trailerWorld);
+
+         osg::Matrix trailerWorldMat;
+         trailerWorld.Get(trailerWorldMat);
+
+         osg::Matrix trailerHitchMatInv;
+         trailerHitchMatInv.invert(trailerHitchMat);
+
+         osg::Matrix trailerRelToHitch =  trailerWorldMat * trailerHitchMatInv;
+         osg::Matrix newTrailerTransform =  trailerRelToHitch * tractorHitchMat;
+
+         osg::Matrix hitchRotation;
+         dtUtil::MatrixUtil::HprToMatrix(hitchRotation, mCurrentHitchRotHPR);
+         newTrailerTransform *= hitchRotation;
+
+         tractorHitchTransform.Set(tractorHitchMat);
+         trailerTransform.Set(newTrailerTransform);
       }
 
       //////////////////////////////////////////////////
@@ -312,11 +340,48 @@ namespace SimCore
       //////////////////////////////////////////////////
       void TrailerHitchActComp::Detach()
       {
-         if (mHitchJoint != NULL)
+         delete mHitchJoint;
+         mHitchJoint = NULL;
+         mTrailerActor = NULL;
+      }
+
+      //////////////////////////////////////////////////
+      osg::Vec3d TrailerHitchActComp::WarpTrailerToTractor()
+      {
+         osg::Vec3d result(0.0, 0.0, 0.0);
+         if (mTrailerActor != NULL)
          {
-            delete mHitchJoint;
-            mHitchJoint = NULL;
+            dtCore::Transform tractorHitchTransform, trailerWorld;
+            CalcTransformsForTractorHitchAndTrailerVisual(tractorHitchTransform, trailerWorld);
+
+            dtGame::DeadReckoningHelper* drHelper = NULL;
+            if (mTrailerActor->IsRemote())
+            {
+               mTrailerActor->GetComponent(drHelper);
+            }
+
+            // this does not mean if it doesn't drHelper, but rather that it's not remote
+            // OR it has no drHelper.
+            if (drHelper == NULL)
+            {
+               // Move the trailer so it is exactly the right position.
+               mTrailerActor->SetTransform(trailerWorld);
+               dtPhysics::PhysicsActComp* physACTrailer = NULL;
+               mTrailerActor->GetComponent(physACTrailer);
+               if (physACTrailer != NULL)
+               {
+                  physACTrailer->SetMultiBodyTransformAsVisual(trailerWorld);
+               }
+            }
+            else
+            {
+               drHelper->SetLastKnownTranslation(trailerWorld.GetTranslation());
+               drHelper->SetLastKnownRotation(trailerWorld.GetRotation());
+            }
+
+            tractorHitchTransform.GetTranslation(result);
          }
+         return result;
       }
 
       DT_IMPLEMENT_ACCESSOR(TrailerHitchActComp, float, RotationMaxYaw);
@@ -333,12 +398,37 @@ namespace SimCore
 
       void TrailerHitchActComp::SetTrailerActorId(const dtCore::UniqueId& id)
       {
+         bool wasAttached = mTrailerActor != NULL;
+         if (wasAttached)
+         {
+            Detach();
+         }
          mTrailerActorId = id;
-         Detach();
-         Attach();
+         if (wasAttached)
+         {
+            Attach();
+         }
+      }
+
+      DT_IMPLEMENT_ACCESSOR_GETTER(TrailerHitchActComp, osg::Vec3, CurrentHitchRotHPR);
+
+      void TrailerHitchActComp::SetCurrentHitchRotHPR(const osg::Vec3& hpr)
+      {
+         mCurrentHitchRotHPR = hpr;
+         if (mUseCurrentHitchRotToMoveTrailerWhenRemote && mTrailerActor != NULL && mTrailerActor->IsRemote())
+         {
+            WarpTrailerToTractor();
+         }
       }
 
       DT_IMPLEMENT_ACCESSOR(TrailerHitchActComp, bool, CascadeDeletes);
+
+      DT_IMPLEMENT_ACCESSOR_GETTER(TrailerHitchActComp, bool, UseCurrentHitchRotToMoveTrailerWhenRemote);
+
+      void TrailerHitchActComp::SetUseCurrentHitchRotToMoveTrailerWhenRemote(bool moveTrailerWhenRemote)
+      {
+         mUseCurrentHitchRotToMoveTrailerWhenRemote = moveTrailerWhenRemote;
+      }
 
    }
 

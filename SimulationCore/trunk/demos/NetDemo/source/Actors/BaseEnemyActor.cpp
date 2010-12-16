@@ -277,7 +277,7 @@ namespace NetDemo
       }
 
       // Set the angular velocity manually because we are abusing the physics engine in all enemies.
-      GetDRPublishingActComp()->SetCurrentAngularVelocity(osg::Vec3(0.0f, 0.0f, 0.0f));
+      GetComponent<dtGame::DRPublishingActComp>()->SetCurrentAngularVelocity(osg::Vec3(0.0f, 0.0f, 0.0f));
 
 
       //this is a super hack to delete the enemies if they fall through the world

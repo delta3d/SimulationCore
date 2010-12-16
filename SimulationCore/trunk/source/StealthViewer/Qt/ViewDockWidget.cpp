@@ -227,8 +227,8 @@ namespace StealthQt
    dtCore::RefPtr<StealthGM::ViewWindowWrapper> ViewDockWidget::CreateNewViewWindow(const std::string& newViewName)
    {
       MainWindow& mainWindow = *StealthViewerData::GetInstance().GetMainWindow();
-      StealthGM::ViewWindowConfigObject& viewConfig =
-        StealthViewerData::GetInstance().GetViewWindowConfigObject();
+      //StealthGM::ViewWindowConfigObject& viewConfig =
+      //  StealthViewerData::GetInstance().GetViewWindowConfigObject();
 
       QRect rect = mainWindow.frameGeometry();
       dtCore::RefPtr<dtCore::View> view = new dtCore::View(newViewName);
