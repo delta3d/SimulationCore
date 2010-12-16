@@ -112,16 +112,34 @@ namespace SimCore
          /// The trailer actor id.
          DT_DECLARE_ACCESSOR(dtCore::UniqueId, TrailerActorId);
 
+         /// Current Hitch rotation in HPR.  If tractor is remote, then this will move the trailer if
+         /// and only if UseCurrentHitchRotToMoveTrailerWhenRemote is true.
+         DT_DECLARE_ACCESSOR(osg::Vec3, CurrentHitchRotHPR);
+
          /// true or false for removing the attached actors from the GM when the parent is removed.
          DT_DECLARE_ACCESSOR(bool, CascadeDeletes);
+
+         /// Set this to true to make the CurrentHitchRotHPR move the trailer. Defaults to false.
+         DT_DECLARE_ACCESSOR(bool, UseCurrentHitchRotToMoveTrailerWhenRemote);
 
          /// Call this to attach
          void Attach();
 
          void Detach();
 
+         /**
+          * Call this if you move the tractor.  if CurrentHitchRotHPR is changed
+          * and UseCurrentHitchRotToMoveTrailerWhenRemote is true, this will be called
+          * automatically each frame.
+
+          * @return the hitch world position.
+          */
+         osg::Vec3d WarpTrailerToTractor();
+
          std::pair<osg::Group*, osg::Group* > GetHitchNodes();
          std::pair<dtPhysics::PhysicsObject*, dtPhysics::PhysicsObject*> GetPhysicsObjects();
+
+         void CalcTransformsForTractorHitchAndTrailerVisual(dtCore::Transform& tractorHitchTransform, dtCore::Transform& trailerTransform);
 
          // Finds the trailer actor by the id stored.  Returns the actor as a convenience.
          SimCore::Actors::IGActor* LookupTrailer();

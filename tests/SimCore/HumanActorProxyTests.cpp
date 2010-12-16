@@ -236,7 +236,10 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
          human->SetStance(SimCore::Actors::HumanActorProxy::StanceEnum::UPRIGHT_STANDING);
          human->SetPrimaryWeaponState(SimCore::Actors::HumanActorProxy::WeaponStateEnum::NO_WEAPON);
 
-         human->GetDeadReckoningHelper().SetLastKnownVelocity(osg::Vec3(0.0f, 0.0f, 0.0f));
+         dtGame::DeadReckoningHelper* drHelper = NULL;
+         mHumanAP->GetComponent(drHelper);
+
+         drHelper->SetLastKnownVelocity(osg::Vec3(0.0f, 0.0f, 0.0f));
 
          mGM->AddActor(*mHumanAP, false, false);
          // have to call this because the human ignores the plan if no model is set..
@@ -245,7 +248,7 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
          human->SetStance(SimCore::Actors::HumanActorProxy::StanceEnum::CROUCHING);
          human->SetPrimaryWeaponState(SimCore::Actors::HumanActorProxy::WeaponStateEnum::NO_WEAPON);
 
-         human->GetDeadReckoningHelper().SetLastKnownVelocity(osg::Vec3(1.1f, 1.2f, 1.3f));
+         drHelper->SetLastKnownVelocity(osg::Vec3(1.1f, 1.2f, 1.3f));
          human->SetMaxTimePerIteration(0.35);
 
          CPPUNIT_ASSERT_MESSAGE("Plan failed - see error log. May have taken too long, or been impossible.",
@@ -268,10 +271,13 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
          SimCore::Actors::Human* human = NULL;
          mHumanAP->GetActor(human);
 
+         dtGame::DeadReckoningHelper* drHelper = NULL;
+         mHumanAP->GetComponent(drHelper);
+
          human->SetStance(SimCore::Actors::HumanActorProxy::StanceEnum::CROUCHING);
          human->SetPrimaryWeaponState(SimCore::Actors::HumanActorProxy::WeaponStateEnum::NO_WEAPON);
 
-         human->GetDeadReckoningHelper().SetLastKnownVelocity(osg::Vec3(1.1f, 0.3f, 0.4f));
+         drHelper->SetLastKnownVelocity(osg::Vec3(1.1f, 0.3f, 0.4f));
 
          human->SetMaxTimePerIteration(0.25);
 
@@ -282,7 +288,7 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
          human->SetStance(SimCore::Actors::HumanActorProxy::StanceEnum::CRAWLING);
          human->SetPrimaryWeaponState(SimCore::Actors::HumanActorProxy::WeaponStateEnum::FIRING_POSITION);
 
-         human->GetDeadReckoningHelper().SetLastKnownVelocity(osg::Vec3(1.1f, 1.2f, 1.3f));
+         drHelper->SetLastKnownVelocity(osg::Vec3(1.1f, 1.2f, 1.3f));
 
          CPPUNIT_ASSERT_MESSAGE("Plan failed - see error log. May have taken too long, or been impossible.",
                   human->GenerateNewAnimationSequence());
@@ -366,9 +372,12 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
          SimCore::Actors::Human* human = NULL;
          mHumanAP->GetActor(human);
 
+         dtGame::DeadReckoningHelper* drHelper = NULL;
+         mHumanAP->GetComponent(drHelper);
+
          human->SetStance(SimCore::Actors::HumanActorProxy::StanceEnum::UPRIGHT_WALKING);
          human->SetPrimaryWeaponState(SimCore::Actors::HumanActorProxy::WeaponStateEnum::FIRING_POSITION);
-         human->GetDeadReckoningHelper().SetLastKnownVelocity(osg::Vec3(0.0f,1.0f,0.0f));
+         drHelper->SetLastKnownVelocity(osg::Vec3(0.0f,1.0f,0.0f));
 
          mGM->AddActor(*mHumanAP, false, false);
          // have to call this because the human ignores the plan if no model is set..
@@ -376,7 +385,7 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
 
          human->SetStance(SimCore::Actors::HumanActorProxy::StanceEnum::KNEELING);
          human->SetPrimaryWeaponState(SimCore::Actors::HumanActorProxy::WeaponStateEnum::DEPLOYED);
-         human->GetDeadReckoningHelper().SetLastKnownVelocity(osg::Vec3(0.0f,0.0f,0.0f));
+         drHelper->SetLastKnownVelocity(osg::Vec3(0.0f,0.0f,0.0f));
 
          human->SetMaxTimePerIteration(0.45);
 
@@ -407,10 +416,13 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
          SimCore::Actors::Human* human = NULL;
          mHumanAP->GetActor(human);
 
+         dtGame::DeadReckoningHelper* drHelper = NULL;
+         mHumanAP->GetComponent(drHelper);
+
          human->SetStance(SimCore::Actors::HumanActorProxy::StanceEnum::CROUCHING);
          human->SetPrimaryWeaponState(SimCore::Actors::HumanActorProxy::WeaponStateEnum::NO_WEAPON);
 
-         human->GetDeadReckoningHelper().SetLastKnownVelocity(osg::Vec3(1.5f, 1.5f, 1.5f));
+         drHelper->SetLastKnownVelocity(osg::Vec3(1.5f, 1.5f, 1.5f));
 
          mGM->AddActor(*mHumanAP, false, false);
          // have to call this because the human ignores the plan if no model is set..
@@ -458,7 +470,10 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
          human->SetStance(SimCore::Actors::HumanActorProxy::StanceEnum::UPRIGHT_STANDING);
          human->SetPrimaryWeaponState(SimCore::Actors::HumanActorProxy::WeaponStateEnum::NO_WEAPON);
 
-         human->GetDeadReckoningHelper().SetLastKnownVelocity(osg::Vec3(1.5f, 1.5f, 1.5f));
+         dtGame::DeadReckoningHelper* drHelper = NULL;
+         mHumanAP->GetComponent(drHelper);
+
+         drHelper->SetLastKnownVelocity(osg::Vec3(1.5f, 1.5f, 1.5f));
 
          mGM->AddActor(*mHumanAP, false, false);
          // have to call this because the human ignores the plan if no model is set..
@@ -511,7 +526,10 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
          human->SetStance(SimCore::Actors::HumanActorProxy::StanceEnum::UPRIGHT_STANDING);
          human->SetPrimaryWeaponState(SimCore::Actors::HumanActorProxy::WeaponStateEnum::NO_WEAPON);
 
-         human->GetDeadReckoningHelper().SetLastKnownVelocity(osg::Vec3(1.5f, 1.5f, 1.5f));
+         dtGame::DeadReckoningHelper* drHelper = NULL;
+         mHumanAP->GetComponent(drHelper);
+
+         drHelper->SetLastKnownVelocity(osg::Vec3(1.5f, 1.5f, 1.5f));
 
          mGM->AddActor(*mHumanAP, false, false);
          // have to call this because the human ignores the plan if no model is set..
@@ -563,9 +581,12 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
          SimCore::Actors::Human* human = NULL;
          mHumanAP->GetActor(human);
 
+         dtGame::DeadReckoningHelper* drHelper = NULL;
+         mHumanAP->GetComponent(drHelper);
+
          human->SetStance(SimCore::Actors::HumanActorProxy::StanceEnum::UPRIGHT_WALKING);
          human->SetPrimaryWeaponState(SimCore::Actors::HumanActorProxy::WeaponStateEnum::DEPLOYED);
-         human->GetDeadReckoningHelper().SetLastKnownVelocity(osg::Vec3(0.0f,0.0f,0.0f));
+         drHelper->SetLastKnownVelocity(osg::Vec3(0.0f,0.0f,0.0f));
 
          mGM->AddActor(*mHumanAP, false, false);
          // have to call this because the human ignores the plan if no model is set..

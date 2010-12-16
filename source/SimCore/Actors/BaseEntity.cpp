@@ -129,6 +129,7 @@ namespace SimCore
       BaseEntityActorProxy::BaseEntityActorProxy()
       {
          SetClassName("SimCore::Actors::BaseEntity");
+         SetHideDTCorePhysicsProps(true);
       }
       /////////////////////////////////////////////////////////////////////
       BaseEntityActorProxy::~BaseEntityActorProxy()

@@ -142,6 +142,7 @@ namespace SimCore
       , mIsCreated(false)
       {
          SetClassName("SimCore::Actors::SimpleMovingShapeActorProxy");
+         SetHideDTCorePhysicsProps(true);
       }
 
       ////////////////////////////////////////////////////////////////////////////

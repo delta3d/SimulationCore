@@ -1090,41 +1090,45 @@ namespace NetDemo
    void InputComponent::UpdateDebugInfo(bool sendUpdateMessage)
    {
       GameLogicComponent* glComp = GetLogicComponent();
-      SimCore::Actors::BasePhysicsVehicleActor* physVehicle =
-         dynamic_cast<SimCore::Actors::BasePhysicsVehicleActor*>(mVehicle.get());
 
-      if (glComp == NULL) 
+      if (glComp == NULL)
       {
          return; // nothing to do without a Game logic component
       }
 
-      if (physVehicle != NULL)
+      dtGame::DeadReckoningHelper* drHelper = NULL;
+      dtGame::DRPublishingActComp* drPubAC = NULL;
+      if (mVehicle.valid())
       {
-         if (physVehicle->IsDeadReckoningHelperValid())
-         {
-            glComp->GetDebugInfo().mDRGroundClampStatus = 
-               physVehicle->GetDeadReckoningHelper().GetGroundClampType().GetName();
-            glComp->GetDebugInfo().mDRAlgorithm = 
-               physVehicle->GetDeadReckoningHelper().GetDeadReckoningAlgorithm().GetName();
-            glComp->GetDebugInfo().mDRUseSplines = 
-               physVehicle->GetDeadReckoningHelper().GetUseCubicSplineTransBlend();
-            glComp->GetDebugInfo().mDRUseFixedBlend = 
-               physVehicle->GetDeadReckoningHelper().GetUseFixedSmoothingTime();            
-         }
-         else 
-         {
-            glComp->GetDebugInfo().mDRGroundClampStatus = "NA";
-            glComp->GetDebugInfo().mDRAlgorithm = "NA";
-            glComp->GetDebugInfo().mDRUseSplines = "NA";
-         }
+         mVehicle->GetComponent(drHelper);
+         mVehicle->GetComponent(drPubAC);
+      }
 
-         if (physVehicle->GetDRPublishingActComp() != NULL)
-         {
-            glComp->GetDebugInfo().mDRPublishRate = (int)
-               physVehicle->GetDRPublishingActComp()->GetMaxUpdateSendRate();
-            glComp->GetDebugInfo().mDRPublishAngularVel = 
-               physVehicle->GetDRPublishingActComp()->GetPublishAngularVelocity();
-         }
+      if (drHelper != NULL)
+      {
+         glComp->GetDebugInfo().mDRGroundClampStatus =
+            drHelper->GetGroundClampType().GetName();
+         glComp->GetDebugInfo().mDRAlgorithm =
+            drHelper->GetDeadReckoningAlgorithm().GetName();
+         glComp->GetDebugInfo().mDRUseSplines =
+            drHelper->GetUseCubicSplineTransBlend();
+         glComp->GetDebugInfo().mDRUseFixedBlend =
+            drHelper->GetUseFixedSmoothingTime();
+      }
+      else
+      {
+         glComp->GetDebugInfo().mDRGroundClampStatus = "NA";
+         glComp->GetDebugInfo().mDRAlgorithm = "NA";
+         glComp->GetDebugInfo().mDRUseSplines = "NA";
+      }
+
+
+      if (drPubAC != NULL)
+      {
+         glComp->GetDebugInfo().mDRPublishRate = (int)
+            drPubAC->GetMaxUpdateSendRate();
+         glComp->GetDebugInfo().mDRPublishAngularVel =
+            drPubAC->GetPublishAngularVelocity();
       }
       else  // not attached to a vehicle
       {
@@ -1199,17 +1203,22 @@ namespace NetDemo
       std::cout << "Resetting DR values such as publish and smoothing." << std::endl;
       if (mVehicle.valid())
       {
-         SimCore::Actors::BasePhysicsVehicleActor* mPhysVehicle =
-            dynamic_cast<SimCore::Actors::BasePhysicsVehicleActor*>(mVehicle.get());
-         if (mPhysVehicle != NULL)
+         dtGame::DRPublishingActComp* drPubAC = NULL;
+         mVehicle->GetComponent(drPubAC);
+         if (drPubAC != NULL)
          {
-            mPhysVehicle->GetDRPublishingActComp()->SetMaxUpdateSendRate(3.0f);
-            mPhysVehicle->GetDRPublishingActComp()->SetUseVelocityInDRUpdateDecision(true);
-            mPhysVehicle->GetDRPublishingActComp()->SetPublishLinearVelocity(true);
+            drPubAC->SetMaxUpdateSendRate(3.0f);
+            drPubAC->SetUseVelocityInDRUpdateDecision(true);
+            drPubAC->SetPublishLinearVelocity(true);
          }
 
-         mVehicle->GetDeadReckoningHelper().SetMaxRotationSmoothingTime(1.0f);
-         mVehicle->GetDeadReckoningHelper().SetMaxTranslationSmoothingTime(1.0f);
+         dtGame::DeadReckoningHelper* drHelper = NULL;
+         mVehicle->GetComponent(drHelper);
+         if (drHelper != NULL)
+         {
+            drHelper->SetMaxRotationSmoothingTime(1.0f);
+            drHelper->SetMaxTranslationSmoothingTime(1.0f);
+         }
       }
    }
 

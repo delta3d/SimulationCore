@@ -564,7 +564,8 @@ namespace SimCore
          //////////////////////////////////////////////////////////////////////
          PagedTerrainPhysicsActorProxy::PagedTerrainPhysicsActorProxy()
          {
-            SetClassName("NxAgeiaTerraPageLand");
+            SetClassName("SimCore::Actors::PagedTerrainPhysicsActor");
+            SetHideDTCorePhysicsProps(true);
          }
 
          //////////////////////////////////////////////////////////////////////

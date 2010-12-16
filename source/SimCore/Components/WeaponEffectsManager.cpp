@@ -1211,7 +1211,7 @@ namespace SimCore
                effect->SetGameManager( mGM.get() );
 
                // Make sure the munition is visible in the scene
-               mGM->GetScene().AddDrawable( effect );
+               mGM->GetScene().AddChild( effect );
 
                // Track this effect though out the life of the application
                mMunitionEffects.push_back( effect );

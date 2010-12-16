@@ -766,6 +766,7 @@ namespace SimCore
       ControlStateProxy::ControlStateProxy()
       {
          SetClassName( ControlStateProxy::CLASS_NAME );
+         SetHideDTCorePhysicsProps(true);
       }
 
       //////////////////////////////////////////////////////////////////////////

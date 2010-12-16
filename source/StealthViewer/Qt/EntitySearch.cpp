@@ -101,10 +101,11 @@ namespace StealthQt
          if(entity == NULL)
             return 0.0;
 
-         const dtGame::DeadReckoningHelper& drhelp = entity->GetDeadReckoningHelper();
+         const dtGame::DeadReckoningHelper* drhelp = NULL;
+         entity->GetComponent(drhelp);
 
-         double lastTransUpdate = drhelp.GetLastTranslationUpdatedTime();
-         double lastRotUpdate   = drhelp.GetLastRotationUpdatedTime();
+         double lastTransUpdate = drhelp->GetLastTranslationUpdatedTime();
+         double lastRotUpdate   = drhelp->GetLastRotationUpdatedTime();
          double mostRecentUpdate = (lastTransUpdate > lastRotUpdate) ? lastTransUpdate : lastRotUpdate;
          double timePassedSinceUpdate = dtCore::System::GetInstance().GetSimulationTime() - mostRecentUpdate;
          timePassedSinceUpdate = (timePassedSinceUpdate < 0.0) ? 0.0 : timePassedSinceUpdate; // neg could happen and looks wierd.

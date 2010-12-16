@@ -136,9 +136,6 @@ class BaseEntityActorProxyTests : public CPPUNIT_NS::TestFixture
       RefPtr<dtGame::DeadReckoningComponent> mDeadReckoningComponent;
       RefPtr<SimCore::Components::TimedDeleterComponent> mTimerDeleterComponent;
 
-#ifdef AGEIA_PHYSICS
-      RefPtr<dtAgeiaPhysX::NxAgeiaWorldComponent> mWorldComp;
-#endif
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(BaseEntityActorProxyTests);
@@ -153,11 +150,6 @@ void BaseEntityActorProxyTests::setUp()
    mDeadReckoningComponent = new dtGame::DeadReckoningComponent();
    mGM->AddComponent(*mDeadReckoningComponent, dtGame::GameManager::ComponentPriority::NORMAL);
 
-#ifdef AGEIA_PHYSICS
-   mWorldComp = new dtAgeiaPhysX::NxAgeiaWorldComponent;
-   mGM->AddComponent(*mWorldComp, dtGame::GameManager::ComponentPriority::NORMAL);
-#endif
-
    // add the deleter component so the detonation actor can register itself to be deleted.
    mTimerDeleterComponent = new SimCore::Components::TimedDeleterComponent();
    mGM->AddComponent(*mTimerDeleterComponent, dtGame::GameManager::ComponentPriority::NORMAL);
@@ -169,9 +161,6 @@ void BaseEntityActorProxyTests::tearDown()
    mDeadReckoningComponent = NULL;
    mTimerDeleterComponent = NULL;
 
-#ifdef AGEIA_PHYSICS
-   mWorldComp = NULL;
-#endif
 
    if (mGM.valid())
    {
@@ -682,6 +671,9 @@ void BaseEntityActorProxyTests::TestBaseEntityActorProxy(SimCore::Actors::BaseEn
    CPPUNIT_ASSERT_MESSAGE("The \"" + SimCore::Actors::BaseEntityActorProxy::PROPERTY_MAPPING_NAME.Get() + "\" property should not be NULL", strProp != NULL);
    strProp->SetValue(testValue);
    CPPUNIT_ASSERT( strProp->GetValue() == testValue );
+
+   CPPUNIT_ASSERT(eap.GetHideDTCorePhysicsProps());
+   CPPUNIT_ASSERT_MESSAGE("dtCore physics properties should be hidden.", eap.GetProperty("Show Collision Geometry") == NULL);
 }
 
 void BaseEntityActorProxyTests::TestPlatformScaleMagnification()
@@ -770,20 +762,27 @@ void BaseEntityActorProxyTests::TestBaseEntityActorUpdates(SimCore::Actors::Base
 
    mGM->AddActor(eap, false, true);
 
+   dtGame::DeadReckoningHelper* drHelper = NULL;
+   eap.GetComponent(drHelper);
+
+   dtGame::DRPublishingActComp* drPubAC = NULL;
+   eap.GetComponent(drPubAC);
+
    SimCore::Actors::BaseEntity& entityActor = static_cast<SimCore::Actors::BaseEntity&>(eap.GetGameActor());
    // we now need a DR algorithm other than none, or it will skip updates.
-   entityActor.GetDeadReckoningHelper().SetDeadReckoningAlgorithm(dtGame::DeadReckoningAlgorithm::STATIC);//VELOCITY_ONLY);
+   drHelper->SetDeadReckoningAlgorithm(dtGame::DeadReckoningAlgorithm::STATIC);//VELOCITY_ONLY);
    // Eliminating smoothing causes the entity movements and DR movements to be fully in sync. This
    // prevents too many updates being sent based on 'smoothing' changes.
-   entityActor.GetDeadReckoningHelper().SetMaxRotationSmoothingTime(0.0f);
-   entityActor.GetDeadReckoningHelper().SetMaxTranslationSmoothingTime(0.0f);
-   entityActor.GetDRPublishingActComp()->SetMaxUpdateSendRate(60.0f); // can update 60 times a second
-   entityActor.GetDRPublishingActComp()->SetMaxRotationError(4.0f);
-   entityActor.GetDRPublishingActComp()->SetMaxTranslationError(10.0f);
+   drHelper->SetMaxRotationSmoothingTime(0.0f);
+   drHelper->SetMaxTranslationSmoothingTime(0.0f);
+
+   drPubAC->SetMaxUpdateSendRate(60.0f); // can update 60 times a second
+   drPubAC->SetMaxRotationError(4.0f);
+   drPubAC->SetMaxTranslationError(10.0f);
 
    //double oldTime = dtCore::System::GetInstance().GetSimTimeSinceStartup();
 
-   float initialTimeUntilNextFullUpdate = entityActor.GetDRPublishingActComp()->GetTimeUntilNextFullUpdate();
+   float initialTimeUntilNextFullUpdate = drPubAC->GetTimeUntilNextFullUpdate();
    float defaultValue = dtGame::DRPublishingActComp::TIME_BETWEEN_UPDATES;
    bool initialValueIsInRange = 
       (initialTimeUntilNextFullUpdate < defaultValue * 1.5001f) && 
@@ -815,9 +814,9 @@ void BaseEntityActorProxyTests::TestBaseEntityActorUpdates(SimCore::Actors::Base
 
    dtCore::AppSleep(20);// Give the DR Publisher time to do the actor update. At 60 hz, we technically only need 16.6 ms
 
-   float timeUntilUpdate1 = entityActor.GetDRPublishingActComp()->GetTimeUntilNextFullUpdate();
+   float timeUntilUpdate1 = drPubAC->GetTimeUntilNextFullUpdate();
    dtCore::System::GetInstance().Step();
-   float timeUntilUpdate2 = entityActor.GetDRPublishingActComp()->GetTimeUntilNextFullUpdate();
+   float timeUntilUpdate2 = drPubAC->GetTimeUntilNextFullUpdate();
 
    /// TEST the time Until Update processing
    RefPtr<const dtGame::TickMessage> tickMessage = static_cast<const dtGame::TickMessage*>(
@@ -906,14 +905,17 @@ void BaseEntityActorProxyTests::TestEntityUpdateToFromStream()
    RefPtr<SimCore::Actors::PlatformActorProxy> eap;
    mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE, eap);
    CPPUNIT_ASSERT(eap.valid());
-   SimCore::Actors::Platform& entity = static_cast<SimCore::Actors::Platform&>(eap->GetGameActor());
+
+   dtGame::DeadReckoningHelper* drHelper = NULL;
+   eap->GetComponent(drHelper);
+
 
    // Set pos/trans
    //osg::Vec3 basePos(201.0358f, 41.591f, 1.02f);
    osg::Vec3 basePos(196.0123f, 37.2345f, 1.02f);
    osg::Vec3 baseRot(140.01f, -0.84f, -0.13f);
-   entity.GetDeadReckoningHelper().SetLastKnownTranslation(basePos);
-   entity.GetDeadReckoningHelper().SetLastKnownRotation(baseRot);
+   drHelper->SetLastKnownTranslation(basePos);
+   drHelper->SetLastKnownRotation(baseRot);
 
    // do a loop - 1000 times is better, but if everyone runs this, it will find it eventually.
    for (unsigned int counter = 0; counter < 250; counter ++)
@@ -922,8 +924,8 @@ void BaseEntityActorProxyTests::TestEntityUpdateToFromStream()
       float randMult = dtUtil::RandFloat(0.001f, 2.003f);
       osg::Vec3 newPos = basePos * randMult;
       osg::Vec3 newRot = baseRot * randMult;
-      entity.GetDeadReckoningHelper().SetLastKnownTranslation(newPos);
-      entity.GetDeadReckoningHelper().SetLastKnownRotation(newRot);
+      drHelper->SetLastKnownTranslation(newPos);
+      drHelper->SetLastKnownRotation(newRot);
 
       // generate an update message 
       dtCore::RefPtr<dtGame::Message> updateMsg =
@@ -942,8 +944,8 @@ void BaseEntityActorProxyTests::TestEntityUpdateToFromStream()
       // Get pos & rot from the message
       eap->ApplyActorUpdate(*messageFromStream, false);
       osg::Vec3 posFromMessage, rotFromMessage;
-      posFromMessage = entity.GetDeadReckoningHelper().GetLastKnownTranslation();
-      rotFromMessage = entity.GetDeadReckoningHelper().GetLastKnownRotation();
+      posFromMessage = drHelper->GetLastKnownTranslation();
+      rotFromMessage = drHelper->GetLastKnownRotation();
 
       // compare values.
       std::ostringstream ss1;
@@ -1016,14 +1018,17 @@ void BaseEntityActorProxyTests::TestBaseEntityDRRegistration(SimCore::Actors::Ba
                   osg::equivalent(vec.z(), 0.0f, 1e-2f)
                   );
 
-   SimCore::Actors::BaseEntity& entity = static_cast<SimCore::Actors::BaseEntity&>(actor.GetGameActor());
+   SimCore::Actors::BaseEntity& entity = dynamic_cast<SimCore::Actors::BaseEntity&>(actor.GetGameActor());
 
    osg::Vec3 setVec = osg::Vec3(1.0, 1.2, 1.3);
 
-   entity.GetDeadReckoningHelper().SetLastKnownTranslation(setVec);
-   entity.GetDeadReckoningHelper().SetLastKnownRotation(setVec);
-   entity.GetDeadReckoningHelper().SetDeadReckoningAlgorithm(dtGame::DeadReckoningAlgorithm::NONE);
-   entity.GetDeadReckoningHelper().SetGroundClampType(dtGame::GroundClampTypeEnum::NONE); //SetFlying(true);
+   dtGame::DeadReckoningHelper* drHelper = NULL;
+   actor.GetComponent(drHelper);
+
+   drHelper->SetLastKnownTranslation(setVec);
+   drHelper->SetLastKnownRotation(setVec);
+   drHelper->SetDeadReckoningAlgorithm(dtGame::DeadReckoningAlgorithm::NONE);
+   drHelper->SetGroundClampType(dtGame::GroundClampTypeEnum::NONE); //SetFlying(true);
 
    dtCore::System::GetInstance().Step();
 
@@ -1039,7 +1044,7 @@ void BaseEntityActorProxyTests::TestBaseEntityDRRegistration(SimCore::Actors::Ba
                   osg::equivalent(vec.z(), 0.0f, 1e-2f)
                   );
 
-   entity.GetDeadReckoningHelper().SetDeadReckoningAlgorithm(dtGame::DeadReckoningAlgorithm::STATIC);
+   drHelper->SetDeadReckoningAlgorithm(dtGame::DeadReckoningAlgorithm::STATIC);
    dtCore::System::GetInstance().Step();
 
    entity.GetTransform(xform);
