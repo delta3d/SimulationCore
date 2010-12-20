@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+<Imageset Name="Periscope" Imagefile="CEGUI/imagesets/Periscope.tga" NativeHorzRes="1600" NativeVertRes="1200" AutoScaled="true">
+   <Image Name="Periscope" XPos="0" YPos="0" Width="1600" Height="1200" />
+</Imageset>
