@@ -702,7 +702,7 @@ namespace SimCore
                }
 
                // ...and if the probability of a tracer is within the probable area...
-               if( probability == 1.0f || dtUtil::RandFloat( 0.0f, 1.0 ) < probability )
+               if( probability == 1.0f || dtUtil::RandFloat( 0.0f, 1.0f ) < probability )
                {
                   // ...generate a tracer effect request...
                   dtCore::RefPtr<MunitionEffectRequest> effectRequest

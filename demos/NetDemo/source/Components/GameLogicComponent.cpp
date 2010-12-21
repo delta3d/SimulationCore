@@ -680,7 +680,7 @@ namespace NetDemo
 
                   dtCore::RefPtr<SimCore::ActComps::TrailerHitchActComp> trailerAC = new SimCore::ActComps::TrailerHitchActComp();
 
-                  mPlayerOwnedVehicle->GetGameActor().AddComponent(*trailerAC);
+                  mPlayerOwnedVehicle->AddComponent(*trailerAC);
 
                   trailerAC->SetHitchType(SimCore::ActComps::HitchTypeEnum::HITCH_TYPE_5TH_WHEEL);
                   trailerAC->SetTrailerActorId(trailer->GetId());

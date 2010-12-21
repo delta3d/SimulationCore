@@ -86,7 +86,7 @@ namespace SimCore
       {
          // This makes the results smoother when sending updates at a high rate.
          // This is just a default value. It can be overridden in the base class via config options.
-         GetDeadReckoningHelper().SetUseFixedSmoothingTime(true);
+         GetComponent<dtGame::DeadReckoningHelper>()->SetUseFixedSmoothingTime(true);
 
          BaseClass::OnEnteredWorld();
 
@@ -247,7 +247,7 @@ namespace SimCore
          {
             osg::Vec3 physAngularVelocity;
             physAngularVelocity = physObj->GetAngularVelocity();
-            GetDRPublishingActComp()->SetCurrentAngularVelocity(physAngularVelocity);
+            GetComponent<dtGame::DRPublishingActComp>()->SetCurrentAngularVelocity(physAngularVelocity);
          }
          else
          {
@@ -308,7 +308,7 @@ namespace SimCore
                // In order to make our local vehicle bounce on impact, the physics engine needs the velocity of
                // the remote entities. Essentially remote entities are kinematic (physics isn't really simulating),
                // but we want to act like their not.
-               osg::Vec3 velocity = GetDeadReckoningHelper().GetLastKnownVelocity();
+               osg::Vec3 velocity = GetComponent<dtGame::DeadReckoningHelper>()->GetLastKnownVelocity();
                physicsObject->SetLinearVelocity(velocity);
             }
 
@@ -395,7 +395,7 @@ namespace SimCore
          static const float METERSPS_TO_MILESPH = 2.236936291;
          if (IsRemote())
          {
-            return GetDeadReckoningHelper().GetLastKnownVelocity().length() * METERSPS_TO_MILESPH;
+            return GetComponent<dtGame::DeadReckoningHelper>()->GetLastKnownVelocity().length() * METERSPS_TO_MILESPH;
          }
          else
          {

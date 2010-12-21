@@ -853,11 +853,13 @@ namespace SimCore
          {
             dtUtil::NodeCollector* nodeCollector = GetNodeCollector();
             if(nodeCollector != NULL && !nodeCollector->GetTransformNodeMap().empty())
-               GetDeadReckoningHelper().SetNodeCollector(*nodeCollector);
+            {
+               GetComponent<dtGame::DeadReckoningHelper>()->SetNodeCollector(*nodeCollector);
+            }
          }
          else
          {
-            GetDeadReckoningHelper().SetUpdateMode(dtGame::DeadReckoningHelper::UpdateMode::CALCULATE_ONLY);
+            GetComponent<dtGame::DeadReckoningHelper>()->SetUpdateMode(dtGame::DeadReckoningHelper::UpdateMode::CALCULATE_ONLY);
          }
 
          //RegisterWithDeadReckoningComponent(); // moved to base class.
