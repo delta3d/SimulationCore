@@ -37,6 +37,7 @@
 #include <dtGame/message.h>
 #include <dtGame/messagetype.h>
 #include <dtGame/gamemanager.h>
+#include <dtGame/deadreckoningcomponent.h>
 #include <SimCore/Components/TimedDeleterComponent.h>
 #include <SimCore/MessageType.h>
 #include <SimCore/Actors/PlayerActor.h>
@@ -244,6 +245,8 @@ namespace SimCore
             mDeleterComp = new TestTimedDeleterComponent;
 
             mGM->AddComponent(*mDeleterComp, dtGame::GameManager::ComponentPriority::NORMAL);
+            mGM->AddComponent(*new dtGame::DeadReckoningComponent(),
+                     dtGame::GameManager::ComponentPriority::NORMAL);
          }
          catch (const dtUtil::Exception& ex)
          {
