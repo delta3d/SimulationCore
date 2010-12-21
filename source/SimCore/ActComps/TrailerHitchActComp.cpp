@@ -30,6 +30,8 @@
 #include <dtPhysics/physicsobject.h>
 #include <dtPhysics/bodywrapper.h>
 #include <dtGame/deadreckoninghelper.h>
+#include <dtGame/environmentactor.h>
+#include <dtCore/scene.h>
 
 #include <pal/palFactory.h>
 #include <pal/palLinks.h>
@@ -175,10 +177,10 @@ namespace SimCore
                return;
             }
 
-            osg::Vec3d hitchWorldPos = WarpTrailerToTractor();
 
             if (!mTrailerActor->IsRemote())
             {
+               osg::Vec3d hitchWorldPos = WarpTrailerToTractor();
                palFactory* factory = dtPhysics::PhysicsWorld::GetInstance().GetPalFactory();
                if (*mHitchType == HitchTypeEnum::HITCH_TYPE_SPHERICAL)
                {
@@ -205,19 +207,9 @@ namespace SimCore
                   mHitchJoint = pgl;
                }
             }
-            else if (mUseCurrentHitchRotToMoveTrailerWhenRemote)
+            else
             {
-               dtGame::GameActor* ga = NULL;
-               GetOwner(ga);
-               // adding as a child so it will stay in the right place
-               // between updates to the hitch rotation.
-               ga->AddChild(mTrailerActor.get());
-
-               dtGame::DeadReckoningHelper* drHelper = NULL;
-               mTrailerActor->GetComponent(drHelper);
-               // The actor is attached with an attach angle, so
-               // turn off the DR.
-               drHelper->SetDeadReckoningAlgorithm(dtGame::DeadReckoningAlgorithm::NONE);
+               WarpTrailerToTractor(mUseCurrentHitchRotToMoveTrailerWhenRemote);
             }
          }
       }
@@ -264,7 +256,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////
-      std::pair<osg::Group*, osg::Group* > TrailerHitchActComp::GetHitchNodes()
+      std::pair<osg::Group*, osg::Group* > TrailerHitchActComp::GetHitchNodes() const
       {
          std::pair<osg::Group*, osg::Group* > result(NULL, NULL);
          SimCore::Actors::IGActor* igDraw = NULL;
@@ -293,7 +285,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////
-      std::pair<dtPhysics::PhysicsObject*, dtPhysics::PhysicsObject*> TrailerHitchActComp::GetPhysicsObjects()
+      std::pair<dtPhysics::PhysicsObject*, dtPhysics::PhysicsObject*> TrailerHitchActComp::GetPhysicsObjects() const
       {
          std::pair<dtPhysics::PhysicsObject*, dtPhysics::PhysicsObject*> result(NULL, NULL);
 
@@ -333,20 +325,85 @@ namespace SimCore
          SimCore::Actors::IGActor* igDraw = NULL;
          GetOwner(igDraw);
          dtDAL::BaseActorObject* actor = igDraw->GetGameActorProxy().GetGameManager()->FindActorById(mTrailerActorId);
-
-         return dynamic_cast<SimCore::Actors::IGActor*>(actor->GetDrawable());
+         if (actor != NULL)
+         {
+            return dynamic_cast<SimCore::Actors::IGActor*>(actor->GetDrawable());
+         }
+         return NULL;
       }
 
       //////////////////////////////////////////////////
       void TrailerHitchActComp::Detach()
       {
+         if (mTrailerActor != NULL)
+         {
+            ResetTrailerActor();
+         }
+
          delete mHitchJoint;
          mHitchJoint = NULL;
          mTrailerActor = NULL;
       }
 
       //////////////////////////////////////////////////
-      osg::Vec3d TrailerHitchActComp::WarpTrailerToTractor()
+      bool TrailerHitchActComp::GetAttached() const
+      {
+         return mTrailerActor.valid() && (mHitchJoint != NULL || mTrailerActor->IsRemote());
+      }
+
+      //////////////////////////////////////////////////
+      dtGame::GameActor* TrailerHitchActComp::GetTrailer()
+      {
+         return mTrailerActor.get();
+      }
+
+      //////////////////////////////////////////////////
+      void TrailerHitchActComp::ResetTrailerActor()
+      {
+         if (mTrailerActor == NULL)
+         {
+            return;
+         }
+
+         dtGame::GameActor* ga = NULL;
+         GetOwner(ga);
+
+         bool needDetach = mTrailerActor->GetParent() == ga;
+
+         if (needDetach)
+         {
+            mTrailerActor->Emancipate();
+         }
+
+         if ( mTrailerActor->GetParent() == NULL)
+         {
+            dtGame::GameManager* gm = ga->GetGameActorProxy().GetGameManager();
+            if (gm->GetEnvironmentActor() != NULL)
+            {
+               dtGame::IEnvGameActor* ienv = NULL;
+               gm->GetEnvironmentActor()->GetDrawable(ienv);
+               ienv->AddActor(*mTrailerActor);
+            }
+            else
+            {
+               gm->GetScene().AddChild(mTrailerActor.get());
+            }
+         }
+
+         dtGame::DeadReckoningHelper* drHelper = NULL;
+         mTrailerActor->GetComponent(drHelper);
+
+         dtGame::DeadReckoningHelper* drHelperOwner = NULL;
+         ga->GetComponent(drHelperOwner);
+         if (drHelper != NULL && drHelperOwner != NULL)
+         {
+            // pick up the dr algorithm from the tractor.
+            drHelper->SetDeadReckoningAlgorithm(drHelperOwner->GetDeadReckoningAlgorithm());
+         }
+      }
+
+      //////////////////////////////////////////////////
+      osg::Vec3d TrailerHitchActComp::WarpTrailerToTractor(bool addAsChild)
       {
          osg::Vec3d result(0.0, 0.0, 0.0);
          if (mTrailerActor != NULL)
@@ -355,17 +412,37 @@ namespace SimCore
             CalcTransformsForTractorHitchAndTrailerVisual(tractorHitchTransform, trailerWorld);
 
             dtGame::DeadReckoningHelper* drHelper = NULL;
-            if (mTrailerActor->IsRemote())
+            mTrailerActor->GetComponent(drHelper);
+
+            dtGame::GameActor* ga = NULL;
+            GetOwner(ga);
+
+            bool parentIsTractor = mTrailerActor->GetParent() == ga;
+
+            if (addAsChild != parentIsTractor)
             {
-               mTrailerActor->GetComponent(drHelper);
+               mTrailerActor->Emancipate();
             }
+
+            if (addAsChild)
+            {
+               // adding as a child so it will stay in the right place
+               // between updates to the hitch rotation.
+               ga->AddChild(mTrailerActor.get());
+               drHelper->SetDeadReckoningAlgorithm(dtGame::DeadReckoningAlgorithm::NONE);
+            }
+            else if (mTrailerActor->GetParent() == NULL)
+            {
+               ResetTrailerActor();
+            }
+
+            // Move the trailer so it is exactly the right position.
+            mTrailerActor->SetTransform(trailerWorld);
 
             // this does not mean if it doesn't drHelper, but rather that it's not remote
             // OR it has no drHelper.
-            if (drHelper == NULL)
+            if (!mTrailerActor->IsRemote())
             {
-               // Move the trailer so it is exactly the right position.
-               mTrailerActor->SetTransform(trailerWorld);
                dtPhysics::PhysicsActComp* physACTrailer = NULL;
                mTrailerActor->GetComponent(physACTrailer);
                if (physACTrailer != NULL)
@@ -410,14 +487,38 @@ namespace SimCore
          }
       }
 
-      DT_IMPLEMENT_ACCESSOR_GETTER(TrailerHitchActComp, osg::Vec3, CurrentHitchRotHPR);
+      osg::Vec3 TrailerHitchActComp::GetCurrentHitchRotHPR() const
+      {
+         osg::Vec3 result(mCurrentHitchRotHPR);
+         if (GetAttached())
+         {
+            std::pair<osg::Group*, osg::Group* > nodes = GetHitchNodes();
+            if (nodes.first == NULL || nodes.second == NULL)
+            {
+               LOG_WARNING("The trailer seems to think it's attached, but either the tractor or trailer hitch nodes cannot be found.");
+            }
+            else
+            {
+               osg::Matrix tractorHitchMat, trailerHitchMat;
+               dtCore::Transformable::GetAbsoluteMatrix(nodes.first->getParent(0), tractorHitchMat);
+               dtCore::Transformable::GetAbsoluteMatrix(nodes.second->getParent(0), trailerHitchMat);
+
+               osg::Matrix tractorHitchMatInv;
+               tractorHitchMatInv.invert(tractorHitchMat);
+
+               osg::Matrix hitchRelativeMatrix = trailerHitchMat * tractorHitchMatInv;
+               dtUtil::MatrixUtil::MatrixToHpr(result, hitchRelativeMatrix);
+            }
+         }
+         return result;
+      }
 
       void TrailerHitchActComp::SetCurrentHitchRotHPR(const osg::Vec3& hpr)
       {
          mCurrentHitchRotHPR = hpr;
          if (mUseCurrentHitchRotToMoveTrailerWhenRemote && mTrailerActor != NULL && mTrailerActor->IsRemote())
          {
-            WarpTrailerToTractor();
+            WarpTrailerToTractor(true);
          }
       }
 
