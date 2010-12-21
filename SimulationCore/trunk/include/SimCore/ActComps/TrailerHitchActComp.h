@@ -112,9 +112,24 @@ namespace SimCore
          /// The trailer actor id.
          DT_DECLARE_ACCESSOR(dtCore::UniqueId, TrailerActorId);
 
-         /// Current Hitch rotation in HPR.  If tractor is remote, then this will move the trailer if
-         /// and only if UseCurrentHitchRotToMoveTrailerWhenRemote is true.
-         DT_DECLARE_ACCESSOR(osg::Vec3, CurrentHitchRotHPR);
+         /**
+          * Current Hitch rotation in HPR, which is calculated via the tractor and trailer hitches and their relative rotation.
+          *
+          * If not attached, this will return an internal value which you can set via the setter and represents
+          * the initial attach angle.
+          */
+         osg::Vec3 GetCurrentHitchRotHPR() const;
+
+         /**
+          * This is just simple setter unless the trailer is remote and UseCurrentHitchRotToMoveTrailerWhenRemote is true
+          * in which case it will actually re-rotate the trailer on the hitch.
+          * If you set this before attaching, the code will use this as the initial attach angle.
+          */
+         void SetCurrentHitchRotHPR(const osg::Vec3& hpr);
+
+      private:
+         osg::Vec3 mCurrentHitchRotHPR;
+      public:
 
          /// true or false for removing the attached actors from the GM when the parent is removed.
          DT_DECLARE_ACCESSOR(bool, CascadeDeletes);
@@ -127,22 +142,28 @@ namespace SimCore
 
          void Detach();
 
+         bool GetAttached() const;
+
+         dtGame::GameActor* GetTrailer();
+
          /**
           * Call this if you move the tractor.  if CurrentHitchRotHPR is changed
           * and UseCurrentHitchRotToMoveTrailerWhenRemote is true, this will be called
           * automatically each frame.
-
+          *
           * @return the hitch world position.
           */
-         osg::Vec3d WarpTrailerToTractor();
+         osg::Vec3d WarpTrailerToTractor(bool addAsChild = false);
 
-         std::pair<osg::Group*, osg::Group* > GetHitchNodes();
-         std::pair<dtPhysics::PhysicsObject*, dtPhysics::PhysicsObject*> GetPhysicsObjects();
+         std::pair<osg::Group*, osg::Group* > GetHitchNodes() const;
+         std::pair<dtPhysics::PhysicsObject*, dtPhysics::PhysicsObject*> GetPhysicsObjects() const;
 
          void CalcTransformsForTractorHitchAndTrailerVisual(dtCore::Transform& tractorHitchTransform, dtCore::Transform& trailerTransform);
 
-         // Finds the trailer actor by the id stored.  Returns the actor as a convenience.
+         /// Finds the trailer actor by the id stored.  Returns the actor as a convenience.
          SimCore::Actors::IGActor* LookupTrailer();
+
+         void ResetTrailerActor();
 
       protected:
          virtual ~TrailerHitchActComp();
