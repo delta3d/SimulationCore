@@ -171,25 +171,33 @@ namespace SimCore
 
          LoadSound(mSoundEffectAcceleration, mSndAcceleration);
 
-         osgSim::DOFTransform* wheels[6];
+         std::vector<osgSim::DOFTransform*> wheels;
 
          dtUtil::NodeCollector* nodeCollector = GetNodeCollector();
 
          if (nodeCollector != NULL)
          {
-            wheels[SimCore::FourWheelVehiclePhysicsActComp::FRONT_LEFT] = nodeCollector->GetDOFTransform("dof_wheel_lt_01");
-            wheels[SimCore::FourWheelVehiclePhysicsActComp::FRONT_RIGHT]= nodeCollector->GetDOFTransform("dof_wheel_rt_01");
-            wheels[SimCore::FourWheelVehiclePhysicsActComp::BACK_LEFT]  = nodeCollector->GetDOFTransform("dof_wheel_lt_02");
-            wheels[SimCore::FourWheelVehiclePhysicsActComp::BACK_RIGHT] = nodeCollector->GetDOFTransform("dof_wheel_rt_02");
-            wheels[SimCore::FourWheelVehiclePhysicsActComp::BACK_LEFT2]  = nodeCollector->GetDOFTransform("dof_wheel_lt_03");
-            wheels[SimCore::FourWheelVehiclePhysicsActComp::BACK_RIGHT2] = nodeCollector->GetDOFTransform("dof_wheel_rt_03");
-         }
-         // Only check the first 4 for validity
-         for (size_t i = 0 ; i < 4; ++i)
-         {
-            if (wheels[i] == NULL)
+            std::string indexString;
+
+            unsigned axle = 1;
+            bool found = true;
+            while (found)
             {
-               LOGN_ERROR("FourWheelVehicleActor.cpp", "One of the wheel DOFs is NULL, unable to create vehicle");
+               dtUtil::MakeIndexString(axle, indexString, 2);
+               wheels.push_back(nodeCollector->GetDOFTransform(std::string("dof_wheel_lt_") + indexString));
+               wheels.push_back(nodeCollector->GetDOFTransform(std::string("dof_wheel_rt_") + indexString));
+               if (wheels[2 * (axle - 1) + 0] == NULL || wheels[2 * (axle - 1) + 1] == NULL)
+               {
+                  found = false;
+                  // Pop off the last axle since it wasn't found.
+                  wheels.pop_back();
+                  wheels.pop_back();
+               }
+               ++axle;
+            }
+            if (wheels.empty())
+            {
+               LOGN_ERROR("FourWheelVehicleActor.cpp", "Couldn't find any wheels, unable to create vehicle.");
                return;
             }
          }

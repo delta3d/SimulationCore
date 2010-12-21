@@ -82,7 +82,6 @@ namespace SimCore
    , mFrontMaxJounce(0.0f)
    , mRearMaxJounce(0.0f)
    , mFourWheelDrive(false)
-   , mDoubleBackWheels(false)
    {
       mAxleRotation[0] = 0.0f;
       mAxleRotation[1] = 0.0f;
@@ -98,13 +97,13 @@ namespace SimCore
    //                               Utility Calculations                               //
    // ///////////////////////////////////////////////////////////////////////////////////
 
-   float FourWheelVehiclePhysicsActComp::GetWheelRotation( WheelLocation index ) const
+   float FourWheelVehiclePhysicsActComp::GetWheelRotation( unsigned index ) const
    {
       return mAxleRotation[(int(index) < 2) ? 0 : 1];
    }
 
    /// Returns the current vertical displacement of the chosen wheel.
-   float FourWheelVehiclePhysicsActComp::GetWheelJounce( WheelLocation index ) const
+   float FourWheelVehiclePhysicsActComp::GetWheelJounce( unsigned index ) const
    {
       return 0.0;
    }
@@ -216,50 +215,78 @@ namespace SimCore
    /// @retval                  false if model wasn't created because of some error.
 
    bool FourWheelVehiclePhysicsActComp::CreateVehicle(const dtCore::Transform& transformForRot,
-            const osg::Node& bodyNode, osgSim::DOFTransform* wheels[6])
+            const osg::Node& bodyNode, std::vector<osgSim::DOFTransform*> wheels)
    {
-      // Make sure we have valid nodes for geometry of all four wheels.
-      for (int i = 0 ; i < 4; ++i)
+      if (wheels.empty())
       {
-         if (wheels[i] == NULL)
-         {
-            return false;
-         }
+         return false;
       }
-
-      if (wheels[4] != NULL && wheels[5] != NULL)
-      {
-          mDoubleBackWheels = true;
-      }
-
-      float frontDamping = 0.0f, rearDamping = 0.0f, frontSpring = 0.0f, rearSpring = 0.0f;
-      osg::Matrix WheelMatrix[6];
-      osg::Vec3   WheelVec[6];
 
       osg::Matrix bodyOffset;
       GetLocalMatrix(bodyNode, bodyOffset);
       //To allow the developer to shift the center of mass.
       bodyOffset.setTrans(bodyOffset.getTrans() - GetMainPhysicsObject()->GetOriginOffset());
 
-      unsigned wheelCount = mDoubleBackWheels ? 6U : 4U;
-      for(unsigned i = 0; i < wheelCount; i++)
+      float frontDamping = 0.0f, rearDamping = 0.0f, frontSpring = 0.0f, rearSpring = 0.0f;
+      std::vector<osg::Matrix> WheelMatrix;
+      std::vector<osg::Vec3>   WheelVec;
+
+      unsigned frontWheelCount = 0;
+      unsigned rearWheelCount = 0;
+
+      float frontLeverArm = 0.0f; // Y distance from front wheels to center of gravity
+      float rearLeverArm  = 0.0f;  // Y distance from rear wheels to center of gravity
+
+      for(unsigned i = 0; i < wheels.size(); i++)
       {
-         GetLocalMatrix(*(wheels[i]), WheelMatrix[i]);
-         WheelVec[i] = WheelMatrix[i].getTrans() - bodyOffset.getTrans();
+         if (wheels[i] != NULL)
+         {
+            WheelMatrix.push_back(osg::Matrix());
+            GetLocalMatrix(*(wheels[i]), WheelMatrix.back());
+            WheelVec.push_back(WheelMatrix[i].getTrans() - bodyOffset.getTrans());
+            if (WheelVec[i][1] > 0.0f)
+            {
+               ++frontWheelCount;
+               frontLeverArm += WheelVec[i][1];
+            }
+            else
+            {
+               ++rearWheelCount;
+               rearLeverArm += -WheelVec[i][1];
+            }
+         }
+         else
+         {
+            return false;
+         }
+      }
+
+      // Take the average distance from the center of mass.
+      if (frontWheelCount > 0)
+      {
+         frontLeverArm /= float(frontWheelCount);
+      }
+      // Take the average distance from the center of mass.
+      if (rearWheelCount > 0)
+      {
+         rearLeverArm /= float(rearWheelCount);
+      }
+
+      // This is a hack to handle no front or no back wheels.  It would be better to find
+      // the hitch point since no wheels in one end would mean it has to be held up by something.
+      if (frontWheelCount == 0)
+      {
+         frontLeverArm = rearLeverArm;
+      }
+      if (rearWheelCount == 0)
+      {
+         rearLeverArm = frontLeverArm;
       }
 
       if (!GetGameActorProxy()->IsRemote())
       {
 
-         float frontLeverArm   =  WheelVec[FRONT_LEFT][1]; // Y distance from front wheels to center of gravity
-         float rearLeverArm    = -WheelVec[BACK_LEFT][1];  // Y distance from rear wheels to center of gravity
-
-         if (mDoubleBackWheels)
-         {
-            rearLeverArm =  (rearLeverArm + (-WheelVec[BACK_LEFT2][1])) / 2.0f;  // average distance to rear wheels.
-         }
-
-         float wheelbase       = frontLeverArm + rearLeverArm;
+         float wheelbase  = frontLeverArm + rearLeverArm;
          if (wheelbase <= 0.0)
          {
             LOGN_ERROR("FourWheelVehiclePhysicsActComp.cpp", "Wheelbase must be greater than zero. "
@@ -280,46 +307,35 @@ namespace SimCore
          mFrontMaxJounce       = dtUtil::Max(0.0f, GetFrontSuspensionRestLength() - frontDeflection);
          mRearMaxJounce        = dtUtil::Max(0.0f, GetRearSuspensionRestLength() - rearDeflection);
 
-         WheelVec[FRONT_LEFT][2] += mFrontMaxJounce;
-         WheelVec[FRONT_RIGHT][2] += mFrontMaxJounce;
-         WheelVec[BACK_LEFT][2] += mRearMaxJounce;
-         WheelVec[BACK_RIGHT][2] += mRearMaxJounce;
-
-         if (mDoubleBackWheels)
+         for (unsigned i = 0; i < frontWheelCount; ++i)
          {
-             WheelVec[BACK_LEFT2][2] += mRearMaxJounce;
-             WheelVec[BACK_RIGHT2][2] += mRearMaxJounce;
+            WheelVec[i][2] += mFrontMaxJounce;
+            if (WheelVec[i][0] < 0.0)
+            {
+               WheelVec[i][0] -= mFrontTrackAdjustment;
+            }
+            else
+            {
+               WheelVec[i][0] += mFrontTrackAdjustment;
+            }
          }
 
-         WheelVec[FRONT_LEFT][0] -= mFrontTrackAdjustment;
-         WheelVec[FRONT_RIGHT][0] += mFrontTrackAdjustment;
-         WheelVec[BACK_LEFT][0] -= mRearTrackAdjustment;
-         WheelVec[BACK_RIGHT][0] += mRearTrackAdjustment;
-
-         if (mDoubleBackWheels)
+         for (unsigned i = frontWheelCount; i < frontWheelCount + rearWheelCount; ++i)
          {
-             WheelVec[BACK_LEFT2][0] -= mRearTrackAdjustment;
-             WheelVec[BACK_RIGHT2][0] += mRearTrackAdjustment;
+            WheelVec[i][2] += mRearMaxJounce;
+            if (WheelVec[i][0] < 0.0)
+            {
+               WheelVec[i][0] -= mRearTrackAdjustment;
+            }
+            else
+            {
+               WheelVec[i][0] += mRearTrackAdjustment;
+            }
          }
+
       }
 
       CreateChassis(transformForRot, bodyNode);
-
-//      osg::MatrixTransform* mtWheels[4];
-//      for (unsigned i = 0; i < 4; ++i)
-//      {
-//         dtCore::RefPtr<osg::MatrixTransform> mat = new osg::MatrixTransform();
-//         mtWheels[i] = mat.get();
-//         mat->setName(wheels[i]->getName());
-//         wheels[i]->getParent(0)->addChild(mat);
-//         for (unsigned j = 0; j < wheels[i]->getNumChildren(); ++j)
-//         {
-//            mat->addChild(wheels[i]->getChild(j));
-//         }
-//
-//         wheels[i]->getParent(0)->removeChild(wheels[i]);
-//
-//      }
 
       BaseWheeledVehiclePhysicsActComp::TireParameters tp;
       BaseWheeledVehiclePhysicsActComp::SuspensionParameters sp;
@@ -339,8 +355,15 @@ namespace SimCore
       sp.mTravel = GetFrontSuspensionTravel();
       sp.mRollInfluence = 0.3f;
 
-      mWheels[FRONT_LEFT]   = AddWheel(WheelVec[FRONT_LEFT], *static_cast<osg::Transform*>(wheels[FRONT_LEFT]->getParent(0)), tp, sp, GetIsVehicleFourWheelDrive(), true, true);
-      mWheels[FRONT_RIGHT]  = AddWheel(WheelVec[FRONT_RIGHT], *static_cast<osg::Transform*>(wheels[FRONT_RIGHT]->getParent(0)), tp, sp, GetIsVehicleFourWheelDrive(), true, true);
+      unsigned frontAxles = frontWheelCount / 2;
+
+      sp.mDamperCoef /= float(frontAxles);
+      sp.mSpringRate /= float(frontAxles);
+
+      for (unsigned i = 0; i < frontWheelCount; ++i)
+      {
+         mWheels.push_back(AddWheel(WheelVec[i], *static_cast<osg::Transform*>(wheels[i]->getParent(0)), tp, sp, GetIsVehicleFourWheelDrive(), true, true));
+      }
 
       tp.mWidth = GetRearWheelWidth();
       tp.mRadius = GetRearWheelRadius();
@@ -354,23 +377,18 @@ namespace SimCore
       sp.mDamperCoef = rearDamping;
       sp.mSpringRate = rearSpring;
 
-      if (mDoubleBackWheels)
-      {
-         sp.mDamperCoef /= 2.0f;
-         sp.mSpringRate /= 2.0f;
-      }
+      unsigned rearAxles = rearWheelCount / 2;
+
+      sp.mDamperCoef /= float(rearAxles);
+      sp.mSpringRate /= float(rearAxles);
 
       sp.mRestLength = GetRearSuspensionRestLength();
       sp.mTravel = GetRearSuspensionTravel();
       sp.mRollInfluence = 0.1f;
 
-      mWheels[BACK_LEFT]    = AddWheel(WheelVec[BACK_LEFT], *static_cast<osg::Transform*>(wheels[BACK_LEFT]->getParent(0)), tp, sp, true, false, true);
-      mWheels[BACK_RIGHT]   = AddWheel(WheelVec[BACK_RIGHT], *static_cast<osg::Transform*>(wheels[BACK_RIGHT]->getParent(0)), tp, sp, true, false, true);
-
-      if (mDoubleBackWheels)
+      for (unsigned i = frontWheelCount; i < frontWheelCount + rearWheelCount; ++i)
       {
-          mWheels[BACK_LEFT2]    = AddWheel(WheelVec[BACK_LEFT2], *static_cast<osg::Transform*>(wheels[BACK_LEFT2]->getParent(0)), tp, sp, true, false, true);
-          mWheels[BACK_RIGHT2]   = AddWheel(WheelVec[BACK_RIGHT2], *static_cast<osg::Transform*>(wheels[BACK_RIGHT2]->getParent(0)), tp, sp, true, false, true);
+         mWheels.push_back(AddWheel(WheelVec[i], *static_cast<osg::Transform*>(wheels[i]->getParent(0)), tp, sp, true, false, true));
       }
 
       FinalizeInitialization();
@@ -382,7 +400,7 @@ namespace SimCore
    void FourWheelVehiclePhysicsActComp::CleanUp()
    {
       BaseClass::CleanUp();
-      for (unsigned i = 0; i < 6; ++i)
+      for (unsigned i = 0; i < mWheels.size(); ++i)
       {
          mWheels[i].mTransform = NULL;
          // The wheel should be deleted by baseclass when it deletes the underlying vehicle.
