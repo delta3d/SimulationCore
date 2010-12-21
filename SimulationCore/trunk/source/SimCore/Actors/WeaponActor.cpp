@@ -823,8 +823,10 @@ namespace SimCore
             sound = dtAudio::AudioManager::GetInstance().NewSound();
 
             if( ! sound.valid())
-               throw dtUtil::Exception(dtGame::ExceptionEnum::INVALID_PARAMETER,
-               "Failed to create the sound object", __FILE__, __LINE__);
+            {
+               throw dtGame::InvalidParameterException(
+                        "Failed to create the sound object", __FILE__, __LINE__);
+            }
 
             sound->LoadFile(filePath.c_str());
          }

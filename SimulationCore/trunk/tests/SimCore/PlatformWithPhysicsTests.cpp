@@ -87,12 +87,11 @@ namespace SimCore
                mDeadReckoningComponent = new dtGame::DeadReckoningComponent();
                mGM->AddComponent(*mDeadReckoningComponent, dtGame::GameManager::ComponentPriority::NORMAL);
 
-#ifndef AGEIA_PHYSICS
                dtCore::RefPtr<dtPhysics::PhysicsWorld> physicsWorld = new dtPhysics::PhysicsWorld(GetGlobalApplication());
                physicsWorld->Init();
                mGM->AddComponent(*new dtPhysics::PhysicsComponent(*physicsWorld, false),
                         dtGame::GameManager::ComponentPriority::NORMAL);
-#endif
+
                mGM->CreateActor(*EntityActorRegistry::PLATFORM_WITH_PHYSICS_ACTOR_TYPE, mPlatformWithPhysicsActorProxy);
                PlatformWithPhysics* temp;
                mPlatformWithPhysicsActorProxy->GetActor(temp);
@@ -144,7 +143,6 @@ namespace SimCore
 
             void TestInit()
             {
-#ifndef AGEIA_PHYSICS
                CPPUNIT_ASSERT(mPlatformWithPhysics->GetPhysicsActComp() != NULL);
                dtPhysics::PhysicsObject* po = mPlatformWithPhysics->GetPhysicsActComp()->GetMainPhysicsObject();
                CPPUNIT_ASSERT(po->GetBodyWrapper() == NULL);
@@ -159,7 +157,6 @@ namespace SimCore
                CPPUNIT_ASSERT_MESSAGE("the physics object body should not be same as before because it should have be reloaded",
                         po->GetBodyWrapper() != bw);
                CPPUNIT_ASSERT_MESSAGE("The original body should be deleted", !bwOb.valid());
-#endif
             }
 
          private:
