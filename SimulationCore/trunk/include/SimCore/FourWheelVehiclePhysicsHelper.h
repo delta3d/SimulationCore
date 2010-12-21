@@ -39,7 +39,6 @@ namespace SimCore
    {
    public:
       typedef SimCore::BaseWheeledVehiclePhysicsActComp BaseClass;
-      enum WheelLocation {FRONT_LEFT = 0, FRONT_RIGHT, BACK_LEFT, BACK_RIGHT, BACK_LEFT2, BACK_RIGHT2};
 
    public:
       FourWheelVehiclePhysicsActComp(dtGame::GameActorProxy& proxy);
@@ -48,8 +47,8 @@ namespace SimCore
       // ///////////////////////////////////////////////////////////////////////////////////
       //                               Utility Calculations                               //
       // ///////////////////////////////////////////////////////////////////////////////////
-      float GetWheelRotation(WheelLocation index) const;
-      float GetWheelJounce(WheelLocation index) const;
+      float GetWheelRotation(unsigned index) const;
+      float GetWheelJounce(unsigned index) const;
 
 
       // ///////////////////////////////////////////////////////////////////////////////////
@@ -61,7 +60,7 @@ namespace SimCore
       void Steer(float normalize_wheel_angle);
       void ApplyBrake(float normalized_brake);
 
-      bool CreateVehicle(const dtCore::Transform& transformForRot, const osg::Node& bodyNode, osgSim::DOFTransform* wheels[6]);
+      bool CreateVehicle(const dtCore::Transform& transformForRot, const osg::Node& bodyNode, std::vector<osgSim::DOFTransform*> wheels);
 
 
       //////////////////////////////////////////////////////////////////
@@ -153,8 +152,7 @@ namespace SimCore
 
    private:
 
-      //  Six so we can support have a double axle set of back wheels.
-      WheelType        mWheels[6];                //!< All of the vehicle's wheels
+      std::vector<WheelType>   mWheels;                //!< All of the vehicle's wheels
 
       float            mCurrentNormalizedSteering;     //!< Current steering from -1.0 to 1.0
       float            mCurrentEngineTorque;      //!< Current torque from engine: depends on mAccelerator and mEngineTorque
@@ -164,7 +162,6 @@ namespace SimCore
       float            mFrontMaxJounce;           //!< Vertical translation of front wheel (relative to body) with suspension fully compressed.
       float            mRearMaxJounce;            //!< Vertical translation of rear wheel (relative to body) with suspension fully compressed.
       bool             mFourWheelDrive;           //!< Is this vehicle using 4 wheel drive or not? affects speed
-      bool             mDoubleBackWheels;
    };
 }
 #endif //DELTA_FOUR_WHEEL_VEHICLE_PHYSICS_HELPER
