@@ -245,11 +245,13 @@ namespace SimCore
          trailerHitchMatInv.invert(trailerHitchMat);
 
          osg::Matrix trailerRelToHitch =  trailerWorldMat * trailerHitchMatInv;
-         osg::Matrix newTrailerTransform =  trailerRelToHitch * tractorHitchMat;
 
          osg::Matrix hitchRotation;
          dtUtil::MatrixUtil::HprToMatrix(hitchRotation, mCurrentHitchRotHPR);
-         newTrailerTransform *= hitchRotation;
+         tractorHitchMat = hitchRotation * tractorHitchMat;
+
+         osg::Matrix newTrailerTransform =  trailerRelToHitch * tractorHitchMat;
+
 
          tractorHitchTransform.Set(tractorHitchMat);
          trailerTransform.Set(newTrailerTransform);
