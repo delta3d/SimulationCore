@@ -89,7 +89,7 @@ namespace StealthGM
 
                mNetworkHour    = dt.GetHour();
                mNetworkMinute  = dt.GetMinute();
-               mNetworkSeconds = dt.GetSecond();
+               mNetworkSeconds = int(dt.GetSecond());
             }
          }
 

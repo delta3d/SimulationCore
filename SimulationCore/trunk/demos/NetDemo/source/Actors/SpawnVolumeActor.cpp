@@ -105,9 +105,9 @@ namespace NetDemo
          GetTransform(trans);
          trans.GetTranslation(pos);
          osg::BoundingBox bb = GetBoundingBox();
-         pos[0] += dtUtil::RandRange(bb._min[0], bb._max[0]);
-         pos[1] += dtUtil::RandRange(bb._min[1], bb._max[1]);
-         pos[2] += dtUtil::RandRange(bb._min[2], bb._max[2]);
+         pos[0] += dtUtil::RandFloat(bb._min[0], bb._max[0]);
+         pos[1] += dtUtil::RandFloat(bb._min[1], bb._max[1]);
+         pos[2] += dtUtil::RandFloat(bb._min[2], bb._max[2]);
       }
 
       return pos;

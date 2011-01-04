@@ -177,7 +177,7 @@ namespace NetDemo
 
          if(!mSpawnVolumes.empty())
          {
-            int index = dtUtil::RandRange(0, mSpawnVolumes.size() - 1);
+            int index = dtUtil::RandRange(0U, unsigned(mSpawnVolumes.size()) - 1U);
             if(mSpawnVolumes[index].valid())
             {
                point = mSpawnVolumes[index]->GetSpawnPoint();

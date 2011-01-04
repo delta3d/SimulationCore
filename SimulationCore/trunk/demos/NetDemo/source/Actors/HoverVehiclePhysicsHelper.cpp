@@ -61,7 +61,7 @@ namespace NetDemo
 
    // These statics are put here as test variables. They need to be made permanent or
    // made into properties on the actor.
-   static float testCorrection = 0.01f;
+   //static float testCorrection = 0.01f;
    //static float testForceBoost = 0.25f;
    static float testJumpBoost = 1.6 * -dtPhysics::DEFAULT_GRAVITY_Z; //dtAgeiaPhysX::DEFAULT_GRAVITY_Z;
    static float testQuicknessAdjustment = 2.0f; // 1.0 gives you a sluggish feel

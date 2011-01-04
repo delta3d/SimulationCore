@@ -161,7 +161,7 @@ namespace SimCore
                   //update our velocity vector
                   if(mParentHuman.valid())
                   {
-                     mSpeed = mParentHuman->GetDeadReckoningHelper().GetLastKnownVelocity().length();
+                     mSpeed = mParentHuman->GetComponent<dtGame::DeadReckoningHelper>()->GetLastKnownVelocity().length();
                      //std::cout << "Human Speed: " << mSpeed << std::endl;
                   }
                   else
@@ -611,9 +611,12 @@ namespace SimCore
             animComponent->RegisterActor(GetGameActorProxy(), *mAnimationHelper);
          }
 
+         dtGame::DeadReckoningHelper* drHelper = NULL;
+         GetComponent(drHelper);
+
          //RegisterWithDeadReckoningComponent(); // Now handled in base class
-         GetDeadReckoningHelper().SetUseModelDimensions(false);
-         GetDeadReckoningHelper().SetAdjustRotationToGround(false);
+         drHelper->SetUseModelDimensions(false);
+         drHelper->SetAdjustRotationToGround(false);
 
          if (IsRemote())
          {
@@ -623,7 +626,7 @@ namespace SimCore
          }
          else
          {
-            GetDeadReckoningHelper().SetUpdateMode(dtGame::DeadReckoningHelper::UpdateMode::CALCULATE_ONLY);
+            drHelper->SetUpdateMode(dtGame::DeadReckoningHelper::UpdateMode::CALCULATE_ONLY);
          }
 
       }
@@ -653,7 +656,7 @@ namespace SimCore
                << "Stance:  \"" << GetStance().GetName()
                << "\"\n Primary Weapon: \"" << GetPrimaryWeaponState().GetName()
                << "\"\n Damage: \"" << GetDamageState().GetName()
-               << "\"\n Velocity: \"" << GetDeadReckoningHelper().GetLastKnownVelocity() << "\"\n";
+               << "\"\n Velocity: \"" << GetComponent<dtGame::DeadReckoningHelper>()->GetLastKnownVelocity() << "\"\n";
             ExecuteActionCountMap::const_iterator i, iend;
             i = mExecutedActionCounts.begin();
             iend = mExecutedActionCounts.end();
@@ -860,7 +863,7 @@ namespace SimCore
 
          //This requires that plans be made in one frame.
          //Moving is the same as the velocity > 0.
-         if (movingState->Get() != !dtUtil::Equivalent(GetDeadReckoningHelper().GetLastKnownVelocity().length2(), 0.0f))
+         if (movingState->Get() != !dtUtil::Equivalent(GetComponent<dtGame::DeadReckoningHelper>()->GetLastKnownVelocity().length2(), 0.0f))
             return false;
 
          bool actionStateResult =

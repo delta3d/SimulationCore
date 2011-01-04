@@ -339,7 +339,7 @@ namespace SimCore
             float resultingDistance = SimCore::UnitOfLength::Convert(SimCore::UnitOfLength::METER, *mUnitOfLength, distance);
             if (mUnitOfLength->GetUseWholeUnits())
             {
-               mIntersectionText->setText(PadNumber(resultingDistance) + " " + mUnitOfLength->GetAbbreviation());
+               mIntersectionText->setText(PadNumber(int(resultingDistance)) + " " + mUnitOfLength->GetAbbreviation());
             }
             else
             {
@@ -357,7 +357,7 @@ namespace SimCore
 
             if (mUnitOfAngle->GetUseWholeUnits())
             {
-               mElevationText->setText(PadNumber(resultingAngle) + " " + mUnitOfAngle->GetAbbreviation());
+               mElevationText->setText(PadNumber(int(resultingAngle)) + " " + mUnitOfAngle->GetAbbreviation());
             }
             else
             {

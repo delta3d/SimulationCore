@@ -101,7 +101,7 @@ namespace NetDemo
 
             float maxThrustForce =  1.5f * (52.5f - length);
 
-            float mass = physicsObject->GetBodyWrapper()->GetMass();
+            //float mass = physicsObject->GetBodyWrapper()->GetMass();
             
             osg::Vec3 up(0.0f, 0.0f, 3.5f);
             //osg::Vec3 force = up + (at * (mCurrentControls.GetThrust() * maxThrustForce));

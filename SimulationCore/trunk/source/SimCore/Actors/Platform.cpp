@@ -975,7 +975,7 @@ namespace SimCore
          if ( mArticHelper.valid() && GetNodeCollector() != NULL)
          {
             mArticHelper->HandleArticulatedParametersArray(
-               newValue, *GetNodeCollector(), GetDeadReckoningHelper() );
+               newValue, *GetNodeCollector(), *GetComponent<dtGame::DeadReckoningHelper>() );
          }
       }
 
@@ -995,7 +995,7 @@ namespace SimCore
       {
          dtCore::RefPtr<dtUtil::NodeCollector> nc =  new dtUtil::NodeCollector(mNonDamagedFileNode.get(), dtUtil::NodeCollector::AllNodeTypes);
          SetNodeCollector(nc);
-         GetDeadReckoningHelper().SetNodeCollector(*nc);
+         GetComponent<dtGame::DeadReckoningHelper>()->SetNodeCollector(*nc);
          // Update the articulation helper with DOFs of the current model.
          if (!mArticHelper.valid())
          {

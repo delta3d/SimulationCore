@@ -157,8 +157,7 @@ namespace SimCore
       void BaseEntityActorProxy::GetPartialUpdateProperties(std::vector<dtUtil::RefString>& propNamesToFill)
       {
          // Add the properties for dead reckoning such as last known translation, etc...
-         BaseEntity& e = static_cast<BaseEntity&>(GetGameActor());
-         e.GetDeadReckoningHelper().GetPartialUpdateProperties(propNamesToFill);
+         GetComponent<dtGame::DeadReckoningHelper>()->GetPartialUpdateProperties(propNamesToFill);
 
          // Add your own properties that you want to publish with EVERY partial update (ie very often)
       }
@@ -847,9 +846,12 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////
       void BaseEntity::CauseFullUpdate()
       {
-         if (!IsRemote() && GetDRPublishingActComp() != NULL && GetGameActorProxy().IsInGM())
+         dtGame::DRPublishingActComp* drPubAC = NULL;
+         GetComponent(drPubAC);
+
+         if (!IsRemote() && drPubAC != NULL && GetGameActorProxy().IsInGM())
          {
-            GetDRPublishingActComp()->ForceFullUpdateAtNextOpportunity();
+            drPubAC->ForceFullUpdateAtNextOpportunity();
          }
       }
 
