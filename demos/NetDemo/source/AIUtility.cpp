@@ -306,7 +306,7 @@ namespace NetDemo
       float lookAhead = mTimeToTarget * dt;
       osg::Vec3 targetPos = GetTargetPosition(lookAhead, current_goal);
       osg::Vec3 goalForward;
-      float dist = GetTargetForward(lookAhead, targetPos, current_goal, current_state, goalForward);      
+      //float dist = GetTargetForward(lookAhead, targetPos, current_goal, current_state, goalForward);
 
       osg::Vec3 currForward = current_state.GetForward();
 
@@ -358,7 +358,7 @@ namespace NetDemo
 
       float angle = 0.0f;
       float dot = goalForward * currForward;
-      float sign = (currForward[0] * goalForward[1]) - (currForward[1] * goalForward[0]);
+      //float sign = (currForward[0] * goalForward[1]) - (currForward[1] * goalForward[0]);
 
       angle = acos(dot);
 

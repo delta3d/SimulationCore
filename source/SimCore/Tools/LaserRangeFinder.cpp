@@ -180,7 +180,7 @@ namespace SimCore
 
             float resultingAngle = SimCore::UnitOfAngle::Convert(SimCore::UnitOfAngle::DEGREE, SimCore::UnitOfAngle::MIL, degrees);
 
-            mElevationText->setText(PadNumber(resultingAngle) + " " + SimCore::UnitOfAngle::MIL.GetAbbreviation());
+            mElevationText->setText(PadNumber(int(resultingAngle)) + " " + SimCore::UnitOfAngle::MIL.GetAbbreviation());
          }
          else
          {

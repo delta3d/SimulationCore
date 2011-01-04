@@ -476,7 +476,7 @@ namespace SimCore
 
                   if(mCurrentInteraction->GetRandomizeResponses())
                   {
-                     index = dtUtil::RandRange(0, mResponses.size() - 1);
+                     index = dtUtil::RandRange(0U, unsigned(mResponses.size()) - 1U);
                   }
 
                   mCurrentInteraction->AddResponse(mResponses[index]);
@@ -518,7 +518,7 @@ namespace SimCore
                //pick a random response
                if(!mResponseOptions.empty())
                {
-                  int index = dtUtil::RandRange(0, mResponseOptions.size() - 1);
+                  int index = dtUtil::RandRange(0U, unsigned(mResponseOptions.size()) - 1U);
                   mCurrentResponse->SetResponseText(mResponseOptions[index]);
                   mResponseOptions.clear();
                }

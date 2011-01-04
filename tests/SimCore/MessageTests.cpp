@@ -422,7 +422,7 @@ class MessageTests : public CPPUNIT_NS::TestFixture
             CPPUNIT_ASSERT(playerActor.valid());
 
             osg::Vec3 tankPos(0, 100, 0);
-            t80Actor->GetDeadReckoningHelper().SetLastKnownTranslation(tankPos);
+            t80Actor->GetComponent<dtGame::DeadReckoningHelper>()->SetLastKnownTranslation(tankPos);
 
             mGM->AddActor(*t80Proxy, true, false);
             mGM->AddActor(*playerProxy, false, false);

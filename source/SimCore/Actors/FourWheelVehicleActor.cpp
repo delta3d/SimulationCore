@@ -570,7 +570,7 @@ namespace SimCore
          if (IsRemote())
          {
             static const float METERSPS_TO_MILESPH = 2.236936291;
-            result = GetDeadReckoningHelper().GetLastKnownVelocity().length() * METERSPS_TO_MILESPH;
+            result = GetComponent<dtGame::DeadReckoningHelper>()->GetLastKnownVelocity().length() * METERSPS_TO_MILESPH;
          }
          else
          {

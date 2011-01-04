@@ -728,7 +728,7 @@ namespace NetDemo
          GetGameManager()->CreateActor(*SimCore::Actors::EntityActorRegistry::DR_GHOST_ACTOR_TYPE, mDRGhostActorProxy);
          if (mDRGhostActorProxy.valid())
          {
-            mOriginalPublishTimesPerSecond = mPhysVehicle->GetDRPublishingActComp()->GetMaxUpdateSendRate();
+            mOriginalPublishTimesPerSecond = mPhysVehicle->GetComponent<dtGame::DRPublishingActComp>()->GetMaxUpdateSendRate();
             SimCore::Actors::DRGhostActor* actor = NULL;
             mDRGhostActorProxy->GetActor(actor);
             actor->SetSlavedEntity(mVehicle);
@@ -786,24 +786,27 @@ namespace NetDemo
       bool ctrlIsPressed = app.GetKeyboard()->GetKeyState(osgGA::GUIEventAdapter::KEY_Control_L) ||
          app.GetKeyboard()->GetKeyState(osgGA::GUIEventAdapter::KEY_Control_R);
 
-      SimCore::Actors::BasePhysicsVehicleActor* mPhysVehicle =
-         dynamic_cast<SimCore::Actors::BasePhysicsVehicleActor*>(mVehicle.get());
-
-      if (mPhysVehicle != NULL)
+      if (mVehicle.valid())
       {
-         if (!ctrlIsPressed)
+         dtGame::DRPublishingActComp* drPubAC = NULL;
+         mVehicle->GetComponent(drPubAC);
+
+         if (drPubAC != NULL)
          {
-            mPhysVehicle->GetDRPublishingActComp()->SetPublishLinearVelocity(
-               !mPhysVehicle->GetDRPublishingActComp()->GetPublishLinearVelocity());
-            std::cout << "TEST - Publish Linear Velocity changed to [" << mPhysVehicle->GetDRPublishingActComp()->GetPublishLinearVelocity() <<
-               "]. Ctrl to change VelDRDecision." << std::endl;
-         }
-         else
-         {
-            mPhysVehicle->GetDRPublishingActComp()->SetUseVelocityInDRUpdateDecision(
-               !mPhysVehicle->GetDRPublishingActComp()->GetUseVelocityInDRUpdateDecision());
-            std::cout << "Toggle - UseVelocity in DR Update Decision changed to [" << 
-               mPhysVehicle->GetDRPublishingActComp()->GetUseVelocityInDRUpdateDecision() << "]." << std::endl;
+            if (!ctrlIsPressed)
+            {
+               drPubAC->SetPublishLinearVelocity(
+                  !drPubAC->GetPublishLinearVelocity());
+               std::cout << "TEST - Publish Linear Velocity changed to [" << drPubAC->GetPublishLinearVelocity() <<
+                  "]. Ctrl to change VelDRDecision." << std::endl;
+            }
+            else
+            {
+               drPubAC->SetUseVelocityInDRUpdateDecision(
+                  !drPubAC->GetUseVelocityInDRUpdateDecision());
+               std::cout << "Toggle - UseVelocity in DR Update Decision changed to [" <<
+                     drPubAC->GetUseVelocityInDRUpdateDecision() << "]." << std::endl;
+            }
          }
 
          // This whole method is not really used anymore, so if needed in the future,
@@ -819,11 +822,14 @@ namespace NetDemo
       {
          GetGameManager()->DeleteActor(*mDRGhostActorProxy.get());
          mDRGhostActorProxy = NULL;
-         SimCore::Actors::BasePhysicsVehicleActor *mPhysVehicle =
-            dynamic_cast<SimCore::Actors::BasePhysicsVehicleActor*>(mVehicle.get());
-         if (mPhysVehicle != NULL)
+         if (mVehicle.valid())
          {
-            mPhysVehicle->GetDRPublishingActComp()->SetMaxUpdateSendRate(mOriginalPublishTimesPerSecond);
+            dtGame::DRPublishingActComp* drPubAC = NULL;
+            mVehicle->GetComponent(drPubAC);
+            if (drPubAC != NULL)
+            {
+               drPubAC->SetMaxUpdateSendRate(mOriginalPublishTimesPerSecond);
+            }
          }
          mDRGhostMode = NONE;
       }
@@ -839,8 +845,13 @@ namespace NetDemo
       {
          mMaxPublishRate += incrementValue;
          dtUtil::Clamp(mMaxPublishRate, 0, 60);
-         physVehicle->GetDRPublishingActComp()->SetMaxUpdateSendRate((float) mMaxPublishRate);
-         std::cout << "TEST - Num Publishes Per Second[" << mMaxPublishRate <<  "]." << std::endl;
+         dtGame::DRPublishingActComp* drPubAC = NULL;
+         physVehicle->GetComponent(drPubAC);
+         if (drPubAC != NULL)
+         {
+            drPubAC->SetMaxUpdateSendRate(float(mMaxPublishRate));
+            std::cout << "TEST - Num Publishes Per Second[" << mMaxPublishRate <<  "]." << std::endl;
+         }
          /*
          float timesPerSecondRate = physVehicle->GetDRPublishingActComp()->GetMaxUpdateSendRate();
          timesPerSecondRate *= scaleFactor;
@@ -858,28 +869,34 @@ namespace NetDemo
    ////////////////////////////////////////////////////////////////////////////////
    void InputComponent::ModifyVehicleSmoothingRate(float scaleFactor)
    {
-      // Like the publish method, only works on the smoothing rate.
-      dtABC::Application& app = GetGameManager()->GetApplication();
-      bool ctrlIsPressed = app.GetKeyboard()->GetKeyState(osgGA::GUIEventAdapter::KEY_Control_L) ||
-         app.GetKeyboard()->GetKeyState(osgGA::GUIEventAdapter::KEY_Control_R);
-
       if (mVehicle.valid())
       {
-         if (!ctrlIsPressed)
-         {
-            float oldRate = mVehicle->GetDeadReckoningHelper().GetMaxTranslationSmoothingTime();
-            float newRate = oldRate * scaleFactor;
-            mVehicle->GetDeadReckoningHelper().SetMaxTranslationSmoothingTime(newRate);
+         // Like the publish method, only works on the smoothing rate.
+         dtABC::Application& app = GetGameManager()->GetApplication();
+         bool ctrlIsPressed = app.GetKeyboard()->GetKeyState(osgGA::GUIEventAdapter::KEY_Control_L) ||
+            app.GetKeyboard()->GetKeyState(osgGA::GUIEventAdapter::KEY_Control_R);
 
-            std::cout << "-- Changed TRANS Smoothing Time to [" << newRate <<  "]. Hold CTRL to change Rot." << std::endl;
-         }
-         else
+         dtGame::DeadReckoningHelper* drHelper = NULL;
+         mVehicle->GetComponent(drHelper);
+
+         if (drHelper != NULL)
          {
-            float oldRate = mVehicle->GetDeadReckoningHelper().GetMaxRotationSmoothingTime();
-            float newRate = oldRate * scaleFactor;
-            mVehicle->GetDeadReckoningHelper().SetMaxRotationSmoothingTime(newRate);
-            
-            std::cout << "-- Changed ROT Smoothing Time to [" << newRate <<  "]." << std::endl;
+            if (!ctrlIsPressed)
+            {
+               float oldRate = drHelper->GetMaxTranslationSmoothingTime();
+               float newRate = oldRate * scaleFactor;
+               drHelper->SetMaxTranslationSmoothingTime(newRate);
+
+               std::cout << "-- Changed TRANS Smoothing Time to [" << newRate <<  "]. Hold CTRL to change Rot." << std::endl;
+            }
+            else
+            {
+               float oldRate = drHelper->GetMaxRotationSmoothingTime();
+               float newRate = oldRate * scaleFactor;
+               drHelper->SetMaxRotationSmoothingTime(newRate);
+
+               std::cout << "-- Changed ROT Smoothing Time to [" << newRate <<  "]." << std::endl;
+            }
          }
 
       }
@@ -948,19 +965,23 @@ namespace NetDemo
    void InputComponent::ToggleFixedBlendTime()
    {
       // Toggle the publishing of angular velocity
-      SimCore::Actors::BasePhysicsVehicleActor* physVehicle =
-         dynamic_cast<SimCore::Actors::BasePhysicsVehicleActor*>(mVehicle.get());
-      if (physVehicle != NULL && physVehicle->GetDRPublishingActComp() != NULL)
+      if (mVehicle.valid())
       {
-         if (physVehicle->GetDeadReckoningHelper().GetUseFixedSmoothingTime())
+         dtGame::DeadReckoningHelper* drHelper = NULL;
+         mVehicle->GetComponent(drHelper);
+
+         if (drHelper!= NULL)
          {
-            physVehicle->GetDeadReckoningHelper().SetUseFixedSmoothingTime(false);
-            LOG_ALWAYS("TEST -- Toggling - Always Use Max Smoothing Time to FALSE");
-         }
-         else
-         {
-            physVehicle->GetDeadReckoningHelper().SetUseFixedSmoothingTime(true);
-            LOG_ALWAYS("TEST -- Toggling - Always Use Max Smoothing Time to TRUE");
+            if (drHelper->GetUseFixedSmoothingTime())
+            {
+               drHelper->SetUseFixedSmoothingTime(false);
+               LOG_ALWAYS("TEST -- Toggling - Always Use Max Smoothing Time to FALSE");
+            }
+            else
+            {
+               drHelper->SetUseFixedSmoothingTime(true);
+               LOG_ALWAYS("TEST -- Toggling - Always Use Max Smoothing Time to TRUE");
+            }
          }
       }
 
@@ -970,19 +991,24 @@ namespace NetDemo
    void InputComponent::TogglePublishAngularVelocity()
    {
       // Toggle the publishing of angular velocity
-      SimCore::Actors::BasePhysicsVehicleActor* physVehicle =
-         dynamic_cast<SimCore::Actors::BasePhysicsVehicleActor*>(mVehicle.get());
-      if (physVehicle != NULL && physVehicle->GetDRPublishingActComp() != NULL)
+
+      if (mVehicle.valid())
       {
-         if (physVehicle->GetDRPublishingActComp()->GetPublishAngularVelocity())
+         dtGame::DRPublishingActComp* drPubAC = NULL;
+         mVehicle->GetComponent(drPubAC);
+
+         if (drPubAC != NULL)
          {
-            physVehicle->GetDRPublishingActComp()->SetPublishAngularVelocity(false);
-            LOG_ALWAYS("TEST -- Toggling - Publish Angular Velocity to FALSE");
-         }
-         else
-         {
-            physVehicle->GetDRPublishingActComp()->SetPublishAngularVelocity(true);
-            LOG_ALWAYS("TEST -- Toggling - Publish Angular Velocity to TRUE");
+            if (drPubAC->GetPublishAngularVelocity())
+            {
+               drPubAC->SetPublishAngularVelocity(false);
+               LOG_ALWAYS("TEST -- Toggling - Publish Angular Velocity to FALSE");
+            }
+            else
+            {
+               drPubAC->SetPublishAngularVelocity(true);
+               LOG_ALWAYS("TEST -- Toggling - Publish Angular Velocity to TRUE");
+            }
          }
       }
       //GetLogicComponent()->GetDebugInfo().mCurDebugVar = "DR Algorithm";
@@ -992,19 +1018,23 @@ namespace NetDemo
    void InputComponent::ToggleUseCubicSplineForDR()
    {
       // Toggle the Use Cubic Spline
-      SimCore::Actors::BasePhysicsVehicleActor* physVehicle =
-         dynamic_cast<SimCore::Actors::BasePhysicsVehicleActor*>(mVehicle.get());
-      if (physVehicle != NULL && physVehicle->IsDeadReckoningHelperValid())
+      if (mVehicle.valid())
       {
-         if (physVehicle->GetDeadReckoningHelper().GetUseCubicSplineTransBlend())
+         dtGame::DeadReckoningHelper* drHelper = NULL;
+         mVehicle->GetComponent(drHelper);
+
+         if (drHelper != NULL)
          {
-            physVehicle->GetDeadReckoningHelper().SetUseCubicSplineTransBlend(false);
-            LOG_ALWAYS("TEST -- Toggling - Use CUBIC Spline - FALSE");
-         }
-         else
-         {
-            physVehicle->GetDeadReckoningHelper().SetUseCubicSplineTransBlend(true);
-            LOG_ALWAYS("TEST -- Toggling - Use CUBIC Spline - TRUE");
+            if (drHelper->GetUseCubicSplineTransBlend())
+            {
+               drHelper->SetUseCubicSplineTransBlend(false);
+               LOG_ALWAYS("TEST -- Toggling - Use CUBIC Spline - FALSE");
+            }
+            else
+            {
+               drHelper->SetUseCubicSplineTransBlend(true);
+               LOG_ALWAYS("TEST -- Toggling - Use CUBIC Spline - TRUE");
+            }
          }
       }
    }
@@ -1012,64 +1042,63 @@ namespace NetDemo
    ////////////////////////////////////////////////////////////////////////////////
    void InputComponent::ToggleDeadReckoningAlgorithm()
    {
-      SimCore::Actors::BasePhysicsVehicleActor* physVehicle =
-         dynamic_cast<SimCore::Actors::BasePhysicsVehicleActor*>(mVehicle.get());
-
-      if (physVehicle != NULL)
+      if (mVehicle.valid())
       {
-         if (physVehicle->GetDeadReckoningHelper().GetDeadReckoningAlgorithm() 
-            == dtGame::DeadReckoningAlgorithm::STATIC)
+         dtGame::DeadReckoningHelper* drHelper = NULL;
+         mVehicle->GetComponent(drHelper);
+
+         if (drHelper != NULL)
          {
-            physVehicle->GetDeadReckoningHelper().SetDeadReckoningAlgorithm
-               (dtGame::DeadReckoningAlgorithm::VELOCITY_ONLY);
-            LOG_ALWAYS("TEST -- Toggling - DR Algorithm to Velocity Only. ");
+            if (drHelper->GetDeadReckoningAlgorithm()
+               == dtGame::DeadReckoningAlgorithm::STATIC)
+            {
+               drHelper->SetDeadReckoningAlgorithm
+                  (dtGame::DeadReckoningAlgorithm::VELOCITY_ONLY);
+               LOG_ALWAYS("TEST -- Toggling - DR Algorithm to Velocity Only. ");
+            }
+            else if (drHelper->GetDeadReckoningAlgorithm()
+               == dtGame::DeadReckoningAlgorithm::VELOCITY_ONLY)
+            {
+               drHelper->SetDeadReckoningAlgorithm
+                  (dtGame::DeadReckoningAlgorithm::VELOCITY_AND_ACCELERATION);
+               LOG_ALWAYS("TEST -- Toggling - DR Algorithm to Velocity AND Acceleration. ");
+            }
+            else if (drHelper->GetDeadReckoningAlgorithm()
+               == dtGame::DeadReckoningAlgorithm::VELOCITY_AND_ACCELERATION)
+            {
+               drHelper->SetDeadReckoningAlgorithm
+                  (dtGame::DeadReckoningAlgorithm::STATIC);
+               LOG_ALWAYS("TEST -- Toggling - DR Algorithm to STATIC . ");
+            }
          }
-         else if (physVehicle->GetDeadReckoningHelper().GetDeadReckoningAlgorithm() 
-            == dtGame::DeadReckoningAlgorithm::VELOCITY_ONLY)
-         {
-            physVehicle->GetDeadReckoningHelper().SetDeadReckoningAlgorithm
-               (dtGame::DeadReckoningAlgorithm::VELOCITY_AND_ACCELERATION);
-            LOG_ALWAYS("TEST -- Toggling - DR Algorithm to Velocity AND Acceleration. ");
-         }
-         else if (physVehicle->GetDeadReckoningHelper().GetDeadReckoningAlgorithm() 
-            == dtGame::DeadReckoningAlgorithm::VELOCITY_AND_ACCELERATION)
-         {
-            physVehicle->GetDeadReckoningHelper().SetDeadReckoningAlgorithm
-               (dtGame::DeadReckoningAlgorithm::STATIC);
-            LOG_ALWAYS("TEST -- Toggling - DR Algorithm to STATIC . ");
-         }
-         return;
       }
    }
 
    ////////////////////////////////////////////////////////////////////////////////
    void InputComponent::ToggleGroundClamping()
    {
-      SimCore::Actors::BasePhysicsVehicleActor* physVehicle =
-         dynamic_cast<SimCore::Actors::BasePhysicsVehicleActor*>(mVehicle.get());
-
-      if (physVehicle != NULL)
+      if (mVehicle.valid())
       {
-         if (physVehicle->GetDeadReckoningHelper().GetGroundClampType() == 
-            dtGame::GroundClampTypeEnum::NONE)
+         dtGame::DeadReckoningHelper* drHelper = NULL;
+         mVehicle->GetComponent(drHelper);
+
+         if (drHelper != NULL)
          {
-            LOG_ALWAYS("TEST -- Toggling - DR Ground Clamping Type is now [KEEP_ABOVE].");
-            physVehicle->GetDeadReckoningHelper().SetGroundClampType
-               (dtGame::GroundClampTypeEnum::KEEP_ABOVE);
-         }
-         else if (physVehicle->GetDeadReckoningHelper().GetGroundClampType() == 
-            dtGame::GroundClampTypeEnum::KEEP_ABOVE)
-         {
-            LOG_ALWAYS("TEST -- Toggling - DR Ground Clamping Type is now [FULL].");
-            physVehicle->GetDeadReckoningHelper().SetGroundClampType
-               (dtGame::GroundClampTypeEnum::FULL);
-         }
-         else if (physVehicle->GetDeadReckoningHelper().GetGroundClampType() == 
-            dtGame::GroundClampTypeEnum::FULL)
-         {
-            LOG_ALWAYS("TEST -- Toggling - DR Ground Clamping Type is now [NONE].");
-            physVehicle->GetDeadReckoningHelper().SetGroundClampType
-               (dtGame::GroundClampTypeEnum::NONE);
+            if (drHelper->GetGroundClampType() == dtGame::GroundClampTypeEnum::NONE)
+            {
+               LOG_ALWAYS("TEST -- Toggling - DR Ground Clamping Type is now [KEEP_ABOVE].");
+               drHelper->SetGroundClampType(dtGame::GroundClampTypeEnum::KEEP_ABOVE);
+            }
+            else if (drHelper->GetGroundClampType() == dtGame::GroundClampTypeEnum::KEEP_ABOVE)
+            {
+               LOG_ALWAYS("TEST -- Toggling - DR Ground Clamping Type is now [FULL].");
+               drHelper->SetGroundClampType(dtGame::GroundClampTypeEnum::FULL);
+            }
+            else if (drHelper->GetGroundClampType() == dtGame::GroundClampTypeEnum::FULL)
+            {
+               LOG_ALWAYS("TEST -- Toggling - DR Ground Clamping Type is now [NONE].");
+               drHelper->SetGroundClampType(dtGame::GroundClampTypeEnum::NONE);
+            }
          }
       }
    }

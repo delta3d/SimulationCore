@@ -168,10 +168,12 @@ class ViewerNetworkPublishingComponentTests : public CPPUNIT_NS::TestFixture
          //account for the different order of rotation vecs.
          osg::Vec3 testRot(testVec.z(), testVec.x(), testVec.y());
 
+         dtGame::DeadReckoningHelper* drHelper = NULL;
+         mStealthActor->GetComponent(drHelper);
          //Must set both the last known and the actual values so the message and
          //and actor will match after being stepped
-         mStealthActor->GetDeadReckoningHelper().SetLastKnownTranslation(testVec);
-         mStealthActor->GetDeadReckoningHelper().SetLastKnownRotation(testRot);
+         drHelper->SetLastKnownTranslation(testVec);
+         drHelper->SetLastKnownRotation(testRot);
 
          dtCore::Transform xform;
          mStealthActor->GetTransform(xform, dtCore::Transformable::ABS_CS);
