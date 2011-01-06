@@ -641,10 +641,10 @@ namespace StealthQt
                this,               SLOT(OnWeatherThemeChanged(const QString&)));
 
       connect(mUi->mSearchInfoPushButton, SIGNAL(clicked(bool)),
-               this,                      SLOT(PopulateEntityInfoWindow(bool)));
+               this,                      SLOT(PopulateEntityInfoWindowDontAttach(bool)));
 
       connect(mUi->mSearchEntityTableWidget, SIGNAL(itemDoubleClicked(QTableWidgetItem*)),
-               this,                         SLOT(PopulateEntityInfoWindow(QTableWidgetItem*)));
+               this,                         SLOT(PopulateEntityInfoWindowAndAttach(QTableWidgetItem*)));
 
       connect(mUi->mSearchSearchPushButton, SIGNAL(clicked(bool)),
                this,                         SLOT(OnEntitySearchSearchButtonClicked(bool)));
@@ -2176,17 +2176,23 @@ namespace StealthQt
    }
 
    ///////////////////////////////////////////////////////////////////
-   void MainWindow::PopulateEntityInfoWindow(bool notUsed)
+   void MainWindow::PopulateEntityInfoWindowDontAttach(bool notUsed)
    {
       QTableWidgetItem* currentItem = mUi->mSearchEntityTableWidget->currentItem();
       if (currentItem == NULL)
          return;
 
-      PopulateEntityInfoWindow(currentItem);
+      DoPopulateEntityInfoWindow(currentItem, false);
    }
 
    ///////////////////////////////////////////////////////////////////
-   void MainWindow::PopulateEntityInfoWindow(QTableWidgetItem* currentItem)
+   void MainWindow::PopulateEntityInfoWindowAndAttach(QTableWidgetItem* currentItem)
+   {
+      DoPopulateEntityInfoWindow(currentItem, true);
+   }
+
+   ///////////////////////////////////////////////////////////////////
+   void MainWindow::DoPopulateEntityInfoWindow(QTableWidgetItem* currentItem, bool attach)
    {
       unsigned int index = (unsigned int)(mUi->mSearchEntityTableWidget->currentRow());
       if (index > mFoundActors.size() || currentItem == NULL)
@@ -2201,7 +2207,7 @@ namespace StealthQt
          UpdateEntityInfoData(*proxy);
 
          // This is the special case. See also OnRefreshEntityInfoTimerElapsed() for similar code and explanation.
-         if (mUi->mToolsAutoAttachOnSelectionCheckBox->checkState() == Qt::Checked)
+         if (attach && mUi->mToolsAutoAttachOnSelectionCheckBox->checkState() == Qt::Checked)
          {
             StealthViewerData::GetInstance().GetGeneralConfigObject().AttachToActor(proxy->GetId());
          }
@@ -2296,40 +2302,13 @@ namespace StealthQt
       // Now, update the entity info window
       if (mUi->mEntityInfoAutoRefreshCheckBox->isChecked())
       {
-         // Nasty duplicated code.
-         // This is a quick fix to stop the entity info window from
-         // refreshing and causing an attach to the current actor
-         // if the box is selected.
-
-         // Simply call the same code with no attach call instead
-         // of calling the method in order not to break existing
-         // functionality.
-
-         // Remember, you cannot change the method signatures to take a
-         // flag or anything because the signatures between a SIGNAL
-         // and SLOT HAVE to match EXACTLY.
-
-         // I will fix this at a later date with a more robust approach
-         // - Eddie
-
          //PopulateEntityInfoWindow();
          QTableWidgetItem* currentItem = mUi->mSearchEntityTableWidget->currentItem();
          unsigned int index = (unsigned int)(mUi->mSearchEntityTableWidget->currentRow());
          if (index > mFoundActors.size() || currentItem == NULL)
             return;
 
-         QString id = currentItem->data(Qt::UserRole).toString();
-
-         // Retrieve proxy from the GM
-         dtGame::GameActorProxy *proxy = mApp->GetGameManager()->FindGameActorById(dtCore::UniqueId(id.toStdString()));
-         if (proxy != NULL)
-         {
-            UpdateEntityInfoData(*proxy);
-         }
-         else
-         {
-            ShowEntityErrorMessage(currentItem);
-         }
+         DoPopulateEntityInfoWindow(currentItem, false);
       }
    }
 
@@ -2555,7 +2534,14 @@ namespace StealthQt
    {
       bool isChecked = (state == Qt::Checked);
       if (isChecked)
+      {
          mShowMissingEntityInfoErrorMessage = true;
+         mUi->mSearchInfoPushButton->setEnabled(false);
+      }
+      else
+      {
+         mUi->mSearchInfoPushButton->setEnabled(true);
+      }
       StealthViewerData::GetInstance().GetGeneralConfigObject().SetAutoRefreshEntityInfoWindow(isChecked);
    }
 
