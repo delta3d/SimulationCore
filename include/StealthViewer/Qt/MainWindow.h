@@ -342,10 +342,12 @@ namespace StealthQt
          void OnHLAErrorTimerElapsed();
 
          /// Called when an entity is selected from the search list
-         void PopulateEntityInfoWindow(bool notUsed = false);
+         void PopulateEntityInfoWindowDontAttach(bool notUsed = false);
 
          /// Called when an entity is double clicked in the search list
-         void PopulateEntityInfoWindow(QTableWidgetItem *item);
+         void PopulateEntityInfoWindowAndAttach(QTableWidgetItem* currentItem);
+
+         void DoPopulateEntityInfoWindow(QTableWidgetItem* currentItem, bool attach);
 
          /// Called when the timer elapses
          void OnGenericTickTimerElapsed();

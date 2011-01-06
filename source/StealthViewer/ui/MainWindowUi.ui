@@ -766,18 +766,18 @@
                      <property name="correctionMode">
                       <enum>QAbstractSpinBox::CorrectToNearestValue</enum>
                      </property>
-                     <property name="displayFormat">
-                      <string>hh:mm:ss</string>
-                     </property>
-                     <property name="calendarPopup">
-                      <bool>true</bool>
-                     </property>
                      <property name="time">
                       <time>
                        <hour>9</hour>
                        <minute>0</minute>
                        <second>0</second>
                       </time>
+                     </property>
+                     <property name="displayFormat">
+                      <string>hh:mm:ss</string>
+                     </property>
+                     <property name="calendarPopup">
+                      <bool>true</bool>
                      </property>
                     </widget>
                    </item>
@@ -1250,7 +1250,7 @@
         <enum>QTabWidget::Rounded</enum>
        </property>
        <property name="currentIndex">
-        <number>2</number>
+        <number>0</number>
        </property>
        <widget class="QWidget" name="mControlsSearchTab">
         <attribute name="title">
@@ -1653,16 +1653,6 @@
                       </property>
                       <property name="text">
                        <string>Detach</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QPushButton" name="mSearchInfoPushButton">
-                      <property name="toolTip">
-                       <string>Display information about the currently selected entity. </string>
-                      </property>
-                      <property name="text">
-                       <string>Info</string>
                       </property>
                      </widget>
                     </item>
@@ -3046,18 +3036,90 @@
              </property>
             </widget>
            </item>
-           <item row="11" column="0" colspan="2">
-            <widget class="QCheckBox" name="mEntityInfoAutoRefreshCheckBox">
-             <property name="text">
-              <string>Auto Refresh</string>
-             </property>
-            </widget>
-           </item>
           </layout>
          </widget>
         </item>
        </layout>
       </widget>
+     </item>
+     <item>
+      <spacer name="spacer_3">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeType">
+        <enum>QSizePolicy::Fixed</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>0</width>
+         <height>6</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="_2">
+       <item>
+        <spacer name="spacer_2">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QPushButton" name="mSearchInfoPushButton">
+         <property name="toolTip">
+          <string>Display information about the currently selected entity. </string>
+         </property>
+         <property name="text">
+          <string>Refresh</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="spacer_4">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Fixed</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>49</width>
+           <height>0</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="mEntityInfoAutoRefreshCheckBox">
+         <property name="text">
+          <string>Auto Refresh</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="spacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
      </item>
      <item>
       <spacer>
