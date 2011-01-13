@@ -138,18 +138,18 @@ namespace SimCore
          dtGame::GameActor* ga = NULL;
          GetOwner(ga);
 
-         // remote versions should be dead-reckoned together, or otherwise moved another way.
-         if (ga != NULL && !ga->IsRemote())
-         {
-            Detach();
-         }
-
          if (mCascadeDeletes && mTrailerActor.valid())
          {
             if (ga != NULL)
             {
                ga->GetGameActorProxy().GetGameManager()->DeleteActor(mTrailerActor->GetGameActorProxy());
             }
+         }
+
+         // remote versions should be dead-reckoned together, or otherwise moved another way.
+         if (ga != NULL && !ga->IsRemote())
+         {
+            Detach();
          }
       }
 
@@ -183,8 +183,9 @@ namespace SimCore
             {
                dtGame::GameActor* ga = NULL;
                GetOwner(ga);
-               if (ga->IsPublished())
+               if (ga->IsPublished() && !mTrailerActor->IsPublished())
                {
+                  // TODO make this listen for the publish message from the tractor.
                   ga->GetGameActorProxy().GetGameManager()->PublishActor(mTrailerActor->GetGameActorProxy());
                }
 
