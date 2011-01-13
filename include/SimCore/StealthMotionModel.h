@@ -80,6 +80,8 @@ namespace SimCore
 
          float GetGroundClearance() const { return mGroundClearance; }
 
+         //an internal offset is used with the ground clamping, this offset must be cleared when warping or attaching
+         void ResetOffset();
 
          /**
           * Gets the recently calculated elevation.
@@ -183,6 +185,11 @@ namespace SimCore
           * The elevation above sea level measured in meters.
           */
          double mElevation;
+
+         /**
+         * The total distance in the Z direction that the object was moved during ground clamping.
+         */
+         float mZOffset;
 
          /**
           * A reference to the Scene, used for ground following.

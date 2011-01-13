@@ -436,6 +436,11 @@ namespace StealthGM
       {
          HandleEndOfPlayback();
       }
+      else if(msgType == SimCore::MessageType::REQUEST_WARP_TO_POSITION || 
+               msgType == SimCore::MessageType::ATTACH_TO_ACTOR)
+      {
+         mStealthMM->ResetOffset();
+      }
    }
 
    ////////////////////////////////////////////////////////////////////////
