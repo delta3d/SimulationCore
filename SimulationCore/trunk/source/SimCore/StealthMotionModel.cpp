@@ -25,6 +25,8 @@
 // INCLUDE DIRECTIVES
 /////////////////////////////////////////////////////////////////////////////
 #include <prefix/SimCorePrefix.h>
+#include <SimCore/StealthMotionModel.h>
+
 #include <dtCore/keyboard.h>
 #include <dtCore/mouse.h>
 #include <dtCore/system.h>
@@ -34,8 +36,7 @@
 #include <dtCore/logicalinputdevice.h>
 #include <dtCore/isector.h>
 #include <osg/Vec3>
-#include <SimCore/StealthMotionModel.h>
-
+#include <dtUtil/mathdefines.h>
 
 
 namespace SimCore
@@ -55,6 +56,8 @@ namespace SimCore
       , mGroundClearance(DEFAULT_GROUND_CLEARANCE)
       , mSpeedLimitMin(DEFAULT_SPEED_LIMIT_MIN) // meters per second
       , mSpeedLimitMax(DEFAULT_SPEED_LIMIT_MAX) // meters per second
+      , mElevation(0.0f)
+      , mZOffset(0.0f)
       , mScene(NULL)
       , mIsector(NULL)
    {
@@ -69,6 +72,12 @@ namespace SimCore
       }
       mIsector = NULL;
       mScene = NULL;
+   }
+
+   /////////////////////////////////////////////////////////////////////////////
+   void StealthMotionModel::ResetOffset()
+   {
+      mZOffset = 0.0f;
    }
 
    /////////////////////////////////////////////////////////////////////////////
@@ -138,6 +147,9 @@ namespace SimCore
       GetTarget()->GetTransform(transform, dtCore::Transformable::ABS_CS);
       transform.GetTranslation(xyz);
 
+      //subtract out the z the offset we were moved last frame, and reset the offset
+      xyz[2] -= mZOffset;
+
       // Ensure isector ray is in the correct
       // position, orientation and length.
       ResetIsector( xyz );
@@ -154,10 +166,19 @@ namespace SimCore
 
          // Correct camera Z position if
          // camera is inside the terrain.
-         if( hitPt[2] >= xyz[2] )
+         if(hitPt[2] >= xyz[2])
          {
+            mZOffset = hitPt[2] - xyz[2];
             //set our new position/rotation
             xyz[2] = hitPt[2];
+            transform.SetTranslation(xyz);
+            GetTarget()->SetTransform(transform, dtCore::Transformable::ABS_CS);
+         }
+         else if(mZOffset > 0.0f) 
+         {
+            //we didn't collide with the terrain and we have a valid offset
+            //that implys our offset is being corrected
+            ResetOffset();
             transform.SetTranslation(xyz);
             GetTarget()->SetTransform(transform, dtCore::Transformable::ABS_CS);
          }
@@ -204,8 +225,24 @@ namespace SimCore
          SetMaximumFlySpeed( GetFlySpeedLimitMax() );
       }
 
+      //we do this to see if we have moved in the z direction
+      osg::Vec3 xyzBefore, xyzAfter;
+      dtCore::Transform transform;
+      
+      GetTarget()->GetTransform(transform, dtCore::Transformable::REL_CS);
+      transform.GetTranslation(xyzBefore);
+
       // Handle the regular inherited motion
       FlyMotionModel::OnMessage(data);
+
+      GetTarget()->GetTransform(transform, dtCore::Transformable::REL_CS);
+      transform.GetTranslation(xyzAfter);
+      
+      //we reset our offset if the player moves in the z direction with input
+      if(!dtUtil::Equivalent(xyzBefore[2], xyzAfter[2]))
+      {
+         ResetOffset();
+      }
 
       // Collide with ground
       if(mScene.valid() && GetTarget() != NULL && IsEnabled() &&
