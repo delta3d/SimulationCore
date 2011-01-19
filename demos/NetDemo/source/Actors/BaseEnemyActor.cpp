@@ -278,17 +278,6 @@ namespace NetDemo
 
       // Set the angular velocity manually because we are abusing the physics engine in all enemies.
       GetComponent<dtGame::DRPublishingActComp>()->SetCurrentAngularVelocity(osg::Vec3(0.0f, 0.0f, 0.0f));
-
-
-      //this is a super hack to delete the enemies if they fall through the world
-      dtCore::Transform t;
-      GetTransform(t);
-
-      osg::Vec3 pos = t.GetTranslation();
-      if(pos[2] < -1000.0f)
-      {
-         DoExplosion(1.0f);
-      }
    }
 
    //////////////////////////////////////////////////////////////////////
