@@ -201,7 +201,7 @@ namespace SimCore
 #ifdef AGEIA_PHYSICS
          dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper& GetPhysicsActComp() { return *mPhysicsActComp; }
 #else
-         dtPhysics::PhysicsActComp& GetPhysicsActComp() { return *mPhysicsActComp; }
+         dtPhysics::PhysicsActComp& GetPhysicsActComp() { return *GetComponent<dtPhysics::PhysicsActComp>(); }
 #endif
          protected:
 
