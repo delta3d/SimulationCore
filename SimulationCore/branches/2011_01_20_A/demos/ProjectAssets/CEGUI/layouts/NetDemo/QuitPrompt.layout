@@ -1,0 +1,61 @@
+<?xml version="1.0" ?>
+<GUILayout>
+   <!-- MAIN CONTAINER WINDOW (ROOT & BACKGROUND IMAGE) -->
+	<Window Name="QuitPrompt_Root" Type="DefaultWindow">
+      <Property Name="UnifiedSize" Value="{{1.0,0},{1.0,0}}"/>
+      <Property Name="UnifiedPosition" Value="{{0.0,0},{0.0,0}}"/>
+      <!--Property Name="Image" Value="set:BackgroundImage image:BackgroundImage"/-->
+
+      <!-- FRAME -->
+      <Window Name="QuitPrompt_Frame" Type="NetDemo/GlowFrame">
+         <Property Name="UnifiedSize" Value="{{0.3,0},{0.4,0}}"/>
+         <Property Name="UnifiedPosition" Value="{{0.0,0},{0.0,0}}"/>
+         <Property Name="ZOrderChangeEnabled" Value="False"/>
+         <Property Name="AlwaysOnTop" Value="True"/>
+         <Property Name="HorizontalAlignment" Value="Centre"/>
+         <Property Name="VerticalAlignment" Value="Centre"/>
+         <Property Name="BackColour" Value="DD000000"/>
+         <Property Name="GlowColour" Value="00000000"/>
+      </Window>
+
+      <!-- TITLE -->
+      <Window Name="QuitPrompt_Title" Type="WindowsLook/StaticImage">
+         <Property Name="UnifiedSize" Value="{{0.15,0},{0.1,0}}"/>
+         <Property Name="UnifiedPosition" Value="{{0.0,0},{-0.1,0}}"/>
+         <Property Name="HorizontalAlignment" Value="Centre"/>
+         <Property Name="VerticalAlignment" Value="Centre"/>
+         <Property Name="BackgroundEnabled" Value="False"/>
+         <Property Name="FrameEnabled" Value="False"/>
+         <Property Name="ZOrderChangeEnabled" Value="False"/>
+         <Property Name="AlwaysOnTop" Value="True"/>
+         <Property Name="Image" Value="set:NetDemoTitles image:QUIT"/>
+      </Window>
+
+      <!-- BUTTON - NO -->
+      <Window Name="QuitPrompt_Button_No" Type="WindowsLook/Button">
+         <Property Name="UnifiedSize" Value="{{0.15,0},{0.075,0}}"/>
+         <Property Name="UnifiedPosition" Value="{{0.0,0},{0.0,0}}"/>
+         <Property Name="AlwaysOnTop" Value="True"/>
+         <Property Name="HorizontalAlignment" Value="Centre"/>
+         <Property Name="VerticalAlignment" Value="Centre"/>
+         <Property Name="Font" Value="Arial-Bold-24"/>
+         <Property Name="TabIndex" Value="0"/>
+         <Property Name="Text" Value="No"/>
+         <Property Name="Action" Value="TRANSITION_BACK"/>
+      </Window>
+
+      <!-- BUTTON - YES -->
+      <Window Name="QuitPrompt_Button_Yes" Type="WindowsLook/Button">
+         <Property Name="UnifiedSize" Value="{{0.15,0},{0.075,0}}"/>
+         <Property Name="UnifiedPosition" Value="{{0.0,0},{0.1,0}}"/>
+         <Property Name="AlwaysOnTop" Value="True"/>
+         <Property Name="HorizontalAlignment" Value="Centre"/>
+         <Property Name="VerticalAlignment" Value="Centre"/>
+         <Property Name="Font" Value="Arial-Bold-24"/>
+         <Property Name="TabIndex" Value="1"/>
+         <Property Name="Text" Value="Yes"/>
+         <Property Name="Action" Value="TRANSITION_FORWARD"/>
+      </Window>
+        
+	</Window>
+</GUILayout>
