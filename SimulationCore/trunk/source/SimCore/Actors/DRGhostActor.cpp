@@ -319,11 +319,11 @@ namespace SimCore
             osg::Vec3 ghostPos = xform.GetTranslation();
 
             // Update one of our Velocity Lines
-            osg::Vec3 velocity = mSlavedEntity->GetDeadReckoningHelper().GetLastKnownVelocity();
+            osg::Vec3 velocity = mSlavedEntity->GetComponent<dtGame::DeadReckoningHelper>()->GetLastKnownVelocity();
             SetCurrentLine(*mVelocityArrowGeom.get(), ghostPos, velocity);
 
             // Update one of our Acceleration Lines
-            osg::Vec3 acceleration = mSlavedEntity->GetDeadReckoningHelper().GetLastKnownAcceleration();
+            osg::Vec3 acceleration = mSlavedEntity->GetComponent<dtGame::DeadReckoningHelper>()->GetLastKnownAcceleration();
             SetCurrentLine(*mAccelerationArrowGeom.get(), ghostPos, acceleration);
 
             mArrowCurrentIndex = (mArrowCurrentIndex + 1) % mArrowMaxNumTrails;
@@ -402,7 +402,7 @@ namespace SimCore
       {
          if (mSlavedEntity.valid())
          {
-            dtGame::DeadReckoningHelper& drHelper(mSlavedEntity->GetDeadReckoningHelper());
+            dtGame::DeadReckoningHelper& drHelper(*mSlavedEntity->GetComponent<dtGame::DeadReckoningHelper>());
             dtCore::Transform ourTransform;
             GetTransform(ourTransform);
 
@@ -422,7 +422,7 @@ namespace SimCore
                   GetComponentByName(dtGame::DeadReckoningComponent::DEFAULT_NAME, drComp);
 
                //BaseGroundClamper::GroundClampingType* groundClampingType = &;
-               osg::Vec3 velocity(mSlavedEntity->GetDeadReckoningHelper().GetCurrentInstantVelocity());
+               osg::Vec3 velocity(drHelper.GetCurrentInstantVelocity());
 
                // Call the ground clamper for the current object. The ground clamper should 
                // be smart enough to know what to do with the supplied values.

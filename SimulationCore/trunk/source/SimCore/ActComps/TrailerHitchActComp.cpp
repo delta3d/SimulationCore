@@ -121,6 +121,11 @@ namespace SimCore
                   CascadeDeletes,
                   "true or false for removing the attached actors from the GM when the parent is removed.",
                   PropRegType, propRegHelper);
+
+         DT_REGISTER_PROPERTY(
+                  CurrentHitchRotHPR,
+                  "The current rotation of the hitch for the trailer.",
+                  PropRegType, propRegHelper);
       }
 
       //////////////////////////////////////////////////
