@@ -435,12 +435,14 @@ namespace SimCore
 
             bool parentIsTractor = mTrailerActor->GetParent() == ga;
 
+            // really an xor.  if you want it to be a child and the parent is not the tractor
+            // or you don't want it to be a child and the parent IS the tractor.
             if (addAsChild != parentIsTractor)
             {
                mTrailerActor->Emancipate();
             }
 
-            if (addAsChild)
+            if (addAsChild && !parentIsTractor)
             {
                // adding as a child so it will stay in the right place
                // between updates to the hitch rotation.
