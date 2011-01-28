@@ -38,6 +38,8 @@
 #include <dtCore/transform.h>
 
 #include <dtDAL/enginepropertytypes.h>
+#include <dtDAL/project.h>
+#include <dtDAL/propertymacros.h>
 
 #include <dtABC/application.h>
 
@@ -67,9 +69,11 @@ namespace SimCore
       //////////////////////////////////////////////////////////////
       // Actor Proxy code
       //////////////////////////////////////////////////////////////
+      const std::string DetonationActorProxy::CLASS_NAME("SimCore::Actors::DetonationActor");
+
       DetonationActorProxy::DetonationActorProxy()
       {
-         SetClassName("SimCore::Actors::DetonationActor");
+         SetClassName(CLASS_NAME);
       }
 
       ///////////////////////////////////////////////////////////////////////
@@ -97,15 +101,12 @@ namespace SimCore
          DetonationActor* da = NULL;
          GetActor(da);
 
+         static const dtUtil::RefString groupImpactEffects("Impact Effects");
+
          AddProperty(new dtDAL::BooleanActorProperty("Enable Physics","Enable Physics",
             dtDAL::BooleanActorProperty::SetFuncType(da, &DetonationActor::SetPhysicsEnabled),
             dtDAL::BooleanActorProperty::GetFuncType(da, &DetonationActor::IsPhysicsEnabled),
             "Sets whether the detonation actor should have physics particles."));
-
-         AddProperty(new dtDAL::FloatActorProperty("Lingering Shot Seconds", "Lingering Shot Seconds",
-            dtDAL::FloatActorProperty::SetFuncType(da, &DetonationActor::SetLingeringSmokeSecs),
-            dtDAL::FloatActorProperty::GetFuncType(da, &DetonationActor::GetLingeringSmokeSecs),
-            "Sets the number of seconds that smoke will linger around after the explosion effect"));
 
          AddProperty(new dtDAL::FloatActorProperty("Explosion Timer Seconds", "Explosion Timer Seconds",
             dtDAL::FloatActorProperty::SetFuncType(da, &DetonationActor::SetExplosionTimerSecs),
@@ -117,27 +118,53 @@ namespace SimCore
             dtDAL::FloatActorProperty::GetFuncType(da, &DetonationActor::GetDeleteActorTimerSecs),
             "Sets the number of seconds after smoke is rendered for an actor to be deleted"));
 
-         AddProperty(new dtDAL::FloatActorProperty("Max Sound Distance", "Max Sound Distance",
-            dtDAL::FloatActorProperty::SetFuncType(da, &DetonationActor::SetMaximumSoundDistance),
-            dtDAL::FloatActorProperty::GetFuncType(da, &DetonationActor::GetMaximumSoundDistance),
-            "Sets the maximum number of meters that a sound will clip"));
+         typedef dtDAL::PropertyRegHelper<DetonationActorProxy&, DetonationActor> RegHelperType;
+         RegHelperType propReg(*this, da, groupImpactEffects);
 
-         AddProperty(new dtDAL::StringActorProperty("Light Name", "Light Name",
-            dtDAL::StringActorProperty::SetFuncType(da, &DetonationActor::SetLightName),
-            dtDAL::StringActorProperty::GetFuncType(da, &DetonationActor::GetLightName),
-            "Sets the name of the light effect to be used when a detonation is spawned"));
+         // GROUND IMPACT PROPERTIES
+         DT_REGISTER_RESOURCE_PROPERTY(dtDAL::DataType::PARTICLE_SYSTEM, GroundImpactEffect, "Ground Impact Effect", 
+                                          "The particle system to spawn on ground impact.", RegHelperType, propReg);
 
-         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::PARTICLE_SYSTEM,
-            "Smoke Particle System", "Smoke Particle System", dtDAL::ResourceActorProperty::SetFuncType(da, &DetonationActor::LoadSmokeFile),
-            "Loads the particle system for this detonation to use for smoke"));
+         DT_REGISTER_RESOURCE_PROPERTY(dtDAL::DataType::SOUND, GroundImpactSound, "Ground Impact Sound", 
+                                          "The sound to play on ground impact.", RegHelperType, propReg);
 
-         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::PARTICLE_SYSTEM,
-            "Detonation Particle System", "Detonation Particle System", dtDAL::ResourceActorProperty::SetFuncType(da, &DetonationActor::LoadDetonationFile),
-            "Loads the particle system for this detonation to use for the explosion"));
+         AddProperty(new dtDAL::StringActorProperty("Ground Impact Light", "Ground Impact Light",
+            dtDAL::StringActorProperty::SetFuncType(da, &DetonationActor::SetGroundImpactLight ),
+            dtDAL::StringActorProperty::GetFuncType(da, &DetonationActor::GetGroundImpactLight ),
+            "The name of light effect for the ground impact effect", groupImpactEffects));
 
-         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::SOUND,
-            "Explosion Sound", "Explosion Sound", dtDAL::ResourceActorProperty::SetFuncType(da, &DetonationActor::LoadSoundFile),
-            "Loads the sound for this detonation to use"));
+         // ENTITY IMPACT PROPERTIES
+
+         DT_REGISTER_RESOURCE_PROPERTY(dtDAL::DataType::PARTICLE_SYSTEM, EntityImpactEffect, "Entity Impact Effect", 
+            "The particle system to spawn on entity impact.", RegHelperType, propReg);
+
+         DT_REGISTER_RESOURCE_PROPERTY(dtDAL::DataType::SOUND, EntityImpactSound, "Entity Impact Sound", 
+            "The sound to play on entity impact.", RegHelperType, propReg);
+
+         AddProperty(new dtDAL::StringActorProperty("Entity Impact Light", "Entity Impact Light",
+            dtDAL::StringActorProperty::SetFuncType(da, &DetonationActor::SetEntityImpactLight ),
+            dtDAL::StringActorProperty::GetFuncType(da, &DetonationActor::GetEntityImpactLight ),
+            "The name of light effect for the entity impact effect", groupImpactEffects));
+
+         // HUMAN IMPACT PROPERTIES
+
+         DT_REGISTER_RESOURCE_PROPERTY(dtDAL::DataType::PARTICLE_SYSTEM, HumanImpactEffect, "Human Impact Effect", 
+            "The particle system to spawn on human impact.", RegHelperType, propReg);
+
+         DT_REGISTER_RESOURCE_PROPERTY(dtDAL::DataType::SOUND, HumanImpactSound, "Human Impact Sound", 
+            "The sound to play on human impact.", RegHelperType, propReg);
+
+         AddProperty(new dtDAL::StringActorProperty("Human Impact Light", "Human Impact Light",
+            dtDAL::StringActorProperty::SetFuncType(da, &DetonationActor::SetHumanImpactLight ),
+            dtDAL::StringActorProperty::GetFuncType(da, &DetonationActor::GetHumanImpactLight ),
+            "The name of light effect for the human impact effect", groupImpactEffects));
+
+         //smoke effect
+         DT_REGISTER_RESOURCE_PROPERTY(dtDAL::DataType::PARTICLE_SYSTEM, SmokeEffect, "Smoke Effect", 
+            "The particle system used for the detonation smoke effect.", RegHelperType, propReg);
+
+         DT_REGISTER_PROPERTY(SmokeLifeTime, "The lifetime in seconds of the smoke effect.", RegHelperType, propReg);
+
       }
 
       ///////////////////////////////////////////////////////////////////////
@@ -158,67 +185,17 @@ namespace SimCore
          }
          else if(timeMsg.GetTimerName() == "ExplosionRendered")
          {
-            static_cast<DetonationActor&>(GetGameActor()).RenderSmoke();
+            DetonationActor* detonation = NULL;
+            GetActor(detonation);
+            detonation->RenderSmoke();
+            GetGameManager()->SetTimer("SmokeRendered", this, detonation->GetSmokeLifeTime());
          }
          else if(timeMsg.GetTimerName() == "SmokeRendered")
          {
             static_cast<DetonationActor&>(GetGameActor()).StopRenderingSmoke();
          }
-         /*
-         // The Delete Actor is no longer valid because everything is handled via the TimerDeleteComponent
-         // which is registered on entering the world.
-         else if(timeMsg.GetTimerName() == "DeleteActor")
-         {
-            DetonationActor &da = static_cast<DetonationActor&>(GetGameActor());
-            if(da.GetSound() != NULL && da.GetSound()->IsPlaying())
-               da.GetSound()->Stop();
-
-            dtCore::RefPtr< dtCore::ParticleSystem > ps = da.GetExplosionParticleSystem();
-            if(ps.valid())
-               da.UnregisterParticleSystem(*ps);
-
-            ps = da.GetSmokeParticleSystem();
-            if(ps.valid())
-               da.UnregisterParticleSystem(*ps);
-
-            GetGameManager()->DeleteActor(*this);
-         }
-         */
          else
             LOG_ERROR("Received a timer message of the correct type, but wrong name");
-      }
-
-      ///////////////////////////////////////////////////////////////////////
-      void DetonationActorProxy::SetDetonationProperties(
-         float lingerTime,
-         float maxSoundDistance,
-         const std::string& detonationFile,
-         const std::string& soundFile,
-         const std::string& smokeFile
-         )
-      {
-         dtDAL::FloatActorProperty* floatProp = NULL;
-
-         GetProperty("Lingering Shot Seconds", floatProp);
-         if(floatProp != NULL )
-            floatProp->SetValue(lingerTime);
-
-         GetProperty("Max Sound Distance", floatProp);
-         if(floatProp != NULL )
-            floatProp->SetValue(maxSoundDistance);
-
-         dtDAL::StringActorProperty* stringProp =  NULL;
-         GetProperty("Detonation Particle System", stringProp);
-         if(stringProp != NULL && !detonationFile.empty() )
-            stringProp->SetValue(detonationFile);
-
-         GetProperty("Explosion Sound", stringProp);
-         if(stringProp != NULL && !soundFile.empty() )
-            stringProp->FromString(soundFile);
-
-         GetProperty("Smoke Particle System");
-         if(stringProp != NULL && !smokeFile.empty() )
-            stringProp->FromString(smokeFile);
       }
 
       ///////////////////////////////////////////////////////////////////////
@@ -236,13 +213,20 @@ namespace SimCore
 
       DetonationActor::DetonationActor(dtGame::GameActorProxy &proxy)
       : IGActor(proxy)
-      , mExplosionSystem(new dtCore::ParticleSystem)
-      , mSmokeSystem(new dtCore::ParticleSystem)
+      , mSmokeLifeTime(0.0f)
+      , mCurrentImpact(IMPACT_TERRAIN)
       , mDelayTime(3.0f)
-      , mLingeringSmokeSecs(0.0f)
       , mRenderExplosionTimerSecs(2.0f)
       , mDeleteActorTimerSecs(5.0f)
       , mUsesPhysics(false)
+      , mCurrentLightName()
+      , mLightImpactGround()
+      , mLightImpactEntity()
+      , mLightImpactHuman()
+      , mCollidedMaterial(NULL)
+      , mExplosionSystem(new dtCore::ParticleSystem())
+      , mSmokeSystem(new dtCore::ParticleSystem())
+      , mSound()
       {
          AddChild(mExplosionSystem.get());
          AddChild(mSmokeSystem.get());
@@ -262,18 +246,6 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////
-      dtCore::ParticleSystem* DetonationActor::GetExplosionParticleSystem()
-      {
-         return mExplosionSystem.get();
-      }
-
-      ///////////////////////////////////////////////////////////////////////
-      const dtCore::ParticleSystem* DetonationActor::GetExplosionParticleSystem() const
-      {
-         return mExplosionSystem.get();
-      }
-
-      ///////////////////////////////////////////////////////////////////////
       dtCore::ParticleSystem* DetonationActor::GetSmokeParticleSystem()
       {
          return mSmokeSystem.get();
@@ -288,6 +260,8 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////
       void DetonationActor::OnEnteredWorld()
       {
+         SetImpactEffects();
+
          // Register explosion particle effects
          if( mExplosionSystem.valid() )
          {
@@ -302,14 +276,15 @@ namespace SimCore
             RegisterParticleSystem( *mSmokeSystem, &attrs );
          }
 
+         if(!mCurrentLightName.empty())
+         {
+            AddDynamicLight(mCurrentLightName);
+         }
+
          ///////////////////////////////////////////////////////////////////////
          // Add physics particle systems to the detonation
          if(mUsesPhysics && mCollidedMaterial != NULL)
          {
-            AddDynamicLight();
-            //this is kind of a hack, but it ensures it is at least a relatively large explosion
-            //and keeps the gun fire from being an explosion
-
             std::string particleSystems[5];
             particleSystems[0] = mCollidedMaterial->GetPhysicsParticleLookupStringOne();
             particleSystems[1] = mCollidedMaterial->GetPhysicsParticleLookupStringTwo();
@@ -338,16 +313,49 @@ namespace SimCore
                }
             }
          }
+         
          ///////////////////////////////////////////////////////////////////////
 
          RenderDetonation();
+         GetGameActorProxy().GetGameManager()->SetTimer("ExplosionRendered", &GetGameActorProxy(), mRenderExplosionTimerSecs);
 
          // Register to delete after X time to make sure the detonation goes away when it should.
-         SimCore::Components::TimedDeleterComponent* renderComp;
-         GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::TimedDeleterComponent::DEFAULT_NAME,renderComp);
-         if (renderComp != NULL)
-            renderComp->AddId(GetUniqueId(), mRenderExplosionTimerSecs +
-               mLingeringSmokeSecs + mDeleteActorTimerSecs);
+         SimCore::Components::TimedDeleterComponent* timeDeleteComp;
+         GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::TimedDeleterComponent::DEFAULT_NAME,timeDeleteComp);
+         if(timeDeleteComp != NULL)
+         {
+            timeDeleteComp->AddId(GetUniqueId(), mRenderExplosionTimerSecs + mSmokeLifeTime + mDeleteActorTimerSecs);
+         }
+      }
+
+      ///////////////////////////////////////////////////////////////////////
+      void DetonationActor::SetImpactEffects()
+      {
+         //we first check what we collided with and select the appropriate particle system
+         if(mCurrentImpact == IMPACT_ENTITY && !GetEntityImpactEffect().IsEmpty())
+         {
+            LoadParticleSystem(GetEntityImpactEffect(), mExplosionSystem);
+            LoadSoundFile(GetEntityImpactSound(), mSound);
+            mCurrentLightName = mLightImpactEntity;
+         }
+         else if (mCurrentImpact == IMPACT_HUMAN && !GetHumanImpactEffect().IsEmpty())
+         {
+            LoadParticleSystem(GetHumanImpactEffect(), mExplosionSystem);
+            LoadSoundFile(GetHumanImpactSound(), mSound); 
+            mCurrentLightName = mLightImpactHuman;
+         }
+         //we default to the terrain impact
+         else if (!GetGroundImpactEffect().IsEmpty())
+         {
+            LoadParticleSystem(GetGroundImpactEffect(), mExplosionSystem);
+            LoadSoundFile(GetGroundImpactSound(), mSound);
+            mCurrentLightName = mLightImpactGround;
+         }
+
+         if(!mSmokeEffect.IsEmpty())
+         {
+            LoadSmokeFile(mSmokeEffect);
+         }
       }
 
       ///////////////////////////////////////////////////////////////////////
@@ -378,61 +386,96 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////
-      void DetonationActor::LoadSoundFile(const std::string &fileName)
+      void DetonationActor::LoadSoundFile( const dtDAL::ResourceDescriptor& resource, dtCore::RefPtr<dtAudio::Sound> soundIn)
       {
-         if(fileName.empty())
+         if(!resource.IsEmpty())
          {
-            //LOG_ERROR("Cannot load an empty sound file. Ignoring.");
-            return;
-         }
+            try 
+            {
+               dtDAL::Project& proj = dtDAL::Project::GetInstance();
+               std::string filename = proj.GetResourcePath(resource);
 
-         if(mSound != NULL)
+               if(soundIn != NULL)
+               {
+                  dtAudio::AudioManager::GetInstance().FreeSound(soundIn.get());
+               }
+
+               soundIn = NULL;
+               soundIn = dtAudio::AudioManager::GetInstance().NewSound();
+
+               if(!soundIn.valid())
+                  throw dtGame::InvalidParameterException(
+                 "Failed to create the detonation sound pointer", __FILE__, __LINE__);
+
+               soundIn->LoadFile(filename.c_str());
+               AddChild(soundIn.get());
+               dtCore::Transform xform;
+               soundIn->SetTransform(xform, dtCore::Transformable::REL_CS);
+            }
+            catch(dtUtil::Exception& e)
+            {
+               e.LogException();
+            }
+         }
+         else
          {
-            dtAudio::AudioManager::GetInstance().FreeSound(mSound.get());
+            LOG_ERROR("Attempting to load invalid sound file.");
          }
-
-         mSound = NULL;
-         mSound = dtAudio::AudioManager::GetInstance().NewSound();
-
-         if(!mSound.valid())
-            throw dtGame::InvalidParameterException(
-            "Failed to create the detonation sound pointer", __FILE__, __LINE__);
-
-         mSound->LoadFile(fileName.c_str());
-         AddChild(mSound.get());
-         dtCore::Transform xform;
-         mSound->SetTransform(xform, dtCore::Transformable::REL_CS);
       }
 
       ///////////////////////////////////////////////////////////////////////
-      void DetonationActor::LoadDetonationFile(const std::string& fileName)
+      void DetonationActor::LoadParticleSystem(const dtDAL::ResourceDescriptor& resource, dtCore::RefPtr<dtCore::ParticleSystem> particleSysIn)
       {
-         mExplosionSystem->LoadFile(fileName);
+         if(!resource.IsEmpty())
+         {
+            try 
+            {
+               dtDAL::Project& proj = dtDAL::Project::GetInstance();
+               std::string filename = proj.GetResourcePath(resource);
+               particleSysIn->LoadFile(filename);
+            }
+            catch(dtUtil::Exception& e)
+            {
+               e.LogException();
+            }
+         }
+         else
+         {
+            LOG_ERROR("Attempting to load invalid detonation particle effect.");
+         }
       }
 
       ///////////////////////////////////////////////////////////////////////
-      void DetonationActor::LoadSmokeFile(const std::string& fileName)
+      void DetonationActor::LoadSmokeFile(const dtDAL::ResourceDescriptor& resource)
       {
-         mSmokeSystem->LoadFile(fileName);
+         LoadParticleSystem(resource, mSmokeSystem);
       }
 
       ///////////////////////////////////////////////////////////////////////
       void DetonationActor::RenderDetonation()
       {
          mExplosionSystem->SetEnabled(true);
-         GetGameActorProxy().GetGameManager()->SetTimer("ExplosionRendered", &GetGameActorProxy(), mRenderExplosionTimerSecs);
       }
 
       ///////////////////////////////////////////////////////////////////////
       void DetonationActor::RenderSmoke()
       {
-         if (mLingeringSmokeSecs > 0.00001)
+         if(mSmokeSystem.valid())
          {
-            mSmokeSystem->SetEnabled(true);
+            StartSmokeEffect(*mSmokeSystem);
+         }
+      }
+
+      ///////////////////////////////////////////////////////////////////////
+      void DetonationActor::StartSmokeEffect(dtCore::ParticleSystem& particles)
+      {
+         if(mSmokeLifeTime > 0.00001)
+         {
+            particles.SetEnabled(true);
 
             if(mUsesPhysics && mCollidedMaterial != NULL)
             {
-               dtCore::ParticleSystem::LayerList ourList = mSmokeSystem->GetAllLayers();
+               dtCore::ParticleSystem::LayerList ourList = particles.GetAllLayers();
                dtCore::ParticleSystem::LayerList::iterator iter = ourList.begin();
                for(; iter != ourList.end(); ++iter)
                {
@@ -440,20 +483,13 @@ namespace SimCore
                                                                                                               mCollidedMaterial->GetHighlighteColorvalue()));
                }
             }
-
-            GetGameActorProxy().GetGameManager()->SetTimer("SmokeRendered", &GetGameActorProxy(), mLingeringSmokeSecs);
          }
-		   //else
-		   //{
-	         //GetGameActorProxy().GetGameManager()->SetTimer("DeleteActor", &GetGameActorProxy(), mDeleteActorTimerSecs);
-		   //}
       }
 
       ///////////////////////////////////////////////////////////////////////
       void DetonationActor::StopRenderingSmoke()
       {
          mSmokeSystem->SetEnabled(false);
-         //GetGameActorProxy().GetGameManager()->SetTimer("DeleteActor", &GetGameActorProxy(), mDeleteActorTimerSecs);
       }
 
       ///////////////////////////////////////////////////////////////////////
@@ -469,24 +505,52 @@ namespace SimCore
                        (position[1] - detonationPos[1]) * (position[1] - detonationPos[1]) +
                        (position[2] - detonationPos[2]) * (position[2] - detonationPos[2])));
 
+         //a rough approximation to the speed of sound in meters per second
          mDelayTime = distance / 350.0f;
       }
 
       ///////////////////////////////////////////////////////////////////////
-      void DetonationActor::AddDynamicLight()
+      void DetonationActor::AddDynamicLight(const std::string& lightName)
       {
-         SimCore::Components::RenderingSupportComponent* renderComp;
-         GetGameActorProxy().GetGameManager()->GetComponentByName(
-               SimCore::Components::RenderingSupportComponent::DEFAULT_NAME,
-               renderComp);
-
-         if(renderComp != NULL)
+         if(!mCurrentLightName.empty())
          {
-            SimCore::Components::RenderingSupportComponent::DynamicLight* dl =
-               renderComp->AddDynamicLightByPrototypeName( GetLightName() );
-            dl->mTarget = this;
+            SimCore::Components::RenderingSupportComponent* renderComp;
+            GetGameActorProxy().GetGameManager()->GetComponentByName(
+                  SimCore::Components::RenderingSupportComponent::DEFAULT_NAME,
+                  renderComp);
+
+            if(renderComp != NULL)
+            {
+               SimCore::Components::RenderingSupportComponent::DynamicLight* dl =
+                  renderComp->AddDynamicLightByPrototypeName(lightName);
+               dl->mTarget = this;
+            }
          }
       }
+
+      //////////////////////////////////////////////////////////////////////////
+      void DetonationActor::SetImpactType(IMPACT_TYPE impact)
+      {
+         mCurrentImpact = impact;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      DetonationActor::IMPACT_TYPE DetonationActor::GetImpactType() const
+      {
+         return mCurrentImpact;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void DetonationActor::SetGroundImpactLight( const std::string& lightName ) { mLightImpactGround = lightName; }
+      const std::string& DetonationActor::GetGroundImpactLight() const { return mLightImpactGround; }
+
+      //////////////////////////////////////////////////////////////////////////
+      void DetonationActor::SetEntityImpactLight( const std::string& lightName ) { mLightImpactEntity = lightName; }
+      const std::string& DetonationActor::GetEntityImpactLight() const { return mLightImpactEntity; }
+
+      //////////////////////////////////////////////////////////////////////////
+      void DetonationActor::SetHumanImpactLight( const std::string& lightName ) { mLightImpactHuman = lightName; }
+      const std::string& DetonationActor::GetHumanImpactLight() const { return mLightImpactHuman; }
 
    }
 }

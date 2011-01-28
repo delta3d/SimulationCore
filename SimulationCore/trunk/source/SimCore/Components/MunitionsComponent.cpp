@@ -26,6 +26,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include <prefix/SimCorePrefix.h>
 #include <dtUtil/mswin.h>
+#include <algorithm>
 // DELTA 3D
 #include <dtABC/application.h>
 #include <dtAudio/audiomanager.h>
@@ -81,7 +82,8 @@ namespace SimCore
          , mMunitionConfigFileName("Configs:MunitionsConfig.xml")
          , mMaximumActiveMunitions(200U)
          , mIsector(new dtCore::BatchIsector)
-         , mLastDetonationTime(0.0f)
+         //, mLastDetonationTime(0.0f)
+         , mMunitionTypeTable(new MunitionTypeTable())
          , mEffectsManager(new WeaponEffectsManager)
       {
       }
@@ -265,62 +267,7 @@ namespace SimCore
          return successes;
       }
 
-      //////////////////////////////////////////////////////////////////////////
-      unsigned int MunitionsComponent::LoadMunitionTypeTable( const std::string& mapName )
-      {
-         // Prepare the table for a fresh load of data.
-         if( mMunitionTypeTable.valid() )
-         {
-            mMunitionTypeTable->Clear();
-         }
-         else
-         {
-            mMunitionTypeTable = new MunitionTypeTable;
-         }
-
-         // Load the map file
-         dtDAL::Map *map = NULL;
-         try
-         {
-            map = &dtDAL::Project::GetInstance().GetMap(mapName);
-         }
-         catch(const dtUtil::Exception &e)
-         {
-            std::ostringstream oss;
-            oss << "ERROR! Failed to load the munitions type table named: " << mapName <<
-               " because: " << e.What() << ". You will not be able to see detonations.";
-
-            LOG_ERROR(oss.str());
-            return 0;
-         }
-         dtDAL::Map &actorMap = *map;
-         std::vector<dtCore::RefPtr<dtDAL::ActorProxy> > proxies;
-         actorMap.GetAllProxies( proxies );
-
-         // Declare variable for the loop
-         dtCore::RefPtr<SimCore::Actors::MunitionTypeActorProxy> curProxy = NULL;
-         unsigned int munitions = 0;
-
-         // Populate the table with valid MunitionTypeActors
-         std::vector<dtCore::RefPtr<dtDAL::ActorProxy> >::iterator iter = proxies.begin();
-         for( ; iter != proxies.end(); ++iter )
-         {
-            curProxy = dynamic_cast<SimCore::Actors::MunitionTypeActorProxy*> (iter->get());
-            if( curProxy.valid() )
-            {
-               if( mMunitionTypeTable->AddMunitionType( curProxy ) )
-               {
-                  ++munitions;
-               }
-            }
-         }
-
-         proxies.clear();
-
-         return munitions;
-      }
-
-      //////////////////////////////////////////////////////////////////////////
+      /////////////////////////////////////////////////////////////////////
       void MunitionsComponent::ProcessMessage( const dtGame::Message& message )
       {
          const dtGame::MessageType& type = message.GetMessageType();
@@ -379,10 +326,12 @@ namespace SimCore
          }
          else if( type == dtGame::MessageType::INFO_TIME_CHANGED )
          {
-            mLastDetonationTime = 0.0f;
+            //mLastDetonationTime = 0.0f;
          }
          else if( type == dtGame::MessageType::INFO_MAP_LOADED )
          {
+            InitMunitionTypeTable();
+
             std::vector<dtDAL::ActorProxy*> terrains;
             GetGameManager()->FindActorsByType( *SimCore::Actors::EntityActorRegistry::TERRAIN_ACTOR_TYPE, terrains );
 
@@ -400,7 +349,8 @@ namespace SimCore
             ClearCreatedMunitionsQueue();
             ClearRegisteredEntities();
             ClearTables();
-            mLastDetonationTime = 0.0f;
+            mMunitionTypeTable->Clear();
+            //mLastDetonationTime = 0.0f;
 
             if (type == dtGame::MessageType::INFO_RESTARTED)
             {
@@ -741,33 +691,20 @@ namespace SimCore
       void MunitionsComponent::ApplyDetonationEffects( const DetonationMessage& message,
          const SimCore::Actors::MunitionTypeActor& munitionType )
       {
+         //brad- todo- make detonation queue
          //Sort of a hack.  Detonations cannot be drawn if they come so quickly.
-         double simTime = GetGameManager()->GetSimulationTime();
-         if ( simTime > mLastDetonationTime && simTime - mLastDetonationTime <= 0.05f )
-         {
-            LOG_DEBUG("Skipping detonations that occur too close together.");
-            return;
-         }
-         else
-         {
-            mLastDetonationTime = simTime;
-         }
+         //double simTime = GetGameManager()->GetSimulationTime();
+         //if ( simTime > mLastDetonationTime && simTime - mLastDetonationTime <= 0.05f )
+         //{
+         //   LOG_DEBUG("Skipping detonations that occur too close together.");
+         //   return;
+         //}
+         //else
+         //{
+         //   mLastDetonationTime = simTime;
+         //}
 
          const std::string& munitionName = message.GetMunitionType();
-
-         // Get the munition effects info so that the detonation actor can be set
-         // with relevant data.
-         const SimCore::Actors::MunitionEffectsInfoActor* effects
-            = GetMunitionEffectsInfo( munitionType, "" );// NO DEFAULT EFFECT FOR NOW: GetDefaultMunitionName() );
-
-         if( effects == NULL )
-         {
-            std::ostringstream ss;
-            ss << "Munition \"" << munitionName << "\" does not have effects defined for it."
-               << std::endl;
-            LOG_WARNING( ss.str() );
-            return;
-         }
 
          // Figure out if we hit an entity or if we hit the ground!
          bool hitEntity = ! message.GetAboutActorId().ToString().empty();
@@ -787,102 +724,44 @@ namespace SimCore
             }
          }
 
-         // Set the position and ground clamp
-         osg::Vec3 pos( message.GetDetonationLocation() );
-         osg::Vec3 endPos = pos;
 
-         // If an entity was hit, use clamping along the impact velocity vector
-         if( hitEntity )
-         {
-            osg::Vec3 normal( message.GetFinalVelocityVector() );
-            if( normal.length2() >= 0.0f )
-            {
-               normal.normalize();
-               normal *= 0.5f;
-               pos -= normal;
-               endPos += normal;
-            }
-         }
-         else // use straight up and down clamping
-         {
-            pos.z() -= 500.0f;
-            endPos.z() += 500.0f;
-         }
-
-         dtCore::BatchIsector::SingleISector& SingleISector = mIsector->EnableAndGetISector(0);
-         SingleISector.SetSectorAsLineSegment(pos, endPos);
          int fidID = 0;
-
-         if(mIsector->Update( osg::Vec3(0,0,0), true ) )
-         {
-            osg::Vec3 hp;
-
-            // Make sure the isector actually has hit points on the terrain.
-            // This component will not assume the isector to return an unsigned value
-            // when its function return is a signed value; thus failing everything from
-            // 0 and everything to the left of 0.
-            if( SingleISector.GetNumberOfHits() <= 0 )
-            {
-               LOG_WARNING( "Munition Component could not place a detonation actor because the BatchIsector has an empty hit list." );
-               return;
-            }
-
-            SingleISector.GetHitPoint(hp);
-            const osg::Drawable* drawable = SingleISector.GetIntersectionHit(0)._drawable.get();
-            if( drawable != NULL && drawable->getStateSet() != NULL)
-            {
-               RefPtr<const osg::IntArray> mOurList
-                  = dynamic_cast<const osg::IntArray*>(drawable->getStateSet()->getUserData());
-               if( mOurList.valid() )
-               {
-                  if( ! mOurList->empty() )
-                  {
-                     int value[4];
-                     int iter = 0;
-                     osg::IntArray::const_iterator listiter = mOurList->begin();
-                     for(; listiter != mOurList->end(); listiter++)
-                     {
-                        value[iter] = *listiter;
-                        ++iter;
-                     }
-                     fidID = value[0];
-                  }
-               }
-            }
-
-            if (dtUtil::Log::GetInstance().IsLevelEnabled(dtUtil::Log::LOG_DEBUG))
-            {
-               std::ostringstream ss;
-               ss << "Found a hit - old z " << pos.z() << " new z " << hp.z();
-               LOG_DEBUG(ss.str());
-            }
-
-            mIsector->Reset();
-
-            // --- DEBUG --- START --- //
-            //std::cout << "MunComp. Det. (clamped): " << pos[0] << ", " << pos[1] << ", " << pos[2] << std::endl;
-            // --- DEBUG --- END --- //
-         }
-
+         RunIsectorForFIDCodes(hitEntity, message, fidID);
+         
          // Prepare a detonation actor to be placed into the scene
-         RefPtr<SimCore::Actors::DetonationActorProxy> proxy;
-         GetGameManager()->CreateActor(*SimCore::Actors::EntityActorRegistry::DETONATION_ACTOR_TYPE, proxy);
-
+         dtCore::RefPtr<SimCore::Actors::DetonationActorProxy>  proxy = CreateDetonationPrototype(message);
          if(!proxy.valid())
          {
-            LOG_ERROR("Failed to create the detonation proxy");
+            LOG_ERROR("Unable to create detonation prototype, aborting ApplyDetonationEffects()");
             return;
          }
 
-         SimCore::Actors::DetonationActor *da = dynamic_cast<SimCore::Actors::DetonationActor*>(proxy->GetActor());
+         SimCore::Actors::DetonationActor* da = dynamic_cast<SimCore::Actors::DetonationActor*>(proxy->GetActor());
          if(da == NULL)
          {
             LOG_ERROR("Received a detonation actor proxy that did not contain a detonation actor. Ignoring.");
+
+            //set proxy to null if we do not have a valid detonation actor
+            proxy = NULL;
             return;
          }
 
+         //set the impact type
+         if(entityIsHuman)
+         {
+            da->SetImpactType(Actors::DetonationActor::IMPACT_HUMAN);
+         }
+         else if(hitEntity)
+         {
+            da->SetImpactType(Actors::DetonationActor::IMPACT_ENTITY);
+         }
+         else
+         {
+            da->SetImpactType(Actors::DetonationActor::IMPACT_TERRAIN);
+         }
+
          // Set the detonation's position
-         pos = message.GetDetonationLocation();
+         osg::Vec3 pos = message.GetDetonationLocation();
          dtCore::Transform xform(pos[0], pos[1], pos[2]);
          da->SetTransform(xform, dtCore::Transformable::REL_CS);
 
@@ -897,8 +776,7 @@ namespace SimCore
             da->SetMaterialCollidedWith(viewerMaterial);
          }
 
-         // Delay particles to ensure that sound reaches the player at the time
-         // particles start spawning.
+         // Delay sound to ensure that it reaches the player at the proper time
          if( mPlayer.valid() )
          {
             dtCore::Transform xform;
@@ -908,73 +786,10 @@ namespace SimCore
             da->CalculateDelayTime(playerPos);
          }
 
-         // Set properties on the detonation actor
-         std::string curValue;
-
-         // Load the particle effect
-         if (hitEntity && entityIsHuman) // For humans, we play a different effect
-         {
-            // do nothing for right now
-         }
-         else if( hitEntity && effects->HasEntityImpactEffect() )
-         {
-            curValue = effects->GetEntityImpactEffect();
-            if (!curValue.empty())
-            {
-               da->LoadDetonationFile( curValue );
-            }
-         }
-         else
-         {
-            curValue = effects->GetGroundImpactEffect();
-            if (!curValue.empty())
-            {
-               da->LoadDetonationFile( curValue );
-            }
-         }
-
-         // Load the sound
-         if (hitEntity && entityIsHuman) // For humans, we play a different effect
-         {
-            // do nothing for shooting a player. For now we have no hit human thud.
-         }
-         else if( hitEntity && effects->HasEntityImpactSound() )
-         {
-            curValue = effects->GetEntityImpactSound();
-            if( ! curValue.empty() )
-            {
-               da->LoadSoundFile( curValue );
-               da->SetMaximumSoundDistance( effects->GetEntityImpactSoundMaxDistance() );
-            }
-         }
-         else
-         {
-            curValue = effects->GetGroundImpactSound();
-            if( ! curValue.empty() )
-            {
-               da->LoadSoundFile( curValue );
-               da->SetMaximumSoundDistance( effects->GetGroundImpactSoundMaxDistance() );
-            }
-         }
-
-         // Load smoke effect
-         curValue = effects->GetSmokeEffect();
-         if( ! curValue.empty() ) { da->LoadSmokeFile( curValue ); }
-         da->SetLingeringSmokeSecs( effects->GetSmokeLifeTime() );
-
          // Determine if the detonation should have physics applied to its particles.
          bool avoidPhysics = munitionType.GetFamily() == SimCore::Actors::MunitionFamily::FAMILY_ROUND
             || munitionType.GetFamily() == SimCore::Actors::MunitionFamily::FAMILY_UNKNOWN;
          da->SetPhysicsEnabled( ! avoidPhysics );
-
-         // Prepare the reference light effect type
-         curValue = effects->GetEntityImpactLight();
-         std::string lightString = dtUtil::Trim(curValue); // Stage put a bunch of bad whitenoise in some strings
-         if( ! hitEntity || lightString.empty() )
-         {
-            curValue = effects->GetGroundImpactLight();
-         }
-         da->SetLightName( curValue );
 
          // Add the newly created detonation to the scene
          GetGameManager()->AddActor(da->GetGameActorProxy(), false, false);
@@ -1198,6 +1013,254 @@ namespace SimCore
          {
             CleanupCreatedMunitionsQueue();
          }
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void MunitionsComponent::RunIsectorForFIDCodes(bool hitEntity, const DetonationMessage& message, int fidID)
+      {
+         //set to a default value
+         fidID = 0;
+
+         // Set the position and ground clamp
+         osg::Vec3 pos( message.GetDetonationLocation() );
+         osg::Vec3 endPos = pos;
+
+         // If an entity was hit, use clamping along the impact velocity vector
+         if( hitEntity )
+         {
+            osg::Vec3 normal( message.GetFinalVelocityVector() );
+            if( normal.length2() >= 0.0f )
+            {
+               normal.normalize();
+               normal *= 0.5f;
+               pos -= normal;
+               endPos += normal;
+            }
+         }
+         else // use straight up and down clamping
+         {
+            pos.z() -= 500.0f;
+            endPos.z() += 500.0f;
+         }
+
+         dtCore::BatchIsector::SingleISector& SingleISector = mIsector->EnableAndGetISector(0);
+         SingleISector.SetSectorAsLineSegment(pos, endPos);
+
+         if(mIsector->Update( osg::Vec3(0,0,0), true ) )
+         {
+            osg::Vec3 hp;
+
+            // Make sure the isector actually has hit points on the terrain.
+            // This component will not assume the isector to return an unsigned value
+            // when its function return is a signed value; thus failing everything from
+            // 0 and everything to the left of 0.
+            if( SingleISector.GetNumberOfHits() <= 0 )
+            {
+               LOG_WARNING( "Munition Component could not place a detonation actor because the BatchIsector has an empty hit list." );
+               return;
+            }
+
+            SingleISector.GetHitPoint(hp);
+            const osg::Drawable* drawable = SingleISector.GetIntersectionHit(0)._drawable.get();
+            if( drawable != NULL && drawable->getStateSet() != NULL)
+            {
+               RefPtr<const osg::IntArray> mOurList
+                  = dynamic_cast<const osg::IntArray*>(drawable->getStateSet()->getUserData());
+               if( mOurList.valid() )
+               {
+                  if( ! mOurList->empty() )
+                  {
+                     int value[4];
+                     int iter = 0;
+                     osg::IntArray::const_iterator listiter = mOurList->begin();
+                     for(; listiter != mOurList->end(); listiter++)
+                     {
+                        value[iter] = *listiter;
+                        ++iter;
+                     }
+                     fidID = value[0];
+                  }
+               }
+            }
+
+            if (dtUtil::Log::GetInstance().IsLevelEnabled(dtUtil::Log::LOG_DEBUG))
+            {
+               std::ostringstream ss;
+               ss << "Found a hit - old z " << pos.z() << " new z " << hp.z();
+               LOG_DEBUG(ss.str());
+            }
+
+            mIsector->Reset();
+
+            // --- DEBUG --- START --- //
+            //std::cout << "MunComp. Det. (clamped): " << pos[0] << ", " << pos[1] << ", " << pos[2] << std::endl;
+            // --- DEBUG --- END --- //
+         }
+
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      dtCore::RefPtr<SimCore::Actors::DetonationActorProxy> MunitionsComponent::CreateDetonationPrototype(const DetonationMessage& message)
+      {
+         dtCore::RefPtr<SimCore::Actors::DetonationActorProxy> proxy;
+
+         if(GetMunitionTypeTable() == NULL)
+         {
+            LOG_ERROR("Unable to create detonation, munition type table is NULL");
+         }
+         else
+         {
+            SimCore::Actors::MunitionTypeActor* munitionType = GetMunitionTypeTable()->GetMunitionType(message.GetMunitionType());
+
+            if(munitionType != NULL)
+            {
+               GetGameManager()->CreateActorFromPrototype(munitionType->GetDetonationActor(), proxy);
+            }
+
+            if(!proxy.valid())
+            {
+               LOG_ERROR("Failed to create the detonation proxy");
+            }
+         }
+
+         return proxy;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void MunitionsComponent::InitMunitionTypeTable()
+      {
+         std::vector<dtDAL::ActorProxy* > proxies;
+         GetGameManager()->FindActorsByType(*SimCore::Actors::EntityActorRegistry::MUNITION_TYPE_ACTOR_TYPE, proxies);
+
+         // Declare variable for the loop
+         dtCore::RefPtr<SimCore::Actors::MunitionTypeActorProxy> curProxy = NULL;
+         unsigned int munitions = 0;
+
+         // Populate the table with valid MunitionTypeActors
+         std::vector<dtDAL::ActorProxy*>::iterator iter = proxies.begin();
+         for( ; iter != proxies.end(); ++iter )
+         {
+            curProxy = dynamic_cast<SimCore::Actors::MunitionTypeActorProxy*> (*iter);
+            if( curProxy.valid() )
+            {
+               if( mMunitionTypeTable->AddMunitionType( curProxy ) )
+               {
+                  ++munitions;
+               }
+            }
+         }
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void MunitionsComponent::ConvertMunitionInfoActorsToDetonationActors(const std::string& mapName)
+      {
+         // Load the map file
+         dtDAL::Map* map = NULL;
+         try
+         {
+            map = &dtDAL::Project::GetInstance().GetMap(mapName);
+         }
+         catch(const dtUtil::Exception &e)
+         {
+            std::ostringstream oss;
+            oss << "ERROR! Failed to load the munitions type table named: " << mapName <<
+               " because: " << e.What() << ". You will not be able to see detonations.";
+
+            LOG_ERROR(oss.str());
+            return;
+         }
+
+         //lets map a mapping to add the detonation prototypes to the proper MunitionTypes
+         typedef std::map<const SimCore::Actors::MunitionEffectsInfoActor*, dtCore::UniqueId> InfoToIdMap;
+         InfoToIdMap effectMapping;
+
+         //now iterate through all the munition info's
+         dtDAL::Map& actorMap = *map;
+         std::vector<dtCore::RefPtr<dtDAL::ActorProxy> > proxies;
+         actorMap.GetAllProxies(proxies);
+
+         dtCore::RefPtr<SimCore::Actors::MunitionEffectsInfoActorProxy> infoProxy = NULL;
+
+         // Populate the table with valid MunitionTypeActors
+         std::vector<dtCore::RefPtr<dtDAL::ActorProxy> >::iterator iter = proxies.begin();
+         for(; iter != proxies.end(); ++iter)
+         {
+            infoProxy = dynamic_cast<SimCore::Actors::MunitionEffectsInfoActorProxy*>(iter->get());
+            if(infoProxy.valid())
+            {
+               dtCore::RefPtr<SimCore::Actors::DetonationActorProxy> detonationProxy;
+               GetGameManager()->CreateActor(*SimCore::Actors::EntityActorRegistry::DETONATION_ACTOR_TYPE, detonationProxy);
+
+               map->AddProxy(*detonationProxy);
+
+               ConvertSingleMunitionInfo(*infoProxy, *detonationProxy);
+
+               effectMapping.insert(std::make_pair(dynamic_cast<SimCore::Actors::MunitionEffectsInfoActor*>(infoProxy->GetActor()), detonationProxy->GetId()));
+            }
+         }
+
+         //Now assign the id's to the munition types
+         dtCore::RefPtr<SimCore::Actors::MunitionTypeActorProxy> curProxy = NULL;
+
+         // Populate the table with valid MunitionTypeActors
+         iter = proxies.begin();
+         for(; iter != proxies.end(); ++iter)
+         {
+            curProxy = dynamic_cast<SimCore::Actors::MunitionTypeActorProxy*>(iter->get());
+            if(curProxy.valid())
+            {
+               SimCore::Actors::MunitionTypeActor& munitionActor = *static_cast<SimCore::Actors::MunitionTypeActor*>(curProxy->GetActor());
+
+               if(munitionActor.GetEffectsInfoActor() != NULL)
+               { 
+                  InfoToIdMap::iterator iter = effectMapping.find(munitionActor.GetEffectsInfoActor());
+                  if(iter != effectMapping.end())
+                  {
+                     munitionActor.SetDetonationActor((*iter).second);
+                  }
+               }
+            }
+         }
+
+         dtDAL::Project::GetInstance().SaveMap(*map);
+         proxies.clear();
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void MunitionsComponent::ConvertSingleMunitionInfo(SimCore::Actors::MunitionEffectsInfoActorProxy& infoProxy, SimCore::Actors::DetonationActorProxy& detonationProxy)
+      {
+         SimCore::Actors::MunitionEffectsInfoActor& infoActor = *static_cast<SimCore::Actors::MunitionEffectsInfoActor*>(infoProxy.GetActor());
+         SimCore::Actors::DetonationActor& detonationActor = *static_cast<SimCore::Actors::DetonationActor*>(detonationProxy.GetActor());
+
+         detonationActor.SetName(infoActor.GetName());
+         detonationProxy.SetInitialOwnership(dtGame::GameActorProxy::Ownership::PROTOTYPE);
+         
+         dtDAL::ResourceDescriptor desc;
+         
+         desc = infoProxy.GetResource("Ground Impact Effect");
+         detonationActor.SetGroundImpactEffect(desc);
+
+         desc = infoProxy.GetResource("Ground Impact Sound");
+         detonationActor.SetGroundImpactSound(desc);
+
+         detonationActor.SetGroundImpactLight(infoActor.GetGroundImpactLight());
+
+
+         desc = infoProxy.GetResource("Entity Impact Effect");
+         detonationActor.SetEntityImpactEffect(desc);
+
+         desc = infoProxy.GetResource("Entity Impact Sound");
+         detonationActor.SetEntityImpactSound(desc);
+
+         detonationActor.SetEntityImpactLight(infoActor.GetEntityImpactLight());
+
+         //there were no human impact effects on the MunitionEffectsInfoActor so we skip setting them here
+
+
+         desc = infoProxy.GetResource("Smoke Effect");
+         detonationActor.SetSmokeEffect(desc);
+
+         detonationActor.SetSmokeLifeTime(infoActor.GetSmokeLifeTime());
       }
    }
 }

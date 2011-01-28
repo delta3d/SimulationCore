@@ -88,6 +88,7 @@ set(LIB_SOURCES_2
    "${SOURCE_PATH}/Actors/LogicConditionalActor.cpp"
    "${SOURCE_PATH}/Actors/LogicOnEventActor.cpp"
    "${SOURCE_PATH}/Actors/MissileActor.cpp"
+   "${SOURCE_PATH}/Actors/MultipleDetonationActor.cpp"
    "${SOURCE_PATH}/Actors/MunitionParticlesActor.cpp"
    "${SOURCE_PATH}/Actors/MunitionTypeActor.cpp"
    "${SOURCE_PATH}/Actors/NECCBoatActor.cpp"

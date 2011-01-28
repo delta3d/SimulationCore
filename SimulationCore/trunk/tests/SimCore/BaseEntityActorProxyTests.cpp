@@ -1109,10 +1109,10 @@ void BaseEntityActorProxyTests::TestDetonationActorProxy()
    SimCore::Actors::DetonationActor *da =
       static_cast<SimCore::Actors::DetonationActor*>(&dap->GetGameActor());
 
-   da->SetLingeringSmokeSecs(0.000001);
+   da->SetSmokeLifeTime(0.000001);
    da->SetDeleteActorTimerSecs(0.0001);
    da->SetExplosionTimerSecs(0.0001);
-   da->LoadSoundFile("Sounds/silence.wav");
+   //da->LoadSoundFile("Sounds/silence.wav");
 
    // TODO Add detonation to GM, set a timer and everything, ensure it fires and deletes
    // itself via its invokable
@@ -1141,10 +1141,10 @@ void BaseEntityActorProxyTests::TestDetonationActorProxy()
       RefPtr<SimCore::Actors::DetonationActorProxy> d;
       mGM->CreateActor("Effects", "Detonation Actor", d);
       SimCore::Actors::DetonationActor& detActor = static_cast<SimCore::Actors::DetonationActor&>(d->GetGameActor());
-      detActor.SetLingeringSmokeSecs(0.001);
+      detActor.SetSmokeLifeTime(0.001);
       detActor.SetExplosionTimerSecs(0.001);
       detActor.SetDeleteActorTimerSecs(0.001);
-      detActor.LoadSoundFile("Sounds/silence.wav");
+      //detActor.LoadSoundFile("Sounds/silence.wav");
       mGM->AddActor(*d, false, false);
       detList.push_back(d);
    }

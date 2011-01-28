@@ -29,12 +29,15 @@
 #include <dtCore/deltadrawable.h>
 #include <dtCore/observerptr.h>
 #include <dtDAL/actorproxy.h>
+#include <dtUtil/getsetmacros.h>
 #include <string>
 
 namespace SimCore
 {
    namespace Actors
    {
+      class DetonationActorProxy;
+
       //////////////////////////////////////////////////////////
       // Enumeration Code
       //////////////////////////////////////////////////////////
@@ -354,11 +357,15 @@ namespace SimCore
             const DISIdentifier& GetDISIdentifier() const { return mDIS; }
             std::string GetDISIdentifierString() const;
 
-            void SetEffectsInfoActor( dtDAL::ActorProxy* proxy );
-
+            void SetEffectsInfoActor(dtDAL::ActorProxy* proxy);
             dtCore::DeltaDrawable* GetEffectsInfoDrawable();
-
             const MunitionEffectsInfoActor* GetEffectsInfoActor() const;
+
+            void SetDetonationActorPrototype(dtDAL::ActorProxy* proxy);
+            DetonationActorProxy* GetDetonationActorPrototype();
+            dtCore::DeltaDrawable* GetDetonationActorPrototypeDrawable();
+
+            DT_DECLARE_ACCESSOR_INLINE(dtCore::UniqueId, DetonationActor);
 
          protected:
             virtual ~MunitionTypeActor();
@@ -371,6 +378,7 @@ namespace SimCore
             std::string mDamageType;
             MunitionFamily* mFamily;
             DISIdentifier mDIS;
+            dtCore::RefPtr<DetonationActorProxy> mDetonationPrototype;
             dtCore::RefPtr<MunitionEffectsInfoActor> mEffects;
             dtCore::ObserverPtr<MunitionTypeActorProxy> mProxy;
       };

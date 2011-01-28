@@ -286,6 +286,9 @@ namespace SimCore
             osg::Group* GetSceneRoot();
             osg::Group* GetNVGSRoot();
             osg::Group* GetGUIRoot();
+            
+            
+            unsigned GetNumLights() const {return mLights.size();}
 
          protected:
             /// Destructor
@@ -312,6 +315,7 @@ namespace SimCore
             void UpdateViewMatrix(dtCore::Camera& pCamera);
 
             void SetDynamicLightProperties(SimCore::Actors::DynamicLightPrototypeActor* prototype, DynamicLight* dl);
+
 
          public:
             //here we define constants for defining the render bins

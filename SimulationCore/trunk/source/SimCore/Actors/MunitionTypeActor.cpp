@@ -26,6 +26,9 @@
 #include <dtUtil/stringutils.h>
 #include <dtDAL/functor.h>
 #include <dtDAL/enginepropertytypes.h>
+#include <SimCore/Actors/DetonationActor.h>
+#include <SimCore/Actors/ViewerMaterialActor.h>
+#include <dtDAL/propertymacros.h>
 
 namespace SimCore
 {
@@ -593,6 +596,12 @@ namespace SimCore
       {
          MunitionTypeActor& actor = static_cast<MunitionTypeActor&>(*GetActor());
 
+         typedef dtDAL::PropertyRegHelper<MunitionTypeActorProxy&, MunitionTypeActor> RegHelperType;
+         RegHelperType propReg(*this, &actor, "Detonation");
+
+         DT_REGISTER_ACTOR_ID_PROPERTY(DetonationActorProxy::CLASS_NAME, DetonationActor, "Detonation Prototype",
+                                       "This is the class that will be spawned to handle the detonation for this munition type", RegHelperType, propReg);
+
          AddProperty(new dtDAL::StringActorProperty("DIS Identifier", "DIS Identifier",
             dtDAL::StringActorProperty::SetFuncType( &actor, &MunitionTypeActor::SetDISIdentifierByString ),
             dtDAL::StringActorProperty::GetFuncType( &actor, &MunitionTypeActor::GetDISIdentifierString ),
@@ -647,7 +656,12 @@ namespace SimCore
          , mFuse(0)
          , mWarhead(0)
          , mTracerFrequency(0)
+         , mModel()
+         , mDamageType()
          , mFamily(&MunitionFamily::FAMILY_UNKNOWN)
+         , mDIS()
+         , mDetonationPrototype()
+         , mEffects()
          , mProxy(&proxy)
       {
       }
@@ -696,5 +710,38 @@ namespace SimCore
          return mEffects.get();
       }
 
+      //////////////////////////////////////////////////////////////////////////
+      void MunitionTypeActor::SetDetonationActorPrototype(dtDAL::ActorProxy* proxy)
+      {
+         if(proxy != NULL)
+         {
+            DetonationActorProxy* detonProxy = dynamic_cast<DetonationActorProxy*>(proxy);
+            mDetonationPrototype = detonProxy;
+         }
+         else
+         {
+            mDetonationPrototype = NULL;
+         }
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      DetonationActorProxy* MunitionTypeActor::GetDetonationActorPrototype()
+      {
+         return mDetonationPrototype.get();
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      dtCore::DeltaDrawable* MunitionTypeActor::GetDetonationActorPrototypeDrawable()
+      {
+         if(mDetonationPrototype.valid())
+         {
+            return mDetonationPrototype->GetActor();
+         }
+         else
+         {
+            return NULL;
+         }
+
+      }
    }
 }

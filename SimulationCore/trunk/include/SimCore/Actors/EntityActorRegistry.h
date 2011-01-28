@@ -45,6 +45,7 @@ namespace SimCore
             static dtCore::RefPtr<dtDAL::ActorType> STEALTH_ACTOR_TYPE;
             static dtCore::RefPtr<dtDAL::ActorType> PLAYER_ACTOR_TYPE;
             static dtCore::RefPtr<dtDAL::ActorType> DETONATION_ACTOR_TYPE;
+            static dtCore::RefPtr<dtDAL::ActorType> MULTIPLE_DETONATION_ACTOR_TYPE;
             static dtCore::RefPtr<dtDAL::ActorType> POSITION_MARKER_ACTOR_TYPE;
             static dtCore::RefPtr<dtDAL::ActorType> TERRAIN_ACTOR_TYPE;
             static dtCore::RefPtr<dtDAL::ActorType> INTERIOR_ACTOR_TYPE;
