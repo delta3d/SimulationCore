@@ -68,7 +68,6 @@ To run DriverDemo, see the special settings in DriverDemo's config.xml file
 
       <!-- SimCore Demo Settings -->
       <Property Name="MunitionsConfigFile">Configs:NetDemoMunitionsConfig.xml</Property>
-      <Property Name="MunitionMap">DemoMunitionTypesMap</Property>
       <Property Name="NetDemo.DefaultPlayMode">FOUR_WHEEL</Property><!--FOUR_WHEEL  HOVER -->
       <Property Name="NetDemo.DefaultHoverVehiclePrototype">Hover Tank</Property>
       <Property Name="NetDemo.DefaultWheeledVehiclePrototype">Truck</Property> 
@@ -90,8 +89,9 @@ To run DriverDemo, see the special settings in DriverDemo's config.xml file
       <Property Name="AdditionalMap1">DriverActors</Property> 
       <Property Name="AdditionalMap2">NetDemoPrototypes2</Property> 
       <Property Name="AdditionalMap3">NetDemoPrototypes</Property> 
-      <Property Name="AdditionalMap4">NetDemoActors</Property> 
-      <!--Property Name="AdditionalMap5">NetDemo</Property--> 
+      <Property Name="AdditionalMap4">NetDemoActors</Property>
+      <Property Name="AdditionalMap5">DemoMunitionTypesMap</Property>
+       <!--Property Name="AdditionalMap5">NetDemo</Property--> 
 
 
       <!-- Driver Demo
