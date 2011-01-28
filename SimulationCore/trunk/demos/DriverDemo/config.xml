@@ -33,13 +33,13 @@ C:\Curtiss\Projects\SimulationCore\demos\DriverDemo
       <Property Name="dtPhysics.DebugDrawRange">500.0</Property>
 
       <Property Name="MunitionsConfigFile">Configs:NetDemoMunitionsConfig.xml</Property>
-      <Property Name="MunitionMap">DemoMunitionTypesMap</Property>
 
       <Property Name="AdditionalMap1">DriverPrototypes</Property> 
       <Property Name="AdditionalMap2">DriverMaterials</Property> 
       <Property Name="AdditionalMap3">DriverActors</Property> 
-      <Property Name="AdditionalMap4">NetDemoPrototypes2</Property> 
-      <!--Property Name="AdditionalMap4">SharedDemoPrototypes</Property--> 
+      <Property Name="AdditionalMap4">NetDemoPrototypes2</Property>
+      <Property Name="AdditionalMap5">DemoMunitionTypesMap</Property>
+       <!--Property Name="AdditionalMap4">SharedDemoPrototypes</Property--> 
       <Property Name="UseGPUCharacterSkinning">true</Property>
       <Property Name="DeveloperMode">true</Property>
       <Property Name="GameManager.Statistics.ToConsole">false</Property>
