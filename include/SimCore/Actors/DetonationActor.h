@@ -29,6 +29,9 @@
 
 #include <SimCore/Actors/IGActor.h>
 //#include <SimCore/Actors/ViewerMaterialActor.h>
+#include <dtUtil/getsetmacros.h>
+#include <dtDAL/resourcedescriptor.h>
+
 namespace dtGame
 {
    class TimerElapsedMessage;
@@ -68,27 +71,18 @@ namespace SimCore
       class SIMCORE_EXPORT DetonationActor : public IGActor
       {
          public:
+            ///currently these are the supported impact types
+            ///each one has specific particle systems, sounds, and lights
+            enum IMPACT_TYPE{IMPACT_TERRAIN, IMPACT_ENTITY, IMPACT_HUMAN};
 
             /// Constructor
             DetonationActor(dtGame::GameActorProxy &proxy);
 
             /**
-             * Loads in a specified sound file
-             * @param fileName The name of the sound file
+             *  The impact type determines which particle system and sounds will be played.
              */
-            void LoadSoundFile(const std::string &fileName);
-
-            /**
-             * Loads in a particle system file for the detonation
-             * @param fileName The name of the file to load
-             */
-            void LoadDetonationFile(const std::string &fileName);
-
-            /**
-             * Loads a smoke file for this detonation actor to use
-             * @param fileName The name of the file to use
-             */
-            void LoadSmokeFile(const std::string &fileName);
+            void SetImpactType(IMPACT_TYPE impact);
+            IMPACT_TYPE GetImpactType() const;
 
             // Invoked when a actor is added to the Game Manager
             virtual void OnEnteredWorld();
@@ -106,26 +100,6 @@ namespace SimCore
              * @note This function sets the mDelayTime member as a post condition
              */
             void CalculateDelayTime(const osg::Vec3 &position);
-
-            /**
-             * Sets the amount of shot lingered seconds on the detonation
-             * @param secs The number of secs to linger
-             */
-            //static void SetLingeringShotSecs(const float secs) { mLingeringShotSecs = secs; }
-
-            /**
-             * Gets the length that the smoke particle system stays alive.  Zero means do NOT
-             * use smoke particle. Default is zero.
-             * @return mLingeringSmokeSecs
-             */
-            float GetLingeringSmokeSecs() const { return mLingeringSmokeSecs; }
-
-            /**
-             * Sets the length that the smoke particle system stays alive.  Zero means do NOT
-             * use smoke particle. Default is zero.
-             * @param lingeringSmokeSecs the length, in seconds that the smoke stays up.
-             */
-            void SetLingeringSmokeSecs(float lingeringSmokeSecs) { mLingeringSmokeSecs = lingeringSmokeSecs; }
 
             /**
              * Sets the explosion render seconds
@@ -189,22 +163,62 @@ namespace SimCore
             void SetPhysicsEnabled( bool usesPhysics ) { mUsesPhysics = usesPhysics; }
             bool IsPhysicsEnabled() const { return mUsesPhysics; }
 
-            /**
-             * Set the name of the light effect that is to be loaded for the detonation.
-             * @param lightName Name of the light effect as is defined in the light
-             *        prototype actor from a map file
-             */
-            void SetLightName( const std::string& lightName ) { mLightName = lightName; }
-            std::string GetLightName() const { return mLightName; }
 
             void SetMaterialCollidedWith(ViewerMaterialActor& material)
             {
                mCollidedMaterial = &material;
             }
+         
+            //Ground Impact Properties
+            //note: if no other impact properties are set it defaults to using the ground impact properties
+            DT_DECLARE_ACCESSOR_INLINE(dtDAL::ResourceDescriptor, GroundImpactEffect);
+            DT_DECLARE_ACCESSOR_INLINE(dtDAL::ResourceDescriptor, GroundImpactSound);
+            void SetGroundImpactLight( const std::string& lightName );
+            const std::string& GetGroundImpactLight() const;
+
+            //Entity Impact Properties
+            DT_DECLARE_ACCESSOR_INLINE(dtDAL::ResourceDescriptor, EntityImpactEffect);
+            DT_DECLARE_ACCESSOR_INLINE(dtDAL::ResourceDescriptor, EntityImpactSound);
+            void SetEntityImpactLight( const std::string& lightName );
+            const std::string& GetEntityImpactLight() const;
+
+            //Human Impact Properties
+            DT_DECLARE_ACCESSOR_INLINE(dtDAL::ResourceDescriptor, HumanImpactEffect);
+            DT_DECLARE_ACCESSOR_INLINE(dtDAL::ResourceDescriptor, HumanImpactSound);
+            void SetHumanImpactLight( const std::string& lightName );
+            const std::string& GetHumanImpactLight() const;
+
+            //smoke effect
+            DT_DECLARE_ACCESSOR_INLINE(dtDAL::ResourceDescriptor, SmokeEffect);
+            void LoadSmokeFile(const dtDAL::ResourceDescriptor& resource);
+
+            DT_DECLARE_ACCESSOR_INLINE(float, SmokeLifeTime);
 
          protected:
             /// Destructor
             virtual ~DetonationActor();
+
+            /// Plays the sound associated with this Detonation Actor
+            virtual void PlaySound();
+
+            /// Enables the explosion particle system of this Detonation Actor
+            virtual void RenderDetonation();
+
+            /// Enables the smoke particle system of this Detonation Actor
+            virtual void RenderSmoke();
+
+            /// Disables the rendering of smoke
+            virtual void StopRenderingSmoke();
+
+
+            /// Enables the smoke particle system of this Detonation Actor
+            void StartSmokeEffect(dtCore::ParticleSystem& particles);
+            void LoadSoundFile(const dtDAL::ResourceDescriptor& resource, dtCore::RefPtr<dtAudio::Sound> soundIn);
+            void LoadParticleSystem(const dtDAL::ResourceDescriptor& resource, dtCore::RefPtr<dtCore::ParticleSystem> particleSysIn);
+
+            ///adds a light for the explosion effect
+            void AddDynamicLight(const std::string& lightName);
+
 
          private:
 
@@ -216,39 +230,32 @@ namespace SimCore
             dtAudio::Sound* GetSound() { return mSound.get(); }
 
             friend class DetonationActorProxy;
-            /// Plays the sound associated with this Detonation Actor
-            void PlaySound();
+           
+            void SetImpactEffects();
 
-            /// Enables the explosion particle system of this Detonation Actor
-            void RenderDetonation();
+            IMPACT_TYPE mCurrentImpact;
 
-            /// Enables the smoke particle system of this Detonation Actor
-            void RenderSmoke();
-
-            /// Disables the rendering of smoke
-            void StopRenderingSmoke();
-
-            ///adds a light for the explosion effect
-            void AddDynamicLight();
-
-            dtCore::RefPtr<dtCore::ParticleSystem> mExplosionSystem, mSmokeSystem;
-            dtCore::RefPtr<dtAudio::Sound> mSound;
             float mDelayTime;
-            //static float mLingeringShotSecs;
-            float mLingeringSmokeSecs;
             float mRenderExplosionTimerSecs;
             float mDeleteActorTimerSecs;
 
             bool mUsesPhysics;
+            
+            std::string mCurrentLightName;
+            std::string mLightImpactGround;
+            std::string mLightImpactEntity;
+            std::string mLightImpactHuman;
 
-            std::string mLightName;
-
-            dtCore::ObserverPtr<ViewerMaterialActor> mCollidedMaterial;
+            dtCore::ObserverPtr<ViewerMaterialActor> mCollidedMaterial; 
+            dtCore::RefPtr<dtCore::ParticleSystem> mExplosionSystem;
+            dtCore::RefPtr<dtCore::ParticleSystem> mSmokeSystem;
+            dtCore::RefPtr<dtAudio::Sound> mSound;
       };
 
       class SIMCORE_EXPORT DetonationActorProxy : public dtGame::GameActorProxy
       {
          public:
+            static const std::string CLASS_NAME;
 
             /// Constructor
             DetonationActorProxy();
@@ -264,15 +271,6 @@ namespace SimCore
 
             /// Invokable that tells the game manager to delete ourselves and play our sound
             void HandleDetonationActorTimers(const dtGame::TimerElapsedMessage& timeMsg);
-
-            /// Set common property values with one function call
-            void SetDetonationProperties(
-               float lingerTime,
-               float maxSoundDistance,
-               const std::string& detonationFile,
-               const std::string& soundFile,
-               const std::string& smokeFile = ""
-               );
 
             /// Clear all timers from the GameManager
             void ClearTimers();

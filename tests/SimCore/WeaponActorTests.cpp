@@ -209,9 +209,17 @@ namespace SimCore
             mMunitionsComp = new MunitionsComponent;
             mGM->AddComponent( *mMunitionsComp, dtGame::GameManager::ComponentPriority::NORMAL );
 
+            mGM->ChangeMap("UnitTestMunitionTypesMap");
+
+            //step a few times to ensure the map loaded
+            dtCore::System::GetInstance().Step();
+            dtCore::System::GetInstance().Step();
+            dtCore::System::GetInstance().Step();
+
             // Create the weapon actor
             mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::WEAPON_ACTOR_TYPE, mWeaponProxy);
             mWeapon = dynamic_cast<SimCore::Actors::WeaponActor*>(&mWeaponProxy->GetGameActor());
+
          }
          catch (const dtUtil::Exception& ex)
          {
@@ -238,6 +246,11 @@ namespace SimCore
             mGM->RemoveComponent( *mMunitionsComp );
             mMunitionsComp = NULL;
          }
+
+         mGM->CloseCurrentMap();            
+         dtCore::System::GetInstance().Step();
+         dtCore::System::GetInstance().Step();
+         dtCore::System::GetInstance().Step();
 
          mGM->DeleteAllActors(true);
 
@@ -523,7 +536,7 @@ namespace SimCore
 
          // Ensure the MunitionsComponent has munition definitions loaded
          // so that the WeaponActor can find them when entering the world.
-         mMunitionsComp->LoadMunitionTypeTable( "UnitTestMunitionTypesMap" );
+         //mMunitionsComp->LoadMunitionTypeTable( "UnitTestMunitionTypesMap" );
 
          // Create a tick message used for testing WeaponActor::OnTickLocal
          dtCore::RefPtr<dtGame::TickMessage> tickMsg;
@@ -551,6 +564,9 @@ namespace SimCore
          mGM->AddActor( *mWeaponProxy, false, false );
 
          // --- Obtain the munition type actor
+         
+         mWeapon->LoadMunitionType(mWeapon->GetMunitionTypeName());
+         
          const SimCore::Actors::MunitionTypeActor* munitionType = mWeapon->GetMunitionType();
          CPPUNIT_ASSERT_MESSAGE( "WeaponActor should be able to access the MunitionsComponent for a MunitionTypeActor",
             munitionType != NULL );

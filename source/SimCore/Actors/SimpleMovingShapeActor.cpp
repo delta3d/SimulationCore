@@ -273,7 +273,7 @@ namespace SimCore
                   std::cout << "particle radius: " << mShapeVolume->mParticleRadius << std::endl;
                   std::cout << "density: " << mShapeVolume->mDensity << std::endl << std::endl;
                }
-               else if(numParticles >= (1.5f * mShapeVolume->mNumParticles))
+               else if(numParticles >= (2.0f * mShapeVolume->mNumParticles))
                {
                   //remove and re-create
                   vrc->RemoveShapeVolume(mShapeVolume.get());

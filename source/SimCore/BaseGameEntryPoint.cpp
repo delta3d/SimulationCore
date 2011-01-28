@@ -415,9 +415,6 @@ namespace SimCore
       //WeatherComp->SetUseEphemeris(true);
       weatherComp->UpdateFog();
 
-      // Load the munitions map file to obtain all munition type definitions.
-      munitionsComp->LoadMunitionTypeTable(
-         app.GetConfigPropertyValue(CONFIG_PROP_MUNITION_MAP, "MunitionTypesMap"));
       munitionsComp->SetMunitionConfigFileName(
          app.GetConfigPropertyValue(CONFIG_PROP_MUNITION_CONFIG_FILE, "Configs:MunitionsConfig.xml"));
 

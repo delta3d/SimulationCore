@@ -31,6 +31,7 @@
 #include <SimCore/Actors/LocalEffectActor.h>
 #include <SimCore/Actors/PlayerActor.h>
 #include <SimCore/Actors/DetonationActor.h>
+#include <SimCore/Actors/MultipleDetonationActor.h>
 #include <SimCore/Actors/TerrainActorProxy.h>
 #include <SimCore/Actors/MissileActor.h>
 #include <SimCore/Actors/InteriorActor.h>
@@ -95,6 +96,7 @@ namespace SimCore
                new dtDAL::ActorType("Player Actor", "Player Actor", "This actor represents a player",
                         EntityActorRegistry::STEALTH_ACTOR_TYPE.get()));
       RefPtr<dtDAL::ActorType> EntityActorRegistry::DETONATION_ACTOR_TYPE(new dtDAL::ActorType("Detonation Actor", "Effects", "This actor represents a detonation"));
+      RefPtr<dtDAL::ActorType> EntityActorRegistry::MULTIPLE_DETONATION_ACTOR_TYPE(new dtDAL::ActorType("Multiple Detonation Actor", "Effects", "This actor is used to represent multiple detonations."));
       RefPtr<dtDAL::ActorType> EntityActorRegistry::POSITION_MARKER_ACTOR_TYPE(new dtDAL::ActorType("Position Marker", "Entity", "This represents a position report or a blip."));
       RefPtr<dtDAL::ActorType> EntityActorRegistry::TERRAIN_ACTOR_TYPE(new dtDAL::ActorType("Terrain", "DVTETerrain", "This actor is the terrain used in DVTE."));
       RefPtr<dtDAL::ActorType> EntityActorRegistry::INTERIOR_ACTOR_TYPE(new dtDAL::ActorType("Interior", "Vehicles", "This is an actor for generic vehicle interiors"));
@@ -235,6 +237,7 @@ namespace SimCore
          mActorFactory->RegisterType<StealthActorProxy>(STEALTH_ACTOR_TYPE.get());
          mActorFactory->RegisterType<PlayerActorProxy>(PLAYER_ACTOR_TYPE.get());
          mActorFactory->RegisterType<DetonationActorProxy>(DETONATION_ACTOR_TYPE.get());
+         mActorFactory->RegisterType<MultipleDetonationActorProxy>(MULTIPLE_DETONATION_ACTOR_TYPE.get());
          mActorFactory->RegisterType<PositionMarkerActorProxy>(POSITION_MARKER_ACTOR_TYPE.get());
          mActorFactory->RegisterType<TerrainActorProxy>(TERRAIN_ACTOR_TYPE.get());
          mActorFactory->RegisterType<InteriorActorProxy>(INTERIOR_ACTOR_TYPE.get());

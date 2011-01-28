@@ -330,6 +330,15 @@ namespace SimCore
             mDamageComp->SetMunitionConfigFileName("Configs:UnitTestsConfig.xml");
 
             mGM->AddComponent(*mDamageComp, dtGame::GameManager::ComponentPriority::NORMAL);
+
+            //std::string context = dtUtil::GetDeltaRootPath() + "/examples/data/demoMap";
+            //dtDAL::Project::GetInstance().SetContext(context, true);
+            mGM->ChangeMap("UnitTestMunitionTypesMap");
+
+            //step a few times to ensure the map loaded
+            dtCore::System::GetInstance().Step();
+            dtCore::System::GetInstance().Step();
+            dtCore::System::GetInstance().Step();
          }
          catch (const dtUtil::Exception& ex)
          {
@@ -345,6 +354,12 @@ namespace SimCore
             dtCore::System::GetInstance().Stop();
 
             mDamageComp = NULL;
+
+            mGM->CloseCurrentMap();
+            
+            dtCore::System::GetInstance().Step();
+            dtCore::System::GetInstance().Step();
+            dtCore::System::GetInstance().Step();
 
             mGM->DeleteAllActors(true);
 
@@ -1441,7 +1456,7 @@ namespace SimCore
          SimCore::Actors::DetonationActorProxy *dap = dynamic_cast<SimCore::Actors::DetonationActorProxy*>(proxy.get());
          CPPUNIT_ASSERT_MESSAGE("The 1 actor in the GM should a be a detonation actor, hence the dynamic_cast should not have failed", dap != NULL);
          SimCore::Actors::DetonationActor& detActor = static_cast<SimCore::Actors::DetonationActor&>(dap->GetGameActor());
-         CPPUNIT_ASSERT_EQUAL_MESSAGE("The detonation actor should have 0 lingering shot seconds.",0.0f, detActor.GetLingeringSmokeSecs());
+         CPPUNIT_ASSERT_EQUAL_MESSAGE("The detonation actor should have 0 lingering shot seconds.",0.0f, detActor.GetSmokeLifeTime());
          detActor.GetTransform(xform);
          osg::Vec3 pos;
          xform.GetTranslation(pos);
@@ -1453,7 +1468,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void MunitionsComponentTests::TestDefaultMunition()
       {
-         mDamageComp->LoadMunitionTypeTable("UnitTestMunitionTypesMap");
+         //mDamageComp->LoadMunitionTypeTable("UnitTestMunitionTypesMap");
 
          // Test Default Munition Feature
          // --- Maintain a reference to at least one munition
@@ -1528,7 +1543,7 @@ namespace SimCore
 
          // Create all necessary objects for detonation test runs
          // --- Load all tables needed for the component to map to damage tables.
-         mDamageComp->LoadMunitionTypeTable("UnitTestMunitionTypesMap");
+         //mDamageComp->LoadMunitionTypeTable("UnitTestMunitionTypesMap");
          mDamageComp->LoadMunitionDamageTables("Configs:UnitTestsConfig.xml");
 
          // -- Register the entity

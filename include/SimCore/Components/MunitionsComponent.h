@@ -66,6 +66,7 @@ namespace SimCore
    namespace Actors
    {
       class MunitionEffectsInfoActor;
+      class DetonationActorProxy;
    }
 
    namespace Components
@@ -128,11 +129,6 @@ namespace SimCore
             //        The damage table shares the same name as the entity class
             //        declared within the MunitionsConfig.xml
             bool RemoveMunitionDamageTable( const std::string& entityClassName );
-
-            // This function loads the table that contains all munition type data.
-            // @param mapName The name of the map within the MunitionTypesMap.xml
-            // @return the number of munition types successfully loaded to the table.
-            unsigned int LoadMunitionTypeTable( const std::string& mapName );
 
             MunitionTypeTable* GetMunitionTypeTable() { return mMunitionTypeTable.get(); }
             const MunitionTypeTable* GetMunitionTypeTable() const { return mMunitionTypeTable.get(); }
@@ -238,11 +234,14 @@ namespace SimCore
              */
             DT_DECLARE_ACCESSOR(unsigned, MaximumActiveMunitions);
 
+            void ConvertMunitionInfoActorsToDetonationActors(const std::string& mapName);
+
          protected:
 
             // Destructor
             virtual ~MunitionsComponent();
 
+            void InitMunitionTypeTable();
             void SetMunitionTypeTable( dtCore::RefPtr<MunitionTypeTable>& table ) { mMunitionTypeTable = table.get(); }
 
             virtual DamageHelper* CreateDamageHelper(SimCore::Actors::BaseEntity& entity, 
@@ -250,6 +249,11 @@ namespace SimCore
 
             void OnDetonation(const dtGame::Message& msg);
             void OnShotFired(const dtGame::Message& msg);
+
+            void RunIsectorForFIDCodes(bool hitEntity, const DetonationMessage& message, int fidID);
+            dtCore::RefPtr<SimCore::Actors::DetonationActorProxy> CreateDetonationPrototype(const DetonationMessage& message);
+
+            void ConvertSingleMunitionInfo(SimCore::Actors::MunitionEffectsInfoActorProxy& infoProxy, SimCore::Actors::DetonationActorProxy& detonationProxy);
 
          private:
 
@@ -279,7 +283,7 @@ namespace SimCore
 
             // This isector is used for ground clamping detonation particle effects.
             dtCore::RefPtr<dtCore::BatchIsector> mIsector;
-            float mLastDetonationTime;
+            //float mLastDetonationTime;
 
             // A reference to the player is needed so that the sound from detonations
             // can be offset properly; there is a sound delay for which to account.

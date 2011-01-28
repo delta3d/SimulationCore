@@ -481,7 +481,9 @@ namespace SimCore
 
             if( NULL == table )
             {
-               LOG_ERROR( "WeaponActor could not access the MunitionsComponent's munition type table." );
+               //this is no longer an error because the map is no longer loaded before the other maps
+               //we now log an error if this returns false when we try to lazily get our munitition type
+               //LOG_ERROR( "WeaponActor could not access the MunitionsComponent's munition type table." );
                return false;
             }
 
@@ -578,48 +580,6 @@ namespace SimCore
          return proxy != NULL ? proxy->GetActor() : NULL;
       }
 
-#ifdef AGEIA_PHYSICS
-      //////////////////////////////////////////////////////////////////////////
-      void WeaponActor::ReceiveContactReport( dtAgeiaPhysX::ContactReport& report, dtGame::GameActorProxy* target )
-      {
-         ++mHitCount;
-
-         // TODO: change the normal to the force vector (currently the force
-         //       vector is coming in as 0).
-         const NxVec3& vec = report.nxVec3crContactNormal;
-         mLastVelocity.set( vec[0], vec[1], vec[2] );
-         mLastVelocity *= mFireVelocity; // temporary
-
-         // Get the impact location
-         if( ! report.lsContactPoints.empty() )
-         {
-            const NxVec3& impact = report.lsContactPoints[0];
-            mLastHitLocation.set( impact[0], impact[1], impact[2] );
-         }
-
-         // Get the target ID
-         mLastTargetObject = target != NULL ? &target->GetGameActor() : NULL;
-         std::string targetID( mLastTargetObject.valid() ?
-            mLastTargetObject->GetUniqueId().ToString() : "" );
-
-         // Send a message if a target has changed or the time allows.
-         if( mLastTargetID != targetID )
-         {
-            mTargetChanged = true;
-            mLastTargetID = targetID;
-         }
-
-         // Check type to see if it is grenade - Indirect Fire type
-         if( ( mMunitionType.valid()
-             && (  mMunitionType->GetFamily() == MunitionFamily::FAMILY_GRENADE
-                || mMunitionType->GetFamily() == MunitionFamily::FAMILY_EXPLOSIVE_ROUND) )
-             || ( mUseBulletPhysics && ( mTargetChanged || mDetMessageTime >= mMessageCycleTime ) ) )
-         {
-            SendDetonationMessage( mHitCount, mLastVelocity, mLastHitLocation, mLastTargetObject.get() );
-            mDetMessageTime = 0.0f;
-         }
-      }
-#else
       //////////////////////////////////////////////////////////////////////////
       void WeaponActor::ReceiveContactReport(dtPhysics::CollisionContact& report, dtGame::GameActorProxy* target)
       {
@@ -642,6 +602,16 @@ namespace SimCore
             mLastTargetID = targetID;
          }
 
+         if(!mMunitionType.valid() && !mMunitionTypeName.empty())
+         {
+            // Attempt a reload
+            bool result = LoadMunitionType(mMunitionTypeName);
+            if(!result)
+            {
+               LOG_ERROR( "WeaponActor could not access the MunitionsComponent's munition type table." );
+            }
+         }
+
          // Check type to see if it is grenade - Indirect Fire type
          if( ( mMunitionType.valid()
              && (  mMunitionType->GetFamily() == MunitionFamily::FAMILY_GRENADE
@@ -652,13 +622,23 @@ namespace SimCore
             mDetMessageTime = 0.0f;
          }
       }
-#endif
 
       //////////////////////////////////////////////////////////////////////////
       void WeaponActor::SendFireMessage( unsigned short quantity,
          const osg::Vec3& initialVelocity, const dtCore::Transformable* target )
       {
          //printf("Sending SHOT FIRED\r\n");
+
+         if(!mMunitionType.valid() && !mMunitionTypeName.empty())
+         {
+            // Attempt a reload
+            bool result = LoadMunitionType(mMunitionTypeName);
+            if(!result)
+            {
+               LOG_ERROR( "WeaponActor could not access the MunitionsComponent's munition type table." );
+               return;
+            }
+         }
 
          dtGame::GameManager* gm = GetGameActorProxy().GetGameManager();
 
@@ -705,8 +685,8 @@ namespace SimCore
          // --- TargetObjectIdentifier - for Direct Fire
          if( target != NULL ) { msg->SetAboutActorId( target->GetUniqueId() ); }
 
-         gm->SendMessage( *msg );
-         gm->SendNetworkMessage( *msg );
+         gm->SendMessage(*msg);
+         gm->SendNetworkMessage(*msg);
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -715,11 +695,22 @@ namespace SimCore
       {
          //printf("Sending DETONATION\r\n");
 
+         if(!mMunitionType.valid() && !mMunitionTypeName.empty())
+         {
+            // Attempt a reload
+            bool result = LoadMunitionType(mMunitionTypeName);
+            if(!result)
+            {
+               LOG_ERROR( "WeaponActor could not access the MunitionsComponent's munition type table." );
+               return;
+            }
+         }
+
          dtGame::GameManager* gm = GetGameActorProxy().GetGameManager();
 
          // Prepare a detonation message
          dtCore::RefPtr<SimCore::DetonationMessage> msg;
-         gm->GetMessageFactory().CreateMessage( SimCore::MessageType::DETONATION, msg );
+         gm->GetMessageFactory().CreateMessage(SimCore::MessageType::DETONATION, msg);
 
          // Required Parameters:
          // --- EventIdentifier
