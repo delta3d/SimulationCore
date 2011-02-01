@@ -123,13 +123,12 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////
       void MultipleDetonationActor::OnEnteredWorld()
       {
-         BaseClass::OnEnteredWorld();
-
          CreateRandomOffsets();
          CreateDetonationParticles();
          CreateSmokeParticles();
          CreateDynamicLights();
-
+		
+         BaseClass::OnEnteredWorld();
       }
       
       ///////////////////////////////////////////////////////////////////////
@@ -139,16 +138,17 @@ namespace SimCore
 
          osg::Vec3 down(0.0f, 0.0f, -1.0f);
 
+	     dtCore::Transform trans;
+         GetTransform(trans);
+         osg::Vec3 detonationPos;
+         trans.GetTranslation(detonationPos);
+
          for(int i = 0; i < mNumDetonations; ++i)
          {
-            osg::Vec2 randVec(dtUtil::RandPercent(), dtUtil::RandPercent());
-            osg::Vec2 vHalf(0.5f, 0.5f);
-            osg::Vec2 pos2 = randVec - vHalf;
-            pos2.normalize();
-
-            pos2 *= mDetonationRadius;
+			osg::Vec2 randVec(dtUtil::RandPercent() * mDetonationRadius, dtUtil::RandPercent() * mDetonationRadius);
+            
             //8848m is considered to be the highest point on earth
-            osg::Vec3 pos(pos2[0], pos2[1], 8849.0f);
+            osg::Vec3 pos(detonationPos[0] + randVec[0], detonationPos[1] + randVec[1], 8849.0f);
 
             dtCore::BatchIsector::SingleISector& singleISector = isector->EnableAndGetISector(i);
             singleISector.SetSectorAsRay(pos, down, 20000.0f);
@@ -242,23 +242,21 @@ namespace SimCore
       void MultipleDetonationActor::CreateDetonationParticles()
       {
          if(!GetGroundImpactEffect().IsEmpty())
-         {
-            dtCore::Transform trans;
-            GetTransform(trans);
-            osg::Vec3 pos;
-            trans.GetTranslation(pos);
-
-            for(int i = 0; i < mNumDetonations; ++i)
+         {			 
+			dtCore::Transform trans;
+          
+			for(int i = 0; i < mNumDetonations; ++i)
             {
                dtCore::RefPtr<dtCore::ParticleSystem> particleSys = new dtCore::ParticleSystem();
-               //AddChild(particleSys.get());
-               LoadParticleSystem(GetMultipleImpactEffect(), particleSys);
+               AddChild(particleSys.get());
 
                Components::ParticleInfoAttributeFlags attrs = { true, false };
                RegisterParticleSystem(*particleSys, &attrs);
 
-               trans.SetTranslation(pos + mDetonationOffsets[i]);
+               trans.SetTranslation(mDetonationOffsets[i]);
                particleSys->SetTransform(trans);
+
+               LoadParticleSystem(GetMultipleImpactEffect(), particleSys);
 
                mExplosionArray.push_back(particleSys);
             }
@@ -271,21 +269,19 @@ namespace SimCore
          if(!GetSmokeEffect().IsEmpty())
          {
             dtCore::Transform trans;
-            GetTransform(trans);
-            osg::Vec3 pos;
-            trans.GetTranslation(pos);
 
             for(int i = 0; i < mNumDetonations; ++i)
             {
                dtCore::RefPtr<dtCore::ParticleSystem> particleSys = new dtCore::ParticleSystem();
-               //AddChild(particleSys.get());
-               LoadParticleSystem(GetSmokeEffect(), particleSys);
+               AddChild(particleSys.get());
 
                Components::ParticleInfoAttributeFlags attrs = { true, false };
                RegisterParticleSystem(*particleSys, &attrs);
 
-               trans.SetTranslation(pos + mDetonationOffsets[i]);
+               trans.SetTranslation(mDetonationOffsets[i]);
                particleSys->SetTransform(trans);
+			   
+               LoadParticleSystem(GetSmokeEffect(), particleSys);
 
                mSmokeArray.push_back(particleSys);
             }
