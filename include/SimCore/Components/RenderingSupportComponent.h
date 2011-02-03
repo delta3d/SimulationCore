@@ -87,8 +87,8 @@ namespace SimCore
 
             class SIMCORE_EXPORT LightType: public dtUtil::Enumeration
             {
-            public:
                DECLARE_ENUM(LightType)
+            public:
                static LightType OMNI_DIRECTIONAL;
                static LightType SPOT_LIGHT;
 
@@ -99,7 +99,7 @@ namespace SimCore
             };
 
 
-            struct SIMCORE_EXPORT DynamicLight: public osg::Referenced
+            class SIMCORE_EXPORT DynamicLight: public osg::Referenced
             {
                protected:
                   /*virtual*/ ~DynamicLight(){}
@@ -159,7 +159,7 @@ namespace SimCore
             };
 
             //uses the Warn's spotlight model
-            struct SIMCORE_EXPORT SpotLight: public DynamicLight
+            class SIMCORE_EXPORT SpotLight: public DynamicLight
             {
             protected:
                /*virtual*/ ~SpotLight(){}
