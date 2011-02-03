@@ -31,8 +31,8 @@ namespace SimCore
 {
    class SIMCORE_EXPORT UnitOfLength : public dtUtil::Enumeration
    {
-   public:
       DECLARE_ENUM(UnitOfLength);
+   public:
       static UnitOfLength METER;
       static UnitOfLength YARD;
       static UnitOfLength FOOT;
@@ -59,8 +59,8 @@ namespace SimCore
     */
    class SIMCORE_EXPORT UnitOfAngle : public dtUtil::Enumeration
    {
-   public:
       DECLARE_ENUM(UnitOfAngle);
+   public:
       static UnitOfAngle DEGREE;
       static UnitOfAngle MIL;
       static UnitOfAngle RADIAN;
