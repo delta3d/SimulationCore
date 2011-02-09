@@ -101,6 +101,9 @@ namespace SimCore
          static const dtUtil::RefString PARAM_PROBABILITY;
          static const dtUtil::RefString PARAM_VIABILITY;
 
+         static const dtUtil::RefString CONFIG_MULTIPLIER_PREFIX;
+         static const dtUtil::RefString CONFIG_COLOR_PREFIX;
+
          EnvironmentProcessActorProxy();
 
          DT_DECLARE_ACCESSOR(bool, Active);
@@ -123,10 +126,14 @@ namespace SimCore
          // This takes a ref ptr by reference because it's called from a functor
          virtual void OnRecordChange(const dtCore::RefPtr<dtDAL::NamedGroupParameter>& record);
 
+         virtual void OnStateTypeChange(const dtCore::RefPtr<dtDAL::NamedGroupParameter>& record);
+
          virtual ~EnvironmentProcessActorProxy();
 
          virtual void CreateActor();
          virtual void BuildPropertyMap();
+
+         virtual void OnRemovedFromWorld();
 
       private:
          RecordList mRecords;

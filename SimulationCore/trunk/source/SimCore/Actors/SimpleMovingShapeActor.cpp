@@ -233,6 +233,13 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////
+      float SimpleMovingShapeActorProxy::CalculateVolume() const
+      {
+         // assume an ellipsoid by default.
+         return 4/3 * osg::PI * mDimensions.x() * mDimensions.y() * mDimensions.z();
+      }
+
+      ////////////////////////////////////////////////////////////////////////////
       void SimpleMovingShapeActorProxy::SetCurrentDimensions( const osg::Vec3& dim )
       {
          mDimensions = dim;
