@@ -80,7 +80,7 @@ static inline float NRand(float sigma = 1.0f)
       return -y * sigma * ONE_OVER_SIGMA_EXP;
 }
 
-
+/*
 static osg::Node* CreateQuad( osg::Texture2D* tex, int renderBin )
 {
    osg::Geometry* geo = new osg::Geometry;
@@ -118,7 +118,7 @@ static osg::Node* CreateQuad( osg::Texture2D* tex, int renderBin )
    ss->setMode( GL_DEPTH_TEST, osg::StateAttribute::OVERRIDE | osg::StateAttribute::OFF );
    ss->setRenderBinDetails( renderBin, "RenderBin" );
    return geode;
-}
+}*/
 
 static osg::Texture2D* CreateDepthTexture(int width, int height)
 {

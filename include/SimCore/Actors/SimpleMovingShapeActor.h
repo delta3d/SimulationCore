@@ -78,6 +78,11 @@ namespace SimCore
          DT_DECLARE_ACCESSOR(dtCore::UniqueId, Owner);
          DT_DECLARE_ACCESSOR(int, Index);
 
+         /** @return the volume based on the dimensions an the shape represented.
+          *  defaults to an ellipsoid.
+          */
+         virtual float CalculateVolume() const;
+
          void SetCurrentDimensions(const osg::Vec3& dim);
          const osg::Vec3& GetCurrentDimensions() const;
 

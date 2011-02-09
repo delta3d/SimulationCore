@@ -31,6 +31,9 @@
 #include <dtGame/gamemanager.inl>
 #include <dtDAL/propertymacros.h>
 #include <dtDAL/namedgroupparameter.inl> //needed for Get and Set Value methods.
+#include <dtDAL/namedvectorparameters.h>
+#include <dtUtil/configproperties.h>
+#include <dtUtil/stringutils.h>
 
 #include <dtGame/deadreckoninghelper.h>
 
@@ -57,6 +60,20 @@ namespace SimCore
       const dtUtil::RefString EnvironmentProcessActorProxy::PARAM_CENTROID_HEIGHT("CentroidHeight");
       const dtUtil::RefString EnvironmentProcessActorProxy::PARAM_RADIUS("Radius");
       const dtUtil::RefString EnvironmentProcessActorProxy::PARAM_RADIUS_RATE("RadiusRate");
+
+      const dtUtil::RefString EnvironmentProcessActorProxy::PARAM_AGENT_ENUM("AgentEnum");
+      const dtUtil::RefString EnvironmentProcessActorProxy::PARAM_GEOM_INDEX("GeomIndex");
+      const dtUtil::RefString EnvironmentProcessActorProxy::PARAM_TOTAL_MASS("TotalMass");
+      const dtUtil::RefString EnvironmentProcessActorProxy::PARAM_MIN_SIZE("MinUnitSize");
+      const dtUtil::RefString EnvironmentProcessActorProxy::PARAM_MAX_SIZE("MaxUnitSize");
+      const dtUtil::RefString EnvironmentProcessActorProxy::PARAM_AVG_MASS_PER_UNIT("AverageMassPerUnit");
+      const dtUtil::RefString EnvironmentProcessActorProxy::PARAM_PURITY("Purity");
+      const dtUtil::RefString EnvironmentProcessActorProxy::PARAM_RADIOLOGCIAL_ACTIVITY("RadiologicalActivity");
+      const dtUtil::RefString EnvironmentProcessActorProxy::PARAM_VIABILITY("Viability");
+      const dtUtil::RefString EnvironmentProcessActorProxy::PARAM_PROBABILITY("Probability");
+
+      const dtUtil::RefString EnvironmentProcessActorProxy::CONFIG_MULTIPLIER_PREFIX("SimCore.Actors.EnvironmentProcess.DensityMultiplier.");
+      const dtUtil::RefString EnvironmentProcessActorProxy::CONFIG_COLOR_PREFIX("SimCore.Actors.EnvironmentProcess.Color.");
 
       ////////////////////////////////////////////
       EnvironmentProcessActorProxy::EnvironmentProcessActorProxy()
@@ -106,9 +123,16 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////
-      DT_IMPLEMENT_ACCESSOR(EnvironmentProcessActorProxy, bool, Active);
-      DT_IMPLEMENT_ACCESSOR_GETTER(EnvironmentProcessActorProxy, int, SequenceNumber);
-      DT_IMPLEMENT_ACCESSOR(EnvironmentProcessActorProxy, int, LastUpdateSequenceNumber);
+      void EnvironmentProcessActorProxy::OnRemovedFromWorld()
+      {
+         BaseClass::OnRemovedFromWorld();
+         ClearCreatedActors();
+      }
+
+      ////////////////////////////////////////////
+      DT_IMPLEMENT_ACCESSOR(EnvironmentProcessActorProxy, bool, Active)
+      DT_IMPLEMENT_ACCESSOR_GETTER(EnvironmentProcessActorProxy, int, SequenceNumber)
+      DT_IMPLEMENT_ACCESSOR(EnvironmentProcessActorProxy, int, LastUpdateSequenceNumber)
 
       ////////////////////////////////////////////
       void EnvironmentProcessActorProxy::SetSequenceNumber(int nextValue)
@@ -181,12 +205,84 @@ namespace SimCore
       };
 
       ////////////////////////////////////////////
+      void EnvironmentProcessActorProxy::OnStateTypeChange(const dtCore::RefPtr<dtDAL::NamedGroupParameter>& record)
+      {
+         //unsigned index = record->GetValue(PARAM_INDEX, 0U);
+         unsigned typeCode = record->GetValue(PARAM_TYPE_CODE, 0U);
+
+         unsigned recordIndex = record->GetValue(PARAM_GEOM_INDEX, unsigned(UINT_MAX));
+
+         RemoveIndexFunc riFunc(recordIndex);
+         CreatedActorList::iterator found = std::find_if(mCreatedActorsBuffer2.begin(), mCreatedActorsBuffer2.end(), riFunc);
+         if (found != mCreatedActorsBuffer2.end())
+         {
+            SimpleMovingShapeActorProxy& actor = **found;
+
+            float milligrams = record->GetValue(PARAM_TOTAL_MASS, float(1.0f));
+
+            float volume = actor.CalculateVolume();
+
+            float density = milligrams / volume;
+            float multiplier = 1.0f;
+
+            std::string multiplierConfig;
+            multiplierConfig.reserve(CONFIG_MULTIPLIER_PREFIX->length() + 12);
+            multiplierConfig = CONFIG_MULTIPLIER_PREFIX;
+
+            std::string colorConfig;
+            multiplierConfig.reserve(CONFIG_COLOR_PREFIX->length() + 12);
+            multiplierConfig = CONFIG_COLOR_PREFIX;
+
+            if (typeCode == BiologicalStateType)
+            {
+               multiplierConfig += "Biological";
+               colorConfig += "Biological";
+            }
+            else if (typeCode == ChemLiquidStateType)
+            {
+               multiplierConfig += "ChemLiquid";
+               colorConfig += "ChemLiquid";
+            }
+            else if (typeCode == RadiologicalStateType)
+            {
+               multiplierConfig += "Radiological";
+               colorConfig += "Radiological";
+            }
+            else if (typeCode == ChemVaporStateType)
+            {
+               multiplierConfig += "ChemVapor";
+               colorConfig += "ChemVapor";
+            }
+
+            multiplier = dtUtil::ToType<float>(GetGameManager()->GetConfiguration().GetConfigPropertyValue(multiplierConfig, "1.0"));
+
+
+            dtCore::RefPtr<dtDAL::NamedVec3Parameter> colorParam = new dtDAL::NamedVec3Parameter("color");
+            colorParam->FromString(GetGameManager()->GetConfiguration().GetConfigPropertyValue(colorConfig, ""));
+
+            density *= multiplier;
+
+            // TODO set the density.
+            //actor.SetTheDensity(desity);
+            // TODO set the color.
+            //actor.SetTheColor(colorParam.GetValue());
+         }
+         else
+         {
+            dtUtil::Log::GetInstance().LogMessage(dtUtil::Log::LOG_ERROR, __FUNCTION__, __LINE__, "Couldn't find matching Simple Moving Shape. %u", recordIndex);
+         }
+      }
+
+      ////////////////////////////////////////////
       void EnvironmentProcessActorProxy::OnRecordChange(const dtCore::RefPtr<dtDAL::NamedGroupParameter>& record)
       {
          unsigned index = record->GetValue(PARAM_INDEX, 0U);
          unsigned typeCode = record->GetValue(PARAM_TYPE_CODE, 0U);
 
-         if (typeCode == GaussianPuffRecordType || typeCode == GaussianPuffRecordEXType)
+         switch (EnvironmentRecordTypeCode(typeCode))
+         {
+         case GaussianPuffRecordType:
+         case GaussianPuffRecordEXType:
          {
             const osg::Vec3d defaultLoc;
             const osg::Vec3 defaultVec3;
@@ -202,8 +298,10 @@ namespace SimCore
                if (found != mCreatedActors.end())
                {
                   puff = *found;
-                  mCreatedActors.erase(found);
+                  // erase it because it got updated.  The actors still in this buffer
+                  // after the update has been processed will be deleted.
                   mCreatedActorsBuffer2.push_back(puff);
+                  mCreatedActors.erase(found, mCreatedActors.end());
                }
             }
 
@@ -213,10 +311,11 @@ namespace SimCore
                puff->SetOwner(GetId());
                puff->SetIndex(index);
                GetGameManager()->AddActor(*puff, IsRemote(), false);
+               mCreatedActorsBuffer2.push_back(puff);
             }
 
             dtGame::DeadReckoningHelper* drAC = NULL;
-            puff->GetGameActor().GetComponent(drAC);
+            puff->GetComponent(drAC);
 
             osg::Vec3d tempVec3d;
             osg::Vec3 tempVec3;
@@ -241,7 +340,19 @@ namespace SimCore
 
             //record->GetValue(PARAM_CENTROID_HEIGHT, 0.0f);
          }
+         break;
+         case BiologicalStateType:
+         case ChemLiquidStateType:
+         case RadiologicalStateType:
+         case ChemVaporStateType:
+         {
+            OnStateTypeChange(record);
+         }
+         break;
 
+         default:
+            break;
+         }
       }
 
       ////////////////////////////////////////////
