@@ -479,6 +479,7 @@ namespace SimCore
          return result;
       }
 
+      ////////////////////////////////////////////////////////////////
       DT_IMPLEMENT_ACCESSOR(TrailerHitchActComp, float, RotationMaxYaw);
 
       DT_IMPLEMENT_ACCESSOR(TrailerHitchActComp, float, RotationMaxCone);
@@ -491,6 +492,7 @@ namespace SimCore
 
       DT_IMPLEMENT_ACCESSOR_GETTER(TrailerHitchActComp, dtCore::UniqueId, TrailerActorId);
 
+      ////////////////////////////////////////////////////////////////
       void TrailerHitchActComp::SetTrailerActorId(const dtCore::UniqueId& id)
       {
          bool wasAttached = mTrailerActor != NULL;
@@ -505,6 +507,7 @@ namespace SimCore
          }
       }
 
+      ////////////////////////////////////////////////////////////////
       osg::Vec3 TrailerHitchActComp::GetCurrentHitchRotHPR() const
       {
          osg::Vec3 result(mCurrentHitchRotHPR);
@@ -531,6 +534,7 @@ namespace SimCore
          return result;
       }
 
+      ////////////////////////////////////////////////////////////////
       void TrailerHitchActComp::SetCurrentHitchRotHPR(const osg::Vec3& hpr)
       {
          mCurrentHitchRotHPR = hpr;
@@ -540,10 +544,12 @@ namespace SimCore
          }
       }
 
+      ////////////////////////////////////////////////////////////////
       DT_IMPLEMENT_ACCESSOR(TrailerHitchActComp, bool, CascadeDeletes);
 
       DT_IMPLEMENT_ACCESSOR_GETTER(TrailerHitchActComp, bool, UseCurrentHitchRotToMoveTrailerWhenRemote);
 
+      ////////////////////////////////////////////////////////////////
       void TrailerHitchActComp::SetUseCurrentHitchRotToMoveTrailerWhenRemote(bool moveTrailerWhenRemote)
       {
          mUseCurrentHitchRotToMoveTrailerWhenRemote = moveTrailerWhenRemote;

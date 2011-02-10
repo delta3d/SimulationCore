@@ -704,7 +704,7 @@ namespace SimCore
          //   mLastDetonationTime = simTime;
          //}
 
-         const std::string& munitionName = message.GetMunitionType();
+         //const std::string& munitionName = message.GetMunitionType();
 
          // Figure out if we hit an entity or if we hit the ground!
          bool hitEntity = ! message.GetAboutActorId().ToString().empty();
