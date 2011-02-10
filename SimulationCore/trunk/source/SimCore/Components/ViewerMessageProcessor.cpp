@@ -84,19 +84,19 @@ namespace SimCore
             dtGame::GameManager& gameManager = *GetGameManager();
             std::vector<dtDAL::ActorProxy*> actors;
 
-            const dtGame::MapMessage& mlm = static_cast<const dtGame::MapMessage&>(msg);
-            dtGame::GameManager::NameVector mapNames;
-            mlm.GetMapNames(mapNames);
-
             //dtAnim::AnimationComponent* animComp = NULL;
             //gameManager.GetComponentByName(dtAnim::AnimationComponent::DEFAULT_NAME, animComp);
 
             // SET THE TERRAIN
-            dtDAL::ActorProxy* terrainProxy = NULL;
-            gameManager.FindActorByName("Terrain", terrainProxy);
-            if (!HandleTerrainActor(terrainProxy))
+            dtDAL::BaseActorObject* terrainAO = NULL;
+            gameManager.FindActorByName("Terrain", terrainAO);
+            if (!HandleTerrainActor(terrainAO))
             {
-               LOG_WARNING("No terrain actor was found in the map: " + mapNames[0]);
+               const dtGame::MapMessage& mlm = static_cast<const dtGame::MapMessage&>(msg);
+               dtGame::GameManager::NameVector mapNames;
+               mlm.GetMapNames(mapNames);
+
+               LOGN_DEBUG("ViewerMessageProcessor.cpp", "No terrain actor was found in the map: " + mapNames[0]);
             }
 
             // SET THE WATER
@@ -107,16 +107,21 @@ namespace SimCore
             HandleWaterActor(waterProxy);
          }
 
-         // Sometimes, the terrain comes after the map is loaded
+         // Sometimes, the terrain or water come after the map is loaded
          else if (msg.GetMessageType() == dtGame::MessageType::INFO_ACTOR_CREATED || 
             msg.GetMessageType() == dtGame::MessageType::INFO_ACTOR_UPDATED)
          {
+
+            const dtGame::ActorUpdateMessage& updateMessage = static_cast<const dtGame::ActorUpdateMessage&> (msg);
             // SET THE TERRAIN
-            const dtGame::ActorUpdateMessage &updateMessage = static_cast<const dtGame::ActorUpdateMessage&> (msg);
-            dtDAL::ActorProxy* terrainProxy = GetGameManager()->FindActorById(updateMessage.GetAboutActorId());
-            if (terrainProxy != NULL && terrainProxy->GetName() == "Terrain")
+            dtDAL::BaseActorObject* terrainAO = GetGameManager()->FindActorById(msg.GetAboutActorId());
+            if (terrainAO != NULL && terrainAO->GetName() == "Terrain")
             {
-               HandleTerrainActor(terrainProxy);
+               HandleTerrainActor(terrainAO);
+            }
+            else if (updateMessage.GetActorType() ==  SimCore::Actors::EntityActorRegistry::BASE_WATER_ACTOR_TYPE)
+            {
+               HandleWaterActor(static_cast<SimCore::Actors::BaseWaterActorProxy*>(terrainAO));
             }
          }
 
