@@ -24,10 +24,10 @@ C:\Curtiss\Projects\Delta3D\SimulationCore\demos\NetDemo (as appropriate)
     <Properties>
       <!-- Delta3D Settings -->
       <Property Name="DeveloperMode">true</Property>
-      <Property Name="GameManager.Statistics.Interval">0</Property>
-      <Property Name="GameManager.Statistics.ToConsole">false</Property>
+      <Property Name="GameManager.Statistics.Interval">10</Property>
+      <Property Name="GameManager.Statistics.ToConsole">true</Property>
       <Property Name="AspectRatio">1.6</Property>
-      <Property Name="System.SimFrameRate">60</Property>
+      <Property Name="System.SimFrameRate">30</Property>
       <Property Name="System.MaxTimeBetweenDraws">0.2</Property>
       <Property Name="System.UseFixedTimeStep">true</Property>
       <Property Name="UseGPUCharacterSkinning">true</Property>
@@ -66,7 +66,8 @@ C:\Curtiss\Projects\Delta3D\SimulationCore\demos\NetDemo (as appropriate)
       <Property Name="NetDemo.DefaultPlayMode">FOUR_WHEEL</Property><!--FOUR_WHEEL  HOVER -->
       <Property Name="NetDemo.DefaultHoverVehiclePrototype">Hover Vehicle</Property>
       <!--Property Name="NetDemo.DefaultWheeledVehiclePrototype">HMMWV</Property--> 
-      <Property Name="NetDemo.DefaultWheeledVehiclePrototype">Propelled Vehicle</Property> 
+      <Property Name="NetDemo.DefaultWheeledVehiclePrototype">Truck</Property> 
+      <Property Name="NetDemo.DefaultWheeledVehicleTrailerPrototype">Trailer</Property> 
       <Property Name="HasBinocs">true</Property>
       <Property Name="HasCompass">true</Property>
       <Property Name="HasGPS">true</Property>

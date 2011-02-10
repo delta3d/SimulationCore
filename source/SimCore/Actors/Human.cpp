@@ -44,6 +44,7 @@
 #include <dtDAL/functor.h>
 #include <dtDAL/enginepropertytypes.h>
 #include <dtDAL/datatype.h>
+#include <dtDAL/project.h>
 
 #include <dtUtil/mathdefines.h>
 #include <dtUtil/log.h>
@@ -386,9 +387,10 @@ namespace SimCore
 
          static const dtUtil::RefString PROPERTY_SKELETAL_MESH_DESC
             ("The skeletal mesh file that defines the human's look and animation set.");
-         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::SKELETAL_MESH,
+         AddProperty(new dtDAL::ResourceActorProperty(dtDAL::DataType::SKELETAL_MESH,
                PROPERTY_SKELETAL_MESH, PROPERTY_SKELETAL_MESH,
-               dtDAL::ResourceActorProperty::SetFuncType(&human, &Human::SetSkeletalMeshFile),
+               dtDAL::ResourceActorProperty::SetDescFuncType(&human, &Human::SetSkeletalMesh),
+               dtDAL::ResourceActorProperty::GetDescFuncType(&human, &Human::GetSkeletalMesh),
                PROPERTY_SKELETAL_MESH_DESC, HUMAN_GROUP));
 
          static const dtUtil::RefString PROPERTY_STANCE_DESC
@@ -518,12 +520,58 @@ namespace SimCore
          mPlannerHelper.SetCurrentState(initialState);
       }
 
-      ////////////////////////////////////////////////////////////////////////////
-      void Human::SetSkeletalMeshFile(const std::string& fileName)
+      void Human::SkeletalMeshLoadCallback()
       {
-         if (mSkeletalMeshFileName != fileName)
+         osg::MatrixTransform& transform = GetScaleMatrixTransform();
+         mModelNode = dtAnim::Cal3DDatabase::GetInstance().GetNodeBuilder().CreateNode(mAnimationHelper->GetModelWrapper());
+         transform.addChild(mModelNode.get());
+
+         //setup speed blends
+         WalkRunBlend* walkRunReady = new WalkRunBlend(*this);
+         WalkRunBlend* walkRunDeployed = new WalkRunBlend(*this);
+         walkRunReady->SetName(AnimationOperators::ANIM_WALK_READY);
+         walkRunDeployed->SetName(AnimationOperators::ANIM_WALK_DEPLOYED);
+
+         dtAnim::SequenceMixer& seqMixer = mAnimationHelper->GetSequenceMixer();
+
+         const dtAnim::Animatable* walkReady = seqMixer.GetRegisteredAnimation("Walk Ready");
+         const dtAnim::Animatable* runReady = seqMixer.GetRegisteredAnimation("Run Ready");
+         if(walkReady && runReady)
          {
-            mSkeletalMeshFileName = fileName;
+            walkRunReady->SetAnimations(walkReady->Clone(mAnimationHelper->GetModelWrapper()).get(), runReady->Clone(mAnimationHelper->GetModelWrapper()).get());
+         }
+         else
+         {
+            LOG_ERROR("Cannot load animations 'Walk Ready' and 'Run Ready' necessary for speed blend.")
+         }
+
+         const dtAnim::Animatable* walkDeployed = seqMixer.GetRegisteredAnimation("Walk Deployed");
+         const dtAnim::Animatable* runDeployed = seqMixer.GetRegisteredAnimation("Run Deployed");
+         if(walkDeployed && runDeployed)
+         {
+            walkRunDeployed->SetAnimations(walkDeployed->Clone(mAnimationHelper->GetModelWrapper()).get(), runDeployed->Clone(mAnimationHelper->GetModelWrapper()).get());
+         }
+         else
+         {
+            LOG_ERROR("Cannot load animations 'Walk Deployed' and 'Run Deployed' necessary for speed blend.")
+         }
+
+         mAnimationHelper->GetSequenceMixer().RegisterAnimation(walkRunReady);
+         mAnimationHelper->GetSequenceMixer().RegisterAnimation(walkRunDeployed);
+
+         //initialize helper
+         SetupPlannerHelper();
+         UpdatePlanAndAnimations();
+         UpdateWeapon();
+         LoadNodeCollector();
+      }
+
+      ////////////////////////////////////////////////////////////////////////////
+      void Human::SetSkeletalMesh(const dtDAL::ResourceDescriptor& rd)
+      {
+         if (mSkeletalMeshResource != rd)
+         {
+            mSkeletalMeshResource = rd;
 
             osg::MatrixTransform& transform = GetScaleMatrixTransform();
             transform.removeChildren(0, transform.getNumChildren());
@@ -532,62 +580,61 @@ namespace SimCore
             // remove any cached node collectors.
             SetNodeCollector(NULL);
 
-            if (!fileName.empty() && mAnimationHelper->LoadModel(fileName))
+            if (!rd.IsEmpty())
             {
-               mModelNode = dtAnim::Cal3DDatabase::GetInstance().GetNodeBuilder().CreateNode(mAnimationHelper->GetModelWrapper());
-               transform.addChild(mModelNode.get());
-
-               //setup speed blends
-               WalkRunBlend* walkRunReady = new WalkRunBlend(*this);
-               WalkRunBlend* walkRunDeployed = new WalkRunBlend(*this);
-               walkRunReady->SetName(AnimationOperators::ANIM_WALK_READY);
-               walkRunDeployed->SetName(AnimationOperators::ANIM_WALK_DEPLOYED);
-
-               dtAnim::SequenceMixer& seqMixer = mAnimationHelper->GetSequenceMixer();
-
-               const dtAnim::Animatable* walkReady = seqMixer.GetRegisteredAnimation("Walk Ready");
-               const dtAnim::Animatable* runReady = seqMixer.GetRegisteredAnimation("Run Ready");
-               if(walkReady && runReady)
+               try
                {
-                  walkRunReady->SetAnimations(walkReady->Clone(mAnimationHelper->GetModelWrapper()).get(), runReady->Clone(mAnimationHelper->GetModelWrapper()).get());
+                  const std::string fileName = dtDAL::Project::GetInstance().GetResourcePath(rd);
+                  if (GetGameActorProxy().IsInSTAGE())
+                  {
+                     if (mAnimationHelper->LoadModel(fileName))
+                     {
+                        SkeletalMeshLoadCallback();
+                     }
+                  }
+                  else if (GetGameActorProxy().IsInGM())
+                  {
+                     mAnimationHelper->LoadModelAsynchronously(fileName,
+                           dtAnim::AnimationHelper::AsynchLoadCompletionCallback(this, &Human::SkeletalMeshLoadCallback));
+                  }
                }
-               else
+               catch (const dtUtil::Exception& ex)
                {
-                  LOG_ERROR("Cannot load animations 'Walk Ready' and 'Run Ready' necessary for speed blend.")
+                  LOG_ERROR(ex.ToString());
+                  mSkeletalMeshResource = dtDAL::ResourceDescriptor::NULL_RESOURCE;
                }
-
-               const dtAnim::Animatable* walkDeployed = seqMixer.GetRegisteredAnimation("Walk Deployed");
-               const dtAnim::Animatable* runDeployed = seqMixer.GetRegisteredAnimation("Run Deployed");
-               if(walkDeployed && runDeployed)
-               {
-                  walkRunDeployed->SetAnimations(walkDeployed->Clone(mAnimationHelper->GetModelWrapper()).get(), runDeployed->Clone(mAnimationHelper->GetModelWrapper()).get());
-               }
-               else
-               {
-                  LOG_ERROR("Cannot load animations 'Walk Deployed' and 'Run Deployed' necessary for speed blend.")
-               }
-
-               mAnimationHelper->GetSequenceMixer().RegisterAnimation(walkRunReady);
-               mAnimationHelper->GetSequenceMixer().RegisterAnimation(walkRunDeployed);
-
-               //initialize helper
-               SetupPlannerHelper();
-               UpdatePlanAndAnimations();
-               UpdateWeapon();
-               LoadNodeCollector();
             }
+
          }
       }
 
       ////////////////////////////////////////////////////////////////////////////
-      const std::string& Human::GetSkeletalMeshFile()
+      const dtDAL::ResourceDescriptor& Human::GetSkeletalMesh()
       {
-         return mSkeletalMeshFileName;
+         return mSkeletalMeshResource;
       }
 
       ////////////////////////////////////////////////////////////////////////////
       void Human::OnEnteredWorld()
       {
+         if (!mSkeletalMeshResource.IsEmpty())
+         {
+            try
+            {
+               const std::string fileName = dtDAL::Project::GetInstance().GetResourcePath(GetSkeletalMesh());
+               if (!fileName.empty())
+               {
+                  mAnimationHelper->LoadModelAsynchronously(fileName, dtAnim::AnimationHelper::AsynchLoadCompletionCallback(this, &Human::SkeletalMeshLoadCallback));
+               }
+            }
+            catch (const dtUtil::Exception& ex)
+            {
+               LOG_ERROR(ex.ToString());
+               mSkeletalMeshResource = dtDAL::ResourceDescriptor::NULL_RESOURCE;
+            }
+
+         }
+
          BaseClass::OnEnteredWorld();
 
          //No burning or smoking people.
@@ -596,7 +643,7 @@ namespace SimCore
 
          SetupPlannerHelper();
 
-         if (!GetSkeletalMeshFile().empty())
+         if (!GetSkeletalMesh().IsEmpty())
          {
             UpdatePlanAndAnimations();
          }
@@ -699,7 +746,9 @@ namespace SimCore
       {
          /// No weapon mesh was set.
          if (GetWeaponMeshName().empty())
+         {
             return;
+         }
 
          dtAnim::Cal3DModelWrapper* wrapper = mAnimationHelper->GetModelWrapper();
 
@@ -896,7 +945,7 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////
       void Human::CheckAndUpdateAnimationState()
       {
-         if (!IsDesiredState(mPlannerHelper.GetCurrentState()) && !GetSkeletalMeshFile().empty())
+         if (!IsDesiredState(mPlannerHelper.GetCurrentState()) && !GetSkeletalMesh().IsEmpty())
          {
             if (mLogger.IsLevelEnabled(dtUtil::Log::LOG_DEBUG))
             {
