@@ -38,6 +38,7 @@
 
 #include <dtCore/refptr.h>
 #include <dtAnim/animationhelper.h>
+#include <dtDAL/resourcedescriptor.h>
 
 namespace dtUtil
 {
@@ -220,9 +221,9 @@ namespace SimCore
             Human(dtGame::GameActorProxy& proxy);
 
             /// Changes the file name used for the skeletal mesh
-            void SetSkeletalMeshFile(const std::string& fileName);
+            void SetSkeletalMesh(const dtDAL::ResourceDescriptor& fileName);
             /// @return the file name used for the skeletal mesh
-            const std::string& GetSkeletalMeshFile();
+            const dtDAL::ResourceDescriptor& GetSkeletalMesh();
 
             /// Changes the human's stance
             void SetStance(HumanActorProxy::StanceEnum& stance);
@@ -286,11 +287,15 @@ namespace SimCore
             void UpdateWeapon();
             bool GetContainsWeaponName(const std::vector<std::string>& vec, const std::string& meshName) const;
 
+            // Callback after the skeletal mesh loads, async or not.
+            virtual void SkeletalMeshLoadCallback();
+            virtual void SkeletalMeshUnloadCallback() {}
+
          private:
             /// Apply the effects of the operator, and get the animatable, if any, associated with it.
             const dtAnim::Animatable* ApplyOperatorAndGetAnimatable(const dtAI::Operator& op);
 
-            std::string mSkeletalMeshFileName;
+            dtDAL::ResourceDescriptor mSkeletalMeshResource;
             std::string mIdleAnimatableName;
             std::string mRunWalkAnimatableName;
             std::string mWeaponMeshName;
