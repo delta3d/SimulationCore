@@ -852,7 +852,7 @@ namespace SimCore
          if (IsRemote())
          {
             dtUtil::NodeCollector* nodeCollector = GetNodeCollector();
-            if(nodeCollector != NULL && !nodeCollector->GetTransformNodeMap().empty())
+            if (nodeCollector != NULL && !nodeCollector->GetTransformNodeMap().empty())
             {
                GetComponent<dtGame::DeadReckoningHelper>()->SetNodeCollector(*nodeCollector);
             }
@@ -862,15 +862,15 @@ namespace SimCore
             GetComponent<dtGame::DeadReckoningHelper>()->SetUpdateMode(dtGame::DeadReckoningHelper::UpdateMode::CALCULATE_ONLY);
          }
 
-         //RegisterWithDeadReckoningComponent(); // moved to base class.
-
          //// Curt - bump mapping
-         dtCore::ShaderProgram *defaultShader = dtCore::ShaderManager::GetInstance().
+         dtCore::ShaderProgram* defaultShader = dtCore::ShaderManager::GetInstance().
             GetShaderInstanceForNode(GetOSGNode());
-         dtCore::ShaderParamFloat *useBumpmappingParam = NULL;
+         dtCore::ShaderParamFloat* useBumpmappingParam = NULL;
          if (defaultShader != NULL)
-            useBumpmappingParam = dynamic_cast<dtCore::ShaderParamFloat *>
+         {
+            useBumpmappingParam = dynamic_cast<dtCore::ShaderParamFloat*>
                (defaultShader->FindParameter("useBumpMap"));
+         }
 
          // if bump mapping is turned on, generate the tangents to be passed to the shader
          if (useBumpmappingParam != NULL && useBumpmappingParam->GetValue() == 1.0f)
@@ -883,7 +883,9 @@ namespace SimCore
          }
 
          if(!mSFXSoundIdleEffect.empty() && GetGameActorProxy().IsInGM())
+         {
             LoadSFXEngineIdleLoop();
+         }
 
          // Once it is added to the GM, it needs to actually create the headlight light, so we have to reset it.
          if (IsHeadLightsEnabled())
@@ -897,7 +899,9 @@ namespace SimCore
       {
          mSFXSoundIdleEffect = soundFX;
          if(!mSFXSoundIdleEffect.empty() && GetGameActorProxy().IsInGM())
+         {
             LoadSFXEngineIdleLoop();
+         }
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
