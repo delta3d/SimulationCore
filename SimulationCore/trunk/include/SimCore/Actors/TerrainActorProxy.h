@@ -31,18 +31,51 @@
 
 #include <SimCore/TerrainPhysicsMode.h>
 
+#include <dtUtil/threadpool.h>
+
+// Sadly, this includes a lot, but it's needed for the options on the LoadNodeTask
+#include <osgDB/ReaderWriter>
+
 #if AGEIA_PHYSICS
 #include <NxAgeiaPrimitivePhysicsHelper.h>
 #endif
+
+namespace dtGame
+{
+   class TimerElapsedMessage;
+}
 
 namespace SimCore
 {
    namespace Actors
    {
+      class SIMCORE_EXPORT LoadNodeTask : public dtUtil::ThreadPoolTask
+      {
+      public:
+         LoadNodeTask();
+
+         virtual void operator()();
+
+         osg::Node* GetLoadedNode();
+         const osg::Node* GetLoadedNode() const;
+
+         /// Check to see if the loading is complete.  If it returns true, call WaitUntilComplete() to make sure.
+         bool IsComplete() const;
+
+         virtual void ResetData();
+
+         DT_DECLARE_ACCESSOR(bool, UseFileCaching);
+         DT_DECLARE_ACCESSOR(std::string, FileToLoad);
+         DT_DECLARE_ACCESSOR(dtCore::RefPtr<osgDB::ReaderWriter::Options>, LoadOptions);
+
+      protected:
+         virtual ~LoadNodeTask();
+      private:
+         dtCore::RefPtr<osg::Node> mLoadedNode;
+         volatile bool mComplete;
+      };
+
       class SIMCORE_EXPORT TerrainActor : public IGActor
-#if AGEIA_PHYSICS
-         , public dtAgeiaPhysX::NxAgeiaPhysicsInterface
-#endif
       {
          public:
 
@@ -105,6 +138,20 @@ namespace SimCore
             dtPhysics::PhysicsActComp& GetHelper() { return *mHelper; }
             const dtPhysics::PhysicsActComp& GetHelper() const { return *mHelper; }
 
+            /**
+             * Override this to do something after the terrain loads.
+             * To override, Call the base class and check the base return
+             * value to see if you should do any post load behavior.
+             * The caller uses the return value, so be sure to propagate it.
+             * Keep in mind that the loading process could be complete, but
+             * the terrain node will be null because the loading failed.
+             * @return true if the terrain loading completed.
+             */
+            virtual bool CheckForTerrainLoaded();
+
+            /// This is called if CheckForTerrainLoaded returns true.
+            virtual void SetupTerrainPhysics();
+
          protected:
 
             /// Destructor
@@ -122,6 +169,9 @@ namespace SimCore
 
             TerrainPhysicsMode* mTerrainPhysicsMode;
             dtCore::RefPtr<osg::Node> mTerrainNode;
+
+            dtCore::RefPtr<LoadNodeTask> mLoadNodeTask;
+
             std::string mLoadedFile, mCollisionResourceString, mPhysicsDirectory;
             //This doesn't load the file unless it's in a scene, so this flag tells it to load
             bool mNeedToLoad;
@@ -147,6 +197,9 @@ namespace SimCore
             /// overridden to initialize the physics.
             virtual void BuildActorComponents();
 
+            /// overridden to setup the timer invokable.
+            virtual void BuildInvokables();
+
             /// Creates the actor we are encapsulating
             virtual void CreateActor() { SetActor(*new TerrainActor(*this)); }
 
@@ -165,6 +218,8 @@ namespace SimCore
             {
                return dtDAL::BaseActorObject::RenderMode::DRAW_ACTOR_AND_BILLBOARD_ICON;
             }
+
+            void HandleNodeLoaded(const dtGame::TimerElapsedMessage& timerElapsed);
 
          protected:
 
