@@ -545,13 +545,6 @@ namespace SimCore
       dtCore::RefPtr<dtDAL::ActorProperty> BasePhysicsVehicleActorProxy::GetDeprecatedProperty(const std::string& name)
       {
          dtCore::RefPtr<dtDAL::ActorProperty> depProp = BaseClass::GetDeprecatedProperty(name);
-
-         if (!depProp.valid())
-         {
-            BasePhysicsVehicleActor* actor = NULL;
-            GetActor(actor);
-            depProp = actor->GetPhysicsActComp()->GetDeprecatedProperty(name);
-         }
          return depProp;
       }
 
