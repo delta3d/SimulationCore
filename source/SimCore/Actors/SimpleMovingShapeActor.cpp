@@ -28,7 +28,12 @@
 #include <dtGame/deadreckoninghelper.h>
 #include <dtDAL/propertymacros.h>
 #include <dtUtil/mathdefines.h>
+#include <dtGame/messagetype.h>
+#include <dtGame/messagefactory.h>
+
 #include <iostream>
+
+
 namespace SimCore
 {
 
@@ -140,6 +145,8 @@ namespace SimCore
       : mOwner("")
       , mIndex(0)
       , mIsCreated(false)
+      , mDensityMultiplier(1.0f)
+      , mShapeColor(1.0f, 1.0f, 1.0f)
       {
          SetClassName("SimCore::Actors::SimpleMovingShapeActorProxy");
          SetHideDTCorePhysicsProps(true);
@@ -174,6 +181,13 @@ namespace SimCore
       void SimpleMovingShapeActorProxy::OnEnteredWorld()
       {
          mShapeVolume = new SimCore::Components::VolumeRenderingComponent::ShapeVolumeRecord();
+
+         //notify the logger component to ignore this actor
+         dtCore::RefPtr<dtGame::Message> message = GetGameManager()->GetMessageFactory().CreateMessage(dtGame::MessageType::LOG_REQ_ADD_IGNORED_ACTOR);
+         message->SetAboutActorId(GetId());
+
+         GetGameManager()->SendMessage(*message);
+         GetGameManager()->SendNetworkMessage(*message);
       }
 
       ////////////////////////////////////////////////////////////////////////////
@@ -259,14 +273,15 @@ namespace SimCore
                   mIsCreated = true;
 
                   mShapeVolume->mPosition.set(0.0f, 0.0f, 0.0f);
-                  mShapeVolume->mColor.set(1.0f, 1.0f, 1.0f, 0.5f);
+                  //std::cout << "Color " << mShapeColor[0] << ", " << mShapeColor[1] << ", " << mShapeColor[2] << std::endl;
+                  mShapeVolume->mColor.set(mShapeColor[0], mShapeColor[1], mShapeColor[2], 0.5f);
                   mShapeVolume->mShapeType = SimCore::Components::VolumeRenderingComponent::ELLIPSOID;
                   mShapeVolume->mRadius = mDimensions;
                   mShapeVolume->mNumParticles = numParticles;
                   mShapeVolume->mParticleRadius = 2.0f;
                   mShapeVolume->mVelocity = 0.05f;
                   //if there are fewer particles they should be more dense
-                  mShapeVolume->mDensity = 0.005f + ((150 - mShapeVolume->mNumParticles) * 0.001f);
+                  mShapeVolume->mDensity = ComputeDensity();
                   mShapeVolume->mTarget = GetGameActor().GetOSGNode();
                   mShapeVolume->mAutoDeleteOnTargetNull = true;
                   mShapeVolume->mRenderMode = SimCore::Components::VolumeRenderingComponent::PARTICLE_VOLUME;
@@ -274,11 +289,11 @@ namespace SimCore
                   vrc->CreateShapeVolume(mShapeVolume);
                   vrc->ComputeParticleRadius(*mShapeVolume);
 
-                  std::cout << std::endl << "Creating new plume:" << std::endl;
-                  std::cout << "radius: " << mShapeVolume->mRadius << std::endl;
-                  std::cout << "num particles: " << mShapeVolume->mNumParticles << std::endl;
-                  std::cout << "particle radius: " << mShapeVolume->mParticleRadius << std::endl;
-                  std::cout << "density: " << mShapeVolume->mDensity << std::endl << std::endl;
+                  //std::cout << std::endl << "Creating new plume:" << std::endl;
+                  //std::cout << "radius: " << mShapeVolume->mRadius << std::endl;
+                  //std::cout << "num particles: " << mShapeVolume->mNumParticles << std::endl;
+                  //std::cout << "particle radius: " << mShapeVolume->mParticleRadius << std::endl;
+                  //std::cout << "density: " << mShapeVolume->mDensity << std::endl << std::endl;
                }
                else if(numParticles >= (2.0f * mShapeVolume->mNumParticles))
                {
@@ -287,7 +302,7 @@ namespace SimCore
 
                   mShapeVolume->mRadius = mDimensions;
                   mShapeVolume->mNumParticles = numParticles;
-                  mShapeVolume->mDensity = 0.005f + ((150 - mShapeVolume->mNumParticles) * 0.001f);
+                  mShapeVolume->mDensity = ComputeDensity();
                   mShapeVolume->mTarget = GetGameActor().GetOSGNode();
                   mShapeVolume->mAutoDeleteOnTargetNull = true;
 
@@ -295,11 +310,11 @@ namespace SimCore
                   vrc->ComputeParticleRadius(*mShapeVolume);
 
 
-                  std::cout << std::endl << "Modifying plume:" << std::endl;
-                  std::cout << "radius: " << mShapeVolume->mRadius << std::endl;
-                  std::cout << "num particles: " << mShapeVolume->mNumParticles << std::endl;
-                  std::cout << "particle radius: " << mShapeVolume->mParticleRadius << std::endl;
-                  std::cout << "density: " << mShapeVolume->mDensity << std::endl << std::endl;
+                  //std::cout << std::endl << "Modifying plume:" << std::endl;
+                  //std::cout << "radius: " << mShapeVolume->mRadius << std::endl;
+                  //std::cout << "num particles: " << mShapeVolume->mNumParticles << std::endl;
+                  //std::cout << "particle radius: " << mShapeVolume->mParticleRadius << std::endl;
+                  //std::cout << "density: " << mShapeVolume->mDensity << std::endl << std::endl;
 
                }
                else
@@ -326,6 +341,59 @@ namespace SimCore
          if(numParticles > 150) numParticles = 150;
          else if (numParticles < 15) numParticles = 15;
          return numParticles;
+      }
+
+      ////////////////////////////////////////////////////////////////////////////
+      void SimpleMovingShapeActorProxy::SetShapeColor(const osg::Vec3& color)
+      {
+         mShapeColor = color;
+
+         if(mIsCreated && mShapeVolume.valid())
+         {
+            mShapeVolume->mColor.set(mShapeColor[0], mShapeColor[1], mShapeColor[2], 0.5f);
+            //std::cout << "Set Color " << mShapeColor[0] << ", " << mShapeColor[1] << ", " << mShapeColor[2] << std::endl;
+            mShapeVolume->mDirtyParams = true;
+         }
+      }
+
+      ////////////////////////////////////////////////////////////////////////////
+      const osg::Vec3& SimpleMovingShapeActorProxy::GetShapeColor() const
+      {
+         return mShapeColor;
+      }
+
+      ////////////////////////////////////////////////////////////////////////////
+      void SimpleMovingShapeActorProxy::SetDensityMultiplier(float density)
+      {
+         mDensityMultiplier = density;
+         //std::cout << "Density: " << density << std::endl;
+         
+         if(mIsCreated && mShapeVolume.valid())
+         {
+            mShapeVolume->mDensity = ComputeDensity();
+            mShapeVolume->mDirtyParams = true;
+         }
+      }
+
+      ////////////////////////////////////////////////////////////////////////////
+      float SimpleMovingShapeActorProxy::GetDensityMultiplier() const
+      {
+         return mDensityMultiplier;
+      }
+
+      ////////////////////////////////////////////////////////////////////////////
+      float SimpleMovingShapeActorProxy::ComputeDensity()
+      {
+         float density = 1.0f;
+         if(mShapeVolume.valid())
+         {
+            int numParticles = mShapeVolume->mNumParticles;
+            dtUtil::Clamp(numParticles, 1, 150);
+
+            density = mDensityMultiplier * (0.005f + ((150 - numParticles) * 0.001f));
+         }
+   
+         return density;
       }
    }
 
