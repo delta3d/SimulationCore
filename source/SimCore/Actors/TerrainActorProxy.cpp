@@ -215,7 +215,7 @@ namespace SimCore
       {
          BaseClass::BuildActorComponents();
 
-         dtCore::RefPtr<dtPhysics::PhysicsActComp> physAC = new dtPhysics::PhysicsActComp(*this);
+         dtCore::RefPtr<dtPhysics::PhysicsActComp> physAC = new dtPhysics::PhysicsActComp();
 
          AddComponent(*physAC);
 

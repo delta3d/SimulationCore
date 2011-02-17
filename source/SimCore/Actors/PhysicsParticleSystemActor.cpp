@@ -661,7 +661,7 @@ namespace SimCore
          BaseClass::BuildActorComponents();
          if (!HasComponent(dtPhysics::PhysicsActComp::TYPE))
          {
-            dtCore::RefPtr<dtPhysics::PhysicsActComp> physAC = new dtPhysics::PhysicsActComp(*this);
+            dtCore::RefPtr<dtPhysics::PhysicsActComp> physAC = new dtPhysics::PhysicsActComp();
             physAC->SetDefaultCollisionGroup(SimCore::CollisionGroup::GROUP_PARTICLE);
             AddComponent(*physAC);
          }

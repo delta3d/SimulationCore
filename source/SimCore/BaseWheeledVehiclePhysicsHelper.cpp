@@ -47,8 +47,8 @@ namespace SimCore
    static const float AIR_DENSITY = 1.204f;    // density of air in kg/m^3 at 20C
 
    /// Constructor
-   BaseWheeledVehiclePhysicsActComp::BaseWheeledVehiclePhysicsActComp(dtGame::GameActorProxy& proxy)
-   : dtPhysics::PhysicsActComp(proxy)
+   BaseWheeledVehiclePhysicsActComp::BaseWheeledVehiclePhysicsActComp()
+   : dtPhysics::PhysicsActComp()
    , mVehicle(NULL)
    , mEngineTorque(1000.0f)
    , mMaxBrakeTorque(100.0f)
@@ -169,7 +169,15 @@ namespace SimCore
       GetMainPhysicsObject()->SetTransform(transformForRot);
       GetMainPhysicsObject()->CreateFromProperties(&bodyNode);
 
-      if (!GetGameActorProxy()->IsRemote())
+      dtGame::GameActor* ga = NULL;
+      GetOwner(ga);
+
+      if (ga == NULL)
+      {
+         return false;
+      }
+
+      if (!ga->GetGameActorProxy().IsRemote())
       {
          //Create the vehicle here so we can add wheels any time.
          mVehicle = dynamic_cast<palVehicle*>(dtPhysics::PhysicsWorld::GetInstance().GetPalFactory()->CreateObject("palVehicle"));

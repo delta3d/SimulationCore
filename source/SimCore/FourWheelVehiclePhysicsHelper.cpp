@@ -44,8 +44,8 @@ namespace SimCore
    void GetLocalMatrix(osgSim::DOFTransform* node, osg::Matrix& wcMatrix);
 
    /// Constructor that provides default values for properties and initial values for state variables.
-   FourWheelVehiclePhysicsActComp::FourWheelVehiclePhysicsActComp(dtGame::GameActorProxy& proxy)
-   : BaseClass(proxy)
+   FourWheelVehiclePhysicsActComp::FourWheelVehiclePhysicsActComp()
+   : BaseClass()
    , mIsVehicleFourWheelDrive(false)
    , mFrontTrackAdjustment(0.0f)
    , mRearTrackAdjustment(0.0f)
@@ -283,7 +283,15 @@ namespace SimCore
          rearLeverArm = frontLeverArm;
       }
 
-      if (!GetGameActorProxy()->IsRemote())
+      dtGame::GameActor* ga = NULL;
+      GetOwner(ga);
+
+      if (ga == NULL)
+      {
+         return false;
+      }
+
+      if (!ga->GetGameActorProxy().IsRemote())
       {
 
          float wheelbase  = frontLeverArm + rearLeverArm;

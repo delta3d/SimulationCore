@@ -575,7 +575,7 @@ namespace SimCore
 
             if (!HasComponent(dtPhysics::PhysicsActComp::TYPE))
             {
-               AddComponent(*new dtPhysics::PhysicsActComp(*this));
+               AddComponent(*new dtPhysics::PhysicsActComp());
             }
          }
 

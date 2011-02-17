@@ -535,8 +535,10 @@ namespace SimCore
          //RegisterForMessages(dtGame::MessageType::INFO_GAME_EVENT);
 
          if (IsRemote())
+         {
             RegisterForMessages(dtGame::MessageType::TICK_REMOTE,
                dtGame::GameActorProxy::TICK_REMOTE_INVOKABLE);
+         }
 
          PlatformActorProxy::OnEnteredWorld();
       }
@@ -567,7 +569,7 @@ namespace SimCore
          // Create the default if a subclass didn't create one.
          if (!HasComponent(dtPhysics::PhysicsActComp::TYPE))
          {
-            AddComponent(*new dtPhysics::PhysicsActComp(*this));
+            AddComponent(*new dtPhysics::PhysicsActComp());
          }
       }
 

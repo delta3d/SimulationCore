@@ -30,8 +30,8 @@ namespace DriverDemo
 {
 
    ////////////////////////////////////////////////////////////////////////////////////
-   HoverTargetPhysicsActComp::HoverTargetPhysicsActComp(dtGame::GameActorProxy& proxy)
-   : dtPhysics::PhysicsActComp(proxy)
+   HoverTargetPhysicsActComp::HoverTargetPhysicsActComp()
+   : dtPhysics::PhysicsActComp()
    , mGroundClearance(4.0)
    {
       // non properties

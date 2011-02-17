@@ -41,7 +41,7 @@ namespace SimCore
       typedef SimCore::BaseWheeledVehiclePhysicsActComp BaseClass;
 
    public:
-      FourWheelVehiclePhysicsActComp(dtGame::GameActorProxy& proxy);
+      FourWheelVehiclePhysicsActComp();
 
 
       // ///////////////////////////////////////////////////////////////////////////////////

@@ -40,7 +40,7 @@ namespace DriverDemo
    public:
       typedef dtPhysics::PhysicsActComp BaseClass;
 
-      HoverTargetPhysicsActComp(dtGame::GameActorProxy& proxy);
+      HoverTargetPhysicsActComp();
 
    protected:
       virtual ~HoverTargetPhysicsActComp();

@@ -688,7 +688,7 @@ namespace SimCore
       {
          if (!HasComponent(dtPhysics::PhysicsActComp::TYPE))
          {
-            AddComponent(*new SimCore::FourWheelVehiclePhysicsActComp(*this));
+            AddComponent(*new SimCore::FourWheelVehiclePhysicsActComp());
          }
 
          BaseClass::BuildActorComponents();
