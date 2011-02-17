@@ -258,14 +258,13 @@ namespace SimCore
 
 
             dtCore::RefPtr<dtDAL::NamedVec3Parameter> colorParam = new dtDAL::NamedVec3Parameter("color");
-            colorParam->FromString(GetGameManager()->GetConfiguration().GetConfigPropertyValue(colorConfig, ""));
+            colorParam->FromString(GetGameManager()->GetConfiguration().GetConfigPropertyValue(colorConfig, "1.0 1.0 1.0"));
 
             density *= multiplier;
 
-            // TODO set the density.
-            //actor.SetTheDensity(desity);
-            // TODO set the color.
-            //actor.SetTheColor(colorParam.GetValue());
+            //actor.SetDensityMultiplier(density);
+            actor.SetDensityMultiplier(multiplier);
+            actor.SetShapeColor(colorParam->GetValue());
          }
          else
          {

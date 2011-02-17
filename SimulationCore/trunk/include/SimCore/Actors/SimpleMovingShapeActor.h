@@ -86,6 +86,12 @@ namespace SimCore
          void SetCurrentDimensions(const osg::Vec3& dim);
          const osg::Vec3& GetCurrentDimensions() const;
 
+         void SetShapeColor(const osg::Vec3& color);
+         const osg::Vec3& GetShapeColor() const;
+
+         void SetDensityMultiplier(float density);
+         float GetDensityMultiplier() const;
+
       protected:
          virtual ~SimpleMovingShapeActorProxy();
 
@@ -97,10 +103,14 @@ namespace SimCore
          virtual void BuildPropertyMap();
 
          unsigned ComputeNumParticles(const osg::Vec3& dims);
+         float ComputeDensity();
+
       private:
 
          bool mIsCreated;
+         float mDensityMultiplier;
          osg::Vec3 mDimensions;
+         osg::Vec3 mShapeColor;
          dtCore::RefPtr<SimpleShapeDRHelper> mDRHelper;
          dtCore::RefPtr<SimCore::Components::VolumeRenderingComponent::ShapeVolumeRecord> mShapeVolume;
 
