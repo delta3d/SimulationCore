@@ -65,7 +65,7 @@ namespace SimCore
    public:
       typedef dtPhysics::PhysicsActComp BaseClass;
 
-      BaseWheeledVehiclePhysicsActComp(dtGame::GameActorProxy& proxy);
+      BaseWheeledVehiclePhysicsActComp();
 
       //////////////////////////////////////////////////////////////////////////////////////
       //                               Vehicle Initialization                             //

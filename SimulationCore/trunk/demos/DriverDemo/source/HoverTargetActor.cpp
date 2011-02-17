@@ -241,7 +241,7 @@ namespace DriverDemo
    {
       if (!HasComponent(dtPhysics::PhysicsActComp::TYPE))
       {
-         AddComponent(*new HoverTargetPhysicsActComp(*this));
+         AddComponent(*new HoverTargetPhysicsActComp());
       }
 
       BaseClass::BuildActorComponents();

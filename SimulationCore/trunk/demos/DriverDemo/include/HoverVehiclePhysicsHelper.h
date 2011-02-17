@@ -38,7 +38,7 @@ namespace DriverDemo
    class DRIVER_DEMO_EXPORT HoverVehiclePhysicsActComp : public dtPhysics::PhysicsActComp
    {
       public:
-         HoverVehiclePhysicsActComp(dtGame::GameActorProxy &proxy);
+         HoverVehiclePhysicsActComp();
 
       protected:
          virtual ~HoverVehiclePhysicsActComp();

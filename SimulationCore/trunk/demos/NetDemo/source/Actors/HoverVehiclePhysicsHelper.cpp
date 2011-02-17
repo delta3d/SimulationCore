@@ -35,8 +35,8 @@ namespace NetDemo
    //void FindMatrix(osg::Node* node, osg::Matrix& wcMatrix);
 
    ////////////////////////////////////////////////////////////////////////////////////
-   HoverVehiclePhysicsActComp::HoverVehiclePhysicsActComp(dtGame::GameActorProxy &proxy)
-      : dtPhysics::PhysicsActComp(proxy)
+   HoverVehiclePhysicsActComp::HoverVehiclePhysicsActComp()
+      : dtPhysics::PhysicsActComp()
       , mVehicleMaxForwardMPH(120.0f)
       , mVehicleMaxStrafeMPH(40.0f)
       //, mVehicleBaseWeight(1000.0f)
@@ -106,7 +106,7 @@ namespace NetDemo
 
       // Get the forward vector and the perpendicular side (right) vector.
       dtGame::GameActor* actor = NULL;
-      GetGameActorProxy()->GetActor( actor );
+      GetOwner( actor );
       osg::Matrix matrix;
       dtCore::Transformable::GetAbsoluteMatrix( actor->GetOSGNode(), matrix);
       osg::Vec3 lookDir = dtUtil::MatrixUtil::GetRow3(matrix, 1);

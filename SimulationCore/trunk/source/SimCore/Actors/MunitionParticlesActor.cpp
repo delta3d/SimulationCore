@@ -100,7 +100,7 @@ namespace SimCore
             if(physicsHelper != NULL)
             {
                // null checked up above in the return
-               hitTarget = physicsHelper->GetGameActorProxy()->GetActor();
+               physicsHelper->GetOwner(hitTarget);
             }
 
             // We don't want to hit ourselves.  So, if we don't have a 'self' owner, then we take
@@ -261,9 +261,14 @@ namespace SimCore
                   dtPhysics::PalVecToVectorType(contactReport.mPosition, report.mClosestHit.m_vHitPosition);
                   contactReport.mDistance = report.mClosestHit.m_fDistance;
 
-                  if (report.mClosestHitsObject != NULL && report.mClosestHitsObject->GetUserData() != NULL)
+                  dtPhysics::PhysicsActComp* physActComp = dynamic_cast<dtPhysics::PhysicsActComp*>(report.mClosestHitsObject->GetUserData());
+
+                  if (report.mClosestHitsObject != NULL && physActComp != NULL)
                   {
-                     mWeapon->ReceiveContactReport(contactReport, dynamic_cast<dtPhysics::PhysicsActComp*>(report.mClosestHitsObject->GetUserData())->GetGameActorProxy());
+                        dtGame::GameActor* ga = NULL;
+                        physActComp->GetOwner(ga);
+
+                        mWeapon->ReceiveContactReport(contactReport, &ga->GetGameActorProxy());
                   }
                   else
                   {

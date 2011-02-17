@@ -261,7 +261,7 @@ namespace SimCore
       {
          if (!HasComponent(dtPhysics::PhysicsActComp::TYPE))
          {
-            dtCore::RefPtr<dtPhysics::PhysicsActComp> physAC = new dtPhysics::PhysicsActComp(*this);
+            dtCore::RefPtr<dtPhysics::PhysicsActComp> physAC = new dtPhysics::PhysicsActComp();
 
             dtCore::RefPtr<dtPhysics::PhysicsObject> physicsObject = new dtPhysics::PhysicsObject("Body");
             physicsObject->SetPrimitiveType(dtPhysics::PrimitiveType::CYLINDER);

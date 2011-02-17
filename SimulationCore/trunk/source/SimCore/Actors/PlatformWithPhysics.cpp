@@ -246,7 +246,7 @@ namespace SimCore
          BaseClass::BuildActorComponents();
          if (!HasComponent(dtPhysics::PhysicsActComp::TYPE))
          {
-            dtCore::RefPtr<dtPhysics::PhysicsActComp> physActComp = new dtPhysics::PhysicsActComp(*this);
+            dtCore::RefPtr<dtPhysics::PhysicsActComp> physActComp = new dtPhysics::PhysicsActComp();
 
             dtCore::RefPtr<dtPhysics::PhysicsObject> physObj = new dtPhysics::PhysicsObject(PlatformWithPhysics::DEFAULT_NAME);
             physObj->SetPrimitiveType(dtPhysics::PrimitiveType::CONVEX_HULL);

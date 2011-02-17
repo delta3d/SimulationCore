@@ -40,7 +40,7 @@ namespace NetDemo
    public:
       typedef dtPhysics::PhysicsActComp BaseClass;
 
-      HoverVehiclePhysicsActComp(dtGame::GameActorProxy& proxy);
+      HoverVehiclePhysicsActComp();
 
    protected:
       virtual ~HoverVehiclePhysicsActComp();

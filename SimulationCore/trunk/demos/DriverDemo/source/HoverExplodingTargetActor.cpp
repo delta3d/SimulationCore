@@ -387,7 +387,7 @@ namespace DriverDemo
    {
       // create my unique physics helper.  almost all of the physics is on the helper.
       // The actor just manages properties and key presses mostly.
-      AddComponent(*new HoverTargetPhysicsActComp(*this));
+      AddComponent(*new HoverTargetPhysicsActComp());
 
       BaseClass::BuildActorComponents();
 

@@ -404,7 +404,7 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////////////
    void BaseEnemyActorProxy::BuildActorComponents()
    {
-      dtCore::RefPtr<dtPhysics::PhysicsActComp> physAC = new dtPhysics::PhysicsActComp(*this);
+      dtCore::RefPtr<dtPhysics::PhysicsActComp> physAC = new dtPhysics::PhysicsActComp();
 
       // Add our initial body.
       dtCore::RefPtr<dtPhysics::PhysicsObject> physicsObject = new dtPhysics::PhysicsObject("VehicleBody");
