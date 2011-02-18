@@ -92,6 +92,9 @@ namespace SimCore
          void SetDensityMultiplier(float density);
          float GetDensityMultiplier() const;
 
+         void SetMass(float milligrams);
+         float GetMass() const;
+
       protected:
          virtual ~SimpleMovingShapeActorProxy();
 
@@ -108,6 +111,7 @@ namespace SimCore
       private:
 
          bool mIsCreated;
+         float mMass;
          float mDensityMultiplier;
          osg::Vec3 mDimensions;
          osg::Vec3 mShapeColor;

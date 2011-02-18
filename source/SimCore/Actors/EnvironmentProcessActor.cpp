@@ -219,10 +219,6 @@ namespace SimCore
             SimpleMovingShapeActorProxy& actor = **found;
 
             float milligrams = record->GetValue(PARAM_TOTAL_MASS, float(1.0f));
-
-            float volume = actor.CalculateVolume();
-
-            float density = milligrams / volume;
             float multiplier = 1.0f;
 
             std::string multiplierConfig;
@@ -260,10 +256,8 @@ namespace SimCore
             dtCore::RefPtr<dtDAL::NamedVec3Parameter> colorParam = new dtDAL::NamedVec3Parameter("color");
             colorParam->FromString(GetGameManager()->GetConfiguration().GetConfigPropertyValue(colorConfig, "1.0 1.0 1.0"));
 
-            density *= multiplier;
-
-            //actor.SetDensityMultiplier(density);
             actor.SetDensityMultiplier(multiplier);
+            actor.SetMass(milligrams);
             actor.SetShapeColor(colorParam->GetValue());
          }
          else
