@@ -145,6 +145,7 @@ namespace SimCore
       : mOwner("")
       , mIndex(0)
       , mIsCreated(false)
+      , mMass(1.0f)
       , mDensityMultiplier(1.0f)
       , mShapeColor(1.0f, 1.0f, 1.0f)
       {
@@ -289,11 +290,11 @@ namespace SimCore
                   vrc->CreateShapeVolume(mShapeVolume);
                   vrc->ComputeParticleRadius(*mShapeVolume);
 
-                  //std::cout << std::endl << "Creating new plume:" << std::endl;
-                  //std::cout << "radius: " << mShapeVolume->mRadius << std::endl;
-                  //std::cout << "num particles: " << mShapeVolume->mNumParticles << std::endl;
-                  //std::cout << "particle radius: " << mShapeVolume->mParticleRadius << std::endl;
-                  //std::cout << "density: " << mShapeVolume->mDensity << std::endl << std::endl;
+                  std::cout << std::endl << "Creating new plume:" << std::endl;
+                  std::cout << "radius: " << mShapeVolume->mRadius << std::endl;
+                  std::cout << "num particles: " << mShapeVolume->mNumParticles << std::endl;
+                  std::cout << "particle radius: " << mShapeVolume->mParticleRadius << std::endl;
+                  std::cout << "density: " << mShapeVolume->mDensity << std::endl << std::endl;
                }
                else if(numParticles >= (2.0f * mShapeVolume->mNumParticles))
                {
@@ -310,11 +311,11 @@ namespace SimCore
                   vrc->ComputeParticleRadius(*mShapeVolume);
 
 
-                  //std::cout << std::endl << "Modifying plume:" << std::endl;
-                  //std::cout << "radius: " << mShapeVolume->mRadius << std::endl;
-                  //std::cout << "num particles: " << mShapeVolume->mNumParticles << std::endl;
-                  //std::cout << "particle radius: " << mShapeVolume->mParticleRadius << std::endl;
-                  //std::cout << "density: " << mShapeVolume->mDensity << std::endl << std::endl;
+                  std::cout << std::endl << "Modifying plume:" << std::endl;
+                  std::cout << "radius: " << mShapeVolume->mRadius << std::endl;
+                  std::cout << "num particles: " << mShapeVolume->mNumParticles << std::endl;
+                  std::cout << "particle radius: " << mShapeVolume->mParticleRadius << std::endl;
+                  std::cout << "density: " << mShapeVolume->mDensity << std::endl << std::endl;
 
                }
                else
@@ -336,10 +337,10 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////
       unsigned SimpleMovingShapeActorProxy::ComputeNumParticles( const osg::Vec3& dims )
       {
-         float totalSize = dims[0] * dims[1] * dims[2];
+         float totalSize = std::sqrt(dims[0] * dims[1] * dims[2]);
          unsigned numParticles = unsigned(totalSize / 25.0f);
          if(numParticles > 150) numParticles = 150;
-         else if (numParticles < 15) numParticles = 15;
+         else if (numParticles < 5) numParticles = 5;
          return numParticles;
       }
 
@@ -384,16 +385,30 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////
       float SimpleMovingShapeActorProxy::ComputeDensity()
       {
-         float density = 1.0f;
+         float density = 0.25f;
          if(mShapeVolume.valid())
          {
-            int numParticles = mShapeVolume->mNumParticles;
-            dtUtil::Clamp(numParticles, 1, 150);
+            float shapeVolume = CalculateVolume();
+            dtUtil::ClampMin(shapeVolume, 0.001f);
 
-            density = mDensityMultiplier * (0.005f + ((150 - numParticles) * 0.001f));
+            density = mMass / shapeVolume;
+            density *= mDensityMultiplier;
+            dtUtil::Clamp(density, 0.000001f, 0.25f);
          }
    
          return density;
+      }
+
+      ////////////////////////////////////////////////////////////////////////////
+      void SimpleMovingShapeActorProxy::SetMass(float milligrams)
+      {
+         mMass = milligrams;
+      }
+
+      ////////////////////////////////////////////////////////////////////////////
+      float SimpleMovingShapeActorProxy::GetMass() const
+      {
+         return mMass;
       }
    }
 
