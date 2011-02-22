@@ -400,6 +400,15 @@ namespace SimCore
    ////////////////////////////////////////////////////////////////////////// 
    void VolumeRenderingComponent::Tick(float dt)
    {
+      //static unsigned counter = 0;
+      //++counter;
+
+      //if(counter > 200)
+      //{
+      //   counter = 0;
+      //   std::cout << "VolumeRenderingComponent: " << mVolumes.size() << " plumes" << std::endl<< std::endl;
+      //}
+
       UpdateVolumes(dt);
    }
 
@@ -434,8 +443,9 @@ namespace SimCore
                }
                else
                {
+                  RemoveDrawable(*svr);
                   svr->mDeleteMe = true;
-                  //std::cout << "Auto delete on NULL Ptr" << std::ensvr;
+                  //std::cout << "Auto delete on NULL Ptr" << std::endl;
                   continue;
                }
             }
