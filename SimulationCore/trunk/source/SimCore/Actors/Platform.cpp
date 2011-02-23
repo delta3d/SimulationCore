@@ -57,12 +57,14 @@
 #include <dtDAL/actortype.h>
 #include <dtDAL/namedparameter.h>
 #include <dtDAL/functor.h> // deprecated
+#include <dtDAL/propertymacros.h>
+#include <dtDAL/resourcedescriptor.h>
+#include <dtDAL/project.h> // to lookup resource.
 
 #include <dtUtil/boundingshapeutils.h>
 #include <dtUtil/log.h>
 #include <dtUtil/mathdefines.h>
 #include <dtUtil/configproperties.h>
-#include <dtDAL/propertymacros.h>
 
 #include <dtAudio/sound.h>
 #include <dtAudio/audiomanager.h>
@@ -98,6 +100,7 @@ namespace SimCore
 
       ////////////////////////////////////////////////////////////////////////////////////
       PlatformActorProxy::PlatformActorProxy()
+      : mHasLoadedResources(false)
       {
          SetClassName("SimCore::Actors::Platform");
       }
@@ -108,6 +111,52 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
+      void PlatformActorProxy::CreateActor()
+      {
+         Platform* pEntity = new Platform(*this);
+         SetActor(*pEntity);
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////
+      DT_IMPLEMENT_ACCESSOR_GETTER(PlatformActorProxy, dtDAL::ResourceDescriptor, NonDamagedResource);
+      void PlatformActorProxy::SetNonDamagedResource(const dtDAL::ResourceDescriptor& rd)
+      {
+         mNonDamagedResource = rd;
+         if (GetHasLoadedResources() || IsInSTAGE())
+         {
+            Platform* plat = NULL;
+            GetDrawable(plat);
+            plat->LoadDamageableFile(rd,  PlatformActorProxy::DamageStateEnum::NO_DAMAGE);
+         }
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////
+      DT_IMPLEMENT_ACCESSOR_GETTER(PlatformActorProxy, dtDAL::ResourceDescriptor, DamagedResource);
+      void PlatformActorProxy::SetDamagedResource(const dtDAL::ResourceDescriptor& rd)
+      {
+         mDamagedResource = rd;
+         if (GetHasLoadedResources() || IsInSTAGE())
+         {
+            Platform* plat = NULL;
+            GetDrawable(plat);
+            plat->LoadDamageableFile(rd,  PlatformActorProxy::DamageStateEnum::SLIGHT_DAMAGE);
+         }
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////
+      DT_IMPLEMENT_ACCESSOR_GETTER(PlatformActorProxy, dtDAL::ResourceDescriptor, DestroyedResource);
+      void PlatformActorProxy::SetDestroyedResource(const dtDAL::ResourceDescriptor& rd)
+      {
+         mDestroyedResource = rd;
+         if (GetHasLoadedResources() || IsInSTAGE())
+         {
+            Platform* plat = NULL;
+            GetDrawable(plat);
+            plat->LoadDamageableFile(rd,  PlatformActorProxy::DamageStateEnum::DESTROYED);
+         }
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////
       void PlatformActorProxy::GetPartialUpdateProperties(std::vector<dtUtil::RefString>& propNamesToFill)
       {
          BaseClass::GetPartialUpdateProperties(propNamesToFill);
@@ -115,7 +164,7 @@ namespace SimCore
          Platform* platform;
          GetActor(platform);
 
-         if(platform->GetArticulationHelper() != NULL && platform->GetArticulationHelper()->IsDirty() )
+         if (platform->GetArticulationHelper() != NULL && platform->GetArticulationHelper()->IsDirty() )
          {
             propNamesToFill.push_back(platform->GetArticulationHelper()->GetArticulationArrayPropertyName());
             platform->GetArticulationHelper()->SetDirty(false);
@@ -131,23 +180,26 @@ namespace SimCore
 
          BaseClass::BuildPropertyMap();
 
-         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::STATIC_MESH,
-            PROPERTY_MESH_NON_DAMAGED_ACTOR,
-            PROPERTY_MESH_NON_DAMAGED_ACTOR,
-            dtDAL::ResourceActorProperty::SetFuncType(this, &PlatformActorProxy::LoadNonDamagedFile),
-            "This is the model for a non damaged actor"));
+         AddProperty(new dtDAL::ResourceActorProperty(dtDAL::DataType::STATIC_MESH,
+               PROPERTY_MESH_NON_DAMAGED_ACTOR,
+               PROPERTY_MESH_NON_DAMAGED_ACTOR,
+               dtDAL::ResourceActorProperty::SetDescFuncType(this, &PlatformActorProxy::SetNonDamagedResource),
+               dtDAL::ResourceActorProperty::GetDescFuncType(this, &PlatformActorProxy::GetNonDamagedResource),
+               "This is the model for a non damaged actor"));
 
-         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::STATIC_MESH,
-            PROPERTY_MESH_DAMAGED_ACTOR,
-            PROPERTY_MESH_DAMAGED_ACTOR,
-            dtDAL::ResourceActorProperty::SetFuncType(this, &PlatformActorProxy::LoadDamagedFile),
-            "This is the model for a damaged actor"));
+         AddProperty(new dtDAL::ResourceActorProperty(dtDAL::DataType::STATIC_MESH,
+               PROPERTY_MESH_DAMAGED_ACTOR,
+               PROPERTY_MESH_DAMAGED_ACTOR,
+               dtDAL::ResourceActorProperty::SetDescFuncType(this, &PlatformActorProxy::SetDamagedResource),
+               dtDAL::ResourceActorProperty::GetDescFuncType(this, &PlatformActorProxy::GetDamagedResource),
+               "This is the model for a damaged actor"));
 
-         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::STATIC_MESH,
-            PROPERTY_MESH_DESTROYED_ACTOR,
-            PROPERTY_MESH_DESTROYED_ACTOR,
-            dtDAL::ResourceActorProperty::SetFuncType(this, &PlatformActorProxy::LoadDestroyedFile),
-            "This is the model for a destroyed actor"));
+         AddProperty(new dtDAL::ResourceActorProperty(dtDAL::DataType::STATIC_MESH,
+               PROPERTY_MESH_DESTROYED_ACTOR,
+               PROPERTY_MESH_DESTROYED_ACTOR,
+               dtDAL::ResourceActorProperty::SetDescFuncType(this, &PlatformActorProxy::SetDestroyedResource),
+               dtDAL::ResourceActorProperty::GetDescFuncType(this, &PlatformActorProxy::GetDestroyedResource),
+               "This is the model for a destroyed actor"));
 
          static const dtUtil::RefString PROPERTY_MUZZLE_FLASH_POSITION("Muzzle Flash Position");
          AddProperty(new dtDAL::Vec3ActorProperty(PROPERTY_MUZZLE_FLASH_POSITION,
@@ -245,44 +297,42 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
-      void PlatformActorProxy::CreateActor()
-      {
-         Platform* pEntity = new Platform(*this);
-         SetActor(*pEntity);
-      }
-
-      ////////////////////////////////////////////////////////////////////////////////////
       dtDAL::ActorProxyIcon* PlatformActorProxy::GetBillboardIcon()
       {
-         if(!mBillboardIcon.valid())
+         if (!mBillboardIcon.valid())
+         {
             mBillboardIcon = new dtDAL::ActorProxyIcon(dtDAL::ActorProxyIcon::IMAGE_BILLBOARD_STATICMESH);
+         }
 
          return mBillboardIcon.get();
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
-      void PlatformActorProxy::LoadNonDamagedFile(const std::string &fileName)
+      void PlatformActorProxy::EnsureResourcesAreLoaded()
       {
-         Platform* platform = NULL;
-         GetActor(platform);
-         platform->SetNonDamagedNodeFileName(fileName);
-         platform->LoadDamageableFile(fileName, BaseEntityActorProxy::DamageStateEnum::NO_DAMAGE);
+         if (!mHasLoadedResources)
+         {
+            Platform* plat = NULL;
+            GetDrawable(plat);
+
+            plat->LoadDamageableFile(mNonDamagedResource,  PlatformActorProxy::DamageStateEnum::NO_DAMAGE);
+            plat->LoadDamageableFile(mDamagedResource,  PlatformActorProxy::DamageStateEnum::SLIGHT_DAMAGE);
+            plat->LoadDamageableFile(mDestroyedResource,  PlatformActorProxy::DamageStateEnum::DESTROYED);
+            mHasLoadedResources = true;
+         }
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
-      void PlatformActorProxy::LoadDamagedFile(const std::string &fileName)
+      bool PlatformActorProxy::GetHasLoadedResources() const
       {
-        Platform* platform = NULL;
-        GetActor(platform);
-        platform->LoadDamageableFile(fileName, BaseEntityActorProxy::DamageStateEnum::SLIGHT_DAMAGE);
+         return mHasLoadedResources;
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
-      void PlatformActorProxy::LoadDestroyedFile(const std::string &fileName)
+      void PlatformActorProxy::OnRemovedFromWorld()
       {
-        Platform* platform = NULL;
-        GetActor(platform);
-        platform->LoadDamageableFile(fileName, BaseEntityActorProxy::DamageStateEnum::DESTROYED);
+         BaseClass::OnRemovedFromWorld();
+         mHasLoadedResources = false;
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
@@ -332,12 +382,16 @@ namespace SimCore
       void Platform::SetEngineSmokeOn(bool enable)
       {
          if (mEngineSmokeOn == enable)
+         {
             return;
+         }
 
          if (enable)
          {
             if (!mEngineSmokeSystem.valid())
+            {
                mEngineSmokeSystem = new dtCore::ParticleSystem;
+            }
 
             mEngineSmokeSystem->LoadFile(mEngineSmokeSystemFile, true);
             dtCore::Transform xform;
@@ -583,7 +637,7 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
-      void Platform::SetDamageState(PlatformActorProxy::DamageStateEnum &damageState)
+      void Platform::SetDamageState(PlatformActorProxy::DamageStateEnum& damageState)
       {
          if (damageState != GetDamageState())
          {
@@ -670,13 +724,20 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
-      void Platform::LoadDamageableFile(const std::string& fileName, PlatformActorProxy::DamageStateEnum &state)
+      void Platform::LoadDamageableFile(const dtDAL::ResourceDescriptor& rd, PlatformActorProxy::DamageStateEnum& state)
       {
-         if(!fileName.empty())
+         std::string fileName;
+
+         if (!rd.IsEmpty())
+         {
+            fileName = dtDAL::Project::GetInstance().GetResourcePath(rd);
+         }
+
+         if (!fileName.empty())
          {
 
             bool loadedNewModel = false;
-            if(state == PlatformActorProxy::DamageStateEnum::NO_DAMAGE)
+            if (state == PlatformActorProxy::DamageStateEnum::NO_DAMAGE)
             {
                if (fileName != mNonDamagedFileNode->getName())
                {
@@ -684,15 +745,15 @@ namespace SimCore
                   LoadNodeCollector();
                }
             }
-            else if(state == PlatformActorProxy::DamageStateEnum::SLIGHT_DAMAGE)
+            else if (state == PlatformActorProxy::DamageStateEnum::SLIGHT_DAMAGE)
             {
                loadedNewModel = LoadModelNodeInternal(*mDamagedFileNode, fileName, state.GetName());
             }
-            else if(state == PlatformActorProxy::DamageStateEnum::MODERATE_DAMAGE)
+            else if (state == PlatformActorProxy::DamageStateEnum::MODERATE_DAMAGE)
             {
                loadedNewModel = LoadModelNodeInternal(*mDamagedFileNode, fileName, state.GetName());
             }
-            else if(state == PlatformActorProxy::DamageStateEnum::DESTROYED)
+            else if (state == PlatformActorProxy::DamageStateEnum::DESTROYED)
             {
                loadedNewModel = LoadModelNodeInternal(*mDestroyedFileNode, fileName, state.GetName());
             }
@@ -710,9 +771,10 @@ namespace SimCore
          }
          else
          {
-            if(state == PlatformActorProxy::DamageStateEnum::NO_DAMAGE)
+            if (state == PlatformActorProxy::DamageStateEnum::NO_DAMAGE)
             {
                mNonDamagedFileNode->removeChild(0,mNonDamagedFileNode->getNumChildren());
+               mNonDamagedFileNode->setName("");
                mNonDamagedFileNode->setUserData(NULL);
                SetNodeCollector(NULL);
                if (mArticHelper.valid())
@@ -720,19 +782,16 @@ namespace SimCore
                   mArticHelper->UpdateDOFReferences(NULL);
                }
             }
-            else if(state == PlatformActorProxy::DamageStateEnum::SLIGHT_DAMAGE)
+            else if (state == PlatformActorProxy::DamageStateEnum::SLIGHT_DAMAGE || state == PlatformActorProxy::DamageStateEnum::MODERATE_DAMAGE)
             {
                mDamagedFileNode->removeChild(0,mDamagedFileNode->getNumChildren());
+               mDamagedFileNode->setName("");
                mDamagedFileNode->setUserData(NULL);
             }
-            else if(state == PlatformActorProxy::DamageStateEnum::MODERATE_DAMAGE)
-            {
-               mDamagedFileNode->removeChild(0,mDamagedFileNode->getNumChildren());
-               mDamagedFileNode->setUserData(NULL);
-            }
-            else if(state == PlatformActorProxy::DamageStateEnum::DESTROYED)
+            else if (state == PlatformActorProxy::DamageStateEnum::DESTROYED)
             {
                mDestroyedFileNode->removeChild(0,mDestroyedFileNode->getNumChildren());
+               mDamagedFileNode->setName("");
                mDestroyedFileNode->setUserData(NULL);
             }
             else
@@ -747,7 +806,9 @@ namespace SimCore
       void Platform::OnShaderGroupChanged()
       {
          if (GetShaderGroup().empty())
+         {
             return;
+         }
 
          const dtCore::ShaderGroup *shaderGroup =
             dtCore::ShaderManager::GetInstance().FindShaderGroupPrototype(GetShaderGroup());
@@ -790,21 +851,33 @@ namespace SimCore
 
             //Check the non damaged shader...
             if (noDamage != NULL)
+            {
                dtCore::ShaderManager::GetInstance().AssignShaderFromPrototype(*noDamage,*mNonDamagedFileNode);
+            }
             else if (defaultShader != NULL)
+            {
                dtCore::ShaderManager::GetInstance().AssignShaderFromPrototype(*defaultShader,*mNonDamagedFileNode);
+            }
 
             //Check the moderate damage shader...
             if (moderate != NULL)
+            {
                dtCore::ShaderManager::GetInstance().AssignShaderFromPrototype(*moderate,*mDamagedFileNode);
+            }
             else if (defaultShader != NULL)
+            {
                dtCore::ShaderManager::GetInstance().AssignShaderFromPrototype(*defaultShader,*mDamagedFileNode);
+            }
 
             //Check the destroyed shader...
             if (destroyed != NULL)
+            {
                dtCore::ShaderManager::GetInstance().AssignShaderFromPrototype(*destroyed,*mDestroyedFileNode);
+            }
             else if (defaultShader != NULL)
+            {
                dtCore::ShaderManager::GetInstance().AssignShaderFromPrototype(*defaultShader,*mDestroyedFileNode);
+            }
          }
          catch (const dtUtil::Exception &e)
          {
@@ -827,9 +900,19 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
+      void Platform::EnsureResourcesAreLoaded()
+      {
+         // dynamic cast will throw an exception on the reference if it's not the right type.
+         dynamic_cast<PlatformActorProxy&>(GetGameActorProxy()).EnsureResourcesAreLoaded();
+      }
+
+
+      ////////////////////////////////////////////////////////////////////////////////////
       void Platform::OnEnteredWorld()
       {
          BaseClass::OnEnteredWorld();
+
+         EnsureResourcesAreLoaded();
 
          dtCore::RefPtr<SimCore::ActComps::CamoPaintStateActComp> camoPaintComp;
          GetComponent(camoPaintComp);
@@ -882,7 +965,7 @@ namespace SimCore
             mDestroyedFileNode->accept(*visitor.get());
          }
 
-         if(!mSFXSoundIdleEffect.empty() && GetGameActorProxy().IsInGM())
+         if (!mSFXSoundIdleEffect.empty() && GetGameActorProxy().IsInGM())
          {
             LoadSFXEngineIdleLoop();
          }
@@ -898,7 +981,7 @@ namespace SimCore
       void Platform::SetSFXEngineIdleLoop(const std::string& soundFX)
       {
          mSFXSoundIdleEffect = soundFX;
-         if(!mSFXSoundIdleEffect.empty() && GetGameActorProxy().IsInGM())
+         if (!mSFXSoundIdleEffect.empty() && GetGameActorProxy().IsInGM())
          {
             LoadSFXEngineIdleLoop();
          }
@@ -907,14 +990,14 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////
       void Platform::LoadSFXEngineIdleLoop()
       {
-         if(mSndIdleLoop.valid())
+         if (mSndIdleLoop.valid())
          {
             mSndIdleLoop->Stop();
             RemoveChild(mSndIdleLoop.get());
             mSndIdleLoop.release();
          }
 
-         if(!mSFXSoundIdleEffect.empty())
+         if (!mSFXSoundIdleEffect.empty())
          {
             GetGameActorProxy().GetGameManager()->SetTimer("TimeElapsedForSoundIdle", &GetGameActorProxy(), 1, true);
             mSndIdleLoop = dtAudio::AudioManager::GetInstance().NewSound();
@@ -1032,7 +1115,7 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////
       void Platform::TickControlState( const dtGame::Message& tickMessage )
       {
-         if( mTimeUntilControlStateUpdate >= 0.0f )
+         if ( mTimeUntilControlStateUpdate >= 0.0f )
          {
             mTimeUntilControlStateUpdate -=
                static_cast<const dtGame::TickMessage&>(tickMessage).GetDeltaRealTime();
@@ -1040,9 +1123,9 @@ namespace SimCore
 
          // Send control state update if controlling articulations directly
          // on a remote entity.
-         if( mTimeUntilControlStateUpdate < 0.0f && mArticHelper.valid() && mArticHelper->IsDirty() )
+         if ( mTimeUntilControlStateUpdate < 0.0f && mArticHelper.valid() && mArticHelper->IsDirty() )
          {
-            if( mArticHelper->GetControlState() != NULL )
+            if ( mArticHelper->GetControlState() != NULL )
             {
                mTimeUntilControlStateUpdate = mTimeBetweenControlStateUpdates;
 

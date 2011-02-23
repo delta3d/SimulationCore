@@ -33,11 +33,11 @@
 
 #include <SimCore/Actors/BaseEntity.h>
 #include <osg/Group>
+#include <dtDAL/resourcedescriptor.h>
 
 namespace dtCore
 {
    class ParticleSystem;
-   class NodeCollector;
 }
 
 namespace dtUtil
@@ -99,29 +99,18 @@ namespace SimCore
             PlatformActorProxy();
 
             /**
-             * Loads in the non damaged model for an entity
-             * @param fileName The name of the file to load
-             */
-            void LoadNonDamagedFile(const std::string& fileName);
-
-            /**
-             * Loads in the damaged model for an entity
-             * @param fileName The name of the file to load
-             */
-            void LoadDamagedFile(const std::string& fileName);
-
-            /**
-             * Loads in the destroyed model for an entity
-             * @param fileName The name of the file to load
-             */
-            void LoadDestroyedFile(const std::string& fileName);
-
-            /**
              * Initializes the actual actor the derived proxy will represent
              * By default this will create an Platform. This should be
              * overridden in all subclasses of the Platform class
              */
             virtual void CreateActor();
+
+            /// mesh Resource to use for the non-damaged state.  @see #EnsureResourcesAreLoaded
+            DT_DECLARE_ACCESSOR(dtDAL::ResourceDescriptor, NonDamagedResource);
+            /// mesh Resource to use for the damaged state. @see #EnsureResourcesAreLoaded
+            DT_DECLARE_ACCESSOR(dtDAL::ResourceDescriptor, DamagedResource);
+            /// mesh Resource to use for the destroyed state. @see #EnsureResourcesAreLoaded
+            DT_DECLARE_ACCESSOR(dtDAL::ResourceDescriptor, DestroyedResource);
 
             /// Called by tick local when sending a partial update to get a list of the properties to send.
             virtual void GetPartialUpdateProperties(std::vector<dtUtil::RefString>& propNamesToFill);
@@ -146,11 +135,36 @@ namespace SimCore
              */
             virtual dtDAL::ActorProxyIcon* GetBillboardIcon();
 
+            /**
+             * This call exists so that the resources can be loaded when the developer needs them to be.
+             * It is called from OnEnteredWorld; however, a subclass may want to call this earlier.
+             * For example, before it calls the baseclass OnEnteredWorld, or before the actor is even added to the GM.
+             * This will only do anything once per time the actor is added to the GM, so multiple calls to it will work fine.
+             *
+             * Once this has been called, setting any resource values such as #SetNonDamagedResource
+             * will trigger an immediate model load.
+             *
+             * As some background, the platform now no longer loads resources as soon as the value is set
+             * so that prototype actors don't take up too much memory.  This call will make them load.
+             *
+             * If the actor is in STAGE or is alreading in the world, the models will load as soon as the
+             * property is set.
+             *
+             * @note a version of this function exists on the drawable to make it easier to call
+             *       this from there if needed.  In the future, hopefully that won't be necessary.
+             */
+            virtual void EnsureResourcesAreLoaded();
+
+            /// @return true if EnsureResourcesAreLoaded has been called.
+            bool GetHasLoadedResources() const;
+            /// Sets HasLoadedResources back to false so if the actor is re-added to the GM it will work.
+            virtual void OnRemovedFromWorld();
          protected:
             // Destructor
             virtual ~PlatformActorProxy();
 
             dtCore::RefPtr<dtDAL::ActorProxyIcon> mBillboardIcon;
+            bool mHasLoadedResources;
       };
 
       /**
@@ -172,11 +186,13 @@ namespace SimCore
             Platform(dtGame::GameActorProxy& proxy);
 
             /**
-             * Generic method for loading damagable files
-             * @param fileName The file to load
-             * @param state The dtHLA::DamageState that the file represents
+             * Generic method for loading damageable resources.  It is called automatically
+             * when the #NonDamagedResource #DamagedResource and #DestroyedResource files are
+             * set.
+             * @param rd The resource descriptor to load.
+             * @param state The damage state enum that the resource represents
              */
-            void LoadDamageableFile(const std::string& fileName, PlatformActorProxy::DamageStateEnum& state);
+            void LoadDamageableFile(const dtDAL::ResourceDescriptor& rd, PlatformActorProxy::DamageStateEnum& state);
 
             /**
              * Returns the switch node of this entity
@@ -296,9 +312,6 @@ namespace SimCore
             /// @return true if this platform should be visible based on the options given.
             bool ShouldBeVisible(const SimCore::VisibilityOptions& options);
 
-            void SetNonDamagedNodeFileName(const std::string& value) {mNonDamagedNodeFileName = value;}
-            std::string GetNonDamagedNodeFileName() {return mNonDamagedNodeFileName;}
-
             /// Ticks are registered for on all local entities. Over ride for custom stuff.
             virtual void OnTickLocal(const dtGame::TickMessage& tickMessage);
 
@@ -346,6 +359,8 @@ namespace SimCore
             // smoke 'stuff'.
             void InnerSetEngineSmokeOn(bool enable) { mEngineSmokeOn = enable; }
 
+            // Helper function to call the one on the proxy.
+            void EnsureResourcesAreLoaded();
          private:
             /// The minimum time allowed between control state updates
             float mTimeBetweenControlStateUpdates;
@@ -400,10 +415,6 @@ namespace SimCore
             std::string                      mSFXSoundIdleEffect; /// What is the filepath / string of the sound effect
             float                            mMinIdleSoundDistance;
             float                            mMaxIdleSoundDistance;
-
-            /// The resource path name of the undamaged file name. Set when the undamaged node is loaded.
-            std::string mNonDamagedNodeFileName;
-
       };
 
    }

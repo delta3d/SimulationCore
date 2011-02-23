@@ -25,6 +25,8 @@
 
 #include <SimCore/Export.h>
 #include <dtGame/gameactor.h>
+#include <dtUtil/getsetmacros.h>
+#include <dtDAL/resourcedescriptor.h>
 
 namespace SimCore
 {
@@ -46,13 +48,9 @@ namespace SimCore
             bool GetUsesInsideModel() {return mUseInsideModel;}
             void SetUsesInsideModel(bool value) {mUseInsideModel = value;}
 
-            //////////////////////////////////////////////////////////////////////////////////
-            std::string GetInsideModelResourceGood() {return mInsideModelResourceGood;}
-            void SetInsideModelResourceGood(const std::string& value) {mInsideModelResourceGood = value;}
-            std::string GetInsideModelResourceDamaged() {return mInsideModelResourceDamaged;}
-            void SetInsideModelResourceDamaged(const std::string& value) {mInsideModelResourceDamaged = value;}
-            std::string GetInsideModelResourceDestroyed() {return mInsideModelResourceDestroyed;}
-            void SetInsideModelResourceDestroyed(const std::string& value) {mInsideModelResourceDestroyed = value;}
+            DT_DECLARE_ACCESSOR(dtDAL::ResourceDescriptor, InsideModelResourceGood);
+            DT_DECLARE_ACCESSOR(dtDAL::ResourceDescriptor, InsideModelResourceDamaged);
+            DT_DECLARE_ACCESSOR(dtDAL::ResourceDescriptor, InsideModelResourceDestroyed);
 
             //////////////////////////////////////////////////////////////////////////////////
             osg::Vec3 GetRotationOffSet() {return mRotationOffSet;}
@@ -67,9 +65,6 @@ namespace SimCore
             osg::Vec3   mSeatPosition;
             osg::Vec3   mRotationOffSet;
             bool        mUseInsideModel;
-            std::string mInsideModelResourceGood;
-            std::string mInsideModelResourceDamaged;
-            std::string mInsideModelResourceDestroyed;
       };
 
       /////////////////////////////////////////////////////////////////////////////

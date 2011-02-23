@@ -154,6 +154,8 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////
       void FourWheelVehicleActor::OnEnteredWorld()
       {
+         EnsureResourcesAreLoaded();
+
          LoadSound(mSoundEffectIgnition, mSndIgnition);
 
          if (LoadSound(mSoundEffectIdleLoop, mSndVehicleIdleLoop))

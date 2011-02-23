@@ -104,17 +104,28 @@ void VehicleConfigTests::TestFunction()
 
    CPPUNIT_ASSERT(objActor.valid());
    
-   objActor->SetInsideModelResourceGood("TestString");
-   const std::string& testAgainst = objActor->GetInsideModelResourceGood();
-   CPPUNIT_ASSERT(testAgainst == "TestString");
+   dtDAL::ResourceDescriptor rdTest("StaticMeshes:hazard_cone.ive");
 
-   objActor->SetInsideModelResourceDamaged("TestString2");
-   const std::string& testAgainst2 = objActor->GetInsideModelResourceDamaged();
-   CPPUNIT_ASSERT(testAgainst2 == "TestString2");
+   {
+      CPPUNIT_ASSERT_EQUAL(objActor->GetInsideModelResourceGood(), dtDAL::ResourceDescriptor::NULL_RESOURCE);
+      objActor->SetInsideModelResourceGood(rdTest);
+      const dtDAL::ResourceDescriptor& testAgainst = objActor->GetInsideModelResourceGood();
+      CPPUNIT_ASSERT_EQUAL(rdTest, testAgainst);
+   }
 
-   objActor->SetInsideModelResourceDestroyed("TestString3");
-   const std::string& testAgainst3 = objActor->GetInsideModelResourceDestroyed();
-   CPPUNIT_ASSERT(testAgainst3 == "TestString3");
+   {
+      CPPUNIT_ASSERT_EQUAL(objActor->GetInsideModelResourceDamaged(), dtDAL::ResourceDescriptor::NULL_RESOURCE);
+      objActor->SetInsideModelResourceDamaged(rdTest);
+      const dtDAL::ResourceDescriptor& testAgainst = objActor->GetInsideModelResourceDamaged();
+      CPPUNIT_ASSERT_EQUAL(rdTest, testAgainst);
+   }
+
+   {
+      CPPUNIT_ASSERT_EQUAL(objActor->GetInsideModelResourceDestroyed(), dtDAL::ResourceDescriptor::NULL_RESOURCE);
+      objActor->SetInsideModelResourceDestroyed(rdTest);
+      const dtDAL::ResourceDescriptor& testAgainst = objActor->GetInsideModelResourceDestroyed();
+      CPPUNIT_ASSERT_EQUAL(rdTest, testAgainst);
+   }
 
    objActor->SetUsesInsideModel(true);
    CPPUNIT_ASSERT(objActor->GetUsesInsideModel());

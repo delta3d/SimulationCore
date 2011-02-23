@@ -138,19 +138,19 @@ namespace SimCore
          BaseClass::OnEnteredWorld();
          if (!mNodeCollector.valid())
          {
-            dtGame::GameActor* owner;
+            dtGame::GameActor* owner = NULL;
             GetOwner(owner);
             SetNodeCollector(new dtUtil::NodeCollector(owner->GetOSGNode(), dtUtil::NodeCollector::AllNodeTypes));
          }
 
-         if(mWeaponSwapMesh != dtDAL::ResourceDescriptor::NULL_RESOURCE)
+         if (mWeaponSwapMesh != dtDAL::ResourceDescriptor::NULL_RESOURCE)
          {
             //we will configure a default weapon to use if the resource   
             bool weaponAdded = AddWeapon(mWeaponName, mWeaponHotSpotDOF, mWeaponSwapMesh);
-            if(weaponAdded)
+            if (weaponAdded)
             {
                mWeaponToSwitchTo = FindWeapon(mWeaponName);
-               if(mWeaponToSwitchTo != NULL)
+               if (mWeaponToSwitchTo != NULL)
                {
                   //swap weapon is supposed to do determine if we need to unattch and do this for us but 
                   //in cases where we start with a weapon we have to clear out the dof children 
@@ -172,11 +172,11 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void WeaponSwapActComp::SwapWeapon()
       {
-         dtGame::GameActor* owner;
+         dtGame::GameActor* owner = NULL;
          GetOwner(owner);
-         if(owner != NULL)
+         if (owner != NULL)
          {
-            if(mHasWeapon)
+            if (mHasWeapon)
             {
                UnAttachWeapon();
             }
@@ -191,7 +191,7 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////
       void WeaponSwapActComp::Update()
       {
-         if(mSwitchWeapons)
+         if (mSwitchWeapons)
          {
             SwapWeapon();
          }
@@ -200,10 +200,10 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////
       bool WeaponSwapActComp::AttachWeapon(WeaponDescription* wp)
       {
-         if(mNodeCollector.valid())
+         if (mNodeCollector.valid())
          {
             osgSim::DOFTransform* dof = mNodeCollector->GetDOFTransform(mWeaponSwapRootNode);
-            if(dof != NULL)
+            if (dof != NULL)
             {
                dof->addChild(wp->mRootNode.get());
 
@@ -212,7 +212,7 @@ namespace SimCore
                   = new dtUtil::NodeCollector(wp->mRootNode.get(), dtUtil::NodeCollector::DOFTransformFlag);
                osgSim::DOFTransform* hotspotDof = weaponNodeCollector->GetDOFTransform(wp->mHotSpotName);
 
-               if( hotspotDof != NULL )
+               if ( hotspotDof != NULL )
                {
                   //note: this function only works if the dof hot spot has the same name on both weapons
                   mNodeCollector->AddDOFTransform(wp->mHotSpotName, *hotspotDof);
@@ -228,10 +228,10 @@ namespace SimCore
 
       void WeaponSwapActComp::UnAttachWeapon()
       {
-         if(mNodeCollector.valid())
+         if (mNodeCollector.valid())
          {
             osgSim::DOFTransform* dof = mNodeCollector->GetDOFTransform(mWeaponSwapRootNode);
-            if(dof != NULL)
+            if (dof != NULL)
             {
                // clear all children of dof before adding the gun.
                dof->removeChildren(0, dof->getNumChildren());
@@ -253,13 +253,13 @@ namespace SimCore
 
             isModelLoaded = SimCore::Actors::IGActor::LoadFileStatic(weaponFileName, newModel, newModel, false);
 
-            if(isModelLoaded)
+            if (isModelLoaded)
             {
                // Get access to the hot spot on the weapon model
                dtCore::RefPtr<dtUtil::NodeCollector> weaponNodeCollector = new dtUtil::NodeCollector(newModel.get(), dtUtil::NodeCollector::DOFTransformFlag);
                osgSim::DOFTransform* hotspotDof = weaponNodeCollector->GetDOFTransform(weaponHotspotName);
 
-               if(hotspotDof != NULL)
+               if (hotspotDof != NULL)
                {
                   dtCore::RefPtr<WeaponDescription> weaponDesc = new WeaponDescription();
                   weaponDesc->mWeaponName = weaponName;  
@@ -278,7 +278,7 @@ namespace SimCore
 
       void WeaponSwapActComp::NextWeapon()
       {
-         if(mWeapons.size() > 1)
+         if (mWeapons.size() > 1)
          {
             int index = FindWeaponIndex(mCurrentWeapon);
             if(index >= 0)

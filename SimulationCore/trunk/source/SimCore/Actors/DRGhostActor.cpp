@@ -168,10 +168,15 @@ namespace SimCore
             // Get our mesh from the entity we are modeling
             if (mSlavedEntity.valid())
             {
-               SimCore::Actors::Platform *platform = dynamic_cast<SimCore::Actors::Platform*>(mSlavedEntity.get());
+               PlatformActorProxy* platform = dynamic_cast<PlatformActorProxy*>(&mSlavedEntity->GetGameActorProxy());
                if (platform != NULL)
                {
-                  SetMesh(platform->GetNonDamagedNodeFileName());
+                  dtDAL::ResourceActorProperty* rap = NULL;
+                  GetGameActorProxy().GetProperty("static mesh", rap);
+                  if (rap != NULL)
+                  {
+                     rap->SetValue(platform->GetNonDamagedResource());
+                  }
                }
                //mSlavedEntity->GetDeadReckoningHelper().SetMaxRotationSmoothingTime(dtGame::DeadReckoningHelper::DEFAULT_MAX_SMOOTHING_TIME_ROT);
                //mSlavedEntity->GetDeadReckoningHelper().SetMaxTranslationSmoothingTime(dtGame::DeadReckoningHelper::DEFAULT_MAX_SMOOTHING_TIME_POS);
