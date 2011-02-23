@@ -1,30 +1,30 @@
 /* -*-c++-*-
-* Simulation Core - BaseEntityActorProxyTests (.h & .cpp) - Using 'The MIT License'
-* Copyright (C) 2006-2008, Alion Science and Technology Corporation
-*
-* Permission is hereby granted, free of charge, to any person obtaining a copy
-* of this software and associated documentation files (the "Software"), to deal
-* in the Software without restriction, including without limitation the rights
-* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-* copies of the Software, and to permit persons to whom the Software is
-* furnished to do so, subject to the following conditions:
-*
-* The above copyright notice and this permission notice shall be included in
-* all copies or substantial portions of the Software.
-*
-* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-* THE SOFTWARE.
-*
-* This software was developed by Alion Science and Technology Corporation under
-* circumstances in which the U. S. Government may have rights in the software.
-*
-* @author Eddie Johnson
-*/
+ * Simulation Core - BaseEntityActorProxyTests (.h & .cpp) - Using 'The MIT License'
+ * Copyright (C) 2006-2008, Alion Science and Technology Corporation
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *
+ * This software was developed by Alion Science and Technology Corporation under
+ * circumstances in which the U. S. Government may have rights in the software.
+ *
+ * @author Eddie Johnson
+ */
 #include <prefix/SimCorePrefix.h>
 #include <cppunit/extensions/HelperMacros.h>
 
@@ -50,6 +50,7 @@
 
 #include <dtUtil/macros.h>
 #include <dtUtil/mathdefines.h>
+#include <dtUtil/fileutils.h>
 
 #include <dtCore/timer.h>
 
@@ -75,10 +76,6 @@
 #include <UnitTestMain.h>
 #include <dtABC/application.h>
 
-#ifdef AGEIA_PHYSICS
-#include <NxAgeiaWorldComponent.h>
-#endif
-
 using dtCore::RefPtr;
 using dtCore::ObserverPtr;
 
@@ -88,6 +85,8 @@ class BaseEntityActorProxyTests : public CPPUNIT_NS::TestFixture
    CPPUNIT_TEST_SUITE(BaseEntityActorProxyTests);
 
       CPPUNIT_TEST(TestPlatform);
+      CPPUNIT_TEST(TestPlatformDelayedLoading);
+      CPPUNIT_TEST(TestPlatformOnEnteredWorldLoading);
       CPPUNIT_TEST(TestPlatformHeadlights);
       CPPUNIT_TEST(TestHuman);
       CPPUNIT_TEST(TestPlatformScaleMagnification);
@@ -104,38 +103,39 @@ class BaseEntityActorProxyTests : public CPPUNIT_NS::TestFixture
 
    CPPUNIT_TEST_SUITE_END();
 
-   public:
+public:
 
-      void setUp();
-      void tearDown();
-      void TestPlatform();
-      void TestPlatformHeadlights();
-      void TestHuman();
-      void TestPlatformScaleMagnification();
-      void TestHumanScaleMagnification();
-      void TestPlatformActorUpdates();
-      void TestHumanActorUpdates();
-      void TestEntityUpdateToFromStream();
-      void TestPlatformDRRegistration();
-      void TestHumanDRRegistration();
-      void TestPlayerActorProxy();
-      void TestDetonationActorProxy();
-      void TestDetonationSoundDelay();
-      void TestBaseWaterActorProxy();
+   void setUp();
+   void tearDown();
+   void TestPlatform();
+   void TestPlatformDelayedLoading();
+   void TestPlatformOnEnteredWorldLoading();
+   void TestPlatformHeadlights();
+   void TestHuman();
+   void TestPlatformScaleMagnification();
+   void TestHumanScaleMagnification();
+   void TestPlatformActorUpdates();
+   void TestHumanActorUpdates();
+   void TestEntityUpdateToFromStream();
+   void TestPlatformDRRegistration();
+   void TestHumanDRRegistration();
+   void TestPlayerActorProxy();
+   void TestDetonationActorProxy();
+   void TestDetonationSoundDelay();
+   void TestBaseWaterActorProxy();
 
-   private:
-      void TestScaleMagnification(SimCore::Actors::BaseEntityActorProxy&);
-      void TestBaseEntityActorProxy(SimCore::Actors::BaseEntityActorProxy&);
-      void TestBaseEntityVisOpts(SimCore::Actors::BaseEntityActorProxy&);
-      void TestBaseEntityActorUpdates(SimCore::Actors::BaseEntityActorProxy&);
-      void TestBaseEntityDRRegistration(SimCore::Actors::BaseEntityActorProxy&);
-      void TestPlatformLoadMesh(SimCore::Actors::Platform* platform,
+private:
+   void TestScaleMagnification(SimCore::Actors::BaseEntityActorProxy&);
+   void TestBaseEntityActorProxy(SimCore::Actors::BaseEntityActorProxy&);
+   void TestBaseEntityVisOpts(SimCore::Actors::BaseEntityActorProxy&);
+   void TestBaseEntityActorUpdates(SimCore::Actors::BaseEntityActorProxy&);
+   void TestBaseEntityDRRegistration(SimCore::Actors::BaseEntityActorProxy&);
+   void TestPlatformLoadMesh(SimCore::Actors::Platform* platform,
          SimCore::Actors::BaseEntityActorProxy::DamageStateEnum& state);
 
-      RefPtr<dtGame::GameManager> mGM;
-      RefPtr<dtGame::DeadReckoningComponent> mDeadReckoningComponent;
-      RefPtr<SimCore::Components::TimedDeleterComponent> mTimerDeleterComponent;
-
+   RefPtr<dtGame::GameManager> mGM;
+   RefPtr<dtGame::DeadReckoningComponent> mDeadReckoningComponent;
+   RefPtr<SimCore::Components::TimedDeleterComponent> mTimerDeleterComponent;
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(BaseEntityActorProxyTests);
@@ -153,14 +153,12 @@ void BaseEntityActorProxyTests::setUp()
    // add the deleter component so the detonation actor can register itself to be deleted.
    mTimerDeleterComponent = new SimCore::Components::TimedDeleterComponent();
    mGM->AddComponent(*mTimerDeleterComponent, dtGame::GameManager::ComponentPriority::NORMAL);
-
 }
 
 void BaseEntityActorProxyTests::tearDown()
 {
    mDeadReckoningComponent = NULL;
    mTimerDeleterComponent = NULL;
-
 
    if (mGM.valid())
    {
@@ -170,9 +168,92 @@ void BaseEntityActorProxyTests::tearDown()
    dtCore::System::GetInstance().Stop();
 }
 
+void BaseEntityActorProxyTests::TestPlatformDelayedLoading()
+{
+   RefPtr<SimCore::Actors::PlatformActorProxy> eap;
+   mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE, eap);
+   CPPUNIT_ASSERT(eap.valid());
+
+   CPPUNIT_ASSERT(!eap->GetHasLoadedResources());
+
+   SimCore::Actors::Platform* platform = NULL;
+   eap->GetActor(platform);
+
+   dtDAL::ResourceDescriptor happySphere("StaticMeshes:physics_happy_sphere.ive");
+
+   eap->SetNonDamagedResource(happySphere);
+   CPPUNIT_ASSERT(platform->GetNonDamagedFileNode() == NULL);
+   eap->SetDamagedResource(happySphere);
+   CPPUNIT_ASSERT(platform->GetDamagedFileNode() == NULL);
+   eap->SetDestroyedResource(happySphere);
+   CPPUNIT_ASSERT(platform->GetDestroyedFileNode() == NULL);
+
+   CPPUNIT_ASSERT(!eap->GetHasLoadedResources());
+
+   eap->EnsureResourcesAreLoaded();
+   CPPUNIT_ASSERT(eap->GetHasLoadedResources());
+
+   CPPUNIT_ASSERT(platform->GetNonDamagedFileNode() != NULL);
+   CPPUNIT_ASSERT(platform->GetDamagedFileNode() != NULL);
+   CPPUNIT_ASSERT(platform->GetDestroyedFileNode() != NULL);
+
+   dtCore::RefPtr<osg::Node> backupNode;
+
+   // Now that the resources are loaded, go ahead and change the values to see if they change immediately.
+   backupNode = platform->GetNonDamagedFileNode();
+   eap->SetNonDamagedResource(dtDAL::ResourceDescriptor::NULL_RESOURCE);
+   CPPUNIT_ASSERT(platform->GetNonDamagedFileNode() == NULL);
+   eap->SetNonDamagedResource(happySphere);
+   CPPUNIT_ASSERT(platform->GetNonDamagedFileNode() != NULL);
+   CPPUNIT_ASSERT(platform->GetNonDamagedFileNode() != backupNode);
+
+   backupNode = platform->GetDamagedFileNode();
+   eap->SetDamagedResource(dtDAL::ResourceDescriptor::NULL_RESOURCE);
+   CPPUNIT_ASSERT(platform->GetDamagedFileNode() == NULL);
+   eap->SetDamagedResource(happySphere);
+   CPPUNIT_ASSERT(platform->GetDamagedFileNode() != NULL);
+   CPPUNIT_ASSERT(platform->GetDamagedFileNode() != backupNode);
+
+   backupNode = platform->GetDamagedFileNode();
+   eap->SetDamagedResource(dtDAL::ResourceDescriptor::NULL_RESOURCE);
+   CPPUNIT_ASSERT(platform->GetDamagedFileNode() == NULL);
+   eap->SetDamagedResource(happySphere);
+   CPPUNIT_ASSERT(platform->GetDamagedFileNode() != NULL);
+   CPPUNIT_ASSERT(platform->GetDamagedFileNode() != backupNode);
+}
+
+void BaseEntityActorProxyTests::TestPlatformOnEnteredWorldLoading()
+{
+   RefPtr<SimCore::Actors::PlatformActorProxy> eap;
+   mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE, eap);
+   CPPUNIT_ASSERT(eap.valid());
+
+   dtDAL::ResourceDescriptor happySphere("StaticMeshes:physics_happy_sphere.ive");
+
+   CPPUNIT_ASSERT(!eap->GetHasLoadedResources());
+
+   SimCore::Actors::Platform* platform = NULL;
+   eap->GetActor(platform);
+
+   eap->SetNonDamagedResource(happySphere);
+   CPPUNIT_ASSERT(platform->GetNonDamagedFileNode() == NULL);
+   eap->SetDamagedResource(happySphere);
+   CPPUNIT_ASSERT(platform->GetDamagedFileNode() == NULL);
+   eap->SetDestroyedResource(happySphere);
+   CPPUNIT_ASSERT(platform->GetDestroyedFileNode() == NULL);
+
+   mGM->AddActor(*eap, false, false);
+
+   CPPUNIT_ASSERT(eap->GetHasLoadedResources());
+
+   CPPUNIT_ASSERT(platform->GetNonDamagedFileNode() != NULL);
+   CPPUNIT_ASSERT(platform->GetDamagedFileNode() != NULL);
+   CPPUNIT_ASSERT(platform->GetDestroyedFileNode() != NULL);
+}
+
 void BaseEntityActorProxyTests::TestPlatform()
 {
-   RefPtr<SimCore::Actors::BaseEntityActorProxy> eap;
+   RefPtr<SimCore::Actors::PlatformActorProxy> eap;
    mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE, eap);
    CPPUNIT_ASSERT(eap.valid());
 
@@ -180,7 +261,8 @@ void BaseEntityActorProxyTests::TestPlatform()
 
    TestBaseEntityActorProxy(*eap);
 
-   SimCore::Actors::Platform* platform;
+
+   SimCore::Actors::Platform* platform = NULL;
    eap->GetActor(platform);
 
    TestPlatformLoadMesh(platform, SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::NO_DAMAGE);
@@ -232,7 +314,7 @@ void BaseEntityActorProxyTests::TestPlatform()
 }
 
 void BaseEntityActorProxyTests::TestPlatformLoadMesh(SimCore::Actors::Platform* platform,
-         SimCore::Actors::BaseEntityActorProxy::DamageStateEnum& state)
+      SimCore::Actors::BaseEntityActorProxy::DamageStateEnum& state)
 {
    CPPUNIT_ASSERT(platform->GetNodeCollector() == NULL);
 
@@ -241,7 +323,9 @@ void BaseEntityActorProxyTests::TestPlatformLoadMesh(SimCore::Actors::Platform* 
       CPPUNIT_ASSERT(platform->GetNonDamagedFileNode() == NULL);
    }
 
-   platform->LoadDamageableFile("StaticMeshes/physics_happy_sphere.ive", state);
+   dtDAL::ResourceDescriptor happySphere("StaticMeshes:physics_happy_sphere.ive");
+
+   platform->LoadDamageableFile(happySphere, state);
    dtCore::RefPtr<osg::Node> currentNode = NULL;
 
    dtCore::RefPtr<const dtUtil::NodeCollector> nodeCollector = platform->GetNodeCollector();
@@ -271,10 +355,11 @@ void BaseEntityActorProxyTests::TestPlatformLoadMesh(SimCore::Actors::Platform* 
    CPPUNIT_ASSERT(currentNode->getParent(0)->getUserData() != NULL);
    osg::Node* copiedNode = dynamic_cast<osg::Node*>(currentNode->getParent(0)->getUserData());
    CPPUNIT_ASSERT(copiedNode != NULL);
-   CPPUNIT_ASSERT_EQUAL(std::string("StaticMeshes/physics_happy_sphere.ive"), currentNode->getParent(0)->getName());
+   CPPUNIT_ASSERT_EQUAL(std::string(dtDAL::Project::GetInstance().GetContext(0) + dtUtil::FileUtils::PATH_SEPARATOR + "StaticMeshes" + dtUtil::FileUtils::PATH_SEPARATOR + "physics_happy_sphere.ive"),
+         currentNode->getParent(0)->getName());
    CPPUNIT_ASSERT_EQUAL(state.GetName(), currentNode->getName());
 
-   platform->LoadDamageableFile("StaticMeshes/physics_happy_sphere.ive", state);
+   platform->LoadDamageableFile(happySphere, state);
 
    if (state ==  SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::NO_DAMAGE)
    {
@@ -294,7 +379,9 @@ void BaseEntityActorProxyTests::TestPlatformLoadMesh(SimCore::Actors::Platform* 
       CPPUNIT_ASSERT_MESSAGE("It should NOT have reloaded the mesh", currentNode == platform->GetDestroyedFileNode());
    }
 
-   platform->LoadDamageableFile("StaticMeshes/physics_crate.ive", state);
+   dtDAL::ResourceDescriptor crate("StaticMeshes:physics_crate.ive");
+
+   platform->LoadDamageableFile(crate, state);
 
    if (state ==  SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::NO_DAMAGE)
    {
@@ -318,10 +405,11 @@ void BaseEntityActorProxyTests::TestPlatformLoadMesh(SimCore::Actors::Platform* 
       currentNode = platform->GetDestroyedFileNode();
    }
 
-   CPPUNIT_ASSERT_EQUAL(std::string("StaticMeshes/physics_crate.ive"), currentNode->getParent(0)->getName());
+   CPPUNIT_ASSERT_EQUAL(std::string(dtDAL::Project::GetInstance().GetContext(0) + dtUtil::FileUtils::PATH_SEPARATOR + "StaticMeshes" + dtUtil::FileUtils::PATH_SEPARATOR + "physics_crate.ive"),
+         currentNode->getParent(0)->getName());
    CPPUNIT_ASSERT_EQUAL(state.GetName(), currentNode->getName());
 
-   platform->LoadDamageableFile("", state);
+   platform->LoadDamageableFile(dtDAL::ResourceDescriptor::NULL_RESOURCE, state);
 
    if (state ==  SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::NO_DAMAGE)
    {
@@ -354,24 +442,24 @@ void BaseEntityActorProxyTests::TestPlatformHeadlights()
    CPPUNIT_ASSERT_MESSAGE("The head lights property should not be NULL", prop != NULL);
    std::stringstream textMessage;
    textMessage << "The default value of \""
-      << static_cast<std::string>(SimCore::Actors::PlatformActorProxy::PROPERTY_HEAD_LIGHTS_ENABLED) << "\" should be false.";
+         << static_cast<std::string>(SimCore::Actors::PlatformActorProxy::PROPERTY_HEAD_LIGHTS_ENABLED) << "\" should be false.";
    CPPUNIT_ASSERT_MESSAGE(textMessage.str(), !prop->GetValue());
    prop->SetValue(true);
    CPPUNIT_ASSERT_MESSAGE("Headlights should NOT turn on with no rendering support component",
-            !prop->GetValue());
+         !prop->GetValue());
 
    mGM->AddComponent(*new SimCore::Components::RenderingSupportComponent, dtGame::GameManager::ComponentPriority::NORMAL);
 
    prop->SetValue(true);
    CPPUNIT_ASSERT_MESSAGE("Headlights should turn on with a valid rendering support component",
-            prop->GetValue());
+         prop->GetValue());
 
    prop->SetValue(false);
    CPPUNIT_ASSERT(!prop->GetValue());
    eap->SetGameManager(NULL);
    prop->SetValue(true);
    CPPUNIT_ASSERT_MESSAGE("With no game manager set, you should still be able to set the value to true and have it stick so it will work in stage",
-            prop->GetValue());
+         prop->GetValue());
 
    eap->SetGameManager(mGM);
 
@@ -512,19 +600,19 @@ void BaseEntityActorProxyTests::TestBaseEntityActorProxy(SimCore::Actors::BaseEn
    BaseEntity* entity = NULL;
    eap.GetActor( entity );
    CPPUNIT_ASSERT_MESSAGE("BaseEntity should be valid when being accessed from its proxy.",
-      entity != NULL);
+         entity != NULL);
 
    prop = eap.GetProperty("Firepower Disabled");
    CPPUNIT_ASSERT_MESSAGE("The firepower property should not be NULL", prop != NULL);
    CPPUNIT_ASSERT_MESSAGE("The default value of \"Firepower Disabled\" should be false.",
-            !static_cast<dtDAL::BooleanActorProperty*>(prop)->GetValue());
+         !static_cast<dtDAL::BooleanActorProperty*>(prop)->GetValue());
    static_cast<dtDAL::BooleanActorProperty*>(prop)->SetValue(true);
    CPPUNIT_ASSERT(static_cast<dtDAL::BooleanActorProperty*>(prop)->GetValue());
 
    prop = eap.GetProperty("Mobility Disabled");
    CPPUNIT_ASSERT_MESSAGE("The mobility property should not be NULL", prop != NULL);
    CPPUNIT_ASSERT_MESSAGE("The default value of \"Mobility Disabled\" should be false.",
-            !static_cast<dtDAL::BooleanActorProperty*>(prop)->GetValue());
+         !static_cast<dtDAL::BooleanActorProperty*>(prop)->GetValue());
    static_cast<dtDAL::BooleanActorProperty*>(prop)->SetValue(true);
    CPPUNIT_ASSERT(static_cast<dtDAL::BooleanActorProperty*>(prop)->GetValue());
 
@@ -533,13 +621,13 @@ void BaseEntityActorProxyTests::TestBaseEntityActorProxy(SimCore::Actors::BaseEn
    CPPUNIT_ASSERT_MESSAGE("The angular velocity vector property should not be NULL", prop != NULL);
    static_cast<dtDAL::Vec3fActorProperty*>(prop)->SetValue(vec);
    CPPUNIT_ASSERT_MESSAGE("GetValue should return what was set",
-            static_cast<dtDAL::Vec3fActorProperty*>(prop)->GetValue() == vec);
+         static_cast<dtDAL::Vec3fActorProperty*>(prop)->GetValue() == vec);
 
    prop = eap.GetProperty("Last Known Translation");
    CPPUNIT_ASSERT_MESSAGE("The last known translation property should not be NULL", prop != NULL);
    static_cast<dtDAL::Vec3fActorProperty*>(prop)->SetValue(vec);
    CPPUNIT_ASSERT_MESSAGE("GetValue should return what was set",
-            static_cast<dtDAL::Vec3fActorProperty*>(prop)->GetValue() == vec);
+         static_cast<dtDAL::Vec3fActorProperty*>(prop)->GetValue() == vec);
    static_cast<dtDAL::Vec3fActorProperty*>(prop)->SetValue(osg::Vec3(0.0f, 0.0f, 0.0f));
 
    prop = eap.GetProperty("Last Known Rotation");
@@ -566,17 +654,17 @@ void BaseEntityActorProxyTests::TestBaseEntityActorProxy(SimCore::Actors::BaseEn
    aep = dynamic_cast<dtDAL::AbstractEnumActorProperty*>(prop);
    CPPUNIT_ASSERT_MESSAGE("The abstract enum property should not be NULL", aep != NULL);
    CPPUNIT_ASSERT_MESSAGE("Property should be defaulted to GROUND domain.", aep->GetEnumValue().GetName()
-      == BaseEntityActorProxy::DomainEnum::GROUND.GetName());
+         == BaseEntityActorProxy::DomainEnum::GROUND.GetName());
    CPPUNIT_ASSERT(entity->GetDomain() == BaseEntityActorProxy::DomainEnum::GROUND);
 
    aep->SetValueFromString(BaseEntityActorProxy::DomainEnum::SURFACE.GetName());
    CPPUNIT_ASSERT_MESSAGE("GetValue should return what was set", aep->GetEnumValue().GetName()
-      == BaseEntityActorProxy::DomainEnum::SURFACE.GetName());
+         == BaseEntityActorProxy::DomainEnum::SURFACE.GetName());
    CPPUNIT_ASSERT(entity->GetDomain() == BaseEntityActorProxy::DomainEnum::SURFACE);
 
    entity->SetDomain(BaseEntityActorProxy::DomainEnum::AMPHIBIOUS);
    CPPUNIT_ASSERT_MESSAGE("GetValue should return what was set", aep->GetEnumValue().GetName()
-      == BaseEntityActorProxy::DomainEnum::AMPHIBIOUS.GetName());
+         == BaseEntityActorProxy::DomainEnum::AMPHIBIOUS.GetName());
    CPPUNIT_ASSERT(entity->GetDomain() == BaseEntityActorProxy::DomainEnum::AMPHIBIOUS);
 
    prop = eap.GetProperty("Force Affiliation");
@@ -595,10 +683,10 @@ void BaseEntityActorProxyTests::TestBaseEntityActorProxy(SimCore::Actors::BaseEn
    aep = dynamic_cast<dtDAL::AbstractEnumActorProperty*>(prop);
    CPPUNIT_ASSERT_MESSAGE("The abstract enum property for \"GroundClampType\" should not be NULL", aep != NULL);
    CPPUNIT_ASSERT_MESSAGE("The \"GroundClampType\" should default to KEEP_ABOVE", 
-      aep->GetEnumValue() == dtGame::GroundClampTypeEnum::KEEP_ABOVE);
+         aep->GetEnumValue() == dtGame::GroundClampTypeEnum::KEEP_ABOVE);
    aep->SetValueFromString("Full");
    CPPUNIT_ASSERT_MESSAGE("The \"GroundClampType\" should now be full", 
-      aep->GetEnumValue() == dtGame::GroundClampTypeEnum::FULL);
+         aep->GetEnumValue() == dtGame::GroundClampTypeEnum::FULL);
 
    dtDAL::ActorProperty* offsetProp = eap.GetProperty("Ground Offset");
    CPPUNIT_ASSERT_MESSAGE("The ground offset should be close 0.0.", osg::equivalent(static_cast<dtDAL::FloatActorProperty*>(offsetProp)->GetValue(), 0.0f, 0.1f));
@@ -732,9 +820,9 @@ void BaseEntityActorProxyTests::TestScaleMagnification(SimCore::Actors::BaseEnti
 
    osg::Vec3 value = v3Prop->GetValue();
    CPPUNIT_ASSERT_MESSAGE("The scale should equal the default scale x the scale magnification.",
-      osg::equivalent(expectedScale.x(), value.x(), 0.00001f) &&
-      osg::equivalent(expectedScale.y(), value.y(), 0.00001f) &&
-      osg::equivalent(expectedScale.z(), value.z(), 0.00001f));
+         osg::equivalent(expectedScale.x(), value.x(), 0.00001f) &&
+         osg::equivalent(expectedScale.y(), value.y(), 0.00001f) &&
+         osg::equivalent(expectedScale.z(), value.z(), 0.00001f));
 }
 
 void BaseEntityActorProxyTests::TestPlatformActorUpdates()
@@ -785,12 +873,12 @@ void BaseEntityActorProxyTests::TestBaseEntityActorUpdates(SimCore::Actors::Base
    float initialTimeUntilNextFullUpdate = drPubAC->GetTimeUntilNextFullUpdate();
    float defaultValue = dtGame::DRPublishingActComp::TIME_BETWEEN_UPDATES;
    bool initialValueIsInRange = 
-      (initialTimeUntilNextFullUpdate < defaultValue * 1.5001f) && 
-      (initialTimeUntilNextFullUpdate > defaultValue * 0.4999f);
+         (initialTimeUntilNextFullUpdate < defaultValue * 1.5001f) &&
+         (initialTimeUntilNextFullUpdate > defaultValue * 0.4999f);
 
    CPPUNIT_ASSERT_MESSAGE("The first full update time should be between 0.5 & 1.5 times the default, but it is \""
-            + dtUtil::ToString(initialTimeUntilNextFullUpdate) + "\" with default \"" + dtUtil::ToString(defaultValue) + "\"",
-      initialValueIsInRange);
+         + dtUtil::ToString(initialTimeUntilNextFullUpdate) + "\" with default \"" + dtUtil::ToString(defaultValue) + "\"",
+         initialValueIsInRange);
    //CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(
    //      "The time until next update should be seeded to the time between complete updates.",
    //      dtGame::DRPublishingActComp::TIME_BETWEEN_UPDATES,
@@ -820,14 +908,14 @@ void BaseEntityActorProxyTests::TestBaseEntityActorUpdates(SimCore::Actors::Base
 
    /// TEST the time Until Update processing
    RefPtr<const dtGame::TickMessage> tickMessage = static_cast<const dtGame::TickMessage*>(
-      tc->FindProcessMessageOfType(dtGame::MessageType::TICK_LOCAL).get());
+         tc->FindProcessMessageOfType(dtGame::MessageType::TICK_LOCAL).get());
    float tickTime = tickMessage->GetDeltaSimTime();
    CPPUNIT_ASSERT_EQUAL_MESSAGE("The time until the next update should decrement by the step time",
-      timeUntilUpdate1 - tickTime, timeUntilUpdate2);
+         timeUntilUpdate1 - tickTime, timeUntilUpdate2);
 
 
    CPPUNIT_ASSERT_MESSAGE("The translation was small. It should NOT have sent an update.",
-      !tc->FindProcessMessageOfType(dtGame::MessageType::INFO_ACTOR_UPDATED).valid());
+         !tc->FindProcessMessageOfType(dtGame::MessageType::INFO_ACTOR_UPDATED).valid());
 
 
    osg::Vec3 largeMovement(200.0f, 345.0f, 657.0f);
@@ -839,23 +927,23 @@ void BaseEntityActorProxyTests::TestBaseEntityActorUpdates(SimCore::Actors::Base
    dtCore::System::GetInstance().Step();
 
    RefPtr<const dtGame::ActorUpdateMessage> update1 =
-      static_cast<const dtGame::ActorUpdateMessage*>(tc->FindProcessMessageOfType(
-                                               dtGame::MessageType::INFO_ACTOR_UPDATED).get());
+         static_cast<const dtGame::ActorUpdateMessage*>(tc->FindProcessMessageOfType(
+               dtGame::MessageType::INFO_ACTOR_UPDATED).get());
 
    entityActor.GetTransform(xform, dtCore::Transformable::REL_CS);
 
    std::ostringstream ss;
    ss << "The translation was large. It should have sent an update.  New position is: "
-      << pos;
+         << pos;
 
    CPPUNIT_ASSERT_MESSAGE(ss.str(),
-                          update1.valid());
+         update1.valid());
 
    // The number of params is based on the subclass. It should at least be pos & rot, but might also be vel & ang vel...
    std::vector<const dtGame::MessageParameter*> toFill;
    update1->GetUpdateParameters(toFill);
    CPPUNIT_ASSERT_MESSAGE("The update message should have at least 2 update parameters in it.",
-                           (int) (toFill.size()) >= 2);
+         (int) (toFill.size()) >= 2);
 
    tc->reset();
 
@@ -867,7 +955,7 @@ void BaseEntityActorProxyTests::TestBaseEntityActorUpdates(SimCore::Actors::Base
    dtCore::System::GetInstance().Step();
 
    CPPUNIT_ASSERT_MESSAGE("The rotation was small. It should NOT have sent an update.",
-      !tc->FindProcessMessageOfType(dtGame::MessageType::INFO_ACTOR_UPDATED).valid());
+         !tc->FindProcessMessageOfType(dtGame::MessageType::INFO_ACTOR_UPDATED).valid());
 
    tc->reset();
 
@@ -879,16 +967,16 @@ void BaseEntityActorProxyTests::TestBaseEntityActorUpdates(SimCore::Actors::Base
    dtCore::System::GetInstance().Step();
 
    RefPtr<const dtGame::ActorUpdateMessage> update2 =
-      static_cast<const dtGame::ActorUpdateMessage*>(tc->FindProcessMessageOfType(
-                                               dtGame::MessageType::INFO_ACTOR_UPDATED).get());
+         static_cast<const dtGame::ActorUpdateMessage*>(tc->FindProcessMessageOfType(
+               dtGame::MessageType::INFO_ACTOR_UPDATED).get());
 
    CPPUNIT_ASSERT_MESSAGE("The rotation was large. It should have sent an update.",
-                          update2.valid());
+         update2.valid());
 
    update2->GetUpdateParameters(toFill);
    // The number of params is based on the subclass. It should at least be pos & rot, but might also be vel & ang vel...
    CPPUNIT_ASSERT_MESSAGE("The update message should have at least 2 update parameters in it.",
-                          (int) (toFill.size()) >= 2);
+         (int) (toFill.size()) >= 2);
 
    tc->reset();
 }
@@ -929,7 +1017,7 @@ void BaseEntityActorProxyTests::TestEntityUpdateToFromStream()
 
       // generate an update message 
       dtCore::RefPtr<dtGame::Message> updateMsg =
-         mGM->GetMessageFactory().CreateMessage(dtGame::MessageType::INFO_ACTOR_UPDATED);
+            mGM->GetMessageFactory().CreateMessage(dtGame::MessageType::INFO_ACTOR_UPDATED);
       dtGame::ActorUpdateMessage *message = static_cast<dtGame::ActorUpdateMessage *>(updateMsg.get());
       eap->PopulateActorUpdate(*message);
 
@@ -951,16 +1039,16 @@ void BaseEntityActorProxyTests::TestEntityUpdateToFromStream()
       std::ostringstream ss1;
       ss1 << "Test #[" << counter << "] - Pos from the data stream should be [" << newPos << "] but it is [" << posFromMessage << "].";
       CPPUNIT_ASSERT_MESSAGE(ss1.str(), 
-         osg::equivalent(posFromMessage.x(), newPos.x(), 1e-2f) &&
-         osg::equivalent(posFromMessage.y(), newPos.y(), 1e-2f) &&
-         osg::equivalent(posFromMessage.z(), newPos.z(), 1e-2f));
+            osg::equivalent(posFromMessage.x(), newPos.x(), 1e-2f) &&
+            osg::equivalent(posFromMessage.y(), newPos.y(), 1e-2f) &&
+            osg::equivalent(posFromMessage.z(), newPos.z(), 1e-2f));
 
       std::ostringstream ss2;
       ss2 << "Test #[" << counter << "] - Rotation from the data stream should be [" << newRot << "] but it is [" << rotFromMessage << "].";
       CPPUNIT_ASSERT_MESSAGE(ss2.str(), 
-         osg::equivalent(rotFromMessage.x(), newRot.x(), 1e-2f) &&
-         osg::equivalent(rotFromMessage.y(), newRot.y(), 1e-2f) &&
-         osg::equivalent(rotFromMessage.z(), newRot.z(), 1e-2f));
+            osg::equivalent(rotFromMessage.x(), newRot.x(), 1e-2f) &&
+            osg::equivalent(rotFromMessage.y(), newRot.y(), 1e-2f) &&
+            osg::equivalent(rotFromMessage.z(), newRot.z(), 1e-2f));
 
    }
 
@@ -1002,21 +1090,21 @@ void BaseEntityActorProxyTests::TestBaseEntityDRRegistration(SimCore::Actors::Ba
 {
    mGM->AddActor(actor, true, false);
    CPPUNIT_ASSERT_MESSAGE("Entity Is remote, so it should add itself to the Dead Reckoning component.",
-      mDeadReckoningComponent->IsRegisteredActor(actor));
+         mDeadReckoningComponent->IsRegisteredActor(actor));
 
    dtCore::Transform xform;
    actor.GetGameActor().GetTransform(xform);
    osg::Vec3 vec;
    xform.GetTranslation(vec);
    CPPUNIT_ASSERT(osg::equivalent(vec.x(), 0.0f, 1e-2f) &&
-                  osg::equivalent(vec.y(), 0.0f, 1e-2f) &&
-                  osg::equivalent(vec.z(), 0.0f, 1e-2f)
-                  );
+         osg::equivalent(vec.y(), 0.0f, 1e-2f) &&
+         osg::equivalent(vec.z(), 0.0f, 1e-2f)
+   );
    xform.GetRotation(vec);
    CPPUNIT_ASSERT(osg::equivalent(vec.x(), 0.0f, 1e-2f) &&
-                  osg::equivalent(vec.y(), 0.0f, 1e-2f) &&
-                  osg::equivalent(vec.z(), 0.0f, 1e-2f)
-                  );
+         osg::equivalent(vec.y(), 0.0f, 1e-2f) &&
+         osg::equivalent(vec.z(), 0.0f, 1e-2f)
+   );
 
    SimCore::Actors::BaseEntity& entity = dynamic_cast<SimCore::Actors::BaseEntity&>(actor.GetGameActor());
 
@@ -1035,14 +1123,14 @@ void BaseEntityActorProxyTests::TestBaseEntityDRRegistration(SimCore::Actors::Ba
    entity.GetTransform(xform);
    xform.GetTranslation(vec);
    CPPUNIT_ASSERT(osg::equivalent(vec.x(), 0.0f, 1e-2f) &&
-                  osg::equivalent(vec.y(), 0.0f, 1e-2f) &&
-                  osg::equivalent(vec.z(), 0.0f, 1e-2f)
-                  );
+         osg::equivalent(vec.y(), 0.0f, 1e-2f) &&
+         osg::equivalent(vec.z(), 0.0f, 1e-2f)
+   );
    xform.GetRotation(vec);
    CPPUNIT_ASSERT(osg::equivalent(vec.x(), 0.0f, 1e-2f) &&
-                  osg::equivalent(vec.y(), 0.0f, 1e-2f) &&
-                  osg::equivalent(vec.z(), 0.0f, 1e-2f)
-                  );
+         osg::equivalent(vec.y(), 0.0f, 1e-2f) &&
+         osg::equivalent(vec.z(), 0.0f, 1e-2f)
+   );
 
    drHelper->SetDeadReckoningAlgorithm(dtGame::DeadReckoningAlgorithm::STATIC);
    dtCore::System::GetInstance().Step();
@@ -1053,19 +1141,19 @@ void BaseEntityActorProxyTests::TestBaseEntityDRRegistration(SimCore::Actors::Ba
    ss << "Translation should be " << setVec << " but it is " << vec << ".";
 
    CPPUNIT_ASSERT_MESSAGE(ss.str(),
-                  osg::equivalent(vec.x(), setVec.x(), 1e-2f) &&
-                  osg::equivalent(vec.y(), setVec.y(), 1e-2f) &&
-                  osg::equivalent(vec.z(), setVec.z(), 1e-2f)
-                  );
+         osg::equivalent(vec.x(), setVec.x(), 1e-2f) &&
+         osg::equivalent(vec.y(), setVec.y(), 1e-2f) &&
+         osg::equivalent(vec.z(), setVec.z(), 1e-2f)
+   );
    xform.GetRotation(vec);
 
    ss.str("");
    ss << "Rotation should be " << setVec << " but it is " << vec << ".";
    CPPUNIT_ASSERT_MESSAGE(ss.str(),
-                  osg::equivalent(vec.x(), setVec.x(), 1e-2f) &&
-                  osg::equivalent(vec.y(), setVec.y(), 1e-2f) &&
-                  osg::equivalent(vec.z(), setVec.z(), 1e-2f)
-                  );
+         osg::equivalent(vec.x(), setVec.x(), 1e-2f) &&
+         osg::equivalent(vec.y(), setVec.y(), 1e-2f) &&
+         osg::equivalent(vec.z(), setVec.z(), 1e-2f)
+   );
 
    mDeadReckoningComponent->UnregisterActor(actor);
    CPPUNIT_ASSERT(!mDeadReckoningComponent->IsRegisteredActor(actor));
@@ -1083,7 +1171,7 @@ void BaseEntityActorProxyTests::TestPlayerActorProxy()
    dtCore::AppSleep(10);
    dtCore::System::GetInstance().Step();
    RefPtr<const dtGame::Message> msg =
-      tc->FindProcessMessageOfType(dtGame::MessageType::INFO_PLAYER_ENTERED_WORLD);
+         tc->FindProcessMessageOfType(dtGame::MessageType::INFO_PLAYER_ENTERED_WORLD);
 
    CPPUNIT_ASSERT_MESSAGE("A player entered the world, a player enter world message should have been found", msg.valid());
    CPPUNIT_ASSERT_MESSAGE("The message found should be of the correct type", msg->GetMessageType() == dtGame::MessageType::INFO_PLAYER_ENTERED_WORLD);
@@ -1107,7 +1195,7 @@ void BaseEntityActorProxyTests::TestDetonationActorProxy()
    mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::DETONATION_ACTOR_TYPE, dap);
    CPPUNIT_ASSERT(dap.valid());
    SimCore::Actors::DetonationActor *da =
-      static_cast<SimCore::Actors::DetonationActor*>(&dap->GetGameActor());
+         static_cast<SimCore::Actors::DetonationActor*>(&dap->GetGameActor());
 
    da->SetSmokeLifeTime(0.000001);
    da->SetDeleteActorTimerSecs(0.0001);

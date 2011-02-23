@@ -439,7 +439,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void WeaponActor::OnEnteredWorld()
       {
-         IGActor::OnEnteredWorld();
+         BaseClass::OnEnteredWorld();
 
          if( ! mMunitionType.valid() && ! mMunitionTypeName.empty() )
          {
@@ -453,10 +453,12 @@ namespace SimCore
       {
          dtGame::GameManager* gm = GetGameActorProxy().GetGameManager();
 
-         if(mShooter.valid())
+         if (mShooter.valid())
          {
             gm->DeleteActor(*mShooter);
          }
+
+         BaseClass::OnRemovedFromWorld();
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -464,7 +466,7 @@ namespace SimCore
       {
          dtGame::GameManager* gm = GetGameActorProxy().GetGameManager();
 
-         if( gm != NULL )
+         if ( gm != NULL )
          {
             // Try to access the munitions component in order
             // to obtain the munition types of shooters
@@ -885,18 +887,6 @@ namespace SimCore
             dtDAL::ResourceActorProperty::SetFuncType(actor, &WeaponActor::LoadSoundFire),
             "The sound produced when this weapon fires.",
             groupResources));
-
-         /*AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::SOUND,
-            "Dry Fire Sound", "Dry Fire Sound",
-            dtDAL::ResourceActorProperty::SetFuncType(actor, &WeaponActor::LoadSoundDryFire),
-            "The sound produced when this weapon attempts to fire nothing.",
-            groupResources));
-
-         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::SOUND,
-            "Jammed Sound", "Jammed Sound",
-            dtDAL::ResourceActorProperty::SetFuncType(actor, &WeaponActor::LoadSoundJammed),
-            "The sound produced when this weapon fires unsuccessfully, jamming on its internal ammunition or parts.",
-            groupResources));*/
 
          // --- PRIMITIVE PROPERTIES --- //
 

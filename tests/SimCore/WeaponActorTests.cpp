@@ -107,7 +107,7 @@ namespace SimCore
             // This function hides the PhysX code from the unit test code.
             void CreateShooter();
 
-            int GetActorCount(dtDAL::ActorType& actorType);
+            size_t GetActorCount(dtDAL::ActorType& actorType);
 
          protected:
          private:
@@ -316,11 +316,11 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      int WeaponActorTests::GetActorCount(dtDAL::ActorType& actorType)
+      size_t WeaponActorTests::GetActorCount(dtDAL::ActorType& actorType)
       {
          std::vector<dtDAL::ActorProxy*> proxyArray;
          mGM->FindActorsByType(actorType, proxyArray);
-         return int(proxyArray.size());
+         return proxyArray.size();
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -513,12 +513,12 @@ namespace SimCore
 
          dtDAL::ActorType& shooterType = *SimCore::Actors::EntityActorRegistry::PHYSICS_MUNITIONS_PARTICLE_SYSTEM_TYPE;
 
-         CPPUNIT_ASSERT(GetActorCount(shooterType) == 1);
+         CPPUNIT_ASSERT_EQUAL(size_t(1), GetActorCount(shooterType));
 
          mGM->DeleteActor(*mWeaponProxy);
          dtCore::System::GetInstance().Step();
 
-         CPPUNIT_ASSERT(GetActorCount(shooterType) == 0);
+         CPPUNIT_ASSERT_EQUAL(size_t(0), GetActorCount(shooterType));
       }
 
       //////////////////////////////////////////////////////////////////////////

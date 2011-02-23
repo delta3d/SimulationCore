@@ -55,7 +55,7 @@ namespace SimCore
          public:
             typedef dtActors::GameMeshActor BaseClass;
 
-            DRGhostActor(DRGhostActorProxy &proxy);
+            DRGhostActor(DRGhostActorProxy& proxy);
 
          protected:
             virtual ~DRGhostActor();
@@ -71,8 +71,8 @@ namespace SimCore
             //virtual void OnTickRemote(const dtGame::TickMessage& tickMessage);
             virtual void OnTickLocal(const dtGame::TickMessage& tickMessage);
 
-            void SetSlavedEntity(SimCore::Actors::BaseEntity *newEntity);
-            SimCore::Actors::BaseEntity *GetSlavedEntity() { return mSlavedEntity.get(); }
+            void SetSlavedEntity(SimCore::Actors::BaseEntity* newEntity);
+            SimCore::Actors::BaseEntity* GetSlavedEntity() { return mSlavedEntity.get(); }
 
             /// The velocity scalar is used to magnify the velocity that is rendered to make it more or less visible. Default is 1.0f
             void SetArrowDrawScalar(float newValue) { mArrowDrawScalar = newValue; }
@@ -139,7 +139,7 @@ namespace SimCore
             virtual void BuildPropertyMap();
 
             /// Returns a useful reference to our actor. If no actor is created yet, this will likely crash.
-            DRGhostActor &GetActorAsDRGhostActor()
+            DRGhostActor& GetActorAsDRGhostActor()
             {
                return *(static_cast<DRGhostActor*>(GetActor()));
             }

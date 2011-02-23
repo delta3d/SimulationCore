@@ -54,13 +54,13 @@ namespace SimCore
       public:
 
          /// Constructor
-         MissileActor(dtGame::GameActorProxy &proxy);
+         MissileActor(dtGame::GameActorProxy& proxy);
 
          void SetFlameEnabled( bool enable );
 
          bool GetFlameEnabled();
 
-         void LoadFlameFile(const std::string &fileName);
+         void LoadFlameFile(const std::string& fileName);
 
          void SetFlame( dtCore::ParticleSystem* particles );
 

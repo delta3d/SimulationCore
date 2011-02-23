@@ -322,11 +322,11 @@ class MessageTests : public CPPUNIT_NS::TestFixture
 
             if (useSubNode)
             {
-               const std::string modelFile("StaticMeshes/T80/t80u_good.ive");
-               CPPUNIT_ASSERT_MESSAGE("The T80 Model does not exist",
-                        dtUtil::FileUtils::GetInstance().FileExists(dtDAL::Project::GetInstance().GetContext() +
-                        "/" + modelFile));
-               t80Proxy->LoadNonDamagedFile(modelFile);
+               dtDAL::ResourceDescriptor modelFile("StaticMeshes:T80:t80u_good.ive");
+
+               CPPUNIT_ASSERT_NO_THROW_MESSAGE("The T80 Model does not exist", dtDAL::Project::GetInstance().GetResourcePath(modelFile));
+
+               t80Proxy->SetNonDamagedResource(modelFile);
             }
 
             RefPtr<SimCore::Actors::StealthActorProxy> playerProxy;

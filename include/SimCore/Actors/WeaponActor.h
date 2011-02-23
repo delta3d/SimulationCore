@@ -53,9 +53,11 @@ namespace SimCore
       // Actor Code
       //////////////////////////////////////////////////////////
       class WeaponActorProxy;
-      class SIMCORE_EXPORT WeaponActor : public Actors::Platform
+      class SIMCORE_EXPORT WeaponActor : public Platform
       {
          public:
+
+            typedef Platform BaseClass;
 
             enum WeaponEffect
             {
@@ -76,7 +78,7 @@ namespace SimCore
             };
 
             // Constructor
-            WeaponActor(WeaponActorProxy &proxy);
+            WeaponActor(WeaponActorProxy& proxy);
 
             // Inherited Functions:
             virtual void OnEnteredWorld();
@@ -148,11 +150,7 @@ namespace SimCore
             // NOTE: It is this weapons responsibility for collecting and preparing
             //       data for a network message, as well as forwarding a local
             //       message through the application.
-#ifdef AGEIA_PHYSICS
-            virtual void ReceiveContactReport(dtAgeiaPhysX::ContactReport& report, dtGame::GameActorProxy* target);
-#else
             virtual void ReceiveContactReport(dtPhysics::CollisionContact& report, dtGame::GameActorProxy* target);
-#endif
 
             /**
              * Set the shooter that this weapon uses to display tracers and/or
