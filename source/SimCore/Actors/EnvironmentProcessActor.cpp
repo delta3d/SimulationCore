@@ -217,8 +217,6 @@ namespace SimCore
          CreatedActorList::iterator found = std::find_if(mCreatedActorsBuffer2.begin(), mCreatedActorsBuffer2.end(), riFunc);
          if (found != mCreatedActorsBuffer2.end())
          {
-            std::cout << "Found puff to update with chem info: " << recordIndex << std::endl;
-
             SimpleMovingShapeActorProxy& actor = **found;
 
             float milligrams = record->GetValue(PARAM_TOTAL_MASS, float(1.0f));
@@ -272,11 +270,6 @@ namespace SimCore
          else
          {
             dtUtil::Log::GetInstance().LogMessage(dtUtil::Log::LOG_ERROR, __FUNCTION__, __LINE__, "Couldn't find matching Simple Moving Shape. %u", recordIndex);
-            std::cout << "Did NOT find puff to update with chem info: " << recordIndex << std::endl;
-            for (unsigned i = 0; i < mCreatedActorsBuffer2.size(); ++i)
-            {
-               std::cout << "    Have puff number: " << mCreatedActorsBuffer2[i]->GetIndex() << std::endl;
-            }
          }
       }
 
@@ -304,21 +297,11 @@ namespace SimCore
 
                if (found != mCreatedActors.end())
                {
-                  std::cout << "Found puff to update for index: " << recordIndex << std::endl;
                   puff = *found;
-                  std::cout << "Found index: " << puff->GetIndex() << std::endl;
                   // erase it because it got updated.  The actors still in this buffer
                   // after the update has been processed will be deleted.
                   mCreatedActorsBuffer2.push_back(puff);
                   mCreatedActors.erase(found);
-               }
-               else
-               {
-                  std::cout << "Did NOT find puff to update for index: " << recordIndex << std::endl;
-                  for (unsigned i = 0; i < mCreatedActors.size(); ++i)
-                  {
-                     std::cout << "    Have puff number: " << mCreatedActors[i]->GetIndex() << std::endl;
-                  }
                }
             }
 
@@ -344,10 +327,8 @@ namespace SimCore
 
             tempVec3 = record->GetValue(PARAM_DIMENSION, defaultVec3);
             puff->SetLastKnownDimension(tempVec3);
-            std::cout << "Dimension" << tempVec3 << std::endl;
             tempVec3 = record->GetValue(PARAM_DIMENSION_RATE, defaultVec3);
             puff->SetLastKnownDimensionVelocity(tempVec3);
-            std::cout << "Dimension Rate" << tempVec3 << std::endl;
             tempVec3 = record->GetValue(PARAM_ORIENTATION, defaultVec3);
             drAC->SetLastKnownRotation(tempVec3);
             tempVec3 = record->GetValue(PARAM_VELOCITY, defaultVec3);
