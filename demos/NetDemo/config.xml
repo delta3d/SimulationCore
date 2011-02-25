@@ -66,8 +66,9 @@ C:\Curtiss\Projects\Delta3D\SimulationCore\demos\NetDemo (as appropriate)
       <Property Name="NetDemo.DefaultPlayMode">FOUR_WHEEL</Property><!--FOUR_WHEEL  HOVER -->
       <Property Name="NetDemo.DefaultHoverVehiclePrototype">Hover Vehicle</Property>
       <!--Property Name="NetDemo.DefaultWheeledVehiclePrototype">HMMWV</Property--> 
-      <Property Name="NetDemo.DefaultWheeledVehiclePrototype">Truck</Property> 
-      <Property Name="NetDemo.DefaultWheeledVehicleTrailerPrototype">Trailer</Property> 
+      <!-- Property Name="NetDemo.DefaultWheeledVehiclePrototype">Truck</Property--> 
+      <Property Name="NetDemo.DefaultWheeledVehiclePrototype">Propelled Vehicle</Property> 
+      <!--Property Name="NetDemo.DefaultWheeledVehicleTrailerPrototype">Trailer</Property--> 
       <Property Name="HasBinocs">true</Property>
       <Property Name="HasCompass">true</Property>
       <Property Name="HasGPS">true</Property>
