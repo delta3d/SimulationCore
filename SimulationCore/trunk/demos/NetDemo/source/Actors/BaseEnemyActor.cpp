@@ -83,11 +83,12 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////////////
    void BaseEnemyActor::OnEnteredWorld()
    {
+      EnsureResourcesAreLoaded();
+
       dtCore::Transform ourTransform;
       GetTransform(ourTransform);
 
       // TODO - Maybe use sphere instead???
-
       dtPhysics::PhysicsObject *physObj = GetPhysicsActComp()->GetMainPhysicsObject();
       physObj->CreateFromProperties(GetNonDamagedFileNode());
       physObj->SetTransform(ourTransform);

@@ -54,7 +54,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////
       // Actor code
       //////////////////////////////////////////////////////////
-      InteriorActor::InteriorActor(dtGame::GameActorProxy &proxy)
+      InteriorActor::InteriorActor(dtGame::GameActorProxy& proxy)
          : Platform(proxy),
          mVisible(true)
          , mLoadedDamageFiles(false)

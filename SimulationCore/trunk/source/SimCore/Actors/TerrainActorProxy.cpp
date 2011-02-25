@@ -154,6 +154,13 @@ namespace SimCore
          SetHideDTCorePhysicsProps(true);
       }
 
+      /////////////////////////////////////////////////////////////////////////////
+      void TerrainActorProxy::OnRemovedFromWorld()
+      {
+         dtGame::GameActorProxy::OnRemovedFromWorld();
+      }
+
+
       ///////////////////////////////////////////////////////////////////////////////
       void TerrainActorProxy::BuildPropertyMap()
       {
@@ -283,7 +290,6 @@ namespace SimCore
       {
          dtGame::GameActor::OnEnteredWorld();
       }
-
 
       /////////////////////////////////////////////////////////////////////////////
       void TerrainActor::AddedToScene(dtCore::Scene* scene)

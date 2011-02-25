@@ -69,6 +69,8 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////////////
    void FortActor::OnEnteredWorld()
    {
+      EnsureResourcesAreLoaded();
+
       dtCore::Transform ourTransform;
       GetTransform(ourTransform);
 

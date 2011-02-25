@@ -137,6 +137,8 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////////////
    void LightTower::OnEnteredWorld()
    {
+      EnsureResourcesAreLoaded();
+
       dtCore::Transform ourTransform;
       GetTransform(ourTransform);
 

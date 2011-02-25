@@ -114,27 +114,6 @@ namespace SimCore
             /// @return the physics mode as in if the physics should be loaded and when.
             void SetTerrainPhysicsMode(TerrainPhysicsMode& physicsMode);
 
-#if AGEIA_PHYSICS
-            virtual void AgeiaPrePhysicsUpdate() { }
-
-            virtual void AgeiaPostPhysicsUpdate() { }
-
-            virtual void AgeiaRaycastReport(const NxRaycastHit& hit,
-               const NxActor& actor,
-               const NxActor& collidedActor)
-            {}
-
-            virtual void AgeiaRaycastReport(const NxRaycastHit& hit,
-               NxActor& ourSelf,
-               NxActor& whatWeHit)
-            {}
-
-            virtual void AgeiaCollisionReport(dtAgeiaPhysX::ContactReport& contactReport,
-               NxActor& ourSelf,
-               NxActor& whatWeHit)
-            {}
-
-#endif
             dtPhysics::PhysicsActComp& GetHelper() { return *mHelper; }
             const dtPhysics::PhysicsActComp& GetHelper() const { return *mHelper; }
 
@@ -161,11 +140,7 @@ namespace SimCore
 
             void LoadMeshFromFile(const std::string& filename, const std::string& materialType);
 
-#if AGEIA_PHYSICS
-            dtCore::RefPtr<dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper> mHelper;
-#else
             dtCore::RefPtr<dtPhysics::PhysicsActComp> mHelper;
-#endif
 
             TerrainPhysicsMode* mTerrainPhysicsMode;
             dtCore::RefPtr<osg::Node> mTerrainNode;
@@ -188,6 +163,8 @@ namespace SimCore
              * Constructor
              */
             TerrainActorProxy();
+
+            virtual void OnRemovedFromWorld();
 
             /**
              * Adds the properties to the actor.

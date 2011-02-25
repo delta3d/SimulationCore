@@ -79,6 +79,8 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////////////
    void FireBallTowerActor::OnEnteredWorld()
    {
+      EnsureResourcesAreLoaded();
+
       dtCore::Transform ourTransform;
       GetTransform(ourTransform);
 

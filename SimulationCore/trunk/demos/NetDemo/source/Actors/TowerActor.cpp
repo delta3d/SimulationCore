@@ -109,6 +109,8 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////////////
    void TowerActor::OnEnteredWorld()
    {
+      EnsureResourcesAreLoaded();
+
       dtCore::Transform ourTransform;
       GetTransform(ourTransform);
 

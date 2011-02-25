@@ -191,14 +191,15 @@ namespace SimCore
       class RemoveIndexFunc
       {
       public:
-         RemoveIndexFunc(unsigned index)
-         : mIndex(index)
+         RemoveIndexFunc(unsigned indexToFind)
+         : mIndex(indexToFind)
          {
          }
 
          bool operator()(SimpleMovingShapeActorProxy* actor)
          {
-            return unsigned(actor->GetIndex()) == mIndex;
+            bool result = unsigned(actor->GetIndex()) == mIndex;
+            return result;
          }
       private:
          unsigned mIndex;
@@ -216,6 +217,8 @@ namespace SimCore
          CreatedActorList::iterator found = std::find_if(mCreatedActorsBuffer2.begin(), mCreatedActorsBuffer2.end(), riFunc);
          if (found != mCreatedActorsBuffer2.end())
          {
+            std::cout << "Found puff to update with chem info: " << recordIndex << std::endl;
+
             SimpleMovingShapeActorProxy& actor = **found;
 
             float milligrams = record->GetValue(PARAM_TOTAL_MASS, float(1.0f));
@@ -229,32 +232,38 @@ namespace SimCore
             multiplierConfig.reserve(CONFIG_COLOR_PREFIX->length() + 12);
             multiplierConfig = CONFIG_COLOR_PREFIX;
 
+            std::string defaultColor("1.0 1.0 1.0");
+
             if (typeCode == BiologicalStateType)
             {
                multiplierConfig += "Biological";
                colorConfig += "Biological";
+               defaultColor = "1.0 0.6 0.1";
             }
             else if (typeCode == ChemLiquidStateType)
             {
                multiplierConfig += "ChemLiquid";
                colorConfig += "ChemLiquid";
+               defaultColor = "0.1 1.0 0.1";
             }
             else if (typeCode == RadiologicalStateType)
             {
                multiplierConfig += "Radiological";
                colorConfig += "Radiological";
+               defaultColor = "1.0 1.0 0.1";
             }
             else if (typeCode == ChemVaporStateType)
             {
                multiplierConfig += "ChemVapor";
                colorConfig += "ChemVapor";
+               defaultColor = "0.5 0.5 1.0";
             }
 
             multiplier = dtUtil::ToType<float>(GetGameManager()->GetConfiguration().GetConfigPropertyValue(multiplierConfig, "1.0"));
 
 
             dtCore::RefPtr<dtDAL::NamedVec3Parameter> colorParam = new dtDAL::NamedVec3Parameter("color");
-            colorParam->FromString(GetGameManager()->GetConfiguration().GetConfigPropertyValue(colorConfig, "1.0 1.0 1.0"));
+            colorParam->FromString(GetGameManager()->GetConfiguration().GetConfigPropertyValue(colorConfig, defaultColor));
 
             actor.SetDensityMultiplier(multiplier);
             actor.SetMass(milligrams);
@@ -263,13 +272,18 @@ namespace SimCore
          else
          {
             dtUtil::Log::GetInstance().LogMessage(dtUtil::Log::LOG_ERROR, __FUNCTION__, __LINE__, "Couldn't find matching Simple Moving Shape. %u", recordIndex);
+            std::cout << "Did NOT find puff to update with chem info: " << recordIndex << std::endl;
+            for (unsigned i = 0; i < mCreatedActorsBuffer2.size(); ++i)
+            {
+               std::cout << "    Have puff number: " << mCreatedActorsBuffer2[i]->GetIndex() << std::endl;
+            }
          }
       }
 
       ////////////////////////////////////////////
       void EnvironmentProcessActorProxy::OnRecordChange(const dtCore::RefPtr<dtDAL::NamedGroupParameter>& record)
       {
-         unsigned index = record->GetValue(PARAM_INDEX, 0U);
+         unsigned recordIndex = record->GetValue(PARAM_INDEX, 0U);
          unsigned typeCode = record->GetValue(PARAM_TYPE_CODE, 0U);
 
          switch (EnvironmentRecordTypeCode(typeCode))
@@ -284,17 +298,27 @@ namespace SimCore
 
             if (!mCreatedActors.empty())
             {
-               RemoveIndexFunc riFunc(index);
+               RemoveIndexFunc riFunc(recordIndex);
 
-               CreatedActorList::iterator found = std::remove_if(mCreatedActors.begin(), mCreatedActors.end(), riFunc);
+               CreatedActorList::iterator found = std::find_if(mCreatedActors.begin(), mCreatedActors.end(), riFunc);
 
                if (found != mCreatedActors.end())
                {
+                  std::cout << "Found puff to update for index: " << recordIndex << std::endl;
                   puff = *found;
+                  std::cout << "Found index: " << puff->GetIndex() << std::endl;
                   // erase it because it got updated.  The actors still in this buffer
                   // after the update has been processed will be deleted.
                   mCreatedActorsBuffer2.push_back(puff);
-                  mCreatedActors.erase(found, mCreatedActors.end());
+                  mCreatedActors.erase(found);
+               }
+               else
+               {
+                  std::cout << "Did NOT find puff to update for index: " << recordIndex << std::endl;
+                  for (unsigned i = 0; i < mCreatedActors.size(); ++i)
+                  {
+                     std::cout << "    Have puff number: " << mCreatedActors[i]->GetIndex() << std::endl;
+                  }
                }
             }
 
@@ -302,7 +326,7 @@ namespace SimCore
             {
                GetGameManager()->CreateActor(*EntityActorRegistry::ENVIRONMENT_PROCESS_MOVING_SHAPE_ACTOR_TYPE, puff);
                puff->SetOwner(GetId());
-               puff->SetIndex(index);
+               puff->SetIndex(recordIndex);
                GetGameManager()->AddActor(*puff, IsRemote(), false);
                mCreatedActorsBuffer2.push_back(puff);
             }
