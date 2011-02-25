@@ -40,10 +40,6 @@
 #include <climits>
 #include <algorithm>
 
-//DELETE ME
-#include <iostream>
-#include <osg/io_utils>
-
 namespace SimCore
 {
    namespace Actors
