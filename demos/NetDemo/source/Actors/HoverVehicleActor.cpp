@@ -62,6 +62,8 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////////////
    void HoverVehicleActor::OnEnteredWorld()
    {
+      EnsureResourcesAreLoaded();
+
       dtCore::Transform ourTransform;
       GetTransform(ourTransform);
 
