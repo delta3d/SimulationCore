@@ -290,11 +290,11 @@ namespace SimCore
                   vrc->CreateShapeVolume(mShapeVolume);
                   vrc->ComputeParticleRadius(*mShapeVolume);
 
-                  std::cout << std::endl << "Creating new plume:" << std::endl;
-                  std::cout << "radius: " << mShapeVolume->mRadius << std::endl;
-                  std::cout << "num particles: " << mShapeVolume->mNumParticles << std::endl;
-                  std::cout << "particle radius: " << mShapeVolume->mParticleRadius << std::endl;
-                  std::cout << "density: " << mShapeVolume->mDensity << std::endl << std::endl;
+                  //std::cout << std::endl << "Creating new plume:" << std::endl;
+                  //std::cout << "radius: " << mShapeVolume->mRadius << std::endl;
+                  //std::cout << "num particles: " << mShapeVolume->mNumParticles << std::endl;
+                  //std::cout << "particle radius: " << mShapeVolume->mParticleRadius << std::endl;
+                  //std::cout << "density: " << mShapeVolume->mDensity << std::endl << std::endl;
                }
                else if(numParticles >= (2.0f * mShapeVolume->mNumParticles))
                {
@@ -311,11 +311,11 @@ namespace SimCore
                   vrc->ComputeParticleRadius(*mShapeVolume);
 
 
-                  std::cout << std::endl << "Modifying plume:" << std::endl;
-                  std::cout << "radius: " << mShapeVolume->mRadius << std::endl;
-                  std::cout << "num particles: " << mShapeVolume->mNumParticles << std::endl;
-                  std::cout << "particle radius: " << mShapeVolume->mParticleRadius << std::endl;
-                  std::cout << "density: " << mShapeVolume->mDensity << std::endl << std::endl;
+                  //std::cout << std::endl << "Modifying plume:" << std::endl;
+                  //std::cout << "radius: " << mShapeVolume->mRadius << std::endl;
+                  //std::cout << "num particles: " << mShapeVolume->mNumParticles << std::endl;
+                  //std::cout << "particle radius: " << mShapeVolume->mParticleRadius << std::endl;
+                  //std::cout << "density: " << mShapeVolume->mDensity << std::endl << std::endl;
 
                }
                else
