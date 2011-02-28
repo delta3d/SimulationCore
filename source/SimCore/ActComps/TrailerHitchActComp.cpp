@@ -239,7 +239,8 @@ namespace SimCore
          std::pair<osg::Group*, osg::Group* > nodes = GetHitchNodes();
          if (nodes.first == NULL || nodes.second == NULL)
          {
-            LOG_WARNING("Unable to attach trailer, either the tractor or trailer hitch nodes cannot be found.");
+            LOG_WARNING("Unable to attach trailer; either the tractor hitch \"" + mHitchNodeNameTractor
+                     + "\"  or trailer hitch \"" + mHitchNodeNameTrailer + "\" nodes cannot be found.");
             return;
          }
 
@@ -516,7 +517,8 @@ namespace SimCore
             std::pair<osg::Group*, osg::Group* > nodes = GetHitchNodes();
             if (nodes.first == NULL || nodes.second == NULL)
             {
-               LOG_WARNING("The trailer seems to think it's attached, but either the tractor or trailer hitch nodes cannot be found.");
+               LOG_WARNING("The trailer seems to think it's attached, but either the tractor hitch \"" + mHitchNodeNameTractor
+                        + "\"  or trailer hitch \"" + mHitchNodeNameTrailer + "\" nodes cannot be found.");
             }
             else
             {
