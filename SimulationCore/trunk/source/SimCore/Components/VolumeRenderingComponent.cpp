@@ -912,7 +912,7 @@ namespace SimCore
       dtCore::RefPtr<osg::Image> img = noise3d.MakeNoiseTexture(GL_ALPHA);
       LOG_INFO("Finished creating noise texture for VolumeRenderingComponent.");
 
-      dtCore::ShaderManager& sm = dtCore::ShaderManager::GetInstance();
+      //dtCore::ShaderManager& sm = dtCore::ShaderManager::GetInstance();
 
       mNoiseTexture = new osg::Texture3D();
       mNoiseTexture->setImage(img.get());
@@ -997,10 +997,10 @@ namespace SimCore
       osg::Vec3 p1, p2;// Box vertices, Sphere center, Cylinder/Cone e`nds
       float radius1 = 0.0f;
       float radius2 = 0.0f;
-      float radius3 = 0.0f;
+      //float radius3 = 0.0f;
       float radius1Sqr = 0.0f;
       float radius2Sqr = 0.0f;
-      float radius3Sqr = 0.0f;
+      //float radius3Sqr = 0.0f;
 
 
       switch(s)
