@@ -22,7 +22,7 @@ C:\Curtiss\Projects\SimulationCore\demos\DriverDemo
 
     <Properties>
       <Property Name="Delta3DLogFileName">Delta3D_Log1.html</Property> 
-      <Property Name="ProjectPath">../ProjectAssets</Property>
+      <!-- Property Name="ProjectPath">../ProjectConfig.dtproj</Property -->
 
       <Property Name="dtPhysics.PhysicsEngine">Bullet</Property> <!-- Bullet Novodex ODE -->
       <Property Name="dtPhysics.PalPluginPath">../../../dtPhysics/ext/PalPlugins/</Property>
