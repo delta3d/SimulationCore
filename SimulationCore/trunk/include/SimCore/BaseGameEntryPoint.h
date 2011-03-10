@@ -53,6 +53,7 @@ namespace SimCore
       public:
 
          static const std::string PROJECT_CONTEXT_DIR;
+         static const std::string PROJECT_CONFIG_FILE;
          static const std::string LIBRARY_NAME;
 
          /**

@@ -56,6 +56,7 @@
 #include <dtDAL/resourcedescriptor.h>
 #include <dtDAL/map.h>
 #include <dtDAL/enginepropertytypes.h>
+#include <dtDAL/projectconfig.h>
 
 #include <dtGame/gamemanager.h>
 #include <dtGame/gameapplication.h>
@@ -83,6 +84,7 @@ namespace SimCore
 
    const std::string BaseGameEntryPoint::LIBRARY_NAME("SimCore");
    const std::string BaseGameEntryPoint::PROJECT_CONTEXT_DIR("ProjectAssets");
+   const std::string BaseGameEntryPoint::PROJECT_CONFIG_FILE("ProjectConfig.dtproj");
 
    const std::string BaseGameEntryPoint::CONFIG_PROP_PROJECT_CONTEXT_PATH("ProjectPath");
    const std::string BaseGameEntryPoint::CONFIG_PROP_USE_GPU_CHARACTER_SKINNING("UseGPUCharacterSkinning");
@@ -225,53 +227,53 @@ namespace SimCore
    void BaseGameEntryPoint::AssignProjectContext(dtGame::GameManager& gm)
    {
       dtUtil::FileUtils& fileUtils = dtUtil::FileUtils::GetInstance();
-      std::string finalProjectPath;
 
       if (mProjectPath.empty())
       {
          mProjectPath = gm.GetConfiguration().GetConfigPropertyValue(CONFIG_PROP_PROJECT_CONTEXT_PATH);
       }
 
+      if (mProjectPath.empty())
+      {
+         if (fileUtils.FileExists(PROJECT_CONFIG_FILE))
+         {
+            mProjectPath = PROJECT_CONFIG_FILE;
+         }
+         else if (fileUtils.DirExists(PROJECT_CONTEXT_DIR))
+         {
+            mProjectPath = PROJECT_CONTEXT_DIR;
+         }
+         else if (fileUtils.DirExists(std::string("../") + PROJECT_CONTEXT_DIR))
+         {
+            mProjectPath = std::string("../") + PROJECT_CONTEXT_DIR;
+         }
+      }
+
       if(!mProjectPath.empty())
       {
-         if(!fileUtils.DirExists(mProjectPath))
+         if (fileUtils.DirExists(mProjectPath))
          {
-           throw dtGame::GameApplicationConfigException(
-                  "The data directory " + mProjectPath + " could not be located in the working directory or its parent directory. Aborting application. Make sure the config.xml is in the right directory and the ProjectPath is set correctly."
-                  , __FILE__, __LINE__);
+            LOG_INFO("The project context \"" + mProjectPath + "\" is a directory has been found. Attempting config project");
+            dtDAL::Project::GetInstance().SetContext(mProjectPath);
+         }
+         else if (fileUtils.FileExists(mProjectPath))
+         {
+            LOG_INFO("The project context \"" + mProjectPath + "\" is a file.  Attempting to load as a project config.");
+            dtDAL::Project::GetInstance().SetupFromProjectConfigFile(mProjectPath);
          }
          else
          {
-            LOG_INFO("The data directory " + mProjectPath + " was located in the current working directory.");
-            dtDAL::Project::GetInstance().SetContext(mProjectPath);
+            throw dtGame::GameApplicationConfigException(
+                   "The path " + mProjectPath + " could not be located in the working directory or its parent directory. Aborting application. Make sure the config.xml is in the right directory and the ProjectPath is set correctly."
+                   , __FILE__, __LINE__);
          }
-         finalProjectPath = mProjectPath;
       }
       else
       {
-         if(!fileUtils.DirExists(PROJECT_CONTEXT_DIR))
-         {
-            fileUtils.ChangeDirectory("..");
-            if(!fileUtils.DirExists(PROJECT_CONTEXT_DIR))
-            {
-               throw dtGame::GameApplicationConfigException(
+         throw dtGame::GameApplicationConfigException(
                   "The data directory " + PROJECT_CONTEXT_DIR +
                   " could not be located in the working directory or its parent directory. Aborting application. Make sure the config.xml is in the right directory and the ProjectPath is set correctly."
                   , __FILE__, __LINE__);
-            }
-            else
-            {
-               LOG_INFO("The data directory " + PROJECT_CONTEXT_DIR + " was located in the parent directory. "
-                        "Setting current working directory to be the parent directory.");
-               dtDAL::Project::GetInstance().SetContext(PROJECT_CONTEXT_DIR);
-            }
-         }
-         else
-         {
-            LOG_INFO("The data directory " + PROJECT_CONTEXT_DIR + " was located in the current working directory.");
-            dtDAL::Project::GetInstance().SetContext(PROJECT_CONTEXT_DIR);
-         }
-         finalProjectPath = PROJECT_CONTEXT_DIR;
       }
    }
 
