@@ -28,17 +28,19 @@
    </property>
    <widget class="QMenu" name="mMenuWindow">
     <property name="title">
-     <string>Window</string>
+     <string>&amp;Window</string>
     </property>
     <addaction name="mActionFullScreen"/>
     <addaction name="mActionShowControls"/>
     <addaction name="mActionShowPreferences"/>
     <addaction name="mActionShowEntityInfo"/>
     <addaction name="mActionShowViewUI"/>
+    <addaction name="separator"/>
+    <addaction name="mActionExit"/>
    </widget>
    <widget class="QMenu" name="mMenuNetwork">
     <property name="title">
-     <string>Network</string>
+     <string>&amp;Network</string>
     </property>
     <addaction name="mActionHLAConnections"/>
    </widget>
@@ -3202,6 +3204,11 @@
     <string>Show Views</string>
    </property>
   </action>
+  <action name="mActionExit">
+   <property name="text">
+    <string>E&amp;xit</string>
+   </property>
+  </action>
  </widget>
  <tabstops>
   <tabstop>mWeatherUseNetworkSettingsRadioButton</tabstop>
@@ -3432,6 +3439,22 @@
     <hint type="destinationlabel">
      <x>785</x>
      <y>596</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mActionExit</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>719</x>
+     <y>454</y>
     </hint>
    </hints>
   </connection>
