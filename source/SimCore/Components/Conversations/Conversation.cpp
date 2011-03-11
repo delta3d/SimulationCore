@@ -264,6 +264,7 @@ namespace SimCore
       const std::string DISABLE_EVENT_ELEMENT("DisableEvent");
       const std::string ENABLE_FLAG("Enabled");
       const std::string FORCE_CLOSE_RESPONSE_LAST_FLAG("ForceCloseResponseLast");
+      const std::string REPEAT_ELEMENT("Repeat"); // Used at interaction and wrong_feedback level.
 
       //////////////////////////////////////////////////////////////////////////
       void Conversation::XMLHandler::startElement(const XMLCh* const uri,
@@ -288,6 +289,7 @@ namespace SimCore
          dtUtil::AttributeSearch::ResultMap::iterator disableeventiter = results.find(DISABLE_EVENT_ELEMENT);
          dtUtil::AttributeSearch::ResultMap::iterator enableflagiter = results.find(ENABLE_FLAG);
          dtUtil::AttributeSearch::ResultMap::iterator forcecloselastiter = results.find(FORCE_CLOSE_RESPONSE_LAST_FLAG);
+         dtUtil::AttributeSearch::ResultMap::iterator repeatiter = results.find(REPEAT_ELEMENT);
 
          if(elementStr == CONVERSATION_ELEMENT)
          {
@@ -351,6 +353,11 @@ namespace SimCore
             {
                bool b = dtUtil::ToType<bool>((*forcecloselastiter).second);
                mCurrentInteraction->SetForceCloseResponseLast(b);
+            }
+
+            if(repeatiter != results.end())
+            {
+               mCurrentInteraction->SetRepeatText((*repeatiter).second);
             }
 
          }
@@ -442,6 +449,12 @@ namespace SimCore
                   std::string str2((*audioiter).second);
                   mBranchInteraction->SetSoundHandle(str2);
                }
+
+               if(repeatiter != results.end())
+               {
+                  mBranchInteraction->SetRepeatText((*repeatiter).second);
+               }
+
             }
             else
             {

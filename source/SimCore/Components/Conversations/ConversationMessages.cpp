@@ -16,7 +16,7 @@
  * along with this library; if not, write to the Free Software Foundation, Inc.,
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * Bradley Anderegg
+ * Bradley Anderegg, Curtiss Murphy
  */
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -45,6 +45,7 @@ namespace SimCore
    const dtUtil::RefString InteractionChangedMessage::PARAMETER_RESPONSE_TEXT_4("Response Text 4");
    const dtUtil::RefString InteractionChangedMessage::PARAMETER_RESPONSE_TEXT_5("Response Text 5");
    const dtUtil::RefString InteractionChangedMessage::PARAMETER_RESPONSE_TEXT_6("Response Text 6");
+   const dtUtil::RefString InteractionChangedMessage::PARAMETER_REPEAT_TEXT("Repeat Text");
 
    /////////////////////////////////////////////////////////////////////////////
    InteractionChangedMessage::InteractionChangedMessage()
@@ -57,6 +58,7 @@ namespace SimCore
       , mResponseText4(new dtGame::StringMessageParameter(InteractionChangedMessage::PARAMETER_RESPONSE_TEXT_4, ""))
       , mResponseText5(new dtGame::StringMessageParameter(InteractionChangedMessage::PARAMETER_RESPONSE_TEXT_5, ""))
       , mResponseText6(new dtGame::StringMessageParameter(InteractionChangedMessage::PARAMETER_RESPONSE_TEXT_6, ""))
+      , mRepeatText(new dtGame::StringMessageParameter(InteractionChangedMessage::PARAMETER_REPEAT_TEXT, ""))
    {
       AddParameter(mConversationName.get());
       AddParameter(mInteractionText.get());
@@ -66,6 +68,7 @@ namespace SimCore
       AddParameter(mResponseText4.get());
       AddParameter(mResponseText5.get());
       AddParameter(mResponseText6.get());
+      AddParameter(mRepeatText.get());
    }
 
    /////////////////////////////////////////////////////////////////////////////
@@ -168,6 +171,18 @@ namespace SimCore
    const std::string& InteractionChangedMessage::GetResponseText6() const
    {
       return mResponseText6->GetValue();
+   }
+
+   /////////////////////////////////////////////////////////////////////////////
+   void InteractionChangedMessage::SetRepeatText(const std::string& text)
+   {
+      mRepeatText->FromString(text);
+   }
+
+   /////////////////////////////////////////////////////////////////////////////
+   const std::string& InteractionChangedMessage::GetRepeatText() const
+   {
+      return mRepeatText->GetValue();
    }
 
 

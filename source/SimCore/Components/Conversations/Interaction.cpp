@@ -16,7 +16,7 @@
 * along with this library; if not, write to the Free Software Foundation, Inc.,
 * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 *
-* Bradley Anderegg
+* Bradley Anderegg, Curtiss Murphy
 */
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -57,6 +57,7 @@ namespace SimCore
          , mInteractionText()
          , mSoundHandle()
          , mResponses()
+         , mRepeatText()
       {
 
       }
@@ -101,6 +102,18 @@ namespace SimCore
       const std::string& Interaction::GetSoundHandle() const
       {
          return mSoundHandle;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void Interaction::SetRepeatText(const std::string& newValue)
+      {
+         mRepeatText = newValue;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      const std::string& Interaction::GetRepeatText() const
+      {
+         return mRepeatText;
       }
 
       //////////////////////////////////////////////////////////////////////////
