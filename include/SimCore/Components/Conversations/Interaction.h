@@ -16,7 +16,7 @@
 * along with this library; if not, write to the Free Software Foundation, Inc.,
 * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 *
-* Bradley Anderegg
+* Bradley Anderegg, Curtiss Murphy
 */
 #ifndef SIMCORE_INTERACTION_H
 #define SIMCORE_INTERACTION_H
@@ -80,6 +80,11 @@ namespace SimCore
             void SetSoundHandle(const std::string& soundName);
             const std::string& GetSoundHandle() const;
 
+            /// Repeat Text is a placeholder for some UI's that allow audio and a text option to ask 'please repeat last audio'. 
+            void SetRepeatText(const std::string& newValue);
+            /// Repeat Text is a placeholder for some UI's that allow audio and a text option to ask 'please repeat last audio'. 
+            const std::string& GetRepeatText() const;
+
             void SetInteractionType(const InteractionType& interactionType);
             const InteractionType& GetInteractionType() const;
 
@@ -111,6 +116,7 @@ namespace SimCore
             std::string mCharacterName;
             std::string mInteractionText;
             std::string mSoundHandle;
+            std::string mRepeatText;
 
             ResponseArray mResponses;
       };

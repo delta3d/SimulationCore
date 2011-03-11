@@ -16,7 +16,7 @@
  * along with this library; if not, write to the Free Software Foundation, Inc.,
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * Bradley Anderegg
+ * Bradley Anderegg, Curtiss Murphy
  */
 
 #ifndef SIMCORE_CONVERSATION_MESSAGES_H
@@ -62,6 +62,7 @@ namespace SimCore
          static const dtUtil::RefString PARAMETER_RESPONSE_TEXT_4;
          static const dtUtil::RefString PARAMETER_RESPONSE_TEXT_5;
          static const dtUtil::RefString PARAMETER_RESPONSE_TEXT_6;
+         static const dtUtil::RefString PARAMETER_REPEAT_TEXT;
 
          /// Constructor
          InteractionChangedMessage();
@@ -90,6 +91,9 @@ namespace SimCore
          void SetResponseText6( const std::string& text );
          const std::string& GetResponseText6() const;
 
+         void SetRepeatText( const std::string& text );
+         const std::string& GetRepeatText() const;
+
       protected:
 
          /// Destructor
@@ -104,6 +108,7 @@ namespace SimCore
          dtCore::RefPtr<dtGame::StringMessageParameter> mResponseText4;
          dtCore::RefPtr<dtGame::StringMessageParameter> mResponseText5;
          dtCore::RefPtr<dtGame::StringMessageParameter> mResponseText6;
+         dtCore::RefPtr<dtGame::StringMessageParameter> mRepeatText; 
 
    };
 
