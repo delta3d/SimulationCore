@@ -64,6 +64,7 @@ set(LIB_SOURCES_2
    "${SOURCE_PATH}/Actors/BasePhysicsVehicleActor.cpp"
    "${SOURCE_PATH}/Actors/BaseTerrainActor.cpp"
    "${SOURCE_PATH}/Actors/BaseWaterActor.cpp"
+   "${SOURCE_PATH}/Actors/BattlefieldGraphicsActor.cpp"
    "${SOURCE_PATH}/Actors/CamoConfigActor.cpp"
    "${SOURCE_PATH}/Actors/ControlStateActor.cpp"
    "${SOURCE_PATH}/Actors/DayTimeActor.cpp"
