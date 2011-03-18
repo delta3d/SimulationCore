@@ -103,6 +103,8 @@ namespace SimCore
 
             static dtCore::RefPtr<dtDAL::ActorType> ENVIRONMENT_PROCESS_MOVING_SHAPE_ACTOR_TYPE;
 
+            static dtCore::RefPtr<dtDAL::ActorType> BATTLEFIELD_GRAPHICS_ACTOR_TYPE;
+
 
             /// Constructor
             EntityActorRegistry();
