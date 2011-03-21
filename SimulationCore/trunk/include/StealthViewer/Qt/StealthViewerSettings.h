@@ -67,6 +67,7 @@ namespace StealthQt
          static const QString SERVER_GAMEVERSION;
          static const QString DIS_IP_ADDRESS;
          static const QString DIS_PORT;
+         static const QString DIS_BROADCAST;
          static const QString DIS_EXERCISE_ID;
          static const QString DIS_SITE_ID;
          static const QString DIS_APPLICATION_ID;
@@ -175,16 +176,27 @@ namespace StealthQt
           * @param isEditMode True if you are editing an existing connection
           * @return True on success
           */
-         bool AddConnection(const QString &name, const QString &mapResource,
-            const QString &configResource, const QString &fedResource,
-            const QString &fedex, const QString &federateName,
-            const QString &ridFile, const QString &connectionType,
-            const QString &serverIPAddress, const QString &serverPort, 
-            const QString &serverGameName, const QString &serverGameVersion,
-            const QString &disIPAddress, const unsigned int &disPort,
-            const unsigned char &disExerciseID, const unsigned short &disSiteID,
-            const unsigned short &disApplicationID, const unsigned int &disMTU,
-            const QString &actorXMLFile, bool isEditMode = false);
+         bool AddConnection(const QString &name,
+            const QString &mapResource,
+            const QString &configResource,
+            const QString &fedResource,
+            const QString &fedex,
+            const QString &federateName,
+            const QString &ridFile,
+            const QString &connectionType,
+            const QString &serverIPAddress,
+            const QString &serverPort, 
+            const QString &serverGameName,
+            const QString &serverGameVersion,
+            const QString &disIPAddress, //13
+            const unsigned int &disPort,
+            bool disBroadcast,
+            const unsigned char &disExerciseID,
+            const unsigned short &disSiteID,
+            const unsigned short &disApplicationID,
+            const unsigned int &disMTU,
+            const QString &actorXMLFile,
+            bool isEditMode = false);
 
          /**
           * Returns a string list of the properties in the following order:

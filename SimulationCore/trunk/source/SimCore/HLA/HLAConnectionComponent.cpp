@@ -311,6 +311,7 @@ namespace SimCore
             disConnectionData.site_id = mDISSiteID;
             disConnectionData.application_id = mDISApplicationID;
             disConnectionData.MTU = mDISMTU;
+            disConnectionData.use_broadcast = mDISIsBroadcastPort;
 
             dtDIS::SharedState* disConfig = new dtDIS::SharedState("", mDISActorXMLFile);
             disConfig->SetConnectionData(disConnectionData);

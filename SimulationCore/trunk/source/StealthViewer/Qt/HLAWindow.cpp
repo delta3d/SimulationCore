@@ -319,11 +319,12 @@ namespace StealthQt
          int serverGameVersionInt = properties[11].toInt();
          std::string disIPAddress = properties[12].toStdString();
          unsigned int disPort = properties[13].toUInt();
-         unsigned char disExerciseID = properties[14].toUInt();
-         unsigned short disSiteID = properties[15].toUShort();
-         unsigned short disApplicationID = properties[16].toUShort();
-         unsigned int disMTU = properties[17].toUInt();
-         std::string disActorXMLFile = properties[18].toStdString();
+         bool disBroadcast = properties[14] == "true" ? true: false;
+         unsigned char disExerciseID = properties[15].toUInt();
+         unsigned short disSiteID = properties[16].toUShort();
+         unsigned short disApplicationID = properties[17].toUShort();
+         unsigned int disMTU = properties[18].toUInt();
+         std::string disActorXMLFile = properties[19].toStdString();
 
          if(mHLAComp != NULL)
          {
@@ -359,6 +360,7 @@ namespace StealthQt
 
                mHLAComp->SetDISIPAddress(disIPAddress);
                mHLAComp->SetDISPort(disPort);
+               mHLAComp->SetDISBroadcast(disBroadcast);
                mHLAComp->SetDISExerciseID(disExerciseID);
                mHLAComp->SetDISSiteID(disSiteID);
                mHLAComp->SetDISApplicationID(disApplicationID);
