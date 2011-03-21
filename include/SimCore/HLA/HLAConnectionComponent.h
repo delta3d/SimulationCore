@@ -198,6 +198,11 @@ namespace SimCore
             /// Port used with type DIS Connections
             unsigned int GetDISPort() const { return mDISPort; }
 
+            /// Setup the DIS connection as a broadcast
+            void SetDISBroadcast(bool newValue) { mDISIsBroadcastPort = newValue; }
+            /// Is the DIS connection a broadcast Port?
+            unsigned int GetDISBroadcast() const { return mDISIsBroadcastPort; }
+
             /// Exercise ID used with type DIS Connections
             void SetDISExerciseID(unsigned char newValue) { mDISExerciseID = newValue; }
             /// Exercise ID used with type DIS Connections
@@ -285,6 +290,7 @@ namespace SimCore
             int mServerGameVersion;
             std::string mDISIPAddress;
             unsigned int mDISPort;
+            bool mDISIsBroadcastPort;
             unsigned char mDISExerciseID;
             unsigned short mDISSiteID;
             unsigned short mDISApplicationID;

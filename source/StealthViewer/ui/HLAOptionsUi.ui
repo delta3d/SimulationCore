@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>402</width>
-    <height>704</height>
+    <height>755</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -404,13 +404,16 @@
         <property name="title">
          <string>DIS Options</string>
         </property>
-        <layout class="QFormLayout" name="formLayout">
+        <layout class="QGridLayout" name="gridLayout_4">
          <item row="0" column="0">
           <widget class="QLabel" name="mDISIPAddressLabel">
            <property name="text">
             <string>IP Address</string>
            </property>
           </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLineEdit" name="mDISIPAddressEdit"/>
          </item>
          <item row="1" column="0">
           <widget class="QLabel" name="mDISPortLabel">
@@ -419,45 +422,27 @@
            </property>
           </widget>
          </item>
-         <item row="2" column="0">
+         <item row="1" column="1">
+          <widget class="QSpinBox" name="mDISPortEdit">
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+           <property name="maximum">
+            <number>65535</number>
+           </property>
+           <property name="value">
+            <number>62040</number>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0">
           <widget class="QLabel" name="mDISExerciseIDLabel">
            <property name="text">
             <string>Exercise ID</string>
            </property>
           </widget>
          </item>
-         <item row="3" column="0">
-          <widget class="QLabel" name="mDISSiteIDLabel">
-           <property name="text">
-            <string>Site ID</string>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="0">
-          <widget class="QLabel" name="mDISApplicationIDLabel">
-           <property name="text">
-            <string>Application ID</string>
-           </property>
-          </widget>
-         </item>
-         <item row="5" column="0">
-          <widget class="QLabel" name="mDISMTULabel">
-           <property name="text">
-            <string>MTU</string>
-           </property>
-          </widget>
-         </item>
-         <item row="6" column="0">
-          <widget class="QLabel" name="mDISActorLabel">
-           <property name="text">
-            <string>Actor XML File</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="QLineEdit" name="mDISIPAddressEdit"/>
-         </item>
-         <item row="2" column="1">
+         <item row="3" column="1">
           <widget class="QSpinBox" name="mDISExerciseIDEdit">
            <property name="alignment">
             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -470,7 +455,14 @@
            </property>
           </widget>
          </item>
-         <item row="3" column="1">
+         <item row="4" column="0">
+          <widget class="QLabel" name="mDISSiteIDLabel">
+           <property name="text">
+            <string>Site ID</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="1">
           <widget class="QSpinBox" name="mDISSiteIDEdit">
            <property name="alignment">
             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -483,7 +475,14 @@
            </property>
           </widget>
          </item>
-         <item row="4" column="1">
+         <item row="5" column="0">
+          <widget class="QLabel" name="mDISApplicationIDLabel">
+           <property name="text">
+            <string>Application ID</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="1">
           <widget class="QSpinBox" name="mDISApplicationIDEdit">
            <property name="alignment">
             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -496,7 +495,14 @@
            </property>
           </widget>
          </item>
-         <item row="5" column="1">
+         <item row="6" column="0">
+          <widget class="QLabel" name="mDISMTULabel">
+           <property name="text">
+            <string>MTU</string>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="1">
           <widget class="QSpinBox" name="mDISMTUEdit">
            <property name="alignment">
             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -509,7 +515,14 @@
            </property>
           </widget>
          </item>
-         <item row="6" column="1">
+         <item row="7" column="0">
+          <widget class="QLabel" name="mDISActorLabel">
+           <property name="text">
+            <string>Actor XML File</string>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="1">
           <layout class="QHBoxLayout" name="horizontalLayout">
            <item>
             <widget class="QLineEdit" name="mDISActorEdit">
@@ -527,18 +540,15 @@
            </item>
           </layout>
          </item>
-         <item row="1" column="1">
-          <widget class="QSpinBox" name="mDISPortEdit">
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-           </property>
-           <property name="maximum">
-            <number>65535</number>
-           </property>
-           <property name="value">
-            <number>62040</number>
+         <item row="2" column="0">
+          <widget class="QLabel" name="mDISBroadcastLabel">
+           <property name="text">
+            <string>Is Broadcast port</string>
            </property>
           </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QCheckBox" name="mDISBroadcastPort"/>
          </item>
         </layout>
        </widget>

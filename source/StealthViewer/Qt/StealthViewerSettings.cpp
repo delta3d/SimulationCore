@@ -77,6 +77,7 @@ namespace StealthQt
    const QString StealthViewerSettings::SERVER_GAMEVERSION("SERVER_GAMEVERSION");
    const QString StealthViewerSettings::DIS_IP_ADDRESS("DIS_IP_ADDRESS");
    const QString StealthViewerSettings::DIS_PORT("DIS_PORT");
+   const QString StealthViewerSettings::DIS_BROADCAST("DIS_BROADCAST");
    const QString StealthViewerSettings::DIS_EXERCISE_ID("DIS_EXERCISE_ID");
    const QString StealthViewerSettings::DIS_SITE_ID("DIS_SITE_ID");
    const QString StealthViewerSettings::DIS_APPLICATION_ID("DIS_APPLICATION_ID");
@@ -188,6 +189,7 @@ namespace StealthQt
       const QString &connectionType, const QString &serverIPAddress, 
       const QString &serverPort, const QString &serverGameName, const QString &serverGameVersion, 
       const QString &disIPAddress, const unsigned int &disPort,
+      bool disBroadcast,
       const unsigned char &disExerciseID, const unsigned short &disSiteID,
       const unsigned short &disApplicationID, const unsigned int &disMTU,
       const QString &actorXMLFile, bool isEditMode)
@@ -261,6 +263,7 @@ namespace StealthQt
             setValue(StealthViewerSettings::SERVER_GAMEVERSION, serverGameVersion);
             setValue(StealthViewerSettings::DIS_IP_ADDRESS,     disIPAddress);
             setValue(StealthViewerSettings::DIS_PORT,           disPort);
+            setValue(StealthViewerSettings::DIS_BROADCAST,      disBroadcast);
             setValue(StealthViewerSettings::DIS_EXERCISE_ID,    disExerciseID);
             setValue(StealthViewerSettings::DIS_SITE_ID,        disSiteID);
             setValue(StealthViewerSettings::DIS_APPLICATION_ID, disApplicationID);
@@ -300,6 +303,7 @@ namespace StealthQt
                setValue(StealthViewerSettings::SERVER_GAMEVERSION, serverGameVersion);
                setValue(StealthViewerSettings::DIS_IP_ADDRESS,     disIPAddress);
                setValue(StealthViewerSettings::DIS_PORT,           disPort);
+               setValue(StealthViewerSettings::DIS_BROADCAST,      disBroadcast);
                setValue(StealthViewerSettings::DIS_EXERCISE_ID,    disExerciseID);
                setValue(StealthViewerSettings::DIS_SITE_ID,        disSiteID);
                setValue(StealthViewerSettings::DIS_APPLICATION_ID, disApplicationID);
@@ -388,12 +392,27 @@ namespace StealthQt
          QStringList list = LoadConnectionProperties(group);
 
          // Add internally
-         AddConnection(list[0], list[1], list[2],
-                       list[3], list[4], list[5], list[6],
-                       list[7], list[8], list[9], list[10], list[11],
-                       list[12], list[13].toInt(), list[14].toUInt(),
-                       list[15].toUShort(), list[16].toUShort(),
-                       list[17].toUInt(), list[18]);
+         AddConnection(list[0],
+                       list[1],
+                       list[2],
+                       list[3],
+                       list[4],
+                       list[5],
+                       list[6],
+                       list[7],
+                       list[8],
+                       list[9],
+                       list[10],
+                       list[11],
+                       list[12],           //dis IP 
+                       list[13].toUInt(),  //DIS Port
+                       list[14] == "true" ? true : false, //DIS Broadcast (bool) 
+                       list[15].toUShort(), //DIS exercise ID
+                       list[16].toUShort(), //DIS Site ID
+                       list[17].toUShort(), //DIS Application ID
+                       list[18].toUInt(),   //DIS MTU
+                       list[19]             //DIS ActorMapping file
+         );
       }
 
       mIsLoadingFromIni = false;
@@ -443,9 +462,15 @@ namespace StealthQt
                        connectionsToAdd[i][3], connectionsToAdd[i][4], connectionsToAdd[i][5],
                        connectionsToAdd[i][6], connectionsToAdd[i][7], connectionsToAdd[i][8], 
                        connectionsToAdd[i][9], connectionsToAdd[i][10], connectionsToAdd[i][11],
-                       connectionsToAdd[i][12], connectionsToAdd[i][13].toInt(), connectionsToAdd[i][14].toUInt(),
-                       connectionsToAdd[i][15].toUShort(), connectionsToAdd[i][16].toUShort(),
-                       connectionsToAdd[i][17].toUInt(), connectionsToAdd[i][18]);
+                       connectionsToAdd[i][12], //DIS IP
+                       connectionsToAdd[i][13].toInt(), //DIS port
+                       connectionsToAdd[i][14] == "true" ? true : false, //DIS Broadcast (bool)
+                       connectionsToAdd[i][15].toUInt(), //DIS exercize
+                       connectionsToAdd[i][16].toUShort(), //DIS site ID
+                       connectionsToAdd[i][17].toUShort(), //DIS Application ID
+                       connectionsToAdd[i][18].toUInt(), //DIS MTU
+                       connectionsToAdd[i][19] //DIS actor mapping file
+         );
       }
 
       emit ItemDeleted(connectionName);
@@ -1398,6 +1423,11 @@ namespace StealthQt
 
          if (contains(StealthViewerSettings::DIS_PORT))
             props.push_back(value(StealthViewerSettings::DIS_PORT).toString());
+         else
+            props.push_back(tr(""));
+
+         if (contains(StealthViewerSettings::DIS_BROADCAST))
+            props.push_back(value(StealthViewerSettings::DIS_BROADCAST).toString());
          else
             props.push_back(tr(""));
 

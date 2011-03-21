@@ -237,8 +237,9 @@ namespace StealthQt
               disIPAddress = mUi->mDISIPAddressEdit->text(),
               actorXMLFile = mUi->mDISActorEdit->text();
       QString connectionType = mUi->mConnectionTypeCombo->currentText();
-      unsigned int disPort = mUi->mDISPortEdit->value(),
-                   disMTU  = mUi->mDISMTUEdit->value();
+      unsigned int disPort = mUi->mDISPortEdit->value();
+      bool disBroadcast = mUi->mDISBroadcastPort->isChecked();
+      unsigned int disMTU  = mUi->mDISMTUEdit->value();
       unsigned char disExerciseID = mUi->mDISExerciseIDEdit->value();
       unsigned short disSiteID        = mUi->mDISSiteIDEdit->value(),
                      disApplicationID = mUi->mDISApplicationIDEdit->value();
@@ -394,8 +395,16 @@ namespace StealthQt
 
       bool success = StealthViewerData::GetInstance().GetSettings().AddConnection
          (name, map, config, fedFile, fedex, fedName, ridFile, connectionType, 
-         serverIPAddress, serverPort, serverGameName, serverGameVersionStr, disIPAddress,
-         disPort, disExerciseID, disSiteID, disApplicationID, disMTU, actorXMLFile, mIsEditMode);
+         serverIPAddress, serverPort, serverGameName, serverGameVersionStr,
+         disIPAddress,
+         disPort,
+         disBroadcast,
+         disExerciseID,
+         disSiteID,
+         disApplicationID,
+         disMTU,
+         actorXMLFile,
+         mIsEditMode);
 
       if(!success)
       {
@@ -452,11 +461,12 @@ namespace StealthQt
       // Load DIS Settings
       mUi->mDISIPAddressEdit->setText(list.value(12));
       mUi->mDISPortEdit->setValue(list.value(13).toUInt());
-      mUi->mDISExerciseIDEdit->setValue(list.value(14).toUInt());
-      mUi->mDISSiteIDEdit->setValue(list.value(15).toUShort());
-      mUi->mDISApplicationIDEdit->setValue(list.value(16).toUShort());
-      mUi->mDISMTUEdit->setValue(list.value(17).toUInt());
-      mUi->mDISActorEdit->setText(list.value(18));
+      mUi->mDISBroadcastPort->setChecked(list.value(14) == "true" ? true : false);
+      mUi->mDISExerciseIDEdit->setValue(list.value(15).toUInt());
+      mUi->mDISSiteIDEdit->setValue(list.value(16).toUShort());
+      mUi->mDISApplicationIDEdit->setValue(list.value(17).toUShort());
+      mUi->mDISMTUEdit->setValue(list.value(18).toUInt());
+      mUi->mDISActorEdit->setText(list.value(19));
 
       // We default to HLA in all cases unless ClientServer explictly set.
       // This supports backward compatibility with existing systems.

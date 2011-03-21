@@ -127,6 +127,7 @@ void StealthViewerHLAWindowTests::TestDisplaySavedConnections()
    testProps.push_back(QString("ServerVersion"));
    testProps.push_back(QString("TestDISIPAddress"));
    testProps.push_back(QString("62040"));
+   testProps.push_back(QString("false"));
    testProps.push_back(QString("1"));
    testProps.push_back(QString("1500"));
    testProps.push_back(QString("0"));
@@ -137,8 +138,9 @@ void StealthViewerHLAWindowTests::TestDisplaySavedConnections()
       testProps[3], testProps[4], testProps[5], testProps[6], 
       testProps[7], testProps[8], testProps[9], testProps[10], testProps[11],
       testProps[12], testProps[13].toInt(), testProps[14].toUInt(),
-      testProps[15].toUShort(), testProps[16].toUShort(),
-      testProps[17].toUInt(), testProps[18]);
+      testProps[15] == "true" ? true : false,
+      testProps[16].toUShort(), testProps[17].toUShort(),
+      testProps[18].toUInt(), testProps[19]);
 
    CPPUNIT_ASSERT_EQUAL((unsigned int)(1), settings.GetNumConnections());
 
