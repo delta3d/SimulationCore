@@ -83,6 +83,12 @@ namespace StealthQt
          StealthViewerData::GetInstance().GetGeneralConfigObject().GetReconnectOnStartup();
 
       mUi->mReconnectOnStartupCheckBox->setChecked(connect);
+
+      //automatically select the first item in the network list, if there is one
+      if (mUi->mNetworkListWidget->item(0))
+      {
+         mUi->mNetworkListWidget->setCurrentItem(mUi->mNetworkListWidget->item(0));
+      }
    }
 
    //////////////////////////////////////////////////////////////
