@@ -336,45 +336,48 @@ void StealthViewerSettingsTests::TestAddConnection()
    CPPUNIT_ASSERT(settings.GetNumConnections() == 0);
 
    QStringList testProps;
-   testProps.push_back(QString("TestName"));
-   testProps.push_back(QString("TestMap"));
-   testProps.push_back(QString("TestConfig"));
-   testProps.push_back(QString("TestFed"));
-   testProps.push_back(QString("TestFedex"));
-   testProps.push_back(QString("TestFedName"));
-   testProps.push_back(QString("TestRid"));
-   testProps.push_back(QString("HLA"));
-   testProps.push_back(QString("TestIPAddress"));
-   testProps.push_back(QString("TestServerPort"));
-   testProps.push_back(QString("TestServerGameName"));
-   testProps.push_back(QString("1"));
-   testProps.push_back(QString("TestDISIPAddress"));
-   testProps.push_back(QString("62040"));
-   testProps.push_back(QString("false"));
-   testProps.push_back(QString("1"));
-   testProps.push_back(QString("1500"));
-   testProps.push_back(QString("0"));
-   testProps.push_back(QString("0"));
-   testProps.push_back(QString("TestDISActorXMLFile"));
+   testProps.push_back(QString("TestName")); //0
+   testProps.push_back(QString("TestMap"));  //1
+   testProps.push_back(QString("TestConfig")); //2
+   testProps.push_back(QString("TestFed")); //3
+   testProps.push_back(QString("TestFedex"));  //4
+   testProps.push_back(QString("TestFedName"));  //5
+   testProps.push_back(QString("TestRid"));  //6
+   testProps.push_back(QString("HLA"));  //7 //connection type
+   testProps.push_back(QString("TestIPAddress")); //8
+   testProps.push_back(QString("TestServerPort")); //9
+   testProps.push_back(QString("TestServerGameName")); //10
+   testProps.push_back(QString("1")); //11 //game version
+   testProps.push_back(QString("TestDISIPAddress")); //12
+   testProps.push_back(QString("62040"));//13 //dis port
+   testProps.push_back(QString("false"));//14 //dis broadcast
+   testProps.push_back(QString("1"));//15  //dis exercise id
+   testProps.push_back(QString("1500"));//16 //dis site id
+   testProps.push_back(QString("0"));//17 //dis app id
+   testProps.push_back(QString("0"));//18 //dis mtu
+   testProps.push_back(QString("TestDISActorXMLFile"));//19
 
    settings.AddConnection(testProps[0], testProps[1], testProps[2],
                           testProps[3], testProps[4], testProps[5],
                           testProps[6], testProps[7], testProps[8], 
                           testProps[9], testProps[10], testProps[11],
                           testProps[12], 
-                          testProps[13].toUInt(), testProps[14].toUInt(), testProps[15] == "true" ? true : false,
+                          testProps[13].toUInt(), testProps[14] == "true" ? true : false,
+                          testProps[15].toUInt(), 
                           testProps[16].toUShort(), testProps[17].toUShort(),
                           testProps[18].toUInt(), testProps[19]);
 
    CPPUNIT_ASSERT_EQUAL((unsigned int)(1), settings.GetNumConnections());
 
    QStringList result = settings.GetConnectionProperties(testProps[0]);
+
    CPPUNIT_ASSERT(!result.isEmpty());
 
    for(int i = 0; i < result.size(); i++)
    {
       QString temp = result[i];
-      CPPUNIT_ASSERT(temp == testProps[i]);
+      CPPUNIT_ASSERT_EQUAL_MESSAGE("Returned connection setting didn't match what was set:#" + dtUtil::ToString(i),
+         testProps[i].toStdString(), temp.toStdString());
    }
 }
 
