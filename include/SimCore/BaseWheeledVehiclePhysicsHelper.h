@@ -51,13 +51,8 @@ namespace SimCore
       bool mPowered;
       bool mSteered;
       bool mBraked;
-      dtCore::ObserverPtr<osg::Transform> mTransform;
 
-#ifdef AGEIA_PHYSICS
-      NxWheelShape* mWheel;
-#else
       palWheel* mWheel;
-#endif
    };
 
    class SIMCORE_EXPORT BaseWheeledVehiclePhysicsActComp : public dtPhysics::PhysicsActComp
@@ -88,7 +83,7 @@ namespace SimCore
       /**
       * /brief Purpose : Create Wheels onto the main physics vehicle
       */
-      virtual WheelType AddWheel(const osg::Vec3& position, osg::Transform& node, TireParameters& tireParams,
+      virtual WheelType AddWheel(const osg::Vec3& position, TireParameters& tireParams,
                SuspensionParameters& suspensionParams,
                bool powered = true, bool steered = true, bool braked = true);
 

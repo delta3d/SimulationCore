@@ -28,6 +28,7 @@
 
 #include <dtGame/gamemanager.h>
 #include <dtGame/deadreckoningcomponent.h>
+#include <dtGame/drpublishingactcomp.h>
 
 #include <dtDAL/actorproperty.h>
 #include <dtDAL/enginepropertytypes.h>
@@ -42,6 +43,9 @@
 
 #include <SimCore/Actors/PlatformWithPhysics.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
+#include <SimCore/ActComps/CamoPaintStateActComp.h>
+#include <SimCore/ActComps/WeaponSwapActComp.h>
+#include <SimCore/ActComps/WheelActComp.h>
 
 #include <SimCore/Components/ViewerMessageProcessor.h>
 #include <SimCore/CollisionGroupEnum.h>
@@ -50,12 +54,10 @@
 #include <UnitTestMain.h>
 #include <dtABC/application.h>
 
-#ifndef AGEIA_PHYSICS
 #include <dtPhysics/physicscomponent.h>
 #include <dtPhysics/physicsactcomp.h>
 #include <dtPhysics/physicsobject.h>
 #include <dtPhysics/bodywrapper.h>
-#endif
 
 using dtCore::RefPtr;
 using dtCore::ObserverPtr;
@@ -65,13 +67,13 @@ namespace SimCore
    namespace Actors
    {
 
-
-      class PlatformWithPhysicsTests : public CPPUNIT_NS::TestFixture
+      class PlatformTests : public CPPUNIT_NS::TestFixture
       {
-         CPPUNIT_TEST_SUITE(PlatformWithPhysicsTests);
+         CPPUNIT_TEST_SUITE(PlatformTests);
 
          CPPUNIT_TEST(TestPhysicsDefaults);
          CPPUNIT_TEST(TestInit);
+         CPPUNIT_TEST(TestAvailableActorComponents);
 
          CPPUNIT_TEST_SUITE_END();
 
@@ -109,9 +111,7 @@ namespace SimCore
             {
                mDeadReckoningComponent = NULL;
 
-#ifndef AGEIA_PHYSICS
                mPhysicsComp = NULL;
-#endif
 
                mPlatformWithPhysics = NULL;
                dtCore::ObserverPtr<SimCore::Actors::PlatformWithPhysicsActorProxy> pOb = mPlatformWithPhysicsActorProxy.get();
@@ -129,8 +129,8 @@ namespace SimCore
 
             void TestPhysicsDefaults()
             {
-               CPPUNIT_ASSERT(mPlatformWithPhysics->GetPhysicsActComp() != NULL);
-               dtPhysics::PhysicsObject* po = mPlatformWithPhysics->GetPhysicsActComp()->GetMainPhysicsObject();
+               CPPUNIT_ASSERT(mPlatformWithPhysics->GetComponent<dtPhysics::PhysicsActComp>() != NULL);
+               dtPhysics::PhysicsObject* po = mPlatformWithPhysics->GetComponent<dtPhysics::PhysicsActComp>()->GetMainPhysicsObject();
                CPPUNIT_ASSERT_EQUAL(dtPhysics::MechanicsType::DYNAMIC, po->GetMechanicsType());
                CPPUNIT_ASSERT_EQUAL(dtPhysics::PrimitiveType::CONVEX_HULL, po->GetPrimitiveType());
                CPPUNIT_ASSERT_EQUAL(dtPhysics::CollisionGroup(SimCore::CollisionGroup::GROUP_VEHICLE_GROUND), po->GetCollisionGroup());
@@ -143,8 +143,8 @@ namespace SimCore
 
             void TestInit()
             {
-               CPPUNIT_ASSERT(mPlatformWithPhysics->GetPhysicsActComp() != NULL);
-               dtPhysics::PhysicsObject* po = mPlatformWithPhysics->GetPhysicsActComp()->GetMainPhysicsObject();
+               CPPUNIT_ASSERT(mPlatformWithPhysics->GetComponent<dtPhysics::PhysicsActComp>() != NULL);
+               dtPhysics::PhysicsObject* po = mPlatformWithPhysics->GetComponent<dtPhysics::PhysicsActComp>()->GetMainPhysicsObject();
                CPPUNIT_ASSERT(po->GetBodyWrapper() == NULL);
                mGM->AddActor(*mPlatformWithPhysicsActorProxy, false, false);
 
@@ -159,19 +159,113 @@ namespace SimCore
                CPPUNIT_ASSERT_MESSAGE("The original body should be deleted", !bwOb.valid());
             }
 
+            void TestAvailableActorComponents()
+            {
+               CheckAvailableActorComponents(*mPlatformWithPhysicsActorProxy, true, false, false, false, false);
+
+               dtCore::RefPtr<SimCore::Actors::PlatformActorProxy> platform;
+               mGM->CreateActor(*EntityActorRegistry::PLATFORM_ACTOR_TYPE, platform);
+
+               CheckAvailableActorComponents(*platform, false, false, false, false, false);
+
+               CPPUNIT_ASSERT_MESSAGE("Platforms with the switchable type should default to having physics creation on.",
+                        PlatformActorProxy::GetPhysicsCreationEnabled());
+
+               PlatformActorProxy::SetPhysicsCreationEnabled(false);
+
+               mGM->CreateActor(*EntityActorRegistry::PLATFORM_WITH_PHYSICS_ACTOR_TYPE, platform);
+
+               CheckAvailableActorComponents(*platform, true, false, false, false, false);
+
+               mGM->CreateActor(*EntityActorRegistry::PLATFORM_SWITCHABLE_PHYSICS_ACTOR_TYPE, platform);
+
+               CheckAvailableActorComponents(*platform, false, false, false, false, false);
+
+               mGM->CreateActor(*EntityActorRegistry::MILITARY_AIR_PLATFORM_ACTOR_TYPE, platform);
+
+               CheckAvailableActorComponents(*platform, false, true, true, true, false);
+
+               mGM->CreateActor(*EntityActorRegistry::MILITARY_GROUND_PLATFORM_ACTOR_TYPE, platform);
+
+               CheckAvailableActorComponents(*platform, false, true, true, true, true);
+
+               mGM->CreateActor(*EntityActorRegistry::AIR_PLATFORM_ACTOR_TYPE, platform);
+
+               CheckAvailableActorComponents(*platform, false, false, false, false, false);
+
+               mGM->CreateActor(*EntityActorRegistry::GROUND_PLATFORM_ACTOR_TYPE, platform);
+
+               CheckAvailableActorComponents(*platform, false, false, false, false, true);
+
+
+
+               PlatformActorProxy::SetPhysicsCreationEnabled(true);
+
+               mGM->CreateActor(*EntityActorRegistry::PLATFORM_WITH_PHYSICS_ACTOR_TYPE, platform);
+
+               CheckAvailableActorComponents(*platform, true, false, false, false, false);
+
+               mGM->CreateActor(*EntityActorRegistry::PLATFORM_SWITCHABLE_PHYSICS_ACTOR_TYPE, platform);
+
+               CheckAvailableActorComponents(*platform, true, false, false, false, false);
+
+               mGM->CreateActor(*EntityActorRegistry::MILITARY_AIR_PLATFORM_ACTOR_TYPE, platform);
+
+               CheckAvailableActorComponents(*platform, true, true, true, true, false);
+
+               mGM->CreateActor(*EntityActorRegistry::MILITARY_GROUND_PLATFORM_ACTOR_TYPE, platform);
+
+               CheckAvailableActorComponents(*platform, true, true, true, true, true);
+
+               mGM->CreateActor(*EntityActorRegistry::AIR_PLATFORM_ACTOR_TYPE, platform);
+
+               CheckAvailableActorComponents(*platform, true, false, false, false, false);
+
+               mGM->CreateActor(*EntityActorRegistry::GROUND_PLATFORM_ACTOR_TYPE, platform);
+
+               CheckAvailableActorComponents(*platform, true, false, false, false, true);
+
+            }
+
          private:
+
+            void CheckAvailableActorComponents(SimCore::Actors::PlatformActorProxy& platform, bool physics, bool camo, bool weaponswap,
+                     bool munitions, bool wheels)
+            {
+               CPPUNIT_ASSERT(platform.GetComponent<dtGame::DeadReckoningHelper>() != NULL);
+               CPPUNIT_ASSERT(platform.GetComponent<dtGame::DRPublishingActComp>() != NULL);
+
+               CPPUNIT_ASSERT_EQUAL(physics, platform.GetComponent<dtPhysics::PhysicsActComp>() != NULL);
+
+               CPPUNIT_ASSERT_EQUAL(camo, platform.GetComponent<SimCore::ActComps::CamoPaintStateActComp>() != NULL);
+               CPPUNIT_ASSERT_EQUAL(weaponswap, platform.GetComponent<SimCore::ActComps::WeaponSwapActComp>() != NULL);
+               CPPUNIT_ASSERT_EQUAL(wheels, platform.GetComponent<SimCore::ActComps::WheelActComp>() != NULL);
+
+               BaseEntity* be = NULL;
+               platform.GetActor(be);
+               CPPUNIT_ASSERT(be != NULL);
+               CPPUNIT_ASSERT_EQUAL(munitions, be->GetAutoRegisterWithMunitionsComponent());
+
+               if (platform.GetActorType().InstanceOf(*EntityActorRegistry::AIR_PLATFORM_ACTOR_TYPE))
+               {
+                  CPPUNIT_ASSERT_EQUAL(dtGame::GroundClampTypeEnum::NONE, platform.GetComponent<dtGame::DeadReckoningHelper>()->GetGroundClampType());
+                  CPPUNIT_ASSERT_EQUAL(PlatformActorProxy::DomainEnum::AIR, be->GetDomain());
+               }
+               else if (platform.GetActorType().InstanceOf(*EntityActorRegistry::GROUND_PLATFORM_ACTOR_TYPE))
+               {
+                  CPPUNIT_ASSERT_EQUAL(PlatformActorProxy::DomainEnum::GROUND, be->GetDomain());
+               }
+            }
 
             RefPtr<dtGame::GameManager> mGM;
             RefPtr<dtGame::DeadReckoningComponent> mDeadReckoningComponent;
             RefPtr<SimCore::Actors::PlatformWithPhysics> mPlatformWithPhysics;
             RefPtr<SimCore::Actors::PlatformWithPhysicsActorProxy> mPlatformWithPhysicsActorProxy;
 
-#ifndef AGEIA_PHYSICS
             RefPtr<dtPhysics::PhysicsComponent> mPhysicsComp;
-#endif
       };
 
-      CPPUNIT_TEST_SUITE_REGISTRATION(PlatformWithPhysicsTests);
+      CPPUNIT_TEST_SUITE_REGISTRATION(PlatformTests);
    }
 }
 

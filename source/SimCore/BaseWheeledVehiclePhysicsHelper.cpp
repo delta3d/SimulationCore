@@ -24,10 +24,9 @@
 
 #include <prefix/SimCorePrefix.h>
 #include <SimCore/BaseWheeledVehiclePhysicsHelper.h>
+#include <SimCore/ActComps/WheelActComp.h>
 #include <osg/Matrix>
 #include <osg/MatrixTransform>
-#include <osg/ComputeBoundsVisitor>
-#include <osgSim/DOFTransform>
 #include <dtDAL/enginepropertytypes.h>
 #include <dtCore/transform.h>
 
@@ -106,43 +105,27 @@ namespace SimCore
    //                               Vehicle Initialization                             //
    // ///////////////////////////////////////////////////////////////////////////////////
 
-   WheelType BaseWheeledVehiclePhysicsActComp::AddWheel(const osg::Vec3& position, osg::Transform& node,
-            TireParameters& tireParams, SuspensionParameters& suspensionParams, bool powered, bool steered, bool braked)
+   WheelType BaseWheeledVehiclePhysicsActComp::AddWheel(const osg::Vec3& position,
+            TireParameters& tireParams, SuspensionParameters& suspensionParams,
+            bool powered, bool steered, bool braked)
    {
       WheelType wheel;
       //pal keeps track of this, but I set the anyway for completeness.
       wheel.mPowered = powered;
       wheel.mSteered = steered;
       wheel.mBraked = braked;
-      wheel.mTransform = &node;
       wheel.mWheel = NULL;
 
       if (mVehicle != NULL)
       {
          wheel.mWheel = mVehicle->AddWheel();
-         osg::ComputeBoundsVisitor bb;
-
-         node.accept(bb);
-
-         float wheelRadius = (bb.getBoundingBox().zMax() - bb.getBoundingBox().zMin()) / 2.0f;
-         float wheelWidth = (bb.getBoundingBox().xMax() - bb.getBoundingBox().xMin()) / 2.0f;
-
-         if (tireParams.mRadius > FLT_EPSILON)
-         {
-            wheelRadius = tireParams.mRadius;
-         }
-
-         if (tireParams.mWidth > FLT_EPSILON)
-         {
-            wheelWidth = tireParams.mWidth;
-         }
 
          palWheelInfo wheelInfo;
          wheelInfo.m_fPosX = position.x();
          wheelInfo.m_fPosY = position.y();
          wheelInfo.m_fPosZ = position.z();
-         wheelInfo.m_fRadius = wheelRadius;
-         wheelInfo.m_fWidth = wheelWidth;
+         wheelInfo.m_fRadius = tireParams.mRadius;
+         wheelInfo.m_fWidth = tireParams.mWidth;
          wheelInfo.m_fSuspension_Travel = suspensionParams.mTravel;
          wheelInfo.m_fSuspension_Rest_Length = suspensionParams.mRestLength;
          wheelInfo.m_fSuspension_Ks = suspensionParams.mSpringRate;
@@ -302,40 +285,26 @@ namespace SimCore
    //////////////////////////////////////////////////////////////////////////////////////
    void BaseWheeledVehiclePhysicsActComp::UpdateWheelTransforms()
    {
-      std::vector<WheelType>::iterator i, iend;
-      i = mWheels.begin();
-      iend = mWheels.end();
-      for (; i != iend; ++i)
+      SimCore::ActComps::WheelActComp* wheelAC = NULL;
+      GetOwner()->GetComponent(wheelAC);
+      if (wheelAC != NULL)
       {
-         WheelType& wheel = *i;
-         palMatrix4x4& palmat = wheel.mWheel->GetLocationMatrix();
-         osg::Matrix m;
-         dtPhysics::PalMatrixToTransform(m, palmat);
-
-         osg::Matrix worldMat;
-         dtCore::Transformable::GetAbsoluteMatrix(wheel.mTransform->getParent(0), worldMat);
-         osg::Matrix relMat = m * osg::Matrix::inverse(worldMat);
-
-
-         osgSim::DOFTransform* dof = dynamic_cast<osgSim::DOFTransform*>(wheel.mTransform.get());
-         if (dof != NULL)
+         unsigned wheelIndex = 0;
+         for (unsigned i = 0; i < wheelAC->GetNumAxles() && wheelIndex < mWheels.size(); ++i)
          {
-            dtCore::Transform xform;
-            xform.Set(relMat);
-            osg::Vec3 hpr;
-            xform.GetRotation(hpr);
+            SimCore::ActComps::Axle* axle = wheelAC->GetAxle(i);
+            for (unsigned j = 0; j < axle->GetNumWheels() && wheelIndex < mWheels.size(); ++j)
+            {
+               WheelType& wheel = mWheels[wheelIndex];
+               ++wheelIndex;
 
-            dof->setHPRMultOrder(osgSim::DOFTransform::HPR);
-            dof->setCurrentHPR(hpr);
-            dof->setCurrentTranslate(xform.GetTranslation());
+               palMatrix4x4& palmat = wheel.mWheel->GetLocationMatrix();
+               osg::Matrix m;
+               dtPhysics::PalMatrixToTransform(m, palmat);
+
+               axle->SetWheelBaseTransform(j, m);
+            }
          }
-         else
-         {
-            osg::MatrixTransform* matTrans = dynamic_cast<osg::MatrixTransform*>(wheel.mTransform.get());
-            matTrans->setMatrix(relMat);
-         }
-
-
       }
    }
 

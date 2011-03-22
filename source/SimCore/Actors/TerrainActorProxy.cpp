@@ -289,6 +289,7 @@ namespace SimCore
       void TerrainActor::OnEnteredWorld()
       {
          dtGame::GameActor::OnEnteredWorld();
+         LoadFile(mLoadedFile);
       }
 
       /////////////////////////////////////////////////////////////////////////////
@@ -298,7 +299,10 @@ namespace SimCore
          //Actually load the file, even if it's empty string so that if someone were to
          //load a mesh, remove it from the scene, then try to clear the mesh, this actor will still
          //work.
-         LoadFile(mLoadedFile);
+         if (GetGameActorProxy().IsInSTAGE())
+         {
+            LoadFile(mLoadedFile);
+         }
       }
 
       /////////////////////////////////////////////////////////////////////////////
@@ -548,15 +552,17 @@ namespace SimCore
                {
                   dtUtil::ThreadPool::AddTask(*mLoadNodeTask, dtUtil::ThreadPool::IMMEDIATE);
                   dtUtil::ThreadPool::ExecuteTasks();
-                  CheckForTerrainLoaded();
+                  if (CheckForTerrainLoaded())
+                  {
+                     SetupTerrainPhysics();
+                  }
                }
                else
                {
                   dtUtil::ThreadPool::AddTask(*mLoadNodeTask, dtUtil::ThreadPool::BACKGROUND);
+                  // This timer is repeating, so it must be cleared when it's over.
+                  GetGameActorProxy().GetGameManager()->SetTimer(LOAD_NODE_TERRAIN_TIMER, &GetGameActorProxy(), LOAD_NODE_TIMER_TIMEOUT, true, true);
                }
-
-               // This timer is repeating, so it must be cleared when it's over.
-               GetGameActorProxy().GetGameManager()->SetTimer(LOAD_NODE_TERRAIN_TIMER, &GetGameActorProxy(), LOAD_NODE_TIMER_TIMEOUT, true, true);
             }
 
             // go ahead and start this because even if the loading fails later

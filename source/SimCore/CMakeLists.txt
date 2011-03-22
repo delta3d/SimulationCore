@@ -99,7 +99,6 @@ set(LIB_SOURCES_2
    "${SOURCE_PATH}/Actors/PagedTerrainPhysicsActor.cpp"
    "${SOURCE_PATH}/Actors/PhysicsParticleSystemActor.cpp"
    "${SOURCE_PATH}/Actors/Platform.cpp"
-   "${SOURCE_PATH}/Actors/PlatformWithPhysics.cpp"
    "${SOURCE_PATH}/Actors/PlayerActor.cpp"
    "${SOURCE_PATH}/Actors/PortalActor.cpp"
    "${SOURCE_PATH}/Actors/PositionMarker.cpp"
@@ -185,8 +184,9 @@ set( LIB_SOURCES_8
    "${SOURCE_PATH}/ActComps/BodyPaintActComp.cpp"
    "${SOURCE_PATH}/ActComps/BodyPaintStateActComp.cpp"
    "${SOURCE_PATH}/ActComps/CamoPaintStateActComp.cpp"
-   "${SOURCE_PATH}/ActComps/WeaponSwapActComp.cpp"
    "${SOURCE_PATH}/ActComps/TrailerHitchActComp.cpp"
+   "${SOURCE_PATH}/ActComps/WeaponSwapActComp.cpp"
+   "${SOURCE_PATH}/ActComps/WheelActComp.cpp"
    )
 SET(LIB_SOURCES ${LIB_SOURCES_1} ${LIB_SOURCES_2} ${LIB_SOURCES_3} ${LIB_SOURCES_4} ${LIB_SOURCES_5} ${LIB_SOURCES_6} ${LIB_SOURCES_7} ${LIB_SOURCES_8})
 

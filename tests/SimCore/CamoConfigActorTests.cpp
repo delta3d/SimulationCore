@@ -410,7 +410,7 @@ namespace SimCore
 
             // Create a proxy.
             dtCore::RefPtr<dtGame::GameActorProxy> proxy;
-            mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE, proxy);
+            mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::MILITARY_GROUND_PLATFORM_ACTOR_TYPE, proxy);
 
             // Get the actor that was created.
             SimCore::Actors::Platform* actor = NULL;
@@ -418,8 +418,8 @@ namespace SimCore
             proxy->GetActor(actor);
 
             // Get the actor's Camo Paint Actor Component
-            CamoPaintStateActComp* actComp = dynamic_cast<CamoPaintStateActComp*>
-               (actor->GetComponent(CamoPaintStateActComp::TYPE));
+            CamoPaintStateActComp* actComp = NULL;
+            proxy->GetComponent(actComp);
             CPPUNIT_ASSERT(actComp != NULL);
             actComp->SetCamoId(camoId2);
 

@@ -1453,7 +1453,7 @@ namespace SimCore
          mGM->FindActorsByType(*SimCore::Actors::EntityActorRegistry::DETONATION_ACTOR_TYPE, container);
          CPPUNIT_ASSERT_EQUAL_MESSAGE("The actors container should have 1 detonation actors in it.", 1U, unsigned(container.size()));
          RefPtr<dtDAL::ActorProxy> proxy = container[0];
-         SimCore::Actors::DetonationActorProxy *dap = dynamic_cast<SimCore::Actors::DetonationActorProxy*>(proxy.get());
+         SimCore::Actors::DetonationActorProxy* dap = dynamic_cast<SimCore::Actors::DetonationActorProxy*>(proxy.get());
          CPPUNIT_ASSERT_MESSAGE("The 1 actor in the GM should a be a detonation actor, hence the dynamic_cast should not have failed", dap != NULL);
          SimCore::Actors::DetonationActor& detActor = static_cast<SimCore::Actors::DetonationActor&>(dap->GetGameActor());
          CPPUNIT_ASSERT_EQUAL_MESSAGE("The detonation actor should have 0 lingering shot seconds.",0.0f, detActor.GetSmokeLifeTime());
