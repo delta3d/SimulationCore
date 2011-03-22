@@ -193,7 +193,7 @@ namespace SimCore
          {
             // Create a proxy.
             dtCore::RefPtr<dtGame::GameActorProxy> proxy;
-            mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE, proxy);
+            mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::MILITARY_AIR_PLATFORM_ACTOR_TYPE, proxy);
 
             // Get the actor that was created.
             SimCore::Actors::Platform* actor = NULL;

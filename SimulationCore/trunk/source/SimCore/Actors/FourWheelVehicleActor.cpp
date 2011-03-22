@@ -1,27 +1,27 @@
 /* -*-c++-*-
-* Simulation Core
-* Copyright 2007-2010, Alion Science and Technology
-*
-* This library is free software; you can redistribute it and/or modify it under
-* the terms of the GNU Lesser General Public License as published by the Free
-* Software Foundation; either version 2.1 of the License, or (at your option)
-* any later version.
-*
-* This library is distributed in the hope that it will be useful, but WITHOUT
-* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-* FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
-* details.
-*
-* You should have received a copy of the GNU Lesser General Public License
-* along with this library; if not, write to the Free Software Foundation, Inc.,
-* 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-*
-* This software was developed by Alion Science and Technology Corporation under
-* circumstances in which the U. S. Government may have rights in the software.
-*
-* @author Allen Danklefsen
-* @author David Guthrie
-*/
+ * Simulation Core
+ * Copyright 2007-2010, Alion Science and Technology
+ *
+ * This library is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 2.1 of the License, or (at your option)
+ * any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this library; if not, write to the Free Software Foundation, Inc.,
+ * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ *
+ * This software was developed by Alion Science and Technology Corporation under
+ * circumstances in which the U. S. Government may have rights in the software.
+ *
+ * @author Allen Danklefsen
+ * @author David Guthrie
+ */
 #include <prefix/SimCorePrefix.h>
 #include <SimCore/Actors/FourWheelVehicleActor.h>
 #include <dtDAL/propertymacros.h>
@@ -45,6 +45,7 @@
 #include <SimCore/Actors/TerrainActorProxy.h>
 #include <SimCore/Actors/InteriorActor.h>
 #include <SimCore/Actors/PortalActor.h>
+#include <SimCore/ActComps/WheelActComp.h>
 #include <dtGame/drpublishingactcomp.h>
 #include <SimCore/PhysicsTypes.h>
 
@@ -173,90 +174,12 @@ namespace SimCore
 
          LoadSound(mSoundEffectAcceleration, mSndAcceleration);
 
-         std::vector<osgSim::DOFTransform*> wheels;
-
-         dtUtil::NodeCollector* nodeCollector = GetNodeCollector();
-
-         if (nodeCollector != NULL)
-         {
-            std::string indexString;
-
-            unsigned axle = 1;
-            bool found = true;
-            while (found)
-            {
-               dtUtil::MakeIndexString(axle, indexString, 2);
-               wheels.push_back(nodeCollector->GetDOFTransform(std::string("dof_wheel_lt_") + indexString));
-               wheels.push_back(nodeCollector->GetDOFTransform(std::string("dof_wheel_rt_") + indexString));
-               if (wheels[2 * (axle - 1) + 0] == NULL || wheels[2 * (axle - 1) + 1] == NULL)
-               {
-                  found = false;
-                  // Pop off the last axle since it wasn't found.
-                  wheels.pop_back();
-                  wheels.pop_back();
-               }
-               ++axle;
-            }
-            if (wheels.empty())
-            {
-               LOGN_ERROR("FourWheelVehicleActor.cpp", "Couldn't find any wheels, unable to create vehicle.");
-               return;
-            }
-         }
-
-         dtCore::Transform ourTransform;
-         GetTransform(ourTransform);
-
-         osg::Node* chassis = NULL;
-         if (nodeCollector != NULL)
-         {
-            chassis = nodeCollector->GetDOFTransform("dof_chassis");
-            if (chassis == NULL)
-            {
-               chassis = nodeCollector->GetGroup("Body");
-            }
-
-         }
-
-         if (chassis == NULL)
-         {
-            chassis = GetNonDamagedFileNode();
-
-            if (chassis == NULL)
-            {
-               LOGN_ERROR("FourWheelVehicleActor.cpp",
-                        "Unable to find either a dof_chassis node or an undamaged model node.  Vehicle will not be created.");
-            }
-            else
-            {
-               LOGN_WARNING("FourWheelVehicleActor.cpp",
-                        "Unable to find either a dof_chassis node.  "
-                        "Vehicle will created, but the wheels may be part of the collision geometry,"
-                        "and it may not have a proper center of mass.");
-            }
-         }
-         else
-         {
-            FourWheelVehiclePhysicsActComp* helper = GetFourWheelPhysicsActComp();
-            osg::Matrix bodyOffset;
-            bodyOffset.makeIdentity();
-            helper->GetLocalMatrix(*chassis, bodyOffset);
-            bodyOffset.setTrans(bodyOffset.getTrans() - helper->GetMainPhysicsObject()->GetOriginOffset());
-            dtCore::Transform offsetXform;
-            offsetXform.Set(bodyOffset);
-
-            helper->GetMainPhysicsObject()->SetVisualToBodyTransform(offsetXform);
-
-            GetFourWheelPhysicsActComp()->CreateVehicle(ourTransform, *chassis, wheels);
-            helper->GetMainPhysicsObject()->SetTransformAsVisual(ourTransform);
-         }
 
          if (!IsRemote())
          {
-
             // Create portals to get in and out of our vehicle
             GetGameActorProxy().GetGameManager()->CreateActor(
-               *EntityActorRegistry::PORTAL_ACTOR_TYPE, mVehiclesPortal);
+                     *EntityActorRegistry::PORTAL_ACTOR_TYPE, mVehiclesPortal);
             Portal* portal = dynamic_cast<Portal*>(mVehiclesPortal->GetActor());
             portal->SetActorLink(&GetGameActorProxy());
             portal->SetPortalName(GetName());
@@ -363,7 +286,7 @@ namespace SimCore
       }
 
 
-     ///////////////////////////////////////////////////////////////////////////////////
+      ///////////////////////////////////////////////////////////////////////////////////
       void FourWheelVehicleActor::UpdateRotationDOFS(float deltaTime, bool insideVehicle)
       {
          osg::ref_ptr<osgSim::DOFTransform> steeringWheel;
@@ -688,6 +611,14 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////
       void FourWheelVehicleActorProxy::BuildActorComponents()
       {
+         if (!HasComponent(SimCore::ActComps::WheelActComp::TYPE))
+         {
+            AddComponent(*new SimCore::ActComps::WheelActComp());
+         }
+
+//         SimCore::ActComps::WheelActComp* wheelAC = NULL;
+//         GetComponent(wheelAC);
+
          if (!HasComponent(dtPhysics::PhysicsActComp::TYPE))
          {
             AddComponent(*new SimCore::FourWheelVehiclePhysicsActComp());

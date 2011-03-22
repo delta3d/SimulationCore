@@ -24,91 +24,16 @@
 #ifndef _PLATFORM_PHYSICS_ACTOR_
 #define _PLATFORM_PHYSICS_ACTOR_
 
-#include <SimCore/Export.h>
 #include <SimCore/Actors/Platform.h>
-#include <SimCore/Actors/VehicleInterface.h>
-
-#include <SimCore/PhysicsTypes.h>
-#include <dtPhysics/physicsactcomp.h>
 
 
 namespace SimCore
 {
    namespace Actors
    {
-#ifdef AGEIA_PHYSICS
-      class SIMCORE_EXPORT PlatformWithPhysics : public Platform,
-      public dtAgeiaPhysX::NxAgeiaPhysicsInterface,
-      public VehicleInterface
-#else
-   class SIMCORE_EXPORT PlatformWithPhysics : public Platform,
-   public VehicleInterface
-#endif
-{
-public:
-      /// constructor for NxAgeiaBaseActor
-      PlatformWithPhysics(PlatformActorProxy &proxy);
 
-      // Called when the actor has been added to the game manager.
-      // You can respond to OnEnteredWorld on either the proxy or actor or both.
-      virtual void OnEnteredWorld();
-
-      /// change physics model
-      virtual void SetDamageState(BaseEntityActorProxy::DamageStateEnum &damageState);
-
-      /// your basic tick local
-      virtual void OnTickLocal(const dtGame::TickMessage& tickMessage);
-
-      /// since it derives off vehicle interface
-      virtual float GetMPH() const {return 0.0f;}
-
-      virtual void PrePhysicsUpdate();
-      // returns the physics helper for use
-      dtPhysics::PhysicsActComp* GetPhysicsActComp();
-
-      ///////////////////////////////////////
-      void SetNodeForGeometryToUse(osg::Node* nodeToUse)
-      {
-         mLoadGeomFromNode = true;
-         mNodeForGeometry = nodeToUse;
-      }
-
-      /// default name
-      static const std::string DEFAULT_NAME;
-
-      /// buildings default name
-      static const std::string BUILDING_DEFAULT_NAME;
-
-protected:
-      /// destructor
-      virtual ~PlatformWithPhysics();
-
-      // single method that can be called multiple places
-      void LoadCollision();
-
-private:
-      bool                       mLoadGeomFromNode;
-      dtCore::RefPtr<osg::Node>  mNodeForGeometry;
-};
-
-   ////////////////////////////////////////////////////////
-   // PROXY
-   ////////////////////////////////////////////////////////
-   class SIMCORE_EXPORT PlatformWithPhysicsActorProxy : public PlatformActorProxy
-   {
-   public:
-      typedef PlatformActorProxy BaseClass;
-      PlatformWithPhysicsActorProxy();
-      virtual void BuildPropertyMap();
-      virtual dtCore::RefPtr<dtDAL::ActorProperty> GetDeprecatedProperty(const std::string& name);
-
-      virtual void BuildActorComponents();
-
-   protected:
-      virtual ~PlatformWithPhysicsActorProxy();
-      void CreateActor();
-      virtual void OnEnteredWorld();
-   };
-   }// namespace
+      typedef Platform PlatformWithPhysics;
+      typedef PlatformActorProxy PlatformWithPhysicsActorProxy;
+   }
 }// namespace
 #endif

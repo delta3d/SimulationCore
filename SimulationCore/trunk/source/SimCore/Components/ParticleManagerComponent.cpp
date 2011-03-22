@@ -553,7 +553,7 @@ namespace SimCore
             return;
          }
 
-         bool forceInfoUpdate = false;
+         //bool forceInfoUpdate = false;
          dtCore::ParticleSystem* curParticles = NULL;
          ParticleInfo::ForceOperatorList* curForces = NULL;
          ParticleInfo* curInfo = NULL;
@@ -779,7 +779,7 @@ namespace SimCore
          dtCore::ParticleSystem::LayerList::iterator itor = layers.begin();
          for( ; itor != layers.end(); ++itor )
          {
-            osgParticle::ParticleSystem* ref = &itor->GetParticleSystem();
+            //osgParticle::ParticleSystem* ref = &itor->GetParticleSystem();
 
             //attaching a shader to the particle, one for emmisive particles the other for non emmisive
             dtCore::ParticleLayer& pLayer = *itor;

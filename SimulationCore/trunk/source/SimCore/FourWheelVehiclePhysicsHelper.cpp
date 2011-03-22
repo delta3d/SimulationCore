@@ -26,6 +26,9 @@
 #include <SimCore/FourWheelVehiclePhysicsHelper.h>
 #include <SimCore/PhysicsTypes.h>
 
+#include <SimCore/ActComps/WheelActComp.h>
+#include <SimCore/Actors/IGActor.h>
+
 //#else
 //#include <dtPhysics/physicscomponent.h>
 //#endif
@@ -38,11 +41,6 @@
 
 namespace SimCore
 {
-   const float FourWheelVehiclePhysicsActComp::ACC_GRAVITY = 9.80665;  // @fixme We assume SI metric: meter, kilogram, second.
-
-   // forward declaration
-   void GetLocalMatrix(osgSim::DOFTransform* node, osg::Matrix& wcMatrix);
-
    /// Constructor that provides default values for properties and initial values for state variables.
    FourWheelVehiclePhysicsActComp::FourWheelVehiclePhysicsActComp()
    : BaseClass()
@@ -151,34 +149,6 @@ namespace SimCore
    /// Updates vehicle position and rotation.
    void FourWheelVehiclePhysicsActComp::UpdateVehicle(float deltaTime)
    {
-      //float mph = GetMPH();
-
-//      if ( mph >= 0.0f )
-//      {
-//         // Forward motion: limited by specified top speed.
-//         //!< @todo this needs to be a function of RPM and transmission
-//         if ( mph < GetVehicleTopSpeed() ) {
-//            mCurrentEngineTorque = -mAccelerator * GetEngineTorque();
-//            mCurrentNormalizedBrakes = 0;
-//         }
-//         else {
-//            mCurrentEngineTorque = 0;
-//         }
-//      }
-//      else
-//      {
-//         // Rearward motion: limited by specified reverse top speed
-//         //!< @todo this needs to be a function of RPM and transmission
-//         if ( -mph < GetVehicleTopSpeedReverse() ) {
-//            mCurrentEngineTorque = mAccelerator * GetEngineTorque();
-//            mCurrentNormalizedBrakes = 0;
-//         }
-//         else {
-//            mCurrentEngineTorque = 0;
-//         }
-//      }
-
-      //float perWheelEngineTorque = GetIsVehicleFourWheelDrive() ? mCurrentEngineTorque / 4.0: mCurrentEngineTorque / 2.0;
       Control(mAccelerator, mCurrentNormalizedSteering, mCurrentNormalizedBrakes);
    }
 
@@ -215,11 +185,33 @@ namespace SimCore
    /// @retval                  false if model wasn't created because of some error.
 
    bool FourWheelVehiclePhysicsActComp::CreateVehicle(const dtCore::Transform& transformForRot,
-            const osg::Node& bodyNode, std::vector<osgSim::DOFTransform*> wheels)
+            const osg::Node& bodyNode)
    {
-      if (wheels.empty())
+      dtGame::GameActor* ga = NULL;
+      GetOwner(ga);
+
+      if (ga == NULL)
       {
          return false;
+      }
+
+      // Wheel actor component finds the wheels...
+      SimCore::ActComps::WheelActComp* wheelAC = NULL;
+      ga->GetComponent(wheelAC);
+      if (wheelAC == NULL)
+      {
+         LOG_ERROR("Unable to create vehicle physics with no wheel actor component. Aborting");
+         return false;
+      }
+
+      if (wheelAC->GetNumAxles() == 0)
+      {
+         wheelAC->FindAxles();
+         if (wheelAC->GetNumAxles() == 0)
+         {
+            LOG_ERROR("Unable to create vehicle physics with no wheels. Aborting");
+            return false;
+         }
       }
 
       osg::Matrix bodyOffset;
@@ -230,6 +222,7 @@ namespace SimCore
       float frontDamping = 0.0f, rearDamping = 0.0f, frontSpring = 0.0f, rearSpring = 0.0f;
       std::vector<osg::Matrix> WheelMatrix;
       std::vector<osg::Vec3>   WheelVec;
+      std::vector<osg::Vec2>   WheelSizes;
 
       unsigned frontWheelCount = 0;
       unsigned rearWheelCount = 0;
@@ -237,27 +230,29 @@ namespace SimCore
       float frontLeverArm = 0.0f; // Y distance from front wheels to center of gravity
       float rearLeverArm  = 0.0f;  // Y distance from rear wheels to center of gravity
 
-      for(unsigned i = 0; i < wheels.size(); i++)
+      for (unsigned i = 0; i < wheelAC->GetNumAxles(); ++i)
       {
-         if (wheels[i] != NULL)
+         SimCore::ActComps::Axle* curAxle = wheelAC->GetAxle(i);
+
+         for (unsigned j = 0; j < curAxle->GetNumWheels(); ++j)
          {
-            WheelMatrix.push_back(osg::Matrix());
-            GetLocalMatrix(*(wheels[i]), WheelMatrix.back());
-            WheelVec.push_back(WheelMatrix[i].getTrans() - bodyOffset.getTrans());
-            if (WheelVec[i][1] > 0.0f)
+            osg::Matrix wheelModelRelative;
+            osg::Vec2 widthRadius = curAxle->GetWheelWidthAndRadius();
+            WheelSizes.push_back(widthRadius);
+            curAxle->GetWheelBaseTransform(j, wheelModelRelative, false);
+            WheelMatrix.push_back(wheelModelRelative);
+            WheelVec.push_back(WheelMatrix.back().getTrans() - bodyOffset.getTrans());
+
+            if (WheelVec.back()[1] > 0.0f)
             {
                ++frontWheelCount;
-               frontLeverArm += WheelVec[i][1];
+               frontLeverArm += WheelVec.back()[1];
             }
             else
             {
                ++rearWheelCount;
-               rearLeverArm += -WheelVec[i][1];
+               rearLeverArm += -WheelVec.back()[1];
             }
-         }
-         else
-         {
-            return false;
          }
       }
 
@@ -283,14 +278,6 @@ namespace SimCore
          rearLeverArm = frontLeverArm;
       }
 
-      dtGame::GameActor* ga = NULL;
-      GetOwner(ga);
-
-      if (ga == NULL)
-      {
-         return false;
-      }
-
       if (!ga->GetGameActorProxy().IsRemote())
       {
 
@@ -308,8 +295,10 @@ namespace SimCore
          frontDamping = CalcDamperCoeficient(GetFrontSuspensionDamperFactor(), GetChassisMass(), frontSpring, wheelbase, rearLeverArm);
          rearDamping = CalcDamperCoeficient(GetRearSuspensionDamperFactor(), GetChassisMass(), rearSpring, wheelbase, frontLeverArm);
 
-         float frontWheelLoad  = 0.5f * ( GetChassisMass() * ACC_GRAVITY * rearLeverArm / wheelbase );
-         float rearWheelLoad   = 0.5f * ( GetChassisMass() * ACC_GRAVITY * frontLeverArm / wheelbase );
+         float gravity = dtPhysics::PhysicsWorld::GetInstance().GetGravity().length();
+
+         float frontWheelLoad  = 0.5f * ( GetChassisMass() * gravity * rearLeverArm / wheelbase );
+         float rearWheelLoad   = 0.5f * ( GetChassisMass() * gravity * frontLeverArm / wheelbase );
          float frontDeflection = (frontWheelLoad / frontSpring);
          float rearDeflection  = (rearWheelLoad / rearSpring);
          mFrontMaxJounce       = dtUtil::Max(0.0f, GetFrontSuspensionRestLength() - frontDeflection);
@@ -370,7 +359,25 @@ namespace SimCore
 
       for (unsigned i = 0; i < frontWheelCount; ++i)
       {
-         mWheels.push_back(AddWheel(WheelVec[i], *static_cast<osg::Transform*>(wheels[i]->getParent(0)), tp, sp, GetIsVehicleFourWheelDrive(), true, true));
+         if (GetFrontWheelWidth() < FLT_EPSILON)
+         {
+            tp.mWidth = WheelSizes[i][0];
+         }
+         else
+         {
+            tp.mWidth = GetFrontWheelWidth();
+         }
+
+         if (GetFrontWheelRadius() < FLT_EPSILON)
+         {
+            tp.mRadius = WheelSizes[i][1];
+         }
+         else
+         {
+            tp.mRadius = GetFrontWheelRadius();
+         }
+
+         mWheels.push_back(AddWheel(WheelVec[i], tp, sp, GetIsVehicleFourWheelDrive(), true, true));
       }
 
       tp.mWidth = GetRearWheelWidth();
@@ -396,7 +403,24 @@ namespace SimCore
 
       for (unsigned i = frontWheelCount; i < frontWheelCount + rearWheelCount; ++i)
       {
-         mWheels.push_back(AddWheel(WheelVec[i], *static_cast<osg::Transform*>(wheels[i]->getParent(0)), tp, sp, true, false, true));
+         if (GetRearWheelWidth() < FLT_EPSILON)
+         {
+            tp.mWidth = WheelSizes[i][0];
+         }
+         else
+         {
+            tp.mWidth = GetRearWheelWidth();
+         }
+
+         if (GetRearWheelRadius() < FLT_EPSILON)
+         {
+            tp.mRadius = WheelSizes[i][1];
+         }
+         else
+         {
+            tp.mRadius = GetRearWheelRadius();
+         }
+         mWheels.push_back(AddWheel(WheelVec[i], tp, sp, true, false, true));
       }
 
       FinalizeInitialization();
@@ -410,7 +434,6 @@ namespace SimCore
       BaseClass::CleanUp();
       for (unsigned i = 0; i < mWheels.size(); ++i)
       {
-         mWheels[i].mTransform = NULL;
          // The wheel should be deleted by baseclass when it deletes the underlying vehicle.
          mWheels[i].mWheel = NULL;
       }
@@ -555,5 +578,54 @@ namespace SimCore
                , PropRegType, propRegHelper);
 
       BaseClass::BuildPropertyMap();
+   }
+
+   void FourWheelVehiclePhysicsActComp::OnEnteredWorld()
+   {
+      BaseClass::OnEnteredWorld();
+
+      SimCore::Actors::IGActor* igActor = NULL;
+      GetOwner(igActor);
+      if (igActor == NULL)
+      {
+         LOG_ERROR("The four wheel vehicle physics helper only support IG Actors as owners currently.");
+         return;
+      }
+
+      dtCore::Transform ourTransform;
+      igActor->GetTransform(ourTransform);
+
+      dtUtil::NodeCollector* nodeCollector = igActor->GetNodeCollector();
+
+      osg::Node* chassis = NULL;
+      if (nodeCollector != NULL)
+      {
+         chassis = nodeCollector->GetDOFTransform("dof_chassis");
+         if (chassis == NULL)
+         {
+            chassis = nodeCollector->GetGroup("Body");
+         }
+      }
+
+      if (chassis == NULL)
+      {
+         LOGN_ERROR("FourWheelVehicleActor.cpp",
+                  "Unable to find either a \"dof_chassis\" node or a \"Body\" node.  Vehicle will not be created.");
+      }
+      else
+      {
+         osg::Matrix bodyOffset;
+         bodyOffset.makeIdentity();
+         GetLocalMatrix(*chassis, bodyOffset);
+         bodyOffset.setTrans(bodyOffset.getTrans() - GetMainPhysicsObject()->GetOriginOffset());
+         dtCore::Transform offsetXform;
+         offsetXform.Set(bodyOffset);
+
+         GetMainPhysicsObject()->SetVisualToBodyTransform(offsetXform);
+
+         CreateVehicle(ourTransform, *chassis);
+         GetMainPhysicsObject()->SetTransformAsVisual(ourTransform);
+      }
+
    }
 } // end namespace

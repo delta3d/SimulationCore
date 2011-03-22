@@ -40,6 +40,16 @@ namespace SimCore
             static dtCore::RefPtr<dtDAL::ActorType> PLATFORM_ACTOR_TYPE;
             static dtCore::RefPtr<dtDAL::ActorType> HUMAN_ACTOR_TYPE;
 
+            static dtCore::RefPtr<dtDAL::ActorType> PLATFORM_SWITCHABLE_PHYSICS_ACTOR_TYPE;
+
+            static dtCore::RefPtr<dtDAL::ActorType> GROUND_PLATFORM_ACTOR_TYPE;
+
+            static dtCore::RefPtr<dtDAL::ActorType> AIR_PLATFORM_ACTOR_TYPE;
+
+            static dtCore::RefPtr<dtDAL::ActorType> MILITARY_GROUND_PLATFORM_ACTOR_TYPE;
+
+            static dtCore::RefPtr<dtDAL::ActorType> MILITARY_AIR_PLATFORM_ACTOR_TYPE;
+
             static dtCore::RefPtr<dtDAL::ActorType> PLATFORM_WITH_PHYSICS_ACTOR_TYPE;
 
             static dtCore::RefPtr<dtDAL::ActorType> STEALTH_ACTOR_TYPE;
@@ -69,6 +79,8 @@ namespace SimCore
             static dtCore::RefPtr<dtDAL::ActorType> PAGED_TERRAIN_PHYSICS_ACTOR_TYPE;
             static dtCore::RefPtr<dtDAL::ActorType> AGEIA_VEHICLE_ACTOR_TYPE;
             static dtCore::RefPtr<dtDAL::ActorType> FOUR_WHEEL_VEHICLE_ACTOR_TYPE;
+            static dtCore::RefPtr<dtDAL::ActorType> FOUR_WHEEL_VEHICLE_CIV_ACTOR_TYPE;
+            static dtCore::RefPtr<dtDAL::ActorType> FOUR_WHEEL_VEHICLE_MIL_ACTOR_TYPE;
             static dtCore::RefPtr<dtDAL::ActorType> HUMAN_PHYSICS_ACTOR_TYPE;
             static dtCore::RefPtr<dtDAL::ActorType> PORTAL_ACTOR_TYPE;
 

@@ -105,15 +105,17 @@ namespace SimCore
             options->setObjectCacheHint(osgDB::ReaderWriter::Options::CACHE_NONE);
          }
 
-         if(loadTerrainMaterialsOn)
+         if (loadTerrainMaterialsOn)
          {
             options->setOptionString("loadMaterialsToStateSet");
          }
 
+         options->setPluginStringData("password", "hello");
+
          originalFile = osgDB::readNodeFile(fileName, options.get());
-         if ( originalFile.valid() )
+         if (originalFile.valid())
          {
-            if(useCache)
+            if (useCache)
             {
                copiedFile = static_cast<osg::Node*>(originalFile->clone(osg::CopyOp(COPY_OPS_SHARED_GEOMETRY) ));
             }

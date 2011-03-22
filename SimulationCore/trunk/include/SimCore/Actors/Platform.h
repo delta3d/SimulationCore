@@ -99,6 +99,19 @@ namespace SimCore
             PlatformActorProxy();
 
             /**
+             * Sometimes one wants all the platforms to have physics enabled, sometimes you want them disabled.
+             * This will make any platform created that has an ActorType that extends EntityActorRegistry::PLATFORM_SWITCHABLE_PHYSICS_ACTOR_TYPE
+             * to have physics or not.  This only effects the actors at the time of creation and no attempt has been
+             * made to make this thread safe.
+             *
+             * It default to true.
+             */
+            static void SetPhysicsCreationEnabled(bool);
+
+            /// Reads the value assigned with #SetPhysicsCreationEnabled
+            static bool GetPhysicsCreationEnabled();
+
+            /**
              * Initializes the actual actor the derived proxy will represent
              * By default this will create an Platform. This should be
              * overridden in all subclasses of the Platform class
@@ -163,8 +176,11 @@ namespace SimCore
             // Destructor
             virtual ~PlatformActorProxy();
 
+         private:
             dtCore::RefPtr<dtDAL::ActorProxyIcon> mBillboardIcon;
             bool mHasLoadedResources;
+
+            static bool mPhysicsCreationEnabled;
       };
 
       /**
@@ -334,6 +350,18 @@ namespace SimCore
 
            unsigned GetHeadlightId() const{ return mHeadLightID;}
 
+           /// since it derives off vehicle interface
+           virtual float GetMPH() const {return 0.0f;}
+
+           /**
+            * This is to support an odd use case that may not need to be handled any longer.
+            */
+           void SetNodeForGeometryToUse(osg::Node* nodeToUse)
+           {
+              mLoadGeomFromNode = true;
+              mNodeForGeometry = nodeToUse;
+           }
+
          protected:
 
             /**
@@ -361,6 +389,9 @@ namespace SimCore
 
             // Helper function to call the one on the proxy.
             void EnsureResourcesAreLoaded();
+
+            void PrePhysicsUpdate();
+            void LoadCollision();
          private:
             /// The minimum time allowed between control state updates
             float mTimeBetweenControlStateUpdates;
@@ -415,6 +446,10 @@ namespace SimCore
             std::string                      mSFXSoundIdleEffect; /// What is the filepath / string of the sound effect
             float                            mMinIdleSoundDistance;
             float                            mMaxIdleSoundDistance;
+
+            dtCore::RefPtr<osg::Node>  mNodeForGeometry;
+            bool                       mLoadGeomFromNode;
+
       };
 
    }

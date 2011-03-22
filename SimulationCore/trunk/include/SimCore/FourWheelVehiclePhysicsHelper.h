@@ -60,13 +60,14 @@ namespace SimCore
       void Steer(float normalize_wheel_angle);
       void ApplyBrake(float normalized_brake);
 
-      bool CreateVehicle(const dtCore::Transform& transformForRot, const osg::Node& bodyNode, std::vector<osgSim::DOFTransform*> wheels);
+      bool CreateVehicle(const dtCore::Transform& transformForRot, const osg::Node& bodyNode);
 
 
       //////////////////////////////////////////////////////////////////
       // Build the property list for the actor
       virtual void BuildPropertyMap();
 
+      virtual void OnEnteredWorld();
 
       DT_DECLARE_ACCESSOR(bool, IsVehicleFourWheelDrive);
 
@@ -146,9 +147,6 @@ namespace SimCore
 
    protected:
       virtual ~FourWheelVehiclePhysicsActComp();
-
-      static const float ACC_GRAVITY;
-
 
    private:
 

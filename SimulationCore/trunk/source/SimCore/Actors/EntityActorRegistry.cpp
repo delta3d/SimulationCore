@@ -89,6 +89,26 @@ namespace SimCore
                new dtDAL::ActorType("PlatformWithPhysics", "Entity", "A platform with a basic convex hull for collision detection",
                         EntityActorRegistry::PLATFORM_ACTOR_TYPE.get()));
 
+      RefPtr<dtDAL::ActorType> EntityActorRegistry::PLATFORM_SWITCHABLE_PHYSICS_ACTOR_TYPE(
+               new dtDAL::ActorType("PlatformSwitchablePhysics", "Entity", "A platform that can have physics enabled or disabled globally via an app flag.",
+                        EntityActorRegistry::PLATFORM_ACTOR_TYPE.get()));
+
+      RefPtr<dtDAL::ActorType> EntityActorRegistry::GROUND_PLATFORM_ACTOR_TYPE(
+               new dtDAL::ActorType("Platform", "Entity.Ground.Civilian", "A ground vehicle platform",
+                        EntityActorRegistry::PLATFORM_SWITCHABLE_PHYSICS_ACTOR_TYPE.get()));
+
+      RefPtr<dtDAL::ActorType> EntityActorRegistry::AIR_PLATFORM_ACTOR_TYPE(
+               new dtDAL::ActorType("Platform", "Entity.Air.Civilian", "A air vehicle platform",
+                        EntityActorRegistry::PLATFORM_SWITCHABLE_PHYSICS_ACTOR_TYPE.get()));
+
+      RefPtr<dtDAL::ActorType> EntityActorRegistry::MILITARY_GROUND_PLATFORM_ACTOR_TYPE(
+               new dtDAL::ActorType("Platform", "Entity.Ground.Military", "A military ground platform",
+                        EntityActorRegistry::GROUND_PLATFORM_ACTOR_TYPE.get()));
+
+      RefPtr<dtDAL::ActorType> EntityActorRegistry::MILITARY_AIR_PLATFORM_ACTOR_TYPE(
+               new dtDAL::ActorType("Platform", "Entity.Air.Military", "A military air platform",
+                        EntityActorRegistry::AIR_PLATFORM_ACTOR_TYPE.get()));
+
       RefPtr<dtDAL::ActorType> EntityActorRegistry::STEALTH_ACTOR_TYPE(
                new dtDAL::ActorType("Stealth Actor", "Stealth Actor", "This actor is a stealth actor",
                         EntityActorRegistry::PLATFORM_ACTOR_TYPE.get()));
@@ -131,7 +151,11 @@ namespace SimCore
       RefPtr<dtDAL::ActorType> EntityActorRegistry::AGEIA_VEHICLE_ACTOR_TYPE(new dtDAL::ActorType("NxAgeiaFourWheelVehicle", "NxAgeiaPhysicsModels", "",
                EntityActorRegistry::PLATFORM_ACTOR_TYPE.get()));
       RefPtr<dtDAL::ActorType> EntityActorRegistry::FOUR_WHEEL_VEHICLE_ACTOR_TYPE(new dtDAL::ActorType("FourWheelVehicle", "Entity", "",
-               EntityActorRegistry::PLATFORM_ACTOR_TYPE.get()));
+               EntityActorRegistry::MILITARY_GROUND_PLATFORM_ACTOR_TYPE.get()));
+      RefPtr<dtDAL::ActorType> EntityActorRegistry::FOUR_WHEEL_VEHICLE_MIL_ACTOR_TYPE(new dtDAL::ActorType("FourWheelVehicle", "Entity.Ground.Military", "Multi-wheeled vehicle with physics configured for a military vehicle with camo and weopons",
+               EntityActorRegistry::MILITARY_GROUND_PLATFORM_ACTOR_TYPE.get()));
+      RefPtr<dtDAL::ActorType> EntityActorRegistry::FOUR_WHEEL_VEHICLE_CIV_ACTOR_TYPE(new dtDAL::ActorType("FourWheelVehicle", "Entity.Ground.Civilian", "Multi-wheeled vehicle with physics configured more simply than a military vehicle.",
+               EntityActorRegistry::GROUND_PLATFORM_ACTOR_TYPE.get()));
       RefPtr<dtDAL::ActorType> EntityActorRegistry::HUMAN_PHYSICS_ACTOR_TYPE(
                new dtDAL::ActorType("HumanWithPhysicsActor", "Entity", "Human with a physics collision mesh",
                         EntityActorRegistry::HUMAN_ACTOR_TYPE.get()));
@@ -208,7 +232,7 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////////
-      extern "C" SIMCORE_EXPORT void DestroyPluginRegistry(dtDAL::ActorPluginRegistry *registry)
+      extern "C" SIMCORE_EXPORT void DestroyPluginRegistry(dtDAL::ActorPluginRegistry* registry)
       {
           delete registry;
       }
@@ -231,8 +255,18 @@ namespace SimCore
          mActorFactory->RegisterType<PlatformActorProxy>(PLATFORM_ACTOR_TYPE.get());
          mActorFactory->RegisterType<HumanActorProxy>(HUMAN_ACTOR_TYPE.get());
 
-         mActorFactory->RegisterType<PlatformWithPhysicsActorProxy>(PLATFORM_WITH_PHYSICS_ACTOR_TYPE.get());
-         mActorFactory->RegisterType<PlatformWithPhysicsActorProxy>(OLD_REMOTE_PHYSX_ACTOR_TYPE.get());
+         mActorFactory->RegisterType<PlatformActorProxy>(PLATFORM_SWITCHABLE_PHYSICS_ACTOR_TYPE.get());
+
+         mActorFactory->RegisterType<PlatformActorProxy>(PLATFORM_WITH_PHYSICS_ACTOR_TYPE.get());
+         mActorFactory->RegisterType<PlatformActorProxy>(OLD_REMOTE_PHYSX_ACTOR_TYPE.get());
+
+         mActorFactory->RegisterType<PlatformActorProxy>(GROUND_PLATFORM_ACTOR_TYPE);
+
+         mActorFactory->RegisterType<PlatformActorProxy>(AIR_PLATFORM_ACTOR_TYPE);
+
+         mActorFactory->RegisterType<PlatformActorProxy>(MILITARY_GROUND_PLATFORM_ACTOR_TYPE);
+
+         mActorFactory->RegisterType<PlatformActorProxy>(MILITARY_AIR_PLATFORM_ACTOR_TYPE);
 
          mActorFactory->RegisterType<StealthActorProxy>(STEALTH_ACTOR_TYPE.get());
          mActorFactory->RegisterType<PlayerActorProxy>(PLAYER_ACTOR_TYPE.get());
@@ -264,6 +298,8 @@ namespace SimCore
 
          mActorFactory->RegisterType<PlatformWithPhysicsActorProxy>(AGEIA_VEHICLE_ACTOR_TYPE.get());
          mActorFactory->RegisterType<FourWheelVehicleActorProxy>(FOUR_WHEEL_VEHICLE_ACTOR_TYPE.get());
+         mActorFactory->RegisterType<FourWheelVehicleActorProxy>(FOUR_WHEEL_VEHICLE_CIV_ACTOR_TYPE.get());
+         mActorFactory->RegisterType<FourWheelVehicleActorProxy>(FOUR_WHEEL_VEHICLE_MIL_ACTOR_TYPE.get());
 
          mActorFactory->RegisterType<HumanWithPhysicsActorProxy>(HUMAN_PHYSICS_ACTOR_TYPE.get());
          mActorFactory->RegisterType<PagedTerrainPhysicsActorProxy>(AGEIA_TLAND_ACTOR_TYPE.get());
@@ -283,7 +319,7 @@ namespace SimCore
          mActorFactory->RegisterType<SurfaceHazeDataActorProxy>(SURFACE_HAZE_DATA_ACTOR_TYPE.get());
 
          // OBSOLETE ACTOR TYPES - FOR backward compatible playbacks back to IPT2 (summer 2007).
-         dtDAL::ActorType *oldEntityType = new dtDAL::ActorType("Entity", "Entity",
+         dtDAL::ActorType* oldEntityType = new dtDAL::ActorType("Entity", "Entity",
                "OBSOLETE ENTITY TYPE - IS NOW PLATFORM - BACKWARD COMPATIBLE FOR OLDER LOG FILES");
          mActorFactory->RegisterType<PlatformActorProxy>(oldEntityType);
 
