@@ -231,7 +231,7 @@ int main (int argc, char* argv[])
 
    dtAudio::AudioManager::Instantiate();
 
-   globalApplication = new dtABC::Application("config.xml");
+   globalApplication = new dtABC::Application("tests/config.xml");
    globalApplication->GetWindow()->SetPosition(0, 0, 50, 50);
    globalApplication->Config();
 
