@@ -78,6 +78,7 @@ namespace SimCore
          , mConnectionType(&ConnectionType::TYPE_NONE)
          , mServerGameVersion(1)
          , mState(&ConnectionState::STATE_NOT_CONNECTED)
+         , mPausedDuringConnectionFrame(false)
       {
 
       }
@@ -104,7 +105,14 @@ namespace SimCore
          // can connect to the network.
          if(msg.GetMessageType() == dtGame::MessageType::INFO_MAP_LOADED)
          {
+            GetGameManager()->SetPaused(true);
+            mPausedDuringConnectionFrame = true;
             DoReconnectToNetwork();
+         }
+         else if(mPausedDuringConnectionFrame && msg.GetMessageType() == dtGame::MessageType::TICK_LOCAL)
+         {
+            GetGameManager()->SetPaused(false);
+            mPausedDuringConnectionFrame = false;
          }
       }
 
