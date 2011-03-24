@@ -21,7 +21,7 @@
  * 
  * David Guthrie
  */
-
+#include <prefix/SimCorePrefix.h>
 #include <SimCore/ActComps/WheelActComp.h>
 #include <SimCore/Actors/IGActor.h>
 #include <dtGame/basemessages.h>
