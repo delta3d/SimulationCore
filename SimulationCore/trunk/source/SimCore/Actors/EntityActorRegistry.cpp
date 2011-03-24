@@ -59,7 +59,7 @@
 #include <SimCore/Actors/FourWheelVehicleActor.h>
 #include <SimCore/Actors/EnvironmentProcessActor.h>
 #include <SimCore/Actors/SimpleMovingShapeActor.h>
-
+#include <SimCore/Actors/BattlefieldGraphicsActor.h>
 #include <SimCore/Actors/PlatformWithPhysics.h>
 #include <SimCore/Actors/PagedTerrainPhysicsActor.h>
 #include <SimCore/Actors/HumanWithPhysicsActor.h>
@@ -225,6 +225,9 @@ namespace SimCore
                new dtDAL::ActorType("EnvironmentProcessMovingShape", "SimCore", "Represents an shape or other deadreckoned area that is part of an environment process.")
                );
 
+      RefPtr<dtDAL::ActorType> EntityActorRegistry::BATTLEFIELD_GRAPHICS_ACTOR_TYPE( new dtDAL::ActorType("BattlefieldGraphics", "SimCore", "Represents a shape or area that is extruded in 2D."));
+
+
       ///////////////////////////////////////////////////////////////////////////
       extern "C" SIMCORE_EXPORT dtDAL::ActorPluginRegistry* CreatePluginRegistry()
       {
@@ -342,6 +345,8 @@ namespace SimCore
          
          // Config Actors
          mActorFactory->RegisterType<CamoConfigActorProxy>(CAMO_CONFIG_ACTOR_TYPE.get());
+
+         mActorFactory->RegisterType<BattlefieldGraphicsActorProxy>(BATTLEFIELD_GRAPHICS_ACTOR_TYPE.get());
 
       }
    }
