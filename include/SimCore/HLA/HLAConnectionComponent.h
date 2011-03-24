@@ -297,6 +297,8 @@ namespace SimCore
             unsigned int mDISMTU;
             std::string mDISActorXMLFile;
 
+            bool mPausedDuringConnectionFrame;
+
             const ConnectionState *mState;
       };
    }
