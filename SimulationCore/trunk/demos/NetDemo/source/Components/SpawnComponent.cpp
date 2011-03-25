@@ -212,7 +212,7 @@ namespace NetDemo
       SetWaveNumber(waveNumber);
       SetTimeLeftInWave(timeLeftInWave);
 
-      int tempDifficulty = (mDifficulty > 0) ? mDifficulty : 1;
+      //int tempDifficulty = (mDifficulty > 0) ? mDifficulty : 1;
       mNumEnemiesCurrent = mNumEnemiesStart + (mNumPlayers * mDifficulty * waveNumber);
       if (mDifficulty <= 0)
       {

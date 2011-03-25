@@ -553,6 +553,13 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////
       void BasePhysicsVehicleActorProxy::BuildActorComponents()
       {
+         // Create the default if a subclass didn't create one.  The base physics vehicle does not use the
+         // platform default physics actor component.
+         if (!HasComponent(dtPhysics::PhysicsActComp::TYPE))
+         {
+            AddComponent(*new dtPhysics::PhysicsActComp());
+         }
+
          BaseClass::BuildActorComponents();
 
          // DEFAULT the Dead Reckoning Algorithm to Velocity And Acceleration. It's a prop so will
@@ -564,12 +571,6 @@ namespace SimCore
          {
             // default to velocity only.  Humans walk.
             drAC->SetDeadReckoningAlgorithm(dtGame::DeadReckoningAlgorithm::VELOCITY_AND_ACCELERATION);
-         }
-
-         // Create the default if a subclass didn't create one.
-         if (!HasComponent(dtPhysics::PhysicsActComp::TYPE))
-         {
-            AddComponent(*new dtPhysics::PhysicsActComp());
          }
       }
 

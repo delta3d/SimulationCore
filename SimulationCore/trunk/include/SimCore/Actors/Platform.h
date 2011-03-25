@@ -353,15 +353,6 @@ namespace SimCore
            /// since it derives off vehicle interface
            virtual float GetMPH() const {return 0.0f;}
 
-           /**
-            * This is to support an odd use case that may not need to be handled any longer.
-            */
-           void SetNodeForGeometryToUse(osg::Node* nodeToUse)
-           {
-              mLoadGeomFromNode = true;
-              mNodeForGeometry = nodeToUse;
-           }
-
          protected:
 
             /**
@@ -390,8 +381,6 @@ namespace SimCore
             // Helper function to call the one on the proxy.
             void EnsureResourcesAreLoaded();
 
-            void PrePhysicsUpdate();
-            void LoadCollision();
          private:
             /// The minimum time allowed between control state updates
             float mTimeBetweenControlStateUpdates;
@@ -446,9 +435,6 @@ namespace SimCore
             std::string                      mSFXSoundIdleEffect; /// What is the filepath / string of the sound effect
             float                            mMinIdleSoundDistance;
             float                            mMaxIdleSoundDistance;
-
-            dtCore::RefPtr<osg::Node>  mNodeForGeometry;
-            bool                       mLoadGeomFromNode;
 
       };
 
