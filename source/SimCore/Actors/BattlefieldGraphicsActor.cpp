@@ -110,15 +110,23 @@ namespace SimCore
          if(mPoints.size() == 1 && mRadius > 0.0001f)
          {
             //use a cylinder
-            dtCore::RefPtr<osg::Cylinder> shape = new osg::Cylinder(mPoints.front(), mRadius, mMaxAltitude - mMinAltitude);
+            float minZ = mMinAltitude;
+            float maxZ = mMaxAltitude;
+            float diff = maxZ - minZ;
+
+            osg::Vec3 center = mPoints[0];
+            center[2] = minZ + (0.5f * diff);
+
+            dtCore::RefPtr<osg::Cylinder> shape = new osg::Cylinder(center, mRadius, diff);
             dtCore::RefPtr<osg::ShapeDrawable> shapeDrawable = new osg::ShapeDrawable(shape);
             shapeDrawable->setColor(color);
             mGeode->addDrawable(shapeDrawable);
+            GetGameActor().GetOSGNode()->asGroup()->addChild(mGeode.get());
 
          }
          else if(mPoints.size() > 1)
          {
-            int numVerts = 4 * mPoints.size();
+            int numVerts = 4 * (mPoints.size() - 1);
 
             if(mClosed)
             {
@@ -129,7 +137,7 @@ namespace SimCore
             dtCore::RefPtr<osg::Vec3Array> vectorArray = new osg::Vec3Array();
             dtCore::RefPtr<osg::Vec4Array> colorArray = new osg::Vec4Array();
             vectorArray->reserve(numVerts);
-
+            
 
             std::vector<osg::Vec3>::iterator iter = mPoints.begin();
             std::vector<osg::Vec3>::iterator iterEnd = mPoints.end();
@@ -166,8 +174,10 @@ namespace SimCore
             }
 
             geom->setVertexArray(vectorArray.get());
-            geom->setColorArray(colorArray.get());
+            geom->setColorArray(colorArray.get());            
+            geom->setColorBinding(osg::Geometry::BIND_PER_VERTEX);
             geom->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::QUADS, 0, 4 * numVerts));
+
 
             mGeode->addDrawable(geom.get());
             GetGameActor().GetOSGNode()->asGroup()->addChild(mGeode.get());
@@ -231,6 +241,16 @@ namespace SimCore
                 GROUPNAME
 
                );
+
+         
+         dtCore::RefPtr<dtDAL::Vec3ActorProperty> vec3prop =
+         new dtDAL::Vec3ActorProperty("NestedVec3",
+                  "Nested Vec3",
+                  dtDAL::Vec3ActorProperty::SetFuncType(arrayProp.get(), &Vec3ArrayPropType::SetCurrentValue),
+                  dtDAL::Vec3ActorProperty::GetFuncType(arrayProp.get(), &Vec3ArrayPropType::GetCurrentValue),
+                  "", GROUPNAME);
+
+         arrayProp->SetArrayProperty(*vec3prop);
 
          AddProperty(arrayProp);
 
