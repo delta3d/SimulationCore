@@ -29,6 +29,12 @@
 #include <dtDAL/propertymacros.h>
 #include <dtDAL/arrayactorpropertycomplex.h>
 
+#include <osg/Shape>
+#include <osg/ShapeDrawable>
+#include <osg/Material>
+#include <osg/BlendFunc>
+#include <osg/RenderInfo>
+#include <osg/StateSet>
 
 namespace SimCore
 {
@@ -63,6 +69,125 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////
       void BattlefieldGraphicsActorProxy::OnEnteredWorld()
       {
+         CreateGeometry();
+      }
+      
+      
+      ////////////////////////////////////////////////////////////////////////////
+      void BattlefieldGraphicsActorProxy::OnRemovedFromWorld()
+      {
+         CleanUp();
+      }
+
+      ////////////////////////////////////////////////////////////////////////////
+      void BattlefieldGraphicsActorProxy::CleanUp()
+      {
+         if(mGeode.valid())
+         {
+            GetGameActor().GetOSGNode()->asGroup()->removeChild(mGeode.get());
+            mGeode = NULL;
+         }
+      }
+
+      ////////////////////////////////////////////////////////////////////////////
+      void BattlefieldGraphicsActorProxy::CreateGeometry()
+      {
+         osg::Vec4 color(0.5f, 0.5f, 1.0f, 0.5f);
+
+         mGeode = new osg::Geode();
+
+         osg::StateSet* ss = mGeode->getOrCreateStateSet();
+         ss->setMode(GL_BLEND, osg::StateAttribute::ON);
+
+         osg::BlendFunc* blendFunc = new osg::BlendFunc();
+         blendFunc->setFunction(osg::BlendFunc::SRC_ALPHA ,osg::BlendFunc::ONE_MINUS_SRC_ALPHA);
+         ss->setAttributeAndModes(blendFunc);
+         ss->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
+
+
+
+         if(mPoints.size() == 1 && mRadius > 0.0001f)
+         {
+            //use a cylinder
+            dtCore::RefPtr<osg::Cylinder> shape = new osg::Cylinder(mPoints.front(), mRadius, mMaxAltitude - mMinAltitude);
+            dtCore::RefPtr<osg::ShapeDrawable> shapeDrawable = new osg::ShapeDrawable(shape);
+            shapeDrawable->setColor(color);
+            mGeode->addDrawable(shapeDrawable);
+
+         }
+         else if(mPoints.size() > 1)
+         {
+            int numVerts = 4 * mPoints.size();
+
+            if(mClosed)
+            {
+               numVerts += 4;
+            }
+
+            dtCore::RefPtr<osg::Geometry> geom = new osg::Geometry();
+            dtCore::RefPtr<osg::Vec3Array> vectorArray = new osg::Vec3Array();
+            dtCore::RefPtr<osg::Vec4Array> colorArray = new osg::Vec4Array();
+            vectorArray->reserve(numVerts);
+
+
+            std::vector<osg::Vec3>::iterator iter = mPoints.begin();
+            std::vector<osg::Vec3>::iterator iterEnd = mPoints.end();
+
+            osg::Vec3 point1 = *iter;
+            osg::Vec3 point2;
+            ++iter;
+
+            for(;iter != iterEnd; ++iter)
+            {
+               point2 = *iter;
+               AddPlane(*vectorArray, point1, point2, mMinAltitude, mMaxAltitude);
+
+               //temporary until we have a color source
+               colorArray->push_back(color);
+               colorArray->push_back(color);
+               colorArray->push_back(color);
+               colorArray->push_back(color);
+               
+               point1 = point2;
+            }
+
+            if(mClosed)
+            {
+               //connect the beginning and the end
+               point1 = mPoints.front();
+               point2 = mPoints.back();
+               AddPlane(*vectorArray, point1, point2, mMinAltitude, mMaxAltitude);
+
+               colorArray->push_back(color);
+               colorArray->push_back(color);
+               colorArray->push_back(color);
+               colorArray->push_back(color);
+            }
+
+            geom->setVertexArray(vectorArray.get());
+            geom->setColorArray(colorArray.get());
+            geom->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::QUADS, 0, 4 * numVerts));
+
+            mGeode->addDrawable(geom.get());
+            GetGameActor().GetOSGNode()->asGroup()->addChild(mGeode.get());
+         }
+
+      }
+
+      ////////////////////////////////////////////////////////////////////////////
+      void BattlefieldGraphicsActorProxy::AddPlane(osg::Vec3Array& geom, const osg::Vec3& from, const osg::Vec3& to, float minHeight, float maxHeight)
+      {
+         //the four corners are lower left , upper left, upper right, and lower right
+         osg::Vec3 LL, UL, UR, LR;
+         LL.set(from.x(), from.y(), minHeight);
+         UL.set(from.x(), from.y(), maxHeight);
+         UR.set(to.x(), to.y(), maxHeight);
+         LR.set(to.x(), to.y(), minHeight);
+
+         geom.push_back(LL);
+         geom.push_back(UL);
+         geom.push_back(UR);
+         geom.push_back(LR);
       }
 
       ////////////////////////////////////////////////////////////////////////////
@@ -109,7 +234,6 @@ namespace SimCore
          AddProperty(arrayProp);
 
       }
-
 
    }
 }
