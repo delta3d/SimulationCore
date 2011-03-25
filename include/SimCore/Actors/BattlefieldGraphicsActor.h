@@ -28,7 +28,10 @@
 #include <SimCore/Export.h>
 #include <dtGame/gameactorproxy.h>
 #include <dtUtil/getsetmacros.h>
+
 #include <osg/Vec3>
+#include <osg/Geode>
+#include <osg/Array>
 
 namespace SimCore
 {
@@ -58,12 +61,13 @@ namespace SimCore
          virtual ~BattlefieldGraphicsActorProxy();
 
          virtual void OnEnteredWorld();
-
-         //virtual void OnRemovedFromWorld() { }
+         virtual void OnRemovedFromWorld();
 
          virtual void CreateActor();
          virtual void BuildPropertyMap();
 
+
+      private:
          //for some reason the ArrayActorPropertyComplex get/set macro is trying to 
          //use the wrong insert function, as a temporary workaround I have made
          //an overload with a different name 
@@ -72,8 +76,11 @@ namespace SimCore
             InsertPoint(index);
          }
 
-      private:
+         void CleanUp();
+         void CreateGeometry();
+         void AddPlane(osg::Vec3Array& geom, const osg::Vec3& from, const osg::Vec3& to, float minHeight, float maxHeight);
 
+         dtCore::RefPtr<osg::Geode> mGeode;
 
       };
 
