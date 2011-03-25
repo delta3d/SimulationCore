@@ -29,6 +29,7 @@
 #include <dtDAL/propertymacros.h>
 #include <dtDAL/arrayactorpropertycomplex.h>
 
+#include <osg/Geometry>
 #include <osg/Shape>
 #include <osg/ShapeDrawable>
 #include <osg/Material>
