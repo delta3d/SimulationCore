@@ -27,6 +27,7 @@
 #include <SimCore/ActComps/CamoPaintStateActComp.h>
 #include <SimCore/ActComps/WeaponSwapActComp.h>
 #include <SimCore/ActComps/WheelActComp.h>
+#include <SimCore/ActComps/PlatformDefaultPhysicsActComp.h>
 #include <SimCore/Actors/Platform.h>
 
 // Included to allow code to select which actor components to add.
@@ -106,8 +107,6 @@ namespace SimCore
       const dtUtil::RefString PlatformActorProxy::PROPERTY_ENGINE_POSITION("Engine Position");
       const dtUtil::RefString PlatformActorProxy::PROPERTY_ENGINE_SMOKE_POSITION("EngineSmokePosition");
       const dtUtil::RefString PlatformActorProxy::PROPERTY_ENGINE_SMOKE_ON("EngineSmokeOn");
-
-      static const dtUtil::RefString PLATFORM_BODY_NAME("PlatformBody");
 
       bool PlatformActorProxy::mPhysicsCreationEnabled(true);
 
@@ -329,15 +328,7 @@ namespace SimCore
             if (at.InstanceOf(*EntityActorRegistry::PLATFORM_WITH_PHYSICS_ACTOR_TYPE) ||
                     ( at.InstanceOf(*EntityActorRegistry::PLATFORM_SWITCHABLE_PHYSICS_ACTOR_TYPE) && mPhysicsCreationEnabled ) )
             {
-               dtCore::RefPtr<dtPhysics::PhysicsActComp> physActComp = new dtPhysics::PhysicsActComp();
-
-               dtCore::RefPtr<dtPhysics::PhysicsObject> physObj = new dtPhysics::PhysicsObject(PLATFORM_BODY_NAME);
-               physObj->SetPrimitiveType(dtPhysics::PrimitiveType::CONVEX_HULL);
-               physObj->SetMechanicsType(dtPhysics::MechanicsType::DYNAMIC);
-               physObj->SetMass(500.0f);
-               physObj->SetCollisionGroup(SimCore::CollisionGroup::GROUP_VEHICLE_GROUND);
-               physActComp->AddPhysicsObject(*physObj);
-
+               dtCore::RefPtr<dtPhysics::PhysicsActComp> physActComp = new SimCore::ActComps::PlatformDefaultPhysicsActComp();
                AddComponent(*physActComp);
             }
          }
@@ -428,7 +419,6 @@ namespace SimCore
       , mHeadLightID(0)
       , mMinIdleSoundDistance(5.0f)
       , mMaxIdleSoundDistance(30.0f)
-      , mLoadGeomFromNode(false)
       {
          mSwitchNode->insertChild(0, mNonDamagedFileNode.get());
          mSwitchNode->insertChild(1, mDamagedFileNode.get());
@@ -717,9 +707,12 @@ namespace SimCore
          if (damageState != GetDamageState())
          {
             InternalSetDamageState(damageState);
-            if (!mLoadGeomFromNode)
+
+            SimCore::ActComps::PlatformDefaultPhysicsActComp* physAC = NULL;
+            GetComponent(physAC);
+            if (physAC != NULL)
             {
-               LoadCollision();
+               physAC->LoadCollision(false);
             }
          }
       }
@@ -1054,31 +1047,6 @@ namespace SimCore
          {
             SetHeadLightsEnabled(true);
          }
-
-         dtPhysics::PhysicsActComp* physAC = NULL;
-         GetComponent(physAC);
-         if (physAC != NULL)
-         {
-            physAC->SetPrePhysicsCallback(dtPhysics::PhysicsActComp::UpdateCallback(this, &Platform::PrePhysicsUpdate));
-            // this is for static world geometry
-            if(mLoadGeomFromNode)
-            {
-               SetName("Building Body");
-               physAC->GetMainPhysicsObject()->CreateFromProperties(mNodeForGeometry.get());
-               physAC->GetMainPhysicsObject()->SetMechanicsType(dtPhysics::MechanicsType::STATIC);
-
-               osg::Matrix bodyOffset;
-               bodyOffset.setTrans(-physAC->GetMainPhysicsObject()->GetOriginOffset());
-               dtCore::Transform offsetXform;
-               offsetXform.Set(bodyOffset);
-
-               physAC->GetMainPhysicsObject()->SetVisualToBodyTransform(offsetXform);
-            }
-            else // this is for objects moving around, in our case vehicles
-            {
-               LoadCollision();
-            }
-         }
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
@@ -1236,101 +1204,6 @@ namespace SimCore
                mArticHelper->NotifyControlStateUpdate();
                mArticHelper->SetDirty( false );
             }
-         }
-      }
-
-      ////////////////////////////////////////////////////////////////////
-      void Platform::PrePhysicsUpdate()
-      {
-         if(!mLoadGeomFromNode && HasComponent(dtPhysics::PhysicsActComp::TYPE))
-         {
-            dtPhysics::PhysicsObject* physObj = GetComponent<dtPhysics::PhysicsActComp>()->GetMainPhysicsObject();
-            if (physObj != NULL)
-            {
-               dtCore::Transform xform;
-               GetTransform(xform);
-               physObj->SetTransformAsVisual(xform);
-            }
-         }
-      }
-
-      ///////////////////////////////////////////////////////////
-      void Platform::LoadCollision()
-      {
-         dtPhysics::PhysicsActComp* physAC = NULL;
-         GetComponent(physAC);
-
-         if (physAC == NULL)
-         {
-            return;
-         }
-
-         std::string checkValue;
-
-         BaseEntityActorProxy::DamageStateEnum& damState = GetDamageState();
-         if (damState == BaseEntityActorProxy::DamageStateEnum::NO_DAMAGE)
-         {
-            checkValue = GetGameActorProxy().GetProperty(PlatformActorProxy::PROPERTY_MESH_NON_DAMAGED_ACTOR)->ToString();
-         }
-         else if (damState == BaseEntityActorProxy::DamageStateEnum::SLIGHT_DAMAGE
-            || damState == BaseEntityActorProxy::DamageStateEnum::MODERATE_DAMAGE )
-         {
-            checkValue = GetGameActorProxy().GetProperty(PlatformActorProxy::PROPERTY_MESH_DAMAGED_ACTOR)->ToString();
-         }
-         else if (damState == BaseEntityActorProxy::DamageStateEnum::DESTROYED)
-         {
-            checkValue = GetGameActorProxy().GetProperty(PlatformActorProxy::PROPERTY_MESH_DESTROYED_ACTOR)->ToString();
-         }
-
-         if (checkValue.empty())
-         {
-            LOG_DEBUG("Unable to load file, resource was not valid! This is for actor \"" +
-               GetUniqueId().ToString() + ". However this is called from " +
-               "setdamagestate, and model may not be valid yet.");
-            return;
-         }
-         else
-         {
-            dtCore::RefPtr<dtPhysics::PhysicsObject> physObj = physAC->GetMainPhysicsObject();
-
-            if (physObj.valid())
-            {
-               // it's re-added below, don't worry.
-               physAC->RemovePhysicsObject(*physObj);
-            }
-            else
-            {
-               LOG_ERROR("The Physics object should already be created, attempting to create a another physics object.");
-               physObj = new dtPhysics::PhysicsObject(PLATFORM_BODY_NAME);
-               physObj->SetPrimitiveType(dtPhysics::PrimitiveType::CONVEX_HULL);
-               physObj->SetMechanicsType(dtPhysics::MechanicsType::DYNAMIC);
-               physObj->SetMass(500.0f);
-            }
-
-            // TODO, if it changes to local again, it should figure out what the property was configured to be.
-            // users also probably want to be able to configure what remote does.
-            if (IsRemote())
-            {
-               physObj->SetMechanicsType(dtPhysics::MechanicsType::KINEMATIC);
-            }
-
-            physAC->AddPhysicsObject(*physObj);
-
-            dtCore::Transform offsetXform;
-            offsetXform.SetTranslation(-physObj->GetOriginOffset());
-
-            physObj->SetVisualToBodyTransform(offsetXform);
-
-            dtCore::Transform xform;
-            GetTransform(xform);
-
-            physObj->SetTransformAsVisual(xform);
-
-            // Note, this must be done after the visual to body transform is set because the origin
-            // offset may be adjusted if the primitive type is a box, sphere, or cylinder and the center
-            // of the bounding box doesn't match the center of the mesh
-            physObj->CreateFromProperties(&GetScaleMatrixTransform(), true, checkValue);
-
          }
       }
 
