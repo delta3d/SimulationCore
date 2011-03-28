@@ -52,10 +52,17 @@ namespace StealthQt
       Q_OBJECT
    public:
 
+      typedef QDialog BaseClass;
+
       AdditionalViewEditDialog(StealthGM::ViewWindowWrapper& viewWindow,
                QWidget *parent = NULL, Qt::WindowFlags f = 0);
 
       virtual ~AdditionalViewEditDialog();
+
+      void SetCancelButtonVisible(bool visible);
+
+      virtual void accept();
+      virtual void reject();
 
    public slots:
       void UpdateName(const QString& name);
@@ -71,6 +78,9 @@ namespace StealthQt
       FOVWidget* mFOVWidget;
       dtCore::RefPtr<StealthGM::ViewWindowWrapper> mViewWindow;
       QDoubleValidator* mAngleValidator;
+
+      // Fields for storing information prior to editing a view.
+      std::string mPrevName;
    };
 
 }

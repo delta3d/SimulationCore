@@ -120,17 +120,17 @@ namespace StealthQt
       dtCore::RefPtr<StealthGM::ViewWindowWrapper> newViewWrap = CreateNewViewWindow("");
 
       AdditionalViewEditDialog dialog(*newViewWrap, this);
-      dialog.exec();
-      //if (dialog.exec() == QDialog::Accepted)
-      //{
-      newViewWrap->SetAttachToCamera(viewConfig.GetMainViewWindow().GetView().GetCamera());
-      viewConfig.AddViewWindow(*newViewWrap);
-      ResetList();
-      //}
-      //else
-      //{
-      newViewWrap = NULL;
-      //}
+      dialog.SetCancelButtonVisible(true);
+      if (dialog.exec() == QDialog::Accepted)
+      {
+         newViewWrap->SetAttachToCamera(viewConfig.GetMainViewWindow().GetView().GetCamera());
+         viewConfig.AddViewWindow(*newViewWrap);
+         ResetList();
+      }
+      else
+      {
+         newViewWrap = NULL;
+      }
    }
 
    ////////////////////////////////////////////////////////////////////////
@@ -155,6 +155,7 @@ namespace StealthQt
       {
          std::string oldName = viewWindow->GetName();
          AdditionalViewEditDialog dialog(*viewWindow, this);
+         dialog.SetCancelButtonVisible(false);
          dialog.exec();
 
          if (viewWindow->GetName() != oldName)
