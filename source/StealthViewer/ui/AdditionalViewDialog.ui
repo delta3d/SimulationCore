@@ -1,7 +1,8 @@
-<ui version="4.0" >
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <class>AdditionalViewDialogUi</class>
- <widget class="QDialog" name="AdditionalViewDialogUi" >
-  <property name="geometry" >
+ <widget class="QDialog" name="AdditionalViewDialogUi">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
@@ -9,35 +10,35 @@
     <height>398</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout" >
+  <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QWidget" native="1" name="widget" >
-     <layout class="QFormLayout" name="formLayout_2" >
-      <property name="fieldGrowthPolicy" >
+    <widget class="QWidget" name="widget" native="true">
+     <layout class="QFormLayout" name="formLayout_2">
+      <property name="fieldGrowthPolicy">
        <enum>QFormLayout::FieldsStayAtSizeHint</enum>
       </property>
-      <property name="margin" >
+      <property name="margin">
        <number>0</number>
       </property>
-      <item row="0" column="0" >
-       <widget class="QLabel" name="label" >
-        <property name="text" >
+      <item row="0" column="0">
+       <widget class="QLabel" name="label">
+        <property name="text">
          <string>Name</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="1" >
-       <widget class="QLineEdit" name="mNameEdit" />
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="mNameEdit"/>
       </item>
      </layout>
     </widget>
    </item>
    <item>
-    <widget class="QWidget" native="1" name="mFOVPane" >
-     <property name="minimumSize" >
+    <widget class="QWidget" name="mFOVPane" native="true">
+     <property name="minimumSize">
       <size>
        <width>0</width>
        <height>0</height>
@@ -46,62 +47,62 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="groupBox" >
-     <property name="title" >
+    <widget class="QGroupBox" name="groupBox">
+     <property name="title">
       <string>Parameters</string>
      </property>
-     <layout class="QFormLayout" name="formLayout" >
-      <item row="0" column="0" >
-       <widget class="QLabel" name="mParentViewLabel" >
-        <property name="text" >
+     <layout class="QFormLayout" name="formLayout">
+      <item row="0" column="0">
+       <widget class="QLabel" name="mParentViewLabel">
+        <property name="text">
          <string>Parent View</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="1" >
-       <widget class="QComboBox" name="mParentViewCombo" >
-        <property name="enabled" >
+      <item row="0" column="1">
+       <widget class="QComboBox" name="mParentViewCombo">
+        <property name="enabled">
          <bool>false</bool>
         </property>
         <item>
-         <property name="text" >
+         <property name="text">
           <string>Main</string>
          </property>
         </item>
        </widget>
       </item>
-      <item row="1" column="0" >
-       <widget class="QLabel" name="mRelativeViewAzimuthLabel" >
-        <property name="text" >
+      <item row="1" column="0">
+       <widget class="QLabel" name="mRelativeViewAzimuthLabel">
+        <property name="text">
          <string>Relative View Azimuth</string>
         </property>
        </widget>
       </item>
-      <item row="2" column="0" >
-       <widget class="QLabel" name="mRelativeViewElevationLabel" >
-        <property name="text" >
+      <item row="2" column="0">
+       <widget class="QLabel" name="mRelativeViewElevationLabel">
+        <property name="text">
          <string>Relative View Elevation</string>
         </property>
        </widget>
       </item>
-      <item row="1" column="1" >
-       <widget class="QLineEdit" name="mViewAzimuth" />
+      <item row="1" column="1">
+       <widget class="QLineEdit" name="mViewAzimuth"/>
       </item>
-      <item row="2" column="1" >
-       <widget class="QLineEdit" name="mViewElevation" />
+      <item row="2" column="1">
+       <widget class="QLineEdit" name="mViewElevation"/>
       </item>
      </layout>
     </widget>
    </item>
    <item>
-    <widget class="QDialogButtonBox" name="buttonBox" >
-     <property name="orientation" >
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
-     <property name="standardButtons" >
-      <set>QDialogButtonBox::Close</set>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
      </property>
-     <property name="centerButtons" >
+     <property name="centerButtons">
       <bool>true</bool>
      </property>
     </widget>
@@ -116,11 +117,11 @@
    <receiver>AdditionalViewDialogUi</receiver>
    <slot>accept()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>248</x>
      <y>254</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>157</x>
      <y>274</y>
     </hint>
@@ -132,11 +133,11 @@
    <receiver>AdditionalViewDialogUi</receiver>
    <slot>reject()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>316</x>
      <y>260</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>286</x>
      <y>274</y>
     </hint>

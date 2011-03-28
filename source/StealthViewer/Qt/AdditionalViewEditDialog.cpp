@@ -77,6 +77,24 @@ namespace StealthQt
                this,          SLOT(UpdatePitch(const QString&)));
 
       UpdateName(mUi->mNameEdit->text());
+
+      // Maintain data prior to editing the view incase changes are rejected.
+      mPrevName = mViewWindow->GetName();
+   }
+
+   ////////////////////////////////////////////////////////////////////////
+   void AdditionalViewEditDialog::SetCancelButtonVisible(bool visible)
+   {
+      QDialogButtonBox::StandardButtons buttons = mUi->buttonBox->standardButtons();
+      if(visible)
+      {
+         buttons |= QDialogButtonBox::Cancel;
+      }
+      else
+      {
+         buttons &= (~QDialogButtonBox::Cancel);
+      }
+      mUi->buttonBox->setStandardButtons(buttons);
    }
 
    ////////////////////////////////////////////////////////////////////////
@@ -128,21 +146,40 @@ namespace StealthQt
       mFOVWidget = NULL;
    }
 
-   void AdditionalViewEditDialog::closeEvent(QCloseEvent* e)
+   ////////////////////////////////////////////////////////////////////////
+   void AdditionalViewEditDialog::accept()
    {
+      BaseClass::accept();
+
       if (!NameValid(mUi->mNameEdit->text().toStdString()))
       {
-         e->ignore();
          if (mUi->mNameEdit->text().isEmpty())
          {
             QMessageBox::information(this, tr("Invalid Name"),
-                     "View names may not be empty.");
+               "View names may not be empty.");
          }
          else
          {
             QMessageBox::information(this, tr("Invalid Name"),
-                     "The View name is either invalid or is a duplicate of another view.");
+               "The View name is either invalid or is a duplicate of another view.");
          }
       }
+   }
+
+   ////////////////////////////////////////////////////////////////////////
+   void AdditionalViewEditDialog::reject()
+   {
+      BaseClass::reject();
+
+      // Set the name text field since it will ensure all appropriate slots
+      // will be called. This ensures that the title of the view window is
+      // updated and that the view's name is set back the way it once was.
+      QString name(mPrevName.c_str());
+      mUi->mNameEdit->setText(name);
+   }
+
+   ////////////////////////////////////////////////////////////////////////
+   void AdditionalViewEditDialog::closeEvent(QCloseEvent* e)
+   {
    }
 }
