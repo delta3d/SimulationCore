@@ -110,10 +110,10 @@ namespace StealthQt
          if (count > 0)
          {
             f |= Qt::Tool;
-            f |= Qt::WindowStaysOnTopHint;
+            //f |= Qt::WindowStaysOnTopHint;
          }
          ++count;
-         return new StealthQt::AdditionalViewDockWidget(format, NULL, shareWidget, f);
+         return new StealthQt::AdditionalViewDockWidget(format, parent, shareWidget, f);
       }
    };
 
