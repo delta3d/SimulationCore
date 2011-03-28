@@ -25,6 +25,7 @@
 #ifndef WHEELACTCOMP_H_
 #define WHEELACTCOMP_H_
 
+#include <SimCore/Export.h>
 #include <dtGame/actorcomponent.h>
 #include <dtUtil/getsetmacros.h>
 #include <dtUtil/refstring.h>
@@ -45,7 +46,7 @@ namespace SimCore
 {
    namespace ActComps
    {
-      class Axle : public osg::Referenced
+      class SIMCORE_EXPORT Axle : public osg::Referenced
       {
       public:
          Axle();
@@ -73,7 +74,7 @@ namespace SimCore
        * Defines a set of wheels/axles for an actor.  It looks for wheels on model and can handle displaying the rotation
        * and steering for it.
        */
-      class WheelActComp : public dtGame::ActorComponent
+      class  SIMCORE_EXPORT WheelActComp : public dtGame::ActorComponent
       {
       public:
          static const dtGame::ActorComponent::ACType TYPE;
