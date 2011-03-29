@@ -32,7 +32,7 @@ namespace SimCore
 {
    namespace ActComps
    {
-      static const dtUtil::RefString PLATFORM_BODY_NAME("PlatformBody");
+      static const dtUtil::RefString PLATFORM_BODY_NAME("Default");
 
       class PlatformDefaultPhysicsActComp : public dtPhysics::PhysicsActComp
       {
@@ -67,7 +67,6 @@ namespace SimCore
 
          virtual void OnAddedToActor(dtGame::GameActor& actor)
          {
-            SetPrePhysicsCallback(dtPhysics::PhysicsActComp::UpdateCallback(this, &PlatformDefaultPhysicsActComp::PrePhysicsUpdate));
             dtPhysics::PhysicsActComp::OnAddedToActor(actor);
          }
 
@@ -132,6 +131,15 @@ namespace SimCore
             if (plat->IsRemote())
             {
                physObj->SetMechanicsType(dtPhysics::MechanicsType::KINEMATIC);
+            }
+
+            if (physObj->GetMechanicsType() != dtPhysics::MechanicsType::DYNAMIC)
+            {
+               if (!IsPrePhysicsCallbackValid())
+               {
+                  // If it's kinematic or static, the prephysics callback should be applied.
+                  SetPrePhysicsCallback(dtPhysics::PhysicsActComp::UpdateCallback(this, &PlatformDefaultPhysicsActComp::PrePhysicsUpdate));
+               }
             }
 
             AddPhysicsObject(*physObj, true);
