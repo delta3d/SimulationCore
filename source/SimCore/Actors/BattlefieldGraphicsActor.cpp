@@ -37,6 +37,9 @@
 #include <osg/RenderInfo>
 #include <osg/StateSet>
 
+#include <osgUtil/DelaunayTriangulator>
+
+
 namespace SimCore
 {
 
@@ -105,6 +108,7 @@ namespace SimCore
          ss->setAttributeAndModes(blendFunc);
          ss->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
 
+         ss->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
 
 
          if(mPoints.size() == 1 && mRadius > 0.0001f)
@@ -126,80 +130,120 @@ namespace SimCore
          }
          else if(mPoints.size() > 1)
          {
-            int numVerts = 4 * (mPoints.size() - 1);
-
-            if(mClosed)
-            {
-               numVerts += 4;
-            }
+            int numVerts = 0;
 
             dtCore::RefPtr<osg::Geometry> geom = new osg::Geometry();
             dtCore::RefPtr<osg::Vec3Array> vectorArray = new osg::Vec3Array();
             dtCore::RefPtr<osg::Vec4Array> colorArray = new osg::Vec4Array();
-            vectorArray->reserve(numVerts);
             
 
             std::vector<osg::Vec3>::iterator iter = mPoints.begin();
             std::vector<osg::Vec3>::iterator iterEnd = mPoints.end();
 
-            osg::Vec3 point1 = *iter;
-            osg::Vec3 point2;
-            ++iter;
+            osg::Vec3 point1;
 
             for(;iter != iterEnd; ++iter)
             {
-               point2 = *iter;
-               AddPlane(*vectorArray, point1, point2, mMinAltitude, mMaxAltitude);
+               point1 = *iter;
+
+               AddTriangle(*vectorArray, point1, mMinAltitude, mMaxAltitude);
 
                //temporary until we have a color source
                colorArray->push_back(color);
                colorArray->push_back(color);
-               colorArray->push_back(color);
-               colorArray->push_back(color);
-               
-               point1 = point2;
+
+               numVerts += 2;
+            
             }
 
             if(mClosed)
             {
                //connect the beginning and the end
                point1 = mPoints.front();
-               point2 = mPoints.back();
-               AddPlane(*vectorArray, point1, point2, mMinAltitude, mMaxAltitude);
+               
+               AddTriangle(*vectorArray, point1, mMinAltitude, mMaxAltitude);
 
+               //temporary until we have a color source
                colorArray->push_back(color);
                colorArray->push_back(color);
-               colorArray->push_back(color);
-               colorArray->push_back(color);
+
+               numVerts += 2;
             }
 
             geom->setVertexArray(vectorArray.get());
             geom->setColorArray(colorArray.get());            
             geom->setColorBinding(osg::Geometry::BIND_PER_VERTEX);
-            geom->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::QUADS, 0, 4 * numVerts));
+            geom->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::TRIANGLE_STRIP, 0, numVerts));
 
 
             mGeode->addDrawable(geom.get());
+
+            if(mClosed)
+            {
+               CreateClosedTop();
+            }
+
             GetGameActor().GetOSGNode()->asGroup()->addChild(mGeode.get());
          }
 
       }
 
       ////////////////////////////////////////////////////////////////////////////
-      void BattlefieldGraphicsActorProxy::AddPlane(osg::Vec3Array& geom, const osg::Vec3& from, const osg::Vec3& to, float minHeight, float maxHeight)
+      void BattlefieldGraphicsActorProxy::CreateClosedTop()
+      {
+         int numVerts = mPoints.size();
+         osg::Vec4 color(0.5f, 0.5f, 1.0f, 0.5f);
+
+         dtCore::RefPtr<osg::Geometry> geom = new osg::Geometry();
+         dtCore::RefPtr<osg::Vec3Array> vectorArray = new osg::Vec3Array();
+         dtCore::RefPtr<osg::Vec4Array> colorArray = new osg::Vec4Array();
+         vectorArray->reserve(numVerts);
+         colorArray->reserve(numVerts);
+
+
+         std::vector<osg::Vec3>::iterator iter = mPoints.begin();
+         std::vector<osg::Vec3>::iterator iterEnd = mPoints.end();
+
+         
+         for(;iter != iterEnd; ++iter)
+         {
+            osg::Vec3 point1 = *iter;
+
+            osg::Vec3 UL(point1.x(), point1.y(), mMaxAltitude);
+
+            colorArray->push_back(color);
+            vectorArray->push_back(UL);
+         }
+
+         dtCore::RefPtr<osgUtil::DelaunayTriangulator> triangulator = new osgUtil::DelaunayTriangulator(vectorArray);
+         bool result = triangulator->triangulate();
+         if(result)
+         {
+            geom->setVertexArray(vectorArray.get());
+            geom->setColorArray(colorArray.get());            
+            geom->setColorBinding(osg::Geometry::BIND_PER_VERTEX);
+            geom->addPrimitiveSet(triangulator->getTriangles());
+
+            mGeode->addDrawable(geom.get());
+         }
+         else
+         {
+            LOG_ERROR("Unable to use DelaunayTriangulator to close top of volume");
+         }
+      }
+
+      ////////////////////////////////////////////////////////////////////////////
+      void BattlefieldGraphicsActorProxy::AddTriangle(osg::Vec3Array& geom, const osg::Vec3& point, float minHeight, float maxHeight)
       {
          //the four corners are lower left , upper left, upper right, and lower right
-         osg::Vec3 LL, UL, UR, LR;
-         LL.set(from.x(), from.y(), minHeight);
-         UL.set(from.x(), from.y(), maxHeight);
-         UR.set(to.x(), to.y(), maxHeight);
-         LR.set(to.x(), to.y(), minHeight);
+         osg::Vec3 UR, LR;
+         UR.set(point.x(), point.y(), maxHeight);
+         LR.set(point.x(), point.y(), minHeight);
 
-         geom.push_back(LL);
-         geom.push_back(UL);
          geom.push_back(UR);
          geom.push_back(LR);
       }
+
 
       ////////////////////////////////////////////////////////////////////////////
       void BattlefieldGraphicsActorProxy::CreateActor()
@@ -255,6 +299,7 @@ namespace SimCore
          AddProperty(arrayProp);
 
       }
+
 
    }
 }
