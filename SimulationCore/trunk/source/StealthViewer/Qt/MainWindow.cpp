@@ -73,6 +73,7 @@
 #include <dtUtil/datetime.h>
 
 #include <dtCore/camera.h>
+#include <dtCore/system.h>
 #include <dtCore/transformable.h>
 #include <dtCore/transform.h>
 
@@ -104,17 +105,36 @@ namespace StealthQt
    public:
       ///Overwrite to generate a custom OSGAdapterWidget
       virtual dtQt::OSGAdapterWidget* CreateWidget(const QGLFormat& format, bool drawOnSeparateThread, QWidget* parent = NULL,
-                                             const QGLWidget* shareWidget = NULL, Qt::WindowFlags f = 0)
+         const QGLWidget* shareWidget = NULL, Qt::WindowFlags f = 0)
       {
          static int count = 0;
-         if (count > 0)
+         bool assignParent = false;
+         if (count == 0)
+         {
+            assignParent = true;
+         }
+         else
          {
             f |= Qt::Tool;
             //f |= Qt::WindowStaysOnTopHint;
          }
          ++count;
-         return new StealthQt::AdditionalViewDockWidget(format, parent, shareWidget, f);
+
+         dtQt::OSGAdapterWidget* widget = NULL;
+         if (assignParent)
+         {
+            mParent = new StealthQt::AdditionalViewDockWidget(format, parent, shareWidget, f);
+            widget = mParent;
+         }
+         else
+         {
+            widget = new StealthQt::AdditionalViewDockWidget(format, mParent, shareWidget, f);
+         }
+
+         return widget;
       }
+
+      dtQt::OSGAdapterWidget* mParent;
    };
 
    ///////////////////////////////////////////////////////////////////////////////
@@ -477,7 +497,14 @@ namespace StealthQt
             widget->RequestClose();
          }
       }
-      QApplication::quit();
+
+      // Tick once to ensure all sub-windows/tool windows,
+      // such as additional OSG views, have a chance to free
+      // their contexts before the application ends. This
+      // prevents a crash caused by out of order shutdown,
+      // where OSG is too late to cleanup as the application
+      // would have already ended.
+      dtCore::System::GetInstance().Step();
    }
 
    ///////////////////////////////////////////////////////////////////////////////
