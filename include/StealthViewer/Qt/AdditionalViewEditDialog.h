@@ -69,10 +69,12 @@ namespace StealthQt
       void UpdateHeading(const QString& heading);
       void UpdatePitch(const QString& pitch);
    protected:
-      void closeEvent(QCloseEvent* e);
+      void showEvent(QShowEvent* e);
    private:
       void Init();
       bool NameValid(const std::string& stdName);
+
+      void SetOkButtonEnabled(bool enabled);
 
       Ui::AdditionalViewDialogUi* mUi;
       FOVWidget* mFOVWidget;
