@@ -30,6 +30,7 @@
 #include <QtGui/QDoubleValidator>
 #include <QtGui/QMessageBox>
 #include <QtGui/QCloseEvent>
+#include <QtGui/QPushButton>
 
 #include <StealthViewer/Qt/AdditionalViewEditDialog.h>
 #include <StealthViewer/Qt/FOVWidget.h>
@@ -78,7 +79,7 @@ namespace StealthQt
 
       UpdateName(mUi->mNameEdit->text());
 
-      // Maintain data prior to editing the view incase changes are rejected.
+      // Maintain data prior to editing the view in case changes are rejected.
       mPrevName = mViewWindow->GetName();
    }
 
@@ -98,6 +99,16 @@ namespace StealthQt
    }
 
    ////////////////////////////////////////////////////////////////////////
+   void AdditionalViewEditDialog::SetOkButtonEnabled(bool enabled)
+   {
+      QPushButton* buttonOk = mUi->buttonBox->button(QDialogButtonBox::Ok);
+      if(buttonOk != NULL)
+      {
+         buttonOk->setEnabled(enabled);
+      }
+   }
+
+   ////////////////////////////////////////////////////////////////////////
    bool AdditionalViewEditDialog::NameValid(const std::string& stdName)
    {
       StealthGM::ViewWindowConfigObject& viewConfig =
@@ -110,13 +121,13 @@ namespace StealthQt
    ////////////////////////////////////////////////////////////////////////
    void AdditionalViewEditDialog::UpdateName(const QString& name)
    {
-      std::string stdName = name.toStdString();
+      std::string stdName = name.trimmed().toStdString();
       mViewWindow->SetName(stdName);
       mViewWindow->SetWindowTitle(stdName);
 
       bool canClose = NameValid(stdName);
 
-      mUi->buttonBox->setEnabled(canClose);
+      SetOkButtonEnabled(canClose);
    }
 
    ////////////////////////////////////////////////////////////////////////
@@ -151,9 +162,10 @@ namespace StealthQt
    {
       BaseClass::accept();
 
-      if (!NameValid(mUi->mNameEdit->text().toStdString()))
+      QString qstrName = mUi->mNameEdit->text().trimmed();
+      if (!NameValid(qstrName.toStdString()))
       {
-         if (mUi->mNameEdit->text().isEmpty())
+         if (qstrName.isEmpty())
          {
             QMessageBox::information(this, tr("Invalid Name"),
                "View names may not be empty.");
@@ -174,12 +186,13 @@ namespace StealthQt
       // Set the name text field since it will ensure all appropriate slots
       // will be called. This ensures that the title of the view window is
       // updated and that the view's name is set back the way it once was.
-      QString name(mPrevName.c_str());
+      QString name(tr(mPrevName.c_str()));
       mUi->mNameEdit->setText(name);
    }
 
    ////////////////////////////////////////////////////////////////////////
-   void AdditionalViewEditDialog::closeEvent(QCloseEvent* e)
+   void AdditionalViewEditDialog::showEvent(QShowEvent* e)
    {
+      SetOkButtonEnabled(NameValid(mUi->mNameEdit->text().trimmed().toStdString()));
    }
 }
