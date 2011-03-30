@@ -78,7 +78,8 @@ namespace SimCore
 
          void CleanUp();
          void CreateGeometry();
-         void AddPlane(osg::Vec3Array& geom, const osg::Vec3& from, const osg::Vec3& to, float minHeight, float maxHeight);
+         void CreateClosedTop();
+         void AddTriangle(osg::Vec3Array& geom, const osg::Vec3& point, float minHeight, float maxHeight);
 
          dtCore::RefPtr<osg::Geode> mGeode;
 
