@@ -109,7 +109,9 @@ namespace SimCore
                float rotationSpread, float waveLengthModifier, float ampModifier, float texMod)
                : dtUtil::Enumeration(name) , mSpeedMod(speedMod) , mRotationSpread(rotationSpread)
                , mWaveLengthModifier(waveLengthModifier) , mAmpModifier(ampModifier), mTextureWaveModifier(texMod)
-               {   }
+               {  
+                  AddInstance(this);
+               }
          };
 
 
