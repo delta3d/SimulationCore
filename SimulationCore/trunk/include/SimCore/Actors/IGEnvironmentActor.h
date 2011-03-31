@@ -197,6 +197,9 @@ namespace SimCore
          /// Called when a proxy is added to the game manager
          virtual void OnEnteredWorld();
 
+         //we override this to make the environment actor global.. ie return false
+         /*virtual*/ bool IsPlaceable() const;
+
       protected:
 
          /// Destructor
