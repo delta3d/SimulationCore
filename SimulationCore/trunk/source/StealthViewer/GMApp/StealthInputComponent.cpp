@@ -400,21 +400,24 @@ namespace StealthGM
 
          if (GetStealthActor() == NULL || !mStealthActorProxy.valid())
          {
+            dtCore::RefPtr<dtDAL::BaseActorObject> proxy;
             std::vector<dtDAL::ActorProxy*> proxies;
+
             gameManager.FindPrototypesByActorType(*SimCore::Actors::EntityActorRegistry::STEALTH_ACTOR_TYPE, proxies);
             if (proxies.empty())
             {
-               throw dtDAL::InvalidActorException(
-                  "Failed to find the stealth actor prototype in the map",
-                  __FILE__, __LINE__);
+               //create one by default
+               proxy = gameManager.CreateActor(*SimCore::Actors::EntityActorRegistry::STEALTH_ACTOR_TYPE);
             }
             else
             {
-               dtCore::RefPtr<dtDAL::ActorProxy> proxy = gameManager.CreateActorFromPrototype(proxies[0]->GetId());
-               mStealthActorProxy = static_cast<SimCore::Actors::StealthActorProxy*> (proxy.get());
-
-               SetStealthActor(static_cast<SimCore::Actors::StealthActor*>(mStealthActorProxy->GetActor()));
+               proxy = gameManager.CreateActorFromPrototype(proxies[0]->GetId());
             }
+
+            mStealthActorProxy = static_cast<SimCore::Actors::StealthActorProxy*> (proxy.get());
+
+            SetStealthActor(static_cast<SimCore::Actors::StealthActor*>(mStealthActorProxy->GetActor()));
+         
          }
 
          // Re-add the stealth actor to the game manager since a map unload
