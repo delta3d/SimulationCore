@@ -284,6 +284,7 @@ namespace SimCore
    /////////////////////////////////////////////////////////////
    VolumeRenderingComponent::VolumeRenderingComponent(const std::string& name)
    : BaseClass(name) 
+   , mInitialized(false)
    , mMaxParticlesPerDrawable(150)
    , mRootNode(new osg::Group())
    , mVolumes()
@@ -314,17 +315,6 @@ namespace SimCore
    {
       BaseClass::OnAddedToGM();
 
-      double vfov, aspect, nearp, farp;
-      GetGameManager()->GetApplication().GetCamera()->GetPerspectiveParams(vfov, aspect, nearp, farp);
-
-      CreateDepthPrePass(1024 * aspect, 1024);
-
-      //CreateDepthPrePass("sceneDepth", 16, 16);
-      GetGameManager()->GetScene().GetSceneNode()->addChild(mRootNode.get());
-
-      mRootNode->setNodeMask(RenderingSupportComponent::MAIN_CAMERA_ONLY_FEATURE_NODE_MASK);
-
-      CreateNoiseTexture();
    }
 
    /////////////////////////////////////////////////////////////
@@ -336,6 +326,19 @@ namespace SimCore
    /////////////////////////////////////////////////////////////
    void VolumeRenderingComponent::Init()
    {
+      double vfov, aspect, nearp, farp;
+      GetGameManager()->GetApplication().GetCamera()->GetPerspectiveParams(vfov, aspect, nearp, farp);
+
+      CreateDepthPrePass(1024 * aspect, 1024);
+
+      //CreateDepthPrePass("sceneDepth", 16, 16);
+      GetGameManager()->GetScene().GetSceneNode()->addChild(mRootNode.get());
+
+      mRootNode->setNodeMask(RenderingSupportComponent::MAIN_CAMERA_ONLY_FEATURE_NODE_MASK);
+
+      CreateNoiseTexture();
+
+      mInitialized = true;
    }
 
    
@@ -354,6 +357,12 @@ namespace SimCore
    {
       if (svr != NULL)
       {
+         //do lazy initialization   
+         if(!mInitialized)
+         {
+            Init();
+         }
+
          mVolumes.push_back(svr);
          CreateDrawable(*svr);
          return svr->GetId();
@@ -368,6 +377,12 @@ namespace SimCore
    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// 
    VolumeRenderingComponent::ShapeRecordId VolumeRenderingComponent::CreateStaticShapeVolume(Shape s, const osg::Vec4& color, const osg::Vec3& center, const osg::Vec3& radius)
    {
+      //do lazy initialization   
+      if(!mInitialized)
+      {
+         Init();
+      }
+
       dtCore::RefPtr<ShapeVolumeRecord> svr = new ShapeVolumeRecord();
       svr->mShapeType = s;
       svr->mColor = color;
@@ -385,30 +400,23 @@ namespace SimCore
    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    void VolumeRenderingComponent::ProcessMessage(const dtGame::Message& message)
    {
-      
-      if(message.GetMessageType() == dtGame::MessageType::TICK_LOCAL)
-      {
-         float dt = float(static_cast<const dtGame::TickMessage&>(message).GetDeltaSimTime());
-         Tick(dt);
-      }
-      else if(message.GetMessageType() == dtGame::MessageType::INFO_MAP_UNLOADED)
-      {
-         CleanUp();
+      if(mInitialized)
+      {  
+         if(message.GetMessageType() == dtGame::MessageType::TICK_LOCAL)
+         {
+            float dt = float(static_cast<const dtGame::TickMessage&>(message).GetDeltaSimTime());
+            Tick(dt);
+         }
+         else if(message.GetMessageType() == dtGame::MessageType::INFO_MAP_UNLOADED)
+         {
+            CleanUp();
+         }
       }
    }
 
    ////////////////////////////////////////////////////////////////////////// 
    void VolumeRenderingComponent::Tick(float dt)
    {
-      //static unsigned counter = 0;
-      //++counter;
-
-      //if(counter > 200)
-      //{
-      //   counter = 0;
-      //   std::cout << "VolumeRenderingComponent: " << mVolumes.size() << " plumes" << std::endl<< std::endl;
-      //}
-
       UpdateVolumes(dt);
    }
 
@@ -753,8 +761,7 @@ namespace SimCore
    ////////////////////////////////////////////////////////////////////////// 
    void VolumeRenderingComponent::CreateParticleVolume(ShapeVolumeRecord& newShape)
    {
-
-      dtCore::RefPtr<osg::Geode> g = new osg::Geode();
+       dtCore::RefPtr<osg::Geode> g = new osg::Geode();
 
       dtCore::RefPtr<osg::MatrixTransform> matTrans = new osg::MatrixTransform();
       newShape.mParentNode = matTrans.get();
