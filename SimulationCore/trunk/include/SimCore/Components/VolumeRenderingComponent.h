@@ -346,6 +346,7 @@ namespace SimCore
          void Tick(float dt);  
          void CreateNoiseTexture();
 
+         bool mInitialized;
          unsigned mMaxParticlesPerDrawable;
          dtCore::RefPtr<osg::Group> mRootNode;
 
