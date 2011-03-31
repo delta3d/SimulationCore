@@ -13,10 +13,6 @@
     </header>
     <libraries>
         <library>
-            <name>DVTE</name>
-            <version></version>
-        </library>
-        <library>
             <name>SimCore</name>
             <version></version>
         </library>
