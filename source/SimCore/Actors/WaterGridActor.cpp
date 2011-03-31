@@ -1173,9 +1173,6 @@ namespace SimCore
             }
          }
          mComputedRadialDistance = r;
-         for(int p = 0; p < 10; ++p)
-            std::cout << "WaterGridActor - Max Radial Distance = " << mComputedRadialDistance << std::endl;
-
 
          int counter = 0;
 
