@@ -549,6 +549,13 @@ namespace SimCore
       void IGEnvironmentActorProxy::OnEnteredWorld()
       {
       }
+
+      /////////////////////////////////////////////////////////////
+      bool IGEnvironmentActorProxy::IsPlaceable() const
+      {
+         return false;
+      }
+
    }
 }
 
