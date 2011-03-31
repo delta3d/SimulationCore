@@ -397,7 +397,6 @@ namespace StealthGM
 
       gameManager.AddComponent(*renderingSupportComponent, dtGame::GameManager::ComponentPriority::NORMAL);
 
-      //this enables night vision
       dtCore::RefPtr<SimCore::Components::VolumeRenderingComponent> volumeRenderingComponent
          = new SimCore::Components::VolumeRenderingComponent();
 
