@@ -60,7 +60,7 @@ namespace SimCore
          static BattlefieldGraphicsTypeEnum ZONE_OF_RESPONSIBILITY;
 
          /// @return the color for the given enum.  This will lookup the color in the config, or return the default if not found.
-         osg::Vec3 GetColorForType(BattlefieldGraphicsTypeEnum& enumToLookup, dtUtil::ConfigProperties& config);
+         osg::Vec3 GetColor(dtUtil::ConfigProperties& config);
 
       private:
          BattlefieldGraphicsTypeEnum(const std::string& name, const osg::Vec3& defaultColor);
