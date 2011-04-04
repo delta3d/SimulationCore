@@ -29,6 +29,7 @@
 #include <dtCore/scene.h>
 
 #include <dtUtil/getsetmacros.h>
+#include <dtUtil/stringutils.h>
 #include <dtDAL/propertymacros.h>
 #include <dtDAL/arrayactorpropertycomplex.h>
 #include <dtCore/shadermanager.h>
@@ -55,21 +56,33 @@ namespace SimCore
       : dtUtil::Enumeration(name)
       , mDefaultColor(defaultColor)
       {
+         AddInstance(this);
+      }
 
+      osg::Vec3 BattlefieldGraphicsTypeEnum::GetColor(dtUtil::ConfigProperties& config)
+      {
+         osg::Vec3 result = mDefaultColor;
+         static const std::string lookupstring("SimCore.BattlefieldGrapicsActor.Color.");
+         const std::string color = config.GetConfigPropertyValue(lookupstring + GetName(), "");
+         if (!color.empty())
+         {
+            result = dtUtil::ToType<osg::Vec3>(color);
+         }
+         return result;
       }
 
       BattlefieldGraphicsTypeEnum BattlefieldGraphicsTypeEnum::UNASSIGNED("UNASSIGNED", osg::Vec3());
-      BattlefieldGraphicsTypeEnum BattlefieldGraphicsTypeEnum::AIR_CORRIDOR("AIR_CORRIDOR", osg::Vec3());
-      BattlefieldGraphicsTypeEnum BattlefieldGraphicsTypeEnum::AIR_SPACE_COORDINATION_AREA("AIR_SPACE_COORDINATION_AREA", osg::Vec3());
-      BattlefieldGraphicsTypeEnum BattlefieldGraphicsTypeEnum::COORDINATED_FIRE_LINE("COORDINATED_FIRE_LINE", osg::Vec3());
-      BattlefieldGraphicsTypeEnum BattlefieldGraphicsTypeEnum::FREE_FIRE_AREA("FREE_FIRE_AREA", osg::Vec3());
-      BattlefieldGraphicsTypeEnum BattlefieldGraphicsTypeEnum::FIRE_SUPPORT_COORDINATION_LINE("FIRE_SUPPORT_COORDINATION_LINE", osg::Vec3());
-      BattlefieldGraphicsTypeEnum BattlefieldGraphicsTypeEnum::NO_FIRE_AREA("NO_FIRE_AREA", osg::Vec3());
-      BattlefieldGraphicsTypeEnum BattlefieldGraphicsTypeEnum::RESTRICTIVE_FIRE_AREA("RESTRICTIVE_FIRE_AREA", osg::Vec3());
-      BattlefieldGraphicsTypeEnum BattlefieldGraphicsTypeEnum::RESTRICTIVE_FIRE_LINE("RESTRICTIVE_FIRE_LINE", osg::Vec3());
-      BattlefieldGraphicsTypeEnum BattlefieldGraphicsTypeEnum::TARGET("TARGET", osg::Vec3());
-      BattlefieldGraphicsTypeEnum BattlefieldGraphicsTypeEnum::TARGET_BUILDUP_AREA("TARGET_BUILDUP_AREA", osg::Vec3());
-      BattlefieldGraphicsTypeEnum BattlefieldGraphicsTypeEnum::ZONE_OF_RESPONSIBILITY("ZONE_OF_RESPONSIBILITY", osg::Vec3());
+      BattlefieldGraphicsTypeEnum BattlefieldGraphicsTypeEnum::AIR_CORRIDOR("AIR_CORRIDOR", osg::Vec3(0.5f, 0.5f, 1.0f));
+      BattlefieldGraphicsTypeEnum BattlefieldGraphicsTypeEnum::AIR_SPACE_COORDINATION_AREA("AIR_SPACE_COORDINATION_AREA", osg::Vec3(0.5f, 0.5f, 1.0f));
+      BattlefieldGraphicsTypeEnum BattlefieldGraphicsTypeEnum::COORDINATED_FIRE_LINE("COORDINATED_FIRE_LINE", osg::Vec3(1.0f, 0.5f, 0.5f));
+      BattlefieldGraphicsTypeEnum BattlefieldGraphicsTypeEnum::FREE_FIRE_AREA("FREE_FIRE_AREA", osg::Vec3(1.0f, 0.5f, 0.5f));
+      BattlefieldGraphicsTypeEnum BattlefieldGraphicsTypeEnum::FIRE_SUPPORT_COORDINATION_LINE("FIRE_SUPPORT_COORDINATION_LINE", osg::Vec3(0.5f, 0.5f, 1.0f));
+      BattlefieldGraphicsTypeEnum BattlefieldGraphicsTypeEnum::NO_FIRE_AREA("NO_FIRE_AREA", osg::Vec3(0.5f, 1.0f, 0.5f));
+      BattlefieldGraphicsTypeEnum BattlefieldGraphicsTypeEnum::RESTRICTIVE_FIRE_AREA("RESTRICTIVE_FIRE_AREA", osg::Vec3(0.5f, 1.0f, 1.0f));
+      BattlefieldGraphicsTypeEnum BattlefieldGraphicsTypeEnum::RESTRICTIVE_FIRE_LINE("RESTRICTIVE_FIRE_LINE", osg::Vec3(0.5f, 1.0f, 1.0f));
+      BattlefieldGraphicsTypeEnum BattlefieldGraphicsTypeEnum::TARGET("TARGET", osg::Vec3(1.0f, 0.5f, 0.5f));
+      BattlefieldGraphicsTypeEnum BattlefieldGraphicsTypeEnum::TARGET_BUILDUP_AREA("TARGET_BUILDUP_AREA", osg::Vec3(1.0f, 0.5f, 0.5f));
+      BattlefieldGraphicsTypeEnum BattlefieldGraphicsTypeEnum::ZONE_OF_RESPONSIBILITY("ZONE_OF_RESPONSIBILITY", osg::Vec3(0.9f, 0.9f, 0.9f));
 
       ////////////////////////////////////////////////////////////////////////////
       DT_IMPLEMENT_ARRAY_ACCESSOR(BattlefieldGraphicsActorProxy, osg::Vec3, Point, Points, osg::Vec3());
@@ -125,7 +138,7 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////
       void BattlefieldGraphicsActorProxy::CreateGeometry()
       {
-         osg::Vec4 color(0.5f, 0.5f, 1.0f, 0.5f);
+         osg::Vec4 color(GetType().GetColor(GetGameManager()->GetConfiguration()), 0.5f);
 
          mGeode = new osg::Geode();
 
