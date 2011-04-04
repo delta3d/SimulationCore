@@ -46,6 +46,8 @@ namespace SimCore
       public:
          DECLARE_ENUM(BattlefieldGraphicsTypeEnum);
 
+         static const std::string CONFIG_PREFIX;
+
          static BattlefieldGraphicsTypeEnum UNASSIGNED;
          static BattlefieldGraphicsTypeEnum AIR_CORRIDOR;
          static BattlefieldGraphicsTypeEnum AIR_SPACE_COORDINATION_AREA;
@@ -61,6 +63,8 @@ namespace SimCore
 
          /// @return the color for the given enum.  This will lookup the color in the config, or return the default if not found.
          osg::Vec3 GetColor(dtUtil::ConfigProperties& config);
+
+         const osg::Vec3& GetDefaultColor() const;
 
       private:
          BattlefieldGraphicsTypeEnum(const std::string& name, const osg::Vec3& defaultColor);

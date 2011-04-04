@@ -52,6 +52,9 @@ namespace SimCore
    namespace Actors
    {
       IMPLEMENT_ENUM(BattlefieldGraphicsTypeEnum);
+
+      const std::string BattlefieldGraphicsTypeEnum::CONFIG_PREFIX("SimCore.BattlefieldGrapicsActor.Color.");
+
       BattlefieldGraphicsTypeEnum::BattlefieldGraphicsTypeEnum(const std::string& name, const osg::Vec3& defaultColor)
       : dtUtil::Enumeration(name)
       , mDefaultColor(defaultColor)
@@ -62,13 +65,17 @@ namespace SimCore
       osg::Vec3 BattlefieldGraphicsTypeEnum::GetColor(dtUtil::ConfigProperties& config)
       {
          osg::Vec3 result = mDefaultColor;
-         static const std::string lookupstring("SimCore.BattlefieldGrapicsActor.Color.");
-         const std::string color = config.GetConfigPropertyValue(lookupstring + GetName(), "");
+         const std::string color = config.GetConfigPropertyValue(CONFIG_PREFIX + GetName(), "");
          if (!color.empty())
          {
             result = dtUtil::ToType<osg::Vec3>(color);
          }
          return result;
+      }
+
+      const osg::Vec3& BattlefieldGraphicsTypeEnum::GetDefaultColor() const
+      {
+         return mDefaultColor;
       }
 
       BattlefieldGraphicsTypeEnum BattlefieldGraphicsTypeEnum::UNASSIGNED("UNASSIGNED", osg::Vec3());
