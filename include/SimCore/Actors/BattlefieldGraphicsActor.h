@@ -28,6 +28,8 @@
 #include <SimCore/Export.h>
 #include <dtGame/gameactorproxy.h>
 #include <dtUtil/getsetmacros.h>
+#include <dtUtil/enumeration.h>
+#include <dtUtil/configproperties.h>
 
 #include <osg/Vec3>
 #include <osg/Geode>
@@ -39,6 +41,33 @@ namespace SimCore
    namespace Actors
    {
 
+      class SIMCORE_EXPORT BattlefieldGraphicsTypeEnum : public dtUtil::Enumeration
+      {
+      public:
+         DECLARE_ENUM(BattlefieldGraphicsTypeEnum);
+
+         static BattlefieldGraphicsTypeEnum UNASSIGNED;
+         static BattlefieldGraphicsTypeEnum AIR_CORRIDOR;
+         static BattlefieldGraphicsTypeEnum AIR_SPACE_COORDINATION_AREA;
+         static BattlefieldGraphicsTypeEnum COORDINATED_FIRE_LINE;
+         static BattlefieldGraphicsTypeEnum FREE_FIRE_AREA;
+         static BattlefieldGraphicsTypeEnum FIRE_SUPPORT_COORDINATION_LINE;
+         static BattlefieldGraphicsTypeEnum NO_FIRE_AREA;
+         static BattlefieldGraphicsTypeEnum RESTRICTIVE_FIRE_AREA;
+         static BattlefieldGraphicsTypeEnum RESTRICTIVE_FIRE_LINE;
+         static BattlefieldGraphicsTypeEnum TARGET;
+         static BattlefieldGraphicsTypeEnum TARGET_BUILDUP_AREA;
+         static BattlefieldGraphicsTypeEnum ZONE_OF_RESPONSIBILITY;
+
+         /// @return the color for the given enum.  This will lookup the color in the config, or return the default if not found.
+         osg::Vec3 GetColorForType(BattlefieldGraphicsTypeEnum& enumToLookup, dtUtil::ConfigProperties& config);
+
+      private:
+         BattlefieldGraphicsTypeEnum(const std::string& name, const osg::Vec3& defaultColor);
+         osg::Vec3 mDefaultColor;
+      };
+
+
       class SIMCORE_EXPORT BattlefieldGraphicsActorProxy : public dtGame::GameActorProxy
       {
       public:
@@ -47,6 +76,8 @@ namespace SimCore
          BattlefieldGraphicsActorProxy();
 
          virtual void BuildActorComponents();
+
+         DT_DECLARE_ACCESSOR(dtUtil::EnumerationPointer<BattlefieldGraphicsTypeEnum>, Type);
 
          DT_DECLARE_ACCESSOR_INLINE(bool, Closed);
 
