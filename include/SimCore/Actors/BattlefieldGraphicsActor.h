@@ -109,8 +109,12 @@ namespace SimCore
 
          void CleanUp();
          void CreateGeometry();
+         void AssignShader();
+
+         void CreateMultiGeometry();
          void CreateClosedTop();
          void AddTriangle(osg::Vec3Array& geom, const osg::Vec3& point, float minHeight, float maxHeight);
+         void AddQuadGeometry(const osg::Vec3& from, const osg::Vec3& to, float minHeight, float maxHeight);
 
          dtCore::RefPtr<osg::Geode> mGeode;
 

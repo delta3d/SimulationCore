@@ -25,9 +25,13 @@
 #include <prefix/SimCorePrefix.h>
 #include <SimCore/Actors/BattlefieldGraphicsActor.h>
 #include <dtGame/gameactor.h>
+#include <dtGame/gamemanager.h>
+#include <dtCore/scene.h>
+
 #include <dtUtil/getsetmacros.h>
 #include <dtDAL/propertymacros.h>
 #include <dtDAL/arrayactorpropertycomplex.h>
+#include <dtCore/shadermanager.h>
 
 #include <osg/Geometry>
 #include <osg/Shape>
@@ -36,6 +40,7 @@
 #include <osg/BlendFunc>
 #include <osg/RenderInfo>
 #include <osg/StateSet>
+#include <osg/CullFace>
 
 #include <osgUtil/DelaunayTriangulator>
 
@@ -127,13 +132,140 @@ namespace SimCore
          osg::StateSet* ss = mGeode->getOrCreateStateSet();
          ss->setMode(GL_BLEND, osg::StateAttribute::ON);
 
-         osg::BlendFunc* blendFunc = new osg::BlendFunc();
+         dtCore::RefPtr<osg::BlendFunc> blendFunc = new osg::BlendFunc();
          blendFunc->setFunction(osg::BlendFunc::SRC_ALPHA ,osg::BlendFunc::ONE_MINUS_SRC_ALPHA);
          ss->setAttributeAndModes(blendFunc);
          ss->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
 
          ss->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
 
+         dtCore::RefPtr<osg::CullFace> cull = new osg::CullFace();
+         cull->setMode(osg::CullFace::BACK);
+         ss->setAttributeAndModes(cull, osg::StateAttribute::OFF);
+
+         AssignShader();
+
+         //assign uniforms
+         osg::Uniform* particleColor = ss->getOrCreateUniform("color", osg::Uniform::FLOAT_VEC4);
+         particleColor->set(color);
+
+         if(mPoints.size() == 1 && mRadius > 0.0001f)
+         {
+            //use a cylinder
+            float minZ = mMinAltitude;
+            float maxZ = mMaxAltitude;
+            float diff = maxZ - minZ;
+
+            osg::Vec3 center = mPoints[0];
+            center[2] = minZ + (0.5f * diff);
+
+            dtCore::RefPtr<osg::Cylinder> shape = new osg::Cylinder(center, mRadius, diff);
+            dtCore::RefPtr<osg::ShapeDrawable> shapeDrawable = new osg::ShapeDrawable(shape);
+            //shapeDrawable->setColor(color);
+            mGeode->addDrawable(shapeDrawable);
+            //GetGameActor().GetOSGNode()->asGroup()->addChild(mGeode.get());
+            GetGameManager()->GetScene().GetSceneNode()->addChild(mGeode.get());
+
+
+         }
+         else if(mPoints.size() > 1)
+         {
+            int numVerts = 0;
+
+            dtCore::RefPtr<osg::Geometry> geom = new osg::Geometry();
+            dtCore::RefPtr<osg::Vec3Array> vectorArray = new osg::Vec3Array();
+            
+
+            std::vector<osg::Vec3>::iterator iter = mPoints.begin();
+            std::vector<osg::Vec3>::iterator iterEnd = mPoints.end();
+
+            osg::Vec3 point1;
+            osg::Vec3 point2;
+
+            for(;iter != iterEnd; ++iter)
+            {
+               point1 = *iter;
+
+               AddTriangle(*vectorArray, point1, mMinAltitude, mMaxAltitude);
+
+               numVerts += 2;
+            
+            }
+
+            if(mClosed)
+            {
+               //connect the beginning and the end
+               point1 = mPoints.front();
+               
+               AddTriangle(*vectorArray, point1, mMinAltitude, mMaxAltitude);
+
+               numVerts += 2;
+            }
+
+            geom->setVertexArray(vectorArray.get());
+            geom->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::TRIANGLE_STRIP, 0, numVerts));
+
+
+            mGeode->addDrawable(geom.get());
+
+            if(mClosed)
+            {
+               CreateClosedTop();
+            }
+
+            //GetGameActor().GetOSGNode()->asGroup()->addChild(mGeode.get());
+            GetGameManager()->GetScene().GetSceneNode()->addChild(mGeode.get());
+         }
+
+      }
+
+      ////////////////////////////////////////////////////////////////////////////
+      void BattlefieldGraphicsActorProxy::AssignShader()
+      {
+         
+         dtCore::ShaderManager& sm = dtCore::ShaderManager::GetInstance();
+
+         const dtCore::ShaderGroup *shaderGroup = sm.FindShaderGroupPrototype("BattlefieldGraphicsGroup");
+
+         if (shaderGroup == NULL)
+         {
+            LOG_INFO("Could not find shader group BattlefieldGraphicsGroup");
+            return;
+         }
+
+         const dtCore::ShaderProgram *defaultShader = shaderGroup->GetDefaultShader();
+
+         try
+         {
+            if (defaultShader != NULL)
+            {
+               dtCore::ShaderManager::GetInstance().AssignShaderFromPrototype(*defaultShader, *mGeode);
+            }
+            else
+            {
+               LOG_WARNING("Could not find a default shader in shader group: BattlefieldGraphicsGroup");
+            }
+         }
+         catch (const dtUtil::Exception &e)
+         {
+            LOG_WARNING("Caught Exception while assigning shader: " + e.ToString());
+         }
+      }
+
+      ////////////////////////////////////////////////////////////////////////////
+      void BattlefieldGraphicsActorProxy::CreateMultiGeometry()
+      {
+         osg::Vec4 color(0.5f, 0.5f, 1.0f, 0.5f);
+
+         mGeode = new osg::Geode();
+
+         osg::StateSet* ss = mGeode->getOrCreateStateSet();
+         ss->setMode(GL_BLEND, osg::StateAttribute::ON);
+
+         osg::BlendFunc* blendFunc = new osg::BlendFunc();
+         blendFunc->setFunction(osg::BlendFunc::SRC_ALPHA ,osg::BlendFunc::ONE_MINUS_SRC_ALPHA);
+         ss->setAttributeAndModes(blendFunc);
+         ss->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
 
          if(mPoints.size() == 1 && mRadius > 0.0001f)
          {
@@ -154,56 +286,26 @@ namespace SimCore
          }
          else if(mPoints.size() > 1)
          {
-            int numVerts = 0;
-
-            dtCore::RefPtr<osg::Geometry> geom = new osg::Geometry();
-            dtCore::RefPtr<osg::Vec3Array> vectorArray = new osg::Vec3Array();
-            dtCore::RefPtr<osg::Vec4Array> colorArray = new osg::Vec4Array();
-            
 
             std::vector<osg::Vec3>::iterator iter = mPoints.begin();
             std::vector<osg::Vec3>::iterator iterEnd = mPoints.end();
 
-            osg::Vec3 point1;
+            osg::Vec3 point1 = *iter;
+            osg::Vec3 point2;
+            ++iter;
 
             for(;iter != iterEnd; ++iter)
             {
-               point1 = *iter;
+               point2 = *iter;
+               AddQuadGeometry(point1, point2, mMinAltitude, mMaxAltitude);
 
-               AddTriangle(*vectorArray, point1, mMinAltitude, mMaxAltitude);
-
-               //temporary until we have a color source
-               colorArray->push_back(color);
-               colorArray->push_back(color);
-
-               numVerts += 2;
-            
+               point1 = point2;
             }
 
             if(mClosed)
             {
                //connect the beginning and the end
-               point1 = mPoints.front();
-               
-               AddTriangle(*vectorArray, point1, mMinAltitude, mMaxAltitude);
-
-               //temporary until we have a color source
-               colorArray->push_back(color);
-               colorArray->push_back(color);
-
-               numVerts += 2;
-            }
-
-            geom->setVertexArray(vectorArray.get());
-            geom->setColorArray(colorArray.get());            
-            geom->setColorBinding(osg::Geometry::BIND_PER_VERTEX);
-            geom->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::TRIANGLE_STRIP, 0, numVerts));
-
-
-            mGeode->addDrawable(geom.get());
-
-            if(mClosed)
-            {
+               AddQuadGeometry(mPoints.front(), mPoints.back(), mMinAltitude, mMaxAltitude);
                CreateClosedTop();
             }
 
@@ -220,9 +322,7 @@ namespace SimCore
 
          dtCore::RefPtr<osg::Geometry> geom = new osg::Geometry();
          dtCore::RefPtr<osg::Vec3Array> vectorArray = new osg::Vec3Array();
-         dtCore::RefPtr<osg::Vec4Array> colorArray = new osg::Vec4Array();
          vectorArray->reserve(numVerts);
-         colorArray->reserve(numVerts);
 
 
          std::vector<osg::Vec3>::iterator iter = mPoints.begin();
@@ -235,7 +335,6 @@ namespace SimCore
 
             osg::Vec3 UL(point1.x(), point1.y(), mMaxAltitude);
 
-            colorArray->push_back(color);
             vectorArray->push_back(UL);
          }
 
@@ -244,8 +343,6 @@ namespace SimCore
          if(result)
          {
             geom->setVertexArray(vectorArray.get());
-            geom->setColorArray(colorArray.get());            
-            geom->setColorBinding(osg::Geometry::BIND_PER_VERTEX);
             geom->addPrimitiveSet(triangulator->getTriangles());
 
             mGeode->addDrawable(geom.get());
@@ -266,6 +363,32 @@ namespace SimCore
 
          geom.push_back(UR);
          geom.push_back(LR);
+      }
+
+      ////////////////////////////////////////////////////////////////////////////
+      void BattlefieldGraphicsActorProxy::AddQuadGeometry(const osg::Vec3& from, const osg::Vec3& to, float minHeight, float maxHeight)
+      {
+         osg::Vec4 color(0.5f, 0.5f, 1.0f, 0.5f);
+
+         dtCore::RefPtr<osg::Geometry> geom = new osg::Geometry();
+         dtCore::RefPtr<osg::Vec3Array> vectorArray = new osg::Vec3Array();
+
+         osg::Vec3 LL, UL, UR, LR;
+         LL.set(from.x(), from.y(), minHeight);
+         UL.set(from.x(), from.y(), maxHeight);
+         UR.set(to.x(), to.y(), maxHeight);
+         LR.set(to.x(), to.y(), minHeight);
+
+         vectorArray->push_back(LL);
+         vectorArray->push_back(LR);
+         vectorArray->push_back(UR);
+         vectorArray->push_back(UL);
+
+         geom->setVertexArray(vectorArray.get());
+         geom->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::QUADS, 0, 4));
+
+
+         mGeode->addDrawable(geom.get());
       }
 
 
