@@ -45,12 +45,34 @@ namespace SimCore
 
    namespace Actors
    {
+      IMPLEMENT_ENUM(BattlefieldGraphicsTypeEnum);
+      BattlefieldGraphicsTypeEnum::BattlefieldGraphicsTypeEnum(const std::string& name, const osg::Vec3& defaultColor)
+      : dtUtil::Enumeration(name)
+      , mDefaultColor(defaultColor)
+      {
+
+      }
+
+      BattlefieldGraphicsTypeEnum BattlefieldGraphicsTypeEnum::UNASSIGNED("UNASSIGNED", osg::Vec3());
+      BattlefieldGraphicsTypeEnum BattlefieldGraphicsTypeEnum::AIR_CORRIDOR("AIR_CORRIDOR", osg::Vec3());
+      BattlefieldGraphicsTypeEnum BattlefieldGraphicsTypeEnum::AIR_SPACE_COORDINATION_AREA("AIR_SPACE_COORDINATION_AREA", osg::Vec3());
+      BattlefieldGraphicsTypeEnum BattlefieldGraphicsTypeEnum::COORDINATED_FIRE_LINE("COORDINATED_FIRE_LINE", osg::Vec3());
+      BattlefieldGraphicsTypeEnum BattlefieldGraphicsTypeEnum::FREE_FIRE_AREA("FREE_FIRE_AREA", osg::Vec3());
+      BattlefieldGraphicsTypeEnum BattlefieldGraphicsTypeEnum::FIRE_SUPPORT_COORDINATION_LINE("FIRE_SUPPORT_COORDINATION_LINE", osg::Vec3());
+      BattlefieldGraphicsTypeEnum BattlefieldGraphicsTypeEnum::NO_FIRE_AREA("NO_FIRE_AREA", osg::Vec3());
+      BattlefieldGraphicsTypeEnum BattlefieldGraphicsTypeEnum::RESTRICTIVE_FIRE_AREA("RESTRICTIVE_FIRE_AREA", osg::Vec3());
+      BattlefieldGraphicsTypeEnum BattlefieldGraphicsTypeEnum::RESTRICTIVE_FIRE_LINE("RESTRICTIVE_FIRE_LINE", osg::Vec3());
+      BattlefieldGraphicsTypeEnum BattlefieldGraphicsTypeEnum::TARGET("TARGET", osg::Vec3());
+      BattlefieldGraphicsTypeEnum BattlefieldGraphicsTypeEnum::TARGET_BUILDUP_AREA("TARGET_BUILDUP_AREA", osg::Vec3());
+      BattlefieldGraphicsTypeEnum BattlefieldGraphicsTypeEnum::ZONE_OF_RESPONSIBILITY("ZONE_OF_RESPONSIBILITY", osg::Vec3());
+
       ////////////////////////////////////////////////////////////////////////////
       DT_IMPLEMENT_ARRAY_ACCESSOR(BattlefieldGraphicsActorProxy, osg::Vec3, Point, Points, osg::Vec3());
 
       ////////////////////////////////////////////////////////////////////////////
       BattlefieldGraphicsActorProxy::BattlefieldGraphicsActorProxy()
-         : mClosed(false)
+         : mType(&BattlefieldGraphicsTypeEnum::UNASSIGNED)
+         , mClosed(false)
          , mRadius(0.0f)
          , mMinAltitude(0.0f)
          , mMaxAltitude(100.0f)
@@ -63,6 +85,8 @@ namespace SimCore
       BattlefieldGraphicsActorProxy::~BattlefieldGraphicsActorProxy()
       {
       }
+
+      DT_IMPLEMENT_ACCESSOR(BattlefieldGraphicsActorProxy, dtUtil::EnumerationPointer<BattlefieldGraphicsTypeEnum>, Type);
 
       ////////////////////////////////////////////////////////////////////////////
       void BattlefieldGraphicsActorProxy::BuildActorComponents()
@@ -258,6 +282,8 @@ namespace SimCore
 
          typedef dtDAL::PropertyRegHelper<BattlefieldGraphicsActorProxy&, BattlefieldGraphicsActorProxy> PropRegHelperType;
          PropRegHelperType propRegHelper(*this, this, GROUPNAME);
+
+         DT_REGISTER_PROPERTY(Type, "A type code defining what the graphic represents", PropRegHelperType, propRegHelper);
 
          DT_REGISTER_PROPERTY(Closed, "A boolean which determines if the last point should connect back to the first point, ie if the shape is closed or not",
                                  PropRegHelperType, propRegHelper);
