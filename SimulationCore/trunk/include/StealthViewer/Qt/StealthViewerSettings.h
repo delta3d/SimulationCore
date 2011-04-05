@@ -23,7 +23,7 @@
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
 *
-* @author Eddie Johnson, Curtiss Murphy
+* @author David Guthrie, Eddie Johnson, Curtiss Murphy
 */
 #ifndef STEALTH_VIEWER_SETTINGS
 #define STEALTH_VIEWER_SETTINGS
@@ -127,6 +127,7 @@ namespace StealthQt
             static const QString SHOW_HUMANS;
             static const QString SHOW_TRACKS;
             static const QString SHOW_BLIPS;
+            static const QString SHOW_BFG;
             static const QString SHOW_ENUM_PREFIX;
 
          static const QString CONTROLS_CAMERA_GROUP;

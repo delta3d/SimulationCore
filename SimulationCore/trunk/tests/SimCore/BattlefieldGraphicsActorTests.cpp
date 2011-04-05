@@ -26,6 +26,7 @@
 #include <dtGame/gamemanager.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
 #include <SimCore/Actors/BattlefieldGraphicsActor.h>
+#include <SimCore/VisibilityOptions.h>
 #include <UnitTestMain.h>
 
 #include <dtUtil/configproperties.h>
@@ -55,6 +56,7 @@ namespace SimCore
             // Test Methods
             void TestEnumColor();
             void TestActorProperties();
+            void TestVisibilityOptions();
 
          private:
             dtCore::RefPtr<dtGame::GameManager> mGM;
@@ -143,5 +145,22 @@ namespace SimCore
          }
       }
 
+      void BattlefieldGraphicsActorTests::TestVisibilityOptions()
+      {
+         IGActor* drawable = NULL;
+         mActor->GetDrawable(drawable);
+         CPPUNIT_ASSERT(drawable != NULL);
+         VisibilityOptions vo;
+
+         BasicVisibilityOptions bvo;
+         bvo.SetAllFalse();
+         bvo.mBattlefieldGraphics = true;
+         vo.SetBasicOptions(bvo);
+         CPPUNIT_ASSERT(drawable->ShouldBeVisible(vo));
+         bvo.SetAllTrue();
+         bvo.mBattlefieldGraphics = false;
+         vo.SetBasicOptions(bvo);
+         CPPUNIT_ASSERT(!drawable->ShouldBeVisible(vo));
+      }
    }
 }
