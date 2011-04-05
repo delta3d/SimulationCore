@@ -78,6 +78,7 @@ namespace SimCore
          CPPUNIT_ASSERT_MESSAGE(ALL_OPTS_TRUE_MSG, basicOpts.mPlatforms);
          CPPUNIT_ASSERT_MESSAGE(ALL_OPTS_TRUE_MSG, !basicOpts.mSensorBlips);
          CPPUNIT_ASSERT_MESSAGE(ALL_OPTS_TRUE_MSG, !basicOpts.mTracks);
+         CPPUNIT_ASSERT_MESSAGE(ALL_OPTS_TRUE_MSG, basicOpts.mBattlefieldGraphics);
 
          {
             const std::vector<SimCore::Actors::BaseEntityActorProxy::ForceEnum*>& forces =
@@ -104,6 +105,7 @@ namespace SimCore
          CPPUNIT_ASSERT_MESSAGE(ALL_OPTS_FALSE_MSG, !basicOpts3.mPlatforms);
          CPPUNIT_ASSERT_MESSAGE(ALL_OPTS_FALSE_MSG, !basicOpts3.mSensorBlips);
          CPPUNIT_ASSERT_MESSAGE(ALL_OPTS_FALSE_MSG, !basicOpts3.mTracks);
+         CPPUNIT_ASSERT_MESSAGE(ALL_OPTS_FALSE_MSG, !basicOpts3.mBattlefieldGraphics);
 
          {
             const std::vector<SimCore::Actors::BaseEntityActorProxy::ForceEnum*>& forces =

@@ -135,6 +135,7 @@ namespace StealthQt
       const QString StealthViewerSettings::SHOW_HUMANS("SHOW_HUMANS");
       const QString StealthViewerSettings::SHOW_TRACKS("SHOW_TRACKS");
       const QString StealthViewerSettings::SHOW_BLIPS("SHOW_BLIPS");
+      const QString StealthViewerSettings::SHOW_BFG("SHOW_BATTLEFIELD_GRAPHICS");
       const QString StealthViewerSettings::SHOW_ENUM_PREFIX("SHOW_ENUM_");
 
    const QString StealthViewerSettings::CONTROLS_CAMERA_GROUP("CONTROLS_CAMERA_GROUP");
@@ -612,6 +613,7 @@ namespace StealthQt
          setValue(StealthViewerSettings::SHOW_HUMANS, basicOptions.mDismountedInfantry);
          setValue(StealthViewerSettings::SHOW_TRACKS, basicOptions.mTracks);
          setValue(StealthViewerSettings::SHOW_BLIPS, basicOptions.mSensorBlips);
+         setValue(StealthViewerSettings::SHOW_BFG, basicOptions.mBattlefieldGraphics);
 
          const std::vector<SimCore::Actors::BaseEntityActorProxy::ForceEnum*>& forces =
             SimCore::Actors::BaseEntityActorProxy::ForceEnum::EnumerateType();
@@ -1074,6 +1076,11 @@ namespace StealthQt
          if (contains(SHOW_BLIPS))
          {
             basicOptions.mSensorBlips = value(SHOW_BLIPS).toBool();
+         }
+
+         if (contains(SHOW_BFG))
+         {
+            basicOptions.mBattlefieldGraphics = value(SHOW_BFG).toBool();
          }
 
          const std::vector<SimCore::Actors::BaseEntityActorProxy::ForceEnum*>& forces =

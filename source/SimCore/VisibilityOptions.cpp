@@ -52,6 +52,7 @@ namespace SimCore
       mPlatforms = true;
       mSensorBlips = true;
       mTracks = true;
+      mBattlefieldGraphics = true;
 
       std::map<dtUtil::Enumeration*, bool>::iterator i, iend;
       i = mVisibleMap.begin();
@@ -68,6 +69,7 @@ namespace SimCore
       mPlatforms = false;
       mSensorBlips = false;
       mTracks = false;
+      mBattlefieldGraphics = false;
 
       std::map<dtUtil::Enumeration*, bool>::iterator i, iend;
       i = mVisibleMap.begin();

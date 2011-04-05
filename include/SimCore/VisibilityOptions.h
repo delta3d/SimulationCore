@@ -43,6 +43,8 @@ namespace SimCore
       bool mSensorBlips: 1;
       bool mTracks: 1;
 
+      bool mBattlefieldGraphics: 1;
+
       void SetAllTrue();
       void SetAllFalse();
 

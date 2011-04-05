@@ -61,7 +61,7 @@ namespace SimCore
             | osg::CopyOp::DEEP_COPY_UNIFORMS );
 
             /// Constructor
-            IGActor(dtGame::GameActorProxy &proxy);
+            IGActor(dtGame::GameActorProxy& proxy);
 
             /**
              * Loads in a model file.  Is now a wrapper that calls LoadFileStatic().
@@ -70,13 +70,13 @@ namespace SimCore
              * or NULL if error
              */
             //osg::Node* LoadFile(const std::string &fileName, bool useCache = true);
-            bool LoadFile(const std::string &fileName, dtCore::RefPtr<osg::Node>& originalFile,
+            bool LoadFile(const std::string& fileName, dtCore::RefPtr<osg::Node>& originalFile,
                dtCore::RefPtr<osg::Node>& copiedFile, bool useCache = true, bool loadTerrainMaterialsOn = false);
 
             /**
              * A static version of LoadFile.  The real LoadFile is now a wrapper that calls this.
              */
-            static bool LoadFileStatic(const std::string &fileName, dtCore::RefPtr<osg::Node>& originalFile,
+            static bool LoadFileStatic(const std::string& fileName, dtCore::RefPtr<osg::Node>& originalFile,
                dtCore::RefPtr<osg::Node>& copiedFile, bool useCache = true, bool loadTerrainMaterialsOn = false);
 
             /* Registers the particle system to the ParticleManagerComponent

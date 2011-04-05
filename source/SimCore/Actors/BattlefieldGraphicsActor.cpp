@@ -24,6 +24,7 @@
 
 #include <prefix/SimCorePrefix.h>
 #include <SimCore/Actors/BattlefieldGraphicsActor.h>
+#include <SimCore/VisibilityOptions.h>
 #include <dtGame/gameactor.h>
 #include <dtGame/gamemanager.h>
 #include <dtCore/scene.h>
@@ -183,8 +184,8 @@ namespace SimCore
             dtCore::RefPtr<osg::ShapeDrawable> shapeDrawable = new osg::ShapeDrawable(shape);
             //shapeDrawable->setColor(color);
             mGeode->addDrawable(shapeDrawable);
-            //GetGameActor().GetOSGNode()->asGroup()->addChild(mGeode.get());
-            GetGameManager()->GetScene().GetSceneNode()->addChild(mGeode.get());
+            GetGameActor().GetOSGNode()->asGroup()->addChild(mGeode.get());
+            //GetGameManager()->GetScene().GetSceneNode()->addChild(mGeode.get());
 
 
          }
@@ -233,8 +234,8 @@ namespace SimCore
                CreateClosedTop();
             }
 
-            //GetGameActor().GetOSGNode()->asGroup()->addChild(mGeode.get());
-            GetGameManager()->GetScene().GetSceneNode()->addChild(mGeode.get());
+            GetGameActor().GetOSGNode()->asGroup()->addChild(mGeode.get());
+            //GetGameManager()->GetScene().GetSceneNode()->addChild(mGeode.get());
          }
 
       }
@@ -413,9 +414,9 @@ namespace SimCore
 
 
       ////////////////////////////////////////////////////////////////////////////
-      void BattlefieldGraphicsActorProxy::CreateActor()
+      void BattlefieldGraphicsActorProxy::CreateDrawable()
       {
-         SetActor(*new dtGame::GameActor(*this));
+         SetDrawable(*new BattlefieldGraphicsDrawable(*this));
       }
 
       ////////////////////////////////////////////////////////////////////////////
@@ -466,6 +467,24 @@ namespace SimCore
          arrayProp->SetArrayProperty(*vec3prop);
 
          AddProperty(arrayProp);
+
+      }
+
+      /////////////////////////////////////////////////////////////////////
+      BattlefieldGraphicsDrawable::BattlefieldGraphicsDrawable(dtGame::GameActorProxy& owner)
+      : IGActor(owner)
+      {
+      }
+
+      /////////////////////////////////////////////////////////////////////
+      bool BattlefieldGraphicsDrawable::ShouldBeVisible(const SimCore::VisibilityOptions& vo)
+      {
+         return vo.GetBasicOptions().mBattlefieldGraphics;
+      }
+
+      /////////////////////////////////////////////////////////////////////
+      BattlefieldGraphicsDrawable::~BattlefieldGraphicsDrawable()
+      {
 
       }
 

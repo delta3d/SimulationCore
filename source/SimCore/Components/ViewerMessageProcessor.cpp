@@ -451,7 +451,6 @@ namespace SimCore
                entity->SetScaleMagnification(osg::Vec3(mMagnification, mMagnification, mMagnification));
             }
 
-            //Must dynamic cast here because the GetActor template does a static cast.
             SimCore::Actors::IGActor* ig = dynamic_cast<SimCore::Actors::IGActor*>(ap.GetActor());
             if (ig != NULL)
             {

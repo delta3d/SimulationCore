@@ -26,6 +26,7 @@
 #define BATTLEFIELDGRAPHICS_ACTOR_H_
 
 #include <SimCore/Export.h>
+#include <SimCore/Actors/IGActor.h>
 #include <dtGame/gameactorproxy.h>
 #include <dtUtil/getsetmacros.h>
 #include <dtUtil/enumeration.h>
@@ -98,7 +99,7 @@ namespace SimCore
          virtual void OnEnteredWorld();
          virtual void OnRemovedFromWorld();
 
-         virtual void CreateActor();
+         virtual void CreateDrawable();
          virtual void BuildPropertyMap();
 
 
@@ -124,6 +125,16 @@ namespace SimCore
 
       };
 
+      class SIMCORE_EXPORT BattlefieldGraphicsDrawable : public SimCore::Actors::IGActor
+      {
+      public:
+         BattlefieldGraphicsDrawable(dtGame::GameActorProxy& owner);
+
+         ///@return true if this actor should be visible based on the visibility options given.
+         virtual bool ShouldBeVisible(const SimCore::VisibilityOptions& vo);
+      private:
+         ~BattlefieldGraphicsDrawable();
+      };
    }
 
 }

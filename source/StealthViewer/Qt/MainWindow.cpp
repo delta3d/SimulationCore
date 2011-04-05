@@ -707,6 +707,8 @@ namespace StealthQt
                this,               SLOT(OnVisibilityOptionToggled(bool)));
       connect(mUi->mVisShowBlips,  SIGNAL(toggled(bool)),
                this,               SLOT(OnVisibilityOptionToggled(bool)));
+      connect(mUi->mVisShowBFG,  SIGNAL(toggled(bool)),
+               this,               SLOT(OnVisibilityOptionToggled(bool)));
 
       ////////////////////////////////////////////////////
 
@@ -2005,6 +2007,7 @@ namespace StealthQt
       mUi->mVisShowHumans->setChecked(basicOpts.mDismountedInfantry);
       mUi->mVisShowBlips->setChecked(basicOpts.mSensorBlips);
       mUi->mVisShowTracks->setChecked(basicOpts.mTracks);
+      mUi->mVisShowBFG->setChecked(basicOpts.mBattlefieldGraphics);
 
       for (size_t i = 0; i < domainEnumVals.size(); ++i)
       {
@@ -2605,6 +2608,7 @@ namespace StealthQt
       basicOpts.mDismountedInfantry = mUi->mVisShowHumans->isChecked();
       basicOpts.mSensorBlips = mUi->mVisShowBlips->isChecked();
       basicOpts.mTracks = mUi->mVisShowTracks->isChecked();
+      basicOpts.mBattlefieldGraphics = mUi->mVisShowBFG->isChecked();
 
       for (size_t i = 0; i < mVisibilityCheckBoxes.size(); ++i)
       {
