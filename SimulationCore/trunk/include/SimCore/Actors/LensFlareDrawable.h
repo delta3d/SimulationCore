@@ -24,13 +24,31 @@
 #include <SimCore/Export.h>
 
 #include <dtUtil/refstring.h>
+#include <dtCore/observerptr.h>
 #include <dtCore/deltadrawable.h>
 #include <dtGame/gmcomponent.h>
 
 #include <osg/Texture2D>
 #include <osg/Drawable>
 #include <osg/MatrixTransform>
+
+#include <vector>
 #include <map>
+
+namespace osg
+{
+   class Camera;
+}
+
+namespace dtPhysics
+{
+   class RayCast;
+}
+
+namespace dtCore
+{
+   class Camera;
+}
 
 namespace SimCore
 {
@@ -55,7 +73,6 @@ namespace SimCore
 
                   /*virtual*/ void drawImplementation(osg::RenderInfo& renderInfo) const;
 
-                private:
 
                    void LoadTextures();
                    float CalculateEffectScale(osg::Camera* cam, bool visible) const;
@@ -63,7 +80,10 @@ namespace SimCore
                    void InitTexture(const std::string& filename, osg::Texture2D* ptr);
                    void RenderQuad(const osg::Vec4& rgba, const osg::Vec2& point, float scale) const;
 
+
+                   bool mUseRayCast;
                    osg::Vec3d mLightPos;
+
                    dtCore::RefPtr<osg::Texture2D> mSoftGlow;
                    dtCore::RefPtr<osg::Texture2D> mHardGlow;
                    dtCore::RefPtr<osg::Texture2D> mStreaks;
@@ -72,6 +92,7 @@ namespace SimCore
                    {
                       FadeParams()
                          : mVisible(false)
+                         , mRayCastVisible(false)
                          , mFadeDirection(0)
                          , mFadeRate(1.0f)
                          , mLastTickTime(0.0)
@@ -79,7 +100,7 @@ namespace SimCore
                       {
                       }
 
-                      bool mVisible;
+                      bool mVisible, mRayCastVisible;
                       int mFadeDirection;
                       float mFadeRate, mLastTickTime, mFadeCurrent;
                    };
@@ -99,7 +120,14 @@ namespace SimCore
             LensFlareDrawable();
 
             void Init();
+            void SetUseRayCast(bool b);
+            bool GetUseRayCast() const;
+
             void Update(const osg::Vec3& lightPos);
+
+            void OnMessage(dtCore::Base::MessageData* data);
+            
+            void UpdateView(dtCore::Camera& pCamera);
 
             /*virtual*/ osg::Node* GetOSGNode();
             /*virtual*/ const osg::Node* GetOSGNode() const;
@@ -113,6 +141,10 @@ namespace SimCore
 
             dtCore::RefPtr<osg::MatrixTransform> mNode;
             dtCore::RefPtr<LensFlareOSGDrawable> mLensFlareDrawable;
+
+            typedef std::pair<dtPhysics::RayCast, dtCore::ObserverPtr<osg::Camera> > RayCastCameraPair;
+            typedef std::vector<RayCastCameraPair> RayCastArray;
+            RayCastArray mRayCastArray;
       };
    }
 }
