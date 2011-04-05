@@ -478,6 +478,9 @@ namespace SimCore
          //this drawable creates a nice halo/glare effect from the sun
          mLensFlare = new LensFlareDrawable();
          mLensFlare->Init();
+         //using raycast by default
+         mLensFlare->SetUseRayCast(true);
+
          AddChild(mLensFlare.get());
       }
 

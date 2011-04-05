@@ -29,7 +29,13 @@
 #include <dtDAL/project.h>
 #include <dtCore/scene.h>
 #include <dtCore/system.h>
+#include <dtCore/camera.h>
 #include <dtABC/application.h>
+
+#include <SimCore/CollisionGroupEnum.h>
+
+#include <dtPhysics/raycast.h>
+#include <dtPhysics/palphysicsworld.h>
 
 #include <SimCore/Components/RenderingSupportComponent.h>
 
@@ -51,32 +57,35 @@ namespace SimCore
       const dtUtil::RefString LensFlareDrawable::TEXTURE_LENSFLARE_HARD_GLOW("Textures:sun_glare_hard_glow.bmp");
       const dtUtil::RefString LensFlareDrawable::TEXTURE_LENSFLARE_STREAKS("Textures:sun_glare_streaks_01.bmp");
 
-
+      //////////////////////////////////////////////////////////////////////////
       LensFlareDrawable::LensFlareDrawable()
          : dtCore::DeltaDrawable("LensFlareDrawable")
+         , mLensFlareDrawable(new LensFlareOSGDrawable())
       {
-
+         AddSender(&dtCore::System::GetInstance());
       }
 
+      //////////////////////////////////////////////////////////////////////////
       LensFlareDrawable::~LensFlareDrawable()
       {
-
+         RemoveSender(&dtCore::System::GetInstance());
       }
 
+      //////////////////////////////////////////////////////////////////////////
       osg::Node* SimCore::Actors::LensFlareDrawable::GetOSGNode()
       {
          return mNode.get();
       }
 
+      //////////////////////////////////////////////////////////////////////////
       const osg::Node* SimCore::Actors::LensFlareDrawable::GetOSGNode() const
       {
          return mNode.get();
       }
 
+      //////////////////////////////////////////////////////////////////////////
       void LensFlareDrawable::Init()
       {
-         mLensFlareDrawable = new LensFlareDrawable::LensFlareOSGDrawable();
-
          osg::Geode* geode = new osg::Geode();
 
          geode->addDrawable(mLensFlareDrawable.get());
@@ -100,21 +109,107 @@ namespace SimCore
          mNode->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
          mNode->setMatrix(osg::Matrix::identity());
          mNode->addChild(projection);
+
+
+         //add a camera callback for updates
+         dtCore::Camera::AddCameraSyncCallback(*this,
+            dtCore::Camera::CameraSyncCallback(this, &LensFlareDrawable::UpdateView));
+      }
+      
+      //////////////////////////////////////////////////////////////////////////
+      void LensFlareDrawable::OnMessage(dtCore::Base::MessageData* data)
+      {
+         if (data->message == dtCore::System::MESSAGE_POST_EVENT_TRAVERSAL)
+         {
+            RayCastArray::iterator iter = mRayCastArray.begin();
+            RayCastArray::iterator iterEnd = mRayCastArray.end();
+
+            for(;iter != iterEnd; ++iter)
+            {
+
+               RayCastCameraPair& rccp = *iter;
+
+               if(rccp.second.valid())
+               {
+                  LensFlareOSGDrawable::FadeParams& params = mLensFlareDrawable->mFadeMap[rccp.second.get()];
+
+                  dtPhysics::RayCast::Report report;
+                  dtPhysics::PhysicsWorld::GetInstance().TraceRay(rccp.first, report);
+                  params.mRayCastVisible = !report.mHasHitObject;
+               }
+            }
+
+            mRayCastArray.clear();
+         }
       }
 
+      //////////////////////////////////////////////////////////////////////////
+      void LensFlareDrawable::UpdateView(dtCore::Camera& pCamera)
+      {
+         if(mLensFlareDrawable->mUseRayCast)
+         {
+            osg::Camera* cam = pCamera.GetOSGCamera();
+            if(cam != NULL)
+            {
+               dtCore::Transform t;
+               osg::Vec3d pos, dir;
+
+               pCamera.GetTransform(t);
+               t.GetTranslation(pos);
+
+               dir = mLensFlareDrawable->mLightPos - pos;
+               float length = dir.normalize();
+               if(length > 0.99)
+               {
+                  dir = dir * 100000.0;
+
+                  dtPhysics::RayCast ray;
+
+                  ray.SetOrigin(pos);
+                  ray.SetDirection(dir);
+
+                  //static const dtPhysics::CollisionGroupFilter GROUPS_FLAGS = (1 << SimCore::CollisionGroup::GROUP_TERRAIN);
+                  //ray.SetCollisionGroupFilter(GROUPS_FLAGS);
+
+                  //we have to store these for later since we cannot process them in the camera synch callback
+                  //if physics is running in a background thread
+                  mRayCastArray.push_back(RayCastCameraPair(ray, cam));
+                  
+               }
+            }
+         }
+
+         
+      }
+
+      //////////////////////////////////////////////////////////////////////////
       void LensFlareDrawable::Update(const osg::Vec3& lightPos)
       {
          mLensFlareDrawable->SetLightPos(lightPos);
       }
 
+      //////////////////////////////////////////////////////////////////////////
+      void LensFlareDrawable::SetUseRayCast( bool b )
+      {
+         mLensFlareDrawable->mUseRayCast = b;
+      }
 
+      //////////////////////////////////////////////////////////////////////////
+      bool LensFlareDrawable::GetUseRayCast() const
+      {
+         return mLensFlareDrawable->mUseRayCast;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
       LensFlareDrawable::LensFlareOSGDrawable::LensFlareOSGDrawable()
+         : mUseRayCast(false)
       {
          setUseDisplayList(false);
          LoadTextures();
       }
 
 
+      //////////////////////////////////////////////////////////////////////////
       void LensFlareDrawable::LensFlareOSGDrawable::LoadTextures()
       {
          dtDAL::Project& project = dtDAL::Project::GetInstance();
@@ -139,6 +234,7 @@ namespace SimCore
          }
       }
 
+      //////////////////////////////////////////////////////////////////////////
       void LensFlareDrawable::LensFlareOSGDrawable::InitTexture( const std::string& filename, osg::Texture2D* ptr )
       {
          osg::Image* newImage = osgDB::readImageFile(filename);
@@ -156,6 +252,7 @@ namespace SimCore
          ptr->setUnRefImageDataAfterApply(true);
       }
 
+      //////////////////////////////////////////////////////////////////////////
       void LensFlareDrawable::LensFlareOSGDrawable::EnableTextureState(osg::RenderInfo& renderInfo) const
       {
          renderInfo.getState()->setClientActiveTextureUnit(0);
@@ -165,6 +262,7 @@ namespace SimCore
          glEnable(GL_TEXTURE_2D);
       }
 
+      //////////////////////////////////////////////////////////////////////////
       //this function calculates a scalar to apply to the flare effect which fades it in and
       //out over the fade rate
       float LensFlareDrawable::LensFlareOSGDrawable::CalculateEffectScale(osg::Camera* cam, bool visible) const
@@ -199,6 +297,7 @@ namespace SimCore
          return params.mFadeCurrent;
       }
 
+      //////////////////////////////////////////////////////////////////////////
       void LensFlareDrawable::LensFlareOSGDrawable::drawImplementation(osg::RenderInfo& renderInfo) const
       {
          if(renderInfo.getState() && mHardGlow.valid() && mSoftGlow.valid() && mStreaks.valid())
@@ -217,10 +316,19 @@ namespace SimCore
             screenXYZ += osg::Vec4d(1.0, 1.0, 1.0, 1.0);
             screenXYZ *= 0.5;
 
-            float bufferZ = 0.0f;
-            glReadPixels(GLint(cam->getViewport()->width() * screenXYZ.x()), GLint(cam->getViewport()->height() * screenXYZ.y()), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &bufferZ);
+            bool occluded = true;
+            if(!mUseRayCast)
+            {
+               float bufferZ = 0.0f;
+               glReadPixels(GLint(cam->getViewport()->width() * screenXYZ.x()), GLint(cam->getViewport()->height() * screenXYZ.y()), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &bufferZ);
 
-            bool occluded = bufferZ < 1;
+               occluded = bufferZ < 1;
+            }
+            else
+            {
+               FadeParams& params = mFadeMap[cam];
+               occluded = !params.mRayCastVisible;
+            }
 
             float effectScale = CalculateEffectScale(cam, inFrontOfCamera && !occluded);
 
@@ -247,6 +355,7 @@ namespace SimCore
          }
       }
 
+      //////////////////////////////////////////////////////////////////////////
       void LensFlareDrawable::LensFlareOSGDrawable::RenderQuad(const osg::Vec4& rgba, const osg::Vec2& point, float scale) const
       {
          osg::Vec2 q[4];
