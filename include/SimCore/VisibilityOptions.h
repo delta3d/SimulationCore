@@ -64,10 +64,12 @@ namespace SimCore
    public:
       VisibilityOptions();
 
-      virtual ~VisibilityOptions();
-
+   public:
       const BasicVisibilityOptions& GetBasicOptions() const;
       void SetBasicOptions(const BasicVisibilityOptions& options);
+
+   protected:
+      virtual ~VisibilityOptions();
 
    private:
       BasicVisibilityOptions mBasicOptions;
