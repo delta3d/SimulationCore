@@ -145,7 +145,7 @@ namespace SimCore
 
          for(int i = 0; i < mNumDetonations; ++i)
          {
-			osg::Vec2 randVec(dtUtil::RandPercent() * mDetonationRadius, dtUtil::RandPercent() * mDetonationRadius);
+			osg::Vec2 randVec((0.5f - dtUtil::RandPercent()) * mDetonationRadius, (0.5f - dtUtil::RandPercent()) * mDetonationRadius);
             
             //8848m is considered to be the highest point on earth
             osg::Vec3 pos(detonationPos[0] + randVec[0], detonationPos[1] + randVec[1], 8849.0f);
