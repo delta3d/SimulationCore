@@ -709,7 +709,9 @@ namespace SimCore
             InternalSetDamageState(damageState);
 
             SimCore::ActComps::PlatformDefaultPhysicsActComp* physAC = NULL;
-            GetComponent(physAC);
+            // as if this writing, GetComponent doesn't do a dynamic cast, but the dynamic cast is required here
+            // because I need to know not only if this has a physics component, but if that component is this specific type.
+            physAC = dynamic_cast<SimCore::ActComps::PlatformDefaultPhysicsActComp*>(GetComponent(SimCore::ActComps::PlatformDefaultPhysicsActComp::TYPE));
             if (physAC != NULL)
             {
                physAC->LoadCollision(false);
