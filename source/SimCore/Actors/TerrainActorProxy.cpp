@@ -594,10 +594,10 @@ namespace SimCore
          // It is "complete" so wait to make sure the task clears the thread pool.
          mLoadNodeTask->WaitUntilComplete();
 
-         mTerrainNode = mLoadNodeTask->GetLoadedNode();
-
-         if (mTerrainNode.valid())
+         if (mLoadNodeTask->GetLoadedNode() != NULL)
          {
+            mTerrainNode = mLoadNodeTask->GetLoadedNode();
+
             osg::StateSet* ss = mTerrainNode->getOrCreateStateSet();
             ss->setRenderBinDetails(SimCore::Components::RenderingSupportComponent::RENDER_BIN_TERRAIN, "TerrainBin");
 
@@ -617,6 +617,8 @@ namespace SimCore
                SetShaderGroup(""); // clear the shader so that it will accept the new setting
                SetShaderGroup(shaderToSet);
             }
+
+            mLoadNodeTask = NULL;
          }
 
          return true;
