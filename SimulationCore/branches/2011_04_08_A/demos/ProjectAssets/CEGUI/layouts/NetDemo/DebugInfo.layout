@@ -1,0 +1,175 @@
+<?xml version="1.0" ?>
+<GUILayout>
+   <!-- MAIN CONTAINER WINDOW (ROOT & BACKGROUND IMAGE) -->
+
+   <!-- FRAME -->
+   <Window Name="Root_DebugInfo" Type="NetDemo/GlowFrame">
+      <Property Name="UnifiedSize" Value="{{0.32,0},{0.33,0}}"/>
+      <Property Name="UnifiedPosition" Value="{{0,0},{-0.13,0}}"/>
+      <Property Name="ZOrderChangeEnabled" Value="False"/>
+      <Property Name="AlwaysOnTop" Value="True"/>
+      <Property Name="HorizontalAlignment" Value="Left"/>
+      <Property Name="VerticalAlignment" Value="Bottom"/>
+      <Property Name="BackColour" Value="DD000000"/>
+      <Property Name="FrameColour" Value="00000000"/>
+      <Property Name="GlowColour" Value="00000000"/>
+
+      <!-- TEXT - 0 -->
+      <Window Name="DebugInfo_0" Type="WindowsLook/StaticText">
+         <Property Name="UnifiedSize" Value="{{0.8,0},{0.075,0}}"/>
+	 <Property Name="UnifiedPosition" Value="{{-0.02,0},{0.04,0}}"/>
+         <Property Name="BackgroundEnabled" Value="False"/>
+         <Property Name="FrameEnabled" Value="False"/>
+         <Property Name="HorizontalAlignment" Value="Centre"/>
+         <Property Name="Font" Value="DejaVuSans-12"/>
+         <Property Name="AlwaysOnTop" Value="True"/>
+         <Property Name="TextColours" Value="FFFFFFFF"/>
+	 <Property Name="Text" Value="7/8: Change Publish Rate"/>
+      </Window>
+
+      <!-- TEXT - 1 -->
+      <Window Name="DebugInfo_1" Type="WindowsLook/StaticText">
+         <Property Name="UnifiedSize" Value="{{0.8,0},{0.075,0}}"/>
+         <Property Name="UnifiedPosition" Value="{{-0.02,0},{0.115,0}}"/>
+         <Property Name="BackgroundEnabled" Value="False"/>
+         <Property Name="FrameEnabled" Value="False"/>
+         <Property Name="HorizontalAlignment" Value="Centre"/>
+         <Property Name="Font" Value="DejaVuSans-12"/>
+         <Property Name="AlwaysOnTop" Value="True"/>
+         <Property Name="TextColours" Value="FFFFFFFF"/>
+         <Property Name="Text" Value="9: Cycle Current Debug Var"/>
+      </Window>
+
+      <!-- TEXT - 2 -->
+      <Window Name="DebugInfo_2" Type="WindowsLook/StaticText">
+         <Property Name="UnifiedSize" Value="{{0.8,0},{0.075,0}}"/>
+         <Property Name="UnifiedPosition" Value="{{-0.02,0},{0.19,0}}"/>
+         <Property Name="BackgroundEnabled" Value="False"/>
+         <Property Name="FrameEnabled" Value="False"/>
+         <Property Name="HorizontalAlignment" Value="Centre"/>
+         <Property Name="Font" Value="DejaVuSans-12"/>
+         <Property Name="AlwaysOnTop" Value="True"/>
+         <Property Name="TextColours" Value="FFFFFFFF"/>
+         <Property Name="Text" Value="0: Toggle Variable Value"/>
+      </Window>
+
+      <!-- TEXT - 3 -->
+      <Window Name="DebugInfo_3" Type="WindowsLook/StaticText">
+         <Property Name="UnifiedSize" Value="{{0.8,0},{0.075,0}}"/>
+         <Property Name="UnifiedPosition" Value="{{-0.02,0},{0.26.5,0}}"/>
+         <Property Name="BackgroundEnabled" Value="False"/>
+         <Property Name="FrameEnabled" Value="False"/>
+         <Property Name="HorizontalAlignment" Value="Centre"/>
+         <Property Name="Font" Value="DejaVuSans-12"/>
+         <Property Name="AlwaysOnTop" Value="True"/>
+         <Property Name="TextColours" Value="FFFFFFFF"/>
+         <Property Name="Text" Value="Cur Var: None"/>
+      </Window>
+
+      <!-- TEXT - 4 -->
+      <Window Name="DebugInfo_4" Type="WindowsLook/StaticText">
+         <Property Name="UnifiedSize" Value="{{0.8,0},{0.075,0}}"/>
+         <Property Name="UnifiedPosition" Value="{{-0.02,0},{0.37,0}}"/>
+         <Property Name="BackgroundEnabled" Value="False"/>
+         <Property Name="FrameEnabled" Value="False"/>
+         <Property Name="HorizontalAlignment" Value="Centre"/>
+         <Property Name="Font" Value="DejaVuSans-12"/>
+         <Property Name="AlwaysOnTop" Value="True"/>
+         <Property Name="TextColours" Value="FFFFFFFF"/>
+         <Property Name="Text" Value="DR Algorithm: ?"/>
+      </Window>
+
+      <!-- TEXT - 5 -->
+      <Window Name="DebugInfo_5" Type="WindowsLook/StaticText">
+         <Property Name="UnifiedSize" Value="{{0.8,0},{0.075,0}}"/>
+         <Property Name="UnifiedPosition" Value="{{-0.02,0},{0.445,0}}"/>
+         <Property Name="BackgroundEnabled" Value="False"/>
+         <Property Name="FrameEnabled" Value="False"/>
+         <Property Name="HorizontalAlignment" Value="Centre"/>
+         <Property Name="Font" Value="DejaVuSans-12"/>
+         <Property Name="AlwaysOnTop" Value="True"/>
+         <Property Name="TextColours" Value="FFFFFFFF"/>
+         <Property Name="Text" Value="Ground Clamp: ?"/>
+      </Window>
+
+      <!-- TEXT - 6 -->
+      <Window Name="DebugInfo_6" Type="WindowsLook/StaticText">
+         <Property Name="UnifiedSize" Value="{{0.8,0},{0.075,0}}"/>
+         <Property Name="UnifiedPosition" Value="{{-0.02,0},{0.52,0}}"/>
+         <Property Name="BackgroundEnabled" Value="False"/>
+         <Property Name="FrameEnabled" Value="False"/>
+         <Property Name="HorizontalAlignment" Value="Centre"/>
+         <Property Name="Font" Value="DejaVuSans-12"/>
+         <Property Name="AlwaysOnTop" Value="True"/>
+         <Property Name="TextColours" Value="FFFFFFFF"/>
+         <Property Name="Text" Value="DR Blending Type: ?"/>
+      </Window>
+
+      <!-- TEXT - 7 -->
+      <Window Name="DebugInfo_7" Type="WindowsLook/StaticText">
+         <Property Name="UnifiedSize" Value="{{0.8,0},{0.075,0}}"/>
+         <Property Name="UnifiedPosition" Value="{{-0.02,0},{0.595,0}}"/>
+         <Property Name="BackgroundEnabled" Value="False"/>
+         <Property Name="FrameEnabled" Value="False"/>
+         <Property Name="HorizontalAlignment" Value="Centre"/>
+         <Property Name="Font" Value="DejaVuSans-12"/>
+         <Property Name="AlwaysOnTop" Value="True"/>
+         <Property Name="TextColours" Value="FFFFFFFF"/>
+         <Property Name="Text" Value="DR Ghost Mode: ?"/>
+      </Window>
+
+      <!-- TEXT - 8 -->
+      <Window Name="DebugInfo_8" Type="WindowsLook/StaticText">
+         <Property Name="UnifiedSize" Value="{{0.8,0},{0.075,0}}"/>
+         <Property Name="UnifiedPosition" Value="{{-0.02,0},{0.67,0}}"/>
+         <Property Name="BackgroundEnabled" Value="False"/>
+         <Property Name="FrameEnabled" Value="False"/>
+         <Property Name="HorizontalAlignment" Value="Centre"/>
+         <Property Name="Font" Value="DejaVuSans-12"/>
+         <Property Name="AlwaysOnTop" Value="True"/>
+         <Property Name="TextColours" Value="FFFFFFFF"/>
+         <Property Name="Text" Value="Publish Rate: ?"/>
+      </Window>
+
+      <!-- TEXT - 9 -->
+      <Window Name="DebugInfo_9" Type="WindowsLook/StaticText">
+         <Property Name="UnifiedSize" Value="{{0.8,0},{0.075,0}}"/>
+         <Property Name="UnifiedPosition" Value="{{-0.02,0},{0.745,0}}"/>
+         <Property Name="BackgroundEnabled" Value="False"/>
+         <Property Name="FrameEnabled" Value="False"/>
+         <Property Name="HorizontalAlignment" Value="Centre"/>
+         <Property Name="Font" Value="DejaVuSans-12"/>
+         <Property Name="AlwaysOnTop" Value="True"/>
+         <Property Name="TextColours" Value="FFFFFFFF"/>
+         <Property Name="Text" Value="DR Fixed Blend: ?"/>
+      </Window>
+
+      <!-- TEXT - 10 -->
+      <Window Name="DebugInfo_10" Type="WindowsLook/StaticText">
+         <Property Name="UnifiedSize" Value="{{0.8,0},{0.075,0}}"/>
+         <Property Name="UnifiedPosition" Value="{{-0.02,0},{0.82,0}}"/>
+         <Property Name="BackgroundEnabled" Value="False"/>
+         <Property Name="FrameEnabled" Value="False"/>
+         <Property Name="HorizontalAlignment" Value="Centre"/>
+         <Property Name="Font" Value="DejaVuSans-12"/>
+         <Property Name="AlwaysOnTop" Value="True"/>
+         <Property Name="TextColours" Value="FFFFFFFF"/>
+         <Property Name="Text" Value="DR Publish Ang Vel: ?"/>
+      </Window>
+
+      <!-- TEXT - 11 -->
+      <Window Name="DebugInfo_11" Type="WindowsLook/StaticText">
+         <Property Name="UnifiedSize" Value="{{0.8,0},{0.075,0}}"/>
+         <Property Name="UnifiedPosition" Value="{{-0.02,0},{0.89,0}}"/>
+         <Property Name="BackgroundEnabled" Value="False"/>
+         <Property Name="FrameEnabled" Value="False"/>
+         <Property Name="HorizontalAlignment" Value="Centre"/>
+         <Property Name="Font" Value="DejaVuSans-12"/>
+         <Property Name="AlwaysOnTop" Value="True"/>
+         <Property Name="TextColours" Value="FFFFFFFF"/>
+         <Property Name="Text" Value="Avg Error: ?"/>
+      </Window>
+
+        
+   </Window>
+</GUILayout>
