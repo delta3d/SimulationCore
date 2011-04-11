@@ -150,17 +150,17 @@ namespace SimCore
          IGActor* drawable = NULL;
          mActor->GetDrawable(drawable);
          CPPUNIT_ASSERT(drawable != NULL);
-         VisibilityOptions vo;
+         dtCore::RefPtr<VisibilityOptions> vo = new VisibilityOptions();
 
          BasicVisibilityOptions bvo;
          bvo.SetAllFalse();
          bvo.mBattlefieldGraphics = true;
-         vo.SetBasicOptions(bvo);
-         CPPUNIT_ASSERT(drawable->ShouldBeVisible(vo));
+         vo->SetBasicOptions(bvo);
+         CPPUNIT_ASSERT(drawable->ShouldBeVisible(*vo));
          bvo.SetAllTrue();
          bvo.mBattlefieldGraphics = false;
-         vo.SetBasicOptions(bvo);
-         CPPUNIT_ASSERT(!drawable->ShouldBeVisible(vo));
+         vo->SetBasicOptions(bvo);
+         CPPUNIT_ASSERT(!drawable->ShouldBeVisible(*vo));
       }
    }
 }
