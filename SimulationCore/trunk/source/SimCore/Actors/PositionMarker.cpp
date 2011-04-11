@@ -9,6 +9,7 @@
 
 
 #include <dtDAL/enginepropertytypes.h>
+#include <dtDAL/project.h>
 
 #include <dtUtil/functor.h>
 #include <dtUtil/log.h>
@@ -47,7 +48,17 @@ namespace SimCore
          , mStaleColor(0.6, 0.6, 0.6, 1.0)
       {
          dtCore::RefPtr<osg::Node> original, copied;
-         IGActor::LoadFileStatic("StaticMeshes/Hemisphere.ive", original, copied);
+         std::string resourceDesc("StaticMeshes:Hemisphere.ive");
+         std::string filename = dtDAL::Project::GetInstance().GetResourcePath(resourceDesc);
+         if(!filename.empty())
+         {
+            IGActor::LoadFileStatic(filename, original, copied);
+         }
+         else
+         {
+            LOG_ERROR("Cannot find required resource: " + resourceDesc);
+         }
+
          //gotta hold onto the new one.
          copied->setUserData(original.get());
          dtCore::RefPtr<osg::MatrixTransform> mt = new osg::MatrixTransform();
