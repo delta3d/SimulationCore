@@ -44,6 +44,7 @@
 #include <SimCore/Actors/PlatformWithPhysics.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
 #include <SimCore/ActComps/CamoPaintStateActComp.h>
+#include <SimCore/ActComps/TrailEffectActComp.h>
 #include <SimCore/ActComps/WeaponSwapActComp.h>
 #include <SimCore/ActComps/WheelActComp.h>
 
@@ -161,12 +162,12 @@ namespace SimCore
 
             void TestAvailableActorComponents()
             {
-               CheckAvailableActorComponents(*mPlatformWithPhysicsActorProxy, true, false, false, false, false);
+               CheckAvailableActorComponents(*mPlatformWithPhysicsActorProxy, true, false, false, false, false, false);
 
                dtCore::RefPtr<SimCore::Actors::PlatformActorProxy> platform;
                mGM->CreateActor(*EntityActorRegistry::PLATFORM_ACTOR_TYPE, platform);
 
-               CheckAvailableActorComponents(*platform, false, false, false, false, false);
+               CheckAvailableActorComponents(*platform, false, false, false, false, false, false);
 
                CPPUNIT_ASSERT_MESSAGE("Platforms with the switchable type should default to having physics creation on.",
                         PlatformActorProxy::GetPhysicsCreationEnabled());
@@ -175,27 +176,27 @@ namespace SimCore
 
                mGM->CreateActor(*EntityActorRegistry::PLATFORM_WITH_PHYSICS_ACTOR_TYPE, platform);
 
-               CheckAvailableActorComponents(*platform, true, false, false, false, false);
+               CheckAvailableActorComponents(*platform, true, false, false, false, false, false);
 
                mGM->CreateActor(*EntityActorRegistry::PLATFORM_SWITCHABLE_PHYSICS_ACTOR_TYPE, platform);
 
-               CheckAvailableActorComponents(*platform, false, false, false, false, false);
+               CheckAvailableActorComponents(*platform, false, false, false, false, false, false);
 
                mGM->CreateActor(*EntityActorRegistry::MILITARY_AIR_PLATFORM_ACTOR_TYPE, platform);
 
-               CheckAvailableActorComponents(*platform, false, true, true, true, false);
+               CheckAvailableActorComponents(*platform, false, true, true, true, false, false);
 
                mGM->CreateActor(*EntityActorRegistry::MILITARY_GROUND_PLATFORM_ACTOR_TYPE, platform);
 
-               CheckAvailableActorComponents(*platform, false, true, true, true, true);
+               CheckAvailableActorComponents(*platform, false, true, true, true, true, false);
 
                mGM->CreateActor(*EntityActorRegistry::AIR_PLATFORM_ACTOR_TYPE, platform);
 
-               CheckAvailableActorComponents(*platform, false, false, false, false, false);
+               CheckAvailableActorComponents(*platform, false, false, false, false, false, false);
 
                mGM->CreateActor(*EntityActorRegistry::GROUND_PLATFORM_ACTOR_TYPE, platform);
 
-               CheckAvailableActorComponents(*platform, false, false, false, false, true);
+               CheckAvailableActorComponents(*platform, false, false, false, false, true, false);
 
 
 
@@ -203,34 +204,42 @@ namespace SimCore
 
                mGM->CreateActor(*EntityActorRegistry::PLATFORM_WITH_PHYSICS_ACTOR_TYPE, platform);
 
-               CheckAvailableActorComponents(*platform, true, false, false, false, false);
+               CheckAvailableActorComponents(*platform, true, false, false, false, false, false);
 
                mGM->CreateActor(*EntityActorRegistry::PLATFORM_SWITCHABLE_PHYSICS_ACTOR_TYPE, platform);
 
-               CheckAvailableActorComponents(*platform, true, false, false, false, false);
+               CheckAvailableActorComponents(*platform, true, false, false, false, false, false);
 
                mGM->CreateActor(*EntityActorRegistry::MILITARY_AIR_PLATFORM_ACTOR_TYPE, platform);
 
-               CheckAvailableActorComponents(*platform, true, true, true, true, false);
+               CheckAvailableActorComponents(*platform, true, true, true, true, false, false);
+
+               mGM->CreateActor(*EntityActorRegistry::MILITARY_HELO_PLATFORM_ACTOR_TYPE, platform);
+
+               CheckAvailableActorComponents(*platform, true, true, true, true, false, true);
 
                mGM->CreateActor(*EntityActorRegistry::MILITARY_GROUND_PLATFORM_ACTOR_TYPE, platform);
 
-               CheckAvailableActorComponents(*platform, true, true, true, true, true);
+               CheckAvailableActorComponents(*platform, true, true, true, true, true, false);
 
                mGM->CreateActor(*EntityActorRegistry::AIR_PLATFORM_ACTOR_TYPE, platform);
 
-               CheckAvailableActorComponents(*platform, true, false, false, false, false);
+               CheckAvailableActorComponents(*platform, true, false, false, false, false, false);
+
+               mGM->CreateActor(*EntityActorRegistry::HELO_PLATFORM_ACTOR_TYPE, platform);
+
+               CheckAvailableActorComponents(*platform, true, false, false, false, false, true);
 
                mGM->CreateActor(*EntityActorRegistry::GROUND_PLATFORM_ACTOR_TYPE, platform);
 
-               CheckAvailableActorComponents(*platform, true, false, false, false, true);
+               CheckAvailableActorComponents(*platform, true, false, false, false, true, false);
 
             }
 
          private:
 
             void CheckAvailableActorComponents(SimCore::Actors::PlatformActorProxy& platform, bool physics, bool camo, bool weaponswap,
-                     bool munitions, bool wheels)
+                     bool munitions, bool wheels, bool trailEffects)
             {
                CPPUNIT_ASSERT(platform.GetComponent<dtGame::DeadReckoningHelper>() != NULL);
                CPPUNIT_ASSERT(platform.GetComponent<dtGame::DRPublishingActComp>() != NULL);
@@ -240,6 +249,7 @@ namespace SimCore
                CPPUNIT_ASSERT_EQUAL(camo, platform.GetComponent<SimCore::ActComps::CamoPaintStateActComp>() != NULL);
                CPPUNIT_ASSERT_EQUAL(weaponswap, platform.GetComponent<SimCore::ActComps::WeaponSwapActComp>() != NULL);
                CPPUNIT_ASSERT_EQUAL(wheels, platform.GetComponent<SimCore::ActComps::WheelActComp>() != NULL);
+               CPPUNIT_ASSERT_EQUAL(trailEffects, platform.GetComponent<SimCore::ActComps::TrailEffectActComp>() != NULL);
 
                BaseEntity* be = NULL;
                platform.GetActor(be);

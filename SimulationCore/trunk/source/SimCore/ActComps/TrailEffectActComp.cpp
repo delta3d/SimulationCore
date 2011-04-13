@@ -156,8 +156,7 @@ namespace SimCore
          , mOwnerIsPlatform(false)
          , mClampTimer(0.0f)
       {
-         SetTrailClampInterval(DEFAULT_TRAIL_CLAMP_INTERVAL);
-         SetTrailEnableDistance(DEFAULT_TRAIL_ENABLE_DISTANCE);
+         SetDefaults();
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -166,13 +165,20 @@ namespace SimCore
          , mOwnerIsPlatform(false)
          , mClampTimer(0.0f)
       {
-         SetTrailClampInterval(DEFAULT_TRAIL_CLAMP_INTERVAL);
-         SetTrailEnableDistance(DEFAULT_TRAIL_ENABLE_DISTANCE);
+         SetDefaults();
       }
 
       //////////////////////////////////////////////////////////////////////////
       TrailEffectActComp::~TrailEffectActComp()
       {
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void TrailEffectActComp::SetDefaults()
+      {
+         SetTrailClampInterval(DEFAULT_TRAIL_CLAMP_INTERVAL);
+         SetTrailEnableDistance(DEFAULT_TRAIL_ENABLE_DISTANCE);
+         SetTrailAttached(false);
       }
 
 
@@ -401,7 +407,7 @@ namespace SimCore
             // Ensure the particle effect is not attached to the owner's sub-nodes.
             do 
             {
-               parent = particleNode->getParent(0);
+               parent = particleNode->getNumParents() > 0 ? particleNode->getParent(0) : NULL;
                if(parent != NULL)
                {
                   parent->removeChild(particleNode);
