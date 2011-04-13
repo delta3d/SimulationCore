@@ -559,7 +559,7 @@ namespace SimCore
                }
                else
                {
-                  dtUtil::ThreadPool::AddTask(*mLoadNodeTask, dtUtil::ThreadPool::BACKGROUND);
+                  dtUtil::ThreadPool::AddTask(*mLoadNodeTask, dtUtil::ThreadPool::IO);
                   // This timer is repeating, so it must be cleared when it's over.
                   GetGameActorProxy().GetGameManager()->SetTimer(LOAD_NODE_TERRAIN_TIMER, &GetGameActorProxy(), LOAD_NODE_TIMER_TIMEOUT, true, true);
                }

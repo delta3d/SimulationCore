@@ -287,7 +287,10 @@ namespace SimCore
             void UpdateWeapon();
             bool GetContainsWeaponName(const std::vector<std::string>& vec, const std::string& meshName) const;
 
-            // Callback after the skeletal mesh loads, async or not.
+
+            void AsyncCompleteCallback() { mModelLoadedAndWaiting = true; }
+
+            // Called when model is loaded whether async or not.
             virtual void SkeletalMeshLoadCallback();
             virtual void SkeletalMeshUnloadCallback() {}
 
@@ -324,6 +327,7 @@ namespace SimCore
             dtUtil::Log& mLogger;
 
             double mMaxTimePerIteration;
+            bool mModelLoadedAndWaiting;
       };
 
       class SIMCORE_EXPORT BasicStanceState: public dtAI::IStateVariable
