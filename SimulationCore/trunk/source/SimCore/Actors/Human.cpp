@@ -365,7 +365,7 @@ namespace SimCore
 
       HumanActorProxy::HumanActorProxy()
       {
-         SetClassName("SimCore::Actors::Human");
+         SetClassName("SimCore::Actors::Human\n");
       }
 
       ////////////////////////////////////////////////////////////////////////////
@@ -479,6 +479,7 @@ namespace SimCore
          , mFullRunVelocity(0.0f)
          , mLogger(dtUtil::Log::GetInstance("Human.cpp"))
          , mMaxTimePerIteration(0.5)
+         , mModelLoadedAndWaiting(false)
       {
          SetName("Human");
          std::vector<BasicStanceEnum*> basicStances = BasicStanceEnum::EnumerateType();
@@ -522,9 +523,12 @@ namespace SimCore
 
       void Human::SkeletalMeshLoadCallback()
       {
+         mModelLoadedAndWaiting = false;
+
          osg::MatrixTransform& transform = GetScaleMatrixTransform();
          mModelNode = dtAnim::Cal3DDatabase::GetInstance().GetNodeBuilder().CreateNode(mAnimationHelper->GetModelWrapper());
          transform.addChild(mModelNode.get());
+         mModelNode->setName(mSkeletalMeshResource.GetResourceIdentifier());
 
          //setup speed blends
          WalkRunBlend* walkRunReady = new WalkRunBlend(*this);
@@ -595,7 +599,7 @@ namespace SimCore
                   else if (GetGameActorProxy().IsInGM())
                   {
                      mAnimationHelper->LoadModelAsynchronously(fileName,
-                           dtAnim::AnimationHelper::AsynchLoadCompletionCallback(this, &Human::SkeletalMeshLoadCallback));
+                           dtAnim::AnimationHelper::AsynchLoadCompletionCallback(this, &Human::AsyncCompleteCallback));
                   }
                }
                catch (const dtUtil::Exception& ex)
@@ -617,14 +621,14 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////
       void Human::OnEnteredWorld()
       {
-         if (!mSkeletalMeshResource.IsEmpty())
+         if (!mSkeletalMeshResource.IsEmpty() && (mModelNode == NULL || mModelNode->getName() != mSkeletalMeshResource.GetResourceIdentifier()))
          {
             try
             {
                const std::string fileName = dtDAL::Project::GetInstance().GetResourcePath(GetSkeletalMesh());
                if (!fileName.empty())
                {
-                  mAnimationHelper->LoadModelAsynchronously(fileName, dtAnim::AnimationHelper::AsynchLoadCompletionCallback(this, &Human::SkeletalMeshLoadCallback));
+                  mAnimationHelper->LoadModelAsynchronously(fileName, dtAnim::AnimationHelper::AsynchLoadCompletionCallback(this, &Human::AsyncCompleteCallback));
                }
             }
             catch (const dtUtil::Exception& ex)
@@ -945,6 +949,11 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////
       void Human::CheckAndUpdateAnimationState()
       {
+         if (mModelLoadedAndWaiting)
+         {
+            SkeletalMeshLoadCallback();
+         }
+
          if (!IsDesiredState(mPlannerHelper.GetCurrentState()) && !GetSkeletalMesh().IsEmpty())
          {
             if (mLogger.IsLevelEnabled(dtUtil::Log::LOG_DEBUG))
