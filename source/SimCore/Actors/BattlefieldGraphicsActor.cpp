@@ -189,6 +189,44 @@ namespace SimCore
 
 
          }
+         else if(mPoints.size() > 1 && mRadius > 0.0001f)
+         {
+            std::vector<osg::Vec3>::iterator iter = mPoints.begin();
+            std::vector<osg::Vec3>::iterator iterEnd = mPoints.end();
+
+            osg::Vec3 point1 = *iter;
+            osg::Vec3 point2;
+            ++iter;
+            
+            osg::Matrix rot;
+            rot.makeRotate(osg::PI_2, osg::Vec3(0.0f, 0.0f, 1.0f));
+
+            for(;iter != iterEnd; ++iter)
+            {
+               point2 = *iter;
+
+               osg::Vec3 point1A, point1B;
+               osg::Vec3 point2A, point2B;
+
+               osg::Vec3 diff = point2 - point1;
+               diff.normalize();
+
+               osg::Vec3 offset = rot.preMult(diff);
+               point1A = point1 + (offset * mRadius * 0.5f);
+               point1B = point1 - (offset * mRadius * 0.5f);
+
+               point2A = point2 + (offset * mRadius * 0.5f);
+               point2B = point2 - (offset * mRadius * 0.5f);
+
+               
+               AddQuadGeometry(point1A, point2A, mMinAltitude, mMaxAltitude);
+               AddQuadGeometry(point1B, point2B, mMinAltitude, mMaxAltitude);
+
+               point1 = point2;
+            }
+
+            GetGameActor().GetOSGNode()->asGroup()->addChild(mGeode.get());
+         }
          else if(mPoints.size() > 1)
          {
             int numVerts = 0;
@@ -201,7 +239,6 @@ namespace SimCore
             std::vector<osg::Vec3>::iterator iterEnd = mPoints.end();
 
             osg::Vec3 point1;
-            osg::Vec3 point2;
 
             for(;iter != iterEnd; ++iter)
             {
