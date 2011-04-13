@@ -45,10 +45,12 @@ namespace SimCore
             static dtCore::RefPtr<dtDAL::ActorType> GROUND_PLATFORM_ACTOR_TYPE;
 
             static dtCore::RefPtr<dtDAL::ActorType> AIR_PLATFORM_ACTOR_TYPE;
+            static dtCore::RefPtr<dtDAL::ActorType> HELO_PLATFORM_ACTOR_TYPE;
 
             static dtCore::RefPtr<dtDAL::ActorType> MILITARY_GROUND_PLATFORM_ACTOR_TYPE;
 
             static dtCore::RefPtr<dtDAL::ActorType> MILITARY_AIR_PLATFORM_ACTOR_TYPE;
+            static dtCore::RefPtr<dtDAL::ActorType> MILITARY_HELO_PLATFORM_ACTOR_TYPE;
 
             static dtCore::RefPtr<dtDAL::ActorType> PLATFORM_WITH_PHYSICS_ACTOR_TYPE;
 

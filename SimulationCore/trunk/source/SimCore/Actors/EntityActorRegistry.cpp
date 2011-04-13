@@ -101,6 +101,10 @@ namespace SimCore
                new dtDAL::ActorType("Platform", "Entity.Air.Civilian", "A air vehicle platform",
                         EntityActorRegistry::PLATFORM_SWITCHABLE_PHYSICS_ACTOR_TYPE.get()));
 
+      RefPtr<dtDAL::ActorType> EntityActorRegistry::HELO_PLATFORM_ACTOR_TYPE(
+               new dtDAL::ActorType("Platform", "Entity.Air.Civilian.Helo", "A helo vehicle platform",
+                        EntityActorRegistry::AIR_PLATFORM_ACTOR_TYPE.get()));
+
       RefPtr<dtDAL::ActorType> EntityActorRegistry::MILITARY_GROUND_PLATFORM_ACTOR_TYPE(
                new dtDAL::ActorType("Platform", "Entity.Ground.Military", "A military ground platform",
                         EntityActorRegistry::GROUND_PLATFORM_ACTOR_TYPE.get()));
@@ -108,6 +112,10 @@ namespace SimCore
       RefPtr<dtDAL::ActorType> EntityActorRegistry::MILITARY_AIR_PLATFORM_ACTOR_TYPE(
                new dtDAL::ActorType("Platform", "Entity.Air.Military", "A military air platform",
                         EntityActorRegistry::AIR_PLATFORM_ACTOR_TYPE.get()));
+
+      RefPtr<dtDAL::ActorType> EntityActorRegistry::MILITARY_HELO_PLATFORM_ACTOR_TYPE(
+               new dtDAL::ActorType("Platform", "Entity.Air.Military.Helo", "A military helo platform",
+                        EntityActorRegistry::MILITARY_AIR_PLATFORM_ACTOR_TYPE.get()));
 
       RefPtr<dtDAL::ActorType> EntityActorRegistry::STEALTH_ACTOR_TYPE(
                new dtDAL::ActorType("Stealth Actor", "Stealth Actor", "This actor is a stealth actor",
@@ -266,10 +274,12 @@ namespace SimCore
          mActorFactory->RegisterType<PlatformActorProxy>(GROUND_PLATFORM_ACTOR_TYPE);
 
          mActorFactory->RegisterType<PlatformActorProxy>(AIR_PLATFORM_ACTOR_TYPE);
+         mActorFactory->RegisterType<PlatformActorProxy>(HELO_PLATFORM_ACTOR_TYPE);
 
          mActorFactory->RegisterType<PlatformActorProxy>(MILITARY_GROUND_PLATFORM_ACTOR_TYPE);
 
          mActorFactory->RegisterType<PlatformActorProxy>(MILITARY_AIR_PLATFORM_ACTOR_TYPE);
+         mActorFactory->RegisterType<PlatformActorProxy>(MILITARY_HELO_PLATFORM_ACTOR_TYPE);
 
          mActorFactory->RegisterType<StealthActorProxy>(STEALTH_ACTOR_TYPE.get());
          mActorFactory->RegisterType<PlayerActorProxy>(PLAYER_ACTOR_TYPE.get());
