@@ -215,6 +215,8 @@ namespace SimCore
             void SetParticlePosition(const osg::Vec3& pos);
 
          private:
+            void SetDefaults();
+
             bool mOwnerIsPlatform;
             float mClampTimer;
             osg::Vec3 mClampPoint;

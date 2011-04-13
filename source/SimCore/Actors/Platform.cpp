@@ -28,6 +28,7 @@
 #include <SimCore/ActComps/WeaponSwapActComp.h>
 #include <SimCore/ActComps/WheelActComp.h>
 #include <SimCore/ActComps/PlatformDefaultPhysicsActComp.h>
+#include <SimCore/ActComps/TrailEffectActComp.h>
 #include <SimCore/Actors/Platform.h>
 
 // Included to allow code to select which actor components to add.
@@ -358,6 +359,16 @@ namespace SimCore
          else
          {
             p->SetAutoRegisterWithMunitionsComponent(false);
+         }
+
+         // Add Trail Effect properties if none already exist.
+         if (at.InstanceOf(*EntityActorRegistry::HELO_PLATFORM_ACTOR_TYPE)
+            || at.InstanceOf(*EntityActorRegistry::MILITARY_HELO_PLATFORM_ACTOR_TYPE))
+         {
+            if (!HasComponent(SimCore::ActComps::TrailEffectActComp::TYPE))
+            {
+               AddComponent(*new SimCore::ActComps::TrailEffectActComp());
+            }
          }
       }
 
