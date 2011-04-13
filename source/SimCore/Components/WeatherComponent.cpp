@@ -486,8 +486,8 @@ namespace SimCore
             // Change Wind
             // --- The following forces an actor update message for which
             //     components and entity may be listening.
-            osg::Vec2 wind(atmosActor->GetWind());
-            mEnvironmentActor->SetWind(osg::Vec3( wind[0], wind[1], 0.0 ));
+            osg::Vec3 wind(atmosActor->GetWind(), 0.0f);
+            mEnvironmentActor->SetWind(wind);//osg::Vec3( wind[0], wind[1], 0.0 ));
 
             // Change Precipitation
             // --- This change must be applied before wind changes occur,
