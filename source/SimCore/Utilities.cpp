@@ -114,9 +114,10 @@ namespace Utils
       result = dtUtil::ToType<bool>(developerMode);
       return result;
    }
+
    ///////////////////////////////////////////////////////////////////////////////////
-   bool KeepActorOnGround(dtCore::Transformable& actor, dtCore::Transformable& terrainActor, float dropHeight,
-            float maxDepthBelow, float maxHeightAbove)
+   bool KeepTransformOnGround(dtCore::Transform& xform, dtCore::Transformable& terrainActor, float dropHeight,
+      float maxDepthBelow, float maxHeightAbove)
    {
       // assume we are under earth unless we get proof otherwise.
       // because some checks could THINK we are under earth, especially if you drive / move
@@ -124,9 +125,6 @@ namespace Utils
       bool underearth = maxDepthBelow >= 0.0f;
       bool tooHigh = maxHeightAbove >= 0.0f;
 
-      dtCore::Transform xform;
-
-      actor.GetTransform(xform);
       osg::Vec3 pos;
       xform.GetTranslation(pos);
 
@@ -172,8 +170,23 @@ namespace Utils
          // Setting to the highest position in either case.
          pos.z() = hp[2] + dropHeight;
          xform.SetTranslation(pos);
+      }
+      return result;
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////////
+   bool KeepActorOnGround(dtCore::Transformable& actor, dtCore::Transformable& terrainActor, float dropHeight,
+            float maxDepthBelow, float maxHeightAbove)
+   {
+      dtCore::Transform xform;
+      actor.GetTransform(xform);
+
+      bool result = KeepTransformOnGround(xform, terrainActor, dropHeight, maxDepthBelow, maxHeightAbove);
+      if (result)
+      {
          actor.SetTransform(xform);
       }
+
       return result;
    }
 
