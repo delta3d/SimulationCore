@@ -24,8 +24,8 @@ C:\Curtiss\Projects\Delta3D\SimulationCore\demos\NetDemo (as appropriate)
     <Properties>
       <!-- Delta3D Settings -->
       <Property Name="DeveloperMode">true</Property>
-      <Property Name="GameManager.Statistics.Interval">10</Property>
-      <Property Name="GameManager.Statistics.ToConsole">true</Property>
+      <Property Name="GameManager.Statistics.Interval">0</Property>
+      <Property Name="GameManager.Statistics.ToConsole">false</Property>
       <Property Name="AspectRatio">1.6</Property>
       <Property Name="System.SimFrameRate">30</Property>
       <Property Name="System.MaxTimeBetweenDraws">0.2</Property>
