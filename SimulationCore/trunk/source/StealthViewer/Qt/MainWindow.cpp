@@ -125,6 +125,13 @@ namespace StealthQt
          {
             mParent = new StealthQt::AdditionalViewDockWidget(format, parent, shareWidget, f);
             widget = mParent;
+
+// AT last check, in windows, it had windowing problems on Win32 if mParent is NULL.
+// In X11, the parnent MUST be null or the GLXContext can't be created for the extra views.
+// On Mac OS X, it doesn't seem to make any different whether the parent of the extra windows is NULL or the main window.
+#ifdef Q_WS_X11
+            mParent = NULL;
+#endif
          }
          else
          {
