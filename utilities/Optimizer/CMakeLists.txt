@@ -19,8 +19,6 @@ ADD_EXECUTABLE(${PROG_NAME}
 
 LINK_WITH_VARIABLES(${PROG_NAME}
                                    DTUTIL_LIBRARY
-                                   DTDAL_LIBRARY
-                                   DTCORE_LIBRARY
                                    OSG_LIBRARY
                                    OSGGA_LIBRARY
                                    OSGVIEWER_LIBRARY
