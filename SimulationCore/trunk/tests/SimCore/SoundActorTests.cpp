@@ -88,6 +88,7 @@ void SoundActorTests::setUp()
    {
       dtCore::Scene* scene = new dtCore::Scene();
       mGameManager = new dtGame::GameManager(*scene);
+      mGameManager->SetApplication(GetGlobalApplication());
       mGameManager->LoadActorRegistry(LIBRARY_TEST_GAME_ACTOR);
 
       dtCore::System::GetInstance().SetShutdownOnWindowClose(false);

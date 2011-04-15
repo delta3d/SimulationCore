@@ -53,6 +53,9 @@ namespace SimCore
    const MessageType MessageType::TIME_VALUE("Time Value", "Time", "Respose to a time query (HLA).",
       USER_DEFINED_MESSAGE_TYPE + 19, DT_MSG_CLASS(TimeValueMessage));
 
+   const MessageType MessageType::INFO_TERRAIN_LOADED("Terrain Loaded", "Info", "Sent when new terrain has been added an initialized.",
+         USER_DEFINED_MESSAGE_TYPE + 27, DT_MSG_CLASS(dtGame::Message));
+
    MessageType MessageType::BINOCULARS("Binoculars", "Tools", "Binoculars", USER_DEFINED_MESSAGE_TYPE + 10, DT_MSG_CLASS(ToolMessage));
    MessageType MessageType::COMPASS("Compass", "Tools", "Compass", USER_DEFINED_MESSAGE_TYPE + 11, DT_MSG_CLASS(ToolMessage));
    MessageType MessageType::NIGHT_VISION("Night Vision", "Tools", "Night Vision", USER_DEFINED_MESSAGE_TYPE + 12, DT_MSG_CLASS(ToolMessage));
