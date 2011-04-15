@@ -26,6 +26,7 @@
 #include <SimCore/CollisionGroupEnum.h>
 #include <SimCore/Actors/PagedTerrainPhysicsActor.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
+#include <SimCore/MessageType.h>
 #include <dtDAL/enginepropertytypes.h>
 #include <dtDAL/actorproxyicon.h>
 #include <dtDAL/project.h>
@@ -445,16 +446,20 @@ namespace SimCore
             //Set the helper name to match the actor name.
             mHelper->SetName(GetName());
          }
+
+         dtCore::RefPtr<dtGame::Message> terrainMessage;
+         GetGameActorProxy().GetGameManager()->GetMessageFactory().CreateMessage(SimCore::MessageType::INFO_TERRAIN_LOADED, terrainMessage);
+         terrainMessage->SetAboutActorId(GetUniqueId());
+         GetGameActorProxy().GetGameManager()->SendMessage(*terrainMessage);
       }
 
       /////////////////////////////////////////////////////////////////////////////
       void TerrainActor::LoadMeshFromFile(const std::string& fileToLoad, const std::string& materialType)
       {
-         if(dtUtil::FileUtils::GetInstance().FileExists(fileToLoad))
+         if (dtUtil::FileUtils::GetInstance().FileExists(fileToLoad))
          {
-
             std::string filename = dtUtil::FindFileInPathList(fileToLoad);
-            if(!filename.empty())
+            if (!filename.empty())
             {
                dtPhysics::PhysicsReaderWriter::PhysicsTriangleData data;
                data.mFaces = new osg::UIntArray();
@@ -582,8 +587,8 @@ namespace SimCore
       {
          if (!mLoadNodeTask.valid())
          {
-            // It's done, but didn't load anything.
-            return true;
+            // It's done already or nothing is happening.
+            return mTerrainNode.valid();
          }
 
          if (!mLoadNodeTask->IsComplete())
