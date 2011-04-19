@@ -24,12 +24,9 @@
 
 #include <SimCore/Actors/IGActor.h>
 
-#include <osg/Node>
-#include <osg/MatrixTransform>
-#include <osgSim/DOFTransform>
-
-#include <dtCore/particlesystem.h>
 #include <dtUtil/nodecollector.h>
+#include <dtUtil/fileutils.h>
+#include <dtCore/particlesystem.h>
 #include <dtCore/scene.h>
 
 #include <dtGame/gamemanager.h>
@@ -37,6 +34,10 @@
 
 #include <SimCore/Components/ParticleManagerComponent.h>
 #include <SimCore/VisibilityOptions.h>
+
+#include <osg/Node>
+#include <osg/MatrixTransform>
+#include <osgSim/DOFTransform>
 
 #include <osgDB/ReadFile>
 #include <osgDB/Registry>
@@ -94,7 +95,12 @@ namespace SimCore
          //Log::GetInstance().LogMessage(Log::LOG_DEBUG, __FUNCTION__,
          //   "Loading '%s'", filename.c_str());
 
-         dtCore::RefPtr<osgDB::ReaderWriter::Options> options = new osgDB::ReaderWriter::Options;
+         // Setup appropriate options
+         osgDB::ReaderWriter::Options* curOptions = osgDB::Registry::instance()->getOptions();
+         osg::ref_ptr<osgDB::ReaderWriter::Options> options =  curOptions ?
+            static_cast<osgDB::ReaderWriter::Options*>(curOptions->clone(osg::CopyOp::SHALLOW_COPY)) :
+         new osgDB::ReaderWriter::Options;
+
 
          if (useCache)
          {
@@ -109,10 +115,9 @@ namespace SimCore
          {
             options->setOptionString("loadMaterialsToStateSet");
          }
+         
+         originalFile = dtUtil::FileUtils::GetInstance().ReadNode(fileName, options.get());
 
-         options->setPluginStringData("password", "hello");
-
-         originalFile = osgDB::readNodeFile(fileName, options.get());
          if (originalFile.valid())
          {
             if (useCache)
