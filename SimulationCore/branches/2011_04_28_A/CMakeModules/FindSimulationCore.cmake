@@ -1,0 +1,72 @@
+# Locate gdal
+# This module defines
+# SIMULATIONCORE_EXT_DIR
+# SIMULATIONCORE_FOUND, if false, do not try to link to gdal 
+# SIMULATIONCORE_INCLUDE_DIR, where to find the headers
+#
+# $SIMULATIONCORE_DIR is an environment variable that would
+# correspond to the ./configure --prefix=$DELTA3D
+#
+# Created by David Guthrie. 
+
+SET(SIMULATIONCORE_DIR $ENV{SIMCORE_ROOT})
+IF(SIMULATIONCORE_DIR)
+  FILE(TO_CMAKE_PATH ${SIMULATIONCORE_DIR} SIMULATIONCORE_DIR)
+ENDIF(SIMULATIONCORE_DIR)
+
+FIND_PATH(SIMULATIONCORE_DIR include/SimCore/Export.h
+    PATHS
+      ${CMAKE_SOURCE_DIR}
+      ${CMAKE_SOURCE_DIR}/../SimulationCore
+    $ENV{SIMCORE_ROOT}
+    /usr/local
+    /usr
+    /sw # Fink
+    /opt/local # DarwinPorts
+    /opt/csw # Blastwave
+    /opt
+)
+
+find_path(SIMULATIONCORE_INCLUDE_DIR NAMES SimCore/Export.h PATH_SUFFIXES include inc
+    PATHS
+    ${SIMULATIONCORE_DIR}
+    NO_DEFAULT_PATH
+)
+
+find_path(SIMULATIONCORE_LIB_DIR NAMES libSimCore.so libSimCore.dylib SimCore.dll .
+    PATHS
+       ${SIMULATIONCORE_DIR}
+    PATH_SUFFIXES
+       Build/lib
+       Debug/lib
+       Release/lib
+       lib
+    NO_DEFAULT_PATH
+)
+
+find_path(OSGEPHEMERIS_INCLUDE_DIR NAMES osgEphemeris
+    PATHS
+    ${SIMULATIONCORE_DIR}/ext/source/osgEphemeris/include
+    NO_DEFAULT_PATH
+)
+
+SET(SIMCORE_LIBRARY SimCore)
+SET(SIMCORE_WIDGETS_LIBRARY SimCoreWidgets)
+SET(SIMCOREHLA_LIBRARY SimCoreHLA)
+SET(STEALTHGM_LIBRARY StealthGMApp)
+SET(STEALTHQT_LIBRARY StealthQtLib)
+SET(OSGEPHEMERIS_LIBRARY osgEphemeris)
+
+IF (WIN32)
+SET(SIMCORE_LIBRARY_DEBUG SimCored)
+SET(SIMCORE_WIDGETS_LIBRARY_DEBUG SimCoreWidgetsd)
+SET(SIMCOREHLA_LIBRARY_DEBUG SimCoreHLAd)
+SET(STEALTHGM_LIBRARY_DEBUG StealthGMAppd)
+SET(STEALTHQT_LIBRARY_DEBUG StealthQtLibd)
+SET(OSGEPHEMERIS_LIBRARY_DEBUG osgEphemerisd)
+ENDIF (WIN32)
+
+SET(SIMULATIONCORE_FOUND "NO")
+IF(SIMCORE_LIBRARY AND SIMULATIONCORE_INCLUDE_DIR AND SIMULATIONCORE_LIB_DIR)
+    SET(SIMULATIONCORE_FOUND "YES")
+ENDIF(SIMCORE_LIBRARY AND SIMULATIONCORE_INCLUDE_DIR AND SIMULATIONCORE_LIB_DIR)

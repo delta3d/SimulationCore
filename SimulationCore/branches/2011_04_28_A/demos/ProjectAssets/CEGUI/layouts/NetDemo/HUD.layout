@@ -1,0 +1,107 @@
+<?xml version="1.0" ?>
+<GUILayout>
+   
+   <!-- MAIN CONTAINER WINDOW (ROOT & BACKGROUND IMAGE) -->
+   <Window Name="HUD_Root" Type="WindowsLook/StaticImage">
+      <Property Name="UnifiedSize" Value="{{1.0,0},{1.0,0}}"/>
+      <Property Name="UnifiedPosition" Value="{{0.0,0},{0.0,0}}"/>
+      <Property Name="BackgroundColours" Value="00000000"/>
+      <Property Name="FrameEnabled" Value="False"/>
+      <Property Name="MousePassThroughEnabled" Value="True"/>
+
+      <!-- FORT IMAGE -->
+      <Window Name="HUD_Fort" Type="WindowsLook/StaticImage">
+         <Property Name="UnifiedSize" Value="{{0.2,0},{0.13333,0}}"/>
+         <Property Name="UnifiedPosition" Value="{{0.0,0},{0.0,0}}"/>
+         <Property Name="HorizontalAlignment" Value="Left"/>
+         <Property Name="VerticalAlignment" Value="Bottom"/>
+         <Property Name="BackgroundEnabled" Value="False"/>
+         <Property Name="FrameEnabled" Value="False"/>
+         <Property Name="ZOrderChangeEnabled" Value="False"/>
+         <Property Name="AlwaysOnTop" Value="True"/>
+         <Property Name="Image" Value="set:Fort image:Fort"/>
+      </Window>
+
+      <!-- FORT POINTS -->
+      <Window Name="HUD_FortPoints" Type="WindowsLook/StaticText">
+         <Property Name="UnifiedSize" Value="{{0.2,0},{0.13333,0}}"/>
+         <Property Name="UnifiedPosition" Value="{{0.03,0},{0.02,0}}"/>
+         <Property Name="HorizontalAlignment" Value="Left"/>
+         <Property Name="VerticalAlignment" Value="Bottom"/>
+         <Property Name="BackgroundEnabled" Value="False"/>
+         <Property Name="FrameEnabled" Value="False"/>
+         <Property Name="ZOrderChangeEnabled" Value="False"/>
+         <Property Name="AlwaysOnTop" Value="True"/>
+         <Property Name="Font" Value="Arial-Bold-24"/>
+         <Property Name="TextColours" Value="FFFFFF00"/>
+      </Window>
+
+      <!-- DAMAGE METER -->
+      <Window Name="HUD_DamageMeter_Fort" Type="NetDemo/Meter">
+         <Property Name="UnifiedSize" Value="{{0.9,0},{0.026667,0}}"/>
+         <Property Name="UnifiedPosition" Value="{{0.1,0},{-0.025,0}}"/>
+         <Property Name="HorizontalAlignment" Value="Left"/>
+         <Property Name="VerticalAlignment" Value="Bottom"/>
+         <Property Name="ZOrderChangeEnabled" Value="False"/>
+         <Property Name="AlwaysOnTop" Value="True"/>
+      </Window>
+      
+      <!-- SCORE BOX -->
+      <Window Name="HUD_ScoreBox" Type="NetDemo/GlowFrame">
+         <Property Name="UnifiedSize" Value="{{0.2,0},{0.08,0}}"/>
+         <Property Name="UnifiedPosition" Value="{{0.0,0},{0.0,0}}"/>
+         <Property Name="ZOrderChangeEnabled" Value="False"/>
+         <Property Name="AlwaysOnTop" Value="True"/>
+         <Property Name="HorizontalAlignment" Value="Left"/>
+         <Property Name="VerticalAlignment" Value="Top"/>
+         <Property Name="BackColour" Value="CC000000"/>
+         <Property Name="FrameColour" Value="00000000"/>
+         <Property Name="GlowColour" Value="00000000"/>
+      </Window>
+
+      <!-- SCORE -->
+      <Window Name="HUD_Score" Type="WindowsLook/StaticText">
+         <Property Name="UnifiedSize" Value="{{0.5,0},{0.075,0}}"/>
+         <Property Name="UnifiedPosition" Value="{{0.03,0},{0.0,0}}"/>
+         <Property Name="HorizontalAlignment" Value="Left"/>
+         <Property Name="VerticalAlignment" Value="Top"/>
+         <Property Name="BackgroundEnabled" Value="False"/>
+         <Property Name="FrameEnabled" Value="False"/>
+         <Property Name="ZOrderChangeEnabled" Value="False"/>
+         <Property Name="AlwaysOnTop" Value="True"/>
+         <Property Name="Font" Value="Arial-Bold-24"/>
+         <Property Name="TextColours" Value="FFFFFF00"/>
+         <Property Name="Text" Value="Score: 0"/>
+      </Window>
+
+      <!-- HELP LABEL BOX -->
+      <Window Name="HUD_HelpLabelBox" Type="NetDemo/GlowFrame">
+         <Property Name="UnifiedSize" Value="{{0.12,0},{0.08,0}}"/>
+         <Property Name="UnifiedPosition" Value="{{0.0,0},{0.0,0}}"/>
+         <Property Name="ZOrderChangeEnabled" Value="False"/>
+         <Property Name="AlwaysOnTop" Value="True"/>
+         <Property Name="HorizontalAlignment" Value="Right"/>
+         <Property Name="VerticalAlignment" Value="Top"/>
+         <Property Name="BackColour" Value="CC000000"/>
+         <Property Name="FrameColour" Value="00000000"/>
+         <Property Name="GlowColour" Value="00000000"/>
+      </Window>
+      
+      <!-- HELP LABEL -->
+      <Window Name="HUD_HelpLabel" Type="WindowsLook/StaticText">
+         <Property Name="UnifiedSize" Value="{{0.1,0},{0.075,0}}"/>
+         <Property Name="UnifiedPosition" Value="{{0.0,0},{0.0,0}}"/>
+         <Property Name="HorizontalAlignment" Value="Right"/>
+         <Property Name="VerticalAlignment" Value="Top"/>
+         <Property Name="BackgroundEnabled" Value="False"/>
+         <Property Name="FrameEnabled" Value="False"/>
+         <Property Name="ZOrderChangeEnabled" Value="False"/>
+         <Property Name="AlwaysOnTop" Value="True"/>
+         <Property Name="Font" Value="Arial-Bold-24"/>
+         <Property Name="TextColours" Value="FFFFFF00"/>
+         <Property Name="Text" Value="Help (F1)"/>
+      </Window>
+        
+	</Window>
+   
+</GUILayout>
