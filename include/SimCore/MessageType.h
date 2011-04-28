@@ -58,8 +58,6 @@ namespace SimCore
       static const MessageType TIME_QUERY;
       static const MessageType TIME_VALUE;
 
-      static const MessageType INFO_TERRAIN_LOADED;
-
       // These are NON-CONST because they are used in an actor property
       static MessageType BINOCULARS;
       static MessageType COMPASS;
