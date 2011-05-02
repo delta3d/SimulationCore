@@ -25,6 +25,7 @@
 #include <prefix/SimCorePrefix.h>
 #include <SimCore/Actors/BattlefieldGraphicsActor.h>
 #include <SimCore/VisibilityOptions.h>
+#include <SimCore/Actors/EntityActorRegistry.h>
 #include <dtGame/gameactor.h>
 #include <dtGame/gamemanager.h>
 #include <dtCore/scene.h>
@@ -95,6 +96,8 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////
       DT_IMPLEMENT_ARRAY_ACCESSOR(BattlefieldGraphicsActorProxy, osg::Vec3, Point, Points, osg::Vec3());
 
+      bool BattlefieldGraphicsActorProxy::mEnableTopGeometryGlobal = true;
+
       ////////////////////////////////////////////////////////////////////////////
       BattlefieldGraphicsActorProxy::BattlefieldGraphicsActorProxy()
          : mType(&BattlefieldGraphicsTypeEnum::UNASSIGNED)
@@ -102,6 +105,8 @@ namespace SimCore
          , mRadius(0.0f)
          , mMinAltitude(0.0f)
          , mMaxAltitude(100.0f)
+         , mDirtyFlag(false)
+         , mEnableTopGeometry(false)
       {
          SetClassName("SimCore::Actors::BattlefieldGraphicsActorProxy");
          SetHideDTCorePhysicsProps(true);
@@ -146,8 +151,6 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////
       void BattlefieldGraphicsActorProxy::CreateGeometry()
       {
-         osg::Vec4 color(GetType().GetColor(GetGameManager()->GetConfiguration()), 0.5f);
-
          mGeode = new osg::Geode();
 
          osg::StateSet* ss = mGeode->getOrCreateStateSet();
@@ -164,9 +167,11 @@ namespace SimCore
          cull->setMode(osg::CullFace::BACK);
          ss->setAttributeAndModes(cull, osg::StateAttribute::OFF);
 
-         AssignShader();
+         AssignShader(mGeode.get());
 
          //assign uniforms
+         osg::Vec4 color(GetType().GetColor(GetGameManager()->GetConfiguration()), 0.5f);
+
          osg::Uniform* particleColor = ss->getOrCreateUniform("color", osg::Uniform::FLOAT_VEC4);
          particleColor->set(color);
 
@@ -180,52 +185,38 @@ namespace SimCore
             osg::Vec3 center = mPoints[0];
             center[2] = minZ + (0.5f * diff);
 
-            dtCore::RefPtr<osg::Cylinder> shape = new osg::Cylinder(center, mRadius, diff);
-            dtCore::RefPtr<osg::ShapeDrawable> shapeDrawable = new osg::ShapeDrawable(shape);
-            //shapeDrawable->setColor(color);
-            mGeode->addDrawable(shapeDrawable);
-            GetGameActor().GetOSGNode()->asGroup()->addChild(mGeode.get());
-            //GetGameManager()->GetScene().GetSceneNode()->addChild(mGeode.get());
+            //create body
+            dtCore::RefPtr<osg::TessellationHints> hints = new osg::TessellationHints();
+            hints->setCreateBottom(false);
+            hints->setCreateTop(false);
 
+            dtCore::RefPtr<osg::Cylinder> shape = new osg::Cylinder(center, mRadius, diff);
+            dtCore::RefPtr<osg::ShapeDrawable> shapeDrawable = new osg::ShapeDrawable(shape, hints);
+            mGeode->addDrawable(shapeDrawable);
+
+            //create top
+            dtCore::RefPtr<osg::TessellationHints> hintsTop = new osg::TessellationHints();
+            hintsTop->setCreateBody(false);
+
+            dtCore::RefPtr<osg::Cylinder> shapeTop = new osg::Cylinder(center, mRadius, diff);
+            dtCore::RefPtr<osg::ShapeDrawable> shapeDrawableTop = new osg::ShapeDrawable(shape, hintsTop);
+            
+            CreateClosedTop(mPoints, false);
+            mTopGeode->addDrawable(shapeDrawableTop);
+            SetEnableTopGeometry(mEnableTopGeometryGlobal);
+
+
+            GetGameActor().GetOSGNode()->asGroup()->addChild(mGeode.get());
+            GetGameActor().GetOSGNode()->asGroup()->addChild(mTopGeode.get());
 
          }
          else if(mPoints.size() > 1 && mRadius > 0.0001f)
          {
-            std::vector<osg::Vec3>::iterator iter = mPoints.begin();
-            std::vector<osg::Vec3>::iterator iterEnd = mPoints.end();
-
-            osg::Vec3 point1 = *iter;
-            osg::Vec3 point2;
-            ++iter;
-            
-            osg::Matrix rot;
-            rot.makeRotate(osg::PI_2, osg::Vec3(0.0f, 0.0f, 1.0f));
-
-            for(;iter != iterEnd; ++iter)
-            {
-               point2 = *iter;
-
-               osg::Vec3 point1A, point1B;
-               osg::Vec3 point2A, point2B;
-
-               osg::Vec3 diff = point2 - point1;
-               diff.normalize();
-
-               osg::Vec3 offset = rot.preMult(diff);
-               point1A = point1 + (offset * mRadius * 0.5f);
-               point1B = point1 - (offset * mRadius * 0.5f);
-
-               point2A = point2 + (offset * mRadius * 0.5f);
-               point2B = point2 - (offset * mRadius * 0.5f);
-
-               
-               AddQuadGeometry(point1A, point2A, mMinAltitude, mMaxAltitude);
-               AddQuadGeometry(point1B, point2B, mMinAltitude, mMaxAltitude);
-
-               point1 = point2;
-            }
+            CreateClosedGeometry(mPoints);
 
             GetGameActor().GetOSGNode()->asGroup()->addChild(mGeode.get());
+            GetGameActor().GetOSGNode()->asGroup()->addChild(mTopGeode.get());
+
          }
          else if(mPoints.size() > 1)
          {
@@ -258,6 +249,9 @@ namespace SimCore
                AddTriangle(*vectorArray, point1, mMinAltitude, mMaxAltitude);
 
                numVerts += 2;
+
+               CreateClosedTop(mPoints);
+               SetEnableTopGeometry(mEnableTopGeometryGlobal);
             }
 
             geom->setVertexArray(vectorArray.get());
@@ -266,19 +260,14 @@ namespace SimCore
 
             mGeode->addDrawable(geom.get());
 
-            if(mClosed)
-            {
-               CreateClosedTop();
-            }
-
             GetGameActor().GetOSGNode()->asGroup()->addChild(mGeode.get());
-            //GetGameManager()->GetScene().GetSceneNode()->addChild(mGeode.get());
+            GetGameActor().GetOSGNode()->asGroup()->addChild(mTopGeode.get());
          }
 
       }
 
       ////////////////////////////////////////////////////////////////////////////
-      void BattlefieldGraphicsActorProxy::AssignShader()
+      void BattlefieldGraphicsActorProxy::AssignShader(osg::Geode* node)
       {
          
          dtCore::ShaderManager& sm = dtCore::ShaderManager::GetInstance();
@@ -297,7 +286,7 @@ namespace SimCore
          {
             if (defaultShader != NULL)
             {
-               dtCore::ShaderManager::GetInstance().AssignShaderFromPrototype(*defaultShader, *mGeode);
+               dtCore::ShaderManager::GetInstance().AssignShaderFromPrototype(*defaultShader, *node);
             }
             else
             {
@@ -364,8 +353,11 @@ namespace SimCore
             {
                //connect the beginning and the end
                AddQuadGeometry(mPoints.front(), mPoints.back(), mMinAltitude, mMaxAltitude);
-               CreateClosedTop();
+
+               CreateClosedTop(mPoints);
+               SetEnableTopGeometry(mEnableTopGeometryGlobal);
             }
+
 
             GetGameActor().GetOSGNode()->asGroup()->addChild(mGeode.get());
          }
@@ -373,42 +365,192 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////
-      void BattlefieldGraphicsActorProxy::CreateClosedTop()
-      {
-         int numVerts = mPoints.size();
-         osg::Vec4 color(0.5f, 0.5f, 1.0f, 0.5f);
-
-         dtCore::RefPtr<osg::Geometry> geom = new osg::Geometry();
-         dtCore::RefPtr<osg::Vec3Array> vectorArray = new osg::Vec3Array();
-         vectorArray->reserve(numVerts);
-
-
-         std::vector<osg::Vec3>::iterator iter = mPoints.begin();
-         std::vector<osg::Vec3>::iterator iterEnd = mPoints.end();
-
-         
-         for(;iter != iterEnd; ++iter)
+      void BattlefieldGraphicsActorProxy::CreateClosedGeometry(std::vector<osg::Vec3>& points)
+      { 
+         if(points.size() > 1)
          {
+            std::vector<osg::Vec3> frontPoints;
+            std::vector<osg::Vec3> backPoints;
+
+            std::vector<osg::Vec3>::iterator iter = points.begin();
+            std::vector<osg::Vec3>::iterator iterEnd = points.end();
+
             osg::Vec3 point1 = *iter;
+            osg::Vec3 point2;
+            ++iter;
 
-            osg::Vec3 UL(point1.x(), point1.y(), mMaxAltitude);
+            osg::Matrix rot;
+            rot.makeRotate(osg::PI_2, osg::Vec3(0.0f, 0.0f, 1.0f));
 
-            vectorArray->push_back(UL);
+            bool first = true;
+            for(;iter != iterEnd; ++iter)
+            {
+               point2 = *iter;
+
+               osg::Vec3 point1A, point1B;
+               osg::Vec3 point2A, point2B;
+
+               osg::Vec3 diff = point2 - point1;
+               diff.normalize();
+
+               osg::Vec3 offset = rot.preMult(diff);
+               
+               if(1)//first)
+               {
+                  point1A = point1 + (offset * mRadius * 0.5f);
+                  frontPoints.push_back(point1A);
+               }
+            
+               point1B = point1 - (offset * mRadius * 0.5f);
+               backPoints.push_back(point1B);
+
+               if(1)//!first)
+               {
+                  point2A = point2 + (offset * mRadius * 0.5f);
+                  frontPoints.push_back(point2A);
+               }
+
+               point2B = point2 - (offset * mRadius * 0.5f);
+               backPoints.push_back(point2B);
+
+               //CheckPointPairsForIntersections(frontPoints);
+               //CheckPointPairsForIntersections(backPoints);
+
+               CreateClosedGeometry(frontPoints, mMinAltitude, mMaxAltitude, mClosed);
+               CreateClosedGeometry(backPoints, mMinAltitude, mMaxAltitude, mClosed);
+
+               point1 = point2;
+               first = !first;
+            }
+
+            //create top
+
+            std::vector<osg::Vec3>::iterator iterFront = frontPoints.begin();
+            std::vector<osg::Vec3>::iterator iterBack = backPoints.begin();
+
+            std::vector<osg::Vec3>::iterator iterFrontEnd = frontPoints.end();
+            std::vector<osg::Vec3>::iterator iterBackEnd = backPoints.end();
+
+            osg::Vec3 point1Front = *iterFront;
+            osg::Vec3 point2Front;
+            ++iterFront;
+
+            osg::Vec3 point1Back = *iterBack;
+            osg::Vec3 point2Back;
+            ++iterBack;
+
+            for(;iterBack != iterBackEnd && iterFront != iterFrontEnd; ++iterBack, ++iterFront)
+            {
+               point2Front = *iterFront;
+               point2Back = *iterBack;
+
+               std::vector<osg::Vec3> combinedPoints;
+               
+               combinedPoints.push_back(point1Front);
+               combinedPoints.push_back(point1Back);
+               combinedPoints.push_back(point2Front);
+               combinedPoints.push_back(point2Back);
+
+               CreateClosedTop(combinedPoints);
+
+               point1Front = point2Front;
+               point1Back = point2Back;
+            }
+
+            SetEnableTopGeometry(mEnableTopGeometryGlobal);
+            
          }
+      } 
 
-         dtCore::RefPtr<osgUtil::DelaunayTriangulator> triangulator = new osgUtil::DelaunayTriangulator(vectorArray);
-         bool result = triangulator->triangulate();
-         if(result)
+      ////////////////////////////////////////////////////////////////////////////
+      void BattlefieldGraphicsActorProxy::CreateClosedGeometry(std::vector<osg::Vec3>& points, float minHeight, float maxHeight, bool top)
+      {
+         if(points.size() > 1)
          {
-            geom->setVertexArray(vectorArray.get());
-            geom->addPrimitiveSet(triangulator->getTriangles());
+            std::vector<osg::Vec3>::iterator iter = points.begin();
+            std::vector<osg::Vec3>::iterator iterEnd = points.end();
 
-            mGeode->addDrawable(geom.get());
+            osg::Vec3 point1 = *iter;
+            osg::Vec3 point2;
+            ++iter;
+
+            for(;iter != iterEnd; ++iter)
+            {
+               point2 = *iter;
+               AddQuadGeometry(point1, point2, minHeight, maxHeight);
+
+               point1 = point2;
+            }
          }
-         else
+      }
+
+      ////////////////////////////////////////////////////////////////////////////
+      void BattlefieldGraphicsActorProxy::CreateClosedTop(std::vector<osg::Vec3>& points, bool createGeometry) 
+      {
+         if(!mTopGeode.valid())
          {
-            LOG_ERROR("Unable to use DelaunayTriangulator to close top of volume");
+            mTopGeode = new osg::Geode();
          }
+
+         osg::StateSet* ss = mTopGeode->getOrCreateStateSet();
+         ss->setMode(GL_BLEND, osg::StateAttribute::ON);
+
+         dtCore::RefPtr<osg::BlendFunc> blendFunc = new osg::BlendFunc();
+         blendFunc->setFunction(osg::BlendFunc::SRC_ALPHA ,osg::BlendFunc::ONE_MINUS_SRC_ALPHA);
+         ss->setAttributeAndModes(blendFunc);
+         ss->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
+
+         ss->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
+
+         dtCore::RefPtr<osg::CullFace> cull = new osg::CullFace();
+         cull->setMode(osg::CullFace::BACK);
+         ss->setAttributeAndModes(cull, osg::StateAttribute::OFF);
+
+         AssignShader(mTopGeode.get());
+
+         //assign uniforms
+         osg::Vec4 color(GetType().GetColor(GetGameManager()->GetConfiguration()), 0.5f);
+
+         osg::Uniform* particleColor = ss->getOrCreateUniform("color", osg::Uniform::FLOAT_VEC4);
+         particleColor->set(color);
+
+         if(createGeometry)
+         {
+
+            int numVerts = points.size();
+            dtCore::RefPtr<osg::Geometry> geom = new osg::Geometry();
+            dtCore::RefPtr<osg::Vec3Array> vectorArray = new osg::Vec3Array();
+            vectorArray->reserve(numVerts);
+
+
+            std::vector<osg::Vec3>::iterator iter = points.begin();
+            std::vector<osg::Vec3>::iterator iterEnd = points.end();
+
+            
+            for(;iter != iterEnd; ++iter)
+            {
+               osg::Vec3 point1 = *iter;
+
+               osg::Vec3 UL(point1.x(), point1.y(), mMaxAltitude);
+
+               vectorArray->push_back(UL);
+            }
+
+            dtCore::RefPtr<osgUtil::DelaunayTriangulator> triangulator = new osgUtil::DelaunayTriangulator(vectorArray);
+            bool result = triangulator->triangulate();
+            if(result)
+            {
+               geom->setVertexArray(vectorArray.get());
+               geom->addPrimitiveSet(triangulator->getTriangles());
+
+               mTopGeode->addDrawable(geom.get());
+            }
+            else
+            {
+               LOG_ERROR("Unable to use DelaunayTriangulator to close top of volume");
+            }
+         }
+
       }
 
       ////////////////////////////////////////////////////////////////////////////
@@ -505,6 +647,130 @@ namespace SimCore
 
          AddProperty(arrayProp);
 
+      }
+
+      /////////////////////////////////////////////////////////////////////
+      bool BattlefieldGraphicsActorProxy::CheckUpdate()
+      {
+         //todo-
+         return false;
+      }
+
+      /////////////////////////////////////////////////////////////////////
+      void BattlefieldGraphicsActorProxy::CheckPointPairsForIntersections(std::vector<osg::Vec3>& points)
+      {
+         if(points.size() > 3)
+         {
+            std::vector<osg::Vec3> newPoints;
+            std::vector<osg::Vec3>::iterator iter = points.begin();
+            std::vector<osg::Vec3>::iterator iterEnd = points.end();
+
+            osg::Vec3 point1, point2, point3, point4, lastPoint;
+            point1 = *iter;
+            ++iter;
+
+            point2 = *iter;
+            ++iter;
+
+            newPoints.push_back(point1);
+
+            for(;iter != iterEnd; ++iter)
+            {
+               point3 = *iter;
+               if(iter != iterEnd)
+               {
+                  ++iter;
+                  point4 = *iter; 
+
+                  osg::Vec3 lineA = point2 - point1;
+                  osg::Vec3 lineB = point3 - point4;
+
+                  osg::Vec3 resultingIntersection;
+                  if(Intersects(lineA, lineB, resultingIntersection))
+                  {
+                     //swap point 2 with intersection
+                     point2 = resultingIntersection;
+                     point3 = resultingIntersection;
+
+                     newPoints.push_back(point2);
+                  }
+                  else
+                  {
+                     newPoints.push_back(point2);
+                     newPoints.push_back(point3);
+                  }
+
+                  point1 = point3;
+                  point2 = point4;
+                  lastPoint = point4;
+               }
+               else
+               {
+                  lastPoint = point3;
+               }
+            }
+            newPoints.push_back(lastPoint);
+            points.swap(newPoints);
+         }
+      }
+
+      /////////////////////////////////////////////////////////////////////
+      bool BattlefieldGraphicsActorProxy::Intersects( const osg::Vec3& line1, const osg::Vec3& line2, osg::Vec3& intersectPoint )
+      {
+         //todo
+         return false;
+      }
+
+      /////////////////////////////////////////////////////////////////////
+      void BattlefieldGraphicsActorProxy::SetEnableTopGeometry(bool b)
+      {
+         mEnableTopGeometry = b;
+
+         if(mTopGeode.valid())
+         {
+            if(mEnableTopGeometry)
+            {
+               mTopGeode->setNodeMask(0xFFFFFFFF);
+            }
+            else
+            {
+               mTopGeode->setNodeMask(0x0);
+            }
+         }
+      }
+
+      /////////////////////////////////////////////////////////////////////
+      bool BattlefieldGraphicsActorProxy::GetEnableTopGeometry() const
+      {
+         return mEnableTopGeometry;
+      }
+
+      /////////////////////////////////////////////////////////////////////
+      void BattlefieldGraphicsActorProxy::SetGlobalEnableTopGeometry(bool b, dtGame::GameManager& gm)
+      {
+         mEnableTopGeometryGlobal = b;
+
+         std::vector<dtDAL::BaseActorObject*> vect;
+         gm.FindActorsByType(*SimCore::Actors::EntityActorRegistry::BATTLEFIELD_GRAPHICS_ACTOR_TYPE, vect);
+
+         std::vector<dtDAL::BaseActorObject*>::iterator iter = vect.begin();
+         std::vector<dtDAL::BaseActorObject*>::iterator iterEnd = vect.end();
+
+         for(;iter != iterEnd; ++iter)
+         {
+            BattlefieldGraphicsActorProxy* bfg = dynamic_cast<BattlefieldGraphicsActorProxy*>(*iter);
+            if(bfg != NULL)
+            {
+               bfg->SetEnableTopGeometry(mEnableTopGeometryGlobal);
+            }
+         }
+
+      }
+
+      /////////////////////////////////////////////////////////////////////
+      bool BattlefieldGraphicsActorProxy::GetGlobalEnableTopGeometry()
+      {
+         return mEnableTopGeometryGlobal;
       }
 
       /////////////////////////////////////////////////////////////////////

@@ -93,6 +93,12 @@ namespace SimCore
 
          DT_DECLARE_ARRAY_ACCESSOR(osg::Vec3, Point, Points);
 
+         void SetEnableTopGeometry(bool b);
+         bool GetEnableTopGeometry() const;
+
+         static void SetGlobalEnableTopGeometry(bool b, dtGame::GameManager& gm);
+         static bool GetGlobalEnableTopGeometry();
+            
       protected:
          virtual ~BattlefieldGraphicsActorProxy();
 
@@ -114,14 +120,24 @@ namespace SimCore
 
          void CleanUp();
          void CreateGeometry();
-         void AssignShader();
+         void AssignShader(osg::Geode* node);
 
          void CreateMultiGeometry();
-         void CreateClosedTop();
+         void CreateClosedTop(std::vector<osg::Vec3>& points, bool createGeometry = true);
          void AddTriangle(osg::Vec3Array& geom, const osg::Vec3& point, float minHeight, float maxHeight);
          void AddQuadGeometry(const osg::Vec3& from, const osg::Vec3& to, float minHeight, float maxHeight);
+         void CreateClosedGeometry(std::vector<osg::Vec3>& points);
+         void CreateClosedGeometry(std::vector<osg::Vec3>& points, float minHeight, float maxHeight, bool top);
 
+         void CheckPointPairsForIntersections(std::vector<osg::Vec3>& points);
+         bool Intersects(const osg::Vec3& line1, const osg::Vec3& line2, osg::Vec3& intersectPoint);
+         bool CheckUpdate();
+
+         bool mDirtyFlag;
+         bool mEnableTopGeometry;
+         static bool mEnableTopGeometryGlobal;
          dtCore::RefPtr<osg::Geode> mGeode;
+         dtCore::RefPtr<osg::Geode> mTopGeode;
 
       };
 
