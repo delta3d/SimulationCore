@@ -345,13 +345,14 @@ namespace StealthGM
       }
       else if (msgType == dtGame::MessageType::INFO_MAP_LOADED)
       {
-         dtGame::GameManager &gameManager = *GetGameManager();
-         const dtGame::MapMessage &mlm = static_cast<const dtGame::MapMessage&>(message);
+         dtGame::GameManager& gameManager = *GetGameManager();
+         const dtGame::MapMessage& mlm = static_cast<const dtGame::MapMessage&>(message);
          dtGame::GameManager::NameVector mapNames;
          mlm.GetMapNames(mapNames);
 
          std::vector<dtDAL::ActorProxy*> actors;
-         gameManager.FindActorsByType(*SimCore::Actors::EntityActorRegistry::TERRAIN_ACTOR_TYPE, actors);
+         // TODO make a constant for this.
+         gameManager.FindActorsByName("Terrain", actors);
          if (actors.empty())
          {
             LOG_ERROR("No terrain actor was found in the map: " + mapNames[0]);
