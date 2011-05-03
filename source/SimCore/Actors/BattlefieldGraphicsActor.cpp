@@ -395,67 +395,77 @@ namespace SimCore
 
                osg::Vec3 offset = rot.preMult(diff);
                
-               if(1)//first)
-               {
-                  point1A = point1 + (offset * mRadius * 0.5f);
-                  frontPoints.push_back(point1A);
-               }
+               point1A = point1 + (offset * mRadius * 0.5f);
+               frontPoints.push_back(point1A);
             
                point1B = point1 - (offset * mRadius * 0.5f);
                backPoints.push_back(point1B);
 
-               if(1)//!first)
-               {
-                  point2A = point2 + (offset * mRadius * 0.5f);
-                  frontPoints.push_back(point2A);
-               }
+               point2A = point2 + (offset * mRadius * 0.5f);
+               frontPoints.push_back(point2A);
+               
 
                point2B = point2 - (offset * mRadius * 0.5f);
                backPoints.push_back(point2B);
-
-               //CheckPointPairsForIntersections(frontPoints);
-               //CheckPointPairsForIntersections(backPoints);
-
-               CreateClosedGeometry(frontPoints, mMinAltitude, mMaxAltitude, mClosed);
-               CreateClosedGeometry(backPoints, mMinAltitude, mMaxAltitude, mClosed);
 
                point1 = point2;
                first = !first;
             }
 
-            //create top
+            //remove duplicates, find tops
+            std::vector<std::vector<osg::Vec3> > topGeometry;
+            topGeometry.assign(std::min(frontPoints.size(), backPoints.size()), std::vector<osg::Vec3>());
+            CheckPointPairsForIntersections(frontPoints, topGeometry);
+            CheckPointPairsForIntersections(backPoints, topGeometry);
 
-            std::vector<osg::Vec3>::iterator iterFront = frontPoints.begin();
-            std::vector<osg::Vec3>::iterator iterBack = backPoints.begin();
+            //create geometry
+            CreateClosedGeometry(frontPoints, mMinAltitude, mMaxAltitude, mClosed);
+            CreateClosedGeometry(backPoints, mMinAltitude, mMaxAltitude, mClosed);
 
-            std::vector<osg::Vec3>::iterator iterFrontEnd = frontPoints.end();
-            std::vector<osg::Vec3>::iterator iterBackEnd = backPoints.end();
-
-            osg::Vec3 point1Front = *iterFront;
-            osg::Vec3 point2Front;
-            ++iterFront;
-
-            osg::Vec3 point1Back = *iterBack;
-            osg::Vec3 point2Back;
-            ++iterBack;
-
-            for(;iterBack != iterBackEnd && iterFront != iterFrontEnd; ++iterBack, ++iterFront)
+            std::vector<std::vector<osg::Vec3> >::iterator vec_iter = topGeometry.begin();
+            std::vector<std::vector<osg::Vec3> >::iterator vec_iterEnd = topGeometry.end();
+            
+            for(;vec_iter != vec_iterEnd; ++vec_iter)
             {
-               point2Front = *iterFront;
-               point2Back = *iterBack;
-
-               std::vector<osg::Vec3> combinedPoints;
-               
-               combinedPoints.push_back(point1Front);
-               combinedPoints.push_back(point1Back);
-               combinedPoints.push_back(point2Front);
-               combinedPoints.push_back(point2Back);
-
-               CreateClosedTop(combinedPoints);
-
-               point1Front = point2Front;
-               point1Back = point2Back;
+               std::vector<osg::Vec3>& vecArray = *vec_iter;
+               if(vecArray.size() > 2)
+               {
+                  CreateClosedTop(*vec_iter);
+               }
             }
+
+            ////create top
+            //std::vector<osg::Vec3>::iterator iterFront = frontPoints.begin();
+            //std::vector<osg::Vec3>::iterator iterBack = backPoints.begin();
+
+            //std::vector<osg::Vec3>::iterator iterFrontEnd = frontPoints.end();
+            //std::vector<osg::Vec3>::iterator iterBackEnd = backPoints.end();
+
+            //osg::Vec3 point1Front = *iterFront;
+            //osg::Vec3 point2Front;
+            //++iterFront;
+
+            //osg::Vec3 point1Back = *iterBack;
+            //osg::Vec3 point2Back;
+            //++iterBack;
+
+            //for(;iterBack != iterBackEnd && iterFront != iterFrontEnd; ++iterBack, ++iterFront)
+            //{
+            //   point2Front = *iterFront;
+            //   point2Back = *iterBack;
+
+            //   std::vector<osg::Vec3> combinedPoints;
+            //   
+            //   combinedPoints.push_back(point1Front);
+            //   combinedPoints.push_back(point1Back);
+            //   combinedPoints.push_back(point2Front);
+            //   combinedPoints.push_back(point2Back);
+
+            //   CreateClosedTop(combinedPoints);
+
+            //   point1Front = point2Front;
+            //   point1Back = point2Back;
+            //}
 
             SetEnableTopGeometry(mEnableTopGeometryGlobal);
             
@@ -657,7 +667,7 @@ namespace SimCore
       }
 
       /////////////////////////////////////////////////////////////////////
-      void BattlefieldGraphicsActorProxy::CheckPointPairsForIntersections(std::vector<osg::Vec3>& points)
+      void BattlefieldGraphicsActorProxy::CheckPointPairsForIntersections(std::vector<osg::Vec3>& points, std::vector<std::vector<osg::Vec3> >& tops)
       {
          if(points.size() > 3)
          {
@@ -673,51 +683,96 @@ namespace SimCore
             ++iter;
 
             newPoints.push_back(point1);
+            tops[0].push_back(point1);
 
-            for(;iter != iterEnd; ++iter)
+            int i = 0;
+            for(;iter != iterEnd;++i)
             {
                point3 = *iter;
+               
+               ++iter;
                if(iter != iterEnd)
                {
-                  ++iter;
                   point4 = *iter; 
 
-                  osg::Vec3 lineA = point2 - point1;
-                  osg::Vec3 lineB = point3 - point4;
-
-                  osg::Vec3 resultingIntersection;
-                  if(Intersects(lineA, lineB, resultingIntersection))
+                  //assign to get Z value since intersection is done in 2D
+                  osg::Vec3 resultingIntersection = point2;
+                  if(Intersects(point1, point2, point3, point4, resultingIntersection))
                   {
                      //swap point 2 with intersection
                      point2 = resultingIntersection;
                      point3 = resultingIntersection;
 
                      newPoints.push_back(point2);
+                     
+                     tops[i].push_back(point2);
                   }
                   else
                   {
                      newPoints.push_back(point2);
                      newPoints.push_back(point3);
+                     
+                     tops[i].push_back(point2);
+                     tops[i].push_back(point3);
                   }
 
                   point1 = point3;
+                  tops[i + 1].push_back(point1);
+
                   point2 = point4;
                   lastPoint = point4;
+                  ++iter;
                }
                else
                {
                   lastPoint = point3;
                }
             }
+
             newPoints.push_back(lastPoint);
+            tops[i].push_back(lastPoint);
+
             points.swap(newPoints);
+         }
+         else
+         {
+            std::vector<osg::Vec3>::iterator iter = points.begin();
+            std::vector<osg::Vec3>::iterator iterEnd = points.end();
+
+            for(;iter != iterEnd;)
+            {
+               tops[0].push_back(*iter);
+            }
          }
       }
 
       /////////////////////////////////////////////////////////////////////
-      bool BattlefieldGraphicsActorProxy::Intersects( const osg::Vec3& line1, const osg::Vec3& line2, osg::Vec3& intersectPoint )
+      bool BattlefieldGraphicsActorProxy::Intersects(const osg::Vec3& line1From, const osg::Vec3& line1To, const osg::Vec3& line2From, const osg::Vec3& line2To, osg::Vec3& intersectPoint)
       {
-         //todo
+         float denom = ((line2To.y() - line2From.y())*(line1To.x() - line1From.x())) -
+            ((line2To.x() - line2From.x())*(line1To.y() - line1From.y()));
+
+         float nume_a = ((line2To.x() - line2From.x())*(line1From.y() - line2From.y())) -
+            ((line2To.y() - line2From.y())*(line1From.x() - line2From.x()));
+
+         float nume_b = ((line1To.x() - line1From.x())*(line1From.y() - line2From.y())) -
+            ((line1To.y() - line1From.y())*(line1From.x() - line2From.x()));
+
+         if(std::abs(denom) > 0.00001f)
+         {
+            float ua = nume_a / denom;
+            float ub = nume_b / denom;
+
+            if(ua >= 0.0f && ua <= 1.0f && ub >= 0.0f && ub <= 1.0f)
+            {
+               // Get the intersection point- treated as 2D 
+               intersectPoint[0] = line1From.x() + ua*(line1To.x() - line1From.x());
+               intersectPoint[1] = line1From.y() + ua*(line1To.y() - line1From.y());
+
+               return true;
+            }
+         }
+
          return false;
       }
 

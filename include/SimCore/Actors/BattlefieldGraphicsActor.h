@@ -129,8 +129,8 @@ namespace SimCore
          void CreateClosedGeometry(std::vector<osg::Vec3>& points);
          void CreateClosedGeometry(std::vector<osg::Vec3>& points, float minHeight, float maxHeight, bool top);
 
-         void CheckPointPairsForIntersections(std::vector<osg::Vec3>& points);
-         bool Intersects(const osg::Vec3& line1, const osg::Vec3& line2, osg::Vec3& intersectPoint);
+         void CheckPointPairsForIntersections(std::vector<osg::Vec3>& points, std::vector<std::vector<osg::Vec3> >& tops);
+         bool Intersects(const osg::Vec3& line1From, const osg::Vec3& line1To, const osg::Vec3& line2From, const osg::Vec3& line2To, osg::Vec3& intersectPoint);
          bool CheckUpdate();
 
          bool mDirtyFlag;
