@@ -129,6 +129,8 @@ namespace StealthQt
             static const QString SHOW_BLIPS;
             static const QString SHOW_BFG;
             static const QString SHOW_ENUM_PREFIX;
+            /// Close the tops on solid Battlefield graphics objects
+            static const QString BFG_CLOSE_TOPS;
 
          static const QString CONTROLS_CAMERA_GROUP;
 

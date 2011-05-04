@@ -44,6 +44,9 @@ namespace StealthGM
       const SimCore::VisibilityOptions& GetEntityOptions() const;
       SimCore::VisibilityOptions& GetEntityOptions();
 
+      /// Close the tops on solid Battlefield graphics objects
+      DT_DECLARE_ACCESSOR(bool, BFGCloseTops);
+
       /**
        * Overridden base class method to apply the changes made to this class to the
        * game manager

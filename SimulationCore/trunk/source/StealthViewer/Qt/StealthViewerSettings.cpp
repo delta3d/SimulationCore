@@ -137,6 +137,7 @@ namespace StealthQt
       const QString StealthViewerSettings::SHOW_BLIPS("SHOW_BLIPS");
       const QString StealthViewerSettings::SHOW_BFG("SHOW_BATTLEFIELD_GRAPHICS");
       const QString StealthViewerSettings::SHOW_ENUM_PREFIX("SHOW_ENUM_");
+      const QString StealthViewerSettings::BFG_CLOSE_TOPS("BATTLEFIELD_GRAPHICS_CLOSE_TOPS");
 
    const QString StealthViewerSettings::CONTROLS_CAMERA_GROUP("CONTROLS_CAMERA_GROUP");
 
@@ -615,6 +616,8 @@ namespace StealthQt
          setValue(StealthViewerSettings::SHOW_BLIPS, basicOptions.mSensorBlips);
          setValue(StealthViewerSettings::SHOW_BFG, basicOptions.mBattlefieldGraphics);
 
+         setValue(StealthViewerSettings::BFG_CLOSE_TOPS, visObject.GetBFGCloseTops());
+
          const std::vector<SimCore::Actors::BaseEntityActorProxy::ForceEnum*>& forces =
             SimCore::Actors::BaseEntityActorProxy::ForceEnum::EnumerateType();
          for (size_t i = 0; i < forces.size(); ++i)
@@ -1081,6 +1084,11 @@ namespace StealthQt
          if (contains(SHOW_BFG))
          {
             basicOptions.mBattlefieldGraphics = value(SHOW_BFG).toBool();
+         }
+
+         if (contains(BFG_CLOSE_TOPS))
+         {
+            visObject.SetBFGCloseTops(value(BFG_CLOSE_TOPS).toBool());
          }
 
          const std::vector<SimCore::Actors::BaseEntityActorProxy::ForceEnum*>& forces =

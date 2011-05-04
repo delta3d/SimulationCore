@@ -25,18 +25,31 @@
 #include <StealthViewer/GMApp/StealthHUD.h>
 #include <SimCore/Components/ViewerMessageProcessor.h>
 
+#include <SimCore/Actors/BattlefieldGraphicsActor.h>
+
 namespace StealthGM
 {
 
    ////////////////////////////////////////////////////////////////////
    PreferencesVisibilityConfigObject::PreferencesVisibilityConfigObject()
    : mEntityOptions(new SimCore::VisibilityOptions)
+   , mBFGCloseTops(SimCore::Actors::BattlefieldGraphicsActorProxy::GetGlobalEnableTopGeometry())
    {
    }
 
    ////////////////////////////////////////////////////////////////////
    PreferencesVisibilityConfigObject::~PreferencesVisibilityConfigObject()
    {
+   }
+
+   ////////////////////////////////////////////////////////////////////
+   DT_IMPLEMENT_ACCESSOR_GETTER(PreferencesVisibilityConfigObject, bool, BFGCloseTops)
+
+   ////////////////////////////////////////////////////////////////////
+   void PreferencesVisibilityConfigObject::SetBFGCloseTops(bool closeTops)
+   {
+      SetIsUpdated(true);
+      mBFGCloseTops = closeTops;
    }
 
    ////////////////////////////////////////////////////////////////////
@@ -106,6 +119,11 @@ namespace StealthGM
          }
 
          SetIsUpdated(false);
+
+         if (SimCore::Actors::BattlefieldGraphicsActorProxy::GetGlobalEnableTopGeometry() != mBFGCloseTops)
+         {
+            SimCore::Actors::BattlefieldGraphicsActorProxy::SetGlobalEnableTopGeometry(mBFGCloseTops, gameManager);
+         }
       }
    }
 

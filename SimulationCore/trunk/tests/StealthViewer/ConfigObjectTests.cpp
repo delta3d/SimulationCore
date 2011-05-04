@@ -50,6 +50,7 @@
 #include <SimCore/Actors/UniformAtmosphereActor.h>
 #include <SimCore/Actors/EphemerisEnvironmentActor.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
+#include <SimCore/Actors/BattlefieldGraphicsActor.h>
 #include <SimCore/UnitEnums.h>
 
 #include <dtActors/engineactorregistry.h>
@@ -610,6 +611,17 @@ void ConfigObjectTests::TestPreferencesVisibilityConfigObject()
 
    CPPUNIT_ASSERT(options == optionsApplied);
    CPPUNIT_ASSERT(&visConfig->GetEntityOptions() == &vmp->GetVisibilityOptions());
+
+   // These should default to the same value.
+   CPPUNIT_ASSERT_EQUAL(visConfig->GetBFGCloseTops(), SimCore::Actors::BattlefieldGraphicsActorProxy::GetGlobalEnableTopGeometry());
+   bool oldValue = visConfig->GetBFGCloseTops();
+   CPPUNIT_ASSERT(!visConfig->IsUpdated());
+   visConfig->SetBFGCloseTops(!oldValue);
+   CPPUNIT_ASSERT_EQUAL(!oldValue, visConfig->GetBFGCloseTops());
+   CPPUNIT_ASSERT_EQUAL(oldValue, SimCore::Actors::BattlefieldGraphicsActorProxy::GetGlobalEnableTopGeometry());
+   CPPUNIT_ASSERT(visConfig->IsUpdated());
+   visConfig->ApplyChanges(*gm);
+   CPPUNIT_ASSERT_EQUAL(!oldValue, SimCore::Actors::BattlefieldGraphicsActorProxy::GetGlobalEnableTopGeometry());
 }
 
 
