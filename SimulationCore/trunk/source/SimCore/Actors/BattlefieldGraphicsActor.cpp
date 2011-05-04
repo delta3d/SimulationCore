@@ -740,7 +740,7 @@ namespace SimCore
             std::vector<osg::Vec3>::iterator iter = points.begin();
             std::vector<osg::Vec3>::iterator iterEnd = points.end();
 
-            for(;iter != iterEnd;)
+            for(;iter != iterEnd; ++iter)
             {
                tops[0].push_back(*iter);
             }
