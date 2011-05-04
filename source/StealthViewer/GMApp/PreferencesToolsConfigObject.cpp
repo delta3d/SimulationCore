@@ -272,7 +272,7 @@ namespace StealthGM
       if (binos != NULL && binos->IsEnabled())
       {
          std::vector<dtDAL::ActorProxy*> proxies;
-         gameManager.FindActorsByType(*SimCore::Actors::EntityActorRegistry::TERRAIN_ACTOR_TYPE, proxies);
+         gameManager.FindActorsByName("Terrain", proxies);
          if (!proxies.empty())
          {
             SimCore::Actors::TerrainActorProxy* proxy =
@@ -284,7 +284,9 @@ namespace StealthGM
       ////////////////////////////////////////////////////////////////////////////////
 
       if (!IsUpdated())
+      {
          return;
+      }
 
       StealthHUD* hud = NULL;
       gameManager.GetComponentByName(StealthHUD::DEFAULT_NAME, hud);

@@ -714,6 +714,8 @@ namespace StealthQt
                this,               SLOT(OnVisibilityOptionToggled(bool)));
       connect(mUi->mVisShowBlips,  SIGNAL(toggled(bool)),
                this,               SLOT(OnVisibilityOptionToggled(bool)));
+      connect(mUi->mVisBFGCloseTops,  SIGNAL(toggled(bool)),
+               this,               SLOT(OnVisibilityOptionToggled(bool)));
       connect(mUi->mVisShowBFG,  SIGNAL(toggled(bool)),
                this,               SLOT(OnVisibilityOptionToggled(bool)));
 
@@ -2016,6 +2018,8 @@ namespace StealthQt
       mUi->mVisShowTracks->setChecked(basicOpts.mTracks);
       mUi->mVisShowBFG->setChecked(basicOpts.mBattlefieldGraphics);
 
+      mUi->mVisBFGCloseTops->setChecked(StealthViewerData::GetInstance().GetVisibilityConfigObject().GetBFGCloseTops());
+
       for (size_t i = 0; i < domainEnumVals.size(); ++i)
       {
          QCheckBox* check = new QCheckBox(tr(domainEnumVals[i]->GetDisplayName().c_str()));
@@ -2616,6 +2620,8 @@ namespace StealthQt
       basicOpts.mSensorBlips = mUi->mVisShowBlips->isChecked();
       basicOpts.mTracks = mUi->mVisShowTracks->isChecked();
       basicOpts.mBattlefieldGraphics = mUi->mVisShowBFG->isChecked();
+
+      StealthViewerData::GetInstance().GetVisibilityConfigObject().SetBFGCloseTops(mUi->mVisBFGCloseTops->isChecked());
 
       for (size_t i = 0; i < mVisibilityCheckBoxes.size(); ++i)
       {

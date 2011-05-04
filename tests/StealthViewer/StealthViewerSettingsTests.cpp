@@ -228,6 +228,9 @@ void StealthViewerSettingsTests::TestVisibilitySettings()
    StealthGM::PreferencesVisibilityConfigObject& visConfig =
       StealthQt::StealthViewerData::GetInstance().GetVisibilityConfigObject();
 
+   bool newValue = !visConfig.GetBFGCloseTops();
+   visConfig.SetBFGCloseTops(newValue);
+
    SimCore::Components::LabelOptions options = visConfig.GetLabelOptions();
    options.SetMaxLabelDistance(-1.0f);
    options.SetShowLabels(false);
@@ -256,10 +259,14 @@ void StealthViewerSettingsTests::TestVisibilitySettings()
    settings.WritePreferencesToFile(false);
    //reset the values to defaults
    visConfig.SetLabelOptions(SimCore::Components::LabelOptions());
+   // set back to default.
+   visConfig.SetBFGCloseTops(!newValue);
+
    settings.LoadPreferences();
    options2 = visConfig.GetLabelOptions();
 
    CPPUNIT_ASSERT(options == options2);
+   CPPUNIT_ASSERT_EQUAL(newValue, visConfig.GetBFGCloseTops());
 }
 
 void StealthViewerSettingsTests::TestParseIniFile()
