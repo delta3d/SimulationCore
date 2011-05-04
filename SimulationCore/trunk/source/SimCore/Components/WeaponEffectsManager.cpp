@@ -304,7 +304,9 @@ namespace SimCore
             {
                dl = renderComp->AddDynamicLightByPrototypeName( mTracerLightName.Get() );
                dl->mTarget = this;
-               dl->mColor = color;
+               
+               //removing hard coded color on light, not sure why this is here considering it is created via prototype
+               //dl->mColor = color;
 
                mDynamicLightID = dl->GetId();
                mDynamicLightEnabled = true;
