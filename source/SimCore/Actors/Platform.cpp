@@ -528,7 +528,7 @@ namespace SimCore
             if (!foundLightNode)
             {
                dtCore::Transform xform;
-               osg::Vec3 lightOffset(0.0f,20.0f,0.0f);
+               osg::Vec3 lightOffset(0.0f, 1.0f, 0.0f);
                xform.SetTranslation(lightOffset);
                headLightPoint->SetTransform( xform, dtCore::Transformable::REL_CS );
             }
