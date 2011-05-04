@@ -47,6 +47,7 @@
 
 #include <osgUtil/DelaunayTriangulator>
 
+#include <cmath>
 
 namespace SimCore
 {
