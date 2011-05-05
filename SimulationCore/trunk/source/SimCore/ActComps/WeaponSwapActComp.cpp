@@ -152,6 +152,11 @@ namespace SimCore
                mWeaponToSwitchTo = FindWeapon(mWeaponName);
                if (mWeaponToSwitchTo != NULL)
                {
+                  osgSim::DOFTransform* dof = mNodeCollector->GetDOFTransform(mWeaponSwapRootNode);
+                  if (dof != NULL)
+                  {
+                     dof->removeChildren(0, dof->getNumChildren());
+                  }
                   //swap weapon is supposed to do determine if we need to unattch and do this for us but 
                   //in cases where we start with a weapon we have to clear out the dof children 
                   UnAttachWeapon();
@@ -233,8 +238,12 @@ namespace SimCore
             osgSim::DOFTransform* dof = mNodeCollector->GetDOFTransform(mWeaponSwapRootNode);
             if (dof != NULL)
             {
-               // clear all children of dof before adding the gun.
-               dof->removeChildren(0, dof->getNumChildren());
+               if (mCurrentWeapon.valid() && mCurrentWeapon->mRootNode.valid())
+               {
+                  // delete the last weapon.  Used to delete all nodes, but
+                  // other things are added to the
+                  dof->removeChild(mCurrentWeapon->mRootNode);
+               }
 
                mNodeCollector->RemoveDOFTransform(mWeaponHotSpotDOF);
                mHasWeapon = false;
