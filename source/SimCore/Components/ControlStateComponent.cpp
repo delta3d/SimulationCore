@@ -415,7 +415,13 @@ namespace SimCore
       bool ControlStateComponent::AttachModelOnVehicle(
          osg::Node& model, SimCore::Actors::Platform& vehicle, const std::string& dofName )
       {
-         // DEBUG: std::cout << "AttachModelOnVehicle: " << dofName << std::endl;
+//         SimCore::ActComps::WeaponSwapActComp* wsac = NULL;
+//         vehicle.GetComponent(wsac);
+//         if (wsac != NULL)
+//         {
+//            wsac->S
+//         }
+//         // DEBUG: std::cout << "AttachModelOnVehicle: " << dofName << std::endl;
          dtUtil::NodeCollector* nodeCollector = vehicle.GetNodeCollector();
          if( nodeCollector != NULL )
          {
@@ -435,10 +441,8 @@ namespace SimCore
                   {
                      nodeCollector->RemoveDOFTransform(DOF_NAME_WEAPON_HOTSPOT);
                   }
-                
-                  // clear all children of dof before adding the gun.
-                  dof->removeChildren(0, dof->getNumChildren());
 
+                  dof->removeChildren(0, dof->getNumChildren());
                   dof->addChild( &model );
 
                   // Get access to the hot spot on the weapon model
@@ -694,7 +698,7 @@ namespace SimCore
             {
                if( controlStateInfo.mWeaponModel.valid() )
                {
-                  AttachModelOnVehicle( *(controlStateInfo.mWeaponModel.get()), *vehicle, DOF_NAME_WEAPON );
+                  //AttachModelOnVehicle( *(controlStateInfo.mWeaponModel.get()), *vehicle, DOF_NAME_WEAPON );
                }
             }
          }
