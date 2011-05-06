@@ -1,0 +1,1 @@
+cmake -debug-output . -DBUILD_HLA:BOOL=ON -DUSE_PHYSX=ON -DCMAKE_BUILD_TYPE=Debug
