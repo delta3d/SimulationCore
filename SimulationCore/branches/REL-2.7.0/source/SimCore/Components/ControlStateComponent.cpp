@@ -71,7 +71,8 @@ namespace SimCore
 
       ////////////////////////////////////////////////////////////////////////////////
       ControlStateComponent::ControlStateComponent( const std::string& name )
-         : dtGame::GMComponent(name)
+      : dtGame::GMComponent(name)
+      , mDisableRemoteWeaponModelSwap(false)
       {
       }
 
@@ -722,8 +723,11 @@ namespace SimCore
             {
                if( controlStateInfo.mWeaponModel.valid() )
                {
-                  // This call breakes the HMMWV
-                  //AttachModelOnVehicle( *(controlStateInfo.mWeaponModel.get()), *vehicle, DOF_NAME_WEAPON );
+                  if (!mDisableRemoteWeaponModelSwap)
+                  {
+                     // This call breakes the HMMWV
+                     AttachModelOnVehicle( *(controlStateInfo.mWeaponModel.get()), *vehicle, DOF_NAME_WEAPON );
+                  }
                }
             }
          }

@@ -187,12 +187,14 @@ namespace SimCore
 
             void UpdateWeaponOnVehicle( ControlStateInfo& controlStateInfo );
 
+            // This is temporary to work around a bug.
+            DT_DECLARE_ACCESSOR_INLINE(bool, DisableRemoteWeaponModelSwap);
+
          private:
             // Remote Gunner Map
             typedef std::map<dtCore::UniqueId, dtCore::RefPtr<ControlStateInfo> > RemoteControlStateMap;
             RemoteControlStateMap mRemoteGunnerMap;
             RemoteControlStateMap mRemoteVehicleMap;
-
             // Weapon Model File List
             std::vector<dtDAL::ResourceDescriptor> mWeaponModelFileList;
 
