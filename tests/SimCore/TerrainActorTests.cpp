@@ -175,9 +175,13 @@ namespace SimCore
          //CPPUNIT_ASSERT(!terrainDrawable->CheckForTerrainLoaded());
          CPPUNIT_ASSERT_EQUAL((const dtGame::Message*)(NULL), tc->FindProcessMessageOfType(SimCore::MessageType::INFO_TERRAIN_LOADED).get());
 
-         // sleep while it loads in the background.
-         dtCore::AppSleep(150);
-         dtCore::System::GetInstance().Step();
+         unsigned i = 0;
+         while (tc->FindProcessMessageOfType(SimCore::MessageType::INFO_TERRAIN_LOADED) == NULL && i < 100)
+         {
+            // sleep while it loads in the background.
+            dtCore::AppSleep(50);
+            dtCore::System::GetInstance().Step();
+         }
 
          CPPUNIT_ASSERT(tc->FindProcessMessageOfType(SimCore::MessageType::INFO_TERRAIN_LOADED) != NULL);
          CPPUNIT_ASSERT(terrainDrawable->CheckForTerrainLoaded());
