@@ -94,17 +94,17 @@ namespace SimCore
    const std::string BaseGameEntryPoint::CONFIG_PROP_MUNITION_CONFIG_FILE("MunitionsConfigFile");
 
    //////////////////////////////////////////////////////////////////////////
-   BaseGameEntryPoint::BaseGameEntryPoint() :
-      parser(NULL),
-      mMissingRequiredCommandLineOption(false),
-      mIsUIRunning(false)
+   BaseGameEntryPoint::BaseGameEntryPoint()
+   : parser(NULL)
+   , mMissingRequiredCommandLineOption(false)
+   , mIsUIRunning(false)
    {
    }
 
    //////////////////////////////////////////////////////////////////////////
    BaseGameEntryPoint::~BaseGameEntryPoint()
    {
-      if(parser != NULL)
+      if (parser != NULL)
       {
          delete parser;
          parser = NULL;
@@ -138,14 +138,11 @@ namespace SimCore
             "Command Line Error.", __FILE__, __LINE__);
       }
 
+      // Only change the value if a command line option is received.
       int tempBool = 0;
       if(parser->read("--UI", tempBool))
       {
          mIsUIRunning = tempBool == 1 ? true : false;
-      }
-      else
-      {
-         mIsUIRunning = false;
       }
 
       if (!parser->read("--projectPath", mProjectPath))
@@ -170,7 +167,7 @@ namespace SimCore
 
       if(!mIsUIRunning)
       {
-         if (!parser->read("--mapName", mMapName))
+         if (!parser->read("--mapName", mMapName) && mMapName.empty())
          {
             std::cerr << "Please specify the map file to be used with the --mapName option.\n";
             mMissingRequiredCommandLineOption = true;
@@ -426,4 +423,6 @@ namespace SimCore
       // support various munition types.
       //SimCore::Actors::DetonationActor::SetLingeringShotSecs(mLingeringShotEffectSecs);
    }
+
+   DT_IMPLEMENT_ACCESSOR(BaseGameEntryPoint, std::string, MapName);
 }
