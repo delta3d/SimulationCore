@@ -29,6 +29,7 @@
 #include <dtDAL/actorproxy.h>
 #include <osg/Vec3>
 #include <string>
+#include <dtUtil/getsetmacros.h>
 
 namespace osg
 {
@@ -108,10 +109,20 @@ namespace SimCore
           */
          virtual void FinalizeParser();
 
-         /// @return true if this GM app is running inside of a GUI, like the Stealth Viewer Qt UI.
-         bool IsUIRunning() { return mIsUIRunning; }
+         /**
+          * @return true if this GM app is initialized and controlled by a GUI or some other system.
+          * setting this to true makes it not require a map name argument, disables weather updating,
+          * and may disable auto-networking connection in some subclasses.
+          */
+         bool IsUIRunning() const { return mIsUIRunning; }
+
+         /// The name of the map to load.  This only matters if IsUIRunning is false.
+         DT_DECLARE_ACCESSOR(std::string, MapName)
 
       protected:
+
+         // Change if this running in a UI.
+         void SetUIRunning(bool uiRunning) { mIsUIRunning = uiRunning; }
 
          /// reads the values of command line parameters and config options set the project context
          void AssignProjectContext(dtGame::GameManager &gm);
@@ -124,8 +135,7 @@ namespace SimCore
           * warning. setting to the aspect ratio to anything other than 1.33 or 1.6 will result
           * in incorrect results for the binoculars and laser range finder.
           */
-         void AssignAspectRatio(dtGame::GameApplication &app);
-
+         void AssignAspectRatio(dtGame::GameApplication& app);
 
          /// Destructor
          virtual ~BaseGameEntryPoint();
@@ -134,7 +144,6 @@ namespace SimCore
 
          dtCore::RefPtr<dtDAL::BaseActorObject> terrainActor;
 
-         std::string mMapName;
          std::string mProjectPath;
          float mAspectRatio;
          float mLingeringShotEffectSecs;
