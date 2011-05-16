@@ -133,7 +133,7 @@ namespace SimCore
             virtual void UpdateSoundEffects(float deltaTime);
 
             /// Check if the actor is on ground.
-            void KeepOnGround();
+            void KeepOnGround(float dt);
 
             /**
             * Get the point on the PhysX terrain at the specified location.
@@ -175,6 +175,7 @@ namespace SimCore
             ///////////////////////////////////////////////////
 
             float mTerrainPresentDropHeight;
+            float mTimeToWaitBeforeDropping;
 
             ///////////////////////////////////////////////////
             // is there currently a driver inside?

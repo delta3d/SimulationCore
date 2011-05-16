@@ -67,6 +67,7 @@ namespace SimCore
       BasePhysicsVehicleActor::BasePhysicsVehicleActor(PlatformActorProxy& proxy)
          : Platform(proxy)
          , mTerrainPresentDropHeight(0.5f)
+         , mTimeToWaitBeforeDropping(2.0f)
          , mHasDriver(false)
          , mHasFoundTerrain(false)
          , mPerformAboveGroundSafetyCheck(false)
@@ -219,15 +220,24 @@ namespace SimCore
             // Terrain has not been found. Check for it again.
             if (IsTerrainPresent())
             {
-               mHasFoundTerrain = true;
-               physicsObject->SetGravityEnabled(true);
-               physicsObject->SetCollisionResponseEnabled(true);
+               // This will set mHasFoundTerrain to true when it thinks the terrain loading has settled down.
+               KeepOnGround(tickMessage.GetDeltaRealTime());
+
+               // just to be safe, kill the velocity.  Something could be affecting the motion since the object is dynamic.
+               physicsObject->SetLinearVelocity(osg::Vec3(0.0f, 0.0f, 0.0f));
+               physicsObject->SetAngularVelocity(osg::Vec3(0.0f, 0.0f, 0.0f));
+
+               if (mHasFoundTerrain)
+               {
+                  physicsObject->SetGravityEnabled(true);
+                  physicsObject->SetCollisionResponseEnabled(true);
+               }
             }
          }
          // Check to see if we are currently up under the earth, if so, snap them back up.
          else if (GetPerformAboveGroundSafetyCheck())
          {
-            KeepOnGround();
+            KeepOnGround(tickMessage.GetDeltaRealTime());
          }
 
          //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -405,23 +415,40 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
-      void BasePhysicsVehicleActor::KeepOnGround()
+      void BasePhysicsVehicleActor::KeepOnGround(float dt)
       {
-//         dtDAL::ActorProxy* terrainProxy = NULL;
-//         GetGameActorProxy().GetGameManager()->FindActorByName("Terrain", terrainProxy);
-//         if (terrainProxy == NULL)
-//         {
-//            return;
-//         }
-//
-//         dtCore::Transformable* terrain = NULL;
-//         terrainProxy->GetActor(terrain);
-
          dtCore::Transform xform;
          GetTransform(xform);
-         if (SimCore::Utils::KeepBodyOnGround(xform, mTerrainPresentDropHeight))
+
+         if (!mHasFoundTerrain)
          {
-            SetTransform(xform);
+            if (GetPerformAboveGroundSafetyCheck())
+            {
+               if (SimCore::Utils::KeepBodyOnGround(xform, mTerrainPresentDropHeight, 0.0, mTerrainPresentDropHeight * 1.1f))
+               {
+                  SetTransform(xform);
+                  // TODO should this be an accessor and have a constant?h
+                  // Reset since the body was found to be out of bounds for the drop.
+                  // this COULD mean that the terrain is still paging in.
+                  mTimeToWaitBeforeDropping = 2.0f;
+               }
+            }
+
+            if (mTimeToWaitBeforeDropping <= 0)
+            {
+               mHasFoundTerrain = true;
+            }
+            else
+            {
+               mTimeToWaitBeforeDropping -= dt;
+            }
+         }
+         else
+         {
+            if (SimCore::Utils::KeepBodyOnGround(xform, mTerrainPresentDropHeight))
+            {
+               SetTransform(xform);
+            }
          }
       }
 
