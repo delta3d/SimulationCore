@@ -175,6 +175,7 @@ namespace SimCore
             ///////////////////////////////////////////////////
 
             float mTerrainPresentDropHeight;
+            float mTimeToWaitBeforeDroppingConf;
             float mTimeToWaitBeforeDropping;
 
             ///////////////////////////////////////////////////

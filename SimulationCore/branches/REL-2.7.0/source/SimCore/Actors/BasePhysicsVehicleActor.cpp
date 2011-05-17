@@ -63,11 +63,14 @@ namespace SimCore
    namespace Actors
    {
 
+      static const std::string CONF_TIME_WAIT_TERRAIN_PAGING("SimCore.Vehicle.SecsToWaitForTerrainPaging");
+
       ///////////////////////////////////////////////////////////////////////////////////
       BasePhysicsVehicleActor::BasePhysicsVehicleActor(PlatformActorProxy& proxy)
          : Platform(proxy)
          , mTerrainPresentDropHeight(0.5f)
-         , mTimeToWaitBeforeDropping(2.0f)
+         , mTimeToWaitBeforeDroppingConf(1.0f)
+         , mTimeToWaitBeforeDropping(1.0f)
          , mHasDriver(false)
          , mHasFoundTerrain(false)
          , mPerformAboveGroundSafetyCheck(false)
@@ -83,11 +86,21 @@ namespace SimCore
       {
       }
 
+      ///////////////////////////////////////////////////////////////////////////////////
       void BasePhysicsVehicleActor::OnEnteredWorld()
       {
          // This makes the results smoother when sending updates at a high rate.
          // This is just a default value. It can be overridden in the base class via config options.
          GetComponent<dtGame::DeadReckoningHelper>()->SetUseFixedSmoothingTime(true);
+
+         std::string timeConfig = GetGameActorProxy().GetGameManager()->GetConfiguration().GetConfigPropertyValue(CONF_TIME_WAIT_TERRAIN_PAGING);
+         if (!timeConfig.empty())
+         {
+            mTimeToWaitBeforeDroppingConf = dtUtil::ToType<float>(timeConfig);
+            // If it's garbage, don't want to make the app get stuck.
+            dtUtil::Clamp(mTimeToWaitBeforeDroppingConf, 0.0f, 60.0f);
+         }
+         mTimeToWaitBeforeDropping = mTimeToWaitBeforeDroppingConf;
 
          BaseClass::OnEnteredWorld();
 
@@ -232,6 +245,11 @@ namespace SimCore
                   physicsObject->SetGravityEnabled(true);
                   physicsObject->SetCollisionResponseEnabled(true);
                }
+            }
+            else
+            {
+               physicsObject->SetGravityEnabled(false);
+               physicsObject->SetCollisionResponseEnabled(false);
             }
          }
          // Check to see if we are currently up under the earth, if so, snap them back up.
@@ -424,13 +442,13 @@ namespace SimCore
          {
             if (GetPerformAboveGroundSafetyCheck())
             {
-               if (SimCore::Utils::KeepBodyOnGround(xform, mTerrainPresentDropHeight, 0.0, mTerrainPresentDropHeight * 1.1f))
+               if (SimCore::Utils::KeepBodyOnGround(xform, mTerrainPresentDropHeight, mTerrainPresentDropHeight * 0.9f, mTerrainPresentDropHeight * 1.1f))
                {
                   SetTransform(xform);
-                  // TODO should this be an accessor and have a constant?h
+                  // TODO should this be an accessor and have a constant?
                   // Reset since the body was found to be out of bounds for the drop.
                   // this COULD mean that the terrain is still paging in.
-                  mTimeToWaitBeforeDropping = 2.0f;
+                  mTimeToWaitBeforeDropping = mTimeToWaitBeforeDroppingConf;
                }
             }
 
