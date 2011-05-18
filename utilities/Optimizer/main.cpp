@@ -406,6 +406,67 @@ private:
    osg::ref_ptr<osg::GraphicsContext> _gc;
 };
 
+/////////////////////////////////////////////////////
+class EmptyDrawableDeleter : public osg::NodeVisitor
+{
+public:
+
+    EmptyDrawableDeleter()
+      : osg::NodeVisitor(osg::NodeVisitor::TRAVERSE_ALL_CHILDREN)
+   {}
+
+   /**
+   * Visits the specified geode.
+   *
+   * @param node the geode to visit
+   */
+   virtual void apply(osg::Geode& node)
+   {
+      for (unsigned i = 0; i < node.getNumDrawables();)
+      {
+          osg::Geometry* geom = dynamic_cast<osg::Geometry*>(node.getDrawable(i));
+          if (geom != NULL)
+          {
+              for (unsigned j = 0; j < geom->getNumPrimitiveSets();)
+              {
+                  // If it an index array AND it has a zero size, then delete it.  It does nothing.
+                  osg::DrawElements* ps = dynamic_cast<osg::DrawElements*>(geom->getPrimitiveSet(j));
+                  if (ps != NULL && ps->getTotalDataSize() == 0)
+                  {
+                      geom->removePrimitiveSet(j, 1);
+                      std::cout << "Removing Primitive set." << std::endl;
+                  }
+                  else
+                  {
+                      ++j;
+                  }
+              }
+
+              if (geom->getNumPrimitiveSets() == 0)
+              {
+                  node.removeDrawable(geom);
+                  std::cout << "Removing Drawable." << std::endl;
+              }
+              else
+              {
+                  ++i;
+              }
+          }
+          else
+          {
+              ++i;
+          }
+      }
+
+      if (node.getNumDrawables() == 0)
+      {
+          std::cout << "Now have empty geode." << std::endl;
+      }
+
+      traverse(node);
+   }
+
+};
 
 /////////////////////////////////////////////////////////////////////
 class CompressTexturesVisitor : public osg::NodeVisitor
@@ -504,6 +565,21 @@ void FlattenTransforms(osg::Node* n)
 {
    osgUtil::Optimizer opt;
    opt.optimize(n, osgUtil::Optimizer::FLATTEN_STATIC_TRANSFORMS_DUPLICATING_SHARED_SUBGRAPHS);
+}
+
+/////////////////////////////////////////////////////////////////////
+void SimplifyNode(osg::Node* n, float sampleRatio, float maxError, bool smoothing, bool triStrip)
+{
+   std::cout << "Beginning simplify pass with sample ratio " << sampleRatio << "." << std::endl;
+
+   Simplifier simple;
+   simple.setSmoothing(smoothing);
+   simple.setDoTriStrip(triStrip);
+   simple.setSampleRatio(sampleRatio);
+   simple.setMaximumError(maxError);
+   n->accept(simple);
+
+   std::cout << "Simplify successful." << std::endl;
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -680,6 +756,11 @@ int main(int argc, char** argv)
    parser.getApplicationUsage()->addCommandLineOption("--createOccluders", "Setting this option will attempt to create occluder geometry.");
    parser.getApplicationUsage()->addCommandLineOption("--occluderVertCount", "This option specifies the numberr of verts to use for an occluder geometry.");
    parser.getApplicationUsage()->addCommandLineOption("--runOptimizer", "This option is mainly for debugging and does not run the optimizer.");
+   parser.getApplicationUsage()->addCommandLineOption("--simplify", "This option will run the Simplifier over the geometry.");
+   parser.getApplicationUsage()->addCommandLineOption("--sampleRatio", "The sample ratio for the Simplifier.");
+   parser.getApplicationUsage()->addCommandLineOption("--maxError", "The maximum error allowed by the Simplifier.");
+   parser.getApplicationUsage()->addCommandLineOption("--smoothing", "Specifies whether the Simplifier will smooth geometry.");
+   parser.getApplicationUsage()->addCommandLineOption("--triStrip", "Specifies whether or not to combine triangles into triangle strips.");
    parser.getApplicationUsage()->addCommandLineOption("--subdivide", "This option will subdivide the geometry after compile.");
    parser.getApplicationUsage()->addCommandLineOption("--combineGeodes", "This option will flatten the geometry.");
    parser.getApplicationUsage()->addCommandLineOption("--combineDistance", "The distance to allow combining geometry.");
@@ -708,6 +789,17 @@ int main(int argc, char** argv)
       return 1;
    }
 
+   bool simplify = false;
+   float sampleRatio = 0.5f;
+   float maxError = 1.0f;
+   bool smoothing = true;
+   bool triStrip = false;
+
+   ReadCmdOption(simplify, "--simplify", parser);
+   ReadVariable(sampleRatio, "--sampleRatio", parser);
+   ReadVariable(maxError, "--maxError", parser);
+   ReadCmdOption(smoothing, "--smoothing", parser);
+   ReadCmdOption(triStrip, "--triStrip", parser);
 
    bool subdivide = true;
    ReadCmdOption(subdivide, "--subdivide", parser);   
@@ -1022,6 +1114,16 @@ int main(int argc, char** argv)
       //this combine nearby lods
       osgUtil::Optimizer opt;
       opt.optimize(sceneRoot, osgUtil::Optimizer::COMBINE_ADJACENT_LODS);
+   }
+
+   if (simplify)
+   {
+      SimplifyNode(sceneRoot, sampleRatio, maxError, smoothing, triStrip);
+   }
+
+   {
+       EmptyDrawableDeleter edd;
+       sceneRoot->accept(edd);
    }
 
    if(subdivide)
