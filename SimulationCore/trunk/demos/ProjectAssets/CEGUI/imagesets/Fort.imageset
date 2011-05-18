@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8" ?> 
-<Imageset Name="Fort" Imagefile="CEGUI/imagesets/Fort.tga" NativeHorzRes="566" NativeVertRes="297" AutoScaled="true">
-   
-   <Image Name="Fort" XPos="0" YPos="0" Width="256" Height="128" />
-   
-</Imageset>
-
