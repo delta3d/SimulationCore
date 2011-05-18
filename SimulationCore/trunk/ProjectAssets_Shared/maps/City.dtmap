@@ -1,0 +1,517 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="delta3dMap" xsi:schemaLocation="delta3dMap map.xsd">
+    <header>
+        <name>City</name>
+        <description></description>
+        <author></author>
+        <comment></comment>
+        <copyright></copyright>
+        <createTimestamp>2008-05-24T22:38:11-05:00</createTimestamp>
+        <lastUpdateTimestamp>2008-05-24T23:08:10-05:00</lastUpdateTimestamp>
+        <editorVersion>2.0.0</editorVersion>
+        <schemaVersion>1.0</schemaVersion>
+    </header>
+    <libraries>
+        <library>
+            <name>dtPhysics</name>
+            <version></version>
+        </library>
+        <library>
+            <name>Sphero</name>
+            <version></version>
+        </library>
+    </libraries>
+    <actors>
+        <actor>
+            <type>dtcore.Player Start</type>
+            <id>0E0D842B-D6B0-4604-B8DF-9950E5977870</id>
+            <name>Start</name>
+            <property>
+                <name>Rotation</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>90.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>4038.977295</value1>
+                    <value2>1374.620728</value2>
+                    <value3>2.748708</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Normal Rescaling</name>
+                <boolean>true</boolean>
+            </property>
+            <property>
+                <name>Show Collision Geometry</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>Collision Type</name>
+                <enumerated>NONE</enumerated>
+            </property>
+            <property>
+                <name>Collision Radius</name>
+                <float>0</float>
+            </property>
+            <property>
+                <name>Collision Length</name>
+                <float>0</float>
+            </property>
+            <property>
+                <name>Collision Box</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Enable Collision</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>Render Proxy Node</name>
+                <boolean>false</boolean>
+            </property>
+        </actor>
+        <actor>
+            <type>Physics Actors.Physics Material</type>
+            <id>1CDC7227-8651-476D-A2D2-0484F0FDFDEC</id>
+            <name>Terrain Material</name>
+            <property>
+                <name>Dynamic Friction</name>
+                <float>0.5</float>
+            </property>
+            <property>
+                <name>Static Friction</name>
+                <float>0.5</float>
+            </property>
+            <property>
+                <name>Restitution</name>
+                <float>0.2</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtcore.Game.Actors.Game Mesh Actor</type>
+            <id>64713E04-9E9B-4288-ACA6-916AA53D32A1</id>
+            <name>Crate</name>
+            <property>
+                <name>Rotation</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>823.045349</value1>
+                    <value2>792.935547</value2>
+                    <value3>8.070908</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Normal Rescaling</name>
+                <boolean>true</boolean>
+            </property>
+            <property>
+                <name>Show Collision Geometry</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>Collision Type</name>
+                <enumerated>NONE</enumerated>
+            </property>
+            <property>
+                <name>Collision Radius</name>
+                <float>0</float>
+            </property>
+            <property>
+                <name>Collision Length</name>
+                <float>0</float>
+            </property>
+            <property>
+                <name>Collision Box</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Enable Collision</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>Render Proxy Node</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>Enable Dynamics</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>Mass</name>
+                <float>4.1887903</float>
+            </property>
+            <property>
+                <name>Center of Gravity</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>PROTOTYPE</enumerated>
+            </property>
+            <property>
+                <name>ShaderGroup</name>
+                <string>
+            </string>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes::physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>use cache object</name>
+                <boolean>true</boolean>
+            </property>
+            <property>
+                <name>Scale</name>
+                <vec3>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                </vec3>
+            </property>
+        </actor>
+        <actor>
+            <type>dtcore.Game.Actors.Game Mesh Actor</type>
+            <id>67E9B46E-DF23-40B9-BAC7-A0869DAB3911</id>
+            <name>Barrel</name>
+            <property>
+                <name>Rotation</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>818.045349</value1>
+                    <value2>792.935547</value2>
+                    <value3>8.070908</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Normal Rescaling</name>
+                <boolean>true</boolean>
+            </property>
+            <property>
+                <name>Show Collision Geometry</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>Collision Type</name>
+                <enumerated>NONE</enumerated>
+            </property>
+            <property>
+                <name>Collision Radius</name>
+                <float>0</float>
+            </property>
+            <property>
+                <name>Collision Length</name>
+                <float>0</float>
+            </property>
+            <property>
+                <name>Collision Box</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Enable Collision</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>Render Proxy Node</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>Enable Dynamics</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>Mass</name>
+                <float>4.1887903</float>
+            </property>
+            <property>
+                <name>Center of Gravity</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>PROTOTYPE</enumerated>
+            </property>
+            <property>
+                <name>ShaderGroup</name>
+                <string>
+            </string>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>physics_barrel.ive</resourceDisplayName>
+                <resource>StaticMeshes::physics_barrel.ive</resource>
+            </property>
+            <property>
+                <name>use cache object</name>
+                <boolean>true</boolean>
+            </property>
+            <property>
+                <name>Scale</name>
+                <vec3>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                </vec3>
+            </property>
+        </actor>
+        <actor>
+            <type>Physics Actors.Physics Material</type>
+            <id>7F518859-F679-4A8F-89C2-376FB68CC0EA</id>
+            <name>Projectile Material</name>
+            <property>
+                <name>Dynamic Friction</name>
+                <float>0.5</float>
+            </property>
+            <property>
+                <name>Static Friction</name>
+                <float>0.5</float>
+            </property>
+            <property>
+                <name>Restitution</name>
+                <float>0.2</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtcore.Game.Actors.Game Mesh Actor</type>
+            <id>A8CA89E7-7623-4E85-990F-33BBC388E6FF</id>
+            <name>Happy Sphere</name>
+            <property>
+                <name>Rotation</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>818.045349</value1>
+                    <value2>792.935547</value2>
+                    <value3>3.070908</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Normal Rescaling</name>
+                <boolean>true</boolean>
+            </property>
+            <property>
+                <name>Show Collision Geometry</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>Collision Type</name>
+                <enumerated>NONE</enumerated>
+            </property>
+            <property>
+                <name>Collision Radius</name>
+                <float>0</float>
+            </property>
+            <property>
+                <name>Collision Length</name>
+                <float>0</float>
+            </property>
+            <property>
+                <name>Collision Box</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Enable Collision</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>Render Proxy Node</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>Enable Dynamics</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>Mass</name>
+                <float>4.1887903</float>
+            </property>
+            <property>
+                <name>Center of Gravity</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>PROTOTYPE</enumerated>
+            </property>
+            <property>
+                <name>ShaderGroup</name>
+                <string>
+            </string>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>physics_happy_sphere.ive</resourceDisplayName>
+                <resource>StaticMeshes::physics_happy_sphere.ive</resource>
+            </property>
+            <property>
+                <name>use cache object</name>
+                <boolean>true</boolean>
+            </property>
+            <property>
+                <name>Scale</name>
+                <vec3>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                </vec3>
+            </property>
+        </actor>
+        <actor>
+            <type>dtcore.Game.Actors.Game Mesh Actor</type>
+            <id>C9A92AE3-BE39-4A1C-B4EA-0FF2C235F1D5</id>
+            <name>Terrain</name>
+            <property>
+                <name>Rotation</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>19.999998</value2>
+                    <value3>-0.000001</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Normal Rescaling</name>
+                <boolean>true</boolean>
+            </property>
+            <property>
+                <name>Show Collision Geometry</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>Collision Type</name>
+                <enumerated>NONE</enumerated>
+            </property>
+            <property>
+                <name>Collision Radius</name>
+                <float>0</float>
+            </property>
+            <property>
+                <name>Collision Length</name>
+                <float>0</float>
+            </property>
+            <property>
+                <name>Collision Box</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Enable Collision</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>Render Proxy Node</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>Enable Dynamics</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>Mass</name>
+                <float>4.1887903</float>
+            </property>
+            <property>
+                <name>Center of Gravity</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server Local</enumerated>
+            </property>
+            <property>
+                <name>ShaderGroup</name>
+                <string>
+            </string>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>3Kcity.IVE</resourceDisplayName>
+                <resource>StaticMeshes::3Kcity.ive</resource>
+            </property>
+            <property>
+                <name>use cache object</name>
+                <boolean>true</boolean>
+            </property>
+            <property>
+                <name>Scale</name>
+                <vec3>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                </vec3>
+            </property>
+        </actor>
+    </actors>
+</map>

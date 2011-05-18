@@ -1,0 +1,25 @@
+<shaderlist>
+   <shadergroup name="OneColorShader">
+      <shader name="RedShader" default="yes">
+         <source type="Vertex">Shaders/Base/vertex_simple.vert</source>
+         <source type="Fragment">Shaders/Base/onecolor.frag</source>
+         <parameter name="color">
+            <vec4 defaultValue="1.0 0.0 0.0 1.0"/>
+         </parameter>
+      </shader>
+      <shader name="BlueShader" default="no">
+         <source type="Vertex">Shaders/Base/vertex_simple.vert</source>
+         <source type="Fragment">Shaders/Base/onecolor.frag</source>
+         <parameter name="color">
+            <vec4 defaultValue="0.0 0.0 1.0 1.0"/>
+         </parameter>
+      </shader>
+      <shader name="GreenShader" default="no">
+         <source type="Vertex">Shaders/Base/vertex_simple.vert</source>
+         <source type="Fragment">Shaders/Base/onecolor.frag</source>
+         <parameter name="color">
+            <vec4 defaultValue="0.0 1.0 0.0 1.0"/>
+         </parameter>
+      </shader>
+   </shadergroup>
+</shaderlist>
