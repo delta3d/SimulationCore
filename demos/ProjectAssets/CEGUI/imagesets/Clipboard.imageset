@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="utf-8" ?> 
-<Imageset Name="Clipboard" Imagefile="CEGUI/imagesets/Clipboard.tga" NativeHorzRes="256" NativeVertRes="256" AutoScaled="true">
-   <Image Name="Clipboard" XPos="0" YPos="0" Width="256" Height="256" />
-</Imageset>
