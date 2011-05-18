@@ -10,7 +10,8 @@
         <schemaVersion>1.0</schemaVersion>
     </header>
 
-    <contexts>    
-        <context path="../ProjectAssets"/>
+    <contexts>
+       <context path="../ProjectAssets_Demos"/>
+       <context path="../../ProjectAssets_Shared"/>
     </contexts>
 </projectConfig>

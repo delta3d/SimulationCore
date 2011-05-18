@@ -64,7 +64,7 @@ C:\Curtiss\Projects\Delta3D\SimulationCore\demos\NetDemo (as appropriate)
       <Property Name="MunitionsConfigFile">Configs:NetDemoMunitionsConfig.xml</Property>
       
       <Property Name="NetDemo.DefaultPlayMode">FOUR_WHEEL</Property><!--FOUR_WHEEL  HOVER -->
-      <Property Name="NetDemo.DefaultHoverVehiclePrototype">Hover Vehicle</Property>
+      <Property Name="NetDemo.DefaultHoverVehiclePrototype">Truck</Property>
       <!--Property Name="NetDemo.DefaultWheeledVehiclePrototype">HMMWV</Property--> 
       <!-- Property Name="NetDemo.DefaultWheeledVehiclePrototype">Truck</Property--> 
       <Property Name="NetDemo.DefaultWheeledVehiclePrototype">Propelled Vehicle</Property> 
@@ -83,7 +83,7 @@ C:\Curtiss\Projects\Delta3D\SimulationCore\demos\NetDemo (as appropriate)
 
 
       <!-- Net Demo  -->
-      <!-- Property Name="ProjectPath">./ProjectConfig.dtproj</Property -->
+      <Property Name="ProjectPath">./ProjectConfig.dtproj</Property>
       <Property Name="AdditionalMap1">DriverActors</Property> 
       <Property Name="AdditionalMap2">NetDemoPrototypes2</Property> 
       <Property Name="AdditionalMap3">NetDemoPrototypes</Property> 

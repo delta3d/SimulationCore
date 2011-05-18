@@ -11,6 +11,7 @@
     </header>
 
     <contexts>
-       <context path="../ProjectAssets"/>
+       <context path="../ProjectAssets_Demos"/>
+       <context path="../../ProjectAssets_Shared"/>
     </contexts>
 </projectConfig>
