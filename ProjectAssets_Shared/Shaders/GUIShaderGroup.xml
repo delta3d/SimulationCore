@@ -1,0 +1,23 @@
+<shaderlist>
+   <shadergroup name="GUIShaderGroup">
+      <shader name="ButtonHighlightShader" default="yes">
+         <source type="Fragment">Shaders/GUI/ButtonHighlight.frag</source>
+         <parameter name="diffuseTexture">
+            <texture2D textureUnit="0">
+               <source type="Image">Textures/NetDemo/Button.tga</source>
+               <wrap axis="S" mode="Clamp"/>
+               <wrap axis="T" mode="Clamp"/>
+            </texture2D>
+         </parameter>
+         <parameter name="colorOffset">
+            <oscillator oscillation="Up" cycletimemin="2.0" cycletimemax="2.0" rangemin="1.0" rangemax="1.0" offset="0.0"/>
+         </parameter>
+         <parameter name="buttonInnerHighlightColor">
+            <vec4 defaultValue="1.0 0.0 0.3 1.0"/>
+         </parameter>
+         <parameter name="buttonOuterHighlightColor">
+            <vec4 defaultValue="0.0 1.0 0.0 1.0"/>
+         </parameter>
+      </shader>
+   </shadergroup>
+</shaderlist>

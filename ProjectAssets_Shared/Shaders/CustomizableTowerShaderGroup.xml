@@ -1,0 +1,31 @@
+<shaderlist>
+   <shadergroup name="CustomizableTowerShaderGroup">
+      <shader name="NoDamage" default="yes">
+         <source type="Vertex">Shaders/Base/custom_paint.vert</source>
+         <source type="Vertex">Shaders/Base/vertex_functions.vert</source>
+         <source type="Fragment">Shaders/Base/custom_paint.frag</source>
+         <source type="Fragment">Shaders/Base/fragment_functions.frag</source>
+         <source type="Fragment">Shaders/Base/dynamic_light.frag</source>
+         <source type="Fragment">Shaders/Base/spot_light.frag</source>
+         <parameter name="diffuseTexture">
+            <texture2D textureUnit="0">
+               <source type="Auto"/>
+            </texture2D>
+         </parameter>
+         <parameter name="colorMaskTexture">
+            <texture2D textureUnit="1">
+               <source type="Image">Textures/NetDemo/TowerColorMask.tga</source>
+               <wrap axis="S" mode="Clamp"/>
+               <wrap axis="T" mode="Clamp"/>
+            </texture2D>
+         </parameter>
+         <parameter name="color1">
+            <vec4 defaultValue="0.85 0.8 0.0 1.0"/>
+         </parameter>
+         <parameter name="color2">
+            <vec4 defaultValue="0.0 0.0 1.0 1.0"/>
+         </parameter>
+      </shader>
+   </shadergroup>
+
+</shaderlist>
