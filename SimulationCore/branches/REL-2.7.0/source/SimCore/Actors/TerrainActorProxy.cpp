@@ -352,6 +352,12 @@ namespace SimCore
             return;
          }
 
+         // For STAGE
+         if (GetGameActorProxy().GetGameManager() == NULL)
+         {
+            return;
+         }
+
          if (mTerrainPhysicsMode == &SimCore::TerrainPhysicsMode::IMMEDIATE)
          {
             dtCore::Transform xform;
