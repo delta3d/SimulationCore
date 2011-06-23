@@ -1,0 +1,26 @@
+<shaderlist>
+   <shadergroup name="TracerGroup">
+      <shader name="VolumetricLines">
+         <source type="Vertex">Shaders/Base/vertex_functions.vert</source>
+         <source type="Vertex">Shaders/Base/volumetric_lines.vert</source>
+         <source type="Fragment">Shaders/Base/fragment_functions.frag</source>
+         <source type="Fragment">Shaders/Base/volumetric_lines.frag</source>
+         <parameter name="glowTexture">
+            <texture2D textureUnit="0">
+               <source type="Image">Textures/ShadersBase/tracer.png</source>
+               <wrap axis="S" mode="Clamp"/>
+               <wrap axis="T" mode="Clamp"/>
+            </texture2D>
+         </parameter>
+         <parameter name="Intensity">
+            <float defaultValue="1000.0"/>
+         </parameter>
+         <parameter name="lineGlowColor">
+            <vec4 defaultValue="1.0 0.0 0.0 1.0"/>
+         </parameter>
+         <parameter name="lineCenterColor">
+            <vec4 defaultValue="1.0 1.0 1.0 1.0"/>
+         </parameter>
+      </shader>
+   </shadergroup>
+</shaderlist>

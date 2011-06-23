@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+	targetNamespace="munitionsConfig"
+	elementFormDefault="qualified"
+	attributeFormDefault="unqualified">
+
+  <xsd:annotation>
+    <xsd:documentation xml:lang="en">
+      DVTE Munition Damage Probabilities Configuration
+    </xsd:documentation>
+  </xsd:annotation>
+
+  <xsd:element name="munitionsMapping" type="MunitionsMappingType"/>
+
+  <xsd:complexType name="MunitionsMappingType">
+    <xsd:sequence>
+      <xsd:element name="header" type="HeaderType"/>
+      <xsd:element name="entityClass" type="EntityClassType" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="HeaderType">
+    <xsd:sequence>
+      <xsd:element name="name"   type="xsd:string"/>
+      <xsd:element name="description" type="xsd:string"/>
+      <xsd:element name="author"   type="xsd:string"/>
+      <xsd:element name="comment"  type="xsd:string" minOccurs="0"/>
+      <xsd:element name="copyright" type="xsd:string" minOccurs="0"/>
+      <!-- document won't validate unless the version number is correct -->
+      <xsd:element name="schemaVersion" type="xsd:string" fixed="1.0"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="EntityClassType">
+    <xsd:attribute name="name" type="xsd:string"/>
+    <xsd:element name="munition" type="MunitionType" minOccurs="1" maxOccurs="unbounded"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="MunitionType">  
+		<xsd:attribute name="name" type="xsd:string"/>
+		<xsd:complexType>
+			<xsd:sequence>          
+				<xsd:element name="damageProbability" type="DamageProbabilityType"/>
+				<xsd:element name="force" type="xsd:float" default="0.0"/>
+				<xsd:element name="accumulationFactor" type="xsd:float" default="0.0" minOccurs="0" maxOccurs="1"/>
+				<xsd:element name="lethalRanges" type="LethalRangesType" minOccurs="0" maxOccurs="1"/>
+			</xsd:sequence>
+		</xsd:complexType>
+  </xsd:complexType>
+
+  <xsd:complexType name="DamageProbabilityType">
+    <xsd:sequence>
+       <xsd:element name="N" type="ClampedRatioType" default="0.0" minOccurs="0" maxOccurs="1" />   
+       <xsd:element name="M" type="ClampedRatioType" default="0.0" minOccurs="0" maxOccurs="1" />  
+       <xsd:element name="F" type="ClampedRatioType" default="0.0" minOccurs="0" maxOccurs="1" />  
+       <xsd:element name="MF" type="ClampedRatioType" default="0.0" minOccurs="0" maxOccurs="1" />  
+       <xsd:element name="K" type="ClampedRatioType" default="0.0" minOccurs="0" maxOccurs="1" />   
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="DamageRangeType">
+    <xsd:sequence>  
+       <xsd:element name="M" type="DistanceType" default="0.0" minOccurs="0" maxOccurs="1" />  
+       <xsd:element name="F" type="DistanceType" default="0.0" minOccurs="0" maxOccurs="1" />  
+       <xsd:element name="MF" type="DistanceType" default="0.0" minOccurs="0" maxOccurs="1" />  
+       <xsd:element name="K" type="DistanceType" default="0.0" minOccurs="0" maxOccurs="1" />   
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="RangeType">
+    <xsd:attribute name="name">   
+       <xsd:simpleType>   
+          <xsd:restriction base="xsd:string">   
+             <xsd:enumeration value="1/3"/>   
+             <xsd:enumeration value="2/3"/>   
+             <xsd:enumeration value="Max"/>   
+          </xsd:restriction>   
+       </xsd:simpleType>
+    </xsd:attribute>
+    <xsd:sequence>
+       <xsd:element name="angleOfFall" type="Angle180Type" />   
+       <xsd:element name="fowardRange" type="DamageRangeType" minOccurs="0" maxOccurs="1" />    
+       <xsd:element name="deflectRange" type="DamageRangeType" minOccurs="0" maxOccurs="1" />  
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="LethalRangesType">
+     <xsd:sequence>
+        <xsd:element name="rangeCutoff" type="xsd:float" />   
+        <xsd:element name="range" type="RangeType" minOccurs="1" maxOccurs="3" />
+     </xsd:sequence>
+  </xsd:complexType>
+  
+  <xsd:simpleType name="ClampedRatioType" base="xsd:float">
+      <xsd:restriction>
+         <xsd:minInclusive value="0.0"/>
+         <xsd:maxInclusive value="1.0"/>
+      </xsd:restriction>
+  </xsd:simpleType>
+  
+  <xsd:simpleType name="DistanceType" base="xsd:float">
+      <xsd:restriction>
+         <xsd:minInclusive value="0.0"/>
+      </xsd:restriction>
+  </xsd:simpleType>
+  
+  <xsd:simpleType name="Angle180Type" base="xsd:float">
+      <xsd:restriction>
+         <xsd:minInclusive value="0.0"/>
+         <xsd:maxInclusive value="180.0"/>
+      </xsd:restriction>
+  </xsd:simpleType>
+
+</xsd:schema>
