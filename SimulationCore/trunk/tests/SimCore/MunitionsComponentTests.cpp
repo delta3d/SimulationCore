@@ -1404,7 +1404,7 @@ namespace SimCore
          // --- Create an effects damage actor that will be used by the munition type
          dtCore::RefPtr<SimCore::Actors::MunitionEffectsInfoActorProxy> newEffectsInfo;
          mGM->CreateActor( *SimCore::Actors::EntityActorRegistry::MUNITION_EFFECTS_INFO_ACTOR_TYPE, newEffectsInfo );
-         SimCore::Actors::MunitionEffectsInfoActor* effectsInfo;
+         SimCore::Actors::MunitionEffectsInfoActor* effectsInfo = NULL;
          newEffectsInfo->GetActor(effectsInfo);
          effectsInfo->SetSmokeLifeTime( 0.0f );
 

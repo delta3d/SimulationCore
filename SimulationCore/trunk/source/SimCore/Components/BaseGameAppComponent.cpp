@@ -148,10 +148,9 @@ namespace SimCore
             }
          }
 
-         if(mapName.empty())
+         if (mapName.empty())
          {
-            throw dtUtil::Exception(IGExceptionEnum::INVALID_CONNECTION_DATA,
-               "No base Map Name found. Please specify a map in the command line options with --mapName MyMap.", __FILE__, __LINE__);
+            throw SimCore::IGException("No base Map Name found. Please specify a map in the command line options with --mapName MyMap.", __FILE__, __LINE__);
          }
 
          SimCore::Utils::LoadMaps(*GetGameManager(), mapName);

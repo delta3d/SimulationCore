@@ -146,7 +146,14 @@ namespace SimCore
 
             osg::Node* GetWeaponModelOnVehicle( const dtCore::UniqueId& vehicleID );
 
+            // Looks up the weapon id selected on the vehicle control state.
+            unsigned GetWeaponOnVehicleControlState( const dtCore::UniqueId& vehicleID );
+
             virtual bool IsGunnerControlState( const SimCore::Actors::ControlStateActor& controlState );
+
+            SimCore::Actors::ControlStateActor* FindVehicleControlState( const SimCore::Actors::Platform& vehicle );
+
+            SimCore::Actors::ControlStateActor* FindVehicleControlState( const dtCore::UniqueId& vehicle );
 
          protected:
             virtual ~ControlStateComponent();
@@ -165,7 +172,6 @@ namespace SimCore
       
             void HandleControlStateWeaponSwap( SimCore::Actors::ControlStateActor& controlState );
       
-            SimCore::Actors::ControlStateActor* FindVehicleControlState( const SimCore::Actors::Platform& vehicle );
             
             const std::string CreateStationName( unsigned stationNumber ) const;
 
@@ -181,12 +187,14 @@ namespace SimCore
 
             void UpdateWeaponOnVehicle( ControlStateInfo& controlStateInfo );
 
+            // This is temporary to work around a bug.
+            DT_DECLARE_ACCESSOR_INLINE(bool, DisableRemoteWeaponModelSwap);
+
          private:
             // Remote Gunner Map
             typedef std::map<dtCore::UniqueId, dtCore::RefPtr<ControlStateInfo> > RemoteControlStateMap;
             RemoteControlStateMap mRemoteGunnerMap;
             RemoteControlStateMap mRemoteVehicleMap;
-
             // Weapon Model File List
             std::vector<dtDAL::ResourceDescriptor> mWeaponModelFileList;
 
