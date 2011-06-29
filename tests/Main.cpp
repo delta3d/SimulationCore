@@ -353,6 +353,8 @@ int main (int argc, char* argv[])
 
    dtCore::ShaderManager::GetInstance().Clear();
 
+   osgDB::Registry::instance()->clearObjectCache();
+
    globalApplication = NULL;
 #if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
    globalGUI->ShutdownGUI();
