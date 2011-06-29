@@ -74,6 +74,8 @@ namespace NetDemo
       if (parser == NULL)
          parser = new osg::ArgumentParser(&mArgc, mArgv);
 
+      SetMapName("NetDemo");
+
       parser->getApplicationUsage()->setCommandLineUsage("Res Game Application [options] value ...");
 
       BaseClass::Initialize(app, argc, argv);
@@ -88,7 +90,7 @@ namespace NetDemo
 
       GameLogicComponent* gameAppComp = NULL;
       app.GetGameManager()->GetComponentByName(GameLogicComponent::DEFAULT_NAME, gameAppComp);
-      gameAppComp->SetMapName( mMapName );
+      gameAppComp->SetMapName( GetMapName() );
    }
 
    ///////////////////////////////////////////////////////////////////////////

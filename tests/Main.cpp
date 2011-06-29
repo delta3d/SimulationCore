@@ -153,15 +153,15 @@ void SetupCEGUI(dtABC::Application& app)
    globalGUI = new dtGUI::GUI(app.GetCamera(),
             app.GetKeyboard(), app.GetMouse());
    globalGUI->SetScriptModule(new dtGUI::ScriptModule());
-   std::string ceguiDir(dtDAL::Project::GetInstance().GetContext());
-   globalGUI->SetResourceGroupDirectory("schemes", ceguiDir);
-   globalGUI->SetResourceGroupDirectory("imagesets", ceguiDir);
-   globalGUI->SetResourceGroupDirectory("looknfeel", ceguiDir);
-   globalGUI->SetResourceGroupDirectory("layouts", ceguiDir);
-   globalGUI->SetResourceGroupDirectory("fonts", ceguiDir);
+//   std::string ceguiDir(dtDAL::Project::GetInstance().GetContext(0));
+//   globalGUI->SetResourceGroupDirectory("schemes", ceguiDir);
+//   globalGUI->SetResourceGroupDirectory("imagesets", ceguiDir);
+//   globalGUI->SetResourceGroupDirectory("looknfeel", ceguiDir);
+//   globalGUI->SetResourceGroupDirectory("layouts", ceguiDir);
+//   globalGUI->SetResourceGroupDirectory("fonts", ceguiDir);
    try
    {
-      std::cout << "CEGUI in: " << ceguiDir << "\n\n";
+      //std::cout << "CEGUI in: " << ceguiDir << "\n\n";
       globalGUI->LoadScheme("CEGUI/schemes/WindowsLook.scheme");
 #endif
    }
@@ -240,7 +240,8 @@ int main (int argc, char* argv[])
       //Force this to false because many of the tests expect it to be false.
       dtCore::System::GetInstance().SetUseFixedTimeStep(false);
       dtUtil::SetDataFilePathList(dtUtil::GetDeltaDataPathList());
-      dtDAL::Project::GetInstance().SetContext("demos/" + SimCore::BaseGameEntryPoint::PROJECT_CONTEXT_DIR);
+      dtDAL::Project::GetInstance().SetContext("demos/ProjectAssets_Demos");
+      dtDAL::Project::GetInstance().AddContext("ProjectAssets_Shared");
       dtDAL::LibraryManager::GetInstance().LoadActorRegistry(SimCore::BaseGameEntryPoint::LIBRARY_NAME);
       SetupCEGUI(*globalApplication);
    }

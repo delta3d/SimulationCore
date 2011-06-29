@@ -190,6 +190,28 @@ namespace Utils
       return result;
    }
 
+   // From DR Helper.  Needs to move into a math header.
+   /////////////////////////////////////////////////////////////////////////////
+   void OrientTransform(dtCore::Transform& xform,
+      osg::Matrix& rotation, const osg::Vec3& location, const osg::Vec3& normal)
+   {
+      osg::Vec3 oldNormal(0, 0, 1);
+
+      osg::Vec3 newNormal = normal;
+      if (oldNormal * normal < 0.0f)
+      {
+         newNormal = -normal;
+      }
+
+      oldNormal = osg::Matrix::transform3x3(oldNormal, rotation);
+      osg::Matrix normalRot;
+      normalRot.makeRotate(oldNormal, newNormal);
+
+      rotation = rotation * normalRot;
+
+      xform.Set(location, rotation);
+   }
+
    ///////////////////////////////////////////////////////////////////////////////////
    bool KeepBodyOnGround(dtPhysics::TransformType& transformToUpdate, float dropHeight,
             float maxDepthBelow, float maxHeightAbove, dtPhysics::CollisionGroupFilter collisionFlags)
@@ -202,6 +224,9 @@ namespace Utils
 
       dtPhysics::VectorType pos;
       transformToUpdate.GetTranslation(pos);
+
+
+      osg::Vec3 normal(0.0, 0.0, 1.0);
 
       osg::Vec3 hp;
       osg::Vec3 endPos = pos;
@@ -235,6 +260,7 @@ namespace Utils
             {
                hp = report.mHitPos;
                largestDistance = report.mDistance;
+               normal = report.mHitNormal;
             }
 
             if (underearth && pos[2] + offsettodo > report.mHitPos.z())
@@ -260,7 +286,8 @@ namespace Utils
       {
          // Setting to the highest position in either case.
          pos.z() = hp[2] + dropHeight;
-         transformToUpdate.SetTranslation(pos);
+         osg::Matrix rot;
+         OrientTransform(transformToUpdate, rot, pos, normal);
       }
       return result;
 

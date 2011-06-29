@@ -71,7 +71,8 @@ namespace SimCore
 
       ////////////////////////////////////////////////////////////////////////////////
       ControlStateComponent::ControlStateComponent( const std::string& name )
-         : dtGame::GMComponent(name)
+      : dtGame::GMComponent(name)
+      , mDisableRemoteWeaponModelSwap(false)
       {
       }
 
@@ -359,6 +360,25 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////
+      unsigned ControlStateComponent::GetWeaponOnVehicleControlState( const dtCore::UniqueId& vehicleID )
+      {
+         const SimCore::Actors::ControlStateActor* vehicleControl = FindVehicleControlState( vehicleID );
+
+         unsigned result = 0;
+
+         if( vehicleControl != NULL )
+         {
+            const SimCore::Actors::DiscreteControl* weaponControl = vehicleControl->GetDiscreteControl(CONTROL_NAME_WEAPON);
+            if( weaponControl != NULL )
+            {
+               result = unsigned(weaponControl->GetCurrentState());
+            }
+         }
+
+         return result;
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////
       bool ControlStateComponent::IsStationAvailableOnVehicle(
          unsigned station, const SimCore::Actors::ControlStateActor& vehicleControl )
       {
@@ -372,7 +392,12 @@ namespace SimCore
       SimCore::Actors::ControlStateActor* ControlStateComponent::FindVehicleControlState( const SimCore::Actors::Platform& vehicle )
       {
          const dtCore::UniqueId& vehicleID = vehicle.GetUniqueId();
+         return FindVehicleControlState(vehicleID);
+      }
 
+      ////////////////////////////////////////////////////////////////////////////////
+      SimCore::Actors::ControlStateActor* ControlStateComponent::FindVehicleControlState( const dtCore::UniqueId& vehicleID )
+      {
          // Determine if the current vehicle control state is the one for the specified vehicle.
          if( HasVehicleControl( vehicleID ) )
          {
@@ -698,7 +723,11 @@ namespace SimCore
             {
                if( controlStateInfo.mWeaponModel.valid() )
                {
-                  //AttachModelOnVehicle( *(controlStateInfo.mWeaponModel.get()), *vehicle, DOF_NAME_WEAPON );
+                  if (!mDisableRemoteWeaponModelSwap)
+                  {
+                     // This call breakes the HMMWV
+                     AttachModelOnVehicle( *(controlStateInfo.mWeaponModel.get()), *vehicle, DOF_NAME_WEAPON );
+                  }
                }
             }
          }

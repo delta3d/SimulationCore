@@ -536,7 +536,8 @@ namespace SimCore
          // No need to do a find if when labels are off.
          if (GetOptions().ShowLabels())
          {
-            mGM->FindActorsIf(GetOptions(), proxies);
+            LabelOptions options = GetOptions();
+            mGM->FindActorsIf(options, proxies);
          }
 
          // Get the MAIN camera.

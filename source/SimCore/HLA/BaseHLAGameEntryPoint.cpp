@@ -74,7 +74,7 @@ namespace SimCore
                const std::string fedFile = dtDAL::Project::GetInstance().
                   GetResourcePath(dtDAL::ResourceDescriptor(mFedFileResource, mFedFileResource));
 
-               hlaCC->AddMap(mMapName);
+               hlaCC->AddMap(GetMapName());
                hlaCC->SetConfigFile(fedMappingFile);
                hlaCC->SetFedEx(mFederationExecutionName);
                hlaCC->SetFedName(mFederateName);

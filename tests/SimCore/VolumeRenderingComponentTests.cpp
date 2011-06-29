@@ -117,11 +117,15 @@ namespace SimCore
                b._max.x() <= 6.0f);
 
 
+            char str[255];
             for(unsigned i = 0; i < 25; ++i)
             {
+               osg::Vec4 val4 = volume1->GetPointLocation(i);
+               osg::Vec3 val(val4.x(), val4.y(), val4.z());
+               snprintf(str, 255, "ParticleVolumeDrawable points should be within our radius. Index %i point distance %f", i, val.length());
                //test some points to see if they are within our radius
-               CPPUNIT_ASSERT_MESSAGE("ParticleVolumeDrawable points should be within our radius",
-                  volume1->GetPointLocation(1).length() <= 1.0f);
+               CPPUNIT_ASSERT_MESSAGE(str,
+                     val.length() <= 1.0f);
             }
 
             CPPUNIT_ASSERT_EQUAL_MESSAGE("ParticleVolumeDrawable should not crash if a point is accessed that is out of bounds",
