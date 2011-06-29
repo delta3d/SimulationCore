@@ -146,10 +146,9 @@ void GameStateTests::tearDown()
 ////////////////////////////////////////////////////////////////////////////////
 void GameStateTests::TestLoadTransitionFile()
 {
-   const char pathSep = dtUtil::FileUtils::PATH_SEPARATOR;
-   bool loadedFile = mGameStateComponent->LoadTransitions(dtDAL::Project::GetInstance().GetContext()
-      +pathSep+"Transitions"+pathSep+"TestTransitions.xml");
-   CPPUNIT_ASSERT_MESSAGE("Unable to load transition file", loadedFile);
+   std::string filePath = dtDAL::Project::GetInstance().GetResourcePath(dtDAL::ResourceDescriptor("Transitions:TestTransitions.xml"));
+   bool loadedFile = mGameStateComponent->LoadTransitions(filePath);
+   CPPUNIT_ASSERT_MESSAGE("Unable to load transition file: filePath" , loadedFile);
 
    CPPUNIT_ASSERT_MESSAGE("We should begin in the intro state", mGameStateComponent->GetCurrentState() == &StateType::STATE_INTRO);
 
