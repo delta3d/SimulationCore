@@ -355,8 +355,10 @@ void BaseEntityActorProxyTests::TestPlatformLoadMesh(SimCore::Actors::Platform* 
    CPPUNIT_ASSERT(currentNode->getParent(0)->getUserData() != NULL);
    osg::Node* copiedNode = dynamic_cast<osg::Node*>(currentNode->getParent(0)->getUserData());
    CPPUNIT_ASSERT(copiedNode != NULL);
-   CPPUNIT_ASSERT_EQUAL(std::string(dtDAL::Project::GetInstance().GetContext(0) + dtUtil::FileUtils::PATH_SEPARATOR + "StaticMeshes" + dtUtil::FileUtils::PATH_SEPARATOR + "physics_happy_sphere.ive"),
-         currentNode->getParent(0)->getName());
+   CPPUNIT_ASSERT(std::string(dtDAL::Project::GetInstance().GetContext(0) + dtUtil::FileUtils::PATH_SEPARATOR + "StaticMeshes" + dtUtil::FileUtils::PATH_SEPARATOR + "physics_happy_sphere.ive") ==
+         currentNode->getParent(0)->getName() ||
+   std::string(dtDAL::Project::GetInstance().GetContext(1) + dtUtil::FileUtils::PATH_SEPARATOR + "StaticMeshes" + dtUtil::FileUtils::PATH_SEPARATOR + "physics_happy_sphere.ive") ==
+         currentNode->getParent(0)->getName() );
    CPPUNIT_ASSERT_EQUAL(state.GetName(), currentNode->getName());
 
    platform->LoadDamageableFile(happySphere, state);
@@ -405,8 +407,10 @@ void BaseEntityActorProxyTests::TestPlatformLoadMesh(SimCore::Actors::Platform* 
       currentNode = platform->GetDestroyedFileNode();
    }
 
-   CPPUNIT_ASSERT_EQUAL(std::string(dtDAL::Project::GetInstance().GetContext(0) + dtUtil::FileUtils::PATH_SEPARATOR + "StaticMeshes" + dtUtil::FileUtils::PATH_SEPARATOR + "physics_crate.ive"),
-         currentNode->getParent(0)->getName());
+   CPPUNIT_ASSERT(std::string(dtDAL::Project::GetInstance().GetContext(0) + dtUtil::FileUtils::PATH_SEPARATOR + "StaticMeshes" + dtUtil::FileUtils::PATH_SEPARATOR + "physics_crate.ive") ==
+            currentNode->getParent(0)->getName() ||
+            std::string(dtDAL::Project::GetInstance().GetContext(1) + dtUtil::FileUtils::PATH_SEPARATOR + "StaticMeshes" + dtUtil::FileUtils::PATH_SEPARATOR + "physics_crate.ive") ==
+                        currentNode->getParent(0)->getName());
    CPPUNIT_ASSERT_EQUAL(state.GetName(), currentNode->getName());
 
    platform->LoadDamageableFile(dtDAL::ResourceDescriptor::NULL_RESOURCE, state);
