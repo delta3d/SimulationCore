@@ -1,24 +1,29 @@
-# Locate gdal
+# Locate Simulation Core
 # This module defines
-# SIMULATIONCORE_EXT_DIR
 # SIMULATIONCORE_FOUND, if false, do not try to link to gdal 
 # SIMULATIONCORE_INCLUDE_DIR, where to find the headers
+# SIMULATIONCORE_LIB_DIR
+# OSGEPHEMERIS_INCLUDE_DIR
 #
 # $SIMULATIONCORE_DIR is an environment variable that would
 # correspond to the ./configure --prefix=$DELTA3D
 #
 # Created by David Guthrie. 
 
-SET(SIMULATIONCORE_DIR $ENV{SIMCORE_ROOT})
+if (NOT SIMULATIONCORE_DIR)
+  SET(SIMULATIONCORE_DIR $ENV{SIMCORE_ROOT})
+endif(NOT SIMULATIONCORE_DIR)
+
 IF(SIMULATIONCORE_DIR)
   FILE(TO_CMAKE_PATH ${SIMULATIONCORE_DIR} SIMULATIONCORE_DIR)
 ENDIF(SIMULATIONCORE_DIR)
 
 FIND_PATH(SIMULATIONCORE_DIR include/SimCore/Export.h
-    PATHS
+    HINTS
       ${CMAKE_SOURCE_DIR}
       ${CMAKE_SOURCE_DIR}/../SimulationCore
-    $ENV{SIMCORE_ROOT}
+      $ENV{SIMCORE_ROOT}
+    PATHS
     /usr/local
     /usr
     /sw # Fink
@@ -27,28 +32,57 @@ FIND_PATH(SIMULATIONCORE_DIR include/SimCore/Export.h
     /opt
 )
 
-find_path(SIMULATIONCORE_INCLUDE_DIR NAMES SimCore/Export.h PATH_SUFFIXES include inc
+FIND_FILE(SIMULATIONCORE_CONFIG_FILE SimCoreConfig.cmake
+    PATH_SUFFIXES
+       superbuild/SimulationCore-build
+       build
+       Debug
+       Release
+       share/SimCore
+       share/SimulationCore
+    HINTS
+       ${SIMULATIONCORE_DIR}
     PATHS
-    ${SIMULATIONCORE_DIR}
-    NO_DEFAULT_PATH
+    /usr/local
+    /usr
+    /sw # Fink
+    /opt/local # DarwinPorts
+    /opt/csw # Blastwave
+    /opt
 )
 
+if (SIMULATIONCORE_CONFIG_FILE)
+   message (Found the file!!!  ${SIMULATIONCORE_CONFIG_FILE})
+   include(${SIMULATIONCORE_CONFIG_FILE})
+endif(SIMULATIONCORE_CONFIG_FILE)
+
+find_path(SIMULATIONCORE_INCLUDE_DIR NAMES SimCore/Export.h PATH_SUFFIXES include inc
+    HINTS
+    ${SIMULATIONCORE_DIR}
+)
+
+MARK_AS_ADVANCED(SIMULATIONCORE_INCLUDE_DIR)
+
 find_path(SIMULATIONCORE_LIB_DIR NAMES libSimCore.so libSimCore.dylib SimCore.dll .
-    PATHS
+    HINTS
        ${SIMULATIONCORE_DIR}
-    PATH_SUFFIXES
+       ${CMAKE_BINARY_DIR}
+    PATH_SUFFIXES       
+       superbuild/SimulationCore-build/lib
        Build/lib
        Debug/lib
        Release/lib
        lib
-    NO_DEFAULT_PATH
 )
 
+MARK_AS_ADVANCED(SIMULATIONCORE_LIB_DIR)
+
 find_path(OSGEPHEMERIS_INCLUDE_DIR NAMES osgEphemeris
-    PATHS
+    HINTS
     ${SIMULATIONCORE_DIR}/ext/source/osgEphemeris/include
-    NO_DEFAULT_PATH
 )
+
+MARK_AS_ADVANCED(OSGEPHEMERIS_INCLUDE_DIR)
 
 SET(SIMCORE_LIBRARY SimCore)
 SET(SIMCORE_WIDGETS_LIBRARY SimCoreWidgets)
