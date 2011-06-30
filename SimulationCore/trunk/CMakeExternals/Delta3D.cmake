@@ -12,9 +12,15 @@
   SET(Delta3D_DEPENDS ${proj})
 
   IF(NOT DEFINED DELTA_DIR)
+    set(${proj}_BINARY_MODE BINARY_DIR ${CMAKE_BINARY_DIR}/${proj}-build)
+      if (SUPER_BUILD_IN_SOURCE)
+      set(${proj}_BINARY_MODE BUILD_IN_SOURCE 1)
+    endif()
+
     ExternalProject_Add(${proj}
       SVN_REPOSITORY https://delta3d.svn.sourceforge.net/svnroot/delta3d/trunk/delta3d
-      BINARY_DIR ${proj}-build
+      ${${proj}_BINARY_MODE}
+      SOURCE_DIR ${proj}
       INSTALL_COMMAND ""
       CMAKE_GENERATOR ${gen}
       CMAKE_ARGS
