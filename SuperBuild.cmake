@@ -51,6 +51,7 @@ SET(external_projects
 # Set superbuild boolean args
 #-----------------------------------------------------------------------------
 
+OPTION(SUPER_BUILD_IN_SOURCE "Build external projects and SimCore in the source trees" OFF)
 OPTION(BUILD_BINDINGS "Build delta3d python bindings" OFF)
 
 SET(BUILD_EXAMPLES ${BUILD_DEMOS})
@@ -116,6 +117,11 @@ ENDFOREACH()
   SET(proj_DEPENDENCIES Delta3D dtPhysics)
   SET(SimulationCore_DEPENDS ${proj})
 
+  set(${proj}_BINARY_MODE BINARY_DIR ${CMAKE_BINARY_DIR}/${proj}-build)
+  if (SUPER_BUILD_IN_SOURCE)
+     set(${proj}_BINARY_MODE BUILD_IN_SOURCE 1)
+  endif()
+
   ExternalProject_Add(${proj}
     DOWNLOAD_COMMAND ""
     INSTALL_COMMAND ""
@@ -132,7 +138,7 @@ ENDFOREACH()
       -DDTPHYSICS_LIB_DIR:PATH=${DTPHYSICS_LIB_DIR}
       -DDTPHYSICS_EXT_DIR:PATH=${DTPHYSICS_EXT_DIR}
      SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}
-     BINARY_DIR ${CMAKE_BINARY_DIR}/${proj}-build
+     ${${proj}_BINARY_MODE}
      #BUILD_COMMAND ""
      INSTALL_COMMAND ""
      DEPENDS ${proj_DEPENDENCIES}
