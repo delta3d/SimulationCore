@@ -65,6 +65,10 @@ SET(global_cmake_boolean_args
   AUTO_RUN_TESTS
   )
 
+if (RTIS_SINGLE_LIBRARY)
+   LIST(APPEND global_cmake_boolean_args RTIS_SINGLE_LIBRARY)
+endif(RTIS_SINGLE_LIBRARY)
+
 if (MSVC)
    LIST(APPEND global_cmake_boolean_args BUILD_WITH_MP)
 endif()
