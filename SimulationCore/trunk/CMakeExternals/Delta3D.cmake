@@ -25,7 +25,7 @@
         -DBUILD_NET:BOOL=ON
         -DBUILD_TERRAIN:BOOL=OFF
         -DAUTO_RUN_TESTS:BOOL=${AUTO_RUN_TESTS}
-        -DDELTA3D_EXT_DIR:PATH=${CMAKE_CURRENT_SOURCE_DIR}/ext
+        -DDELTA3D_EXT_DIR:PATH=${CMAKE_SOURCE_DIR}/ext
       DEPENDS ${proj_DEPENDENCIES}
      )
      ExternalProject_Get_Property(${proj} SOURCE_DIR)

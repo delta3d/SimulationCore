@@ -341,6 +341,12 @@ if (BUILD_DEMOS)
    ADD_SUBDIRECTORY(demos)
 endif (BUILD_DEMOS)
 
+CONFIGURE_FILE(
+  "${CMAKE_CURRENT_SOURCE_DIR}/SimCoreConfig.cmake.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/SimCoreConfig.cmake"
+  IMMEDIATE @ONLY)
+
+
 #-----------------------------------------------------------------------------
 ### uninstall target
 #-----------------------------------------------------------------------------
