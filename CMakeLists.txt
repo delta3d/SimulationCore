@@ -198,14 +198,6 @@ IF (DELTA3D_FOUND)
    FIND_PACKAGE(HAWKNL REQUIRED)
    FIND_PACKAGE(GNE REQUIRED)
    FIND_PACKAGE(Boost)
-   #if (NOT Boost_INCLUDE_DIR)
-   #   FIND_PATH(Boost_INCLUDE_DIR PATH boost/version.hpp
-   #      PATH_SUFFIXES inc include
-   #      PATHS
-   #      $(DELTA3D_EXT_DIR)
-   #      $(CMAKE_SOURCE_DIR)/ext
-   #   )
-   #endif (NOT Boost_INCLUDE_DIR)
    
 
    IF (NOT WIN32 AND NOT APPLE)

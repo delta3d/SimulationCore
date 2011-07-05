@@ -42,10 +42,10 @@
      )
      ExternalProject_Get_Property(${proj} SOURCE_DIR)
      
-     SET(DELTA_DIR ${SOURCE_DIR})
+     SET(DELTA_DIR ${${proj}_SOURCE_DIR}/${proj})
      SET(DELTA3D_INCLUDE_DIR ${DELTA_DIR}/inc)
      SET(DELTA3D_LIB_DIR ${CMAKE_CURRENT_BINARY_DIR}/${proj}-build/lib)
-     SET(DELTA3D_EXT_DIR ${CMAKE_BINARY_DIR}/ext)
+     SET(DELTA3D_EXT_DIR ${CMAKE_SOURCE_DIR}/ext)
   
   ELSE()
 
