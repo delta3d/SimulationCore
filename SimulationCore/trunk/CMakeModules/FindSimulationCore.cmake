@@ -35,6 +35,7 @@ FIND_PATH(SIMULATIONCORE_DIR include/SimCore/Export.h
 FIND_FILE(SIMULATIONCORE_CONFIG_FILE SimCoreConfig.cmake
     PATH_SUFFIXES
        superbuild/SimulationCore-build
+       build/SimulationCore-build
        build
        Debug
        Release
@@ -52,7 +53,6 @@ FIND_FILE(SIMULATIONCORE_CONFIG_FILE SimCoreConfig.cmake
 )
 
 if (SIMULATIONCORE_CONFIG_FILE)
-   message (Found the file!!!  ${SIMULATIONCORE_CONFIG_FILE})
    include(${SIMULATIONCORE_CONFIG_FILE})
 endif(SIMULATIONCORE_CONFIG_FILE)
 
