@@ -8,19 +8,26 @@
   ENDIF()
 
   SET(proj dtPhysics)
-  SET(proj_DEPENDENCIES Delta3D)
+  SET(proj_DEPENDENCIES delta3d)
   SET(dtPhysics_DEPENDS ${proj})
 
-  set(${proj}_BINARY_MODE BINARY_DIR ${CMAKE_BINARY_DIR}/${proj}-build)
-    if (SUPER_BUILD_IN_SOURCE)
-    set(${proj}_BINARY_MODE BUILD_IN_SOURCE 1)
-  endif()
 
   IF(NOT DEFINED DTPHYSICS_DIR)
+    set(${proj}_BINARY_MODE BINARY_DIR ${CMAKE_BINARY_DIR}/${proj}-build)
+      if (SUPER_BUILD_IN_SOURCE)
+      set(${proj}_BINARY_MODE BUILD_IN_SOURCE 1)
+    endif()
+      
+    set(${proj}_SOURCE_DIR  )
+    if (SUPER_BUILD_SOURCE_AT_TOP_LEVEL)
+      set(${proj}_SOURCE_DIR  )
+      set(${proj}_SOURCE_DIR ${CMAKE_SOURCE_DIR}/../)
+    endif()
+
     ExternalProject_Add(${proj}
       SVN_REPOSITORY https://delta3d-extras.svn.sourceforge.net/svnroot/delta3d-extras/dtPhysics/trunk
       ${${proj}_BINARY_MODE}
-      SOURCE_DIR ${proj}
+      SOURCE_DIR ${${proj}_SOURCE_DIR}${proj}
       INSTALL_COMMAND ""
       CMAKE_GENERATOR ${gen}
       CMAKE_ARGS
