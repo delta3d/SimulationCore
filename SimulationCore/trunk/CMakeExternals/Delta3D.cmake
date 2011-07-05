@@ -7,20 +7,26 @@
     MESSAGE(FATAL_ERROR "DELTA_DIR variable is defined but corresponds to non-existing directory")
   ENDIF()
 
-  SET(proj Delta3D)
+  SET(proj delta3d)
   SET(proj_DEPENDENCIES )
   SET(Delta3D_DEPENDS ${proj})
 
   IF(NOT DEFINED DELTA_DIR)
     set(${proj}_BINARY_MODE BINARY_DIR ${CMAKE_BINARY_DIR}/${proj}-build)
-      if (SUPER_BUILD_IN_SOURCE)
+    if (SUPER_BUILD_IN_SOURCE)
       set(${proj}_BINARY_MODE BUILD_IN_SOURCE 1)
+    endif()
+
+    set(${proj}_SOURCE_DIR  )
+    if (SUPER_BUILD_SOURCE_AT_TOP_LEVEL)
+      set(${proj}_SOURCE_DIR  )
+      set(${proj}_SOURCE_DIR ${CMAKE_SOURCE_DIR}/../)
     endif()
 
     ExternalProject_Add(${proj}
       SVN_REPOSITORY https://delta3d.svn.sourceforge.net/svnroot/delta3d/trunk/delta3d
       ${${proj}_BINARY_MODE}
-      SOURCE_DIR ${proj}
+      SOURCE_DIR ${${proj}_SOURCE_DIR}${proj}
       INSTALL_COMMAND ""
       CMAKE_GENERATOR ${gen}
       CMAKE_ARGS

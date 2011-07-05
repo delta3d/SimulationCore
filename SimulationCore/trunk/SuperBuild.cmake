@@ -52,6 +52,7 @@ SET(external_projects
 #-----------------------------------------------------------------------------
 
 OPTION(SUPER_BUILD_IN_SOURCE "Build external projects and SimCore in the source trees" OFF)
+OPTION(SUPER_BUILD_SOURCE_AT_TOP_LEVEL "Put the source trees for the dependencies in the same directory as the Simulation Core source" OFF)
 OPTION(BUILD_BINDINGS "Build delta3d python bindings" OFF)
 
 SET(BUILD_EXAMPLES ${BUILD_DEMOS})
@@ -114,7 +115,7 @@ ENDFOREACH()
 
 
   SET(proj SimulationCore)
-  SET(proj_DEPENDENCIES Delta3D dtPhysics)
+  SET(proj_DEPENDENCIES delta3d dtPhysics)
   SET(SimulationCore_DEPENDS ${proj})
 
   set(${proj}_BINARY_MODE BINARY_DIR ${CMAKE_BINARY_DIR}/${proj}-build)
