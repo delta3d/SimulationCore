@@ -63,7 +63,7 @@ find_path(SIMULATIONCORE_INCLUDE_DIR NAMES SimCore/Export.h PATH_SUFFIXES includ
 
 MARK_AS_ADVANCED(SIMULATIONCORE_INCLUDE_DIR)
 
-find_path(SIMULATIONCORE_LIB_DIR NAMES libSimCore.so libSimCore.dylib SimCore.dll .
+find_path(SIMULATIONCORE_LIB_DIR NAMES libSimCore.so libSimCore.dylib SimCore.lib .
     HINTS
        ${SIMULATIONCORE_DIR}
        ${CMAKE_BINARY_DIR}
