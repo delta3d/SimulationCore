@@ -17,10 +17,9 @@
       set(${proj}_BINARY_MODE BUILD_IN_SOURCE 1)
     endif()
 
-    set(${proj}_SOURCE_DIR  )
+    set(${proj}_SOURCE_DIR  ${CMAKE_BINARY_DIR})
     if (SUPER_BUILD_SOURCE_AT_TOP_LEVEL)
-      set(${proj}_SOURCE_DIR  )
-      set(${proj}_SOURCE_DIR ${CMAKE_SOURCE_DIR}/../)
+      set(${proj}_SOURCE_DIR ${CMAKE_SOURCE_DIR}/..)
     endif()
 
      
@@ -37,7 +36,7 @@
     ExternalProject_Add(${proj}
       SVN_REPOSITORY https://delta3d.svn.sourceforge.net/svnroot/delta3d/trunk/delta3d
       ${${proj}_BINARY_MODE}
-      SOURCE_DIR ${${proj}_SOURCE_DIR}${proj}
+      SOURCE_DIR ${${proj}_SOURCE_DIR}/${proj}
       INSTALL_COMMAND ""
       CMAKE_GENERATOR ${gen}
       CMAKE_ARGS
@@ -52,18 +51,7 @@
         -DDELTA3D_EXT_DIR:PATH=${CMAKE_SOURCE_DIR}/ext
       DEPENDS ${proj_DEPENDENCIES}
      )
-     ExternalProject_Get_Property(${proj} SOURCE_DIR)
      
-     SET(DELTA_DIR ${${proj}_SOURCE_DIR}/${proj})
-     SET(DELTA3D_INCLUDE_DIR ${DELTA_DIR}/inc)
-     if (NOT SUPER_BUILD_IN_SOURCE)
-       SET(DELTA3D_LIB_DIR ${CMAKE_CURRENT_BINARY_DIR}/${proj}-build/lib)
-     else()
-       SET(DELTA3D_LIB_DIR ${DELTA_DIR}/lib)
-     endif()
-     
-     SET(DELTA3D_EXT_DIR ${CMAKE_SOURCE_DIR}/ext)
-  
   ELSE()
 
     MacroEmptyExternalProject(${proj} "${proj_DEPENDENCIES}")
