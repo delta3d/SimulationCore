@@ -18,13 +18,12 @@
       set(${proj}_BINARY_MODE BUILD_IN_SOURCE 1)
     endif()
       
-    set(${proj}_SOURCE_DIR  )
+    set(${proj}_SOURCE_DIR  ${CMAKE_BINARY_DIR})
     if (SUPER_BUILD_SOURCE_AT_TOP_LEVEL)
-      set(${proj}_SOURCE_DIR  )
-      set(${proj}_SOURCE_DIR ${CMAKE_SOURCE_DIR}/../)
+      set(${proj}_SOURCE_DIR ${CMAKE_SOURCE_DIR}/..)
     endif()
 
-    SET(DTPHYSICS_DIR ${SOURCE_DIR})
+    SET(DTPHYSICS_DIR ${${proj}_SOURCE_DIR}/${proj})
     SET(DTPHYSICS_INCLUDE_DIR ${DTPHYSICS_DIR}/include)
     if (NOT SUPER_BUILD_IN_SOURCE)
       SET(DTPHYSICS_LIB_DIR ${CMAKE_CURRENT_BINARY_DIR}/${proj}-build/lib)
@@ -36,7 +35,7 @@
     ExternalProject_Add(${proj}
       SVN_REPOSITORY https://delta3d-extras.svn.sourceforge.net/svnroot/delta3d-extras/dtPhysics/trunk
       ${${proj}_BINARY_MODE}
-      SOURCE_DIR ${${proj}_SOURCE_DIR}${proj}
+      SOURCE_DIR ${${proj}_SOURCE_DIR}/${proj}
       INSTALL_COMMAND ""
       CMAKE_GENERATOR ${gen}
       CMAKE_ARGS
@@ -50,8 +49,6 @@
         -DDTPHYSICS_LIB_DIR:PATH=${DTPHYSICS_LIB_DIR}
       DEPENDS ${proj_DEPENDENCIES}
      )
-     ExternalProject_Get_Property(${proj} SOURCE_DIR)
-
   ELSE()
 
     MacroEmptyExternalProject(${proj} "${proj_DEPENDENCIES}")
