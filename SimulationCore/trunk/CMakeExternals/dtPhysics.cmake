@@ -24,6 +24,15 @@
       set(${proj}_SOURCE_DIR ${CMAKE_SOURCE_DIR}/../)
     endif()
 
+    SET(DTPHYSICS_DIR ${SOURCE_DIR})
+    SET(DTPHYSICS_INCLUDE_DIR ${DTPHYSICS_DIR}/include)
+    if (NOT SUPER_BUILD_IN_SOURCE)
+      SET(DTPHYSICS_LIB_DIR ${CMAKE_CURRENT_BINARY_DIR}/${proj}-build/lib)
+    else()
+      SET(DTPHYSICS_LIB_DIR ${DTPHYSICS_DIR}/lib)
+    endif()
+    SET(DTPHYSICS_EXT_DIR ${DTPHYSICS_DIR}/ext)
+
     ExternalProject_Add(${proj}
       SVN_REPOSITORY https://delta3d-extras.svn.sourceforge.net/svnroot/delta3d-extras/dtPhysics/trunk
       ${${proj}_BINARY_MODE}
@@ -38,18 +47,11 @@
         -DDELTA3D_LIB_DIR:PATH=${DELTA3D_LIB_DIR}
         -DDELTA3D_EXT_DIR:PATH=${DELTA3D_EXT_DIR}
         -DQT_QMAKE_EXECUTABLE:FILEPATH=${QT_QMAKE_EXECUTABLE}
+        -DDTPHYSICS_LIB_DIR:PATH=${DTPHYSICS_LIB_DIR}
       DEPENDS ${proj_DEPENDENCIES}
      )
      ExternalProject_Get_Property(${proj} SOURCE_DIR)
 
-     SET(DTPHYSICS_DIR ${SOURCE_DIR})
-     SET(DTPHYSICS_INCLUDE_DIR ${DTPHYSICS_DIR}/include)
-     if (NOT SUPER_BUILD_IN_SOURCE)
-       SET(DTPHYSICS_LIB_DIR ${CMAKE_CURRENT_BINARY_DIR}/${proj}-build/lib)
-     else()
-       SET(DTPHYSICS_LIB_DIR ${DTPHYSICS_DIR}/lib)
-     endif()
-     SET(DTPHYSICS_EXT_DIR ${DTPHYSICS_DIR}/ext)
   ELSE()
 
     MacroEmptyExternalProject(${proj} "${proj_DEPENDENCIES}")
