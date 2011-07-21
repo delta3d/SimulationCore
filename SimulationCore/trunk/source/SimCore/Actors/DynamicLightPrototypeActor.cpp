@@ -78,8 +78,8 @@ namespace SimCore
          static const dtUtil::RefString PROPERTY_INTENSITY_DESC("A multiplier for the effect of the light. Can be used to disable or enable a light. Typically 0 or 1 (default). " \
             "Value also used for NVG effects - ex 1000 used for bright flares.");
          AddProperty(new dtDAL::FloatActorProperty(PROPERTY_INTENSITY, PROPERTY_INTENSITY, 
-                  dtDAL::FloatActorProperty::SetFuncType(actor, &DynamicLightPrototypeActor::SetIntensity),
-                  dtDAL::FloatActorProperty::GetFuncType(actor, &DynamicLightPrototypeActor::GetIntensity),
+            dtDAL::FloatActorProperty::SetFuncType(actor, &DynamicLightPrototypeActor::SetIntensity),
+            dtDAL::FloatActorProperty::GetFuncType(actor, &DynamicLightPrototypeActor::GetIntensity),
             PROPERTY_INTENSITY_DESC, LIGHT_GROUP));
 
          static const dtUtil::RefString PROPERTY_ATTENUATION("Attenuation");
