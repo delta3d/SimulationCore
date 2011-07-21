@@ -105,10 +105,11 @@ namespace SimCore
       // Munition Effect Code
       //////////////////////////////////////////////////////////////////////////
       MunitionEffect::MunitionEffect()
-         : mDynamicLightEnabled(false)
-         , mDynamicLightID(0)
-         , mLifeTime(0.0f)
-         , mMaxLifeTime(1.0f)
+      : dtCore::Transformable("MunitionEffect")
+      , mDynamicLightEnabled(false)
+      , mDynamicLightID(0)
+      , mLifeTime(0.0f)
+      , mMaxLifeTime(1.0f)
       {
          SetVisible( true ); // ensures node mask is set to the proper value.
       }
