@@ -143,7 +143,7 @@ namespace SimCore
             //dl->mColor.set(1.0f, 0.2f, 0.2f);
             //dl->mAttenuation.set(0.1, 0.05, 0.0002);
             //dl->mIntensity = 1.0f;
-            mDynamicLight = new dtCore::Transformable();
+            mDynamicLight = new dtCore::Transformable(name + " - Dynamic Light");
             dl->mTarget = mDynamicLight.get();
             //dl->mFlicker = true;
             //dl->mFlickerScale = 0.1f;
@@ -173,7 +173,7 @@ namespace SimCore
 
 
       ////////////////////////////////////////////////////////////////////
-      MunitionParticlesActor::MunitionParticlesActor(dtGame::GameActorProxy &proxy)
+      MunitionParticlesActor::MunitionParticlesActor(dtGame::GameActorProxy& proxy)
       : PhysicsParticleSystemActor(proxy)
       , mUseTracers(false)
       , mCurrentTracerRoundNumber(0)

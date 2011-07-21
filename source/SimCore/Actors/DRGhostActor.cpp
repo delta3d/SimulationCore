@@ -227,7 +227,7 @@ namespace SimCore
             // Global Parent for Vel and Accel arrows
             // We put all of our arrows under a special node that is NOT a child 
             // of the slave OR the ghost. The parent is world relative and doesn't move.
-            mArrowGlobalParentNode = new dtCore::Transformable();
+            mArrowGlobalParentNode = new dtCore::Transformable("Arrow");
             dtGame::IEnvGameActorProxy *envProxy = GetGameActorProxy().GetGameManager()->GetEnvironmentActor();
             if (envProxy != NULL)
             {
