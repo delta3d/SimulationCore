@@ -70,7 +70,7 @@ namespace SimCore
       {
          dtGame::GameActorProxy::BuildPropertyMap();
 
-         DynamicLightPrototypeActor& actor = static_cast<DynamicLightPrototypeActor&>(GetGameActor());
+         DynamicLightPrototypeActor* actor = static_cast<DynamicLightPrototypeActor*>(GetActor());
 
          static const dtUtil::RefString LIGHT_GROUP("Dynamic Light");
 
@@ -78,74 +78,64 @@ namespace SimCore
          static const dtUtil::RefString PROPERTY_INTENSITY_DESC("A multiplier for the effect of the light. Can be used to disable or enable a light. Typically 0 or 1 (default). " \
             "Value also used for NVG effects - ex 1000 used for bright flares.");
          AddProperty(new dtDAL::FloatActorProperty(PROPERTY_INTENSITY, PROPERTY_INTENSITY, 
-            dtDAL::MakeFunctor(actor, &DynamicLightPrototypeActor::SetIntensity), 
-            dtDAL::MakeFunctorRet(actor, &DynamicLightPrototypeActor::GetIntensity), 
+                  dtDAL::FloatActorProperty::SetFuncType(actor, &DynamicLightPrototypeActor::SetIntensity),
+                  dtDAL::FloatActorProperty::GetFuncType(actor, &DynamicLightPrototypeActor::GetIntensity),
             PROPERTY_INTENSITY_DESC, LIGHT_GROUP));
 
          static const dtUtil::RefString PROPERTY_ATTENUATION("Attenuation");
          static const dtUtil::RefString PROPERTY_ATTENUATION_DESC("Controls how far the light is visible. The vec3 represents constant(X), linear(Y), quadratic(Z) attenuations");
          AddProperty(new dtDAL::Vec3ActorProperty(PROPERTY_ATTENUATION, PROPERTY_ATTENUATION,
-            dtDAL::MakeFunctor(actor, &DynamicLightPrototypeActor::SetAttenuation),
-            dtDAL::MakeFunctorRet(actor, &DynamicLightPrototypeActor::GetAttenuation),
+            dtDAL::Vec3ActorProperty::SetFuncType(actor, &DynamicLightPrototypeActor::SetAttenuation),
+            dtDAL::Vec3ActorProperty::GetFuncType(actor, &DynamicLightPrototypeActor::GetAttenuation),
             PROPERTY_ATTENUATION_DESC, LIGHT_GROUP));
-
-         //AddProperty(new dtDAL::FloatActorProperty("SaturationIntensity", "Saturation Intensity", 
-         //   dtDAL::MakeFunctor(actor, &DynamicLightPrototypeActor::SetSaturationIntensity), 
-         //   dtDAL::MakeFunctorRet(actor, &DynamicLightPrototypeActor::GetSaturationIntensity), 
-         //   "Unused", LIGHT_GROUP));
 
          static const dtUtil::RefString PROPERTY_LIGHTCOLOR("Light Color");
          static const dtUtil::RefString PROPERTY_LIGHTCOLOR_DESC("The base color of this light");
          AddProperty(new dtDAL::Vec3ActorProperty(PROPERTY_LIGHTCOLOR, PROPERTY_LIGHTCOLOR,
-            dtDAL::MakeFunctor(actor, &DynamicLightPrototypeActor::SetLightColor),
-            dtDAL::MakeFunctorRet(actor, &DynamicLightPrototypeActor::GetLightColor),
+            dtDAL::Vec3ActorProperty::SetFuncType(actor, &DynamicLightPrototypeActor::SetLightColor),
+            dtDAL::Vec3ActorProperty::GetFuncType(actor, &DynamicLightPrototypeActor::GetLightColor),
             PROPERTY_LIGHTCOLOR_DESC, LIGHT_GROUP));
-
-         //AddProperty(new dtDAL::BooleanActorProperty("FlickerEnabled", "Flicker Enabled",
-         //   dtDAL::MakeFunctor(e, &DynamicLightPrototypeActor::SetFlickerEnabled),
-         //   dtDAL::MakeFunctorRet(e, &DynamicLightPrototypeActor::IsFlickerEnabled),
-         //   "Indicates if the light should flicker. If enabled, the flicker scale is used to determine how much flicker. ", LIGHT_GROUP));
 
          static const dtUtil::RefString PROPERTY_FLICKERSCALE("Flicker Scale");
          static const dtUtil::RefString PROPERTY_FLICKERSCALE_DESC("Indicates if the light should flicker and how much. (value is the max range of variation - ex 0.1 to 0.4). 0.0 means no flicker.");
          AddProperty(new dtDAL::FloatActorProperty(PROPERTY_FLICKERSCALE, PROPERTY_FLICKERSCALE, 
-            dtDAL::MakeFunctor(actor, &DynamicLightPrototypeActor::SetFlickerScale), 
-            dtDAL::MakeFunctorRet(actor, &DynamicLightPrototypeActor::GetFlickerScale), 
+            dtDAL::FloatActorProperty::SetFuncType(actor, &DynamicLightPrototypeActor::SetFlickerScale),
+            dtDAL::FloatActorProperty::GetFuncType(actor, &DynamicLightPrototypeActor::GetFlickerScale),
             PROPERTY_FLICKERSCALE_DESC, LIGHT_GROUP));
 
          static const dtUtil::RefString PROPERTY_MAXIMUMTIME("Maximum Time");
          static const dtUtil::RefString PROPERTY_MAXIMUMTIME_DESC("The maximum time (in seconds) before this light will begin to fade out (see Fade Out Time). Use 0 to specify no maximum time");
          AddProperty(new dtDAL::FloatActorProperty(PROPERTY_MAXIMUMTIME, PROPERTY_MAXIMUMTIME, 
-            dtDAL::MakeFunctor(actor, &DynamicLightPrototypeActor::SetMaxTime), 
-            dtDAL::MakeFunctorRet(actor, &DynamicLightPrototypeActor::GetMaxTime), 
+            dtDAL::FloatActorProperty::SetFuncType(actor, &DynamicLightPrototypeActor::SetMaxTime),
+            dtDAL::FloatActorProperty::GetFuncType(actor, &DynamicLightPrototypeActor::GetMaxTime),
             PROPERTY_MAXIMUMTIME_DESC, LIGHT_GROUP));
 
          static const dtUtil::RefString PROPERTY_FADEOUTTIME("Fade Out Time");
          static const dtUtil::RefString PROPERTY_FADEOUTTIME_DESC("How long the light should take to fade out (in seconds). This occurs AFTER Max Time. 0 means no fade out.");
          AddProperty(new dtDAL::FloatActorProperty(PROPERTY_FADEOUTTIME, PROPERTY_FADEOUTTIME, 
-            dtDAL::MakeFunctor(actor, &DynamicLightPrototypeActor::SetFadeOutTime), 
-            dtDAL::MakeFunctorRet(actor, &DynamicLightPrototypeActor::GetFadeOutTime), 
+            dtDAL::FloatActorProperty::SetFuncType(actor, &DynamicLightPrototypeActor::SetFadeOutTime),
+            dtDAL::FloatActorProperty::GetFuncType(actor, &DynamicLightPrototypeActor::GetFadeOutTime),
             PROPERTY_FADEOUTTIME_DESC, LIGHT_GROUP));
 
          static const dtUtil::RefString PROPERTY_RADIUS("Radius");
          static const dtUtil::RefString PROPERTY_RADIUS_DESC("The distance the light should affect (currently used only for light priority, not for rendering) ");
          AddProperty(new dtDAL::FloatActorProperty(PROPERTY_RADIUS, PROPERTY_RADIUS, 
-            dtDAL::MakeFunctor(actor, &DynamicLightPrototypeActor::SetRadius), 
-            dtDAL::MakeFunctorRet(actor, &DynamicLightPrototypeActor::GetRadius), 
+            dtDAL::FloatActorProperty::SetFuncType(actor, &DynamicLightPrototypeActor::SetRadius),
+            dtDAL::FloatActorProperty::GetFuncType(actor, &DynamicLightPrototypeActor::GetRadius),
             PROPERTY_RADIUS_DESC, LIGHT_GROUP));
 
          static const dtUtil::RefString PROPERTY_DELETEONNULL("Delete When Target Is Null");
          static const dtUtil::RefString PROPERTY_DELETEONNULL_DESC("Indicates to delete the light if the target ever becomes NULL.");
          AddProperty(new dtDAL::BooleanActorProperty(PROPERTY_DELETEONNULL, PROPERTY_DELETEONNULL,
-            dtDAL::MakeFunctor(actor, &DynamicLightPrototypeActor::SetDeleteOnTargetIsNull),
-            dtDAL::MakeFunctorRet(actor, &DynamicLightPrototypeActor::IsDeleteOnTargetIsNull),
+            dtDAL::BooleanActorProperty::SetFuncType(actor, &DynamicLightPrototypeActor::SetDeleteOnTargetIsNull),
+            dtDAL::BooleanActorProperty::GetFuncType(actor, &DynamicLightPrototypeActor::IsDeleteOnTargetIsNull),
             PROPERTY_DELETEONNULL_DESC, LIGHT_GROUP));
 
          static const dtUtil::RefString PROPERTY_LIGHTTYPE("Dynamic Light Type");
          static const dtUtil::RefString PROPERTY_LIGHTTYPE_DESC("Indicates the general type of light. Used for priority and combining lights.");
          AddProperty(new dtDAL::EnumActorProperty<DynamicLightType>(PROPERTY_LIGHTTYPE, PROPERTY_LIGHTTYPE,
-            dtDAL::MakeFunctor(actor, &DynamicLightPrototypeActor::SetDynamicLightType),
-            dtDAL::MakeFunctorRet(actor, &DynamicLightPrototypeActor::GetDynamicLightType),
+            dtDAL::EnumActorProperty<DynamicLightType>::SetFuncType(actor, &DynamicLightPrototypeActor::SetDynamicLightType),
+            dtDAL::EnumActorProperty<DynamicLightType>::GetFuncType(actor, &DynamicLightPrototypeActor::GetDynamicLightType),
             PROPERTY_LIGHTTYPE_DESC, LIGHT_GROUP));
       }
 
@@ -201,33 +191,33 @@ namespace SimCore
       {
          DynamicLightPrototypeProxy::BuildPropertyMap();
 
-         SpotLightPrototypeActor& actor = dynamic_cast<SpotLightPrototypeActor&>(GetGameActor());
+         SpotLightPrototypeActor* actor = dynamic_cast<SpotLightPrototypeActor*>(GetActor());
 
          static const dtUtil::RefString PROPERTY_USE_ABSOLUTE_DIRECTION("UseAbsoluteDirection");
          AddProperty(new dtDAL::BooleanActorProperty(PROPERTY_USE_ABSOLUTE_DIRECTION, PROPERTY_USE_ABSOLUTE_DIRECTION,
-            dtDAL::MakeFunctor(actor, &SpotLightPrototypeActor::SetUseAbsoluteDirection),
-            dtDAL::MakeFunctorRet(actor, &SpotLightPrototypeActor::GetUseAbsoluteDirection),
+            dtDAL::BooleanActorProperty::SetFuncType(actor, &SpotLightPrototypeActor::SetUseAbsoluteDirection),
+            dtDAL::BooleanActorProperty::GetFuncType(actor, &SpotLightPrototypeActor::GetUseAbsoluteDirection),
             "use this flag if this light is attached to a transformable but you do not want to accumulate its parents rotation", "SpotLight"));
 
          static const dtUtil::RefString PROPERTY_SPOT_EXPONENT("SpotExponent");
          AddProperty(new dtDAL::FloatActorProperty(PROPERTY_SPOT_EXPONENT, PROPERTY_SPOT_EXPONENT, 
-            dtDAL::MakeFunctor(actor, &SpotLightPrototypeActor::SetSpotExponent), 
-            dtDAL::MakeFunctorRet(actor, &SpotLightPrototypeActor::GetSpotExponent), 
+            dtDAL::FloatActorProperty::SetFuncType(actor, &SpotLightPrototypeActor::SetSpotExponent),
+            dtDAL::FloatActorProperty::GetFuncType(actor, &SpotLightPrototypeActor::GetSpotExponent),
             "SpotExponent is the spot rate of decay and controls how the lights intensity decays from the center of the cone it its borders. The larger the value the faster de decay, with zero meaning constant light within the light cone.",
             "SpotLight"));
 
          static const dtUtil::RefString PROPERTY_SPOT_COS_CUTOFF("SpotCosCutoff");
          AddProperty(new dtDAL::FloatActorProperty(PROPERTY_SPOT_COS_CUTOFF, PROPERTY_SPOT_COS_CUTOFF, 
-            dtDAL::MakeFunctor(actor, &SpotLightPrototypeActor::SetSpotCosCutoff), 
-            dtDAL::MakeFunctorRet(actor, &SpotLightPrototypeActor::GetSpotCosCutoff), 
+            dtDAL::FloatActorProperty::SetFuncType(actor, &SpotLightPrototypeActor::SetSpotCosCutoff),
+            dtDAL::FloatActorProperty::GetFuncType(actor, &SpotLightPrototypeActor::GetSpotCosCutoff),
             "The cosine of the angle between the light to vertex vector and the spot direction must be larger than spotCosCutoff",
             "SpotLight"));
 
 
          static const dtUtil::RefString PROPERTY_SPOTDIRECTION("SpotDirection");
          AddProperty(new dtDAL::Vec3ActorProperty(PROPERTY_SPOTDIRECTION, PROPERTY_SPOTDIRECTION,
-            dtDAL::MakeFunctor(actor, &SpotLightPrototypeActor::SetSpotDirection),
-            dtDAL::MakeFunctorRet(actor, &SpotLightPrototypeActor::GetSpotDirection),
+            dtDAL::Vec3ActorProperty::SetFuncType(actor, &SpotLightPrototypeActor::SetSpotDirection),
+            dtDAL::Vec3ActorProperty::GetFuncType(actor, &SpotLightPrototypeActor::GetSpotDirection),
             "The direction of the light", "SpotLight"));
 
       }
