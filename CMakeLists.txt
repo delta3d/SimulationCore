@@ -155,6 +155,8 @@ if (SUPER_BUILD)
    return()
 endif()
 
+#This is so simcore itself won't get messed up with its own config
+set (SIMULATIONCORE_IGNORE_CONFIG_FILE ON)
 FIND_PACKAGE(SimulationCore REQUIRED)
 MESSAGE("Using the dtPhysics Physics Abstraction Layer (ODE, Bullet, PhysX).")
 

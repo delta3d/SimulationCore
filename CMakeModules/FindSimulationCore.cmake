@@ -32,6 +32,7 @@ FIND_PATH(SIMULATIONCORE_DIR include/SimCore/Export.h
     /opt
 )
 
+if (NOT SIMULATIONCORE_IGNORE_CONFIG_FILE)
 FIND_FILE(SIMULATIONCORE_CONFIG_FILE SimCoreConfig.cmake
     PATH_SUFFIXES
        superbuild/SimulationCore-build
@@ -51,6 +52,7 @@ FIND_FILE(SIMULATIONCORE_CONFIG_FILE SimCoreConfig.cmake
     /opt/csw # Blastwave
     /opt
 )
+endif()
 
 if (SIMULATIONCORE_CONFIG_FILE)
    include(${SIMULATIONCORE_CONFIG_FILE})
