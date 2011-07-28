@@ -76,13 +76,15 @@ namespace SimCore
             enum IMPACT_TYPE{IMPACT_TERRAIN, IMPACT_ENTITY, IMPACT_HUMAN};
 
             /// Constructor
-            DetonationActor(dtGame::GameActorProxy &proxy);
+            DetonationActor(dtGame::GameActorProxy& proxy);
 
             /**
              *  The impact type determines which particle system and sounds will be played.
              */
             void SetImpactType(IMPACT_TYPE impact);
             IMPACT_TYPE GetImpactType() const;
+
+            virtual void OnRemovedFromWorld();
 
             // Invoked when a actor is added to the Game Manager
             virtual void OnEnteredWorld();
@@ -194,6 +196,13 @@ namespace SimCore
 
             DT_DECLARE_ACCESSOR_INLINE(float, SmokeLifeTime);
 
+            /**
+             * Gets the sound member of this detonation actor
+             * @note If no sound file is loaded, the sound member will be NULL
+             * @return mSound
+             */
+            dtAudio::Sound* GetSound() { return mSound.get(); }
+
          protected:
             /// Destructor
             virtual ~DetonationActor();
@@ -213,21 +222,14 @@ namespace SimCore
 
             /// Enables the smoke particle system of this Detonation Actor
             void StartSmokeEffect(dtCore::ParticleSystem& particles);
-            void LoadSoundFile(const dtDAL::ResourceDescriptor& resource, dtCore::RefPtr<dtAudio::Sound> soundIn);
-            void LoadParticleSystem(const dtDAL::ResourceDescriptor& resource, dtCore::RefPtr<dtCore::ParticleSystem> particleSysIn);
+            void LoadSoundFile(const dtDAL::ResourceDescriptor& resource, dtCore::RefPtr<dtAudio::Sound>& soundIn);
+            void LoadParticleSystem(const dtDAL::ResourceDescriptor& resource, dtCore::RefPtr<dtCore::ParticleSystem>& particleSysIn);
 
             ///adds a light for the explosion effect
             void AddDynamicLight(const std::string& lightName);
 
 
          private:
-
-            /**
-             * Gets the sound member of this detonation actor
-             * @note If no sound file is loaded, the sound member will be NULL
-             * @return mSound
-             */
-            dtAudio::Sound* GetSound() { return mSound.get(); }
 
             friend class DetonationActorProxy;
            
@@ -274,6 +276,16 @@ namespace SimCore
 
             /// Clear all timers from the GameManager
             void ClearTimers();
+
+            virtual void OnRemovedFromWorld()
+            {
+               DetonationActor* actor = NULL;
+               GetActor(actor);
+               if (actor != NULL)
+               {
+                  actor->OnRemovedFromWorld();
+               }
+            }
 
          protected:
 

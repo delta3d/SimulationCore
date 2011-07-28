@@ -235,14 +235,6 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////
       DetonationActor::~DetonationActor()
       {
-         if(mSound.valid())
-         {
-            dtAudio::AudioManager::GetInstance().FreeSound(mSound.get());
-            RemoveChild(mSound.get());
-//            mSound.release();
-//            dtAudio::Sound *sound = mSound.release();
-//            dtAudio::AudioManager::GetInstance().FreeSound(sound);
-         }
       }
 
       ///////////////////////////////////////////////////////////////////////
@@ -255,6 +247,16 @@ namespace SimCore
       const dtCore::ParticleSystem* DetonationActor::GetSmokeParticleSystem() const
       {
          return mSmokeSystem.get();
+      }
+
+      void DetonationActor::OnRemovedFromWorld()
+      {
+         if(mSound.valid())
+         {
+            dtAudio::AudioManager::GetInstance().FreeSound(mSound.get());
+            RemoveChild(mSound.get());
+            mSound = NULL;
+         }
       }
 
       ///////////////////////////////////////////////////////////////////////
@@ -386,7 +388,7 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////
-      void DetonationActor::LoadSoundFile( const dtDAL::ResourceDescriptor& resource, dtCore::RefPtr<dtAudio::Sound> soundIn)
+      void DetonationActor::LoadSoundFile( const dtDAL::ResourceDescriptor& resource, dtCore::RefPtr<dtAudio::Sound>& soundIn)
       {
          if(!resource.IsEmpty())
          {
@@ -424,7 +426,7 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////
-      void DetonationActor::LoadParticleSystem(const dtDAL::ResourceDescriptor& resource, dtCore::RefPtr<dtCore::ParticleSystem> particleSysIn)
+      void DetonationActor::LoadParticleSystem(const dtDAL::ResourceDescriptor& resource, dtCore::RefPtr<dtCore::ParticleSystem>& particleSysIn)
       {
          if(!resource.IsEmpty())
          {

@@ -1204,11 +1204,11 @@ void BaseEntityActorProxyTests::TestDetonationActorProxy()
    da->SetSmokeLifeTime(0.000001);
    da->SetDeleteActorTimerSecs(0.0001);
    da->SetExplosionTimerSecs(0.0001);
-   //da->LoadSoundFile("Sounds/silence.wav");
 
    // TODO Add detonation to GM, set a timer and everything, ensure it fires and deletes
    // itself via its invokable
    mGM->AddActor(*dap, false, false);
+
    dtCore::AppSleep(1);
    dtCore::System::GetInstance().Step();
 
@@ -1226,6 +1226,9 @@ void BaseEntityActorProxyTests::TestDetonationActorProxy()
    //Make sure these don't ACTUALLY get deleted before the end of test.
    //This is a work around for a bug is sigslot.h
    std::vector<RefPtr<SimCore::Actors::DetonationActorProxy> > detList;
+   std::vector<RefPtr<dtAudio::Sound> > soundList;
+
+   SimCore::Actors::DetonationActor::IMPACT_TYPE curType = SimCore::Actors::DetonationActor::IMPACT_ENTITY;
 
    const unsigned short int numDets = 20;
    for(unsigned int i = 0; i < numDets; i++)
@@ -1236,8 +1239,42 @@ void BaseEntityActorProxyTests::TestDetonationActorProxy()
       detActor.SetSmokeLifeTime(0.001);
       detActor.SetExplosionTimerSecs(0.001);
       detActor.SetDeleteActorTimerSecs(0.001);
-      //detActor.LoadSoundFile("Sounds/silence.wav");
+
+      detActor.SetGroundImpactSound(dtDAL::ResourceDescriptor("Sounds:silence.wav"));
+      detActor.SetHumanImpactSound(dtDAL::ResourceDescriptor("Sounds:tank_fire.wav"));
+      detActor.SetEntityImpactSound(dtDAL::ResourceDescriptor::NULL_RESOURCE);
+      detActor.SetGroundImpactEffect(dtDAL::ResourceDescriptor("Particles:DirtHit.osg"));
+      detActor.SetHumanImpactEffect(dtDAL::ResourceDescriptor("Particles:weapon_flash.osg"));
+      detActor.SetEntityImpactEffect(dtDAL::ResourceDescriptor::NULL_RESOURCE);
+
+      detActor.SetImpactType(curType);
+
       mGM->AddActor(*d, false, false);
+
+      switch (curType)
+      {
+      case SimCore::Actors::DetonationActor::IMPACT_ENTITY:
+         // The sound isn't null even though the entity dosen't have one because the ground impact version
+         // will take over if it doesn't
+         CPPUNIT_ASSERT(detActor.GetSound() != NULL);
+         soundList.push_back(detActor.GetSound());
+         CPPUNIT_ASSERT(std::string(detActor.GetSound()->GetFilename()).find("silence.wav") != std::string::npos);
+         curType = SimCore::Actors::DetonationActor::IMPACT_HUMAN;
+         break;
+      case SimCore::Actors::DetonationActor::IMPACT_HUMAN:
+         CPPUNIT_ASSERT(detActor.GetSound() != NULL);
+         soundList.push_back(detActor.GetSound());
+         CPPUNIT_ASSERT(std::string(detActor.GetSound()->GetFilename()).find("tank_fire.wav") != std::string::npos);
+         curType = SimCore::Actors::DetonationActor::IMPACT_TERRAIN;
+         break;
+      case SimCore::Actors::DetonationActor::IMPACT_TERRAIN:
+         CPPUNIT_ASSERT(detActor.GetSound() != NULL);
+         CPPUNIT_ASSERT(std::string(detActor.GetSound()->GetFilename()).find("silence.wav") != std::string::npos);
+         soundList.push_back(detActor.GetSound());
+         curType = SimCore::Actors::DetonationActor::IMPACT_ENTITY;
+         break;
+      }
+
       detList.push_back(d);
    }
 
@@ -1253,6 +1290,21 @@ void BaseEntityActorProxyTests::TestDetonationActorProxy()
    mGM->GetAllGameActors(proxies);
 
    CPPUNIT_ASSERT_MESSAGE("There should NOT be any detonation actors in the GM after their timers expired",  proxies.empty());
+
+   for (unsigned i = 0; i < detList.size(); ++i)
+   {
+      SimCore::Actors::DetonationActor* detActor = NULL;
+      detList[i]->GetActor(detActor);
+      CPPUNIT_ASSERT(detActor != NULL);
+      // The sound should have been set the NULL.
+      CPPUNIT_ASSERT(detActor->GetSound() == NULL);
+   }
+
+   for (unsigned i = 0; i < soundList.size(); ++i)
+   {
+      // Check to see if the sound has been freed by checking if the filename
+      CPPUNIT_ASSERT(std::string(soundList[i]->GetFilename()).empty());
+   }
 
    //must delete the actor before shutting down the audio manager.
    dap = NULL;
