@@ -36,7 +36,7 @@ FIND_PATH(DELTA3D_INCLUDE_DIR NAMES dtCore/dt.h
        include
 )
 
-FIND_PATH( DELTA3D_LIB_DIR NAMES libdtCore.so libdtCore.dylib dtCore.dll .
+FIND_PATH( DELTA3D_LIB_DIR NAMES libdtCore.so libdtCore.dylib dtCore.lib .
     HINTS
        ${DELTA_DIR}
     PATH_SUFFIXES
