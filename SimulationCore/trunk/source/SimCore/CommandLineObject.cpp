@@ -23,15 +23,15 @@
 #include <prefix/SimCorePrefix.h>
 #include <SimCore/CommandLineObject.h>
 
-#include <dtDAL/enginepropertytypes.h>
-#include <dtDAL/namedparameter.h>
+#include <dtCore/enginepropertytypes.h>
+#include <dtCore/namedparameter.h>
 
 namespace SimCore
 {
    //////////////////////////////////////////////////////////////////////////
-   CommandLineObject::CommandLineObject() 
+   CommandLineObject::CommandLineObject()
    {
-    
+
    }
 
    //////////////////////////////////////////////////////////////////////////
@@ -47,16 +47,16 @@ namespace SimCore
    }
 
    //////////////////////////////////////////////////////////////////////////
-   void CommandLineObject::AddParameter(dtDAL::NamedParameter* namedParameter)
+   void CommandLineObject::AddParameter(dtCore::NamedParameter* namedParameter)
    {
       if(namedParameter != NULL)
          mParametersVec.push_back(namedParameter);
    }
 
    //////////////////////////////////////////////////////////////////////////
-   const dtDAL::NamedParameter* CommandLineObject::GetParameter(const std::string& checkValue) const 
+   const dtCore::NamedParameter* CommandLineObject::GetParameter(const std::string& checkValue) const
    {
-      for(std::vector<dtCore::RefPtr<dtDAL::NamedParameter> >::const_iterator iter = mParametersVec.begin();
+      for(std::vector<dtCore::RefPtr<dtCore::NamedParameter> >::const_iterator iter = mParametersVec.begin();
           iter != mParametersVec.end();
           ++iter)
       {
