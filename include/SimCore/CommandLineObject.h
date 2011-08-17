@@ -34,7 +34,7 @@
 #include <vector>
 #include <string>
 
-namespace dtDAL
+namespace dtCore
 {
    class NamedParameter;
 }
@@ -49,26 +49,26 @@ namespace SimCore
       public:
          /// Constructor
          CommandLineObject();
-       
+
          // clear out the parameter list
          virtual void ClearParametersList();
 
          // i dont think you would ever remove a single parameter, or wouldnt
          // have the need to, without just clearing the whole paramter list
          // so no removeparam function, just add
-         virtual void AddParameter(dtDAL::NamedParameter* namedParameter);
+         virtual void AddParameter(dtCore::NamedParameter* namedParameter);
 
          // i dont think you would ever remove a single parameter, or wouldnt
          // have the need to, without just clearing the whole paramter list
          // so no removeparam function, just add
-         virtual const dtDAL::NamedParameter* GetParameter(const std::string& checkValue) const;
+         virtual const dtCore::NamedParameter* GetParameter(const std::string& checkValue) const;
 
       protected:
          /// Destructor
          virtual ~CommandLineObject();
 
       private:
-         std::vector<dtCore::RefPtr<dtDAL::NamedParameter> > mParametersVec;
+         std::vector<dtCore::RefPtr<dtCore::NamedParameter> > mParametersVec;
    };
 } // namespace
 #endif
