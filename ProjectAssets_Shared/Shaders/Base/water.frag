@@ -7,8 +7,6 @@
 //The wave parameters are packed into two vec4's like so
 // [Length, Speed, Amplitude, Frequency], [Q, reserved for later use, Direction.x, Direction.y]
 //////////////////////////////////////////////////////////////////////////////////////////////////
-const int WAVE_OFFSET = 0;
-const int NUMWAVES = 4;
 const int MAX_WAVES = 32;
 
 uniform vec4 waveArray[2 * MAX_WAVES];

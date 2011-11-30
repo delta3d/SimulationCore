@@ -2,7 +2,7 @@
 uniform float WaterHeight;
 uniform vec4 WaterColor;
 
-const float cDeepWaterScalar = 0.74;
+const float cDeepWaterScalar = 0.64;
 const float cViewDistance = 100.0; 
 
 vec3 GetWaterColorAtDepth(float pDepth)
