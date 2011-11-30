@@ -128,7 +128,7 @@ void main (void)
    vec3 camPos = inverseViewMatrix[3].xyz;
                                     
    
-   float resolutionScalar = 1.0 + clamp(floor(sqrt(camPos.z - WaterHeight) / 2.75), 0.0, 3.0); 
+   float resolutionScalar = 1.0 + clamp(floor(sqrt(camPos.z - WaterHeight) / 2.75), 1.0, 3.0); 
    float ampOverLength = 1.0 / (512.0 * resolutionScalar);
 
    vec3 textureNormal = vec3(0.0, 0.0, 0.0);  

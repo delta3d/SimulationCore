@@ -199,15 +199,49 @@ namespace SimCore
 
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
       IMPLEMENT_ENUM(WaterGridActor::ChoppinessSettings);
       WaterGridActor::ChoppinessSettings WaterGridActor::ChoppinessSettings::
-         CHOP_FLAT("CHOP_FLAT", 1.0f, 0.0f, 1.0f, 1.0f, 27.0f);
+         CHOP_FLAT("CHOP_FLAT", 0.0f, 20.0f);
       WaterGridActor::ChoppinessSettings WaterGridActor::ChoppinessSettings::
-         CHOP_MILD("CHOP_MILD", 1.33f, 1.51f, 1.0f, 1.0f, 37.0f);
+         CHOP_MILD("CHOP_MILD", 0.51f, 35.0f);
       WaterGridActor::ChoppinessSettings WaterGridActor::ChoppinessSettings::
-         CHOP_MED("CHOP_MED", 1.6f, 3.0f, 0.80f, 1.0f, 65.0f);
+         CHOP_MED("CHOP_MED", 1.0f, 65.0f);
       WaterGridActor::ChoppinessSettings WaterGridActor::ChoppinessSettings::
-         CHOP_ROUGH("CHOP_ROUGH", 2.0f, 7.5f, 0.6f, 1.0f, 100.0f);
+         CHOP_ROUGH("CHOP_ROUGH", 2.5f, 130.0f);
+
+
+      WaterGridActor::ChoppinessSettings::ChoppinessSettings(const std::string &name, float rotationSpread, float texMod)
+         : dtUtil::Enumeration(name), mRotationSpread(rotationSpread), mTextureWaveModifier(texMod)
+      {  
+         AddInstance(this);
+      }
+
+
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      IMPLEMENT_ENUM(WaterGridActor::SeaState);///////////////////////////////// AMP  WaveLen  Speed
+      WaterGridActor::SeaState WaterGridActor::SeaState::SeaState_0("SeaState_0", 0.1, 0.1, 0.2);
+      WaterGridActor::SeaState WaterGridActor::SeaState::SeaState_1("SeaState_1", 0.15, 0.15, 0.4);
+      WaterGridActor::SeaState WaterGridActor::SeaState::SeaState_2("SeaState_2", 0.25, 0.25, 0.6);
+      WaterGridActor::SeaState WaterGridActor::SeaState::SeaState_3("SeaState_3", 0.45, 0.45, 0.8);
+      WaterGridActor::SeaState WaterGridActor::SeaState::SeaState_4("SeaState_4", 0.65, 0.65, 1.0);
+      WaterGridActor::SeaState WaterGridActor::SeaState::SeaState_5("SeaState_5", 0.85, 0.85, 1.25);
+      WaterGridActor::SeaState WaterGridActor::SeaState::SeaState_6("SeaState_6", 1.0, 1.0, 1.5);
+      WaterGridActor::SeaState WaterGridActor::SeaState::SeaState_7("SeaState_7", 1.15, 1.15, 1.75);
+      WaterGridActor::SeaState WaterGridActor::SeaState::SeaState_8("SeaState_8", 1.25, 1.25, 2.25);
+      WaterGridActor::SeaState WaterGridActor::SeaState::SeaState_9("SeaState_9", 1.45, 1.45, 2.5);
+      WaterGridActor::SeaState WaterGridActor::SeaState::SeaState_10("SeaState_10", 1.55, 1.55, 3.0);
+      WaterGridActor::SeaState WaterGridActor::SeaState::SeaState_11("SeaState_11", 1.65, 1.65, 4.0);
+      WaterGridActor::SeaState WaterGridActor::SeaState::SeaState_12("SeaState_12", 2.0, 2.0, 8.0);
+
+
+
+      WaterGridActor::SeaState::SeaState(const std::string& name, float ampMod, float waveLenMod, float speedMod)
+         : dtUtil::Enumeration(name), mAmplitudeModifier(ampMod) , mWaveLengthModifier(waveLenMod), mSpeedModifier(speedMod)
+      {  
+         AddInstance(this);
+      }
 
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -264,8 +298,9 @@ namespace SimCore
           , mModForFOV(1.0f)
           , mCameraFoVScalar(1.0f)
           , mMaxWaveHeight(0.0f)
-          , mWaterColor(10.0 / 256.0, 69.0 / 256.0, 39.0 / 256.0, 1.0)
-          , mChoppinessEnum(&WaterGridActor::ChoppinessSettings::CHOP_FLAT)
+          , mWaterColor(0.117187, 0.3125, 0.58593, 1.0)
+          , mChoppinessEnum(&ChoppinessSettings::CHOP_FLAT)
+          , mSeaStateEnum(&SeaState::SeaState_4)
       {
          SetName("WaterGridActor"); // Set a default name
       }
@@ -338,225 +373,6 @@ namespace SimCore
          mDeveloperMode = (developerMode == "true" || developerMode == "1");
 
 
-         Wave w;
-
-         w.mWaveLength = 4.8f;
-         w.mAmplitude = 0.08f;
-         w.mSpeed = 0.5f;
-         w.mSteepness = 0.5;
-         w.mDirectionInDegrees = -5.7f;
-         AddWave(w); // -3
-
-         w.mWaveLength = 5.33f;
-         w.mAmplitude = 0.09f;
-         w.mSpeed = 0.3f;
-         w.mSteepness = 0.1;
-         w.mDirectionInDegrees = 181.0f;
-         AddWave(w); // -2
-
-         w.mWaveLength = 6.37f;
-         w.mAmplitude = 0.11f;
-         w.mSpeed = 0.7f;
-         w.mSteepness = 0.7;
-         w.mDirectionInDegrees = 15.3f;
-         AddWave(w);  // -1
-
-         w.mWaveLength = 6.89f;
-         w.mAmplitude = 0.08f;
-         w.mSpeed = 0.65f;
-         w.mSteepness = 0.8;
-         w.mDirectionInDegrees = 4.2f;
-         AddWave(w); // 0
-
-
-         w.mWaveLength = 16.51f;
-         w.mAmplitude = 0.11f;
-         w.mSpeed = 0.8f;
-         w.mSteepness = 0.1;
-         w.mDirectionInDegrees = -15.0f;
-         AddWave(w); // 1
-
-         w.mWaveLength = 19.89f;
-         w.mAmplitude = 0.12f;
-         w.mSpeed = 1.2f;
-         w.mSteepness = 0.1;
-         w.mDirectionInDegrees = 184.0f;
-         AddWave(w); // 2
-
-
-         w.mWaveLength = 35.51f;
-         w.mAmplitude = 0.22f;
-         w.mSpeed = 1.3f;
-         w.mSteepness = 0.3;
-         w.mDirectionInDegrees = 10.7f;
-         AddWave(w);  // 3
-
-         w.mWaveLength = 42.18f;
-         w.mAmplitude = 0.35f;
-         w.mSpeed = 1.1f;
-         w.mSteepness = 0.3;
-         w.mDirectionInDegrees = 0.0f;
-         AddWave(w); // 4
-
-         w.mWaveLength = 54.055f;
-         w.mAmplitude = 0.28f;
-         w.mSpeed = 1.2f;
-         w.mSteepness = 0.2;
-         w.mDirectionInDegrees = -10.4f;
-         AddWave(w); // 5
-
-         w.mWaveLength = 92.15f;
-         w.mAmplitude = 0.25f;
-         w.mSpeed = 1.5f;
-         w.mSteepness = 0.1;
-         w.mDirectionInDegrees = 178.1f;
-         AddWave(w);  // 6
-
-         w.mWaveLength = 106.98f;
-         w.mAmplitude = 0.34f;
-         w.mSpeed = 1.8f;
-         w.mSteepness = 0.3f;
-         w.mDirectionInDegrees = 5.0f;
-         AddWave(w); // 7
-
-         w.mWaveLength = 148.7f;
-         w.mAmplitude = 0.25f;
-         w.mSpeed = 2.3f;
-         w.mSteepness = 0.1f;
-         w.mDirectionInDegrees = 5.0f;
-         AddWave(w); // 8
-
-         w.mWaveLength = 181.35;
-         w.mAmplitude = 0.88f;
-         w.mSpeed = 2.8f;
-         w.mSteepness = 0.6;
-         w.mDirectionInDegrees = -1.8f;
-         AddWave(w); // 9
-
-         w.mWaveLength = 188.9f;
-         w.mAmplitude = 0.92f;
-         w.mSpeed = 3.5f;
-         w.mSteepness = 0.1;
-         w.mDirectionInDegrees = 1.3f;
-         AddWave(w);  // 10
-
-         w.mWaveLength = 200.25f;
-         w.mAmplitude = 0.62f;
-         w.mSpeed = 3.5f;
-         w.mSteepness = 0.1;
-         w.mDirectionInDegrees = 8.1f;
-         AddWave(w);  // 11
-
-
-         w.mWaveLength = 213.275f;
-         w.mAmplitude = 0.3f;
-         w.mSpeed = 3.8f;
-         w.mSteepness = 0.5f;
-         w.mDirectionInDegrees = 5.3f;
-         AddWave(w); // 12
-
-
-         w.mWaveLength = 507.4f;
-         w.mAmplitude = 0.12f;
-         w.mSpeed = 2.5f;
-         w.mSteepness = 0.0f;
-         w.mDirectionInDegrees = 174.0f;
-         AddWave(w); // 13
-
-         w.mWaveLength = 526.5f;
-         w.mAmplitude = 1.8f;
-         w.mSpeed = 6.9f;
-         w.mSteepness = 0.5f;
-         w.mDirectionInDegrees = -3.0f;
-         AddWave(w); // 14
-
-         w.mWaveLength = 540.4f;
-         w.mAmplitude = 1.91;
-         w.mSpeed = 6.8f;
-         w.mSteepness = 0.1f;
-         w.mDirectionInDegrees = 2.5f;
-         AddWave(w); // 15
-
-         w.mWaveLength = 557.2f;
-         w.mAmplitude = 0.63f;
-         w.mSpeed = 1.8f;
-         w.mSteepness = 0.0f;
-         w.mDirectionInDegrees = -179.3f;
-         AddWave(w);  // 16
-
-         w.mWaveLength = 582.4f;
-         w.mAmplitude = 1.51f;
-         w.mSpeed = 7.2f;
-         w.mSteepness = 0.3f;
-         w.mDirectionInDegrees = 12.0f;
-         AddWave(w);  // 17
-
-
-         w.mWaveLength = 1250.3f;
-         w.mAmplitude = 2.5f;
-         w.mSpeed = 9.2f;
-         w.mSteepness = 0.1f;
-         w.mDirectionInDegrees = 3.0f;
-         AddWave(w); // 18
-
-         w.mWaveLength = 1268.0f;
-         w.mAmplitude = 0.9;
-         w.mSpeed = 3.5f;
-         w.mSteepness = 0.0f;
-         w.mDirectionInDegrees = 183.0f;
-         AddWave(w); // 19
-
-         w.mWaveLength = 1280.7f;
-         w.mAmplitude = 2.61f;
-         w.mSpeed = 9.3f;
-         w.mSteepness = 0.5f;
-         w.mDirectionInDegrees = -3.5f;
-         AddWave(w); // 20
-
-         w.mWaveLength = 1310.6f;
-         w.mAmplitude = 1.5f;
-         w.mSpeed = 2.8;
-         w.mSteepness = 0.3f;
-         w.mDirectionInDegrees = -179.3f;
-         AddWave(w);  // 21
-
-         w.mWaveLength = 1325.1f;
-         w.mAmplitude = 2.9f;
-         w.mSpeed = 10.1f;
-         w.mSteepness = 0.2f;
-         w.mDirectionInDegrees = -6.0f;
-         AddWave(w);  // 22
-
-
-         w.mWaveLength = 3600.3f;
-         w.mAmplitude = 5.2f;
-         w.mSpeed = 15.2f;
-         w.mSteepness = 0.1f;
-         w.mDirectionInDegrees = 2.5f;
-         AddWave(w); // 23
-
-         w.mWaveLength = 3727.7f;
-         w.mAmplitude = 4.1f;
-         w.mSpeed = 14.3f;
-         w.mSteepness = 0.5f;
-         w.mDirectionInDegrees = -3.9f;
-         AddWave(w); // 24
-
-         w.mWaveLength = 3929.6f;
-         w.mAmplitude = 1.8f;
-         w.mSpeed = 7.4;
-         w.mSteepness = 0.1f;
-         w.mDirectionInDegrees = -179.3f;
-         AddWave(w);  // 25
-
-         w.mWaveLength = 4017.1f;
-         w.mAmplitude = 6.1f;
-         w.mSpeed = 16.1f;
-         w.mSteepness = 0.2f;
-         w.mDirectionInDegrees = -5.7f;
-         AddWave(w);  // 26
-
-
          const float kArray[] = {1.33, 1.76, 3.0, 2.246,
                                        1.0, 3.71, 1.0, 1.75,
                                        1.5, 1.0, 1.0, 2.0,
@@ -595,7 +411,16 @@ namespace SimCore
 
             AddTextureWave(tw);
          }
+
+         SetSeaStateByNumber(4);
       }
+
+      /////////////////////////////////////////////////////////////////////////////
+      void WaterGridActor::ClearWaves()
+      {
+         mWaves.clear();
+      }
+
 
       /////////////////////////////////////////////////////////////////////////////
       bool WaterGridActor::GetHeightAndNormalAtPoint( const osg::Vec3& detectionPoint,
@@ -611,7 +436,7 @@ namespace SimCore
             float xPos = detectionPoint[0] - mLastCameraOffsetPos[0];
             float yPos = detectionPoint[1] - mLastCameraOffsetPos[1];
             // There are 2 vec4's of data per wave, so the loop is MAX_WAVES * 2 but increments by 2's
-            for(int i = 0; i < MAX_WAVES; i++)
+            for(int i = 0; i < 4/*MAX_WAVES*/; i++)
             {
                // Order is: waveLength, speed, amp, freq, UNUSED, UNUSED, dirX, dirY
                float speed = mProcessedWaveData[i][1]; //waveArray[i].y;
@@ -762,6 +587,34 @@ namespace SimCore
                   SetChoppiness(ChoppinessSettings::CHOP_MED);
                else if (testChoppiness == 3)
                   SetChoppiness(ChoppinessSettings::CHOP_ROUGH);
+
+               keyTimeOut = 0.5;
+            }
+
+            //set to 4 because that is the default
+            static int testSeaState = 4;
+            if(kb->GetKeyState(osgGA::GUIEventAdapter::KEY_Page_Up))
+            {
+               if(testSeaState == 12) testSeaState = -1;
+               
+               testSeaState++;
+
+               SetSeaStateByNumber(testSeaState);
+
+               std::cout << "Setting Sea State to: " << testSeaState << std::endl;
+
+               keyTimeOut = 0.5;
+            }
+
+            if(kb->GetKeyState(osgGA::GUIEventAdapter::KEY_Page_Down))
+            {
+               if(testSeaState == 0) testSeaState = 13;
+
+               testSeaState--;
+
+               SetSeaStateByNumber(testSeaState);
+
+               std::cout << "Setting Sea State to: " << testSeaState << std::endl;
 
                keyTimeOut = 0.5;
             }
@@ -1007,7 +860,7 @@ namespace SimCore
          // Camera Cut Point is an estimated value for the cut point - scaled by all the FoV modifiers.
          bool quitLooking = false;
          int numIgnored = 0;
-         float cameraCutPoint = 0.5 + cameraHeight / (12.0 * mModForWaveLength * mCameraFoVScalar * mModForFOV); // Used to pick waves
+         float cameraCutPoint = 0.5 + cameraHeight / (24.0 * mModForWaveLength * mCameraFoVScalar * mModForFOV); // Used to pick waves
          while(iter != endIter && !quitLooking)
          {
             Wave &nextWave = (*iter);
@@ -1034,7 +887,7 @@ namespace SimCore
                Wave& wave = (*iter);
                // weaken the amp as it reaches the pop point to hide some of the popping
                float fadeRatio = sqrt((wave.mWaveLength - cameraCutPoint) / cameraCutPoint);
-               float amp = wave.mAmplitude /** mModForAmplitude */* dtUtil::Min(1.0f, dtUtil::Max(0.0f, fadeRatio));
+               float amp = wave.mAmplitude * mModForAmplitude;// * dtUtil::Min(1.0f, dtUtil::Max(0.0f, fadeRatio));
                float waveLength = wave.mWaveLength * mModForWaveLength;
                float speed = wave.mSpeed * mModForSpeed;
 
@@ -1052,9 +905,9 @@ namespace SimCore
                   float dirX = sin(osg::DegreesToRadians(curWaveDir + mModForDirectionInDegrees));
                   float dirY = cos(osg::DegreesToRadians(curWaveDir + mModForDirectionInDegrees));
 
-                  mProcessedWaveData[count/2][0] = waveLength * mChoppinessEnum->mWaveLengthModifier;
-                  mProcessedWaveData[count/2][1] = speed * mChoppinessEnum->mSpeedMod;
-                  mProcessedWaveData[count/2][2] = amp * mChoppinessEnum->mSpeedMod;
+                  mProcessedWaveData[count/2][0] = waveLength * mSeaStateEnum->mWaveLengthModifier;
+                  mProcessedWaveData[count/2][1] = speed * mSeaStateEnum->mSpeedModifier;
+                  mProcessedWaveData[count/2][2] = amp * mSeaStateEnum->mAmplitudeModifier;
                   mProcessedWaveData[count/2][3] = freq;
                   mProcessedWaveData[count/2][4] = steepness;
                   mProcessedWaveData[count/2][5] = 1.0f;
@@ -1103,15 +956,15 @@ namespace SimCore
       {
          osg::Geometry* geometry = new osg::Geometry();
 
-         int N = 180; // rows from center outward
-         int K = 180;//260; // columns around the circle
+         int N = 500; // rows from center outward
+         int K = 360;//260; // columns around the circle
 
          //calculate num verts and num indices
          int numVerts = N * K;
          int numIndices = (N - 1) * (K - 1) * 6;
 
          //lets make the geometry
-         dtCore::RefPtr<osg::Vec3Array> pVerts = new osg::Vec3Array(numVerts);
+         dtCore::RefPtr<osg::Vec4Array> pVerts = new osg::Vec4Array(numVerts);
          dtCore::RefPtr<osg::IntArray> pIndices = new osg::IntArray(numIndices);
 
          //float a0 = 0.01f;
@@ -1126,12 +979,12 @@ namespace SimCore
          ////float exponent = 3;
 
          float a0 = 0.05f;
-         float a1 = 1.25f; // 5.0f;
+         float a1 = 1.205f; // 5.0f;
          float outerMostRingDistance = 1250.0; // the furthest rings get an extra reach.
          float middleRingDistance = 12.5; // Middle rings get a minor boost too.
          int numOuterRings = 10;
          int numMiddleRings = 50;
-         float innerExpBase = 1.025f;
+         float innerExpBase = 1.0205f;
          float middleExpBase = 1.05;
          float outerExpBase = 1.5f;
          //float exponent = 3;
@@ -1169,7 +1022,8 @@ namespace SimCore
                }
                float y = r;
                float z = radiusIncrement; // We put the radius increment into the Z so we can use it in the shader
-               (*pVerts)[(i * K) + j ].set(x, y, z);
+               float groupNum = 56.0f * (float(i) / float(N));
+               (*pVerts)[(i * K) + j ].set(x, y, z, groupNum);
             }
          }
          mComputedRadialDistance = r;
@@ -1740,6 +1594,136 @@ namespace SimCore
          return mModForDirectionInDegrees;
       }
 
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      void WaterGridActor::SetSeaStateByNumber(unsigned force)
+      {
+         int numWaves = 16;
+
+         float waveLenMod = 2.0f;
+         float ampMod = 0.25f;
+
+         if(force == 0)
+         {
+            ClearWaves();
+            SetSeaState(SeaState::SeaState_0);
+            //AddRandomizedWaves(0.667f, 0.12f, 0.5f, 1.0f, numWaves);
+            AddRandomizedWaves(waveLenMod * 3.167f, ampMod * 00.16f, 1.0f, 2.5f, numWaves);
+         }
+         else if(force == 1)
+         {
+            ClearWaves();
+            SetSeaState(SeaState::SeaState_1);
+            //AddRandomizedWaves(3.167f, 00.16f, 1.0f, 2.5f, numWaves);
+            AddRandomizedWaves(waveLenMod * 8.667f, ampMod * 00.667f, 1.5f, 5.0f, numWaves);
+         }
+         else if(force == 2)
+         {
+            ClearWaves();
+            SetSeaState(SeaState::SeaState_2);
+            //AddRandomizedWaves(8.667f, 00.667f, 1.5f, 5.0f, numWaves);
+            AddRandomizedWaves(waveLenMod * 12.667f, ampMod * 0.9667f, 1.75f, 6.0f, numWaves);
+         }
+         else if(force == 3)
+         {
+            ClearWaves();
+            SetSeaState(SeaState::SeaState_3);
+            //AddRandomizedWaves(16.667f, 01.1667f, 2.0f, 6.5f, numWaves);
+            AddRandomizedWaves(waveLenMod * 16.667f, ampMod * 1.1667f, 2.0f, 6.5f, numWaves);
+         }
+         else if(force == 4)
+         {
+            ClearWaves();
+            SetSeaState(SeaState::SeaState_4);
+            //AddRandomizedWaves(26.66f, 2.0f, 2.5f, 8.5f, numWaves);
+            AddRandomizedWaves(waveLenMod * 26.66f, ampMod * 2.0f, 4.5f, 8.5f, numWaves);
+         }
+         else if(force == 5)
+         {
+            ClearWaves();
+            SetSeaState(SeaState::SeaState_5);
+            //AddRandomizedWaves(43.33, 02.667, 3.0f, 10.0f, numWaves);
+            AddRandomizedWaves(waveLenMod * 43.33, ampMod * 2.667, 6.0f, 10.0f, numWaves);
+         }
+         else if(force == 6)
+         {
+            ClearWaves();
+            SetSeaState(SeaState::SeaState_6);
+            //AddRandomizedWaves(73.33, 6.0f, 4.0f, 13.0f, numWaves);
+            AddRandomizedWaves(waveLenMod * 73.33, ampMod * 4.0f, 7.0f, 13.0f, numWaves);
+         }
+         else if(force == 7)
+         {
+            ClearWaves();
+            SetSeaState(SeaState::SeaState_7);
+            //AddRandomizedWaves(133.33, 10.67f, 5.5f, 17.0f, numWaves);
+            AddRandomizedWaves(waveLenMod * 123.33, ampMod * 8.67f, 8.5f, 14.0f, numWaves);
+         }
+         else if(force == 8)
+         {
+            ClearWaves();
+            SetSeaState(SeaState::SeaState_8);
+            //AddRandomizedWaves(216.667, 17.33f, 7.5f, 23.0f, numWaves);
+            AddRandomizedWaves(waveLenMod * 166.667, ampMod * 10.633f, 9.5f, 16.5f, numWaves);
+         }
+         else if(force == 9)
+         {
+            ClearWaves();
+            SetSeaState(SeaState::SeaState_9);
+            AddRandomizedWaves(waveLenMod * 178.667, ampMod * 11.33f, 10.5f, 18.0f, numWaves);
+         }
+         else if(force == 10)
+         {
+            ClearWaves();
+            SetSeaState(SeaState::SeaState_10);
+            AddRandomizedWaves(waveLenMod * 199.667, ampMod * 12.33f, 10.5f, 20.0f, numWaves);
+         }
+         else if(force == 11)
+         {
+            ClearWaves();
+            SetSeaState(SeaState::SeaState_11);
+            AddRandomizedWaves(waveLenMod * 216.667, ampMod * 13.33f, 12.5f, 23.0f, numWaves);
+         }
+         else if(force == 12)
+         {
+            ClearWaves();
+            SetSeaState(SeaState::SeaState_12);            
+            AddRandomizedWaves(waveLenMod * 245.667, ampMod * 15.33f, 14.5f, 33.0f, numWaves);
+         }
+      }
+
+      /////////////////////////////////////////////////////////////////////////////
+      void WaterGridActor::AddRandomizedWaves(float meanWaveLength, float meanAmplitude, float minPeriod, float maxPeriod, unsigned numWaves)
+      {
+         float waveLenStart = meanWaveLength / 2.0f;
+         float waveLenIncrement = meanWaveLength / numWaves;
+
+         float ampStart = meanAmplitude / 2.0f;
+         float ampIncrement = meanAmplitude / numWaves;
+
+         for(unsigned i = 0; i < numWaves; ++i, waveLenStart += waveLenIncrement, ampStart += ampIncrement)
+         {
+            Wave w;
+            w.mWaveLength = waveLenStart;
+            w.mAmplitude = ampStart;
+            w.mSpeed = dtUtil::RandFloat(minPeriod, maxPeriod);
+            w.mSteepness = 1.0f;
+            w.mDirectionInDegrees = dtUtil::RandFloat(-10.3333f, 10.3333f);
+            AddWave(w); // 0
+         }
+
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      void WaterGridActor::SetSeaState(WaterGridActor::SeaState& seaState)
+      {
+         //mSeaStateEnum = &seaState;
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      WaterGridActor::SeaState& WaterGridActor::GetSeaState() const
+      {
+         return *mSeaStateEnum;
+      }
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       //WATER GRID PROXY
@@ -1822,6 +1806,11 @@ namespace SimCore
             dtDAL::EnumActorProperty<WaterGridActor::ChoppinessSettings>::GetFuncType(actor, &WaterGridActor::GetChoppiness),
             "Sets the choppiness for the water.", GROUPNAME));
 
+         AddProperty(new dtDAL::EnumActorProperty<WaterGridActor::SeaState>("Sea State", "Sea State",
+            dtDAL::EnumActorProperty<WaterGridActor::SeaState>::SetFuncType(actor, &WaterGridActor::SetSeaState),
+            dtDAL::EnumActorProperty<WaterGridActor::SeaState>::GetFuncType(actor, &WaterGridActor::GetSeaState),
+            "The Sea State number based on the Beaufort wind force scale.", GROUPNAME));
+
       }
 
       /////////////////////////////////////////////////////////////////////////////
@@ -1849,3 +1838,4 @@ namespace SimCore
 
    }//namespace Actors
 }//namespace SimCore
+

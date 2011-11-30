@@ -8,8 +8,8 @@
 // [Length, Speed, Amplitude, Frequency], [Q, reserved for later use, Direction.x, Direction.y]
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const int WAVE_OFFSET = 0;
-const int NUMWAVES = 8;
-const int MAX_WAVES = 8;
+const int NUMWAVES = 16;
+const int MAX_WAVES = 32;
 uniform vec4 waveArray[2 * MAX_WAVES];
 uniform float waterPlaneFOV;
 uniform float WaterHeight;// = 443.0;
@@ -22,6 +22,7 @@ varying float distanceScale;
 varying vec2 vFog;
 varying vec2 vertexWaveDir;
 varying vec3 shaderVertexNormal;
+varying vec3 vOffsetPos;
 
 uniform float elapsedTime;
 uniform float maxComputedDistance;
@@ -52,7 +53,7 @@ void main(void)
    float radialScaleDegrees = cameraOffset + (gl_Vertex.x * waterPlaneFOV);
    float posX = gl_Vertex.y * cos(radians(radialScaleDegrees));
    float posY = gl_Vertex.y * sin(radians(radialScaleDegrees));
-   vec4 localVert = vec4(posX, posY, 0.0, gl_Vertex.w);
+   vec4 localVert = vec4(posX, posY, 0.0, 1.0);
 
    localVert = vec4(localVert.x * scalar, localVert.y * scalar, 0.0, 1.0);
 
@@ -69,13 +70,18 @@ void main(void)
    pos = camPos + localVert;   
    pos.z = WaterHeight;
    vec2 offsetPos = pos.xy - cameraRecenter.xy;
+   vOffsetPos.xy = offsetPos.xy;
+   vOffsetPos.z = distBetweenVerts;
+
 
    float zModifier = 0.0;
    vertexWaveDir = vec2(0.0);
 
    shaderVertexNormal = vec3(0.0, 0.0, 1.0);
+   int offset = WAVE_OFFSET;//gl_Vertex.w;//23 * clamp(distance / maxDistance, 0.0, 1.0);  
+
    // There are 2 vec4's of data per wave, so the loop is MAX_WAVES * 2 but increments by 2's
-   for(int i = 2 * WAVE_OFFSET; i < NUMWAVES * 2; i+=2)
+   for(int i = 2 * offset; i < (offset + NUMWAVES) * 2; i+=2)
    {           
       float waveLen = waveArray[i].x;
       float speed = waveArray[i].y;
@@ -89,7 +95,7 @@ void main(void)
 
       float mPlusPhi =  (freq * (speed * elapsedTime + offsetPos.x * waveDir.x + waveDir.y * offsetPos.y)); 
       
-      float k = max(waveArray[i+1].x, 4.00001);
+      float k = max(1.5 * waveArray[i+1].x, 4.00001);
 
       float sinPhi = sin(mPlusPhi);
       //cos/sin of the sum of the previous two variables
@@ -109,13 +115,10 @@ void main(void)
    shaderVertexNormal.y = -shaderVertexNormal.y;
    shaderVertexNormal = normalize(shaderVertexNormal);
 
-   //we scale out the waves based on distance to keep the water from going through the terrain
-   float heightScalar = 1.0 - min(1.0, max(0.0001, (distance - 100.0) / 200.0));
-   pos.z = WaterHeight + (zModifier * heightScalar);
+   pos.z = WaterHeight + zModifier;
 
    //transform our vector into screen space
    mat4 mvp = gl_ModelViewProjectionMatrix;
-   //mvp[3] = vec4(0.0, 0.0, 0.0, 1.0);
    gl_Position = mvp * pos;
    
    float fog_distance = length(pos - inverseViewMatrix[3]);
