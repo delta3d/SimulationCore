@@ -19,7 +19,7 @@ void main(void)
    gl_Position = ftransform();   
 
    vec4 screenPos = gl_Position;
-   screenPos.z = 0.99;
+   screenPos.z = 0.9999;
    worldSpacePos = (modelViewProjectionInverse * screenPos);
 
    

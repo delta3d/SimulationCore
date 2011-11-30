@@ -96,27 +96,53 @@ namespace SimCore
             static ChoppinessSettings CHOP_ROUGH;
 
             // These attributes are public since this is essentially a struct.
-            std::string name;
-            float mSpeedMod;
             float mRotationSpread;
-            float mWaveLengthModifier;
-            float mAmpModifier;
             float mTextureWaveModifier;
 
          private:
             //////////////////////////////////////////////
-            ChoppinessSettings( const std::string &name,  float speedMod,
-               float rotationSpread, float waveLengthModifier, float ampModifier, float texMod)
-               : dtUtil::Enumeration(name) , mSpeedMod(speedMod) , mRotationSpread(rotationSpread)
-               , mWaveLengthModifier(waveLengthModifier) , mAmpModifier(ampModifier), mTextureWaveModifier(texMod)
-               {  
-                  AddInstance(this);
-               }
+            ChoppinessSettings(const std::string& name, float rotationSpread, float texMod);
          };
 
 
          //////////////////////////////////////////////
-         static const int MAX_WAVES = 8;
+         // Sea State Settings control the significant wave height
+         // they are based on the Beaufort Wind Force Scale and Sea State
+         // which is enumerated from 1-12 with 1 being a calm sea and 12 being a hurricane
+         // see: http://www.seakayak.ws/kayak/kayak.nsf/8db4c87cad13b187852569ff0050c911/e4e2c690916a3a24852570da0057e036!OpenDocument
+         class SIMCORE_EXPORT SeaState : public dtUtil::Enumeration
+         {
+            DECLARE_ENUM(SeaState);
+         public:
+            static SeaState SeaState_0;
+            static SeaState SeaState_1;
+            static SeaState SeaState_2;
+            static SeaState SeaState_3;
+            static SeaState SeaState_4;
+            static SeaState SeaState_5;
+            static SeaState SeaState_6;
+            static SeaState SeaState_7;
+            static SeaState SeaState_8;
+            static SeaState SeaState_9;
+            static SeaState SeaState_10;
+            static SeaState SeaState_11;
+            static SeaState SeaState_12;
+
+
+            // These attributes are public since this is essentially a struct.
+            float mAmplitudeModifier;
+            float mWaveLengthModifier;
+            float mSpeedModifier;
+
+         private:
+            //////////////////////////////////////////////
+            SeaState(const std::string& name, float ampMod, float waveLenMod, float speedMod);
+         };
+
+
+
+         //////////////////////////////////////////////
+         static const int MAX_WAVES = 32;
          static const int MAX_TEXTURE_WAVES;
          static const dtUtil::RefString UNIFORM_ELAPSED_TIME;
          static const dtUtil::RefString UNIFORM_MAX_COMPUTED_DISTANCE;
@@ -145,8 +171,13 @@ namespace SimCore
          void SetWaterColor(const osg::Vec4& color);
          osg::Vec4 GetWaterColor() const;
 
-         void SetChoppiness(WaterGridActor::ChoppinessSettings &choppiness);
-         WaterGridActor::ChoppinessSettings& GetChoppiness() const;
+         void SetChoppiness(ChoppinessSettings& choppiness);
+         ChoppinessSettings& GetChoppiness() const;
+
+         //this alternatively sets it by number, valid ranges from 0-12, see comment on SeaStateEnum above
+         void SetSeaState(SeaState& choppiness);
+         SeaState& GetSeaState() const;
+         void SetSeaStateByNumber(unsigned force);
 
          void AddWave(Wave& pWave);
          void AddTextureWave(const TextureWave& pWave);
@@ -197,6 +228,9 @@ namespace SimCore
          float GetPrimaryWaveDirection() const;
 
          float GetMaxWaveHeight() const;
+
+         void ClearWaves();
+         void AddRandomizedWaves(float meanWaveLength, float meanAmplitude, float minPeriod, float maxPeriod, unsigned numWaves);
 
       protected:
          ~WaterGridActor();
@@ -263,6 +297,7 @@ namespace SimCore
          osg::Vec3 mLastCameraOffsetPos, mCurrentCameraPos;
 
          ChoppinessSettings* mChoppinessEnum;
+         SeaState* mSeaStateEnum;
 
          dtCore::RefPtr<osg::Camera> mWaveCamera;
          dtCore::RefPtr<osg::Camera> mWaveCameraScreen;
