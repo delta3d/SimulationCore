@@ -107,10 +107,16 @@ void main (void)
    waveNormal += fadeAmt3 * SampleNormalMap(waveTexture, waveCoords3);
    //////////////////////////////////////////////////////////////////////////////
 
+   shaderVertexNormal = normalize(shaderVertexNormal);
+
    float waveNormalFadeOut = clamp(distToFragment / 1000.0, 0.0, 1.0);
-   waveNormal = mix(2.0 * waveNormal, vec3(0.0, 0.0, 1.0), waveNormalFadeOut);
+   waveNormal = mix(waveNormal, vec3(0.0, 0.0, 1.0), waveNormalFadeOut);
    waveNormal = normalize(waveNormal);
-   vec3 normal = (2.0 * normalize(shaderVertexNormal))+ waveNormal;
+   
+   float waveNormalContribution = 1.0;//max(vec3(0.0), dot(shaderVertexNormal, vec3(1.0, 1.0, 0.0)));
+   waveNormal = waveNormalContribution * waveNormal;
+   
+   vec3 normal = shaderVertexNormal + waveNormal;
    normal = normalize(normal);   
 
    //this inverts the normal if we are underwater

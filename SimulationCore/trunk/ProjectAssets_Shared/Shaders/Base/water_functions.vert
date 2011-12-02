@@ -17,6 +17,10 @@ uniform vec3 cameraRecenter;
 
 float GetHeightOnWaterSuface(vec2 point)
 {
+
+   vec4 camPos = inverseViewMatrix[3];
+   float distance = length(camPos.xy - point);
+   
    float height = WaterHeight;
 
    vec2 offsetPos = point.xy - cameraRecenter.xy;
@@ -25,17 +29,22 @@ float GetHeightOnWaterSuface(vec2 point)
    int offset = WAVE_OFFSET;   
    for(int i = 2 * offset; i < (offset + NUM_WAVES) * 2; i+=2)
    {           
+      float waveLen = waveArray[i].x;
       float speed = waveArray[i].y;
       float freq = waveArray[i].w;
       float amp = waveArray[i].z;
       vec2 waveDir = waveArray[i + 1].zw;
       float k = max(1.5 * waveArray[i+1].x, 4.00001);
       
-      float mPlusPhi =  (freq * (speed * elapsedTime + offsetPos.x * waveDir.x + waveDir.y * offsetPos.y)); 
-      float sinDir = pow((sinPhi + 1.0) / 2.0, k);
+      //using approximation here because the waves scale out with distance to avoid aliasing with the grid
+      float distBetweenVertsScalar = 2.5 + clamp(distance / 15.0, 0.0, 1000.0);
+      amp *= 1.0 - clamp((distBetweenVertsScalar) / (waveLen), 0.0, 0.999);
       
-      height += amp * sinDir;                    
+      float mPlusPhi =  (freq * (speed * elapsedTime + offsetPos.x * waveDir.x + waveDir.y * offsetPos.y)); 
+      float sinDir = pow((sin(mPlusPhi) + 1.0) / 2.0, k);
+      
+      height += amp * sinDir;
    }
-
+   
    return height;
 }

@@ -203,13 +203,13 @@ namespace SimCore
 
       IMPLEMENT_ENUM(WaterGridActor::ChoppinessSettings);
       WaterGridActor::ChoppinessSettings WaterGridActor::ChoppinessSettings::
-         CHOP_FLAT("CHOP_FLAT", 0.0f, 20.0f);
+         CHOP_FLAT("CHOP_FLAT", 0.0f, 30.0f);
       WaterGridActor::ChoppinessSettings WaterGridActor::ChoppinessSettings::
-         CHOP_MILD("CHOP_MILD", 0.51f, 35.0f);
+         CHOP_MILD("CHOP_MILD", 0.615f, 45.0f);
       WaterGridActor::ChoppinessSettings WaterGridActor::ChoppinessSettings::
-         CHOP_MED("CHOP_MED", 1.0f, 65.0f);
+         CHOP_MED("CHOP_MED", 1.75f, 65.0f);
       WaterGridActor::ChoppinessSettings WaterGridActor::ChoppinessSettings::
-         CHOP_ROUGH("CHOP_ROUGH", 2.5f, 130.0f);
+         CHOP_ROUGH("CHOP_ROUGH", 3.5f, 90.0f);
 
 
       WaterGridActor::ChoppinessSettings::ChoppinessSettings(const std::string &name, float rotationSpread, float texMod)
@@ -426,36 +426,37 @@ namespace SimCore
       bool WaterGridActor::GetHeightAndNormalAtPoint( const osg::Vec3& detectionPoint,
          float& outHeight, osg::Vec3& outNormal ) const
       {
+         outHeight = GetWaterHeight();
+
          float distanceToCamera = (detectionPoint - mCurrentCameraPos).length();
-         float heightScalar = 1.0f - std::min(1.0f, std::max(0.0001f, (distanceToCamera - 100.0f) / 200.0f));
-         outHeight = 0.0f;
 
-         //we scale out the waves based on distance to keep the water from going through the terrain
-         if(heightScalar > 0.01)
+         float xPos = detectionPoint[0] - mLastCameraOffsetPos[0];
+         float yPos = detectionPoint[1] - mLastCameraOffsetPos[1];
+         // There are 2 vec4's of data per wave, so the loop is MAX_WAVES * 2 but increments by 2's
+         for(int i = 0; i < 16/*MAX_WAVES*/; i++)
          {
-            float xPos = detectionPoint[0] - mLastCameraOffsetPos[0];
-            float yPos = detectionPoint[1] - mLastCameraOffsetPos[1];
-            // There are 2 vec4's of data per wave, so the loop is MAX_WAVES * 2 but increments by 2's
-            for(int i = 0; i < 4/*MAX_WAVES*/; i++)
-            {
-               // Order is: waveLength, speed, amp, freq, UNUSED, UNUSED, dirX, dirY
-               float speed = mProcessedWaveData[i][1]; //waveArray[i].y;
-               float freq = mProcessedWaveData[i][3]; //waveArray[i].w;
-               float amp = mProcessedWaveData[i][2]; //waveArray[i].z;
-               float waveDirX = mProcessedWaveData[i][6]; //waveArray[i + 1].zw;
-               float waveDirY = mProcessedWaveData[i][7];
-               float k = mProcessedWaveData[i][4]; //(waveArray[i+1].x);
+            // Order is: waveLength, speed, amp, freq, UNUSED, UNUSED, dirX, dirY
+            float waveLen = mProcessedWaveData[i][0]; //waveArray[i].x
+            float speed = mProcessedWaveData[i][1]; //waveArray[i].y;
+            float freq = mProcessedWaveData[i][3]; //waveArray[i].w;
+            float amp = mProcessedWaveData[i][2]; //waveArray[i].z;
+            float waveDirX = mProcessedWaveData[i][6]; //waveArray[i + 1].zw;
+            float waveDirY = mProcessedWaveData[i][7];
+            float k = std::max(1.5f * mProcessedWaveData[i][4], 4.00001f); //(waveArray[i+1].x);
 
-               // This math MUST match the calculations done in water_functions.vert AND water.vert
-               float mPlusPhi = (freq * (speed * mElapsedTime +
-                  xPos * waveDirX + waveDirY * yPos));
-               float sinDir = pow((std::sin(mPlusPhi) + 1.0f) / 2.0f, k);
+            // This math MUST match the calculations done in water_functions.vert AND water.vert
+            float mPlusPhi = (freq * (speed * mElapsedTime + xPos * waveDirX + waveDirY * yPos));
+            float sinDir = pow((std::sin(mPlusPhi) + 1.0f) / 2.0f, k);
 
-               outHeight += amp * sinDir;
-            }
+            //using approximation here because the waves scale out with distance to avoid aliasing with the grid
+            distanceToCamera /= 15.0f;
+            dtUtil::Clamp(distanceToCamera, 0.0f, 1000.0f);
+            float distBetweenVertsScalar = (2.5f + distanceToCamera) / waveLen;
+            dtUtil::Clamp(distBetweenVertsScalar, 0.0f, 0.999f);
+            amp *= 1.0f - distBetweenVertsScalar;
+
+            outHeight += amp * sinDir;
          }
-
-         outHeight = GetWaterHeight() + (outHeight * heightScalar);
 
          outNormal.set(0.0f, 0.0f, 1.0f);
 
@@ -1363,23 +1364,24 @@ namespace SimCore
          //dtUtil::Clamp(mModForWaveLength, 0.2f, 5.0f);         
 
          //waveHieght is in meters but our sea states are calculated in feet, they go from 1-5 at 0.5 feet, 2 feet, 3.5 feet, 6 feet, and 8 feet
-         if(waveHeight <= 0.1524 || seaState == 1)
-         {
-            SetChoppiness(ChoppinessSettings::CHOP_FLAT);
-         }
-         else if(waveHeight <= 0.6096 || seaState == 2)
-         {
-            SetChoppiness(ChoppinessSettings::CHOP_MILD);
-         }
-         else if(waveHeight <= 1.0668 || seaState == 3)
-         {
-            SetChoppiness(ChoppinessSettings::CHOP_MED);
-         }
-         else //if(waveHeight <= 1.0668 || seaState == 4)
-         {
-            SetChoppiness(ChoppinessSettings::CHOP_ROUGH);
-         }
+         //if(waveHeight <= 0.1524 || seaState == 1)
+         //{
+         //   SetChoppiness(ChoppinessSettings::CHOP_FLAT);
+         //}
+         //else if(waveHeight <= 0.6096 || seaState == 2)
+         //{
+         //   SetChoppiness(ChoppinessSettings::CHOP_MILD);
+         //}
+         //else if(waveHeight <= 1.0668 || seaState == 3)
+         //{
+         //   SetChoppiness(ChoppinessSettings::CHOP_MED);
+         //}
+         //else //if(waveHeight <= 1.0668 || seaState == 4)
+         //{
+         //   SetChoppiness(ChoppinessSettings::CHOP_ROUGH);
+         //}
 
+         SetSeaStateByNumber(seaState);
          SetPrimaryWaveDirection(180.0f + waveDir);
       }
 
@@ -1635,59 +1637,118 @@ namespace SimCore
             ClearWaves();
             SetSeaState(SeaState::SeaState_4);
             //AddRandomizedWaves(26.66f, 2.0f, 2.5f, 8.5f, numWaves);
-            AddRandomizedWaves(waveLenMod * 26.66f, ampMod * 2.0f, 4.5f, 8.5f, numWaves);
+            AddRandomizedWaves(waveLenMod * 3.167f, ampMod * 00.16f, 1.0f, 2.5f, 4);
+            AddRandomizedWaves(waveLenMod * 12.667f, ampMod * 0.9667f, 1.75f, 6.0f, 4);
+            AddRandomizedWaves(waveLenMod * 16.667f, ampMod * 1.1667f, 2.0f, 6.5f, 4);
+            AddRandomizedWaves(waveLenMod * 20.66f, ampMod * 1.5f, 4.5f, 8.5f, 4);
          }
          else if(force == 5)
          {
             ClearWaves();
             SetSeaState(SeaState::SeaState_5);
             //AddRandomizedWaves(43.33, 02.667, 3.0f, 10.0f, numWaves);
-            AddRandomizedWaves(waveLenMod * 43.33, ampMod * 2.667, 6.0f, 10.0f, numWaves);
+            //AddRandomizedWaves(waveLenMod * 43.33, ampMod * 2.667, 6.0f, 10.0f, numWaves);
+            
+            AddRandomizedWaves(waveLenMod * 12.667f, ampMod * 0.9667f, 1.75f, 6.0f, 4);
+            AddRandomizedWaves(waveLenMod * 16.667f, ampMod * 1.1667f, 2.0f, 6.5f, 4);
+            AddRandomizedWaves(waveLenMod * 20.66f, ampMod * 1.5f, 4.5f, 8.5f, 4);
+            AddRandomizedWaves(waveLenMod * 26.66f, ampMod * 2.0f, 4.5f, 8.5f, 4);
+
          }
          else if(force == 6)
          {
             ClearWaves();
             SetSeaState(SeaState::SeaState_6);
             //AddRandomizedWaves(73.33, 6.0f, 4.0f, 13.0f, numWaves);
-            AddRandomizedWaves(waveLenMod * 73.33, ampMod * 4.0f, 7.0f, 13.0f, numWaves);
+            //AddRandomizedWaves(waveLenMod * 73.33, ampMod * 4.0f, 7.0f, 13.0f, numWaves);
+
+
+            AddRandomizedWaves(waveLenMod * 11.667f, ampMod * 1.1471f, 2.0f, 6.5f, 4);
+            AddRandomizedWaves(waveLenMod * 26.66f, ampMod * 2.14f, 4.5f, 8.5f, 4);
+            AddRandomizedWaves(waveLenMod * 43.33, ampMod * 3.341f, 5.0f, 9.0f, 2);
+            AddRandomizedWaves(waveLenMod * 65.33, ampMod * 5.4667, 6.0f, 8.0f, 2);
+            AddRandomizedWaves(waveLenMod * 95.667, ampMod * 6.133f, 7.5f, 12.0f, 4);
          }
          else if(force == 7)
          {
             ClearWaves();
             SetSeaState(SeaState::SeaState_7);
             //AddRandomizedWaves(133.33, 10.67f, 5.5f, 17.0f, numWaves);
-            AddRandomizedWaves(waveLenMod * 123.33, ampMod * 8.67f, 8.5f, 14.0f, numWaves);
+            //AddRandomizedWaves(waveLenMod * 123.33, ampMod * 8.67f, 8.5f, 14.0f, numWaves);
+
+            AddRandomizedWaves(waveLenMod * 9.667f, ampMod * 1.167f, 3.0f, 4.5f, 4);
+            AddRandomizedWaves(waveLenMod * 26.66f, ampMod * 3.14f, 4.5f, 8.5f, 4);
+            AddRandomizedWaves(waveLenMod * 63.33, ampMod * 4.341f, 7.0f, 13.0f, 2);
+            AddRandomizedWaves(waveLenMod * 85.33, ampMod * 6.667, 6.0f, 10.0f, 2);
+            AddRandomizedWaves(waveLenMod * 109.667, ampMod * 8.33f, 10.5f, 20.0f, 4);
          }
          else if(force == 8)
          {
             ClearWaves();
             SetSeaState(SeaState::SeaState_8);
             //AddRandomizedWaves(216.667, 17.33f, 7.5f, 23.0f, numWaves);
-            AddRandomizedWaves(waveLenMod * 166.667, ampMod * 10.633f, 9.5f, 16.5f, numWaves);
+            //AddRandomizedWaves(waveLenMod * 166.667, ampMod * 10.633f, 9.5f, 16.5f, numWaves);
+
+            //AddRandomizedWaves(waveLenMod * 12.667f, ampMod * 1.1667f, 2.0f, 6.5f, 4);
+            //AddRandomizedWaves(waveLenMod * 26.66f, ampMod * 3.14f, 4.5f, 8.5f, 4);
+            //AddRandomizedWaves(waveLenMod * 63.33, ampMod * 6.341f, 7.0f, 13.0f, 4);
+            //AddRandomizedWaves(waveLenMod * 133.33, ampMod * 12.667, 6.0f, 10.0f, 2);
+            //AddRandomizedWaves(waveLenMod * 149.667, ampMod * 14.33f, 10.5f, 20.0f, 2);
+
+            AddRandomizedWaves(waveLenMod * 9.667f, ampMod * 1.167f, 3.0f, 4.5f, 2);
+            AddRandomizedWaves(waveLenMod * 26.66f, ampMod * 3.14f, 4.5f, 8.5f, 4);
+            AddRandomizedWaves(waveLenMod * 63.33, ampMod * 5.341f, 7.0f, 13.0f, 2);
+            AddRandomizedWaves(waveLenMod * 85.33, ampMod * 7.667, 6.0f, 10.0f, 4);
+            AddRandomizedWaves(waveLenMod * 109.667, ampMod * 10.33f, 10.5f, 20.0f, 4);
          }
          else if(force == 9)
          {
             ClearWaves();
             SetSeaState(SeaState::SeaState_9);
-            AddRandomizedWaves(waveLenMod * 178.667, ampMod * 11.33f, 10.5f, 18.0f, numWaves);
+            //AddRandomizedWaves(waveLenMod * 178.667, ampMod * 11.33f, 10.5f, 18.0f, numWaves);
+            AddRandomizedWaves(waveLenMod * 12.667f, ampMod * 1.1667f, 3.0f, 6.5f, 2);
+            AddRandomizedWaves(waveLenMod * 26.66f, ampMod * 3.14f, 4.5f, 8.5f, 4);
+            AddRandomizedWaves(waveLenMod * 63.33, ampMod * 5.341f, 7.0f, 13.0f, 2);
+            AddRandomizedWaves(waveLenMod * 83.33, ampMod * 9.667, 6.0f, 10.0f, 4);
+            AddRandomizedWaves(waveLenMod * 129.667, ampMod * 12.33f, 10.5f, 20.0f, 4);
+
+            
+
          }
          else if(force == 10)
          {
             ClearWaves();
             SetSeaState(SeaState::SeaState_10);
-            AddRandomizedWaves(waveLenMod * 199.667, ampMod * 12.33f, 10.5f, 20.0f, numWaves);
+            //AddRandomizedWaves(waveLenMod * 199.667, ampMod * 12.33f, 10.5f, 20.0f, numWaves);
+
+            AddRandomizedWaves(waveLenMod * 12.667f, ampMod * 2.1667f, 4.0f, 6.5f, 4);
+            AddRandomizedWaves(waveLenMod * 26.66f, ampMod * 4.14f, 3.5f, 5.5f, 4);
+            AddRandomizedWaves(waveLenMod * 73.33, ampMod * 8.341f, 5.0f, 11.0f, 4);
+            AddRandomizedWaves(waveLenMod * 133.33, ampMod * 16.667, 8.0f, 12.0f, 2);
+            AddRandomizedWaves(waveLenMod * 329.667, ampMod * 28.33f, 10.5f, 20.0f, 2);
          }
          else if(force == 11)
          {
             ClearWaves();
             SetSeaState(SeaState::SeaState_11);
-            AddRandomizedWaves(waveLenMod * 216.667, ampMod * 13.33f, 12.5f, 23.0f, numWaves);
+
+            AddRandomizedWaves(waveLenMod * 12.667f, ampMod * 1.1667f, 2.0f, 6.5f, 4);
+            AddRandomizedWaves(waveLenMod * 22.667f, ampMod * 4.1667f, 2.0f, 6.5f, 4);
+            AddRandomizedWaves(waveLenMod * 53.33, ampMod * 8.0f, 7.0f, 13.0f, 4);
+            AddRandomizedWaves(waveLenMod * 143.33, ampMod * 16.667, 6.0f, 10.0f, 2);
+            AddRandomizedWaves(waveLenMod * 399.667, ampMod * 64.33f, 10.5f, 20.0f, 2);
+
          }
          else if(force == 12)
          {
             ClearWaves();
             SetSeaState(SeaState::SeaState_12);            
-            AddRandomizedWaves(waveLenMod * 245.667, ampMod * 15.33f, 14.5f, 33.0f, numWaves);
+
+            AddRandomizedWaves(waveLenMod * 38.667f, ampMod * 2.1667f, 2.0f, 6.5f, 4);
+            AddRandomizedWaves(waveLenMod * 46.667f, ampMod * 4.1667f, 2.0f, 6.5f, 4);
+            AddRandomizedWaves(waveLenMod * 93.33, ampMod * 6.667, 6.0f, 10.0f, 4);
+            AddRandomizedWaves(waveLenMod * 123.33, ampMod * 12.67f, 8.5f, 14.0f, 2);
+            AddRandomizedWaves(waveLenMod * 345.667, ampMod * 105.33f, 33.5f, 33.0f, 2);
          }
       }
 

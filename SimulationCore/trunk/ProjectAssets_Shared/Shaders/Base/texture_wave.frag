@@ -128,7 +128,7 @@ void main (void)
    vec3 camPos = inverseViewMatrix[3].xyz;
                                     
    
-   float resolutionScalar = 1.0 + clamp(floor(sqrt(camPos.z - WaterHeight) / 2.75), 1.0, 3.0); 
+   float resolutionScalar = 1.0 + clamp(floor(sqrt(camPos.z - WaterHeight) / 2.75), 0.0, 3.0); 
    float ampOverLength = 1.0 / (512.0 * resolutionScalar);
 
    vec3 textureNormal = vec3(0.0, 0.0, 0.0);  
@@ -162,7 +162,7 @@ void main (void)
       //float m = dot( freq * waveDir, resolution * tilingSize);      
       float m = dot( freq * waveDir, resolution);                
 
-      float k = 1.1 * steepness;
+      float k = 1.0;//1.1 * steepness;
       float vertexDerivativeScalar = freq * amp * pow((sin(m + phi) + 1.0) * 0.5, k - 1.0) * cos(m + phi);
 
       textureNormal.x += k * waveDir.x * vertexDerivativeScalar;
