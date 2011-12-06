@@ -32,7 +32,7 @@
 #include <dtUtil/log.h>
 #include <dtUtil/fileutils.h>
 #include <dtUtil/macros.h>
-#include <dtCore/globals.h>
+#include <dtUtil/datapathutils.h>
 #include <dtCore/system.h>
 #include <dtAudio/audiomanager.h>
 #include <dtDAL/project.h>

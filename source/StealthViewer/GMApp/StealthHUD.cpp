@@ -33,10 +33,10 @@
 
 #include <dtUtil/macros.h>
 #include <dtUtil/exception.h>
+#include <dtUtil/datapathutils.h>
 #include <dtUtil/datetime.h>
 
 #include <dtCore/object.h>
-#include <dtCore/globals.h>
 #include <dtCore/flymotionmodel.h>
 #include <dtCore/deltawin.h>
 #include <dtCore/scene.h>

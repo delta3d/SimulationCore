@@ -36,25 +36,25 @@
 #include <dtGame/basemessages.h>
 #include <dtGame/messagetype.h>
 
-#include <dtDAL/actorproperty.h>
-#include <dtDAL/enginepropertytypes.h>
+#include <dtCore/actorproperty.h>
+#include <dtCore/enginepropertytypes.h>
 
 #include <dtCore/system.h>
 #include <dtCore/scene.h>
-#include <dtCore/globals.h>
 #include <dtCore/refptr.h>
 #include <dtCore/observerptr.h>
 
 #include <dtUtil/macros.h>
 #include <dtUtil/mathdefines.h>
+#include <dtUtil/datapathutils.h>
 
 #include <SimCore/Actors/LogicConditionalActor.h>
 #include <SimCore/Actors/LogicOnEventActor.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
 
-#include <dtDAL/transformableactorproxy.h>
-#include <dtDAL/gameevent.h>
-#include <dtDAL/gameeventmanager.h>
+#include <dtCore/transformableactorproxy.h>
+#include <dtCore/gameevent.h>
+#include <dtCore/gameeventmanager.h>
 
 
 #include <TestComponent.h>
@@ -91,7 +91,7 @@ class LogicActorTests: public CPPUNIT_NS::TestFixture
       void TestLogicOnEventActor();
 
    private:
-      void CheckGameEventReceived(dtDAL::GameEvent *gameEvent, bool shouldExist, const std::string& message);
+      void CheckGameEventReceived(dtCore::GameEvent *gameEvent, bool shouldExist, const std::string& message);
 
       dtCore::RefPtr<dtGame::GameManager> mGM;
       dtCore::RefPtr<TestComponent> mTestComponent;
@@ -140,13 +140,13 @@ void LogicActorTests::TestConditionalActor()
    CPPUNIT_ASSERT_MESSAGE("Default true event should be NULL", lcapActor.GetTrueEvent() == NULL);
    CPPUNIT_ASSERT_MESSAGE("Default false event should be NULL", lcapActor.GetFalseEvent() == NULL);
 
-   dtCore::RefPtr<dtDAL::GameEvent> testTrueEvent = new dtDAL::GameEvent("LogicTestTRUEEvent");
-   //dtDAL::GameEventManager::GetInstance().AddEvent(*testTrueEvent);
+   dtCore::RefPtr<dtCore::GameEvent> testTrueEvent = new dtCore::GameEvent("LogicTestTRUEEvent");
+   //dtCore::GameEventManager::GetInstance().AddEvent(*testTrueEvent);
    lcapActor.SetTrueEvent(testTrueEvent);
    CPPUNIT_ASSERT_MESSAGE("True event should have been set", lcapActor.GetTrueEvent() == testTrueEvent);
 
-   dtCore::RefPtr<dtDAL::GameEvent> testFalseEvent = new dtDAL::GameEvent("LogicTestFALSEEvent");
-   //dtDAL::GameEventManager::GetInstance().AddEvent(*testFalseEvent);
+   dtCore::RefPtr<dtCore::GameEvent> testFalseEvent = new dtCore::GameEvent("LogicTestFALSEEvent");
+   //dtCore::GameEventManager::GetInstance().AddEvent(*testFalseEvent);
    lcapActor.SetFalseEvent(testFalseEvent);
    CPPUNIT_ASSERT_MESSAGE("False event should have been set", lcapActor.GetFalseEvent() == testFalseEvent);
 
@@ -155,7 +155,7 @@ void LogicActorTests::TestConditionalActor()
 }
 
 ///////////////////////////////////////////////////////////////////////
-void LogicActorTests::CheckGameEventReceived(dtDAL::GameEvent *gameEvent, bool shouldBeFound, const std::string& errorMessage)
+void LogicActorTests::CheckGameEventReceived(dtCore::GameEvent *gameEvent, bool shouldBeFound, const std::string& errorMessage)
 {
    std::vector<dtCore::RefPtr<const dtGame::Message> > msgs = mTestComponent->GetReceivedProcessMessages();
    bool wasFound = false;
@@ -210,26 +210,26 @@ void LogicActorTests::TestLogicOnEventActor()
    mGM->AddActor(*onEventProxy, false, true);
 
    // Event 1 True
-   dtCore::RefPtr<dtDAL::GameEvent> true1Event = new dtDAL::GameEvent("Test 1 True Event");
-   dtDAL::GameEventManager::GetInstance().AddEvent(*true1Event);
+   dtCore::RefPtr<dtCore::GameEvent> true1Event = new dtCore::GameEvent("Test 1 True Event");
+   dtCore::GameEventManager::GetInstance().AddEvent(*true1Event);
    lcap1Actor.SetTrueEvent(true1Event.get());
    // Event 1 False
-   dtCore::RefPtr<dtDAL::GameEvent> false1Event = new dtDAL::GameEvent("Test 1 False Event");
-   dtDAL::GameEventManager::GetInstance().AddEvent(*false1Event);
+   dtCore::RefPtr<dtCore::GameEvent> false1Event = new dtCore::GameEvent("Test 1 False Event");
+   dtCore::GameEventManager::GetInstance().AddEvent(*false1Event);
    lcap1Actor.SetFalseEvent(false1Event.get());
 
    // Event 2 True
-   dtCore::RefPtr<dtDAL::GameEvent> true2Event = new dtDAL::GameEvent("Test 2 True Event");
-   dtDAL::GameEventManager::GetInstance().AddEvent(*true2Event);
+   dtCore::RefPtr<dtCore::GameEvent> true2Event = new dtCore::GameEvent("Test 2 True Event");
+   dtCore::GameEventManager::GetInstance().AddEvent(*true2Event);
    lcap2Actor.SetTrueEvent(true2Event.get());
    // Event 2 False
-   dtCore::RefPtr<dtDAL::GameEvent> false2Event = new dtDAL::GameEvent("Test 2 False Event");
-   dtDAL::GameEventManager::GetInstance().AddEvent(*false2Event);
+   dtCore::RefPtr<dtCore::GameEvent> false2Event = new dtCore::GameEvent("Test 2 False Event");
+   dtCore::GameEventManager::GetInstance().AddEvent(*false2Event);
    lcap2Actor.SetFalseEvent(false2Event.get());
 
    // ConditionalsMetEvent
-   dtCore::RefPtr<dtDAL::GameEvent> conditionsMetEvent = new dtDAL::GameEvent("Test Conditions Met Event");
-   dtDAL::GameEventManager::GetInstance().AddEvent(*conditionsMetEvent);
+   dtCore::RefPtr<dtCore::GameEvent> conditionsMetEvent = new dtCore::GameEvent("Test Conditions Met Event");
+   dtCore::GameEventManager::GetInstance().AddEvent(*conditionsMetEvent);
    onEventActor.SetEventToFire(conditionsMetEvent.get());
 
    // Add conditions to the actor

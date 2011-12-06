@@ -42,12 +42,12 @@
 
 #include <dtGame/gamemanager.h>
 
-#include <dtCore/globals.h>
 #include <dtCore/scene.h>
 
-#include <dtDAL/project.h>
+#include <dtCore/project.h>
 
 #include <dtUtil/macros.h>
+#include <dtUtil/datapathutils.h>
 
 #include <osgDB/FileNameUtils>
 
@@ -136,7 +136,7 @@ namespace StealthQt
    ////////////////////////////////////////////////////////////////////
    QString HLAOptions::FindFile(const QString& caption, const QString& startingSubDir, const QString& filter)
    {
-      const std::string &context = dtDAL::Project::GetInstance().GetContext();
+      const std::string &context = dtCore::Project::GetInstance().GetContext();
       QString dir  = tr(context.c_str()) + tr("/") + startingSubDir;
       
       QString file = QFileDialog::getOpenFileName(this, caption, 

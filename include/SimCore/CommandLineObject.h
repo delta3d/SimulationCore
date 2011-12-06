@@ -27,6 +27,7 @@
 // project includes needed
 #include <SimCore/Export.h>
 
+#include <dtCore/export.h>
 #include <dtCore/refptr.h>
 
 #include <osg/Referenced>

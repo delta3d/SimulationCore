@@ -14,7 +14,6 @@
 #include <DriverHUD.h>
 
 #include <dtCore/object.h>
-#include <dtCore/globals.h>
 #include <dtCore/flymotionmodel.h>
 #include <dtCore/deltawin.h>
 #include <dtCore/scene.h>
@@ -25,6 +24,7 @@
 #include <dtUtil/matrixutil.h>
 #include <dtUtil/macros.h>
 #include <dtUtil/stringutils.h>
+#include <dtUtil/datapathutils.h>
 
 #include <dtGame/actorupdatemessage.h>
 #include <dtGame/basemessages.h>

@@ -27,20 +27,6 @@
 
  namespace SimCore
  {
-   /**
-    * @brief class holding types of exceptions used in the Image Generator namespace.
-    */
-   class SIMCORE_EXPORT IGExceptionEnum : public dtUtil::Enumeration
-   {
-      DECLARE_ENUM(IGExceptionEnum);
-      public:
-
-         static IGExceptionEnum INVALID_CONNECTION_DATA;
-
-      protected:
-         IGExceptionEnum(const std::string& name);
-   };
-
    class SIMCORE_EXPORT IGException : public dtUtil::Exception
    {
    public:

@@ -223,7 +223,6 @@ source_group("Source Files\\ActComps" FILES ${LIB_SOURCES_8})
 
 LINK_WITH_VARIABLES(${LIB_NAME}
                                    DTUTIL_LIBRARY
-                                   DTDAL_LIBRARY
                                    DTCORE_LIBRARY
                                    DTANIM_LIBRARY
                                    DTAI_LIBRARY

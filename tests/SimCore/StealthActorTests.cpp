@@ -39,16 +39,12 @@
 #include <dtGame/deadreckoningcomponent.h>
 #include <dtGame/gamemanager.h>
 
-#include <dtDAL/actorproperty.h>
-#include <dtDAL/enginepropertytypes.h>
-#include <dtDAL/project.h>
-#include <dtDAL/map.h>
-
 #include <dtCore/scene.h>
 #include <dtCore/system.h>
 #include <dtCore/transform.h>
-#include <dtCore/globals.h>
 #include <dtCore/deltawin.h>
+
+#include <dtUtil/datapathutils.h>
 
 #include <SimCore/Actors/StealthActor.h>
 #include <SimCore/Actors/DetonationActor.h>

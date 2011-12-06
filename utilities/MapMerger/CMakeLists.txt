@@ -18,7 +18,6 @@ ADD_EXECUTABLE(${PROG_NAME}
 
 LINK_WITH_VARIABLES(${PROG_NAME}
                                    DTUTIL_LIBRARY
-                                   DTDAL_LIBRARY
                                    DTCORE_LIBRARY
                                    DTAUDIO_LIBRARY
                                    OSG_LIBRARY

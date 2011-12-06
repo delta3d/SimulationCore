@@ -29,10 +29,10 @@
 #include <dtUtil/log.h>
 #include <dtUtil/exception.h>
 #include <dtUtil/stringutils.h>
+#include <dtUtil/datapathutils.h>
 
 #include <dtCore/timer.h>
 #include <dtCore/deltawin.h>
-#include <dtCore/globals.h>
 
 #include <dtDAL/actorproxy.h>
 #include <dtDAL/actorproperty.h>

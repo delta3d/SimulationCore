@@ -40,15 +40,13 @@
 #include <dtGUI/gui.h>
 #endif
 #include <dtABC/application.h>
-#include <dtCore/globals.h>
 #include <dtCore/system.h>
 #include <dtCore/scene.h>
 #include <dtCore/deltawin.h>
 #include <dtUtil/fileutils.h>
-#include <dtDAL/project.h>
-#include <dtDAL/map.h>
-#include <dtDAL/actortype.h>
-#include <dtDAL/enginepropertytypes.h>
+#include <dtUtil/datapathutils.h>
+#include <dtCore/actortype.h>
+#include <dtCore/enginepropertytypes.h>
 #include <SimCore/Actors/PlayerActor.h>
 
 #include <UnitTestMain.h>
@@ -136,9 +134,9 @@ void ToolTests::setUp()
 
    try
    {
-      const dtDAL::ActorType *type = mGM->FindActorType("Player Actor", "Player Actor");
+      const dtCore::ActorType *type = mGM->FindActorType("Player Actor", "Player Actor");
       CPPUNIT_ASSERT(type != NULL);
-      RefPtr<dtDAL::ActorProxy> proxy = mGM->CreateActor(*type);
+      RefPtr<dtCore::ActorProxy> proxy = mGM->CreateActor(*type);
       CPPUNIT_ASSERT(proxy.valid());
       mPlayerActor = dynamic_cast<SimCore::Actors::PlayerActor*>(proxy->GetActor());
       CPPUNIT_ASSERT(mPlayerActor.valid());
@@ -295,9 +293,9 @@ void ToolTests::TestEnableToolProperty()
    CPPUNIT_ASSERT_MESSAGE("The return value should be the LRF", mPlayerActor->GetEnabledTool() == SimCore::MessageType::LASER_RANGE_FINDER);
 
    SimCore::Actors::PlayerActorProxy &pap = static_cast<SimCore::Actors::PlayerActorProxy&>(mPlayerActor->GetGameActorProxy());
-   dtDAL::ActorProperty *ap = pap.GetProperty("Enabled Tool");
+   dtCore::ActorProperty *ap = pap.GetProperty("Enabled Tool");
    CPPUNIT_ASSERT_MESSAGE("The Enabled Tool property should not be NULL", ap != NULL);
-   dtDAL::AbstractEnumActorProperty *aep = dynamic_cast<dtDAL::AbstractEnumActorProperty*>(ap);
+   dtCore::AbstractEnumActorProperty *aep = dynamic_cast<dtCore::AbstractEnumActorProperty*>(ap);
    CPPUNIT_ASSERT(aep != NULL);
    aep->SetEnumValue(SimCore::MessageType::GPS);
    CPPUNIT_ASSERT_MESSAGE("GetEnumValue should return GPS", aep->GetEnumValue() == SimCore::MessageType::GPS);

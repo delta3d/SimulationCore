@@ -33,15 +33,13 @@
 #include <dtCore/scene.h>
 #include <dtCore/system.h>
 #include <dtCore/deltawin.h>
-#include <dtCore/globals.h>
 #include <dtCore/transform.h>
-#include <dtDAL/project.h>
-#include <dtDAL/map.h>
 #include <dtGame/gamemanager.h>
 #include <dtGame/basemessages.h>
 #include <dtUtil/fileutils.h>
 #include <dtUtil/mathdefines.h>
 #include <dtUtil/exception.h>
+#include <dtUtil/datapathutils.h>
 #include <SimCore/Components/StealthHUDElements.h>
 #include <SimCore/Components/LabelManager.h>
 #include <SimCore/Actors/Platform.h>

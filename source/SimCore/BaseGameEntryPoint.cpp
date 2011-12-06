@@ -44,7 +44,6 @@
 
 #include <dtCore/camera.h>
 #include <dtCore/environment.h>
-#include <dtCore/globals.h>
 #include <dtCore/isector.h>
 #include <dtCore/scene.h>
 
@@ -63,6 +62,8 @@
 #include <dtGame/deadreckoningcomponent.h>
 #include <dtGame/gamemanager.h>
 #include <dtGame/exceptionenum.h>
+
+#include <dtUtil/datapathutils.h>
 
 #include <dtAnim/animationcomponent.h>
 #include <dtAnim/cal3ddatabase.h>
