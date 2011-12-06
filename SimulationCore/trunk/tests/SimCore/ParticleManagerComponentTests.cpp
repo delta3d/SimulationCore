@@ -32,7 +32,6 @@
 
 #include <dtActors/engineactorregistry.h>
 
-#include <dtCore/globals.h>
 #include <dtCore/system.h>
 #include <dtCore/refptr.h>
 #include <dtCore/scene.h>
@@ -42,9 +41,7 @@
 #include <dtCore/particlesystem.h>
 #include <dtCore/transformable.h>
 
-#include <dtDAL/project.h>
-#include <dtDAL/map.h>
-#include <dtDAL/resourcedescriptor.h>
+#include <dtCore/project.h>
 
 #include <dtCore/transform.h>
 
@@ -56,6 +53,7 @@
 
 #include <dtUtil/exception.h>
 #include <dtUtil/fileutils.h>
+#include <dtUtil/datapathutils.h>
 
 #include <SimCore/Components/ParticleManagerComponent.h> // includes IGEnvironmentActor
 #include <SimCore/MessageType.h>
@@ -269,8 +267,8 @@ namespace SimCore
          ptr = new dtCore::ParticleSystem("TestParticleSystem");
          CPPUNIT_ASSERT_MESSAGE("ParticleSystem must be obtainable from file", ptr.valid() );
 
-         dtDAL::Project& project = dtDAL::Project::GetInstance();
-         std::string path = project.GetResourcePath(dtDAL::ResourceDescriptor("Particles:unittestparticles.osg"));
+         dtCore::Project& project = dtCore::Project::GetInstance();
+         std::string path = project.GetResourcePath(dtCore::ResourceDescriptor("Particles:unittestparticles.osg"));
 
          CPPUNIT_ASSERT(path != (project.GetContext() + "/"));
 

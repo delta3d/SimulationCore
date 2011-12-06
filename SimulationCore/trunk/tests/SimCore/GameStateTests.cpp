@@ -20,10 +20,9 @@
 #include <cppunit/extensions/HelperMacros.h>
 
 #include <dtABC/application.h>
-#include <dtCore/globals.h>
 #include <dtCore/deltawin.h>
 #include <dtCore/system.h>
-#include <dtDAL/project.h>
+#include <dtCore/project.h>
 #include <dtGame/basemessages.h>
 #include <dtGame/gamemanager.h>
 #include <dtGame/gmcomponent.h>
@@ -35,6 +34,7 @@
 #include <SimCore/Components/GameState/GameStateChangeMessage.h>
 #include <SimCore/Components/GameState/GameStateComponent.h>
 #include <dtUtil/command.h>
+#include <dtUtil/datapathutils.h>
 
 #include <UnitTestMain.h>
 
@@ -146,7 +146,7 @@ void GameStateTests::tearDown()
 ////////////////////////////////////////////////////////////////////////////////
 void GameStateTests::TestLoadTransitionFile()
 {
-   std::string filePath = dtDAL::Project::GetInstance().GetResourcePath(dtDAL::ResourceDescriptor("Transitions:TestTransitions.xml"));
+   std::string filePath = dtCore::Project::GetInstance().GetResourcePath(dtCore::ResourceDescriptor("Transitions:TestTransitions.xml"));
    bool loadedFile = mGameStateComponent->LoadTransitions(filePath);
    CPPUNIT_ASSERT_MESSAGE("Unable to load transition file: filePath" , loadedFile);
 

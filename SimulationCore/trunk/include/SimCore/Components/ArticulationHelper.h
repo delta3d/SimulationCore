@@ -29,6 +29,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include <SimCore/Export.h>
 
+#include <dtCore/export.h>
 #include <dtCore/refptr.h>
 
 #include <dtUtil/enumeration.h>

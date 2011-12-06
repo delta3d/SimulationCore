@@ -47,7 +47,6 @@
 
 #include <dtCore/timer.h>
 #include <dtCore/deltawin.h>
-#include <dtCore/globals.h>
 #include <dtCore/shadermanager.h>
 #include <dtCore/system.h>
 

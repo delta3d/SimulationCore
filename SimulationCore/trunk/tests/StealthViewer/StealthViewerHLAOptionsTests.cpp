@@ -29,8 +29,7 @@
 #include <cppunit/extensions/HelperMacros.h>
 #include <StealthViewer/Qt/HLAOptions.h>
 #include <dtUtil/fileutils.h>
-#include <dtDAL/project.h>
-#include <dtCore/globals.h>
+#include <dtUtil/datapathutils.h>
 #include <QtGui/QApplication>
 
 class SubHLAOptions : public StealthQt::HLAOptions

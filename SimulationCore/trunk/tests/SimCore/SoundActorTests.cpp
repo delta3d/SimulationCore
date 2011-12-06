@@ -36,11 +36,12 @@
 
 #include <dtGame/gamemanager.h>
 
-#include <dtDAL/enginepropertytypes.h>
+#include <dtCore/enginepropertytypes.h>
 
-#include <dtCore/globals.h>
 #include <dtCore/system.h>
 #include <dtCore/scene.h>
+
+#include <dtUtil/datapathutils.h>
 
 #include <dtABC/application.h>
 
@@ -94,7 +95,7 @@ void SoundActorTests::setUp()
       dtCore::System::GetInstance().SetShutdownOnWindowClose(false);
       dtCore::System::GetInstance().Start();
 
-      dtCore::RefPtr<const dtDAL::ActorType> actorType =
+      dtCore::RefPtr<const dtCore::ActorType> actorType =
          mGameManager->FindActorType("SimCore","SoundActor");
       CPPUNIT_ASSERT_MESSAGE("Could not find actor type.",actorType.valid());
 
@@ -141,13 +142,13 @@ void SoundActorTests::TestProperties()
       // Get the tested properties.
       // Random Sound Effect
       // Offset Time
-      const dtDAL::BooleanActorProperty* propRandom = static_cast<const dtDAL::BooleanActorProperty*>
+      const dtCore::BooleanActorProperty* propRandom = static_cast<const dtCore::BooleanActorProperty*>
          (proxy->GetProperty( SimCore::Actors::SoundActorProxy::PROPERTY_PLAY_AS_RANDOM ));
-      const dtDAL::FloatActorProperty* propOffsetTime = static_cast<const dtDAL::FloatActorProperty*>
+      const dtCore::FloatActorProperty* propOffsetTime = static_cast<const dtCore::FloatActorProperty*>
          (proxy->GetProperty( SimCore::Actors::SoundActorProxy::PROPERTY_INITIAL_OFFSET_TIME ));
-      const dtDAL::FloatActorProperty* propRandTimeMax = static_cast<const dtDAL::FloatActorProperty*>
+      const dtCore::FloatActorProperty* propRandTimeMax = static_cast<const dtCore::FloatActorProperty*>
          (proxy->GetProperty( SimCore::Actors::SoundActorProxy::PROPERTY_MAX_RANDOM_TIME ));
-      const dtDAL::FloatActorProperty* propRandTimeMin = static_cast<const dtDAL::FloatActorProperty*>
+      const dtCore::FloatActorProperty* propRandTimeMin = static_cast<const dtCore::FloatActorProperty*>
          (proxy->GetProperty( SimCore::Actors::SoundActorProxy::PROPERTY_MIN_RANDOM_TIME ));
 
       // Make sure the correct properties exist on the proxy.
@@ -226,7 +227,7 @@ void SoundActorTests::TestProperties()
 
       CPPUNIT_ASSERT_THROW_MESSAGE("Play should throw an exception since no resource was set.", proxy->Play(), dtUtil::Exception);
 
-      //dtDAL::ResourceDescriptor rd("Sounds:silence.wav");
+      //dtCore::ResourceDescriptor rd("Sounds:silence.wav");
       proxy->SetSoundResource("Sounds/silence.wav");
 
       proxy->SetDirection(osg::Vec3(0.1, 0.3, 0.9));
@@ -261,7 +262,7 @@ void SoundActorTests::TestTimedPlay()
    try
    {
       // Test loading a sound.
-      //dtDAL::ResourceDescriptor rd("Sounds:silence.wav");
+      //dtCore::ResourceDescriptor rd("Sounds:silence.wav");
       mProxy->SetSoundResource("Sounds/silence.wav");
       SimCore::Actors::SoundActor* soundActor = NULL;
       mProxy->GetActor(soundActor);

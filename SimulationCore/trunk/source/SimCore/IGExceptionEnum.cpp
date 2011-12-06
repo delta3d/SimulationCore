@@ -25,19 +25,9 @@
 
 namespace SimCore
 {
-   IMPLEMENT_ENUM(IGExceptionEnum);
-
-   IGExceptionEnum IGExceptionEnum::INVALID_CONNECTION_DATA("INVALID_CONNECTION_DATA");
-
-   IGExceptionEnum::IGExceptionEnum(const std::string& name) : dtUtil::Enumeration(name)
-   {
-      AddInstance(this);
-   }
-
    ////////////////////////////////////////////////////////////////////////////////////////////////
    IGException::IGException(const std::string& message, const std::string& filename, unsigned int linenum)
    : dtUtil::Exception(message, filename, linenum)
    {
-      mType = &IGExceptionEnum::INVALID_CONNECTION_DATA;
    }
 }

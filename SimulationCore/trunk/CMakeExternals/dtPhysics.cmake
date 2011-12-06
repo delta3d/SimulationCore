@@ -55,3 +55,8 @@
     
   ENDIF()
   
+
+  message("${DTPHYSICS_DIR}")
+  message("${DELTA_DIR}")
+  message("${DELTA3D_EXT_DIR}")
+  message("${DTPHYSICS_INCLUDE_DIR}")

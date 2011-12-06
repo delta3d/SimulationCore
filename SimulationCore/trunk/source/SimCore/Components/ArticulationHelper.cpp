@@ -31,7 +31,6 @@
 #include <dtGame/deadreckoninghelper.h>
 #include <SimCore/Components/ArticulationHelper.h>
 
-
 namespace SimCore
 {
    namespace Components
