@@ -1355,33 +1355,63 @@ namespace SimCore
       {
          //mModForDirectionInDegrees = waveDir;
 
-         std::cout << "Ocean Update- Sea state: " << seaState << ", Wave Dir: " << waveDir << ", WaveHeight: " << waveHeight << ", Lat: " << lat << ", Long: " << llong << std::endl;
+         unsigned seaStateNumber = 0;
+         if(waveHeight <= 0.1f)
+         {
+            seaStateNumber = 0;
+         }
+         else if(waveHeight <= 0.2f)
+         {
+            seaStateNumber = 1;
+         }
+         else if(waveHeight <= 0.6f)
+         {
+            seaStateNumber = 2;
+         }
+         else if(waveHeight <= 1.0f)
+         {
+            seaStateNumber = 3;
+         }
+         else if(waveHeight <= 2.0f)
+         {
+            seaStateNumber = 4;
+         }
+         else if(waveHeight <= 3.0f)
+         {
+            seaStateNumber = 5;
+         }
+         else if(waveHeight <= 4.0f)
+         {
+            seaStateNumber = 6;
+         }
+         else if(waveHeight <= 5.5f)
+         {
+            seaStateNumber = 7;
+         }
+         else if(waveHeight <= 7.0f)
+         {
+            seaStateNumber = 8;
+         }
+         else if(waveHeight <= 9.0f)
+         {
+            seaStateNumber = 9;
+         }
+         else if(waveHeight <= 11.5f)
+         {
+            seaStateNumber = 10;
+         }
+         else if(waveHeight <= 14.0f)
+         {
+            seaStateNumber = 11;
+         }
+         else 
+         {
+            seaStateNumber = 12;
+         }
 
-         //mModForAmplitude = waveHeight;
-         //dtUtil::Clamp(mModForAmplitude, 0.5f, 10.0f);
+         std::cout << "Ocean Update- Sea state: " << seaStateNumber << ", Wave Dir: " << waveDir << ", WaveHeight: " << waveHeight << ", Lat: " << lat << ", Long: " << llong << std::endl;
 
-         //mModForWaveLength = 1.0 + ((waveHeight - 1.0f) * 0.2f);
-         //dtUtil::Clamp(mModForWaveLength, 0.2f, 5.0f);         
-
-         //waveHieght is in meters but our sea states are calculated in feet, they go from 1-5 at 0.5 feet, 2 feet, 3.5 feet, 6 feet, and 8 feet
-         //if(waveHeight <= 0.1524 || seaState == 1)
-         //{
-         //   SetChoppiness(ChoppinessSettings::CHOP_FLAT);
-         //}
-         //else if(waveHeight <= 0.6096 || seaState == 2)
-         //{
-         //   SetChoppiness(ChoppinessSettings::CHOP_MILD);
-         //}
-         //else if(waveHeight <= 1.0668 || seaState == 3)
-         //{
-         //   SetChoppiness(ChoppinessSettings::CHOP_MED);
-         //}
-         //else //if(waveHeight <= 1.0668 || seaState == 4)
-         //{
-         //   SetChoppiness(ChoppinessSettings::CHOP_ROUGH);
-         //}
-
-         SetSeaStateByNumber(seaState);
+         SetSeaStateByNumber(seaStateNumber);
          SetPrimaryWaveDirection(180.0f + waveDir);
       }
 
@@ -1744,11 +1774,11 @@ namespace SimCore
             ClearWaves();
             SetSeaState(SeaState::SeaState_12);            
 
-            AddRandomizedWaves(waveLenMod * 38.667f, ampMod * 2.1667f, 2.0f, 6.5f, 4);
+            AddRandomizedWaves(waveLenMod * 38.667f, ampMod * 2.1667f, 2.0f, 6.5f, 3);
             AddRandomizedWaves(waveLenMod * 46.667f, ampMod * 4.1667f, 2.0f, 6.5f, 4);
             AddRandomizedWaves(waveLenMod * 93.33, ampMod * 6.667, 6.0f, 10.0f, 4);
             AddRandomizedWaves(waveLenMod * 123.33, ampMod * 12.67f, 8.5f, 14.0f, 2);
-            AddRandomizedWaves(waveLenMod * 345.667, ampMod * 105.33f, 33.5f, 33.0f, 2);
+            AddRandomizedWaves(waveLenMod * 545.667, ampMod * 125.33f, 33.5f, 33.0f, 3);
          }
       }
 
