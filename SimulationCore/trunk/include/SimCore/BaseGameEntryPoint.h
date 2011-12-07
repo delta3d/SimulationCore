@@ -80,6 +80,7 @@ namespace SimCore
          static const std::string CONFIG_PROP_MUNITION_MAP;
          static const std::string CONFIG_PROP_MUNITION_CONFIG_FILE;
          static const std::string CONFIG_PROP_MUNITION_DEFAULT;
+         static const std::string CONFIG_PROP_HIGH_RES_GROUND_CLAMP_RANGE;
 
          /// Constructor
          BaseGameEntryPoint();
