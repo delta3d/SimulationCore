@@ -93,6 +93,7 @@ namespace SimCore
    const std::string BaseGameEntryPoint::CONFIG_PROP_ASPECT_RATIO("AspectRatio");
    const std::string BaseGameEntryPoint::CONFIG_PROP_MUNITION_MAP("MunitionMap");
    const std::string BaseGameEntryPoint::CONFIG_PROP_MUNITION_CONFIG_FILE("MunitionsConfigFile");
+   const std::string BaseGameEntryPoint::CONFIG_PROP_HIGH_RES_GROUND_CLAMP_RANGE("HighResGroundClampingRange");
 
    //////////////////////////////////////////////////////////////////////////
    BaseGameEntryPoint::BaseGameEntryPoint()
@@ -390,6 +391,7 @@ namespace SimCore
       std::string useGPUSkinning = gameManager.GetConfiguration().GetConfigPropertyValue(
                CONFIG_PROP_USE_GPU_CHARACTER_SKINNING, "1");
 
+
       dtAnim::AnimNodeBuilder& nodeBuilder = dtAnim::Cal3DDatabase::GetInstance().GetNodeBuilder();
 
       if (useGPUSkinning == "1" || useGPUSkinning == "true")
@@ -403,9 +405,13 @@ namespace SimCore
          LOG_INFO("Using CPU Character Skinning");
       }
 
+      std::string highResGroundClampingRange = gameManager.GetConfiguration().GetConfigPropertyValue(
+         CONFIG_PROP_HIGH_RES_GROUND_CLAMP_RANGE, "200");
+
       // Setup the DR Component.
       dtCore::RefPtr<Components::MultiSurfaceClamper> clamper = new Components::MultiSurfaceClamper;
-      clamper->SetHighResGroundClampingRange( 200.0f );
+      
+      clamper->SetHighResGroundClampingRange( dtUtil::ToFloat(highResGroundClampingRange) );
       drComp->SetGroundClamper( *clamper );
 
       // Setup the Weather Component.

@@ -622,17 +622,17 @@ namespace SimCore
             osg::Vec3 widthVec(inOutPoints[1] - inOutPoints[2]);
 
             float sizeFactor = (widthVec.length() * lengthVec.length())/500.0f;
-            dtUtil::Clamp(sizeFactor, MultiSurfaceClamper::MultiSurfaceRuntimeData::DEFAULT_MAX_TIME_STEP, 1.0f);
+            dtUtil::Clamp(sizeFactor, 0.001f, /*MultiSurfaceClamper::MultiSurfaceRuntimeData::DEFAULT_MAX_TIME_STEP, */1.0f);
             simTimeDelta /= sizeFactor;
-            dtUtil::Clamp(simTimeDelta, MultiSurfaceClamper::MultiSurfaceRuntimeData::DEFAULT_MAX_TIME_STEP, 1.0f);
+            dtUtil::Clamp(simTimeDelta, 0.001f, /*MultiSurfaceClamper::MultiSurfaceRuntimeData::DEFAULT_MAX_TIME_STEP, */1.0f);
          }
 
 
          // Get the surface points and their data.
          SurfacePointDataArray& pointData = inOutData.GetSurfacePointData();
-         inOutPoints[0].z() = pointData[0].GetLastClampPoint().z() + ((inOutPoints[0].z() - pointData[0].GetLastClampPoint().z()) * simTimeDelta) * simTimeDelta;
-         inOutPoints[1].z() = pointData[1].GetLastClampPoint().z() + ((inOutPoints[1].z() - pointData[1].GetLastClampPoint().z()) * simTimeDelta) * simTimeDelta;
-         inOutPoints[2].z() = pointData[2].GetLastClampPoint().z() + ((inOutPoints[2].z() - pointData[2].GetLastClampPoint().z()) * simTimeDelta) * simTimeDelta;
+         inOutPoints[0].z() = pointData[0].GetLastClampPoint().z() + ((inOutPoints[0].z() - pointData[0].GetLastClampPoint().z()) * simTimeDelta);// * simTimeDelta;
+         inOutPoints[1].z() = pointData[1].GetLastClampPoint().z() + ((inOutPoints[1].z() - pointData[1].GetLastClampPoint().z()) * simTimeDelta);// * simTimeDelta;
+         inOutPoints[2].z() = pointData[2].GetLastClampPoint().z() + ((inOutPoints[2].z() - pointData[2].GetLastClampPoint().z()) * simTimeDelta);// * simTimeDelta;
 
          pointData[0].SetLastClampPoint( inOutPoints[0] );
          pointData[1].SetLastClampPoint( inOutPoints[1] );
