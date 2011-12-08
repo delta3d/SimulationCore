@@ -484,95 +484,95 @@ namespace SimCore
          if (kb != NULL && mDeveloperMode && keyTimeOut <= 0.0f)
          {
 
-            if (kb->GetKeyState('9'))
-            {
-               mModForWaveLength *= 0.96f; // 10% less
-               std::cout << "WaveLength mod changed to [" << mModForWaveLength << "]." << std::endl;
-            }
-            else if (kb->GetKeyState('0'))
-            {
-               mModForWaveLength *= 1.04f; // 10% more
-               std::cout << "WaveLength mod changed to [" << mModForWaveLength << "]." << std::endl;
-            }
+            //if (kb->GetKeyState('9'))
+            //{
+            //   mModForWaveLength *= 0.96f; // 10% less
+            //   std::cout << "WaveLength mod changed to [" << mModForWaveLength << "]." << std::endl;
+            //}
+            //else if (kb->GetKeyState('0'))
+            //{
+            //   mModForWaveLength *= 1.04f; // 10% more
+            //   std::cout << "WaveLength mod changed to [" << mModForWaveLength << "]." << std::endl;
+            //}
 
-            if (kb->GetKeyState('7'))
-            {
-               mModForSpeed *= 0.96f; // 10% less
-               std::cout << "Speed mod changed to [" << mModForSpeed << "]." << std::endl;
-            }
-            else if (kb->GetKeyState('8'))
-            {
-               mModForSpeed *= 1.04f; // 10% more
-               std::cout << "Speed mod changed to [" << mModForSpeed << "]." << std::endl;
-            }
+            //if (kb->GetKeyState('7'))
+            //{
+            //   mModForSpeed *= 0.96f; // 10% less
+            //   std::cout << "Speed mod changed to [" << mModForSpeed << "]." << std::endl;
+            //}
+            //else if (kb->GetKeyState('8'))
+            //{
+            //   mModForSpeed *= 1.04f; // 10% more
+            //   std::cout << "Speed mod changed to [" << mModForSpeed << "]." << std::endl;
+            //}
 
-            if (kb->GetKeyState('5'))
-            {
-               mModForAmplitude *= 0.96f; // 10% less
-               std::cout << "Amp mod changed to [" << mModForAmplitude << "]." << std::endl;
-            }
-            else if (kb->GetKeyState('6'))
-            {
-               mModForAmplitude *= 1.04f; // 10% more
-               std::cout << "Amp mod changed to [" << mModForAmplitude << "]." << std::endl;
-            }
+            //if (kb->GetKeyState('5'))
+            //{
+            //   mModForAmplitude *= 0.96f; // 10% less
+            //   std::cout << "Amp mod changed to [" << mModForAmplitude << "]." << std::endl;
+            //}
+            //else if (kb->GetKeyState('6'))
+            //{
+            //   mModForAmplitude *= 1.04f; // 10% more
+            //   std::cout << "Amp mod changed to [" << mModForAmplitude << "]." << std::endl;
+            //}
 
-            if (kb->GetKeyState('3'))
-            {
-               mModForDirectionInDegrees -= 2.00; // 10% less
-               mModForDirectionInDegrees = (mModForDirectionInDegrees < 0.0f) ? (mModForDirectionInDegrees + 360.0f) : mModForDirectionInDegrees;
-               std::cout << "Direction mod changed to [" << mModForDirectionInDegrees << "]." << std::endl;
-            }
-            else if (kb->GetKeyState('4'))
-            {
-               mModForDirectionInDegrees += 2.00f; // 10% more
-               mModForDirectionInDegrees = (mModForDirectionInDegrees > 360.0f) ? (mModForDirectionInDegrees - 360.0f) : mModForDirectionInDegrees;
-               std::cout << "Direction mod changed to [" << mModForDirectionInDegrees << "]." << std::endl;
-            }
+            //if (kb->GetKeyState('3'))
+            //{
+            //   mModForDirectionInDegrees -= 2.00; // 10% less
+            //   mModForDirectionInDegrees = (mModForDirectionInDegrees < 0.0f) ? (mModForDirectionInDegrees + 360.0f) : mModForDirectionInDegrees;
+            //   std::cout << "Direction mod changed to [" << mModForDirectionInDegrees << "]." << std::endl;
+            //}
+            //else if (kb->GetKeyState('4'))
+            //{
+            //   mModForDirectionInDegrees += 2.00f; // 10% more
+            //   mModForDirectionInDegrees = (mModForDirectionInDegrees > 360.0f) ? (mModForDirectionInDegrees - 360.0f) : mModForDirectionInDegrees;
+            //   std::cout << "Direction mod changed to [" << mModForDirectionInDegrees << "]." << std::endl;
+            //}
 
-            if (kb->GetKeyState('1'))
-            {
-               mModForFOV *= 0.96f; // 10% less
-               std::cout << "Mod For FOV changed to [" << mModForFOV << "]." << std::endl;
-            }
-            else if (kb->GetKeyState('2'))
-            {
-               mModForFOV *= 1.04f; // 10% more
-               std::cout << "Mod For FOV changed to [" << mModForFOV << "]." << std::endl;
-            }
+            //if (kb->GetKeyState('1'))
+            //{
+            //   mModForFOV *= 0.96f; // 10% less
+            //   std::cout << "Mod For FOV changed to [" << mModForFOV << "]." << std::endl;
+            //}
+            //else if (kb->GetKeyState('2'))
+            //{
+            //   mModForFOV *= 1.04f; // 10% more
+            //   std::cout << "Mod For FOV changed to [" << mModForFOV << "]." << std::endl;
+            //}
 
-            if(kb->GetKeyState(osgGA::GUIEventAdapter::KEY_Return))
-            {
-               mModForWaveLength = 1.0f; // 10% less
-               mModForFOV = 1.0f; // 10% more
-               mModForDirectionInDegrees = 0.0f;
-               mModForAmplitude = 1.0f;
-               mModForSpeed = 1.0f;
-               std::cout << "Resetting ALL Dev mods to Default." << std::endl;
+            //if(kb->GetKeyState(osgGA::GUIEventAdapter::KEY_Return))
+            //{
+            //   mModForWaveLength = 1.0f; // 10% less
+            //   mModForFOV = 1.0f; // 10% more
+            //   mModForDirectionInDegrees = 0.0f;
+            //   mModForAmplitude = 1.0f;
+            //   mModForSpeed = 1.0f;
+            //   std::cout << "Resetting ALL Dev mods to Default." << std::endl;
 
-               mRenderWaveTexture = !mRenderWaveTexture;
-               SetRenderWaveTexture(mRenderWaveTexture);
-               keyTimeOut = 0.5;
-            }
+            //   mRenderWaveTexture = !mRenderWaveTexture;
+            //   SetRenderWaveTexture(mRenderWaveTexture);
+            //   keyTimeOut = 0.5;
+            //}
 
-            if(kb->GetKeyState(osgGA::GUIEventAdapter::KEY_Space))
-            {
-               mWireframe = !mWireframe;
+            //if(kb->GetKeyState(osgGA::GUIEventAdapter::KEY_Space))
+            //{
+            //   mWireframe = !mWireframe;
 
-               osg::ref_ptr<osg::PolygonMode> polymode = new osg::PolygonMode;
+            //   osg::ref_ptr<osg::PolygonMode> polymode = new osg::PolygonMode;
 
-               if(mWireframe)
-               {
-                  polymode->setMode(osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::LINE);
-               }
-               else
-               {
-                  polymode->setMode(osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::FILL);
-               }
+            //   if(mWireframe)
+            //   {
+            //      polymode->setMode(osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::LINE);
+            //   }
+            //   else
+            //   {
+            //      polymode->setMode(osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::FILL);
+            //   }
 
-               mGeode->getOrCreateStateSet()->setAttributeAndModes(polymode.get(),osg::StateAttribute::OVERRIDE | osg::StateAttribute::ON);
-               keyTimeOut = 0.5;
-            }
+            //   mGeode->getOrCreateStateSet()->setAttributeAndModes(polymode.get(),osg::StateAttribute::OVERRIDE | osg::StateAttribute::ON);
+            //   keyTimeOut = 0.5;
+            //}
 
             if(kb->GetKeyState(osgGA::GUIEventAdapter::KEY_Home))
             {
