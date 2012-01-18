@@ -481,8 +481,8 @@ namespace NetDemo
 
          case 'c':
          {
-            dtCore::UseNewAbsoluteMatrixCode = !dtCore::UseNewAbsoluteMatrixCode;
-            printf("New absolute matrix code is: %u\n", dtCore::UseNewAbsoluteMatrixCode);
+            //dtCore::UseNewAbsoluteMatrixCode = !dtCore::UseNewAbsoluteMatrixCode;
+            //printf("New absolute matrix code is: %u\n", dtCore::UseNewAbsoluteMatrixCode);
             break;
          }
 
