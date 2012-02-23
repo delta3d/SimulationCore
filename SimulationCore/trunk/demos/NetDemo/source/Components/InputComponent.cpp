@@ -51,10 +51,6 @@
 #include <dtUtil/nodecollector.h>
 #include <NetDemoMessageTypes.h>
 
-namespace dtCore
-{
-   extern bool UseNewAbsoluteMatrixCode;
-}
 
 namespace NetDemo
 {
@@ -478,33 +474,6 @@ namespace NetDemo
                ToggleDebugInfo();
             }
             break;
-
-         case 'c':
-         {
-            //dtCore::UseNewAbsoluteMatrixCode = !dtCore::UseNewAbsoluteMatrixCode;
-            //printf("New absolute matrix code is: %u\n", dtCore::UseNewAbsoluteMatrixCode);
-            break;
-         }
-
-         case 'd':
-         {
-            dtCore::Transform xform;
-            std::vector<dtGame::GameActorProxy*> toFill;
-            GetGameManager()->GetAllGameActors(toFill);
-
-            dtCore::Timer_t timer1, timer2;
-            timer1 = dtCore::Timer::Instance()->Tick();
-            for (unsigned count = 0; count < 1000000U;)
-            {
-               for (unsigned i = 0 ; i < toFill.size(); ++i, ++count)
-               {
-                  toFill[i]->GetGameActor().GetTransform(xform);
-               }
-            }
-            timer2 = dtCore::Timer::Instance()->Tick();
-            printf("Time to run a million: %lf\n", dtCore::Timer::Instance()->DeltaSec(timer1, timer2));
-            break;
-         }
 
          default:
             keyUsed = false;
