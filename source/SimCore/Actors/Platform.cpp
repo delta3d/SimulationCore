@@ -688,8 +688,7 @@ namespace SimCore
 
          // Update the entity painting effect to show damage.
          using namespace SimCore::ActComps;
-         CamoPaintStateActComp* paintActComp
-            = dynamic_cast<CamoPaintStateActComp*>(GetComponent(CamoPaintStateActComp::TYPE));
+         CamoPaintStateActComp* paintActComp = GetComponent<CamoPaintStateActComp>();
          if (paintActComp != NULL)
          {
             paintActComp->SetPaintState(stateNum);
@@ -722,7 +721,7 @@ namespace SimCore
             SimCore::ActComps::PlatformDefaultPhysicsActComp* physAC = NULL;
             // as if this writing, GetComponent doesn't do a dynamic cast, but the dynamic cast is required here
             // because I need to know not only if this has a physics component, but if that component is this specific type.
-            physAC = dynamic_cast<SimCore::ActComps::PlatformDefaultPhysicsActComp*>(GetComponent(SimCore::ActComps::PlatformDefaultPhysicsActComp::TYPE));
+            physAC = GetComponent<SimCore::ActComps::PlatformDefaultPhysicsActComp>();
             if (physAC != NULL)
             {
                physAC->LoadCollision(false);
