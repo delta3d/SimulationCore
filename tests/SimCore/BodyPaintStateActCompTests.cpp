@@ -201,9 +201,7 @@ namespace SimCore
 
             // Ensure the component exists
             mActComp = NULL;
-            CamoPaintStateActComp* actComp
-               = dynamic_cast<CamoPaintStateActComp*>
-               (actor->GetComponent(CamoPaintStateActComp::TYPE));
+            CamoPaintStateActComp* actComp = actor->GetComponent<CamoPaintStateActComp>();
             CPPUNIT_ASSERT(actComp != NULL);
             CPPUNIT_ASSERT(actComp->GetOwnerNode() == actor->GetOSGNode());
 
