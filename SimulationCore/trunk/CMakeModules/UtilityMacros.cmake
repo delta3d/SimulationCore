@@ -2,6 +2,18 @@
 # Where is this and what do we need it for?
 #INCLUDE(ListHandle)
 
+macro(MacroEmptyExternalProject proj dependencies)
+
+  ExternalProject_Add(${proj}
+    DOWNLOAD_COMMAND ""
+    CONFIGURE_COMMAND ""
+    BUILD_COMMAND ""
+    INSTALL_COMMAND ""
+    DEPENDS 
+      ${dependencies}
+    )
+    
+endmacro()
 
   MACRO(FILTER_OUT FILTERS INPUTS OUTPUT)
        # Mimicks Gnu Make's $(filter-out) which removes elements 
