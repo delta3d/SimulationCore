@@ -3,8 +3,6 @@ SET(LIB_NAME     ${STEALTHGM_LIBRARY})
 SET(HEADER_PATH ${SimulationCore_SOURCE_DIR}/include/StealthViewer/GMApp)
 SET(SOURCE_PATH ${SimulationCore_SOURCE_DIR}/source/StealthViewer/GMApp)
 
-INCLUDE_DIRECTORIES(${RTI_INCLUDE_DIR})
-
 file(GLOB LIB_PUBLIC_HEADERS 
    "${HEADER_PATH}/*.h")
 file(GLOB LIB_SOURCES 
