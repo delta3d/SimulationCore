@@ -247,11 +247,13 @@ int main (int argc, char* argv[])
    catch(const dtUtil::Exception& ex)
    {
       LOG_ERROR(ex.ToString());
+      globalApplication = NULL;
       return 1;
    }
    catch(const CEGUI::Exception& e)
    {
       //already printed.
+      globalApplication = NULL;
       return 1;
    }
 
