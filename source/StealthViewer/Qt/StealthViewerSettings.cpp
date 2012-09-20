@@ -70,6 +70,7 @@ namespace StealthQt
    const QString StealthViewerSettings::FEDEX("FEDEX");
    const QString StealthViewerSettings::FEDERATE_NAME("FEDERATE_NAME");
    const QString StealthViewerSettings::RID_FILE("RID_FILE");
+   const QString StealthViewerSettings::RTI_STANDARD_VERSION("RTI_STANDARD_VERSION");
    const QString StealthViewerSettings::CONNECTION_TYPE("CONNECTION_TYPE");
    const QString StealthViewerSettings::SERVER_IP_ADDRESS("SERVER_IP_ADDRESS");
    const QString StealthViewerSettings::SERVER_PORT("SERVER_PORT");
@@ -167,7 +168,7 @@ namespace StealthQt
       const QString StealthViewerSettings::ADDITIONAL_VIEW_TITLE("ADDITIONAL_VIEW_TITLE");
 
    /////////////////////////////////////////////////////////////////////
-   StealthViewerSettings::StealthViewerSettings(const QString &applicationName)
+   StealthViewerSettings::StealthViewerSettings(const QString& applicationName)
    : QSettings(QSettings::IniFormat,
                 QSettings::UserScope,
                 StealthViewerSettings::ORGANIZATION,
@@ -185,16 +186,17 @@ namespace StealthQt
    }
 
    /////////////////////////////////////////////////////////////////////
-   bool StealthViewerSettings::AddConnection(const QString &name,
-      const QString &mapResource, const QString &configResource, const QString &fedResource,
-      const QString &fedex, const QString &federateName, const QString &ridFile,
-      const QString &connectionType, const QString &serverIPAddress, 
-      const QString &serverPort, const QString &serverGameName, const QString &serverGameVersion, 
-      const QString &disIPAddress, const unsigned int &disPort,
+   bool StealthViewerSettings::AddConnection(const QString& name,
+      const QString& mapResource, const QString& configResource, const QString& fedResource,
+      const QString& fedex, const QString& federateName, const QString& ridFile,
+      const QString& rtiStandard,
+      const QString& connectionType, const QString& serverIPAddress,
+      const QString& serverPort, const QString& serverGameName, const QString& serverGameVersion,
+      const QString& disIPAddress, const unsigned int& disPort,
       bool disBroadcast,
-      const unsigned char &disExerciseID, const unsigned short &disSiteID,
-      const unsigned short &disApplicationID, const unsigned int &disMTU,
-      const QString &actorXMLFile, bool isEditMode)
+      const unsigned char& disExerciseID, const unsigned short& disSiteID,
+      const unsigned short& disApplicationID, const unsigned int& disMTU,
+      const QString& actorXMLFile, bool isEditMode)
    {
       // CONNECTION values
       if (name.isEmpty() || mapResource.isEmpty() || connectionType.isEmpty()) 
@@ -203,15 +205,15 @@ namespace StealthQt
          LOG_ERROR(error);
          return false;
       }
-      else if (connectionType.toStdString() == CONNECTIONTYPE_HLA && 
+      else if (connectionType.toStdString() == CONNECTIONTYPE_HLA &&
          (configResource.isEmpty() || fedResource.isEmpty() || fedex.isEmpty() || 
-         federateName.isEmpty() || ridFile.isEmpty()))
+         federateName.isEmpty() || rtiStandard.isEmpty()))
       {
          std::string error = "Could not add the current HLA connection [" + name.toStdString() + "] because it contained empty data.";
          LOG_ERROR(error);
          return false;
       }
-      else if (connectionType.toStdString() == CONNECTIONTYPE_CLIENTSERVER && 
+      else if (connectionType.toStdString() == CONNECTIONTYPE_CLIENTSERVER &&
          (serverIPAddress.isEmpty() || serverPort.isEmpty())) // Note - don't check name or version
       {
          std::string error = "Could not add the current Client Server connection [" + name.toStdString() + "] because it contained empty data.";
@@ -219,7 +221,7 @@ namespace StealthQt
          return false;
       }
       else if (connectionType.toStdString() == CONNECTIONTYPE_DIS &&
-         (disIPAddress.isEmpty() || actorXMLFile.isEmpty()))
+         (disIPAddress.isEmpty() || actorXMLFile.isEmpty() || disPort == 0))
       {
          std::string error = "Could not add the current DIS connection [" + name.toStdString() + "] because it contained empty data.";
          LOG_ERROR(error);
@@ -258,6 +260,7 @@ namespace StealthQt
             setValue(StealthViewerSettings::FEDEX,              fedex);
             setValue(StealthViewerSettings::FEDERATE_NAME,      federateName);
             setValue(StealthViewerSettings::RID_FILE,           ridFile);
+            setValue(StealthViewerSettings::RTI_STANDARD_VERSION,rtiStandard);
             setValue(StealthViewerSettings::CONNECTION_TYPE,    connectionType);
             setValue(StealthViewerSettings::SERVER_IP_ADDRESS,  serverIPAddress);
             setValue(StealthViewerSettings::SERVER_PORT,        serverPort);
@@ -298,6 +301,7 @@ namespace StealthQt
                setValue(StealthViewerSettings::FEDEX,              fedex);
                setValue(StealthViewerSettings::FEDERATE_NAME,      federateName);
                setValue(StealthViewerSettings::RID_FILE,           ridFile);
+               setValue(StealthViewerSettings::RTI_STANDARD_VERSION,rtiStandard);
                setValue(StealthViewerSettings::CONNECTION_TYPE,    connectionType);
                setValue(StealthViewerSettings::SERVER_IP_ADDRESS,  serverIPAddress);
                setValue(StealthViewerSettings::SERVER_PORT,        serverPort);
@@ -329,7 +333,7 @@ namespace StealthQt
    }
 
    /////////////////////////////////////////////////////////////////////
-   QStringList StealthViewerSettings::GetConnectionProperties(const QString &connectionName)
+   QStringList StealthViewerSettings::GetConnectionProperties(const QString& connectionName)
    {
       QStringList list;
 
@@ -372,7 +376,7 @@ namespace StealthQt
    }
 
    /////////////////////////////////////////////////////////////////////
-   bool StealthViewerSettings::ContainsConnection(const QString &connectionName)
+   bool StealthViewerSettings::ContainsConnection(const QString& connectionName)
    {
       return (!GetConnectionProperties(connectionName).isEmpty());
    }
@@ -406,14 +410,15 @@ namespace StealthQt
                        list[9],
                        list[10],
                        list[11],
-                       list[12],           //dis IP 
-                       list[13].toUInt(),  //DIS Port
-                       list[14] == "true" ? true : false, //DIS Broadcast (bool) 
-                       list[15].toUShort(), //DIS exercise ID
-                       list[16].toUShort(), //DIS Site ID
-                       list[17].toUShort(), //DIS Application ID
-                       list[18].toUInt(),   //DIS MTU
-                       list[19]             //DIS ActorMapping file
+                       list[12],
+                       list[13],           //dis IP
+                       list[14].toUInt(),  //DIS Port
+                       list[15] == "true" ? true : false, //DIS Broadcast (bool)
+                       list[16].toUShort(), //DIS exercise ID
+                       list[17].toUShort(), //DIS Site ID
+                       list[18].toUShort(), //DIS Application ID
+                       list[19].toUInt(),   //DIS MTU
+                       list[20]             //DIS ActorMapping file
          );
       }
 
@@ -421,7 +426,7 @@ namespace StealthQt
    }
 
    /////////////////////////////////////////////////////////////////////
-   void StealthViewerSettings::RemoveConnection(const QString &connectionName)
+   void StealthViewerSettings::RemoveConnection(const QString& connectionName)
    {
       std::map<QString, unsigned int>::iterator itor = mConnectionNameMap.find(connectionName);
       if(itor == mConnectionNameMap.end())
@@ -462,16 +467,17 @@ namespace StealthQt
       {
          AddConnection(connectionsToAdd[i][0], connectionsToAdd[i][1], connectionsToAdd[i][2],
                        connectionsToAdd[i][3], connectionsToAdd[i][4], connectionsToAdd[i][5],
-                       connectionsToAdd[i][6], connectionsToAdd[i][7], connectionsToAdd[i][8], 
-                       connectionsToAdd[i][9], connectionsToAdd[i][10], connectionsToAdd[i][11],
-                       connectionsToAdd[i][12], //DIS IP
-                       connectionsToAdd[i][13].toInt(), //DIS port
-                       connectionsToAdd[i][14] == "true" ? true : false, //DIS Broadcast (bool)
-                       connectionsToAdd[i][15].toUInt(), //DIS exercize
-                       connectionsToAdd[i][16].toUShort(), //DIS site ID
-                       connectionsToAdd[i][17].toUShort(), //DIS Application ID
-                       connectionsToAdd[i][18].toUInt(), //DIS MTU
-                       connectionsToAdd[i][19] //DIS actor mapping file
+                       connectionsToAdd[i][6], connectionsToAdd[i][7], connectionsToAdd[i][8],
+                       connectionsToAdd[i][9],
+                       connectionsToAdd[i][10], connectionsToAdd[i][11], connectionsToAdd[i][12],
+                       connectionsToAdd[i][13], //DIS IP
+                       connectionsToAdd[i][14].toInt(), //DIS port
+                       connectionsToAdd[i][15] == "true" ? true : false, //DIS Broadcast (bool)
+                       connectionsToAdd[i][16].toUInt(), //DIS exercize
+                       connectionsToAdd[i][17].toUShort(), //DIS site ID
+                       connectionsToAdd[i][18].toUShort(), //DIS Application ID
+                       connectionsToAdd[i][19].toUInt(), //DIS MTU
+                       connectionsToAdd[i][20] //DIS actor mapping file
          );
       }
 
@@ -523,7 +529,7 @@ namespace StealthQt
    /////////////////////////////////////////////////////////////////////
    void StealthViewerSettings::WritePreferencesGeneralGroupToFile()
    {
-      StealthGM::PreferencesGeneralConfigObject &genConfig =
+      StealthGM::PreferencesGeneralConfigObject& genConfig =
          StealthViewerData::GetInstance().GetGeneralConfigObject();
 
       beginGroup(StealthViewerSettings::PREFERENCES_GENERAL_GROUP);
@@ -551,7 +557,7 @@ namespace StealthQt
    /////////////////////////////////////////////////////////////////////
    void StealthViewerSettings::WritePreferencesEnvironmentGroupToFile()
    {
-      StealthGM::PreferencesEnvironmentConfigObject &envConfig =
+      StealthGM::PreferencesEnvironmentConfigObject& envConfig =
          StealthViewerData::GetInstance().GetEnvironmentConfigObject();
 
       beginGroup(StealthViewerSettings::PREFERENCES_ENVIRONMENT_GROUP);
@@ -644,7 +650,7 @@ namespace StealthQt
    /////////////////////////////////////////////////////////////////////
    void StealthViewerSettings::WriteControlsRecordGroupToFile()
    {
-      StealthGM::ControlsRecordConfigObject &recordObject =
+      StealthGM::ControlsRecordConfigObject& recordObject =
          StealthViewerData::GetInstance().GetRecordConfigObject();
 
       beginGroup(StealthViewerSettings::CONTROLS_RECORD_GROUP);
@@ -660,7 +666,7 @@ namespace StealthQt
    /////////////////////////////////////////////////////////////////////
    void StealthViewerSettings::WriteControlsPlaybackGroupToFile()
    {
-      StealthGM::ControlsPlaybackConfigObject &pbObject =
+      StealthGM::ControlsPlaybackConfigObject& pbObject =
          StealthViewerData::GetInstance().GetPlaybackConfigObject();
 
       beginGroup(StealthViewerSettings::CONTROLS_PLAYBACK_GROUP);
@@ -787,7 +793,7 @@ namespace StealthQt
    {
       beginGroup(StealthViewerSettings::PREFERENCES_GENERAL_GROUP);
 
-         StealthGM::PreferencesGeneralConfigObject &genConfig =
+         StealthGM::PreferencesGeneralConfigObject& genConfig =
             StealthViewerData::GetInstance().GetGeneralConfigObject();
 
          if (contains(StealthViewerSettings::ATTACH_MODE))
@@ -882,7 +888,7 @@ namespace StealthQt
    {
       beginGroup(StealthViewerSettings::PREFERENCES_ENVIRONMENT_GROUP);
 
-         StealthGM::PreferencesEnvironmentConfigObject &envConfig =
+         StealthGM::PreferencesEnvironmentConfigObject& envConfig =
             StealthViewerData::GetInstance().GetEnvironmentConfigObject();
 
          if (contains(StealthViewerSettings::USE_NETWORK_SETTINGS))
@@ -956,7 +962,7 @@ namespace StealthQt
    {
       beginGroup(StealthViewerSettings::PREFERENCES_TOOLS_GROUP);
 
-         StealthGM::PreferencesToolsConfigObject &toolsConfig =
+         StealthGM::PreferencesToolsConfigObject& toolsConfig =
             StealthViewerData::GetInstance().GetToolsConfigObject();
 
          if (contains(StealthViewerSettings::COORDINATE_SYSTEM))
@@ -1129,7 +1135,7 @@ namespace StealthQt
    {
       beginGroup(StealthViewerSettings::CONTROLS_RECORD_GROUP);
 
-         StealthGM::ControlsRecordConfigObject &recordConfig =
+         StealthGM::ControlsRecordConfigObject& recordConfig =
             StealthViewerData::GetInstance().GetRecordConfigObject();
 
          if (contains(StealthViewerSettings::SHOW_ADVANCED_RECORD_OPTIONS))
@@ -1164,7 +1170,7 @@ namespace StealthQt
    {
       beginGroup(StealthViewerSettings::CONTROLS_PLAYBACK_GROUP);
 
-         StealthGM::ControlsPlaybackConfigObject &playbackConfig =
+         StealthGM::ControlsPlaybackConfigObject& playbackConfig =
             StealthViewerData::GetInstance().GetPlaybackConfigObject();
 
          if (contains(StealthViewerSettings::SHOW_ADVANCED_PLAYBACK_OPTIONS))
@@ -1338,7 +1344,7 @@ namespace StealthQt
    }
 
    /////////////////////////////////////////////////////////////////////
-   void StealthViewerSettings::RemovePreferences(QStringList &groups)
+   void StealthViewerSettings::RemovePreferences(QStringList& groups)
    {
       for(int i = 0; i < groups.size(); i++)
       {
@@ -1362,7 +1368,7 @@ namespace StealthQt
    }
 
    /////////////////////////////////////////////////////////////////////
-   QStringList StealthViewerSettings::LoadConnectionProperties(const QString &group)
+   QStringList StealthViewerSettings::LoadConnectionProperties(const QString& group)
    {
       QStringList props;
 
@@ -1400,6 +1406,11 @@ namespace StealthQt
 
          if (contains(StealthViewerSettings::RID_FILE))
             props.push_back(value(StealthViewerSettings::RID_FILE).toString());
+         else
+            props.push_back(tr(""));
+
+         if (contains(StealthViewerSettings::RTI_STANDARD_VERSION))
+            props.push_back(value(StealthViewerSettings::RTI_STANDARD_VERSION).toString());
          else
             props.push_back(tr(""));
 

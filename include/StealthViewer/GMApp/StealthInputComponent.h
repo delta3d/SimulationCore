@@ -74,9 +74,9 @@ namespace StealthGM
          dtDAL::ActorProxy* GetTerrainActor();
 
          void SetConnectionParameters(const std::string& executionName,
-            const std::string &fedFile,
-            const std::string &federateName,
-            const std::string &ridFile = "RTI.rid");
+            const std::string& fedFile,
+            const std::string& federateName,
+            const std::string& ridFile = "");
 
          SimCore::Tools::Tool* GetTool(SimCore::MessageType &type);
          void AddTool(SimCore::Tools::Tool &tool, SimCore::MessageType &type);
