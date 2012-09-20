@@ -306,7 +306,7 @@ namespace StealthQt
    }
 
    //////////////////////////////////////////////////////////////
-   void HLAWindow::SetConnectionValues(QStringList &properties)
+   void HLAWindow::SetConnectionValues(QStringList& properties)
    {
       try
       {
@@ -318,19 +318,20 @@ namespace StealthQt
          std::string fedFile; // set below
          std::string federateName = properties[5].toStdString();
          std::string ridFile; // set below
-         std::string connectionType = properties[7].toStdString();
-         std::string serverIPAddress = properties[8].toStdString();
-         std::string serverPort = properties[9].toStdString();
-         std::string serverGameName = properties[10].toStdString();
-         int serverGameVersionInt = properties[11].toInt();
-         std::string disIPAddress = properties[12].toStdString();
-         unsigned int disPort = properties[13].toUInt();
-         bool disBroadcast = properties[14] == "true" ? true: false;
-         unsigned char disExerciseID = properties[15].toUInt();
-         unsigned short disSiteID = properties[16].toUShort();
-         unsigned short disApplicationID = properties[17].toUShort();
-         unsigned int disMTU = properties[18].toUInt();
-         std::string disActorXMLFile = properties[19].toStdString();
+         std::string rtiStandard = properties[7].toStdString();
+         std::string connectionType = properties[8].toStdString();
+         std::string serverIPAddress = properties[9].toStdString();
+         std::string serverPort = properties[10].toStdString();
+         std::string serverGameName = properties[11].toStdString();
+         int serverGameVersionInt = properties[12].toInt();
+         std::string disIPAddress = properties[13].toStdString();
+         unsigned int disPort = properties[14].toUInt();
+         bool disBroadcast = properties[15] == "true" ? true: false;
+         unsigned char disExerciseID = properties[16].toUInt();
+         unsigned short disSiteID = properties[17].toUShort();
+         unsigned short disApplicationID = properties[18].toUShort();
+         unsigned int disMTU = properties[19].toUInt();
+         std::string disActorXMLFile = properties[20].toStdString();
 
          if(mHLAComp != NULL)
          {
@@ -343,13 +344,22 @@ namespace StealthQt
 
                config = project.GetResourcePath(dtDAL::ResourceDescriptor(properties[2].toStdString()));
                fedFile = project.GetResourcePath(dtDAL::ResourceDescriptor(properties[3].toStdString()));
-               ridFile = project.GetResourcePath(dtDAL::ResourceDescriptor(properties[6].toStdString()));
+               // The rid file is not required, and many newer rtis don't even have such a concept.
+               if (!properties[6].isEmpty())
+               {
+                  ridFile = project.GetResourcePath(dtDAL::ResourceDescriptor(properties[6].toStdString()));
+               }
+               else
+               {
+                  ridFile.clear();
+               }
 
                mHLAComp->SetConfigFile(config);
                mHLAComp->SetFedFile(fedFile);
                mHLAComp->SetFedName(federateName);
                mHLAComp->SetFedEx(fedex);
                mHLAComp->SetRidFile(ridFile);
+               mHLAComp->SetRTIStandard(rtiStandard);
             }
             else if (connectionType == StealthViewerSettings::CONNECTIONTYPE_CLIENTSERVER)
             {

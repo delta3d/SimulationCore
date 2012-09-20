@@ -58,8 +58,14 @@ OPTION(BUILD_BINDINGS "Build delta3d python bindings" OFF)
 OPTION(BUILD_3DSMAX_PLUGIN "Build delta3d 3D Studio max plugin" OFF)
 OPTION(BUILD_EXAMPLES "Build examples in all the projects (not to be confused with demos)" ON)
 
+OPTION(USE_RTIS "Use RTI-s for the RTI implementation" ON)
+OPTION(RTIS_SINGLE_LIBRARY "If using rtis, assume it was compiled into single library, not into multiple" OFF)
+OPTION(USE_CERTI "Use CERTI for the RTI implementation" OFF)
+OPTION(USE_MAK "Use MAK for the RTI implementation" OFF)
+OPTION(USE_PORTICO "Use Portico for the RTI implementation" OFF)
+OPTION(USE_HLA_1516e "Use an implementation of RTI 1516e (headers and library names are standardized.)" OFF)
+
 SET(global_cmake_boolean_args
-  BUILD_HLA
   BUILD_DEMOS
   BUILD_DIS
   BUILD_BINDINGS
@@ -76,14 +82,13 @@ if (MSVC)
    LIST(APPEND global_cmake_boolean_args BUILD_WITH_MP)
 endif()
 
-if (BUILD_HLA)
-   LIST(APPEND global_cmake_boolean_args USE_RTIS)
-   LIST(APPEND global_cmake_boolean_args USE_CERTI)
-   LIST(APPEND global_cmake_boolean_args USE_PRTI)
-   LIST(APPEND global_cmake_boolean_args USE_MAK)
-   LIST(APPEND global_cmake_boolean_args USE_PORTICO)
-   LIST(APPEND global_cmake_boolean_args USE_DMSO)
-endif()
+LIST(APPEND global_cmake_boolean_args RTIS_SINGLE_LIBRARY)
+LIST(APPEND global_cmake_boolean_args USE_RTIS)
+LIST(APPEND global_cmake_boolean_args USE_CERTI)
+LIST(APPEND global_cmake_boolean_args USE_PRTI)
+LIST(APPEND global_cmake_boolean_args USE_MAK)
+LIST(APPEND global_cmake_boolean_args USE_PORTICO)
+LIST(APPEND global_cmake_boolean_args USE_DMSO)
 
 FOREACH(global_cmake_arg ${global_cmake_boolean_args})
   LIST(APPEND ep_common_args -D${global_cmake_arg}:BOOL=${${global_cmake_arg}})

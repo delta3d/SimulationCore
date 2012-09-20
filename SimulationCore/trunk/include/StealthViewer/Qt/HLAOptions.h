@@ -91,6 +91,9 @@ namespace StealthQt
          /// Called when the Connection Type combo has been changed
          void OnConnectionTypeComboChanged(const QString &text);
 
+         /// Called when the RTIStandardCombo has been changed
+         void OnRTIStandardComboChanged(const QString&);
+
       protected:
 
          QString FindFile(const QString& caption, const QString& startingSubDir, const QString& filter);

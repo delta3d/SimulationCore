@@ -144,7 +144,7 @@ namespace SimCore
          else if (diff > 0.0f)
          {
             float ccwDiff = -mNeedlePosition + (heading - deg360);
-            if (fabsf(ccwDiff) < diff)
+            if (std::abs(ccwDiff) < diff)
                diff = ccwDiff;
          }
          else if (diff < 0.0f)

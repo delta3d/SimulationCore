@@ -71,6 +71,7 @@ class StealthViewerSettingsTests : public CPPUNIT_NS::TestFixture
       CPPUNIT_TEST(TestGeneralSettings);
       CPPUNIT_TEST(TestVisibilitySettings);
       CPPUNIT_TEST(TestParseIniFile);
+      CPPUNIT_TEST(TestAddConnectionError);
       CPPUNIT_TEST(TestAddConnection);
       CPPUNIT_TEST(TestRemoveConnection);
 
@@ -86,6 +87,7 @@ class StealthViewerSettingsTests : public CPPUNIT_NS::TestFixture
       void TestGeneralSettings();
       void TestVisibilitySettings();
       void TestParseIniFile();
+      void TestAddConnectionError();
       void TestAddConnection();
       void TestRemoveConnection();
 
@@ -281,7 +283,7 @@ void StealthViewerSettingsTests::TestParseIniFile()
 
    settings.AddConnection(QString("TestName"), QString("TestMap"),   QString("TestConfig"),
                           QString("TestFed"),  QString("TestFedex"), QString("TestFedName"),
-                          QString("TestRid"), QString("HLA"), QString("TestIPAddress"), 
+                          QString("TestRid"), QString("TestRTIStandard"), QString("HLA"), QString("TestIPAddress"),
                           QString("TestServerPort"), QString("TestServerGameName"), QString("1"),
                           QString("TestDISIPAddress"), 62040, "false", 1, 1500, 0,
                           0, QString("TestDISActorXMLFile"));
@@ -305,6 +307,7 @@ void StealthViewerSettingsTests::TestParseIniFile()
    testProps.push_back(QString("TestFedex"));
    testProps.push_back(QString("TestFedName"));
    testProps.push_back(QString("TestRid"));
+   testProps.push_back(QString("TestRTIStandard"));
    testProps.push_back(QString("HLA"));
    testProps.push_back(QString("TestIPAddress"));
    testProps.push_back(QString("TestServerPort"));
@@ -321,17 +324,119 @@ void StealthViewerSettingsTests::TestParseIniFile()
 
    settings.AddConnection(testProps[0], testProps[1], testProps[2],
       testProps[3], testProps[4], testProps[5], testProps[6], 
-      testProps[7], testProps[8], testProps[9], testProps[10], testProps[11],
-      testProps[12], 
-      testProps[13].toUInt(), testProps[14].toUInt(), testProps[15] == "true" ? true : false,
-      testProps[16].toUShort(), testProps[17].toUShort(),
-      testProps[18].toUInt(), testProps[19]);
+      testProps[7], testProps[8], testProps[9], testProps[10], testProps[11], testProps[12],
+      testProps[13],
+      testProps[14].toUInt(), testProps[15].toUInt(), testProps[16] == "true" ? true : false,
+      testProps[17].toUShort(), testProps[18].toUShort(),
+      testProps[19].toUInt(), testProps[20]);
 
    CPPUNIT_ASSERT_EQUAL(1U, settings.GetNumConnections());
 
    settings.ParseIniFile();
    CPPUNIT_ASSERT_EQUAL_MESSAGE("Reparsing the ini file should NOT add a duplicate connection",
       1U, settings.GetNumConnections());
+}
+
+void StealthViewerSettingsTests::TestAddConnectionError()
+{
+   SubStealthViewerSettings settings(QString("UnitTest"));
+   settings.ClearAllSettings(true);
+
+   CPPUNIT_ASSERT_ASSERTION_FAIL_MESSAGE("Adding connection should fail if the name is not set.",
+            settings.AddConnection("", "TestMap", "TestConfig",
+            "Fed.fed", "Fedex", "TestFedName", "", "1.3", StealthQt::StealthViewerSettings::CONNECTIONTYPE_HLA,
+            "127.0.0.1", "8000", "MyGame", "1.0", "192.168.0.255", 1995U,
+            true, (unsigned char)(1), (unsigned short)1500U, (unsigned short)0U, 0U, "TestDISActorXMLFile"));
+
+   CPPUNIT_ASSERT_ASSERTION_FAIL_MESSAGE("Adding connection should fail if the map is not set.",
+            settings.AddConnection("TestName", "", "TestConfig",
+            "Fed.fed", "Fedex", "TestFedName", "", "1.3", StealthQt::StealthViewerSettings::CONNECTIONTYPE_HLA, "127.0.0.1", "8000", "MyGame", "1.0", "192.168.0.255", 1995,
+            true, 1, 1500, 0, 0, "TestDISActorXMLFile"));
+
+   CPPUNIT_ASSERT_ASSERTION_FAIL_MESSAGE("Adding connection should fail if the rti config is not set.",
+            settings.AddConnection("TestName", "TestMap", "",
+            "Fed.fed", "Fedex", "TestFedName", "", "1.3", StealthQt::StealthViewerSettings::CONNECTIONTYPE_HLA, "127.0.0.1", "8000", "MyGame", "1.0", "192.168.0.255", 1995,
+            true, 1, 1500, 0, 0, "TestDISActorXMLFile"));
+
+   CPPUNIT_ASSERT_ASSERTION_FAIL_MESSAGE("Adding connection should fail if the fed file is not set.",
+            settings.AddConnection("TestName", "TestMap", "TestConfig",
+            "", "Fedex", "TestFedName", "", "1.3", StealthQt::StealthViewerSettings::CONNECTIONTYPE_HLA, "127.0.0.1", "8000", "MyGame", "1.0", "192.168.0.255", 1995,
+            true, 1, 1500, 0, 0, "TestDISActorXMLFile"));
+
+   CPPUNIT_ASSERT_ASSERTION_FAIL_MESSAGE("Adding connection should fail if the fedex is not set.",
+            settings.AddConnection("TestName", "TestMap", "TestConfig",
+            "Fed.fed", "", "TestFedName", "", "1.3", StealthQt::StealthViewerSettings::CONNECTIONTYPE_HLA, "127.0.0.1", "8000", "MyGame", "1.0", "192.168.0.255", 1995,
+            true, 1, 1500, 0, 0, "TestDISActorXMLFile"));
+
+   CPPUNIT_ASSERT_ASSERTION_FAIL_MESSAGE("Adding connection should fail if the federation name is not set.",
+            settings.AddConnection("TestName", "TestMap", "TestConfig",
+            "Fed.fed", "Fedex", "", "", "1.3", StealthQt::StealthViewerSettings::CONNECTIONTYPE_HLA, "127.0.0.1", "8000", "MyGame", "1.0", "192.168.0.255", 1995,
+            true, 1, 1500, 0, 0, "TestDISActorXMLFile"));
+
+   CPPUNIT_ASSERT_MESSAGE("Adding connection should NOT fail if the rid file and all non-hla settings are empty.",
+            settings.AddConnection("TestName", "TestMap", "TestConfig",
+            "Fed.fed", "Fedex", "TestFedName", "", "1.3", StealthQt::StealthViewerSettings::CONNECTIONTYPE_HLA, "", "", "", "", "", 0,
+            true, 0, 0, 0, 0, ""));
+
+   CPPUNIT_ASSERT_ASSERTION_FAIL_MESSAGE("Adding connection should fail if the connection type is not set.",
+            settings.AddConnection("TestName", "TestMap", "TestConfig",
+            "Fed.fed", "Fedex", "TestFedName", "", "1.3", "", "127.0.0.1", "8000", "MyGame", "1.0", "192.168.0.255", 1995,
+            true, 1, 1500, 0, 0, "TestDISActorXMLFile"));
+
+   CPPUNIT_ASSERT_ASSERTION_FAIL_MESSAGE("Adding connection should fail if the rti standard is not set.",
+            settings.AddConnection("TestName", "TestMap", "TestConfig",
+            "Fed.fed", "Fedex", "TestFedName", "", "", StealthQt::StealthViewerSettings::CONNECTIONTYPE_HLA, "127.0.0.1", "8000", "MyGame", "1.0", "192.168.0.255", 1995,
+            true, 1, 1500, 0, 0, "TestDISActorXMLFile"));
+
+   CPPUNIT_ASSERT_MESSAGE("Adding connection should NOT fail if the connection is not HLA and the hla settings are empty.",
+            settings.AddConnection("TestName", "TestMap", "",
+            "", "", "", "", "", StealthQt::StealthViewerSettings::CONNECTIONTYPE_CLIENTSERVER, "127.0.0.1", "8000", "MyGame", "1.0", "192.168.0.255", 1995,
+            true, 1, 1500, 0, 0, "TestDISActorXMLFile"));
+
+   CPPUNIT_ASSERT_ASSERTION_FAIL_MESSAGE("Adding connection should fail if the connection is Client Server and the server is empty.",
+            settings.AddConnection("TestName", "TestMap", "",
+            "", "", "", "", "", StealthQt::StealthViewerSettings::CONNECTIONTYPE_CLIENTSERVER, "", "8000", "MyGame", "1.0", "192.168.0.255", 1995,
+            true, 1, 1500, 0, 0, "TestDISActorXMLFile"));
+
+   CPPUNIT_ASSERT_ASSERTION_FAIL_MESSAGE("Adding connection should fail if the connection is Client Server and the port is empty.",
+            settings.AddConnection("TestName", "TestMap", "",
+            "", "", "", "", "", StealthQt::StealthViewerSettings::CONNECTIONTYPE_CLIENTSERVER, "127.0.0.1", "", "MyGame", "1.0", "192.168.0.255", 1995,
+            true, 1, 1500, 0, 0, "TestDISActorXMLFile"));
+
+   CPPUNIT_ASSERT_ASSERTION_FAIL_MESSAGE("Adding connection should fail if the connection is Client Server and the game name is empty.",
+            settings.AddConnection("TestName", "TestMap", "",
+            "", "", "", "", "", StealthQt::StealthViewerSettings::CONNECTIONTYPE_CLIENTSERVER, "127.0.0.1", "8000", "", "1.0", "192.168.0.255", 1995,
+            true, 1, 1500, 0, 0, "TestDISActorXMLFile"));
+
+   CPPUNIT_ASSERT_ASSERTION_FAIL_MESSAGE("Adding connection should fail if the connection is Client Server and the version is empty.",
+            settings.AddConnection("TestName", "TestMap", "",
+            "", "", "", "", "", StealthQt::StealthViewerSettings::CONNECTIONTYPE_CLIENTSERVER, "127.0.0.1", "8000", "MyGame", "", "192.168.0.255", 1995,
+            true, 1, 1500, 0, 0, "TestDISActorXMLFile"));
+
+   CPPUNIT_ASSERT_MESSAGE("Adding connection not should fail if the connection is Client Server and the DIS settings are empty.",
+            settings.AddConnection("TestName", "TestMap", "",
+            "", "", "", "", "", StealthQt::StealthViewerSettings::CONNECTIONTYPE_CLIENTSERVER, "127.0.0.1", "8000", "MyGame", "1.0", "", 0,
+            true, 0, 0, 0, 0, ""));
+
+   CPPUNIT_ASSERT_MESSAGE("Adding connection should NOT fail if the connection is DIS and the other settings are empty.",
+            settings.AddConnection("TestName", "TestMap", "",
+            "", "", "", "", "", StealthQt::StealthViewerSettings::CONNECTIONTYPE_DIS, "", "", "", "", "192.168.0.255", 1995,
+            true, 1, 1500, 0, 0, "TestDISActorXMLFile"));
+
+   CPPUNIT_ASSERT_ASSERTION_FAIL_MESSAGE("Adding connection should fail if the connection is DIS and the IP address is empty.",
+            settings.AddConnection("TestName", "TestMap", "",
+            "", "", "", "", "", StealthQt::StealthViewerSettings::CONNECTIONTYPE_CLIENTSERVER, "", "", "", "", "", 1995,
+            true, 1, 1500, 0, 0, "TestDISActorXMLFile"));
+
+   CPPUNIT_ASSERT_ASSERTION_FAIL_MESSAGE("Adding connection should fail if the connection is DIS and the port is 0.",
+            settings.AddConnection("TestName", "TestMap", "",
+            "", "", "", "", "", StealthQt::StealthViewerSettings::CONNECTIONTYPE_CLIENTSERVER, "", "", "", "", "192.168.0.255", 0,
+            true, 1, 1500, 0, 0, "TestDISActorXMLFile"));
+
+   CPPUNIT_ASSERT_ASSERTION_FAIL_MESSAGE("Adding connection should fail if the connection is DIS and the XML config is empty.",
+            settings.AddConnection("TestName", "TestMap", "",
+            "", "", "", "", "", StealthQt::StealthViewerSettings::CONNECTIONTYPE_CLIENTSERVER, "", "", "", "", "192.168.0.255", 1995,
+            true, 1, 1500, 0, 0, ""));
 }
 
 void StealthViewerSettingsTests::TestAddConnection()
@@ -350,29 +455,30 @@ void StealthViewerSettingsTests::TestAddConnection()
    testProps.push_back(QString("TestFedex"));  //4
    testProps.push_back(QString("TestFedName"));  //5
    testProps.push_back(QString("TestRid"));  //6
-   testProps.push_back(QString("HLA"));  //7 //connection type
-   testProps.push_back(QString("TestIPAddress")); //8
-   testProps.push_back(QString("TestServerPort")); //9
-   testProps.push_back(QString("TestServerGameName")); //10
-   testProps.push_back(QString("1")); //11 //game version
-   testProps.push_back(QString("TestDISIPAddress")); //12
-   testProps.push_back(QString("62040"));//13 //dis port
-   testProps.push_back(QString("false"));//14 //dis broadcast
-   testProps.push_back(QString("1"));//15  //dis exercise id
-   testProps.push_back(QString("1500"));//16 //dis site id
-   testProps.push_back(QString("0"));//17 //dis app id
-   testProps.push_back(QString("0"));//18 //dis mtu
-   testProps.push_back(QString("TestDISActorXMLFile"));//19
+   testProps.push_back(QString("TestRTIStandard"));  //7
+   testProps.push_back(QString("HLA"));  //8 //connection type
+   testProps.push_back(QString("TestIPAddress")); //9
+   testProps.push_back(QString("TestServerPort")); //10
+   testProps.push_back(QString("TestServerGameName")); //11
+   testProps.push_back(QString("1")); //12 //game version
+   testProps.push_back(QString("TestDISIPAddress")); //13
+   testProps.push_back(QString("62040"));//14 //dis port
+   testProps.push_back(QString("false"));//15 //dis broadcast
+   testProps.push_back(QString("1"));//16  //dis exercise id
+   testProps.push_back(QString("1500"));//17 //dis site id
+   testProps.push_back(QString("0"));//18 //dis app id
+   testProps.push_back(QString("0"));//19 //dis mtu
+   testProps.push_back(QString("TestDISActorXMLFile"));//20
 
    settings.AddConnection(testProps[0], testProps[1], testProps[2],
                           testProps[3], testProps[4], testProps[5],
-                          testProps[6], testProps[7], testProps[8], 
-                          testProps[9], testProps[10], testProps[11],
-                          testProps[12], 
-                          testProps[13].toUInt(), testProps[14] == "true" ? true : false,
-                          testProps[15].toUInt(), 
-                          testProps[16].toUShort(), testProps[17].toUShort(),
-                          testProps[18].toUInt(), testProps[19]);
+                          testProps[6], testProps[7], testProps[8], testProps[9],
+                          testProps[10], testProps[11], testProps[12],
+                          testProps[13],
+                          testProps[14].toUInt(), testProps[15] == "true" ? true : false,
+                          testProps[16].toUInt(),
+                          testProps[17].toUShort(), testProps[18].toUShort(),
+                          testProps[19].toUInt(), testProps[20]);
 
    CPPUNIT_ASSERT_EQUAL((unsigned int)(1), settings.GetNumConnections());
 
@@ -406,6 +512,7 @@ void StealthViewerSettingsTests::TestRemoveConnection()
                              QString("FedEx")    + QString::number(i),
                              QString("FedName")  + QString::number(i),
                              QString("RidFile")  + QString::number(i),
+                             QString("RTIStandard")  + QString::number(i),
                              QString("HLA")  + QString::number(i),
                              QString("ServerIPAddress")  + QString::number(i),
                              QString("ServerPort")  + QString::number(i),
@@ -437,21 +544,22 @@ void StealthViewerSettingsTests::TestRemoveConnection()
    CPPUNIT_ASSERT(!resultOne.isEmpty());
    QString name = resultOne[0], map = resultOne[1], config = resultOne[2],
            fedFile = resultOne[3], fedex = resultOne[4], fedName = resultOne[5],
-           ridFile = resultOne[6], connectionType = resultOne[7], serverIPAddress = resultOne[8], 
-           serverPort = resultOne[9], serverGameName = resultOne[10], serverGameVersion = resultOne[11];
+           ridFile = resultOne[6], rtiStandard = resultOne[7], connectionType = resultOne[8], serverIPAddress = resultOne[9],
+           serverPort = resultOne[10], serverGameName = resultOne[11], serverGameVersion = resultOne[12];
 
-   CPPUNIT_ASSERT(name == (QString("Name") + QString::number(0)));
-   CPPUNIT_ASSERT(map == (QString("Map") + QString::number(0)));
-   CPPUNIT_ASSERT(config == (QString("Config") + QString::number(0)));
-   CPPUNIT_ASSERT(fedFile == (QString("FedFile") + QString::number(0)));
-   CPPUNIT_ASSERT(fedex == (QString("FedEx") + QString::number(0)));
-   CPPUNIT_ASSERT(fedName == (QString("FedName") + QString::number(0)));
-   CPPUNIT_ASSERT(ridFile == (QString("RidFile") + QString::number(0)));
-   CPPUNIT_ASSERT(connectionType == (QString("HLA") + QString::number(0)));
-   CPPUNIT_ASSERT(serverIPAddress == (QString("ServerIPAddress") + QString::number(0)));
-   CPPUNIT_ASSERT(serverPort == (QString("ServerPort") + QString::number(0)));
-   CPPUNIT_ASSERT(serverGameName == (QString("ServerGameName") + QString::number(0)));
-   CPPUNIT_ASSERT(serverGameVersion == (QString("12") + QString::number(0)));
+   CPPUNIT_ASSERT_EQUAL(name.toStdString(), (QString("Name") + QString::number(0)).toStdString());
+   CPPUNIT_ASSERT_EQUAL(map.toStdString(), (QString("Map") + QString::number(0)).toStdString());
+   CPPUNIT_ASSERT_EQUAL(config.toStdString(), (QString("Config") + QString::number(0)).toStdString());
+   CPPUNIT_ASSERT_EQUAL(fedFile.toStdString(), (QString("FedFile") + QString::number(0)).toStdString());
+   CPPUNIT_ASSERT_EQUAL(fedex.toStdString(), (QString("FedEx") + QString::number(0)).toStdString());
+   CPPUNIT_ASSERT_EQUAL(fedName.toStdString(), (QString("FedName") + QString::number(0)).toStdString());
+   CPPUNIT_ASSERT_EQUAL(ridFile.toStdString(), (QString("RidFile") + QString::number(0)).toStdString());
+   CPPUNIT_ASSERT_EQUAL(rtiStandard.toStdString(), (QString("RTIStandard") + QString::number(0)).toStdString());
+   CPPUNIT_ASSERT_EQUAL(connectionType.toStdString(), (QString("HLA") + QString::number(0)).toStdString());
+   CPPUNIT_ASSERT_EQUAL(serverIPAddress.toStdString(), (QString("ServerIPAddress") + QString::number(0)).toStdString());
+   CPPUNIT_ASSERT_EQUAL(serverPort.toStdString(), (QString("ServerPort") + QString::number(0)).toStdString());
+   CPPUNIT_ASSERT_EQUAL(serverGameName.toStdString(), (QString("ServerGameName") + QString::number(0)).toStdString());
+   CPPUNIT_ASSERT_EQUAL(serverGameVersion.toStdString(), (QString("12") + QString::number(0)).toStdString());
 
    QStringList resultTwo = settings.GetConnectionProperties(QString("Name") + QString::number(2));
    CPPUNIT_ASSERT(!resultTwo.isEmpty());
@@ -462,11 +570,12 @@ void StealthViewerSettingsTests::TestRemoveConnection()
    CPPUNIT_ASSERT(resultTwo[4] == (QString("FedEx") + QString::number(2)));
    CPPUNIT_ASSERT(resultTwo[5] == (QString("FedName") + QString::number(2)));
    CPPUNIT_ASSERT(resultTwo[6] == (QString("RidFile") + QString::number(2)));
-   CPPUNIT_ASSERT(resultTwo[7] == (QString("HLA") + QString::number(2)));
-   CPPUNIT_ASSERT(resultTwo[8] == (QString("ServerIPAddress") + QString::number(2)));
-   CPPUNIT_ASSERT(resultTwo[9] == (QString("ServerPort") + QString::number(2)));
-   CPPUNIT_ASSERT(resultTwo[10] == (QString("ServerGameName") + QString::number(2)));
-   CPPUNIT_ASSERT(resultTwo[11] == (QString("12") + QString::number(2)));
+   CPPUNIT_ASSERT(resultTwo[7] == (QString("RTIStandard") + QString::number(2)));
+   CPPUNIT_ASSERT(resultTwo[8] == (QString("HLA") + QString::number(2)));
+   CPPUNIT_ASSERT(resultTwo[9] == (QString("ServerIPAddress") + QString::number(2)));
+   CPPUNIT_ASSERT(resultTwo[10] == (QString("ServerPort") + QString::number(2)));
+   CPPUNIT_ASSERT(resultTwo[11] == (QString("ServerGameName") + QString::number(2)));
+   CPPUNIT_ASSERT(resultTwo[12] == (QString("12") + QString::number(2)));
 
    settings.RemoveConnection(QString("Name") + QString::number(0));
    CPPUNIT_ASSERT_EQUAL_MESSAGE("Connection removed. Number of connections should have decremented.",
@@ -484,11 +593,12 @@ void StealthViewerSettingsTests::TestRemoveConnection()
    CPPUNIT_ASSERT(resultTwo[4] == (QString("FedEx") + QString::number(2)));
    CPPUNIT_ASSERT(resultTwo[5] == (QString("FedName") + QString::number(2)));
    CPPUNIT_ASSERT(resultTwo[6] == (QString("RidFile") + QString::number(2)));
-   CPPUNIT_ASSERT(resultTwo[7] == (QString("HLA") + QString::number(2)));
-   CPPUNIT_ASSERT(resultTwo[8] == (QString("ServerIPAddress") + QString::number(2)));
-   CPPUNIT_ASSERT(resultTwo[9] == (QString("ServerPort") + QString::number(2)));
-   CPPUNIT_ASSERT(resultTwo[10] == (QString("ServerGameName") + QString::number(2)));
-   CPPUNIT_ASSERT(resultTwo[11] == (QString("12") + QString::number(2)));
+   CPPUNIT_ASSERT(resultTwo[7] == (QString("RTIStandard") + QString::number(2)));
+   CPPUNIT_ASSERT(resultTwo[8] == (QString("HLA") + QString::number(2)));
+   CPPUNIT_ASSERT(resultTwo[9] == (QString("ServerIPAddress") + QString::number(2)));
+   CPPUNIT_ASSERT(resultTwo[10] == (QString("ServerPort") + QString::number(2)));
+   CPPUNIT_ASSERT(resultTwo[11] == (QString("ServerGameName") + QString::number(2)));
+   CPPUNIT_ASSERT(resultTwo[12] == (QString("12") + QString::number(2)));
 
    settings.RemoveConnection(QString("Name") + QString::number(2));
    shouldBeEmpty = settings.GetConnectionProperties(QString("Name") + QString::number(2));

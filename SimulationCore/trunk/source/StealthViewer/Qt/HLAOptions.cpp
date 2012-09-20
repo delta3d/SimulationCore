@@ -120,6 +120,8 @@ namespace StealthQt
 
       connect(mUi->mConnectionTypeCombo, SIGNAL(currentIndexChanged(const QString&)),
              this,                     SLOT(OnConnectionTypeComboChanged(const QString&)));
+      connect(mUi->mRTIStandardCombo, SIGNAL(currentIndexChanged(const QString&)),
+             this,                     SLOT(OnRTIStandardComboChanged(const QString&)));
    }
 
    ////////////////////////////////////////////////////////////////////
@@ -243,7 +245,14 @@ namespace StealthQt
       unsigned char disExerciseID = mUi->mDISExerciseIDEdit->value();
       unsigned short disSiteID        = mUi->mDISSiteIDEdit->value(),
                      disApplicationID = mUi->mDISApplicationIDEdit->value();
-          
+
+      QString rtiStandard = mUi->mRTIStandardCombo->currentText();
+      if (rtiStandard.compare("Other", Qt::CaseInsensitive) == 0)
+      {
+         rtiStandard = mUi->mRTIStandardManualEdit->text();
+      }
+
+
           //itemText(mUi->mConnectionTypeCombo->getCurrentIndex()).toStdString();
 
 
@@ -308,11 +317,6 @@ namespace StealthQt
          if(fedName.isEmpty())
          {
             fedName = "Stealth Viewer";
-         }
-
-         if(ridFile.isEmpty())
-         {
-            ridFile = "RTI.rid";
          }
       }
 
@@ -394,7 +398,7 @@ namespace StealthQt
       }
 
       bool success = StealthViewerData::GetInstance().GetSettings().AddConnection
-         (name, map, config, fedFile, fedex, fedName, ridFile, connectionType, 
+         (name, map, config, fedFile, fedex, fedName, ridFile, rtiStandard, connectionType,
          serverIPAddress, serverPort, serverGameName, serverGameVersionStr,
          disIPAddress,
          disPort,
@@ -448,25 +452,53 @@ namespace StealthQt
       mUi->mFedExLineEdit->setText(list[4]);
       mUi->mFederateNameLineEdit->setText(list[5]);
       mUi->mRidFileLineEdit->setText(list[6]);
+      int rtiStandardComboIndex =  mUi->mRTIStandardCombo->currentIndex();
+
+      if (!list.value(7).isEmpty())
+      {
+         rtiStandardComboIndex = mUi->mRTIStandardCombo->findText(list.value(7));
+      }
+
+      if (rtiStandardComboIndex >= 0)
+      {
+         mUi->mRTIStandardCombo->setCurrentIndex(rtiStandardComboIndex);
+         mUi->mRTIStandardManualEdit->setText("");
+      }
+      else
+      {
+         // Used funny case to make sure insensitive find works.
+         rtiStandardComboIndex = mUi->mRTIStandardCombo->findText("oThEr", static_cast<Qt::MatchFlags>(Qt::MatchStartsWith));
+         if (rtiStandardComboIndex < 0)
+         {
+            mUi->mRTIStandardCombo->addItem("Other", QVariant());
+            rtiStandardComboIndex = mUi->mRTIStandardCombo->findText("Other", static_cast<Qt::MatchFlags>(Qt::MatchStartsWith));
+         }
+         mUi->mRTIStandardCombo->setCurrentIndex(rtiStandardComboIndex);
+         mUi->mRTIStandardManualEdit->setText(list.value(7));
+      }
+      // Have to call this in case reading the value from the config doesn't change the combo box value.
+      OnRTIStandardComboChanged(mUi->mRTIStandardCombo->currentText());
       
       // Get the new connection settings
       //text 7 is Connection Type. Defaults to HLA
-      // value returns a default string if out of bounds, list[7] might crash
-      QString connectionType = list.value(7);
-      mUi->mServerIPAddressEdit->setText(list.value(8));
-      mUi->mServerPortEdit->setText(list.value(9));
-      mUi->mServerGameNameEdit->setText(list.value(10));
-      mUi->mServerGameVersionEdit->setText(list.value(11));
+      // value returns a default string if out of bounds, list[8] might crash
+      QString connectionType = list.value(8);
+      mUi->mServerIPAddressEdit->setText(list.value(9));
+      mUi->mServerPortEdit->setText(list.value(10));
+      mUi->mServerGameNameEdit->setText(list.value(11));
+      mUi->mServerGameVersionEdit->setText(list.value(12));
 
       // Load DIS Settings
-      mUi->mDISIPAddressEdit->setText(list.value(12));
-      mUi->mDISPortEdit->setValue(list.value(13).toUInt());
-      mUi->mDISBroadcastPort->setChecked(list.value(14) == "true" ? true : false);
-      mUi->mDISExerciseIDEdit->setValue(list.value(15).toUInt());
-      mUi->mDISSiteIDEdit->setValue(list.value(16).toUShort());
-      mUi->mDISApplicationIDEdit->setValue(list.value(17).toUShort());
-      mUi->mDISMTUEdit->setValue(list.value(18).toUInt());
-      mUi->mDISActorEdit->setText(list.value(19));
+      mUi->mDISIPAddressEdit->setText(list.value(13));
+      mUi->mDISPortEdit->setValue(list.value(14).toUInt());
+      mUi->mDISBroadcastPort->setChecked(list.value(15) == "true" ? true : false);
+      mUi->mDISExerciseIDEdit->setValue(list.value(16).toUInt());
+      mUi->mDISSiteIDEdit->setValue(list.value(17).toUShort());
+      mUi->mDISApplicationIDEdit->setValue(list.value(18).toUShort());
+      mUi->mDISMTUEdit->setValue(list.value(19).toUInt());
+      mUi->mDISActorEdit->setText(list.value(20));
+
+      // values 20 and 21 are in the HLA part above :-/
 
       // We default to HLA in all cases unless ClientServer explictly set.
       // This supports backward compatibility with existing systems.
@@ -574,4 +606,13 @@ namespace StealthQt
          mUi->mDISGroup->hide();
       }
    }
+
+   ////////////////////////////////////////////////////////////////////
+   void HLAOptions::OnRTIStandardComboChanged(const QString& text)
+   {
+      // mode "other" a funny case so it can always be tested that the insensitivity works.
+      bool makeVisible = text.indexOf(QString("OtHeR"), 0, Qt::CaseInsensitive) >= 0;
+      mUi->mRTIStandardManualEdit->setVisible(makeVisible);
+   }
+
 }

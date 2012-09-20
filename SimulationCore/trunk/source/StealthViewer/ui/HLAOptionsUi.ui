@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>402</width>
-    <height>755</height>
+    <width>453</width>
+    <height>913</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,12 +19,6 @@
   <layout class="QGridLayout">
    <property name="sizeConstraint">
     <enum>QLayout::SetMinAndMaxSize</enum>
-   </property>
-   <property name="margin">
-    <number>9</number>
-   </property>
-   <property name="spacing">
-    <number>6</number>
    </property>
    <item row="0" column="0">
     <widget class="QGroupBox" name="mMainGroupBox">
@@ -107,14 +101,8 @@
         </item>
         <item row="3" column="1">
          <layout class="QHBoxLayout">
-          <property name="spacing">
-           <number>6</number>
-          </property>
           <property name="sizeConstraint">
            <enum>QLayout::SetMinimumSize</enum>
-          </property>
-          <property name="margin">
-           <number>0</number>
           </property>
           <item>
            <widget class="QLineEdit" name="mMapLineEdit">
@@ -162,7 +150,7 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="1">
+         <item row="0" column="2">
           <widget class="QLineEdit" name="mFedExLineEdit">
            <property name="toolTip">
             <string>The federation execution name (fedex) is the name of the federation that you wish to join in JSAF</string>
@@ -182,7 +170,7 @@
            </property>
           </widget>
          </item>
-         <item row="1" column="1">
+         <item row="1" column="2">
           <widget class="QLineEdit" name="mFederateNameLineEdit">
            <property name="toolTip">
             <string>The Federate name is the identifier that will be used for you when you connect to the federation. </string>
@@ -202,14 +190,8 @@
            </property>
           </widget>
          </item>
-         <item row="2" column="1">
+         <item row="2" column="2">
           <layout class="QHBoxLayout">
-           <property name="spacing">
-            <number>6</number>
-           </property>
-           <property name="margin">
-            <number>0</number>
-           </property>
            <item>
             <widget class="QLineEdit" name="mConfigFileLineEdit">
              <property name="toolTip">
@@ -242,14 +224,8 @@
            </property>
           </widget>
          </item>
-         <item row="3" column="1">
+         <item row="3" column="2">
           <layout class="QHBoxLayout">
-           <property name="spacing">
-            <number>6</number>
-           </property>
-           <property name="margin">
-            <number>0</number>
-           </property>
            <item>
             <widget class="QLineEdit" name="mFedFileLineEdit">
              <property name="toolTip">
@@ -282,22 +258,10 @@
            </property>
           </widget>
          </item>
-         <item row="4" column="1">
+         <item row="4" column="2">
           <layout class="QVBoxLayout">
-           <property name="spacing">
-            <number>6</number>
-           </property>
-           <property name="margin">
-            <number>0</number>
-           </property>
            <item>
             <layout class="QHBoxLayout">
-             <property name="spacing">
-              <number>6</number>
-             </property>
-             <property name="margin">
-              <number>0</number>
-             </property>
              <item>
               <widget class="QLineEdit" name="mRidFileLineEdit">
                <property name="toolTip">
@@ -318,9 +282,49 @@
                </property>
               </widget>
              </item>
+             <item>
+              <widget class="QToolButton" name="mClearRidButton">
+               <property name="text">
+                <string>X</string>
+               </property>
+              </widget>
+             </item>
             </layout>
            </item>
           </layout>
+         </item>
+         <item row="5" column="2">
+          <widget class="QComboBox" name="mRTIStandardCombo">
+           <item>
+            <property name="text">
+             <string>1.3</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>1516e</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Other</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item row="5" column="0">
+          <widget class="QLabel" name="mRTIStandardLabel">
+           <property name="text">
+            <string>RTI Standard Version</string>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="2">
+          <widget class="QLineEdit" name="mRTIStandardManualEdit">
+           <property name="toolTip">
+            <string>Enter the Library suffix.  It looks for dtHLAGM_{name} with OS appropriate extensions.</string>
+           </property>
+          </widget>
          </item>
         </layout>
        </widget>
@@ -625,6 +629,22 @@
     <hint type="destinationlabel">
      <x>157</x>
      <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mClearRidButton</sender>
+   <signal>clicked()</signal>
+   <receiver>mRidFileLineEdit</receiver>
+   <slot>clear()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>403</x>
+     <y>289</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>283</x>
+     <y>288</y>
     </hint>
    </hints>
   </connection>

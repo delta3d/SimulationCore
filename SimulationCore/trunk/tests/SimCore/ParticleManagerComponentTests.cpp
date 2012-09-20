@@ -213,6 +213,7 @@ namespace SimCore
          try
          {
             dtCore::System::GetInstance().Start();
+            dtCore::System::GetInstance().SetPause(false);
 
             mApp = &GetGlobalApplication();
             mGM = new dtGame::GameManager(*mApp->GetScene());

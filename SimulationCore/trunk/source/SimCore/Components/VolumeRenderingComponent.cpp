@@ -1121,7 +1121,7 @@ namespace SimCore
 
             // Find a vector orthogonal to n.
             osg::Vec3 basis(1.f, 0.f, 0.f);
-            if(fabsf(basis * n) > 0.999)
+            if(std::abs(basis * n) > 0.999)
             {
                basis.set(0.0f, 1.0f, 0.0f);
             }

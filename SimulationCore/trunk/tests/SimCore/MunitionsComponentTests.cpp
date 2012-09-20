@@ -361,6 +361,8 @@ namespace SimCore
             dtCore::System::GetInstance().Step();
             dtCore::System::GetInstance().Step();
 
+            dtCore::System::GetInstance().Step();
+
             mGM->DeleteAllActors(true);
 
             mGM = NULL;

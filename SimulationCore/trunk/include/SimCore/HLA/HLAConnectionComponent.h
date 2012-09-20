@@ -155,6 +155,8 @@ namespace SimCore
              */
             const std::string& GetRidFile() const { return mRidFile; }
 
+            DT_DECLARE_ACCESSOR(std::string, RTIStandard);
+
             /** 
              * Returns the currect connection state
              * @return mState

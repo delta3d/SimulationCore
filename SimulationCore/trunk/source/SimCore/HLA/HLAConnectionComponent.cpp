@@ -50,6 +50,8 @@
 #include <dtNetGM/servernetworkcomponent.h>
 #include <dtNetGM/clientnetworkcomponent.h>
 
+#include <dtHLAGM/rtiambassador.h>
+
 #include <sstream>
 
 namespace SimCore
@@ -74,7 +76,8 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////
       HLAConnectionComponent::HLAConnectionComponent(const std::string& name)
          : dtGame::GMComponent(name)
-         , mRidFile("RTI.rid") // default to an RTI.rid file so that there is something to find.
+         , mRTIStandard(dtHLAGM::RTIAmbassador::RTI13_IMPLEMENTATION)
+         , mRidFile()
          , mConnectionType(&ConnectionType::TYPE_NONE)
          , mServerGameVersion(1)
          , mState(&ConnectionState::STATE_NOT_CONNECTED)
@@ -169,6 +172,7 @@ namespace SimCore
          try
          {
             componentConfig.LoadConfiguration(*hlaComp, mConfigFile);
+
             hlaComp->JoinFederationExecution(mFedEx, mFedFile, mFedName, mRidFile);
          }
          catch(const dtUtil::Exception &e)
@@ -408,5 +412,30 @@ namespace SimCore
 
          return false;
       }
+
+      ///////////////////////////////////////////////////////////////////////
+      const std::string& HLAConnectionComponent::GetRTIStandard() const
+      {
+         return mRTIStandard;
+      }
+
+      ///////////////////////////////////////////////////////////////////////
+      void HLAConnectionComponent::SetRTIStandard(const std::string& standard)
+      {
+         if (standard.find("1.3") != std::string::npos || standard.find("13") != std::string::npos)
+         {
+            mRTIStandard = dtHLAGM::RTIAmbassador::RTI13_IMPLEMENTATION;
+         }
+         else if (standard.find("1516e") != std::string::npos || standard.find("1516E") != std::string::npos)
+         {
+            mRTIStandard = dtHLAGM::RTIAmbassador::RTI1516e_IMPLEMENTATION;
+         }
+         else
+         {
+            mRTIStandard = standard;
+         }
+
+      }
+
    }
 }

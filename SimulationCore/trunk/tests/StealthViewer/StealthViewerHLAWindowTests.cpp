@@ -120,6 +120,7 @@ void StealthViewerHLAWindowTests::TestDisplaySavedConnections()
    testProps.push_back(QString("TestFedex"));
    testProps.push_back(QString("TestFedName"));
    testProps.push_back(QString("TestRidFile"));
+   testProps.push_back(QString("TestRtiStandard"));
    testProps.push_back(QString("HLA"));
    testProps.push_back(QString("ServerIPAddress"));
    testProps.push_back(QString("ServerPort"));
@@ -136,11 +137,11 @@ void StealthViewerHLAWindowTests::TestDisplaySavedConnections()
 
    settings.AddConnection(testProps[0], testProps[1], testProps[2],
       testProps[3], testProps[4], testProps[5], testProps[6], 
-      testProps[7], testProps[8], testProps[9], testProps[10], testProps[11],
-      testProps[12], testProps[13].toInt(), testProps[14].toUInt(),
-      testProps[15] == "true" ? true : false,
-      testProps[16].toUShort(), testProps[17].toUShort(),
-      testProps[18].toUInt(), testProps[19]);
+      testProps[7], testProps[8], testProps[9], testProps[10], testProps[11], testProps[12],
+      testProps[13], testProps[14].toInt(), testProps[15].toUInt(),
+      testProps[16] == "true" ? true : false,
+      testProps[17].toUShort(), testProps[18].toUShort(),
+      testProps[19].toUInt(), testProps[20]);
 
    CPPUNIT_ASSERT_EQUAL((unsigned int)(1), settings.GetNumConnections());
 

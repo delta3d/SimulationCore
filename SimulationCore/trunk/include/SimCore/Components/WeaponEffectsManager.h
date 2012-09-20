@@ -112,7 +112,7 @@ namespace SimCore
             osg::Vec3 mPosition;
             osg::Vec3 mVelocity;
             dtUtil::RefString mTracerLightName;
-            dtCore::RefPtr<dtGame::GameManager> mGM; // for accessing the rendering support component (safer using GM)
+            dtCore::ObserverPtr<dtGame::GameManager> mGM; // for accessing the rendering support component (safer using GM)
       };
 
 
@@ -344,7 +344,7 @@ namespace SimCore
             dtCore::RefPtr<dtCore::ParticleSystem> mFlash;
             dtCore::ObserverPtr<SimCore::Actors::BaseEntity> mOwner;
             osg::observer_ptr<osgSim::DOFTransform> mDOF;
-            dtCore::RefPtr<dtGame::GameManager> mGM; // for accessing the rendering support component (safer using GM)
+            dtCore::ObserverPtr<dtGame::GameManager> mGM; // for accessing the rendering support component (safer using GM)
       };
 
 
@@ -486,7 +486,7 @@ namespace SimCore
             typedef std::vector<dtCore::RefPtr<MunitionEffect> > MunitionEffectArray;
             MunitionEffectArray mMunitionEffects;
             dtCore::RefPtr<dtCore::BatchIsector> mIsector;
-            dtCore::RefPtr<dtGame::GameManager> mGM;
+            dtCore::ObserverPtr<dtGame::GameManager> mGM;
 
             typedef std::vector<dtCore::RefPtr<MunitionEffectRequest> > MunitionEffectRequestList;
             MunitionEffectRequestList mTracerRequests;

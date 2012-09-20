@@ -1,5 +1,5 @@
 /* -*-c++-*-
-* Stealth Viewer - StealthViewerSettings (.h & .cpp) - Using 'The MIT License'
+* Stealth Viewer - StealthViewerSettings (.h&  .cpp) - Using 'The MIT License'
 * Copyright (C) 2007-2008, Alion Science and Technology Corporation
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -60,6 +60,7 @@ namespace StealthQt
          static const QString FEDEX;
          static const QString FEDERATE_NAME;
          static const QString RID_FILE;
+         static const QString RTI_STANDARD_VERSION;
          static const QString CONNECTION_TYPE;
          static const QString SERVER_IP_ADDRESS;
          static const QString SERVER_PORT;
@@ -179,26 +180,27 @@ namespace StealthQt
           * @param isEditMode True if you are editing an existing connection
           * @return True on success
           */
-         bool AddConnection(const QString &name,
-            const QString &mapResource,
-            const QString &configResource,
-            const QString &fedResource,
-            const QString &fedex,
-            const QString &federateName,
-            const QString &ridFile,
-            const QString &connectionType,
-            const QString &serverIPAddress,
-            const QString &serverPort, 
-            const QString &serverGameName,
-            const QString &serverGameVersion,
-            const QString &disIPAddress, //13
-            const unsigned int &disPort,
+         bool AddConnection(const QString& name,
+            const QString& mapResource,
+            const QString& configResource,
+            const QString& fedResource,
+            const QString& fedex,
+            const QString& federateName,
+            const QString& ridFile,
+            const QString& rtiStandard,
+            const QString& connectionType,
+            const QString& serverIPAddress,
+            const QString& serverPort,
+            const QString& serverGameName,
+            const QString& serverGameVersion,
+            const QString& disIPAddress, //13
+            const unsigned int& disPort,
             bool disBroadcast,
-            const unsigned char &disExerciseID,
-            const unsigned short &disSiteID,
-            const unsigned short &disApplicationID,
-            const unsigned int &disMTU,
-            const QString &actorXMLFile,
+            const unsigned char& disExerciseID,
+            const unsigned short& disSiteID,
+            const unsigned short& disApplicationID,
+            const unsigned int& disMTU,
+            const QString& actorXMLFile,
             bool isEditMode = false);
 
          /**
@@ -207,7 +209,7 @@ namespace StealthQt
           * If not found, the list will be empty
           * @return a list of the properties
           */
-         QStringList GetConnectionProperties(const QString &connectionName);
+         QStringList GetConnectionProperties(const QString& connectionName);
 
          /**
           * Returns a list of all the connection names stored
@@ -220,12 +222,12 @@ namespace StealthQt
           * Returns true if a connection by this name already exists
           * @return true if the connection exists, false if it doesn't
           */
-         bool ContainsConnection(const QString &connectionName);
+         bool ContainsConnection(const QString& connectionName);
 
          /**
           * Deletes a connection from the ini file
           */
-         void RemoveConnection(const QString &connectionName);
+         void RemoveConnection(const QString& connectionName);
 
          /**
           * Returns the number of connections created
@@ -337,14 +339,14 @@ namespace StealthQt
          /**
           * Removes preferences from child groups
           */
-         void RemovePreferences(QStringList &groups);
+         void RemovePreferences(QStringList& groups);
 
          /**
           * Reads connection properties from a file and fills out a list
           * @param group The group to read from
           * @return the list
           */
-         QStringList LoadConnectionProperties(const QString &group);
+         QStringList LoadConnectionProperties(const QString& group);
 
          std::map<QString, unsigned int> mConnectionNameMap;
          unsigned int mNumConnections;

@@ -46,6 +46,8 @@
         -DBUILD_WITH_QT:BOOL=ON
         -DBUILD_NET:BOOL=ON
         -DBUILD_TERRAIN:BOOL=OFF
+        # HLA is on all the time now because it is backend agnostic and has no direct rti dependencies
+        -DBUILD_HLA:BOOL=ON
         -DBUILD_EXAMPLES=${BUILD_EXAMPLES}
         -DBUILD_3DSMAX_PLUGIN=${BUILD_3DSMAX_PLUGIN}
         -DAUTO_RUN_TESTS:BOOL=${AUTO_RUN_TESTS}
