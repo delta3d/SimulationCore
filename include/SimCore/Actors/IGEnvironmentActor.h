@@ -141,6 +141,8 @@ namespace SimCore
 
          bool GetEnableLensFlare() const;
          void SetEnableLensFlare(bool b);
+         LensFlareDrawable* GetLensFlareDrawable();
+         const LensFlareDrawable* GetLensFlareDrawable() const;
 
          virtual osg::Vec3d GetSunPosition() const;
 

@@ -477,9 +477,7 @@ namespace SimCore
       {
          //this drawable creates a nice halo/glare effect from the sun
          mLensFlare = new LensFlareDrawable();
-         mLensFlare->Init();
-         //using raycast by default
-         mLensFlare->SetUseRayCast(true);
+         mLensFlare->Init(*GetGameActorProxy().GetGameManager());
 
          AddChild(mLensFlare.get());
       }
@@ -494,6 +492,18 @@ namespace SimCore
       void IGEnvironmentActor::SetInitializeSystemClock(bool enable)
       {
          mInitSystemClock = enable;
+      }
+
+      /////////////////////////////////////////////////////////////
+      LensFlareDrawable* IGEnvironmentActor::GetLensFlareDrawable()
+      {
+         return mLensFlare.get();
+      }
+
+      /////////////////////////////////////////////////////////////
+      const LensFlareDrawable* IGEnvironmentActor::GetLensFlareDrawable() const
+      {
+         return mLensFlare.get();
       }
 
       /////////////////////////////////////////////////////////////

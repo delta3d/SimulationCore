@@ -30,6 +30,7 @@
 #include <dtCore/scene.h>
 #include <dtCore/system.h>
 #include <dtCore/camera.h>
+#include <dtCore/shadermanager.h>
 #include <dtABC/application.h>
 
 #include <SimCore/CollisionGroupEnum.h>
@@ -47,19 +48,111 @@
 #include <osg/Projection>
 
 #include <osgDB/ReadFile>
+#include <iostream>
 
 namespace SimCore
 {
    namespace Actors
    {
 
+
+      ////////////////////////////////////////////////////////////////////////////////////////
+      LensFlareDrawable::LensFlareUpdateCallback::LensFlareUpdateCallback(LensFlareOSGDrawable* lensFlareReference, const dtCore::Camera& camera)
+         : mLensFlare(lensFlareReference)
+      {
+         osg::Camera* cam = const_cast<osg::Camera*>(camera.GetOSGCamera());
+         if(cam != NULL)
+         { 
+            LensFlareOSGDrawable::FadeParams& params = mLensFlare->mFadeMap[cam];
+
+            int width = cam->getViewport()->width();
+            int height = cam->getViewport()->height();
+
+            params.mDepthTexture = new osg::Texture2D;
+            params.mDepthTexture->setInternalFormat(GL_DEPTH_COMPONENT);
+            params.mDepthTexture->setTextureSize(16, 16);
+            params.mDepthTexture->setShadowTextureMode(osg::Texture2D::LUMINANCE);
+            params.mDepthTexture->setFilter(osg::Texture2D::MIN_FILTER,osg::Texture2D::LINEAR);
+            params.mDepthTexture->setFilter(osg::Texture2D::MAG_FILTER,osg::Texture2D::LINEAR);
+
+            osg::Uniform* texUniform = new osg::Uniform(osg::Uniform::SAMPLER_2D, "lastDepthTexture");
+            texUniform->set(3);
+            osg::StateSet* ss = lensFlareReference->getOrCreateStateSet();
+            ss->addUniform(texUniform);
+            ss->setTextureAttributeAndModes(3, params.mDepthTexture .get(), osg::StateAttribute::ON);
+
+            //osg::Image* image = new osg::Image();
+            //image->allocateImage(16, 16, 1, GL_DEPTH_COMPONENT, GL_FLOAT);
+            //params.mDepthTexture->setImage(image);
+         }
+         else
+         {
+            LOG_ERROR("Invalid camera passed to LensFlareDrawable::LensFlareUpdateCallback constructor");
+         }
+
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////////      
+      void LensFlareDrawable::LensFlareUpdateCallback::operator () (const dtCore::Camera& camera, osg::RenderInfo& renderInfo) const
+      {
+
+         osg::Camera* cam = const_cast<osg::Camera*>(camera.GetOSGCamera());
+         if(cam != NULL)
+         {                        
+            LensFlareOSGDrawable::FadeParams& params = mLensFlare->mFadeMap[cam];
+
+            //compute position of sun
+            osg::Vec4d screenXYZ(mLensFlare->mLightPos.x(), mLensFlare->mLightPos.y(), mLensFlare->mLightPos.z(), 1.0);
+            screenXYZ = cam->getViewMatrix().preMult(screenXYZ);
+            screenXYZ = cam->getProjectionMatrix().preMult(screenXYZ);          
+            screenXYZ /= screenXYZ.w();
+            screenXYZ += osg::Vec4d(1.0, 1.0, 1.0, 1.0);
+            screenXYZ *= 0.5;
+
+            float depthValue = 100.0f;
+            bool occluded = true;
+
+            //set depth texture
+            int width = cam->getViewport()->width();
+            int height = cam->getViewport()->height();
+
+            int startX = int(screenXYZ.x() * width) - 8;              
+            int startY = int(screenXYZ.y() * height) - 8;
+            
+
+            bool inFrontOfCamera = (screenXYZ.w() > 0.0f) && (screenXYZ.z() > 0.0f) && (startX >= 0 && startX <= width) && (startY >= 0 && startY <= height);
+
+            if(inFrontOfCamera)
+            {
+               //params.mDepthTexture->copyTexImage2D(*renderInfo.getState(), 0, 0, width, height);
+               params.mDepthTexture->copyTexImage2D(*renderInfo.getState(), startX, startY, 16, 16);
+
+               //osg::Image* image = params.mDepthTexture->getImage();
+               //image->readImageFromCurrentTexture(renderInfo.getContextID(), false);
+
+               //osg::Vec2 centerPixel(0.5f, 0.5f);
+               //depthValue = image->getColor(centerPixel).x();// < 1.0f;
+               //occluded = depthValue < 1.0f;
+
+            }
+
+            //mLensFlare->CalculateEffectScale(cam, inFrontOfCamera && !occluded);
+
+         }
+         
+      }
+
+
+      //////////////////////////////////////////////////////////////////////////
       const dtUtil::RefString LensFlareDrawable::TEXTURE_LENSFLARE_SOFT_GLOW("Textures:sun_glare_soft_glow.bmp");
       const dtUtil::RefString LensFlareDrawable::TEXTURE_LENSFLARE_HARD_GLOW("Textures:sun_glare_hard_glow.bmp");
-      const dtUtil::RefString LensFlareDrawable::TEXTURE_LENSFLARE_STREAKS("Textures:sun_glare_streaks_01.bmp");
+      const dtUtil::RefString LensFlareDrawable::TEXTURE_LENSFLARE_STREAKS("Textures:sun_glare_streaks_01.PNG");
+
 
       //////////////////////////////////////////////////////////////////////////
       LensFlareDrawable::LensFlareDrawable()
          : dtCore::DeltaDrawable("LensFlareDrawable")
+         , mTraversalMask(0xFFFFFFFF)
          , mLensFlareDrawable(new LensFlareOSGDrawable())
       {
          AddSender(&dtCore::System::GetInstance());
@@ -79,12 +172,12 @@ namespace SimCore
 
       //////////////////////////////////////////////////////////////////////////
       const osg::Node* SimCore::Actors::LensFlareDrawable::GetOSGNode() const
-      {
+      { 
          return mNode.get();
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void LensFlareDrawable::Init()
+      void LensFlareDrawable::Init(dtGame::GameManager& gm)
       {
          osg::Geode* geode = new osg::Geode();
 
@@ -92,7 +185,7 @@ namespace SimCore
          geode->setCullingActive(false);
 
          osg::StateSet* ss = geode->getOrCreateStateSet();
-         ss->setRenderBinDetails(SimCore::Components::RenderingSupportComponent::RENDER_BIN_HUD - 1, "TransparentBin");
+         ss->setRenderBinDetails(SimCore::Components::RenderingSupportComponent::RENDER_BIN_HUD - 1, "RenderBin" );
          ss->setMode( GL_LIGHTING, osg::StateAttribute::OVERRIDE | osg::StateAttribute::OFF );
          ss->setMode( GL_DEPTH_TEST, osg::StateAttribute::OVERRIDE | osg::StateAttribute::OFF );
 
@@ -101,52 +194,122 @@ namespace SimCore
          ss->setAttributeAndModes(bf, osg::StateAttribute::ON | osg::StateAttribute::OVERRIDE);
          ss->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
 
-         osg::Projection* projection = new osg::Projection;
-         projection->setMatrix(osg::Matrix::ortho2D(0,1,0,1));
-         projection->addChild(geode);
-
-         mNode = new osg::MatrixTransform;
-         mNode->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
-         mNode->setMatrix(osg::Matrix::identity());
-         mNode->addChild(projection);
+         mNode = new osg::MatrixTransform();
+         mNode->addChild(geode);
 
 
          //add a camera callback for updates
          dtCore::Camera::AddCameraSyncCallback(*this,
             dtCore::Camera::CameraSyncCallback(this, &LensFlareDrawable::UpdateView));
+
+         //create batch isector
+         mIsector = new dtCore::BatchIsector(&gm.GetScene());
+
+         //SetShader
+         dtCore::ShaderManager& sm = dtCore::ShaderManager::GetInstance();         
+         dtCore::ShaderProgram* sp = sm.FindShaderPrototype("LensFlareShader", "LensFlareGroup");
+         if(sp != NULL)
+         {
+            sm.AssignShaderFromPrototype(*sp, *mNode);
+         }
+         else
+         {
+            LOG_ERROR("Unable to find shader for LensFlareDrawable, with shader group 'LensFlareGroup', shader name 'LensFlareShader'." );
+         }
       }
       
       //////////////////////////////////////////////////////////////////////////
       void LensFlareDrawable::OnMessage(dtCore::Base::MessageData* data)
       {
-         if (data->message == dtCore::System::MESSAGE_POST_EVENT_TRAVERSAL)
+         /*if (data->message == dtCore::System::MESSAGE_POST_EVENT_TRAVERSAL)
          {
-            RayCastArray::iterator iter = mRayCastArray.begin();
-            RayCastArray::iterator iterEnd = mRayCastArray.end();
-
-            for(;iter != iterEnd; ++iter)
+            if(mLensFlareDrawable->mUseRayCast)
             {
-
-               RayCastCameraPair& rccp = *iter;
-
-               if(rccp.second.valid())
+               if(mLensFlareDrawable->mUsePhysicsRaycast)
                {
-                  LensFlareOSGDrawable::FadeParams& params = mLensFlareDrawable->mFadeMap[rccp.second.get()];
 
-                  dtPhysics::RayCast::Report report;
-                  dtPhysics::PhysicsWorld::GetInstance().TraceRay(rccp.first, report);
-                  params.mRayCastVisible = !report.mHasHitObject;
+                  RayCastArray::iterator iter = mRayCastArray.begin();
+                  RayCastArray::iterator iterEnd = mRayCastArray.end();
+
+                  for(;iter != iterEnd; ++iter)
+                  {
+
+                     RayCastCameraPair& rccp = *iter;
+
+                     if(rccp.second.valid())
+                     {
+                        LensFlareOSGDrawable::FadeParams& params = mLensFlareDrawable->mFadeMap[rccp.second.get()];
+
+                        dtPhysics::RayCast::Report report;
+                        dtPhysics::PhysicsWorld::GetInstance().TraceRay(rccp.first, report);
+                        params.mRayCastVisible = !report.mHasHitObject;
+                     }
+                  }
+
+                  mRayCastArray.clear();
+               }
+               else
+               {
+                  if(mTerrainNode.valid())
+                  {
+                     mIsector->SetQueryRoot(mTerrainNode.get());
+                  }
+                  else
+                  {
+                     mIsector->ClearQueryRoot();
+                  }
+
+                  int rayCount = 0;
+                  RayCastArray::iterator iter = mRayCastArray.begin();
+                  RayCastArray::iterator iterEnd = mRayCastArray.end();
+
+                  for(;iter != iterEnd; ++iter, ++rayCount)
+                  {
+                     RayCastCameraPair& rccp = *iter;
+
+                     if(rccp.second.valid())
+                     {
+                        dtCore::BatchIsector::SingleISector& singleISector = mIsector->EnableAndGetISector(rayCount);
+                        singleISector.SetSectorAsRay(osg::Vec3(rccp.first.GetOrigin()), osg::Vec3(rccp.first.GetDirection()), 1000000.0f);
+                     }
+                  }
+   
+                  mIsector->Update();
+
+                  rayCount = 0;
+                  iter = mRayCastArray.begin();
+                  iterEnd = mRayCastArray.end();
+
+                  for(;iter != iterEnd; ++iter, ++rayCount)
+                  {
+                     RayCastCameraPair& rccp = *iter;
+
+                     LensFlareOSGDrawable::FadeParams& params = mLensFlareDrawable->mFadeMap[rccp.second.get()];
+                     
+                     unsigned numHits = mIsector->GetSingleISector(rayCount).GetNumberOfHits();
+                     bool rayVisible = numHits == 0;                    
+                     params.mRayCastVisible = rayVisible;
+                  }
+               
+                  mRayCastArray.clear();
+                  mIsector->StopUsingAllISectors();
                }
             }
-
-            mRayCastArray.clear();
-         }
+         }*/
       }
 
       //////////////////////////////////////////////////////////////////////////
       void LensFlareDrawable::UpdateView(dtCore::Camera& pCamera)
       {
-         if(mLensFlareDrawable->mUseRayCast)
+         if(!HasCamera(&pCamera))
+         {     
+            dtCore::RefPtr<LensFlareUpdateCallback> lensCallback = new LensFlareUpdateCallback(mLensFlareDrawable.get(), pCamera);
+            pCamera.AddPostDrawCallback(*lensCallback);
+
+            mCurrentCameras.push_back(std::make_pair(lensCallback, &pCamera));
+         }
+
+         /*if(mLensFlareDrawable->mUseRayCast)
          {
             osg::Camera* cam = pCamera.GetOSGCamera();
             if(cam != NULL)
@@ -173,11 +336,10 @@ namespace SimCore
 
                   //we have to store these for later since we cannot process them in the camera synch callback
                   //if physics is running in a background thread
-                  mRayCastArray.push_back(RayCastCameraPair(ray, cam));
-                  
+                  mRayCastArray.push_back(RayCastCameraPair(ray, cam));                  
                }
             }
-         }
+         }*/
 
          
       }
@@ -188,26 +350,120 @@ namespace SimCore
          mLensFlareDrawable->SetLightPos(lightPos);
       }
 
-      //////////////////////////////////////////////////////////////////////////
-      void LensFlareDrawable::SetUseRayCast( bool b )
-      {
-         mLensFlareDrawable->mUseRayCast = b;
-      }
+      ////////////////////////////////////////////////////////////////////////////
+      //void LensFlareDrawable::SetUseRayCast(bool useRayCast, bool usePhysicsRaycast)
+      //{
+      //   mLensFlareDrawable->mUseRayCast = useRayCast;
+      //   mLensFlareDrawable->mUsePhysicsRaycast = usePhysicsRaycast;
+
+      //   //prevents from getting in a bad state
+      //   if(usePhysicsRaycast)
+      //   {
+      //      mLensFlareDrawable->mUseRayCast = true;
+      //   }
+      //}
+
+      ////////////////////////////////////////////////////////////////////////////
+      //void LensFlareDrawable::GetUseRayCast(bool& useRayCast, bool& usePhysicsRaycast) const
+      //{
+      //   useRayCast = mLensFlareDrawable->mUseRayCast;
+      //   usePhysicsRaycast = mLensFlareDrawable->mUsePhysicsRaycast;
+      //}
 
       //////////////////////////////////////////////////////////////////////////
-      bool LensFlareDrawable::GetUseRayCast() const
+      //void LensFlareDrawable::SetRayCastTraversalMask( int mask )
+      //{
+      //   mTraversalMask = mask;
+      //}
+
+      ////////////////////////////////////////////////////////////////////////////
+      //int LensFlareDrawable::GetRayCastTraversalMask() const
+      //{
+      //   return mTraversalMask;
+      //}
+
+      ////////////////////////////////////////////////////////////////////////////
+      //void LensFlareDrawable::SetTerrainNode(dtCore::DeltaDrawable* terrainRoot)
+      //{
+      //   mTerrainNode = terrainRoot;
+      //}
+
+      ////////////////////////////////////////////////////////////////////////////
+      //dtCore::DeltaDrawable* LensFlareDrawable::GetTerrainNode()
+      //{
+      //   return mTerrainNode.get();
+      //}
+
+      //////////////////////////////////////////////////////////////////////////
+      bool LensFlareDrawable::HasCamera(dtCore::Camera* cam) const
       {
-         return mLensFlareDrawable->mUseRayCast;
+         for(size_t i = 0; i < mCurrentCameras.size(); ++i)
+         {
+            if(mCurrentCameras[i].second.get() == cam)
+            {
+               return true;
+            }
+         }
+
+         return false;
       }
 
       //////////////////////////////////////////////////////////////////////////
       LensFlareDrawable::LensFlareOSGDrawable::LensFlareOSGDrawable()
          : mUseRayCast(false)
+         , mUsePhysicsRaycast(false)
       {
          setUseDisplayList(false);
-         LoadTextures();
+         Init();
       }
 
+      //////////////////////////////////////////////////////////////////////////
+      LensFlareDrawable::LensFlareOSGDrawable::LensFlareOSGDrawable( const LensFlareOSGDrawable& bd, const osg::CopyOp& copyop/*=osg::CopyOp::SHALLOW_COPY*/ )
+         : mUseRayCast(false)
+         , mUsePhysicsRaycast(false)
+      {
+         setUseDisplayList(false);
+         Init();
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void LensFlareDrawable::LensFlareOSGDrawable::Init()
+      {
+         unsigned numParticles = 1;
+         float w = 1.0f;
+         float h = 1.0f;
+
+         // set up the coords
+         osg::Vec4Array& v = *(new osg::Vec4Array(4 * numParticles));
+         osg::Vec2Array& t = *(new osg::Vec2Array(4 * numParticles));
+
+
+         for(unsigned i = 0; i < numParticles; ++i)
+         {
+            v[(i * 4) + 0].set(-w*1.0f,-h*1.0f, 0.0f, i);
+            v[(i * 4) + 1].set( w*1.0f,-h*1.0f, 0.0f, i);
+            v[(i * 4) + 2].set( w*1.0f,h*1.0f, 0.0f, i);
+            v[(i * 4) + 3].set(-w*1.0f,h*1.0f, 0.0f, i);
+ 
+            t[(i * 4) + 0].set(0.0f,0.0f);
+            t[(i * 4) + 1].set(1.0f,0.0f);
+            t[(i * 4) + 2].set(1.0f,1.0f);
+            t[(i * 4) + 3].set(0.0f,1.0f);
+         }
+
+
+         setVertexArray(&v);
+         setTexCoordArray(0, &t);
+
+         addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::QUADS, 0, 4 * numParticles));
+
+         LoadTextures();         
+
+         osg::StateSet* ss = getOrCreateStateSet();         
+         mLightPosUniform = ss->getOrCreateUniform("sunPosition", osg::Uniform::FLOAT_VEC3);
+         //mEffectRadiusUniform = ss->getOrCreateUniform("effectRadius", osg::Uniform::FLOAT);
+
+      }
 
       //////////////////////////////////////////////////////////////////////////
       void LensFlareDrawable::LensFlareOSGDrawable::LoadTextures()
@@ -218,15 +474,17 @@ namespace SimCore
          {
             std::string softGlowFile = project.GetResourcePath(dtDAL::ResourceDescriptor(TEXTURE_LENSFLARE_SOFT_GLOW));
             mSoftGlow = new osg::Texture2D();
-            InitTexture(softGlowFile, mSoftGlow.get());
+            InitTexture(softGlowFile, mSoftGlow.get(), "softGlow", 0);
 
             std::string hardGlowFile = project.GetResourcePath(dtDAL::ResourceDescriptor(TEXTURE_LENSFLARE_HARD_GLOW));
             mHardGlow = new osg::Texture2D();
-            InitTexture(hardGlowFile, mHardGlow.get());
+            InitTexture(hardGlowFile, mHardGlow.get(), "hardGlow", 1);
 
             std::string streaksFile = project.GetResourcePath(dtDAL::ResourceDescriptor(TEXTURE_LENSFLARE_STREAKS));
             mStreaks = new osg::Texture2D();
-            InitTexture(streaksFile, mStreaks.get());
+            InitTexture(streaksFile, mStreaks.get(), "streaks", 2);
+
+
          }
          catch (dtUtil::Exception& e)
          {
@@ -235,7 +493,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void LensFlareDrawable::LensFlareOSGDrawable::InitTexture( const std::string& filename, osg::Texture2D* ptr )
+      void LensFlareDrawable::LensFlareOSGDrawable::InitTexture( const std::string& filename, osg::Texture2D* ptr, const std::string& uniformName, unsigned index)
       {
          osg::Image* newImage = osgDB::readImageFile(filename);
          if (newImage == 0)
@@ -250,6 +508,12 @@ namespace SimCore
          ptr->setWrap(osg::Texture::WRAP_S, osg::Texture::REPEAT);
          ptr->setWrap(osg::Texture::WRAP_T, osg::Texture::REPEAT);
          ptr->setUnRefImageDataAfterApply(true);
+
+         osg::Uniform* texUniform = new osg::Uniform(osg::Uniform::SAMPLER_2D, uniformName);
+         texUniform->set(int(index));
+         osg::StateSet* ss = getOrCreateStateSet();
+         ss->addUniform(texUniform);
+         ss->setTextureAttributeAndModes(int(index), ptr, osg::StateAttribute::ON);
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -300,90 +564,34 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void LensFlareDrawable::LensFlareOSGDrawable::drawImplementation(osg::RenderInfo& renderInfo) const
       {
-         if(renderInfo.getState() && mHardGlow.valid() && mSoftGlow.valid() && mStreaks.valid())
+         if(renderInfo.getState() != NULL)
          {
-            static const float softGlowScale = 1.0;
-            static const float hardGlowScale = 0.20;
-            static const float streaksScale = 0.55;
-
             //calculate the screen position of the light
             osg::Camera* cam = renderInfo.getCurrentCamera();
-            osg::Vec4d screenXYZ(mLightPos.x(), mLightPos.y(), mLightPos.z(), 1.0);
-            screenXYZ = cam->getViewMatrix().preMult(screenXYZ);
-            screenXYZ = cam->getProjectionMatrix().preMult(screenXYZ);
-            bool inFrontOfCamera = (screenXYZ.w() > 0.0f);
-            screenXYZ /= screenXYZ.w();
-            screenXYZ += osg::Vec4d(1.0, 1.0, 1.0, 1.0);
-            screenXYZ *= 0.5;
 
-            bool occluded = true;
-            if(!mUseRayCast)
-            {
-               float bufferZ = 0.0f;
-               glReadPixels(GLint(cam->getViewport()->width() * screenXYZ.x()), GLint(cam->getViewport()->height() * screenXYZ.y()), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &bufferZ);
+            FadeParams& params = mFadeMap[cam];
 
-               occluded = bufferZ < 1;
-            }
-            else
+            //std::cout << "mFadeCurrent: " << params.mFadeCurrent << std::endl;
+            //mEffectRadiusUniform->set(params.mFadeCurrent);
+            //mEffectRadiusUniform->dirty();
+
+            if(params.mDepthTexture.valid())
             {
-               FadeParams& params = mFadeMap[cam];
-               occluded = !params.mRayCastVisible;
+               params.mDepthTexture->apply(*renderInfo.getState());
             }
 
-            float effectScale = CalculateEffectScale(cam, inFrontOfCamera && !occluded);
-
-
-            //if the lens flare is not on the screen dont draw it
-            if(inFrontOfCamera && (effectScale > 0.0f))// && screenXYZ.x() >= 0.0 && screenXYZ.x() <= 1.0
-               //&& screenXYZ.y() >= 0.0 && screenXYZ.y() <= 1.0)
-            {
-               osg::Vec2 screenPos(screenXYZ.x(), screenXYZ.y());
-
-               osg::Vec4 glowColor(0.60f, 0.60f, 0.8f, 1.0f);
-
-               EnableTextureState(renderInfo);
-
-               mHardGlow->apply(*renderInfo.getState());
-               RenderQuad(glowColor * effectScale, screenPos, hardGlowScale);
-
-               mSoftGlow->apply(*renderInfo.getState());
-               RenderQuad(glowColor * effectScale, screenPos, softGlowScale);
-
-               mStreaks->apply(*renderInfo.getState());
-               RenderQuad(glowColor * effectScale, screenPos, streaksScale);
-            }
+            //queue base class drawing behavior  
+            osg::Geometry::drawImplementation(renderInfo);
          }
       }
 
-      //////////////////////////////////////////////////////////////////////////
-      void LensFlareDrawable::LensFlareOSGDrawable::RenderQuad(const osg::Vec4& rgba, const osg::Vec2& point, float scale) const
+      void LensFlareDrawable::LensFlareOSGDrawable::SetLightPos(const osg::Vec3d& pos)
       {
-         osg::Vec2 q[4];
+         mLightPos = pos;
 
-         q[0].x() = (point[0] - scale);
-         q[0].y() = (point[1] - scale);
+         mLightPosUniform->set(mLightPos);
+         mLightPosUniform->dirty();
 
-         q[1].x() = (point[0] - scale);
-         q[1].y() = (point[1] + scale);
-
-         q[2].x() = (point[0] + scale);
-         q[2].y() = (point[1] - scale);
-
-         q[3].x() = (point[0] + scale);
-         q[3].y() = (point[1] + scale);
-
-         glColor4f(rgba[0], rgba[1], rgba[2], rgba[3]);
-
-         glBegin(GL_TRIANGLE_STRIP);
-         glTexCoord2f(0.0f, 0.0f);
-         glVertex2f(q[0].x(), q[0].y());
-         glTexCoord2f(0.0f, 1.0f);
-         glVertex2f(q[1].x(), q[1].y());
-         glTexCoord2f(1.0f, 0.0f);
-         glVertex2f(q[2].x(), q[2].y());
-         glTexCoord2f(1.0f, 1.0f);
-         glVertex2f(q[3].x(), q[3].y());
-         glEnd();
       }
 
    }
