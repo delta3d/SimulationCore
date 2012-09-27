@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <shaderlist>
+   <shadergroup name="LensFlareGroup">
+      <shader name="LensFlareShader" default="yes">
+         <source type="Vertex">Shaders/Base/lens_flare.vert</source>
+         <source type="Fragment">Shaders/Base/lens_flare.frag</source>
+      </shader>
+   </shadergroup>
    <shadergroup name="GUIShaderGroup">
       <shader name="ButtonHighlightShader" default="yes">
          <source type="Fragment">Shaders/GUI/ButtonHighlight.frag</source>
