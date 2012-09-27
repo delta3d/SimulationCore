@@ -358,6 +358,11 @@ namespace SimCore
             LOGN_DEBUG("WeatherComponent.cpp", "Updating the mEnvironment Actor to the system");
             mEnvironmentActor->SetTimeFromSystem();
 
+            //enable lens flare
+            //std::cout << std::endl << "Enabling lens flare" << std::endl << std::endl;
+
+            //mEnvironmentActor->SetEnableLensFlare(true);
+
          }
 
          // Check for the environment object to see if it was loaded in the map file

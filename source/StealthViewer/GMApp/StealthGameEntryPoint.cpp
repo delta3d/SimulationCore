@@ -411,6 +411,9 @@ namespace StealthGM
          // the connection to the network.
          inputComp->SetConnectionParameters(mFederationExecutionName, fedFile, mFederateName);
       }
+
+      std::cout << std::endl << "Setting Log Level to Notice" << std::endl << std::endl;
+      osg::setNotifyLevel(osg::NOTICE);
    }
 
 }
