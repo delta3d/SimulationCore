@@ -5,12 +5,7 @@ uniform sampler2D streaks;
 uniform sampler2D lastDepthTexture;
 
 uniform vec2 ScreenDimensions;
-uniform float effectRadius;
 
-varying vec4 vViewPosCenter;
-varying vec4 vViewPosVert;
-varying vec3 vPos;
-varying vec4 vCenterPixelOfEffect;
 
 void main(void)
 {
@@ -20,17 +15,18 @@ void main(void)
    
    vec4 streakTextureColor = texture2D(streaks, vec2(gl_TexCoord[0].xy));
     
-   vec2 screenCoord = vec2(0.5, 0.5);//vCenterPixelOfEffect.xy / ScreenDimensions;
+   //just test center pixel, so we either get the whole effect or none of it
+   vec2 screenCoord = vec2(0.5, 0.5);
    float depth = texture2D(lastDepthTexture, screenCoord).r;
    
-   if(depth < 0.9999) 
+   if(depth < 1.0) 
    {
       discard;
    }
    else
    {
-      gl_FragColor = vec4(hardGlowTextureColor.xyz * streakTextureColor.xyz, streakTextureColor.x);
-      //gl_FragColor = vec4(depth, depth, depth, 1.0);
+      vec4 glowColor = vec4(0.60f, 0.60f, 0.8f, 1.0f);
+      gl_FragColor = glowColor * vec4(hardGlowTextureColor.xyz + streakTextureColor.xyz, 1.0);
    }
 
 }
