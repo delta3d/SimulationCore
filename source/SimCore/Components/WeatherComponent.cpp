@@ -181,8 +181,10 @@ namespace SimCore
       void WeatherComponent::SetStateSet(osg::Node* node)
       {
          osg::StateSet* ss = mPrecipEffect->getOrCreateStateSet();
-         osg::Depth* depth = new osg::Depth(osg::Depth::LEQUAL, mPrecipStart, 1.0);
-         ss->setAttributeAndModes(depth,osg::StateAttribute::ON );
+         osg::Depth* depth = new osg::Depth(osg::Depth::LEQUAL, mPrecipStart, 1.0);                       
+         depth->setWriteMask(false);
+
+         ss->setAttributeAndModes(depth,osg::StateAttribute::ON || osg::StateAttribute::OVERRIDE);
          ss->setRenderBinDetails(SimCore::Components::RenderingSupportComponent::RENDER_BIN_PRECIPITATION, "DepthSortedBin");
       }
 
