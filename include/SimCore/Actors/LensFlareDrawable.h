@@ -69,6 +69,7 @@ namespace SimCore
                LensFlareUpdateCallback(LensFlareOSGDrawable* lensFlareReference, const dtCore::Camera& camera);
                void operator () (const dtCore::Camera& camera, osg::RenderInfo& renderInfo) const;
             
+               bool mAttach;
                dtCore::ObserverPtr<LensFlareOSGDrawable> mLensFlare;
             };
 
@@ -114,6 +115,8 @@ namespace SimCore
                          , mFadeCurrent(0.0f)
                          , mLastDepthTest(false) 
                          , mDepthTestPos()
+                         , mDepthTexCoords()
+                         , mDepthTexCoordUniform()
                       {
                       }
 
@@ -124,7 +127,10 @@ namespace SimCore
                       
                       bool mLastDepthTest;
                       osg::Vec4d mDepthTestPos;
+                      osg::Vec2 mDepthTexCoords;
+                      dtCore::RefPtr<osg::Uniform> mDepthTexCoordUniform;
                       dtCore::RefPtr<osg::Texture2D> mDepthTexture;
+                      dtCore::RefPtr<osg::Texture2D> mColorTexture;
                    };
 
                    //this requires a map so the fading can work with each camera

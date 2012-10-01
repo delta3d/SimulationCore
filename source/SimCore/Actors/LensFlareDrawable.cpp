@@ -55,14 +55,19 @@ namespace SimCore
    namespace Actors
    {
 
-
       ////////////////////////////////////////////////////////////////////////////////////////
       LensFlareDrawable::LensFlareUpdateCallback::LensFlareUpdateCallback(LensFlareOSGDrawable* lensFlareReference, const dtCore::Camera& camera)
-         : mLensFlare(lensFlareReference)
+         : mAttach(false)
+         , mLensFlare(lensFlareReference)
       {
          osg::Camera* cam = const_cast<osg::Camera*>(camera.GetOSGCamera());
          if(cam != NULL)
          { 
+            if(cam->getRenderTargetImplementation() == osg::Camera::FRAME_BUFFER_OBJECT)
+            {
+               mAttach = true;
+            }
+
             LensFlareOSGDrawable::FadeParams& params = mLensFlare->mFadeMap[cam];
 
             int width = cam->getViewport()->width();
@@ -70,10 +75,20 @@ namespace SimCore
 
             params.mDepthTexture = new osg::Texture2D;
             params.mDepthTexture->setInternalFormat(GL_DEPTH_COMPONENT);
-            params.mDepthTexture->setTextureSize(16, 16);
+
             params.mDepthTexture->setShadowTextureMode(osg::Texture2D::LUMINANCE);
             params.mDepthTexture->setFilter(osg::Texture2D::MIN_FILTER,osg::Texture2D::LINEAR);
             params.mDepthTexture->setFilter(osg::Texture2D::MAG_FILTER,osg::Texture2D::LINEAR);
+
+            if(mAttach)
+            {
+               params.mDepthTexture->setTextureSize(width, height);
+               cam->attach(osg::Camera::DEPTH_BUFFER, params.mDepthTexture);               
+            }
+            else
+            {
+               params.mDepthTexture->setTextureSize(16, 16);
+            }
 
             osg::Uniform* texUniform = new osg::Uniform(osg::Uniform::SAMPLER_2D, "lastDepthTexture");
             texUniform->set(3);
@@ -81,9 +96,9 @@ namespace SimCore
             ss->addUniform(texUniform);
             ss->setTextureAttributeAndModes(3, params.mDepthTexture .get(), osg::StateAttribute::ON);
 
-            //osg::Image* image = new osg::Image();
-            //image->allocateImage(16, 16, 1, GL_DEPTH_COMPONENT, GL_FLOAT);
-            //params.mDepthTexture->setImage(image);
+            params.mDepthTexCoordUniform = new osg::Uniform(osg::Uniform::FLOAT_VEC2, "depthTexCoords");
+            cam->getOrCreateStateSet()->addUniform(params.mDepthTexCoordUniform);
+        
          }
          else
          {
@@ -95,7 +110,6 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////////      
       void LensFlareDrawable::LensFlareUpdateCallback::operator () (const dtCore::Camera& camera, osg::RenderInfo& renderInfo) const
       {
-
          osg::Camera* cam = const_cast<osg::Camera*>(camera.GetOSGCamera());
          if(cam != NULL)
          {                        
@@ -122,17 +136,22 @@ namespace SimCore
 
             bool inFrontOfCamera = (screenXYZ.w() > 0.0f) && (screenXYZ.z() > 0.0f) && (startX >= 0 && startX <= width) && (startY >= 0 && startY <= height);
 
+            params.mVisible = inFrontOfCamera;
+
             if(inFrontOfCamera)
             {
-               //params.mDepthTexture->copyTexImage2D(*renderInfo.getState(), 0, 0, width, height);
-               params.mDepthTexture->copyTexImage2D(*renderInfo.getState(), startX, startY, 16, 16);
+               if(!mAttach)
+               {
+                  params.mDepthTexture->copyTexImage2D(*renderInfo.getState(), startX, startY, 16, 16);
+                  params.mDepthTexCoords.set(0.5f, 0.5f);
+                  params.mDepthTexCoordUniform->set(params.mDepthTexCoords);
 
-               //osg::Image* image = params.mDepthTexture->getImage();
-               //image->readImageFromCurrentTexture(renderInfo.getContextID(), false);
-
-               //osg::Vec2 centerPixel(0.5f, 0.5f);
-               //depthValue = image->getColor(centerPixel).x();// < 1.0f;
-               //occluded = depthValue < 1.0f;
+               }
+               else
+               {
+                  params.mDepthTexCoords.set(screenXYZ.x(), screenXYZ.y());
+                  params.mDepthTexCoordUniform->set(params.mDepthTexCoords);
+               }
 
             }
 
@@ -570,18 +589,17 @@ namespace SimCore
             osg::Camera* cam = renderInfo.getCurrentCamera();
 
             FadeParams& params = mFadeMap[cam];
-
-            //std::cout << "mFadeCurrent: " << params.mFadeCurrent << std::endl;
-            //mEffectRadiusUniform->set(params.mFadeCurrent);
-            //mEffectRadiusUniform->dirty();
-
-            if(params.mDepthTexture.valid())
+            if(params.mVisible)
             {
-               params.mDepthTexture->apply(*renderInfo.getState());
-            }
 
-            //queue base class drawing behavior  
-            osg::Geometry::drawImplementation(renderInfo);
+               if(params.mDepthTexture.valid())
+               {
+                  params.mDepthTexture->apply(*renderInfo.getState());
+               }
+
+               //queue base class drawing behavior  
+               osg::Geometry::drawImplementation(renderInfo);
+            }
          }
       }
 
