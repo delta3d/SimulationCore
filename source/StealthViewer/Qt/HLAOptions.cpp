@@ -138,7 +138,7 @@ namespace StealthQt
    ////////////////////////////////////////////////////////////////////
    QString HLAOptions::FindFile(const QString& caption, const QString& startingSubDir, const QString& filter)
    {
-      const std::string &context = dtCore::Project::GetInstance().GetContext();
+      const std::string& context = dtCore::Project::GetInstance().GetContext();
       QString dir  = tr(context.c_str()) + tr("/") + startingSubDir;
       
       QString file = QFileDialog::getOpenFileName(this, caption, 
@@ -149,9 +149,14 @@ namespace StealthQt
 
       QString qContext = tr(context.c_str());
                
-      QString displayName = ConvertFileName(file, qContext);
+      QString displayName;
 
-      if(displayName.size() == 0)
+      for (unsigned i = 0; displayName.isEmpty() && i < dtCore::Project::GetInstance().GetContextSlotCount(); ++i)
+      {
+         displayName = ConvertFileName(file, QString(dtCore::Project::GetInstance().GetContext(i).c_str()));
+      }
+
+      if (displayName.size() == 0)
       {
          QMessageBox::warning(this, "Invalid selection", tr("The file selected must be within the ") + qContext + tr(" context") , 
                   QMessageBox::Ok, QMessageBox::Ok);
@@ -164,7 +169,7 @@ namespace StealthQt
    void HLAOptions::OnFedResourceToolButtonClicked(bool checked)
    {
       QString result = FindFile(QString("Select a federation resource"), 
-            QString("Federations"), QString("Federation Files(*.fed)"));
+            QString("Federations"), QString("Federation Files(*.fed *.xml)"));
 
       if(!result.isEmpty())
          mUi->mFedFileLineEdit->setText(result);
