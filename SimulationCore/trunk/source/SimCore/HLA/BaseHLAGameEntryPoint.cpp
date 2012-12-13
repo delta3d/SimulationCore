@@ -79,6 +79,7 @@ namespace SimCore
                hlaCC->SetFedEx(mFederationExecutionName);
                hlaCC->SetFedName(mFederateName);
                hlaCC->SetFedFile(fedFile);
+               hlaCC->SetRTIStandard(mRtiImplementation);
                hlaCC->SetConnectionType(SimCore::HLA::HLAConnectionComponent::ConnectionType::TYPE_HLA);
 
                // loads all maps
@@ -190,6 +191,11 @@ namespace SimCore
             if(!parser->read("--federateName", mFederateName))
             {
                mFederateName = "Stealth Viewer";
+            }
+
+            if(!parser->read("--rtiStandard", mRtiImplementation))
+            {
+               mRtiImplementation = "rti13";
             }
          }
       }
