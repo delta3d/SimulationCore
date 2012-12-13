@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<hla xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="hlaComponent"
-     xsi:schemaLocation="hlaComponent HLAMapping.xsd">
+<hla xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="HLAMapping.xsd">
 
     <header>
         <name>RPR2 FOM</name>
@@ -268,8 +267,8 @@
             <attrToProp>
                 <hlaName>FlamesPresent</hlaName>
                 <hlaDataType>UNSIGNED_CHAR_TYPE</hlaDataType>
-                <gameDataType>BOOLEAN</gameDataType>
                 <gameName>FlamesPresent</gameName>
+                <gameDataType>BOOLEAN</gameDataType>
                 <default>0</default>
             </attrToProp>
             <attrToProp>
@@ -371,8 +370,8 @@
             <attrToProp>
                <hlaName>ArticulatedParametersArray</hlaName> 
                <hlaDataType>ARTICULATED_PART_TYPE</hlaDataType> 
-               <gameDataType>GROUP</gameDataType> 
                <gameName>Articulated Parameters Array</gameName> 
+               <gameDataType>GROUP</gameDataType> 
                <default>unknown</default> 
                <enumerationMapping>
                   <value id="0">unknown</value> 
@@ -721,7 +720,7 @@
             </disEntityEnum>
         </object>
 
-        <object extends="BaseMarine" name="Marine6">
+        <!--object extends="BaseMarine" name="Marine6">
             <objectClass>BaseEntity.PhysicalEntity.Lifeform.Human</objectClass>
             <actorType>Entity.HumanWithPhysicsActor</actorType>
             <remoteOnly>true</remoteOnly>
@@ -734,7 +733,7 @@
                 <specific>0</specific>
                 <extra>0</extra>
             </disEntityEnum>
-        </object>
+        </object-->
 
         <object extends="BaseMarine" name="Marine7">
             <objectClass>BaseEntity.PhysicalEntity.Lifeform.Human</objectClass>
@@ -1627,7 +1626,7 @@
         <!-- This is A 4th tier object. Heirarchy is:               -->
         <!--    BaseEntity <- PhysicalEntity <- Platform <- NECC Driving Sim	-->
         <!-- ****************************************************** -->
-        <object extends="Platform" name="NECC Driving Sim">
+        <!--object extends="Platform" name="NECC Driving Sim">
             <objectClass>BaseEntity.PhysicalEntity.Platform.SurfaceVessel</objectClass>
             <actorType>NxAgeiaPhysicsModels.NeccBoatActorType</actorType>
             <remoteOnly>false</remoteOnly>
@@ -1690,13 +1689,13 @@
                <gameDataType>STRING</gameDataType>
                <default>HMMWV</default>
             </attrToProp>
-        </object>
+        </object-->
 
         <!-- ****************************************************** -->
         <!-- This is A 4th tier object. Heirarchy is:                              -->
         <!--    BaseEntity <- PhysicalEntity <- GroundVehicle <- HMMWV Driving Sim           -->
         <!-- ****************************************************** -->    
-           <object extends="GroundVehicle" name="HMMWV Driving Sim">
+           <!--object extends="GroundVehicle" name="HMMWV Driving Sim">
             <objectClass>BaseEntity.PhysicalEntity.Platform.GroundVehicle</objectClass>
             <actorType>NxAgeiaPhysicsModels.NxAgeiaFourWheelVehicle</actorType>
             <remoteOnly>false</remoteOnly>
@@ -1754,7 +1753,7 @@
                <gameDataType>STRING</gameDataType>
                <default>HMMWV</default>
             </attrToProp>
-        </object>
+        </object-->
         
         <!-- ****************************************************** -->
         <!-- This is A 4th tier object. Heirarchy is:                     -->
@@ -3837,7 +3836,7 @@
                 <country>222</country>
                 <category>7</category>
                 <subcategory>4</subcategory>
-                <specific>0</specific>
+                <specific>42</specific>
                 <extra>0</extra>
             </disEntityEnum>
             <attrToProp>
@@ -4841,7 +4840,7 @@
                 <category>2</category>
                 <subcategory>5</subcategory>
                 <specific>0</specific>
-                <extra>0</extra>
+                <extra>1</extra>
             </disEntityEnum>
             <attrToProp>
                 <gameName>Non-damaged actor</gameName>
@@ -4934,7 +4933,7 @@
                 <category>1</category>
                 <subcategory>2</subcategory>
                 <specific>2</specific>
-                <extra>0</extra>
+                <extra>1</extra>
             </disEntityEnum>
             <attrToProp>
                 <gameName>Non-damaged actor</gameName>
@@ -5553,9 +5552,9 @@
         <!-- This is A first tier object -->
         <!-- *************************** -->
         <object name="Portal">
-            <remoteOnly>false</remoteOnly>
             <objectClass>Portal</objectClass>
             <actorType>PortalModels.Portal</actorType>
+            <remoteOnly>false</remoteOnly>
             <attrToProp>
                     <hlaName>name</hlaName>
                     <hlaDataType>STRING_TYPE</hlaDataType>
@@ -5579,10 +5578,10 @@
         <!-- *************************** -->
         <!-- This is A first tier object -->
         <!-- *************************** -->
-        <object name="JammerBeam">
-            <remoteOnly>false</remoteOnly>
+        <!--object name="JammerBeam">
             <objectClass>EmitterBeam.JammerBeam</objectClass>
             <actorType>ViSiTToolkit.JammerActorType</actorType>
+            <remoteOnly>false</remoteOnly>
             <attrToProp>
                     <hlaName>EffectiveRadiatedPower</hlaName>
                     <hlaDataType>FLOAT_TYPE</hlaDataType>
@@ -5608,37 +5607,35 @@
                     <gameDataType>FLOAT</gameDataType>
             </attrToProp>
             <attrToProp>
-                    <!-- this goes to the jammer  -->
                     <hlaName>EmitterSystemIdentifier</hlaName>
                     <hlaDataType>RTI_OBJECT_ID_STRUCT_TYPE</hlaDataType>
                     <gameName>ActorLink</gameName> 
                     <gameDataType>ACTOR</gameDataType>
             </attrToProp>
-         </object>
+         </object-->
 
         <!-- *************************** -->
         <!-- This is A first tier object -->
         <!-- *************************** -->
-        <object name="Jammer">
-            <remoteOnly>false</remoteOnly>
+        <!--object name="Jammer">
             <objectClass>EmbeddedSystem.EmitterSystem.Jammer</objectClass>
             <actorType>ViSiTToolkit.JammerHostActorType</actorType>
+            <remoteOnly>false</remoteOnly>
             <attrToProp>
-                    <!-- this goes to the vehicle actor -->
                     <hlaName>HostObjectIdentifier</hlaName>
                     <hlaDataType>RTI_OBJECT_ID_STRUCT_TYPE</hlaDataType>
                     <gameName>ActorLink</gameName> 
                     <gameDataType>ACTOR</gameDataType>
             </attrToProp>
-         </object>
+         </object-->
 
         <!-- *************************** -->
         <!-- This is A first tier object -->
         <!-- *************************** -->
         <object name="UniformAtmosphere">
-            <remoteOnly>true</remoteOnly>
             <objectClass>Atmosphere.Atmosphere_0D.Uniform_Atmosphere</objectClass>
             <actorType>Environment.UniformAtmosphere</actorType>
+            <remoteOnly>true</remoteOnly>
             <attrToProp>
                     <hlaName>EAC_Visibility_Distance</hlaName>
                     <hlaDataType>FLOAT_TYPE</hlaDataType>
@@ -6439,13 +6436,6 @@
               <gameDataType>STRING</gameDataType>
               <gameRequired>true</gameRequired>
            </paramToParam>
-        </interaction>
-        
-    </interactions>
-</hla>
-/gameRequired>
-           </paramToParam>
-        </interaction>
-        
+        </interaction>        
     </interactions>
 </hla>
