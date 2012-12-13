@@ -342,100 +342,100 @@ void StealthViewerSettingsTests::TestAddConnectionError()
    SubStealthViewerSettings settings(QString("UnitTest"));
    settings.ClearAllSettings(true);
 
-   CPPUNIT_ASSERT_ASSERTION_FAIL_MESSAGE("Adding connection should fail if the name is not set.",
-            settings.AddConnection("", "TestMap", "TestConfig",
-            "Fed.fed", "Fedex", "TestFedName", "", "1.3", StealthQt::StealthViewerSettings::CONNECTIONTYPE_HLA,
+   CPPUNIT_ASSERT_MESSAGE("Adding connection should fail if the name is not set.",
+            !settings.AddConnection(QString(), "TestMap", "TestConfig",
+            "Fed.fed", "Fedex", "TestFedName", QString(), "1.3", StealthQt::StealthViewerSettings::CONNECTIONTYPE_HLA.c_str(),
             "127.0.0.1", "8000", "MyGame", "1.0", "192.168.0.255", 1995U,
             true, (unsigned char)(1), (unsigned short)1500U, (unsigned short)0U, 0U, "TestDISActorXMLFile"));
 
-   CPPUNIT_ASSERT_ASSERTION_FAIL_MESSAGE("Adding connection should fail if the map is not set.",
-            settings.AddConnection("TestName", "", "TestConfig",
-            "Fed.fed", "Fedex", "TestFedName", "", "1.3", StealthQt::StealthViewerSettings::CONNECTIONTYPE_HLA, "127.0.0.1", "8000", "MyGame", "1.0", "192.168.0.255", 1995,
+   CPPUNIT_ASSERT_MESSAGE("Adding connection should fail if the map is not set.",
+            !settings.AddConnection("TestName", "", "TestConfig",
+            "Fed.fed", "Fedex", "TestFedName", "", "1.3", StealthQt::StealthViewerSettings::CONNECTIONTYPE_HLA.c_str(), "127.0.0.1", "8000", "MyGame", "1.0", "192.168.0.255", 1995,
             true, 1, 1500, 0, 0, "TestDISActorXMLFile"));
 
-   CPPUNIT_ASSERT_ASSERTION_FAIL_MESSAGE("Adding connection should fail if the rti config is not set.",
-            settings.AddConnection("TestName", "TestMap", "",
-            "Fed.fed", "Fedex", "TestFedName", "", "1.3", StealthQt::StealthViewerSettings::CONNECTIONTYPE_HLA, "127.0.0.1", "8000", "MyGame", "1.0", "192.168.0.255", 1995,
+   CPPUNIT_ASSERT_MESSAGE("Adding connection should fail if the rti config is not set.",
+            !settings.AddConnection("TestName", "TestMap", "",
+            "Fed.fed", "Fedex", "TestFedName", "", "1.3", StealthQt::StealthViewerSettings::CONNECTIONTYPE_HLA.c_str(), "127.0.0.1", "8000", "MyGame", "1.0", "192.168.0.255", 1995,
             true, 1, 1500, 0, 0, "TestDISActorXMLFile"));
 
-   CPPUNIT_ASSERT_ASSERTION_FAIL_MESSAGE("Adding connection should fail if the fed file is not set.",
-            settings.AddConnection("TestName", "TestMap", "TestConfig",
-            "", "Fedex", "TestFedName", "", "1.3", StealthQt::StealthViewerSettings::CONNECTIONTYPE_HLA, "127.0.0.1", "8000", "MyGame", "1.0", "192.168.0.255", 1995,
+   CPPUNIT_ASSERT_MESSAGE("Adding connection should fail if the fed file is not set.",
+            !settings.AddConnection("TestName", "TestMap", "TestConfig",
+            "", "Fedex", "TestFedName", "", "1.3", StealthQt::StealthViewerSettings::CONNECTIONTYPE_HLA.c_str(), "127.0.0.1", "8000", "MyGame", "1.0", "192.168.0.255", 1995,
             true, 1, 1500, 0, 0, "TestDISActorXMLFile"));
 
-   CPPUNIT_ASSERT_ASSERTION_FAIL_MESSAGE("Adding connection should fail if the fedex is not set.",
-            settings.AddConnection("TestName", "TestMap", "TestConfig",
-            "Fed.fed", "", "TestFedName", "", "1.3", StealthQt::StealthViewerSettings::CONNECTIONTYPE_HLA, "127.0.0.1", "8000", "MyGame", "1.0", "192.168.0.255", 1995,
+   CPPUNIT_ASSERT_MESSAGE("Adding connection should fail if the fedex is not set.",
+            !settings.AddConnection("TestName", "TestMap", "TestConfig",
+            "Fed.fed", "", "TestFedName", "", "1.3", StealthQt::StealthViewerSettings::CONNECTIONTYPE_HLA.c_str(), "127.0.0.1", "8000", "MyGame", "1.0", "192.168.0.255", 1995,
             true, 1, 1500, 0, 0, "TestDISActorXMLFile"));
 
-   CPPUNIT_ASSERT_ASSERTION_FAIL_MESSAGE("Adding connection should fail if the federation name is not set.",
-            settings.AddConnection("TestName", "TestMap", "TestConfig",
-            "Fed.fed", "Fedex", "", "", "1.3", StealthQt::StealthViewerSettings::CONNECTIONTYPE_HLA, "127.0.0.1", "8000", "MyGame", "1.0", "192.168.0.255", 1995,
+   CPPUNIT_ASSERT_MESSAGE("Adding connection should fail if the federation name is not set.",
+            !settings.AddConnection("TestName", "TestMap", "TestConfig",
+            "Fed.fed", "Fedex", "", "", "1.3", StealthQt::StealthViewerSettings::CONNECTIONTYPE_HLA.c_str(), "127.0.0.1", "8000", "MyGame", "1.0", "192.168.0.255", 1995,
             true, 1, 1500, 0, 0, "TestDISActorXMLFile"));
 
    CPPUNIT_ASSERT_MESSAGE("Adding connection should NOT fail if the rid file and all non-hla settings are empty.",
-            settings.AddConnection("TestName", "TestMap", "TestConfig",
-            "Fed.fed", "Fedex", "TestFedName", "", "1.3", StealthQt::StealthViewerSettings::CONNECTIONTYPE_HLA, "", "", "", "", "", 0,
+            settings.AddConnection("TestNameWork", "TestMap", "TestConfig",
+            "Fed.fed", "Fedex", "TestFedName", "", "1.3", StealthQt::StealthViewerSettings::CONNECTIONTYPE_HLA.c_str(), "", "", "", "", "", 0,
             true, 0, 0, 0, 0, ""));
 
-   CPPUNIT_ASSERT_ASSERTION_FAIL_MESSAGE("Adding connection should fail if the connection type is not set.",
-            settings.AddConnection("TestName", "TestMap", "TestConfig",
+   CPPUNIT_ASSERT_MESSAGE("Adding connection should fail if the connection type is not set.",
+            !settings.AddConnection("TestName", "TestMap", "TestConfig",
             "Fed.fed", "Fedex", "TestFedName", "", "1.3", "", "127.0.0.1", "8000", "MyGame", "1.0", "192.168.0.255", 1995,
             true, 1, 1500, 0, 0, "TestDISActorXMLFile"));
 
-   CPPUNIT_ASSERT_ASSERTION_FAIL_MESSAGE("Adding connection should fail if the rti standard is not set.",
-            settings.AddConnection("TestName", "TestMap", "TestConfig",
-            "Fed.fed", "Fedex", "TestFedName", "", "", StealthQt::StealthViewerSettings::CONNECTIONTYPE_HLA, "127.0.0.1", "8000", "MyGame", "1.0", "192.168.0.255", 1995,
+   CPPUNIT_ASSERT_MESSAGE("Adding connection should fail if the rti standard is not set.",
+            !settings.AddConnection("TestName", "TestMap", "TestConfig",
+            "Fed.fed", "Fedex", "TestFedName", "", "", StealthQt::StealthViewerSettings::CONNECTIONTYPE_HLA.c_str(), "127.0.0.1", "8000", "MyGame", "1.0", "192.168.0.255", 1995,
             true, 1, 1500, 0, 0, "TestDISActorXMLFile"));
 
    CPPUNIT_ASSERT_MESSAGE("Adding connection should NOT fail if the connection is not HLA and the hla settings are empty.",
-            settings.AddConnection("TestName", "TestMap", "",
-            "", "", "", "", "", StealthQt::StealthViewerSettings::CONNECTIONTYPE_CLIENTSERVER, "127.0.0.1", "8000", "MyGame", "1.0", "192.168.0.255", 1995,
+            settings.AddConnection("TestNameWork2", "TestMap", "",
+            "", "", "", "", "", StealthQt::StealthViewerSettings::CONNECTIONTYPE_CLIENTSERVER.c_str(), "127.0.0.1", "8000", "MyGame", "1.0", "192.168.0.255", 1995,
             true, 1, 1500, 0, 0, "TestDISActorXMLFile"));
 
-   CPPUNIT_ASSERT_ASSERTION_FAIL_MESSAGE("Adding connection should fail if the connection is Client Server and the server is empty.",
-            settings.AddConnection("TestName", "TestMap", "",
-            "", "", "", "", "", StealthQt::StealthViewerSettings::CONNECTIONTYPE_CLIENTSERVER, "", "8000", "MyGame", "1.0", "192.168.0.255", 1995,
+   CPPUNIT_ASSERT_MESSAGE("Adding connection should fail if the connection is Client Server and the server is empty.",
+            !settings.AddConnection("TestName", "TestMap", "",
+            "", "", "", "", "", StealthQt::StealthViewerSettings::CONNECTIONTYPE_CLIENTSERVER.c_str(), "", "8000", "MyGame", "1.0", "192.168.0.255", 1995,
             true, 1, 1500, 0, 0, "TestDISActorXMLFile"));
 
-   CPPUNIT_ASSERT_ASSERTION_FAIL_MESSAGE("Adding connection should fail if the connection is Client Server and the port is empty.",
-            settings.AddConnection("TestName", "TestMap", "",
-            "", "", "", "", "", StealthQt::StealthViewerSettings::CONNECTIONTYPE_CLIENTSERVER, "127.0.0.1", "", "MyGame", "1.0", "192.168.0.255", 1995,
+   CPPUNIT_ASSERT_MESSAGE("Adding connection should fail if the connection is Client Server and the port is empty.",
+            !settings.AddConnection("TestName", "TestMap", "",
+            "", "", "", "", "", StealthQt::StealthViewerSettings::CONNECTIONTYPE_CLIENTSERVER.c_str(), "127.0.0.1", "", "MyGame", "1.0", "192.168.0.255", 1995,
             true, 1, 1500, 0, 0, "TestDISActorXMLFile"));
 
-   CPPUNIT_ASSERT_ASSERTION_FAIL_MESSAGE("Adding connection should fail if the connection is Client Server and the game name is empty.",
-            settings.AddConnection("TestName", "TestMap", "",
-            "", "", "", "", "", StealthQt::StealthViewerSettings::CONNECTIONTYPE_CLIENTSERVER, "127.0.0.1", "8000", "", "1.0", "192.168.0.255", 1995,
+   CPPUNIT_ASSERT_MESSAGE("Adding connection should fail if the connection is Client Server and the game name is empty.",
+            !settings.AddConnection("TestName", "TestMap", "",
+            "", "", "", "", "", StealthQt::StealthViewerSettings::CONNECTIONTYPE_CLIENTSERVER.c_str(), "127.0.0.1", "8000", "", "1.0", "192.168.0.255", 1995,
             true, 1, 1500, 0, 0, "TestDISActorXMLFile"));
 
-   CPPUNIT_ASSERT_ASSERTION_FAIL_MESSAGE("Adding connection should fail if the connection is Client Server and the version is empty.",
-            settings.AddConnection("TestName", "TestMap", "",
-            "", "", "", "", "", StealthQt::StealthViewerSettings::CONNECTIONTYPE_CLIENTSERVER, "127.0.0.1", "8000", "MyGame", "", "192.168.0.255", 1995,
+   CPPUNIT_ASSERT_MESSAGE("Adding connection should fail if the connection is Client Server and the version is empty.",
+            !settings.AddConnection("TestName", "TestMap", "",
+            "", "", "", "", "", StealthQt::StealthViewerSettings::CONNECTIONTYPE_CLIENTSERVER.c_str(), "127.0.0.1", "8000", "MyGame", "", "192.168.0.255", 1995,
             true, 1, 1500, 0, 0, "TestDISActorXMLFile"));
 
    CPPUNIT_ASSERT_MESSAGE("Adding connection not should fail if the connection is Client Server and the DIS settings are empty.",
-            settings.AddConnection("TestName", "TestMap", "",
-            "", "", "", "", "", StealthQt::StealthViewerSettings::CONNECTIONTYPE_CLIENTSERVER, "127.0.0.1", "8000", "MyGame", "1.0", "", 0,
+            !settings.AddConnection("TestName", "TestMap", "",
+            "", "", "", "", "", StealthQt::StealthViewerSettings::CONNECTIONTYPE_CLIENTSERVER.c_str(), "127.0.0.1", "8000", "MyGame", "1.0", "", 0,
             true, 0, 0, 0, 0, ""));
 
    CPPUNIT_ASSERT_MESSAGE("Adding connection should NOT fail if the connection is DIS and the other settings are empty.",
-            settings.AddConnection("TestName", "TestMap", "",
-            "", "", "", "", "", StealthQt::StealthViewerSettings::CONNECTIONTYPE_DIS, "", "", "", "", "192.168.0.255", 1995,
+            settings.AddConnection("TestNameWork3", "TestMap", "",
+            "", "", "", "", "", StealthQt::StealthViewerSettings::CONNECTIONTYPE_DIS.c_str(), "", "", "", "", "192.168.0.255", 1995,
             true, 1, 1500, 0, 0, "TestDISActorXMLFile"));
 
-   CPPUNIT_ASSERT_ASSERTION_FAIL_MESSAGE("Adding connection should fail if the connection is DIS and the IP address is empty.",
-            settings.AddConnection("TestName", "TestMap", "",
-            "", "", "", "", "", StealthQt::StealthViewerSettings::CONNECTIONTYPE_CLIENTSERVER, "", "", "", "", "", 1995,
+   CPPUNIT_ASSERT_MESSAGE("Adding connection should fail if the connection is DIS and the IP address is empty.",
+            !settings.AddConnection("TestName", "TestMap", "",
+            "", "", "", "", "", StealthQt::StealthViewerSettings::CONNECTIONTYPE_CLIENTSERVER.c_str(), "", "", "", "", "", 1995,
             true, 1, 1500, 0, 0, "TestDISActorXMLFile"));
 
-   CPPUNIT_ASSERT_ASSERTION_FAIL_MESSAGE("Adding connection should fail if the connection is DIS and the port is 0.",
-            settings.AddConnection("TestName", "TestMap", "",
-            "", "", "", "", "", StealthQt::StealthViewerSettings::CONNECTIONTYPE_CLIENTSERVER, "", "", "", "", "192.168.0.255", 0,
+   CPPUNIT_ASSERT_MESSAGE("Adding connection should fail if the connection is DIS and the port is 0.",
+            !settings.AddConnection("TestName", "TestMap", "",
+            "", "", "", "", "", StealthQt::StealthViewerSettings::CONNECTIONTYPE_CLIENTSERVER.c_str(), "", "", "", "", "192.168.0.255", 0,
             true, 1, 1500, 0, 0, "TestDISActorXMLFile"));
 
-   CPPUNIT_ASSERT_ASSERTION_FAIL_MESSAGE("Adding connection should fail if the connection is DIS and the XML config is empty.",
-            settings.AddConnection("TestName", "TestMap", "",
-            "", "", "", "", "", StealthQt::StealthViewerSettings::CONNECTIONTYPE_CLIENTSERVER, "", "", "", "", "192.168.0.255", 1995,
+   CPPUNIT_ASSERT_MESSAGE("Adding connection should fail if the connection is DIS and the XML config is empty.",
+            !settings.AddConnection("TestName", "TestMap", "",
+            "", "", "", "", "", StealthQt::StealthViewerSettings::CONNECTIONTYPE_CLIENTSERVER.c_str(), "", "", "", "", "192.168.0.255", 1995,
             true, 1, 1500, 0, 0, ""));
 }
 
