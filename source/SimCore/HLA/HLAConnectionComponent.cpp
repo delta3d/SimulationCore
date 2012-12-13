@@ -161,7 +161,7 @@ namespace SimCore
       void HLAConnectionComponent::DoConnectToHLA(dtActors::CoordinateConfigActor* ccActor)
       {
          dtHLAGM::HLAComponent* hlaComp = GetHLAComponent();
-         if(hlaComp == NULL)
+         if (hlaComp == NULL)
          {
             throw dtGame::InvalidParameterException(
                "Failed to find the HLAComponent on the GameManager. Aborting...", __FILE__, __LINE__);
@@ -173,9 +173,9 @@ namespace SimCore
          {
             componentConfig.LoadConfiguration(*hlaComp, mConfigFile);
 
-            hlaComp->JoinFederationExecution(mFedEx, mFedFile, mFedName, mRidFile);
+            hlaComp->JoinFederationExecution(mFedEx, mFedFile, mFedName, mRidFile, mRTIStandard);
          }
-         catch(const dtUtil::Exception &e)
+         catch (const dtUtil::Exception& e)
          {
             mState = &HLAConnectionComponent::ConnectionState::STATE_ERROR;
             throw e;
@@ -187,10 +187,10 @@ namespace SimCore
             hlaComp->GetCoordinateConverter() = ccActor->GetCoordinateConverter();
             std::vector<dtHLAGM::DDMRegionCalculator*> calcs;
             hlaComp->GetDDMSubscriptionCalculators().GetCalculators(calcs);
-            for(size_t i = 0; i < calcs.size(); ++i)
+            for (size_t i = 0; i < calcs.size(); ++i)
             {
                dtHLAGM::DDMCalculatorGeographic* geoCalc = dynamic_cast<dtHLAGM::DDMCalculatorGeographic*>(calcs[i]);
-               if(geoCalc != NULL)
+               if (geoCalc != NULL)
                {
                   geoCalc->SetCoordinateConverter(ccActor->GetCoordinateConverter());
                }
