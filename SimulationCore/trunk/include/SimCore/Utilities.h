@@ -79,12 +79,12 @@ namespace Utils
    /**
     * Uses an isector to check if an object's transform is too high or two low and should be adjusted to be on the terrain.
     * @param dropHeight The height above the highest terrain point found to set the transform if it is object
-    * @param maxDepthBelow The depth below the lowest point hit at which point it should move it back up, or < 0 to ignore
-    * @param maxHeightAbove The depth above the highest point at which point it should move it back up, or < 0 to ignore
+    * @param maxDepthBelow the distance below the terrain at which the transform should not be moved back up, or < 0 to ignore.
+    * @param maxHeightAbove The point above terrain above which point it should not move it back down, or < 0 to ignore
     * @return true if it moves the transform.
     */
    bool SIMCORE_EXPORT KeepTransformOnGround(dtCore::Transform& xform, dtCore::Transformable& terrainActor, float dropHeight,
-      float maxDepthBelow, float maxHeightAbove);
+      float maxDepthBelow = -1.f, float maxHeightAbove = -1.f);
 
    /**
     * Uses an isector to check if an object's transform is too high or two low and should be adjusted to be on the terrain.
