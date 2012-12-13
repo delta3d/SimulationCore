@@ -55,6 +55,7 @@
 #include <SimCore/Tools/LaserRangeFinder.h>
 #include <SimCore/Tools/GPS.h>
 #include <SimCore/Components/TimedDeleterComponent.h>
+#include <SimCore/Utilities.h>
 
 #include <dtGame/message.h>
 #include <dtGame/messagetype.h>
@@ -187,10 +188,11 @@ namespace StealthGM
             }
          }
       }
-
       // A Local Player entered world, so create our motion models
-      else if (msgType == dtGame::MessageType::INFO_PLAYER_ENTERED_WORLD &&
-         message.GetSource() == GetGameManager()->GetMachineInfo())
+//      else if (msgType == dtGame::MessageType::INFO_PLAYER_ENTERED_WORLD &&
+//         message.GetSource() == GetGameManager()->GetMachineInfo())
+      else if (msgType == dtGame::MessageType::INFO_TIMER_ELAPSED && mTerrainActor.valid() &&
+         message.GetAboutActorId() == mTerrainActor->GetId())
       {
          RefPtr<dtGame::GameActorProxy> stealthProxy = GetGameManager()->FindGameActorById(message.GetAboutActorId());
          if (!stealthProxy.valid())
@@ -230,14 +232,32 @@ namespace StealthGM
             GetGameManager()->FindActorsByType(*type, actors);
             if (actors.empty())
             {
-               LOG_WARNING("Failed to find a player start proxy in the map. Defaulting to [0, 0, 0]");
+               if (mTerrainActor.valid() && message.GetAboutActorId() == mTerrainActor->GetId())
+               {
+                  SimCore::Actors::TerrainActor* tdraw;
+                  mTerrainActor->GetDrawable(tdraw);
+                  if (tdraw == NULL || tdraw->CheckForTerrainLoaded())
+                  {
+                     osg::Node* node = tdraw->GetOSGNode();
+                     dtCore::Transform stealthStart;
+                     node->computeBound();
+                     osg::Vec3 startPos = node->getBound().center();
+                     stealthStart.SetTranslation(startPos);
+                     SimCore::Utils::KeepTransformOnGround(stealthStart, *tdraw, 100.0f, 5000.0f, 5000.0f);
+                     GetStealthActor()->SetTransform(stealthStart);
+                  }
+               }
+               else
+               {
+                  LOG_WARNING("Failed to find a player start proxy in the map. Defaulting to [0, 0, 0]");
+               }
             }
             else
             {
                RefPtr<dtDAL::TransformableActorProxy> proxy = dynamic_cast<dtDAL::TransformableActorProxy*>(actors[0]);
-               osg::Vec3 mStartPos = proxy->GetTranslation();
+               osg::Vec3 startPos = proxy->GetTranslation();
                dtCore::Transform stealthStart;
-               stealthStart.SetTranslation(mStartPos);
+               stealthStart.SetTranslation(startPos);
                GetStealthActor()->SetTransform(stealthStart);
             }
 
@@ -343,6 +363,10 @@ namespace StealthGM
          message.ToString(messageError);
          LOG_ALWAYS("   Reject Message[" + messageError + "].");
       }
+      else if (msgType == dtGame::MessageType::INFO_MAP_UNLOADED)
+      {
+         mTerrainActor = NULL;
+      }
       else if (msgType == dtGame::MessageType::INFO_MAP_LOADED)
       {
          dtGame::GameManager& gameManager = *GetGameManager();
@@ -359,11 +383,11 @@ namespace StealthGM
          }
          else
          {
-            RefPtr<dtDAL::ActorProxy> terrainActor = actors[0];
+            mTerrainActor = actors[0];
             //inputComp->SetTerrainActor(*terrainActor);
             //std::string name = terrainActor->GetName();
             //inputComp->SetTerrainActorName(name);
-            dtGame::GameActorProxy *gap = dynamic_cast<dtGame::GameActorProxy*>(terrainActor.get());
+            dtGame::GameActorProxy *gap = dynamic_cast<dtGame::GameActorProxy*>(mTerrainActor.get());
             if (gap == NULL)
             {
                LOG_ERROR("The terrain actor is not a game actor. Ignoring.");
@@ -375,8 +399,8 @@ namespace StealthGM
                {
                   if (mLogController.valid() )
                   {
-                     if (terrainActor.valid())
-                        mLogController->RequestAddIgnoredActor(terrainActor->GetId());
+                     if (mTerrainActor.valid())
+                        mLogController->RequestAddIgnoredActor(mTerrainActor->GetId());
 
                      if (gameManager.GetEnvironmentActor() != NULL)
                         mLogController->RequestAddIgnoredActor(gameManager.GetEnvironmentActor()->GetId());
@@ -1255,12 +1279,14 @@ namespace StealthGM
    void StealthInputComponent::SetConnectionParameters(const std::string &executionName,
                                                        const std::string &fedFile,
                                                        const std::string &federateName,
-                                                       const std::string &ridFile)
+                                                       const std::string &ridFile,
+                                                       const std::string& rtiImplementation)
    {
       mExecutionName = executionName;
       mFedFile = fedFile;
       mFederateName = federateName;
       mRidFile = ridFile;
+      mRtiImplementation = rtiImplementation;
    }
 
    //////////////////////////////////////////////////////////////////////////
@@ -1289,7 +1315,7 @@ namespace StealthGM
 
          if (mHLA.valid() )
          {
-            mHLA->JoinFederationExecution(mExecutionName, mFedFile, mFederateName, mRidFile);
+            mHLA->JoinFederationExecution(mExecutionName, mFedFile, mFederateName, mRidFile, mRtiImplementation);
          }
          else
          {
