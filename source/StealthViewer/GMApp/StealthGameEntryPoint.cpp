@@ -409,7 +409,7 @@ namespace StealthGM
          // Capture HLA connection parameters for the input component to use later in record/playback
          // state swapping. Transitions to IDLE should join the network; PLAYBACK should leave
          // the connection to the network.
-         inputComp->SetConnectionParameters(mFederationExecutionName, fedFile, mFederateName);
+         inputComp->SetConnectionParameters(mFederationExecutionName, fedFile, mFederateName, "", mRtiImplementation);
       }
 
       std::cout << std::endl << "Setting Log Level to Notice" << std::endl << std::endl;

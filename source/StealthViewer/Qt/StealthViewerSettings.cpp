@@ -214,7 +214,7 @@ namespace StealthQt
          return false;
       }
       else if (connectionType.toStdString() == CONNECTIONTYPE_CLIENTSERVER &&
-         (serverIPAddress.isEmpty() || serverPort.isEmpty())) // Note - don't check name or version
+         (serverIPAddress.isEmpty() || serverPort.isEmpty() || serverGameName.isEmpty() || serverGameVersion.isEmpty())) // Note - don't check name or version
       {
          std::string error = "Could not add the current Client Server connection [" + name.toStdString() + "] because it contained empty data.";
          LOG_ERROR(error);
