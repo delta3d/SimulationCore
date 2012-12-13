@@ -135,8 +135,8 @@ namespace Utils
       dtCore::BatchIsector::SingleISector& SingleISector = iSector->EnableAndGetISector(0);
       osg::Vec3 endPos = pos;
       osg::Vec3 startPos = pos;
-      startPos[2] -= 100.0f;
-      endPos[2] += 100.0f;
+      startPos[2] -= underearth ? maxDepthBelow : 1000.0f;
+      endPos[2] += tooHigh ? maxHeightAbove : 1000.0f;
       float offsettodo = maxDepthBelow;
       float tooHighOffset = maxHeightAbove;
       SingleISector.SetSectorAsLineSegment(startPos, endPos);
