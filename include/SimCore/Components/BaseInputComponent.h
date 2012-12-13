@@ -134,7 +134,7 @@ namespace SimCore
             virtual ~BaseInputComponent();
 
             dtCore::RefPtr<SimCore::AttachedMotionModel> mAttachedMM;
-            dtCore::RefPtr<dtDAL::ActorProxy> mTerrainActor;
+            dtCore::RefPtr<dtDAL::BaseActorObject> mTerrainActor;
             dtUtil::Coordinates mCoordinateConverter;
          private:
             std::string mFoName;

@@ -76,7 +76,8 @@ namespace StealthGM
          void SetConnectionParameters(const std::string& executionName,
             const std::string& fedFile,
             const std::string& federateName,
-            const std::string& ridFile = "");
+            const std::string& ridFile = "",
+            const std::string& rtiImplementation =  "rti13");
 
          SimCore::Tools::Tool* GetTool(SimCore::MessageType &type);
          void AddTool(SimCore::Tools::Tool &tool, SimCore::MessageType &type);
@@ -172,6 +173,7 @@ namespace StealthGM
          std::string mFedFile;
          std::string mFederateName;
          std::string mRidFile;
+         std::string mRtiImplementation;
          dtCore::RefPtr<dtHLAGM::HLAComponent> mHLA;
 
          std::map<SimCore::MessageType*, dtCore::RefPtr<SimCore::Tools::Tool> > mToolList;
