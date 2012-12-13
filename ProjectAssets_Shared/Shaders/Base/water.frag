@@ -85,13 +85,15 @@ void main (void)
    vec3 combinedPos = pos.xyz + vec3(camPos.x, camPos.y, 0.0);
    vec3 viewDir = normalize(combinedPos - camPos);
 
+   vec3 vertexNormal = normalize(shaderVertexNormal);
+
    /////////////////////////////////////////////////////////////////////////////
    ////This samples the wave texture in a way that will remove tiling artifacts
    float fadeTransition = 0.05;
    float distToFragment = length(pos.xy);
    float textureScale = 20.0 + clamp((50.0 * floor(distToFragment / 50.0)), 0.0, 2000.0);
    vec3 waveNormal = vec3(0.0, 0.0, 0.0); 
-   vec2 waveCoords = 0.025 * shaderVertexNormal.xy + vec2(combinedPos.xy / textureScale);   
+   vec2 waveCoords = 0.025 * vertexNormal.xy + vec2(combinedPos.xy / textureScale);   
    waveCoords /= (0.5 + (modForFOV * 0.5) );
    //waveCoords = rotateTexCoords(waveCoords, waveDirection);
 
@@ -107,16 +109,15 @@ void main (void)
    waveNormal += fadeAmt3 * SampleNormalMap(waveTexture, waveCoords3);
    //////////////////////////////////////////////////////////////////////////////
 
-   shaderVertexNormal = normalize(shaderVertexNormal);
 
    float waveNormalFadeOut = clamp(distToFragment / 1000.0, 0.0, 1.0);
    waveNormal = mix(waveNormal, vec3(0.0, 0.0, 1.0), waveNormalFadeOut);
    waveNormal = normalize(waveNormal);
    
-   float waveNormalContribution = 1.0;//max(vec3(0.0), dot(shaderVertexNormal, vec3(1.0, 1.0, 0.0)));
+   float waveNormalContribution = 1.0;//max(vec3(0.0), dot(vertexNormal, vec3(1.0, 1.0, 0.0)));
    waveNormal = waveNormalContribution * waveNormal;
    
-   vec3 normal = shaderVertexNormal + waveNormal;
+   vec3 normal = vertexNormal + waveNormal;
    normal = normalize(normal);   
 
    //this inverts the normal if we are underwater
@@ -153,7 +154,7 @@ void main (void)
       //this is the distant foam effect contribution - it's really nutty. It is the outer band of 
       // foam value. And, it changes based on the field of view! What we want is for the foam to 
       // appear in little patches based on the normal on the wave.       
-      float distfoamAmt = max(-1.0 * dot(shaderVertexNormal, vec3(vertexWaveDir.xy, 0.0)), 0.0);
+      float distfoamAmt = max(-1.0 * dot(vertexNormal, vec3(vertexWaveDir.xy, 0.0)), 0.0);
       // What we want.  0.5 at wide (90 HFov).  0.7 at med (45 HFov).  0.9 at narrow (< 10 HFov)
       float distFoamExpFOVScalar = clamp(0.95 - (0.4 * (modForFOV)), 0.55, 0.95);
       float distFoamExp = distFoamExpFOVScalar * (10.0 + (camPos.z / 75.0));

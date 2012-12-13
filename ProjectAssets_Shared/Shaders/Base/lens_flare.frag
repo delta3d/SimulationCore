@@ -24,7 +24,7 @@ void main(void)
    }
    else
    {
-      vec4 glowColor = vec4(0.60f, 0.60f, 0.8f, 1.0f);
+      vec4 glowColor = vec4(0.60, 0.60, 0.8, 1.0);
       gl_FragColor =  glowColor * vec4(hardGlowTextureColor.xyz + streakTextureColor.xyz, 1.0);
    }
 
