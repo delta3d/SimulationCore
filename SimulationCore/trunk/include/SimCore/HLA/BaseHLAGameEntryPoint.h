@@ -61,6 +61,7 @@ namespace SimCore
             std::string mFederateName;
             std::string mFedFileResource;
             std::string mFedMappingResource;
+            std::string mRtiImplementation;
       };
 
    }
