@@ -81,8 +81,8 @@ IF(APPLE)
    endif()
 
    if (NOT CMAKE_OSX_DEPLOYMENT_TARGET)
-     # use 10.5 because osg atomics won't build on less.
-     set(CMAKE_OSX_DEPLOYMENT_TARGET "10.5")
+     # use 10.6 because 10.5 isn't properly supported any longer
+     set(CMAKE_OSX_DEPLOYMENT_TARGET "10.6")
    endif()
 
    SET(CMAKE_EXE_LINKER_FLAGS "-F/Library/Frameworks" )
