@@ -13,20 +13,21 @@
 
 
   IF(NOT DEFINED DTPHYSICS_DIR)
-    set(${proj}_SOURCE_DIR  ${CMAKE_BINARY_DIR})
     if (SUPER_BUILD_SOURCE_AT_TOP_LEVEL)
-      set(${proj}_SOURCE_DIR ${CMAKE_SOURCE_DIR}/..)
+      set(${proj}_SOURCE_DIR ${CMAKE_SOURCE_DIR}/../${proj} CACHE STRING "project source directory")
+    else ()
+       set(${proj}_SOURCE_DIR  ${CMAKE_BINARY_DIR}/${proj} CACHE STRING "project source directory")
     endif()
 
-    set(${proj}_BINARY_MODE BINARY_DIR ${${proj}_SOURCE_DIR}/${proj}/build)
-    if (SUPER_BUILD_IN_SOURCE)
-      set(${proj}_BINARY_MODE BUILD_IN_SOURCE 1)
-    endif()
+    set(${proj}_BINARY_MODE BINARY_DIR ${${proj}_SOURCE_DIR}/superbuild)
+    #if (SUPER_BUILD_IN_SOURCE)
+    #  set(${proj}_BINARY_MODE BUILD_IN_SOURCE 1)
+    #endif()
 
-    SET(DTPHYSICS_DIR ${${proj}_SOURCE_DIR}/${proj})
+    SET(DTPHYSICS_DIR ${${proj}_SOURCE_DIR})
     SET(DTPHYSICS_INCLUDE_DIR ${DTPHYSICS_DIR}/include)
     if (NOT SUPER_BUILD_IN_SOURCE)
-      SET(DTPHYSICS_LIB_DIR ${${proj}_SOURCE_DIR}/${proj}/build/lib)
+      SET(DTPHYSICS_LIB_DIR ${${proj}_SOURCE_DIR}/build/lib)
     else()
       SET(DTPHYSICS_LIB_DIR ${DELTA_DIR}/lib)
     endif()
@@ -35,7 +36,7 @@
     ExternalProject_Add(${proj}
       SVN_REPOSITORY https://delta3d-extras.svn.sourceforge.net/svnroot/delta3d-extras/dtPhysics/trunk
       ${${proj}_BINARY_MODE}
-      SOURCE_DIR ${${proj}_SOURCE_DIR}/${proj}
+      SOURCE_DIR ${${proj}_SOURCE_DIR}
       INSTALL_COMMAND ""
       CMAKE_GENERATOR ${gen}
       CMAKE_ARGS
