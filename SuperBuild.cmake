@@ -57,7 +57,6 @@ OPTION(SUPER_BUILD_SOURCE_AT_TOP_LEVEL "Put the source trees for the dependencie
 OPTION(BUILD_BINDINGS "Build delta3d python bindings" OFF)
 OPTION(BUILD_3DSMAX_PLUGIN "Build delta3d 3D Studio max plugin" OFF)
 OPTION(BUILD_EXAMPLES "Build examples in all the projects (not to be confused with demos)" ON)
-OPTION(DELTA3D_EXT_DIR "Set a different directory for delta3d ext" "")
 
 OPTION(USE_RTIS "Use RTI-s for the RTI implementation" ON)
 OPTION(RTIS_SINGLE_LIBRARY "If using rtis, assume it was compiled into single library, not into multiple" OFF)
