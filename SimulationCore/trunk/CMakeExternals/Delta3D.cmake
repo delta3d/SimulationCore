@@ -12,21 +12,21 @@
   SET(Delta3D_DEPENDS ${proj})
 
   IF(NOT DEFINED DELTA_DIR)
-    set(${proj}_BINARY_MODE BINARY_DIR ${CMAKE_BINARY_DIR}/${proj}-build)
-    if (SUPER_BUILD_IN_SOURCE)
-      set(${proj}_BINARY_MODE BUILD_IN_SOURCE 1)
-    endif()
-
     set(${proj}_SOURCE_DIR  ${CMAKE_BINARY_DIR})
     if (SUPER_BUILD_SOURCE_AT_TOP_LEVEL)
       set(${proj}_SOURCE_DIR ${CMAKE_SOURCE_DIR}/..)
+    endif()
+
+    set(${proj}_BINARY_MODE BINARY_DIR ${${proj}_SOURCE_DIR}/${proj}/build)
+    if (SUPER_BUILD_IN_SOURCE)
+      set(${proj}_BINARY_MODE BUILD_IN_SOURCE 1)
     endif()
 
      
     SET(DELTA_DIR ${${proj}_SOURCE_DIR}/${proj})
     SET(DELTA3D_INCLUDE_DIR ${DELTA_DIR}/inc)
     if (NOT SUPER_BUILD_IN_SOURCE)
-      SET(DELTA3D_LIB_DIR ${CMAKE_CURRENT_BINARY_DIR}/${proj}-build/lib)
+      SET(DELTA3D_LIB_DIR ${${proj}_SOURCE_DIR}/${proj}/build/lib)
     else()
       SET(DELTA3D_LIB_DIR ${DELTA_DIR}/lib)
     endif()
