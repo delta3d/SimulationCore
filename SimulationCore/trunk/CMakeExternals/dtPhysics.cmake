@@ -18,11 +18,18 @@
       set(${proj}_SOURCE_DIR ${CMAKE_SOURCE_DIR}/..)
     endif()
 
-    set(${proj}_BINARY_MODE BINARY_DIR ${${proj}_SOURCE_DIR}/${proj}/ext)       
+    set(${proj}_BINARY_MODE BINARY_DIR ${${proj}_SOURCE_DIR}/${proj}/build)
+    if (SUPER_BUILD_IN_SOURCE)
+      set(${proj}_BINARY_MODE BUILD_IN_SOURCE 1)
+    endif()
 
     SET(DTPHYSICS_DIR ${${proj}_SOURCE_DIR}/${proj})
     SET(DTPHYSICS_INCLUDE_DIR ${DTPHYSICS_DIR}/include)
-    SET(DTPHYSICS_LIB_DIR ${${proj}_SOURCE_DIR}/${proj}/build)
+    if (NOT SUPER_BUILD_IN_SOURCE)
+      SET(DTPHYSICS_LIB_DIR ${${proj}_SOURCE_DIR}/${proj}/build/lib)
+    else()
+      SET(DTPHYSICS_LIB_DIR ${DELTA_DIR}/lib)
+    endif()
     SET(DTPHYSICS_EXT_DIR ${DTPHYSICS_DIR}/ext)
 
     ExternalProject_Add(${proj}
