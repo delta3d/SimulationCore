@@ -131,7 +131,9 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void Interaction::AddResponse( Response& pResponse )
       {
-         ResponseInteractionPair p(&pResponse, NULL);
+         ResponseInteractionPair p;
+         p.first = &pResponse;
+         p.second = NULL;
          pResponse.SetId(mResponses.size());
          mResponses.push_back(p);
       }

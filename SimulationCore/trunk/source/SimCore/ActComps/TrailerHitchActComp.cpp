@@ -275,7 +275,10 @@ namespace SimCore
       //////////////////////////////////////////////////
       std::pair<osg::Group*, osg::Group* > TrailerHitchActComp::GetHitchNodes() const
       {
-         std::pair<osg::Group*, osg::Group* > result(NULL, NULL);
+         std::pair<osg::Group*, osg::Group* > result;
+         result.first = NULL;
+         result.second = NULL;
+
          SimCore::Actors::IGActor* igDraw = NULL;
          GetOwner(igDraw);
 
@@ -304,7 +307,9 @@ namespace SimCore
       //////////////////////////////////////////////////
       std::pair<dtPhysics::PhysicsObject*, dtPhysics::PhysicsObject*> TrailerHitchActComp::GetPhysicsObjects() const
       {
-         std::pair<dtPhysics::PhysicsObject*, dtPhysics::PhysicsObject*> result(NULL, NULL);
+         std::pair<dtPhysics::PhysicsObject*, dtPhysics::PhysicsObject*> result;
+         result.first = NULL;
+         result.second = NULL;
 
          SimCore::Actors::IGActor* igDraw = NULL;
          GetOwner(igDraw);
