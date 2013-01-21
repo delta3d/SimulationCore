@@ -9,7 +9,7 @@ if(COMMAND cmake_policy)
 endif(COMMAND cmake_policy)
 
 
-OPTION(SUPER_BUILD "Enables the build to download and build delta3d and dtPhysics" OFF)
+OPTION(SUPER_BUILD "Enables the build to download and build delta3d" OFF)
 MARK_AS_ADVANCED(SUPER_BUILD)
 
 if (SUPER_BUILD)
@@ -166,21 +166,6 @@ endif()
 #This is so simcore itself won't get messed up with its own config
 set (SIMULATIONCORE_IGNORE_CONFIG_FILE ON)
 FIND_PACKAGE(SimulationCore REQUIRED)
-MESSAGE("Using the dtPhysics Physics Abstraction Layer (ODE, Bullet, PhysX).")
-
-FIND_PACKAGE(DTPhysics REQUIRED)
-
-IF (DTPHYSICS_FOUND)
-   #look for module loaders in dtPhysX CMakeModules
-   SET(CMAKE_MODULE_PATH "${DTPHYSICS_DIR}/CMakeModules;${CMAKE_MODULE_PATH}")
-
-   FIND_PACKAGE(Pal REQUIRED)
- 
-   INCLUDE_DIRECTORIES( ${PAL_INCLUDE_DIR} ${DTPHYSICS_INCLUDE_DIR} )
-   LINK_DIRECTORIES( ${DTPHYSICS_LIB_DIR} )
-ELSE ()
-   return()
-ENDIF ()
 
 FIND_PACKAGE(Delta3D REQUIRED)
 IF (DELTA3D_FOUND)
@@ -209,6 +194,9 @@ IF (DELTA3D_FOUND)
    FIND_PACKAGE(XercesC REQUIRED)
    FIND_PACKAGE(HAWKNL REQUIRED)
    FIND_PACKAGE(GNE REQUIRED)
+   FIND_PACKAGE(Pal REQUIRED)
+   INCLUDE_DIRECTORIES( ${PAL_INCLUDE_DIR} )
+   
    FIND_PACKAGE(Boost)
    
 
@@ -260,6 +248,7 @@ ELSE ()
    return()
 ENDIF ()
 
+
 # Make the headers visible to everything
 INCLUDE_DIRECTORIES(
     ${DELTA3D_INCLUDE_DIR}
@@ -276,6 +265,7 @@ INCLUDE_DIRECTORIES(
     ${XERCES_INCLUDE_DIR}
     ${Boost_INCLUDE_DIR}
     ${PYTHON_INCLUDE_PATH}
+    ${PAL_INCLUDE_DIR}
 )
 
 IF (APPLE)

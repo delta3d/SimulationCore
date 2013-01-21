@@ -13,5 +13,6 @@
     <contexts>
        <context path="../ProjectAssets_Demos"/>
        <context path="../../ProjectAssets_Shared"/>
+       <context path="../../../TerrainAssets"/>
     </contexts>
 </projectConfig>
