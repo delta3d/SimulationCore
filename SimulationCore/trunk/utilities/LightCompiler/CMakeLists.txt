@@ -21,7 +21,8 @@ LINK_WITH_VARIABLES(${PROG_NAME}
                                    DTCORE_LIBRARY
                                    DTGAME_LIBRARY
                                    DTABC_LIBRARY
-                                   DTAUDIO_LIBRARY                                   
+                                   DTAUDIO_LIBRARY
+                                   DTPHYSICS_LIBRARY
                                    OSG_LIBRARY
                                    OSGUTIL_LIBRARY
                                    OSGTEXT_LIBRARY
@@ -32,6 +33,5 @@ LINK_WITH_VARIABLES(${PROG_NAME}
 TARGET_LINK_LIBRARIES(${PROG_NAME} 
    ${OPENGL_LIBRARY}
    ${AGL_LIBRARY}
-   ${DTPHYSICS_LIBRARY}
 )
 
