@@ -76,11 +76,7 @@
 #include <osg/ApplicationUsage>
 #include <osg/ArgumentParser>
 
-#ifdef AGEIA_PHYSICS
-#include <NxAgeiaWorldComponent.h>
-#else
 #include <dtPhysics/physicscomponent.h>
-#endif
 
 using dtCore::RefPtr;
 using dtCore::ObserverPtr;
@@ -412,7 +408,7 @@ namespace StealthGM
          inputComp->SetConnectionParameters(mFederationExecutionName, fedFile, mFederateName, "", mRtiImplementation);
       }
 
-      std::cout << std::endl << "Setting Log Level to Notice" << std::endl << std::endl;
+      //std::cout << std::endl << "Setting Log Level to Notice" << std::endl << std::endl;
       osg::setNotifyLevel(osg::NOTICE);
    }
 
