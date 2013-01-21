@@ -45,7 +45,6 @@ SET(ep_common_args
 
 SET(external_projects
   Delta3D
-  dtPhysics
   )
   
 #-----------------------------------------------------------------------------
@@ -121,7 +120,7 @@ ENDFOREACH()
 
 
   SET(proj SimulationCore)
-  SET(proj_DEPENDENCIES delta3d dtPhysics)
+  SET(proj_DEPENDENCIES delta3d)
   SET(SimulationCore_DEPENDS ${proj})
 
   set(${proj}_BINARY_MODE BINARY_DIR ${CMAKE_BINARY_DIR}/../build)
@@ -140,10 +139,6 @@ ENDFOREACH()
       -DDELTA3D_INCLUDE_DIR:PATH=${DELTA3D_INCLUDE_DIR}
       -DDELTA3D_LIB_DIR:PATH=${DELTA3D_LIB_DIR}
       -DDELTA3D_EXT_DIR:PATH=${DELTA3D_EXT_DIR}
-      -DDTPHYSICS_DIR:PATH=${DTPHYSICS_DIR}
-      -DDTPHYSICS_INCLUDE_DIR:PATH=${DTPHYSICS_INCLUDE_DIR}
-      -DDTPHYSICS_LIB_DIR:PATH=${DTPHYSICS_LIB_DIR}
-      -DDTPHYSICS_EXT_DIR:PATH=${DTPHYSICS_EXT_DIR}
       -DQT_QMAKE_EXECUTABLE:FILEPATH=${QT_QMAKE_EXECUTABLE}
      SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}
      ${${proj}_BINARY_MODE}
