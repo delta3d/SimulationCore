@@ -165,6 +165,10 @@ endif()
 
 #This is so simcore itself won't get messed up with its own config
 set (SIMULATIONCORE_IGNORE_CONFIG_FILE ON)
+
+#Force the lib dir so it will generate the config file correctly without
+# getting the possibility of a searching mistake.
+set (SIMULATIONCORE_LIB_DIR ${CMAKE_BINARY_DIR}/lib CACHE FORCE "Path to the simulation core libraries" )
 FIND_PACKAGE(SimulationCore REQUIRED)
 
 FIND_PACKAGE(Delta3D REQUIRED)
