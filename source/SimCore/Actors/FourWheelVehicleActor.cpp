@@ -46,6 +46,8 @@
 #include <SimCore/Actors/InteriorActor.h>
 #include <SimCore/Actors/PortalActor.h>
 #include <SimCore/ActComps/WheelActComp.h>
+#include <SimCore/ActComps/AbstractWheeledVehicleInputActComp.h>
+#include <SimCore/ActComps/KeyboardWheeledVehicleInputActComp.h>
 #include <dtGame/drpublishingactcomp.h>
 #include <SimCore/PhysicsTypes.h>
 
@@ -57,8 +59,7 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////
       FourWheelVehicleActor ::FourWheelVehicleActor(BasePhysicsVehicleActorProxy& proxy)
       : BaseClass(proxy)
-      , mNumUpdatesUntilFullSteeringAngle(25)
-      , mCurrentSteeringAngleNormalized(0.0f)
+      , mCurrentSteeringAngleNormalized(0.0)
       , mSoundBrakeSquealSpeed(0.0)
       , mGearChangeLow(10.0)
       , mGearChangeMedium(20.0)
@@ -115,8 +116,9 @@ namespace SimCore
       {
          return static_cast<SimCore::FourWheelVehiclePhysicsActComp*> (GetPhysicsActComp());
       }
+      ///////////////////////////////////////////////////////////////////////////////////
 
-      DT_IMPLEMENT_ACCESSOR(FourWheelVehicleActor, int,   NumUpdatesUntilFullSteeringAngle);
+      /// Steering angle normalized from -1 to 1
       DT_IMPLEMENT_ACCESSOR(FourWheelVehicleActor, float, CurrentSteeringAngleNormalized);
 
       DT_IMPLEMENT_ACCESSOR(FourWheelVehicleActor, float, SoundBrakeSquealSpeed);
@@ -365,26 +367,35 @@ namespace SimCore
          GetFourWheelPhysicsActComp()->CalcMPH();
          float curMPH = GetFourWheelPhysicsActComp()->GetMPH();
 
+         dtCore::RefPtr<SimCore::ActComps::AbstractWheeledVehicleInputActComp> inputAC;
+         GetComponent(inputAC);
+
+         if (!inputAC.valid())
+         {
+            return;
+         }
+
+         mCurrentSteeringAngleNormalized = 0.0f;
+
          float accelFactor = 1.0f/(float(mLastGearChange) * 0.6f + 0.4f);
-         float accel = 0.0f;
+         float accel = inputAC->GetAcceleratorNormalized();
          float brake = 0.0f;
          if (! IsMobilityDisabled() && GetHasDriver())
          {
-            if (keyboard->GetKeyState('w') || keyboard->GetKeyState(osgGA::GUIEventAdapter::KEY_Up))
+            if (!dtUtil::Equivalent(accel, 0.0f, 0.01f))
             {
-               accel = accelFactor;
+               accel *= accelFactor;
                mStopMode = false;
-               if (curMPH > 0.0f)
+               if (curMPH > 0.0f && accel > 0.01f)
                {
                   mCruiseMode = true;
                   mCruiseSpeed = curMPH;
                }
-            }
-            else if (keyboard->GetKeyState('s') || keyboard->GetKeyState(osgGA::GUIEventAdapter::KEY_Down))
-            {
-               accel = -accelFactor;
-               mStopMode = false;
-               mCruiseMode = false;
+               else
+               {
+                  mCruiseMode = false;
+                  mCruiseSpeed = 0.0f;
+               }
             }
             else if (mCruiseMode) 
             {
@@ -396,21 +407,23 @@ namespace SimCore
                }
                else
                {
-                  // To keep the accel from going on/off, we use a VERY simple approximation. 
+                  // To keep the accel from going on/off, we use a simple approximation.
                   // Essentially, we try to keep the accel between 1.0 and 0.0, centered around
                   // the target cruisespeed (+/- 1% speed). It means we will rarely be exactly 
-                  // at our desired speed, but our vel won't keep changing. It settles pretty quickly.
+                  // at our desired speed, but our vel won't keep changing. It settles quickly.
                   float minTargetSpeed = mCruiseSpeed * 0.99f;
-                  float maxTargetSpeed = mCruiseSpeed * 1.01f;                  
+                  float maxTargetSpeed = mCruiseSpeed * 1.01f;
                   float cruiseAccelModifier = (maxTargetSpeed - curMPH) / (maxTargetSpeed - minTargetSpeed);                     
                   dtUtil::Clamp(cruiseAccelModifier, 0.0001f, 1.00f);
                   accel = accelFactor * cruiseAccelModifier;
                }
             }
 
+            brake = inputAC->GetBrakesNormalized();
+
             // If you hold the brake and the accelerator at the same time, it will make sure
             // you don't go into cruise mode, which it should not do.
-            if (mStopMode || keyboard->GetKeyState(osgGA::GUIEventAdapter::KEY_Space))
+            if (mStopMode || !dtUtil::Equivalent(brake, 0.0f, 0.01f))
             {
                brake = 1.0f;
                mCruiseMode = false;
@@ -420,36 +433,7 @@ namespace SimCore
                }
             }
 
-            float updateCountInSecs = float(mNumUpdatesUntilFullSteeringAngle) / 60.00f;
-            float angleChange = deltaTime / updateCountInSecs;
-            float recoverAngleChange = 2.0f * angleChange;
-
-            bool turnLeft = keyboard->GetKeyState('a') || keyboard->GetKeyState(osgGA::GUIEventAdapter::KEY_Left);
-            bool turnRight = keyboard->GetKeyState('d') || keyboard->GetKeyState(osgGA::GUIEventAdapter::KEY_Right);
-
-            // If you are turning the wheel or letting the wheel turn toward centered, then turn at double speed
-            if (!turnRight && mCurrentSteeringAngleNormalized < -recoverAngleChange)
-            {
-               mCurrentSteeringAngleNormalized += recoverAngleChange;
-            }
-            else if (!turnLeft && mCurrentSteeringAngleNormalized > recoverAngleChange)
-            {
-               mCurrentSteeringAngleNormalized -= recoverAngleChange;
-            }
-            else if (turnLeft)
-            {
-               mCurrentSteeringAngleNormalized += angleChange;
-            }
-            else if (turnRight)
-            {
-               mCurrentSteeringAngleNormalized -= angleChange;
-            }
-            else
-            {
-               mCurrentSteeringAngleNormalized = 0.0f;
-            }
-
-            dtUtil::Clamp(mCurrentSteeringAngleNormalized, -1.0f, 1.0f);
+            mCurrentSteeringAngleNormalized = inputAC->GetSteeringAngleNormalized();
 
             if (keyboard->GetKeyState('r') || keyboard->GetKeyState('R'))
             {
@@ -473,7 +457,6 @@ namespace SimCore
             brake = 1.0f;
             mStopMode = true;
             mCruiseMode = false;
-            mCurrentSteeringAngleNormalized = 0.0f;
          }
          GetFourWheelPhysicsActComp()->Control(accel, mCurrentSteeringAngleNormalized, brake);
 
@@ -540,10 +523,6 @@ namespace SimCore
          typedef dtDAL::PropertyRegHelper<FourWheelVehicleActorProxy&, FourWheelVehicleActor> PropRegType;
          PropRegType propRegHelper(*this, actor, VEH_GROUP);
          PropRegType propRegHelperSound(*this, actor, SOUND_GROUP);
-
-         DT_REGISTER_PROPERTY_WITH_LABEL(NumUpdatesUntilFullSteeringAngle, "Num updates until full steering angle",
-                  "Number of update cycles to go from straight to full turn angle when using the keyboard.",
-                  PropRegType, propRegHelper);
 
          DT_REGISTER_RESOURCE_PROPERTY_WITH_NAME(dtDAL::DataType::STATIC_MESH, VehicleInteriorModel,
                   "VEHICLE_INSIDE_MODEL", "Vehicle Interior Model",
@@ -622,6 +601,11 @@ namespace SimCore
          if (!HasComponent(dtPhysics::PhysicsActComp::TYPE))
          {
             AddComponent(*new SimCore::FourWheelVehiclePhysicsActComp());
+         }
+
+         if (!HasComponent(SimCore::ActComps::AbstractWheeledVehicleInputActComp::TYPE))
+         {
+            AddComponent(*new SimCore::ActComps::KeyboardWheeledVehicleInputActComp());
          }
 
          BaseClass::BuildActorComponents();

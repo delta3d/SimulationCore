@@ -71,8 +71,6 @@ namespace SimCore
 
             SimCore::FourWheelVehiclePhysicsActComp* GetFourWheelPhysicsActComp() const;
 
-            /// The number of updates to go from straight to full turn angle
-            DT_DECLARE_ACCESSOR(int, NumUpdatesUntilFullSteeringAngle);
             /// Steering angle normalized from -1 to 1
             DT_DECLARE_ACCESSOR(float, CurrentSteeringAngleNormalized);
 
