@@ -8,7 +8,9 @@
 * Norfolk, VA 23513
 * (757) 857-5670, www.alionscience.com
 *
-* @author Curtiss Murphy
+* David Guthrie
+* Brad Anderegg
+* Curtiss Murphy
 */
 #include <prefix/SimCorePrefix.h>
 #include <ActorRegistry.h>
