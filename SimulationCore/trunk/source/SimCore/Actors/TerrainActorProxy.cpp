@@ -279,6 +279,7 @@ namespace SimCore
       , mNeedToLoad(false)
       , mLoadTerrainMeshWithCaching(false)
       {
+         SetName(DEFAULT_NAME);
       }
 
       /////////////////////////////////////////////////////////////////////////////
