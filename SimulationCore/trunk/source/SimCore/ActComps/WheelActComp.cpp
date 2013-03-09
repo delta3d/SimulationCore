@@ -176,6 +176,11 @@ namespace SimCore
                }
                osg::Matrix relMat = xform * osg::Matrix::inverse(worldMat);
 
+               dtCore::Transform removeScale;
+               removeScale.Set(relMat);
+               removeScale.Rescale(osg::Vec3(1.0f, 1.0f, 1.0f));
+               removeScale.Get(relMat);
+
                osgSim::DOFTransform* dof = dynamic_cast<osgSim::DOFTransform*>(nodeToMove);
                if (dof != NULL)
                {

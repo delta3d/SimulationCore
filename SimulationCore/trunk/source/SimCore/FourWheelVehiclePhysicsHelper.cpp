@@ -28,6 +28,7 @@
 
 #include <SimCore/ActComps/WheelActComp.h>
 #include <SimCore/Actors/IGActor.h>
+#include <SimCore/Actors/BaseEntity.h>
 
 //#else
 //#include <dtPhysics/physicscomponent.h>
@@ -185,7 +186,7 @@ namespace SimCore
    /// @retval                  false if model wasn't created because of some error.
 
    bool FourWheelVehiclePhysicsActComp::CreateVehicle(const dtCore::Transform& transformForRot,
-            const osg::Node& bodyNode)
+            osg::Node& bodyNode, const osg::Vec3& scale)
    {
       dtGame::GameActor* ga = NULL;
       GetOwner(ga);
@@ -218,6 +219,12 @@ namespace SimCore
       GetLocalMatrix(bodyNode, bodyOffset);
       //To allow the developer to shift the center of mass.
       bodyOffset.setTrans(bodyOffset.getTrans() - GetMainPhysicsObject()->GetOriginOffset());
+      osg::Vec3d newScaledTrans = bodyOffset.getTrans();
+      for (unsigned k = 0; k < 3; ++k)
+      {
+         newScaledTrans[k] *= scale[k];
+      }
+      bodyOffset.setTrans(newScaledTrans);
 
       float frontDamping = 0.0f, rearDamping = 0.0f, frontSpring = 0.0f, rearSpring = 0.0f;
       std::vector<osg::Matrix> WheelMatrix;
@@ -238,8 +245,21 @@ namespace SimCore
          {
             osg::Matrix wheelModelRelative;
             osg::Vec2 widthRadius = curAxle->GetWheelWidthAndRadius();
+            widthRadius.x() *= scale.x();
+            // z is up, and radius effects the vehicle height, though if z and y don't match
+            // it won't really look right.
+            widthRadius.y() *= scale.z();
             WheelSizes.push_back(widthRadius);
             curAxle->GetWheelBaseTransform(j, wheelModelRelative, false);
+
+            newScaledTrans = wheelModelRelative.getTrans();
+            // Scale the wheel transform based on the scale passed in.
+            for (unsigned k = 0; k < 3; ++k)
+            {
+               newScaledTrans[k] *= scale[k];
+            }
+            wheelModelRelative.setTrans(newScaledTrans);
+
             WheelMatrix.push_back(wheelModelRelative);
             WheelVec.push_back(WheelMatrix.back().getTrans() - bodyOffset.getTrans());
 
@@ -332,7 +352,7 @@ namespace SimCore
 
       }
 
-      CreateChassis(transformForRot, bodyNode);
+      CreateChassis(transformForRot, bodyNode, scale);
 
       BaseWheeledVehiclePhysicsActComp::TireParameters tp;
       BaseWheeledVehiclePhysicsActComp::SuspensionParameters sp;
@@ -597,6 +617,9 @@ namespace SimCore
 
       dtUtil::NodeCollector* nodeCollector = igActor->GetNodeCollector();
 
+      dtCore::Vec3ActorProperty* scaleProp = NULL;
+      igActor->GetGameActorProxy().GetProperty(SimCore::Actors::BaseEntityActorProxy::PROPERTY_DEFAULT_SCALE, scaleProp);
+
       osg::Node* chassis = NULL;
       if (nodeCollector != NULL)
       {
@@ -623,7 +646,13 @@ namespace SimCore
 
          GetMainPhysicsObject()->SetVisualToBodyTransform(offsetXform);
 
-         CreateVehicle(ourTransform, *chassis);
+         osg::Vec3 scale(0.0f, 0.0f, 0.0f);
+         if (scaleProp != NULL)
+         {
+            scale = scaleProp->GetValue();
+         }
+
+         CreateVehicle(ourTransform, *chassis, scale);
          GetMainPhysicsObject()->SetTransformAsVisual(ourTransform);
       }
 
