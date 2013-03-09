@@ -90,7 +90,8 @@ namespace SimCore
       /**
       * /brief Purpose : To create the chassis for the physics.
       */
-      virtual bool CreateChassis(const dtCore::Transform& transformForRot, const osg::Node& bodyNode);
+      virtual bool CreateChassis(const dtCore::Transform& transformForRot,
+               osg::Node& bodyNode, const osg::Vec3& scale);
 
 
       //////////////////////////////////////////////////////////////////////////////////////

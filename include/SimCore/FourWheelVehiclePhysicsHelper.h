@@ -60,7 +60,11 @@ namespace SimCore
       void Steer(float normalize_wheel_angle);
       void ApplyBrake(float normalized_brake);
 
-      bool CreateVehicle(const dtCore::Transform& transformForRot, const osg::Node& bodyNode);
+      /**
+       * Creates the vehicle body and dynamics rig.  you can pass in a scale
+       */
+      bool CreateVehicle(const dtCore::Transform& transformForRot,
+               osg::Node& bodyNode, const osg::Vec3& scale);
 
 
       //////////////////////////////////////////////////////////////////

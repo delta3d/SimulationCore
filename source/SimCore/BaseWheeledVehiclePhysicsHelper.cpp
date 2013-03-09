@@ -144,13 +144,20 @@ namespace SimCore
    }
 
    /////////////////////////////////////////////////////////
-   bool BaseWheeledVehiclePhysicsActComp::CreateChassis(const dtCore::Transform& transformForRot, const osg::Node& bodyNode)
+   bool BaseWheeledVehiclePhysicsActComp::CreateChassis(const dtCore::Transform& transformForRot,
+            osg::Node& bodyNode, const osg::Vec3& scale)
    {
-      osg::Matrix BodyMatrix;
-      GetLocalMatrix(bodyNode, BodyMatrix);
+      dtCore::Transform xform;
+      xform.Rescale(scale);
+
+      osg::Matrix m;
+      xform.Get(m);
+
+      osg::ref_ptr<osg::MatrixTransform> mt = new osg::MatrixTransform(m);
+      mt->addChild(&bodyNode);
 
       GetMainPhysicsObject()->SetTransform(transformForRot);
-      GetMainPhysicsObject()->CreateFromProperties(&bodyNode);
+      GetMainPhysicsObject()->CreateFromProperties(mt);
 
       dtGame::GameActor* ga = NULL;
       GetOwner(ga);
