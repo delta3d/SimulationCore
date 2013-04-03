@@ -19,6 +19,7 @@
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
  * @author David Guthrie
+ * @author Bradley Anderegg
  */
 #include <prefix/SimCorePrefix.h>
 #include <SimCore/Actors/Human.h>
@@ -772,8 +773,14 @@ namespace SimCore
             const std::string& nameToSend = wrapper->GetCoreMeshName(meshID);
             if (GetContainsWeaponName(tokens, nameToSend))
             {
-               dtUtil::ConfigProperties& configParams = GetGameActorProxy().GetGameManager()->GetConfiguration();
-               bool alwaysShowWeapon = dtUtil::ToType<bool>(configParams.GetConfigPropertyValue(CONFIG_ALWAYS_SHOW_WEAPON, "false"));
+				//in the editor environment there may be no game manager
+			   bool alwaysShowWeapon = false;
+			   if (!GetGameActorProxy().IsInSTAGE())
+			   {
+				   dtUtil::ConfigProperties& configParams = GetGameActorProxy().GetGameManager()->GetConfiguration();
+				   alwaysShowWeapon = dtUtil::ToType<bool>(configParams.GetConfigPropertyValue(CONFIG_ALWAYS_SHOW_WEAPON, "false"));
+			   }
+               
 
                bool visibleWeapon = alwaysShowWeapon || (*mPrimaryWeaponStateEnum == HumanActorProxy::WeaponStateEnum::FIRING_POSITION)
                   || (*mPrimaryWeaponStateEnum == HumanActorProxy::WeaponStateEnum::DEPLOYED);
