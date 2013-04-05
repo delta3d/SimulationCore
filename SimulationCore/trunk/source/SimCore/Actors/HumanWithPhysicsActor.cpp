@@ -212,7 +212,25 @@ namespace SimCore
 
             po->CreateFromProperties();
          }
+		 else
+		 {
+			dtCore::Transform xform;
+			GetTransform(xform);
+			
+			osg::Vec3 offset = xform.GetTranslation();
+			offset[2] += 0.9f; //so the character is centered at its origin
+			xform.SetTranslation(offset);
 
+			dtCore::RefPtr<dtPhysics::Geometry> charShape = dtPhysics::Geometry::CreateCapsuleGeometry(xform, 1.8f, 0.5f, 100.0f);
+			mCharacterController = new dtPhysics::CharacterController(*charShape);
+			mCharacterController->SetStepHeight(0.3);
+			mCharacterController->SetSkinWidth(0.04);
+			mCharacterController->SetMaxInclineAngle(60.0);
+			mCharacterController->Init();
+			
+			GetPhysicsActComp()->SetPostPhysicsCallback(
+               dtPhysics::PhysicsActComp::UpdateCallback(this, &HumanWithPhysicsActor::PostPhysicsUpdate));
+		 }
       }
 
       ////////////////////////////////////////////////////////////////////
@@ -226,14 +244,56 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////
       void HumanWithPhysicsActor::PrePhysicsUpdate()
       {
-         dtPhysics::PhysicsObject* physObj = GetPhysicsActComp()->GetMainPhysicsObject();
-         if (physObj != NULL)
-         {
-            dtCore::Transform xform;
-            GetTransform(xform);
-            physObj->SetTransformAsVisual(xform);
-         }
+		   dtCore::Transform xform;
+		   GetTransform(xform);
+
+		  if(IsRemote())
+		  {
+			 dtPhysics::PhysicsObject* physObj = GetPhysicsActComp()->GetMainPhysicsObject();
+			 if (physObj != NULL)
+			 {
+				physObj->SetTransformAsVisual(xform);
+			 }
+		  }
+		  else if (mCharacterController.valid())
+		  {
+			  osg::Vec3 offset = xform.GetTranslation();
+			  offset[2] += 0.9f; //so the character is centered at its origin
+
+			  mCharacterController->Warp(offset);
+		  }
       }
+
+      ///////////////////////////////////////////////////////////////////////////////////
+      void HumanWithPhysicsActor::PostPhysicsUpdate()
+      {
+         // This is ONLY called if we are LOCAL (we put the check here just in case... )
+         if (!IsRemote())
+         {
+			 
+		     dtCore::Transform xform;
+		     GetTransform(xform);
+
+			 osg::Vec3 newPos = mCharacterController->GetTranslation();
+			 newPos[2] -= 0.9f;
+			 xform.SetTranslation(newPos);
+
+			 SetTransform(xform);
+         }
+
+      }
+
+      //////////////////////////////////////////////////////////
+	  dtPhysics::CharacterController* HumanWithPhysicsActor::GetCharacterController()
+	  {
+		  return mCharacterController.get();
+	  }
+      
+	  //////////////////////////////////////////////////////////
+	  const dtPhysics::CharacterController* HumanWithPhysicsActor::GetCharacterController() const
+	  {
+		  return mCharacterController.get();
+	  }
 
       //////////////////////////////////////////////////////////
       // Proxy code
@@ -263,13 +323,16 @@ namespace SimCore
          {
             dtCore::RefPtr<dtPhysics::PhysicsActComp> physAC = new dtPhysics::PhysicsActComp();
 
-            dtCore::RefPtr<dtPhysics::PhysicsObject> physicsObject = new dtPhysics::PhysicsObject("Body");
-            physicsObject->SetPrimitiveType(dtPhysics::PrimitiveType::CYLINDER);
-            physicsObject->SetMechanicsType(dtPhysics::MechanicsType::KINEMATIC);
-            physicsObject->SetCollisionGroup(SimCore::CollisionGroup::GROUP_HUMAN_LOCAL);
-            physicsObject->SetMass(100.0f);
-            physicsObject->SetExtents(osg::Vec3(1.8f, 0.5f, 0.0f));
-            physAC->AddPhysicsObject(*physicsObject);
+			if(IsRemote())
+			{
+				dtCore::RefPtr<dtPhysics::PhysicsObject> physicsObject = new dtPhysics::PhysicsObject("Body");
+				physicsObject->SetPrimitiveType(dtPhysics::PrimitiveType::CYLINDER);
+				physicsObject->SetMechanicsType(dtPhysics::MechanicsType::KINEMATIC);
+				physicsObject->SetCollisionGroup(SimCore::CollisionGroup::GROUP_HUMAN_LOCAL);
+				physicsObject->SetMass(100.0f);
+				physicsObject->SetExtents(osg::Vec3(1.8f, 0.5f, 0.0f));
+				physAC->AddPhysicsObject(*physicsObject);
+			}
 
             AddComponent(*physAC);
          }
