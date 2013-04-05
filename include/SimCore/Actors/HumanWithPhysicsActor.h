@@ -83,8 +83,14 @@ namespace SimCore
             virtual void OnEnteredWorld();
 
             void PrePhysicsUpdate();
+	        void PostPhysicsUpdate();
+
             // returns the physics helper for use
             dtPhysics::PhysicsActComp* GetPhysicsActComp();
+
+			//only valid with humans that are local, use the character controller to move the human
+			dtPhysics::CharacterController* GetCharacterController();
+			const dtPhysics::CharacterController* GetCharacterController() const;
 
          private:
 
@@ -102,6 +108,8 @@ namespace SimCore
             bool        mNotifyChangePosition;
             bool        mNotifyChangeOrient;
             bool        mNotifyChangeVelocity;
+
+			dtCore::RefPtr<dtPhysics::CharacterController> mCharacterController;
       };
 
       // proxy
