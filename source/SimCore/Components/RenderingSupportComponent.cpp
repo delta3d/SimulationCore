@@ -133,6 +133,11 @@ namespace SimCore
       const unsigned RenderingSupportComponent::ADDITIONAL_CAMERA_CULL_MASK = 0x7FFFFFFF;
       const unsigned RenderingSupportComponent::MAIN_CAMERA_ONLY_FEATURE_NODE_MASK = 0x80000000;
 
+	  const unsigned RenderingSupportComponent::RECEIVE_SHADOW_NODE_MASK = 1 << 30;
+      const unsigned RenderingSupportComponent::CAST_SHADOW_NODE_MASK = 1 << 29; 
+      const unsigned RenderingSupportComponent::DISABLE_SHADOW_NODE_MASK = ~(RECEIVE_SHADOW_NODE_MASK | CAST_SHADOW_NODE_MASK);
+
+
       //dyamic light constructor
       RenderingSupportComponent::DynamicLight::DynamicLight()
          : mId(++mLightCounter)

@@ -33,6 +33,7 @@
 #include <SimCore/Actors/PhysicsParticleSystemActor.h>
 #include <SimCore/Actors/IGEnvironmentActor.h>
 #include <SimCore/Components/ParticleManagerComponent.h>
+#include <SimCore/Components/RenderingSupportComponent.h>
 #include <osgParticle/ParticleSystem>
 #include <osgParticle/ModularProgram>
 #include <osgParticle/Operator>
@@ -408,6 +409,8 @@ namespace SimCore
          {
             return false;
          }
+
+		 particles.GetOSGNode()->setNodeMask(SimCore::Components::RenderingSupportComponent::DISABLE_SHADOW_NODE_MASK);
 
          bool success = mIdToInfoMap.insert(
             std::make_pair( particles.GetUniqueId(), new ParticleInfo( particles, attrFlags, priority ) )
