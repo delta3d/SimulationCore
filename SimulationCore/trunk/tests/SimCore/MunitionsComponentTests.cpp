@@ -29,6 +29,7 @@
 #include <cppunit/extensions/HelperMacros.h>
 
 #include <osg/io_utils>
+#include <osgSim/DOFTransform>
 #include <dtCore/system.h>
 #include <dtCore/refptr.h>
 #include <dtCore/scene.h>
@@ -2294,11 +2295,11 @@ namespace SimCore
          testDOF->setName("TestDOF");
          dtCore::ParticleSystem* flash = effect->GetFlash();
          CPPUNIT_ASSERT_MESSAGE("WeaponEffect should have a NULL DOF by default",
-            effect->GetDOF() == NULL );
+            effect->GetParentNode() == NULL );
          CPPUNIT_ASSERT_MESSAGE("WeaponEffect::Attach should be successful with a valid owner",
             effect->Attach( testDOF.get() ) );
          CPPUNIT_ASSERT_MESSAGE("WeaponEffect::Attach should have assigned the DOF transform",
-            effect->GetDOF() == testDOF.get() );
+            effect->GetParentNode() == testDOF.get() );
          CPPUNIT_ASSERT( testDOF->getNumChildren() == 1 );
          CPPUNIT_ASSERT( flash->GetParent() != NULL );
 
@@ -2310,7 +2311,7 @@ namespace SimCore
          // Test Detach
          CPPUNIT_ASSERT( effect->Detach() );
          CPPUNIT_ASSERT( effect->GetOwner() == NULL );
-         CPPUNIT_ASSERT( effect->GetDOF() == NULL );
+         CPPUNIT_ASSERT( effect->GetParentNode() == NULL );
          CPPUNIT_ASSERT( testDOF->getNumChildren() == 0 );
          CPPUNIT_ASSERT( flash->GetParent() == NULL );
 
@@ -2318,14 +2319,14 @@ namespace SimCore
          CPPUNIT_ASSERT_MESSAGE("WeaponEffect::Attach should NOT be successful with an invalid owner",
             ! effect->Attach( testDOF.get() ) );
          CPPUNIT_ASSERT_MESSAGE("WeaponEffect::Attach should NOT have assigned a DOF transform if Attach failed",
-            effect->GetDOF() == NULL );
+            effect->GetParentNode() == NULL );
 
          // Re-attach to test Clear later
          effect->SetOwner( entity );
          CPPUNIT_ASSERT_MESSAGE("WeaponEffect::Attach should be successful with a valid owner, again",
             effect->Attach( testDOF.get() ) );
          CPPUNIT_ASSERT_MESSAGE("WeaponEffect::Attach should have assigned the DOF transform, again",
-            effect->GetDOF() == testDOF.get() );
+            effect->GetParentNode() == testDOF.get() );
 
          // Test setting Flash directly
          dtCore::RefPtr<dtCore::ParticleSystem> particles = effect->GetFlash();
@@ -2337,7 +2338,7 @@ namespace SimCore
          // Test Clear
          effect->Clear();
          CPPUNIT_ASSERT( effect->GetOwner() == NULL );
-         CPPUNIT_ASSERT( effect->GetDOF() == NULL );
+         CPPUNIT_ASSERT( effect->GetParentNode() == NULL );
          CPPUNIT_ASSERT( effect->GetFlash() == NULL );
          CPPUNIT_ASSERT( effect->GetSound() == NULL );
 
@@ -2346,14 +2347,14 @@ namespace SimCore
          effect->Attach( testDOF.get() );
          // --- Prudently check that assignment still works after clearing
          CPPUNIT_ASSERT( effect->GetOwner() != NULL );
-         CPPUNIT_ASSERT( effect->GetDOF() != NULL );
+         CPPUNIT_ASSERT( effect->GetParentNode() != NULL );
          entity = NULL;
          proxy = NULL;
          testDOF = NULL;
          CPPUNIT_ASSERT_MESSAGE("WeaponEffect should NOT hold onto entity memory",
             effect->GetOwner() == NULL );
          CPPUNIT_ASSERT_MESSAGE("WeaponEffect should NOT hold onto DOF memory",
-            effect->GetDOF() == NULL );
+            effect->GetParentNode() == NULL );
       }
 
       //////////////////////////////////////////////////////////////////////////

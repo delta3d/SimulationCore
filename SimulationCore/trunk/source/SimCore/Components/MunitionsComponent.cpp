@@ -55,7 +55,6 @@
 #include <SimCore/Actors/Platform.h>
 #include <SimCore/Actors/MunitionTypeActor.h>
 #include <SimCore/Actors/StealthActor.h>
-#include <SimCore/Actors/WeaponFlashActor.h>
 #include <SimCore/Actors/DetonationActor.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
 #include <SimCore/Actors/PagedTerrainPhysicsActor.h>
@@ -81,9 +80,8 @@ namespace SimCore
          : dtGame::GMComponent(name)
          , mMunitionConfigFileName("Configs:MunitionsConfig.xml")
          , mMaximumActiveMunitions(200U)
-         , mIsector(new dtCore::BatchIsector)
-         //, mLastDetonationTime(0.0f)
          , mMunitionTypeTable(new MunitionTypeTable())
+         , mIsector(new dtCore::BatchIsector)
          , mEffectsManager(new WeaponEffectsManager)
       {
       }
@@ -562,62 +560,18 @@ namespace SimCore
 
          // Prevent further processing if no visible entity was found to have
          // fired the shot.
-         if( ! proxy.valid() ) { return; }
+         if ( ! proxy.valid()) { return; }
 
          // Access the entity directly instead of though a proxy
-         SimCore::Actors::Platform* entity = dynamic_cast<SimCore::Actors::Platform*> (&proxy->GetGameActor());
+         SimCore::Actors::BaseEntity* entity = NULL;
+         proxy->GetDrawable(entity);
 
-         if( entity == NULL ) { return; }
+         if (entity == NULL) { return; }
 
-         // Access the node collector that will be used for finding DOF attach
-         // points on the entity's model geometry.
-         dtUtil::NodeCollector* nodeCollector = entity->GetNodeCollector();
-
-         if( nodeCollector == NULL ) { return; }
-
-         // Prepare variable to be used in the weapons cycling loop
-         float curDotProd = -1.0f;
-         float lastDotProd = -1.0f;
-         osg::Vec3 trajectoryNormal( message.GetInitialVelocityVector() );
-         trajectoryNormal.normalize();
-         osgSim::DOFTransform* curDof = NULL;
-         osgSim::DOFTransform* bestDof = NULL;
-
-         // Loop though and find a weapon on the entity's model that closely matches
-         // the fired munition's initial fired direction. The weapon that matches
-         // the direction the closest will be assigned the flash and sound effects.
-         int limit = nodeCollector->GetTransformNodeMap().size();
-         for( int weapon = 1; weapon <= limit; ++weapon )
-         {
-            // DOF's will have an assumed nomenclature in the format of
-            // "hotspot_" followed by a 2 digit number, starting at one.
-            std::stringstream ss;
-            ss << "hotspot_" << (weapon < 10 ? "0" : "") << weapon;
-            curDof = nodeCollector->GetDOFTransform(ss.str());
-            if( curDof == NULL ) { continue; }
-
-            // If there is more than one weapon, compare current the weapon's
-            // direction with the munition's trajectory
-            if( limit > 1 )
-            {
-               osg::Matrix mtx;
-               osg::Vec3 hpr;
-               hpr = curDof->getCurrentHPR();
-               dtUtil::MatrixUtil::HprToMatrix( mtx, hpr );
-               osg::Vec3 weaponDirection( mtx.ptr()[8], mtx.ptr()[9], mtx.ptr()[10] );
-               weaponDirection.normalize();
-               curDotProd = weaponDirection * trajectoryNormal;
-            }
-
-            if( bestDof == NULL || curDotProd > lastDotProd )
-            {
-               bestDof = curDof;
-               lastDotProd = curDotProd;
-            }
-         }
+         osg::Group* bestNode = entity->GetWeaponMuzzleForDirection(message.GetInitialVelocityVector());
 
          // Attach a flash effect if a DOF was found.
-         if( bestDof != NULL )
+         if( bestNode != NULL )
          {
             // Get the player's location in the world so that sound effects can
             // be attenuated when created in 3D space.
@@ -627,7 +581,7 @@ namespace SimCore
             playerXform.GetTranslation(playerPos);
             // Initiate the weapon effect
             mEffectsManager->ApplyWeaponEffect(
-               *entity, bestDof, *effects, playerPos );
+               *entity, bestNode, *effects, playerPos );
          }
 
          // Place tracers into the scene
@@ -661,11 +615,11 @@ namespace SimCore
                   effectRequest->SetOwner( entity );
                   effectRequest->SetMunitionModelFile( munitionType.GetModel() );
 
-                  if( entity != NULL && bestDof != NULL )
+                  if( entity != NULL && bestNode != NULL )
                   {
                      // ...from the fire point on the firing entity.
                      osg::Matrix mtx;
-                     entity->GetAbsoluteMatrix( bestDof, mtx );
+                     entity->GetAbsoluteMatrix( bestNode, mtx );
 
                      effectRequest->SetFirePoint( mtx.getTrans() );
                      mEffectsManager->AddMunitionEffectRequest( effectRequest );

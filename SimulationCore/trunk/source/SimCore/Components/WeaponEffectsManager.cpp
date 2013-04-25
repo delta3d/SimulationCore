@@ -726,15 +726,15 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      osgSim::DOFTransform* WeaponEffect::GetDOF()
+      osg::Group* WeaponEffect::GetParentNode()
       {
-         return mDOF.get();
+         return mParentNode.get();
       }
 
       //////////////////////////////////////////////////////////////////////////
-      const osgSim::DOFTransform* WeaponEffect::GetDOF() const
+      const osg::Group* WeaponEffect::GetParentNode() const
       {
-         return mDOF.get();
+         return mParentNode.get();
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -803,22 +803,20 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      bool WeaponEffect::Attach( osgSim::DOFTransform* dof )
+      bool WeaponEffect::Attach( osg::Group* parent )
       {
          if( ! mOwner.valid() ) { return false; }
 
          // Remove this from the owner in case it is already attached
          mOwner->RemoveChild( this );
 
-         bool success = false;
-
-         success = mOwner->AddChild( this );
+         bool success = mOwner->AddChild( this );
 
          if( success )
          {
-            mDOF = dof;
+            mParentNode = parent;
 
-            if( mDOF.valid() )
+            if( mParentNode.valid() )
             {
                // Set the parent of the flash explicitly.
                // This will be used like a boolean to determine if the flash has
@@ -826,12 +824,12 @@ namespace SimCore
                if( mFlash.valid() && mFlash->GetParent() == NULL )
                {
                   mFlash->SetParent( this );
-                  mDOF->addChild( mFlash->GetOSGNode() );
+                  mParentNode->addChild( mFlash->GetOSGNode() );
                }
                if( mSound.valid() && mSound->GetParent() == NULL )
                {
                   mSound->SetParent( this );
-                  mDOF->addChild( mSound->GetOSGNode() );
+                  mParentNode->addChild( mSound->GetOSGNode() );
                }
             }
          }
@@ -842,20 +840,20 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       bool WeaponEffect::Detach()
       {
-         if( mDOF.valid() )
+         if( mParentNode.valid() )
          {
             if( mFlash.valid() && mFlash->GetParent() != NULL )
             {
-               mDOF->removeChild( mFlash->GetOSGNode() );
+               mParentNode->removeChild( mFlash->GetOSGNode() );
                mFlash->SetParent( NULL );
             }
             if( mSound.valid() && mSound->GetParent() != NULL )
             {
-               mDOF->removeChild( mSound->GetOSGNode() );
+               mParentNode->removeChild( mSound->GetOSGNode() );
                mSound->SetParent( NULL );
             }
          }
-         mDOF = NULL;
+         mParentNode = NULL;
 
          if( ! mOwner.valid() ) { return false; }
 
@@ -1077,7 +1075,7 @@ namespace SimCore
 
       //////////////////////////////////////////////////////////////////////////
       bool WeaponEffectsManager::ApplyWeaponEffect( SimCore::Actors::BaseEntity& owner,
-         osgSim::DOFTransform* ownerDOF,
+         osg::Group* ownerNode,
          const SimCore::Actors::MunitionEffectsInfoActor& effectsInfo, const osg::Vec3& listenerLocation )
       {
          // If a limit on effects has been set, avoid adding more if the
@@ -1122,7 +1120,7 @@ namespace SimCore
             mEntityToEffectMap.insert( std::make_pair( objectId, newEffect.get() ) );
          }
 
-         bool success = newEffect->Attach( ownerDOF );
+         bool success = newEffect->Attach( ownerNode );
 
          // --- DEBUG --- START --- //
          //std::cout << "\nWeaponEffectsManager " << (foundEffect?"Inserting":"Updating")

@@ -29,7 +29,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include <SimCore/Export.h>
 #include <osg/Referenced>
-#include <osgSim/DOFTransform>
 #include <dtCore/batchisector.h>
 #include <dtCore/observerptr.h>
 #include <dtUtil/refstring.h>
@@ -251,9 +250,9 @@ namespace SimCore
             void SetVisible( bool visible );
             bool IsVisible() const;
 
-            // Access the referenced DOF that was set via Attach
-            osgSim::DOFTransform* GetDOF();
-            const osgSim::DOFTransform* GetDOF() const;
+            // Access the referenced parent node that was set via Attach
+            osg::Group* GetParentNode();
+            const osg::Group* GetParentNode() const;
 
             // Get the time since the flash effect was executed.
             // This time is used by the WeaponEffectsManager to determine
@@ -295,13 +294,13 @@ namespace SimCore
             void Update( float timeDelta );
 
             // Attach this effects object to the owner that was set.
-            // If a DOF is specified, this object will attempt to attach directly
-            // to the DOF rather than the owner.
-            // @param dof The DOF of the owner's geometry to which this effects
-            //        object should attach. If the dof is NULL, direct attachment
+            // If a parent node is specified, this object will attempt to attach directly
+            // to the parent node rather than the owner.
+            // @param parent The node of the owner's scene graph to which this effects
+            //        object should attach. If the parent node is NULL, direct attachment
             //        to the owner will be attempted.
             // @return TRUE if the attachment process was successful.
-            bool Attach( osgSim::DOFTransform* dof );
+            bool Attach( osg::Group* parent );
 
             // Detach this object from the owner and its associated DOF.
             // @return TRUE if the detachment process was successful.
@@ -343,7 +342,7 @@ namespace SimCore
             dtCore::RefPtr<dtAudio::Sound> mSound;
             dtCore::RefPtr<dtCore::ParticleSystem> mFlash;
             dtCore::ObserverPtr<SimCore::Actors::BaseEntity> mOwner;
-            osg::observer_ptr<osgSim::DOFTransform> mDOF;
+            osg::observer_ptr<osg::Group> mParentNode;
             dtCore::ObserverPtr<dtGame::GameManager> mGM; // for accessing the rendering support component (safer using GM)
       };
 
@@ -393,7 +392,7 @@ namespace SimCore
 
             // Update or create a WeaponEffect for the the specified owner entity.
             // @param owner The entity that will have the effects attached
-            // @param ownerDOF The DOF of the entity's geometry to which the effects
+            // @param ownerNode The parent node of the drawable's scene graph to which the effects
             //        object should be attached directly.
             // @param effectsInfo The effects info that contains file paths to
             //        the sound and flash effects needed by a new effects object.
@@ -402,7 +401,7 @@ namespace SimCore
             // @return TRUE if the effect object was successfully created and attached.
             bool ApplyWeaponEffect(
                SimCore::Actors::BaseEntity& owner,
-               osgSim::DOFTransform* ownerDOF, 
+               osg::Group* ownerNode,
                const SimCore::Actors::MunitionEffectsInfoActor& effectsInfo,
                const osg::Vec3& listenerLocation );
 
