@@ -76,6 +76,9 @@
 #include <UnitTestMain.h>
 #include <dtABC/application.h>
 
+#include <osg/MatrixTransform>
+#include <osgSim/DOFTransform>
+
 using dtCore::RefPtr;
 using dtCore::ObserverPtr;
 
@@ -100,6 +103,8 @@ class BaseEntityActorProxyTests : public CPPUNIT_NS::TestFixture
       CPPUNIT_TEST(TestDetonationActorProxy);
       CPPUNIT_TEST(TestDetonationSoundDelay);
       CPPUNIT_TEST(TestBaseWaterActorProxy);
+      CPPUNIT_TEST(TestFindMuzzleNodes);
+      CPPUNIT_TEST(TestFindMuzzleNodesWithDirection);
 
    CPPUNIT_TEST_SUITE_END();
 
@@ -123,6 +128,8 @@ public:
    void TestDetonationActorProxy();
    void TestDetonationSoundDelay();
    void TestBaseWaterActorProxy();
+   void TestFindMuzzleNodes();
+   void TestFindMuzzleNodesWithDirection();
 
 private:
    void TestScaleMagnification(SimCore::Actors::BaseEntityActorProxy&);
@@ -1371,5 +1378,82 @@ void BaseEntityActorProxyTests::TestBaseWaterActorProxy()
    CPPUNIT_ASSERT( constWaterActor->GetHeightAndNormalAtPoint( detectPoint, testHeight, testNormal ) );
    CPPUNIT_ASSERT( testHeight == testValue );
    CPPUNIT_ASSERT( testNormal == worldAxixZ );
+}
+
+void BaseEntityActorProxyTests::TestFindMuzzleNodes()
+{
+   RefPtr<SimCore::Actors::PlatformActorProxy> eap;
+   mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE, eap);
+   CPPUNIT_ASSERT(eap.valid());
+
+   CPPUNIT_ASSERT(!eap->GetHasLoadedResources());
+
+   SimCore::Actors::Platform* platform = NULL;
+   eap->GetActor(platform);
+
+   dtCore::ResourceDescriptor happySphere("StaticMeshes:physics_happy_sphere.ive");
+   dtCore::ResourceDescriptor tank("StaticMeshes:T80:t80u_good.ive");
+
+   platform->LoadDamageableFile(tank, SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::NO_DAMAGE);
+
+   std::vector<osg::Group*> muzzles;
+   platform->GetWeaponMuzzles(muzzles);
+
+   CPPUNIT_ASSERT_EQUAL(1U, unsigned(muzzles.size()));
+
+   platform->LoadDamageableFile(happySphere, SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::NO_DAMAGE);
+
+   muzzles.clear();
+   platform->GetWeaponMuzzles(muzzles);
+
+   CPPUNIT_ASSERT_EQUAL(0U, unsigned(muzzles.size()));
 
 }
+
+class SubBaseEntityManualModel : public SimCore::Actors::BaseEntity
+{
+public:
+   SubBaseEntityManualModel()
+   // Don't try this at home.
+   : BaseEntity(*new dtGame::GameActorProxy)
+   {
+      dtCore::RefPtr<osgSim::DOFTransform> dof = new osgSim::DOFTransform();
+      dof->setName(SimCore::Actors::BaseEntity::MUZZLE_NODE_PREFIX + "01");
+      GetScaleMatrixTransform().addChild(dof);
+      dtCore::RefPtr<osg::MatrixTransform> mt = new osg::MatrixTransform();
+      mt->setName(SimCore::Actors::BaseEntity::MUZZLE_NODE_PREFIX + "02");
+      dof->addChild(mt);
+      dtCore::RefPtr<osg::Group> gp = new osg::Group();
+      gp->setName(SimCore::Actors::BaseEntity::MUZZLE_NODE_PREFIX + "03");
+      dof->addChild(gp);
+
+      dof->setCurrentHPR(osg::Vec3(-25.0, 0.4, 0.0));
+      dof->setCurrentScale(osg::Vec3(1.0, 1.0, 1.0));
+      dof->setCurrentTranslate(osg::Vec3(0.0, 0.0, 0.0));
+      osg::Matrix m;
+      dtCore::Transform tx;
+      tx.SetTranslation(-5.0f, 5.0, 5.0f);
+      tx.SetRotation(-30.0, 0.3, 0.0);
+      tx.Get(m);
+      mt->setMatrix(m);
+
+      LoadNodeCollector();
+   }
+};
+
+
+void BaseEntityActorProxyTests::TestFindMuzzleNodesWithDirection()
+{
+   dtCore::RefPtr<SubBaseEntityManualModel> entity = new SubBaseEntityManualModel;
+   osg::Vec3 dir(0.0, -1.0, 0.0);
+
+   std::vector<osg::Group*> muzzles;
+   entity->GetWeaponMuzzles(muzzles);
+   CPPUNIT_ASSERT_EQUAL(3U, unsigned(muzzles.size()));
+
+   osg::Group* matchingMuzzle = entity->GetWeaponMuzzleForDirection(dir);
+   CPPUNIT_ASSERT(matchingMuzzle != NULL);
+   CPPUNIT_ASSERT_EQUAL(SimCore::Actors::BaseEntity::MUZZLE_NODE_PREFIX + "02", matchingMuzzle->getName());
+
+}
+

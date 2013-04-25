@@ -42,6 +42,7 @@
 #include <dtUtil/templateutility.h>
 
 #include <osg/MatrixTransform>
+#include <osgSim/DOFTransform>
 #include <osg/Group>
 #include <osg/ComputeBoundsVisitor>
 
@@ -402,6 +403,8 @@ namespace SimCore
       ///////////////   BaseEntity                     ////////////////////
       /////////////////////////////////////////////////////////////////////
 
+      const std::string BaseEntity::MUZZLE_NODE_PREFIX = "hotspot_";
+
       BaseEntity::BaseEntity(dtGame::GameActorProxy& proxy)
          : IGActor(proxy)
          , mMaxDamageAmount(1.0f)
@@ -625,6 +628,119 @@ namespace SimCore
             newBB.expandBy(bb.corner(i) * mat);
          }
          return newBB;
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////
+      osg::Group* BaseEntity::GetWeaponMuzzleForDirection(const osg::Vec3& facingDirection)
+      {
+
+         // Prepare variable to be used in the weapons cycling loop
+         float curDotProd = -1.0f;
+         float lastDotProd = -1.0f;
+         osg::Vec3 trajectoryNormal( facingDirection );
+         trajectoryNormal.normalize();
+         osg::Group* curNode = NULL;
+         osg::Group* bestNode = NULL;
+
+         std::vector<osg::Group*> listToFill;
+
+         GetWeaponMuzzles(listToFill);
+
+         unsigned limit = listToFill.size();
+         // Loop though and find a weapon on the entity's model that closely matches
+         // the fired munition's initial fired direction. The weapon that matches
+         // the direction the closest will be assigned the flash and sound effects.
+         for ( unsigned weapon = 0; weapon < limit; ++weapon )
+         {
+            curNode = listToFill[weapon];
+            // If there is more than one weapon, compare current the weapon's
+            // direction with the munition's trajectory
+            if ( limit > 1 )
+            {
+               osg::Matrix mtx;
+               dtCore::Transformable::GetAbsoluteMatrix(curNode, mtx);
+               osg::Vec3 weaponDirection( mtx.ptr()[4], mtx.ptr()[5], mtx.ptr()[6] );
+               weaponDirection.normalize();
+               curDotProd = weaponDirection * trajectoryNormal;
+            }
+
+            if ( bestNode == NULL || curDotProd > lastDotProd )
+            {
+               bestNode = curNode;
+               lastDotProd = curDotProd;
+            }
+         }
+
+         return bestNode;
+
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////
+      void BaseEntity::GetWeaponMuzzles(std::vector<osg::Group*>& listToFill)
+      {
+         // Access the node collector that will be used for finding DOF attach
+         // points on the entity's model geometry.
+         dtUtil::NodeCollector* nodeCollector = GetNodeCollector();
+
+         if ( nodeCollector == NULL ) { return; }
+
+         // most things won't have many hotspots.
+         listToFill.reserve(4);
+
+         {
+            // Loop though and find a weapon on the entity's model that closely matches
+            // the fired munition's initial fired direction. The weapon that matches
+            // the direction the closest will be assigned the flash and sound effects.
+            dtUtil::NodeCollector::GroupNodeMap::iterator i, iend;
+            dtUtil::NodeCollector::GroupNodeMap& groupNodes = nodeCollector->GetGroupNodeMap();
+            i = groupNodes.begin();
+            iend = groupNodes.end();
+            for (; i != iend; ++i)
+            {
+               // If the string begins with the proper string, put it in the vector.
+               if (i->first.find(MUZZLE_NODE_PREFIX) == 0)
+               {
+                  listToFill.push_back(i->second.get());
+               }
+            }
+         }
+
+         {
+            // Loop though and find a weapon on the entity's model that closely matches
+            // the fired munition's initial fired direction. The weapon that matches
+            // the direction the closest will be assigned the flash and sound effects.
+            dtUtil::NodeCollector::TransformNodeMap::iterator i, iend;
+            dtUtil::NodeCollector::TransformNodeMap& dofNodes = nodeCollector->GetTransformNodeMap();
+            i = dofNodes.begin();
+            iend = dofNodes.end();
+            for (; i != iend; ++i)
+            {
+               // If the string begins with the proper string, put it in the vector.
+               if (i->first.find(MUZZLE_NODE_PREFIX) == 0)
+               {
+                  listToFill.push_back(i->second.get());
+               }
+            }
+         }
+
+         {
+            // Loop though and find a weapon on the entity's model that closely matches
+            // the fired munition's initial fired direction. The weapon that matches
+            // the direction the closest will be assigned the flash and sound effects.
+            dtUtil::NodeCollector::MatrixTransformNodeMap::iterator i, iend;
+            dtUtil::NodeCollector::MatrixTransformNodeMap& mtNodes = nodeCollector->GetMatrixTransformNodeMap();
+            i = mtNodes.begin();
+            iend = mtNodes.end();
+            for (; i != iend; ++i)
+            {
+               // If the string begins with the proper string, put it in the vector.
+               if (i->first.find(MUZZLE_NODE_PREFIX) == 0)
+               {
+                  listToFill.push_back(i->second.get());
+               }
+            }
+         }
+
       }
 
       ////////////////////////////////////////////////////////////////////////////////////

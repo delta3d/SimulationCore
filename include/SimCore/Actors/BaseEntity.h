@@ -168,6 +168,8 @@ namespace SimCore
       {
          public:
 
+            static const std::string MUZZLE_NODE_PREFIX;
+
             BaseEntity(dtGame::GameActorProxy& proxy);
 
             virtual void OnEnteredWorld();
@@ -377,6 +379,15 @@ namespace SimCore
              * @return BoundingBox that encloses the Drawable.
              */
             virtual osg::BoundingBox GetBoundingBox();
+
+            /**
+             * Helper function that looks at the drawable and finds the tagged osg group node
+             * with a world vector that matches a certain facing direction.  This is useful
+             * if you want to make a guess which gun fired a shot.
+             */
+            virtual osg::Group* GetWeaponMuzzleForDirection(const osg::Vec3& facingDirection);
+            /// Fills a vector with all the weapon muzzle nodes tagged in the art.
+            virtual void GetWeaponMuzzles(std::vector<osg::Group*>& listToFill);
 
          protected:
             virtual ~BaseEntity();
