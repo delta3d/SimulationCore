@@ -96,6 +96,9 @@ namespace SimCore
          states->setRenderingHint( osg::StateSet::TRANSPARENT_BIN );
          states->setRenderBinDetails( SimCore::Components::RenderingSupportComponent::RENDER_BIN_ENVIRONMENT, "RenderBin" );
 
+		 //disable shadows on the ephemeris 
+		 mEphemerisModel->setNodeMask(SimCore::Components::RenderingSupportComponent::DISABLE_SHADOW_NODE_MASK);
+
          //Set up the Fog Sphere so that it can be rendered
          osg::StateSet* fogSphereStates = mFogSphere->getOrCreateStateSet();
          osg::Depth* depthFogState = new osg::Depth(osg::Depth::ALWAYS, 1.0f , 1.0f );
@@ -105,6 +108,10 @@ namespace SimCore
          fogSphereStates->setMode(GL_LIGHTING, osg::StateAttribute::ON);
          fogSphereStates->setMode(GL_BLEND, osg::StateAttribute::ON);
          fogSphereStates->setRenderBinDetails( SimCore::Components::RenderingSupportComponent::RENDER_BIN_ENVIRONMENT + 2, "RenderBin" );
+
+		 //disable shadows on the fog sphere
+		 mFogSphere->setNodeMask(SimCore::Components::RenderingSupportComponent::DISABLE_SHADOW_NODE_MASK);
+
       }
 
       /////////////////////////////////////////////////////////////

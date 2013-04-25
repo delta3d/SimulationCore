@@ -27,6 +27,7 @@
 #include <osg/StateSet>
 #include <osg/MatrixTransform>
 #include <SimCore/Actors/VolumetricLine.h>
+#include <SimCore/Components/RenderingSupportComponent.h>
 
 namespace SimCore
 {
@@ -93,6 +94,8 @@ namespace SimCore
          dtCore::RefPtr<osg::Geode> geode = new osg::Geode;
          geode->setStateSet( states.get() );
          geode->addDrawable( mGeom.get() );
+
+		 geode->setNodeMask(SimCore::Components::RenderingSupportComponent::DISABLE_SHADOW_NODE_MASK);
 
          // Attach the shader
          dtCore::ShaderManager::GetInstance().AssignShaderFromPrototype( *shader, *geode );

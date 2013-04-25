@@ -29,6 +29,7 @@
 #include <dtGame/gamemanager.h>
 #include <dtGame/basemessages.h>
 #include <dtGame/messagetype.h>
+#include <SimCore/Components/RenderingSupportComponent.h>
 
 
 namespace SimCore
@@ -84,6 +85,8 @@ namespace SimCore
          mParticles = new dtCore::ParticleSystem("Flash");
          mParticles->SetParentRelative( true );
          mParticles->LoadFile( mParticleFile );
+		 
+		 GetOSGNode()->setNodeMask(SimCore::Components::RenderingSupportComponent::DISABLE_SHADOW_NODE_MASK);
          AddChild( mParticles.get() );
 
          return true;

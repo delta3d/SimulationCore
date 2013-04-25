@@ -36,6 +36,8 @@
 #include <dtDAL/arrayactorpropertycomplex.h>
 #include <dtCore/shadermanager.h>
 
+#include <SimCore/Components/RenderingSupportComponent.h>
+
 #include <osg/Geometry>
 #include <osg/Shape>
 #include <osg/ShapeDrawable>
@@ -260,6 +262,8 @@ namespace SimCore
 
 
             mGeode->addDrawable(geom.get());
+
+			GetGameActor().GetOSGNode()->setNodeMask(SimCore::Components::RenderingSupportComponent::DISABLE_SHADOW_NODE_MASK);
 
             GetGameActor().GetOSGNode()->asGroup()->addChild(mGeode.get());
             GetGameActor().GetOSGNode()->asGroup()->addChild(mTopGeode.get());
