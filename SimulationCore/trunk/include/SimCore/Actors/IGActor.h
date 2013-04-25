@@ -124,14 +124,14 @@ namespace SimCore
             static void SetNodeVisible(bool, osg::Node& nodeToUse);
 
             /**
-            * /brief    Purpose :  to load the dofs for the dofcontainer class
+            * /brief    Purpose :  Traverse the scene hierarchy internal to this actor and find nodes of certain types.
             *           Outs     : filled in mNodeCollector memb vars
             */
             virtual void LoadNodeCollector();
 
-            /// Get the node utility class for hotspots and dofs
+            /// Get the node utility class for finding specific named nodes quickly
             dtUtil::NodeCollector*  GetNodeCollector();
-            /// Get the node utility class for hotspots and dofs
+            /// Get the node utility class for finding specific named nodes quickly
             const dtUtil::NodeCollector*  GetNodeCollector() const;
 
          protected:
