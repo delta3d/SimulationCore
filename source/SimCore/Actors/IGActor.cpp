@@ -262,7 +262,10 @@ namespace SimCore
                   dtUtil::NodeCollector::AllNodeTypes);
          dtGame::DeadReckoningHelper* drAC = NULL;
          GetComponent(drAC);
-         drAC->SetNodeCollector(*mNodeCollector);
+         if (drAC != NULL)
+         {
+            drAC->SetNodeCollector(*mNodeCollector);
+         }
       }
 
       ////////////////////////////////////////////////////////////////////////////////////

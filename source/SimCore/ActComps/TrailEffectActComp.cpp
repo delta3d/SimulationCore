@@ -331,7 +331,7 @@ namespace SimCore
                   dtGame::GameManager* gm = actor->GetGameActorProxy().GetGameManager();
                   if(gm != NULL)
                   {
-                     gm->GetScene().AddDrawable(mParticles.get());
+                     gm->GetScene().AddChild(mParticles.get());
                      success = true;
                   }
                   else
@@ -401,7 +401,7 @@ namespace SimCore
             dtGame::GameManager* gm = actor->GetGameActorProxy().GetGameManager();
             if(gm != NULL)
             {
-               gm->GetScene().RemoveDrawable(mParticles.get());
+               gm->GetScene().RemoveChild(mParticles.get());
             }
 
             // Ensure the particle effect is not attached to the owner's sub-nodes.

@@ -139,7 +139,6 @@ namespace SimCore
                mGM->CreateActor(*EntityActorRegistry::HELO_PLATFORM_ACTOR_TYPE, platform);
 
                TrailEffectActComp* actComp = platform->GetComponent<TrailEffectActComp>();
-               const TrailEffectActComp* constComp = actComp;
                CPPUNIT_ASSERT(actComp != NULL);
 
                dtDAL::ResourceDescriptor particleFile("Particles:fire.osg");
