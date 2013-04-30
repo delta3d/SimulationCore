@@ -22,6 +22,7 @@
 #ifndef ABSTRACTWHEELEDVEHICLEINPUTACTCOMP_H_
 #define ABSTRACTWHEELEDVEHICLEINPUTACTCOMP_H_
 
+#include <SimCore/Export.h>
 #include <dtGame/actorcomponent.h>
 
 namespace SimCore
@@ -31,7 +32,7 @@ namespace SimCore
       /*
        * Abstract class that defines the input data for a wheeled vehicle.
        */
-      class AbstractWheeledVehicleInputActComp: public dtGame::ActorComponent
+      class SIMCORE_EXPORT AbstractWheeledVehicleInputActComp: public dtGame::ActorComponent
       {
       public:
          static const dtGame::ActorComponent::ACType TYPE;

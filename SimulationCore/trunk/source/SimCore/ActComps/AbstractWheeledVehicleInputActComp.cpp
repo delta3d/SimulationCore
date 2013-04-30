@@ -19,6 +19,7 @@
  * David Guthrie
  */
 
+#include <prefix/SimCorePrefix.h>
 #include <SimCore/ActComps/AbstractWheeledVehicleInputActComp.h>
 
 namespace SimCore

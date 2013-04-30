@@ -249,7 +249,6 @@ LINK_WITH_VARIABLES(${LIB_NAME}
                                    OPENTHREADS_LIBRARY
                                    CEGUI_LIBRARY
                                    CEGUIOPENGL_LIBRARY
-                                   DTPHYSX_LIBRARY
                                    DTPHYSICS_LIBRARY
                                    PAL_LIBRARY
                                    )
@@ -258,7 +257,6 @@ TARGET_LINK_LIBRARIES(${LIB_NAME}
    ${OSGEPHEMERIS_LIBRARY}
    ${OPENGL_LIBRARY}
    ${AGL_LIBRARY}
-   ${PHYSX_LIBRARIES}
    ${OPENAL_LIBRARY}
 )
 

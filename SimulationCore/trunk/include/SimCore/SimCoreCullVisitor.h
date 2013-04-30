@@ -19,9 +19,10 @@
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
 * @author Allen Danklefsen
+* @author David Guthrie
 */
-#ifndef AGEIA_TERRAIN_CULL_VISITOR
-#define AGEIA_TERRAIN_CULL_VISITOR
+#ifndef SIM_CORE_CULL_VISITOR
+#define SIM_CORE_CULL_VISITOR
 
 #include <SimCore/Export.h>
 #include <dtCore/observerptr.h>
@@ -65,7 +66,7 @@ namespace SimCore
          void SetCameraTransform(const osg::Vec3& camTransform) {mCameraPosition = camTransform;}
          osg::Vec3 GetCameraTransform() const {return mCameraPosition;}
 
-         ///this will enable cooking and sending the terrain vertex data to Ageia for collision detection
+         ///this will enable cooking and sending the terrain vertex data for collision detection
          void SetEnablePhysics(bool);
          bool GetEnablePhysics() const;
 

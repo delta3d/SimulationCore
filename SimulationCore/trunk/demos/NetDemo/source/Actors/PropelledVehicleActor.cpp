@@ -137,134 +137,8 @@ namespace NetDemo
    void PropelledVehicleActor::UpdateVehicleTorquesAndAngles(float deltaTime)
    {
       BaseClass::UpdateVehicleTorquesAndAngles(deltaTime);
-
-//      dtCore::Keyboard* keyboard = GetGameActorProxy().GetGameManager()->GetApplication().GetKeyboard();
-//      if(keyboard == NULL)
-//         return;
-//      //float currentMPH = GetMPH(); // speed, not a velocity with direction
-//
-//      dtPhysics::PhysicsObject* po = GetPhysicsActComp()->GetMainPhysicsObject();
-//      osg::Vec3 dragVec = mHelper->ComputeAeroDynDrag(po->GetLinearVelocity());
-//      po->AddForce(dragVec);
-//
-//      float accelerator = 0.0;
-//      float brakes = 0.0;
-//
-//      float steering = 0.0;
-//
-//      if (!IsMobilityDisabled())
-//      {
-//         // FORWARD OR BACKWARD
-//         if (keyboard->GetKeyState('w') || (keyboard->GetKeyState('W')) ||
-//               keyboard->GetKeyState(osgGA::GUIEventAdapter::KEY_Up))
-//         {
-//            accelerator = 1.0;
-//         }
-//
-//         if (keyboard->GetKeyState('s') || keyboard->GetKeyState('S') ||
-//               keyboard->GetKeyState(osgGA::GUIEventAdapter::KEY_Down))
-//         {
-//            accelerator = -1.0;
-//         }
-//
-//         if (keyboard->GetKeyState(' '))
-//         {
-//            brakes = 1.0;
-//         }
-//
-//         // LEFT OR RIGHT
-//         if (keyboard->GetKeyState('a') || keyboard->GetKeyState('A') ||
-//              keyboard->GetKeyState(osgGA::GUIEventAdapter::KEY_Left))
-//         {
-//
-//            steering = 1.0;
-//            osg::Vec3 torqueDirection = osg::Vec3(0.0, -1.0, 0.0);
-//            //float torqueMagnitude = 1000;
-//            //po->AddLocalTorque(torqueDirection * torqueMagnitude);
-//            //po->AddLocalForce(osg::Vec3(0.0, 0.0, -1000.0));
-//         }
-//         else if (keyboard->GetKeyState('d') || keyboard->GetKeyState('D') ||
-//               keyboard->GetKeyState(osgGA::GUIEventAdapter::KEY_Right))
-//         {
-//
-//            steering = -1.0;
-//            osg::Vec3 torqueDirection = osg::Vec3(0.0, 1.0, 0.0);
-//            //float torqueMagnitude = 1000;
-//
-//            //po->AddLocalTorque(torqueDirection * torqueMagnitude);
-//            //po->AddLocalForce(osg::Vec3(0.0, 0.0, -1000.0));
-//         }
-//
-//         if (keyboard->GetKeyState('f') || keyboard->GetKeyState('F'))
-//         {
-//            //dtPhysics::PhysicsObject* po = GetPhysicsActComp()->GetMainPhysicsObject();
-//
-//
-//
-//            //po->AddLocalForce(boostDirection * boostForce);
-//         }
-//         else
-//         {
-//         }
-//
-//         if (keyboard->GetKeyState('r') || keyboard->GetKeyState('R'))
-//         {
-//            dtCore::Transform xform;
-//            po->GetTransform(xform);
-//            osg::Vec3 trans;
-//            trans.z() += GetOSGNode()->getBound().radius() * 1.2;
-//            xform.GetTranslation(trans);
-//            xform.MakeIdentity();
-//            xform.SetTranslation(trans);
-//            po->SetTransform(xform);
-//         }
-//
-//      }
-//
-//      dtCore::Transform xform;
-//      po->GetTransform(xform);
-//      osg::Vec3 hpr;
-//      xform.GetRotation(hpr);
-//
-//      osg::Vec3 angVel = po->GetAngularVelocity();
-//
-//
-////      osg::Vec3 up;
-////      xform.GetRow(2, up);
-////
-////      osg::Vec3 zup(0.0, 0.0, 1.0);
-////
-////      float mag = (up * zup);
-////
-////      // If you are not upside down, that is, we apply a stranger downward force as you get
-////      // more and more rotated.
-////      if (mag > 0.0)
-////      {
-////         float force = -(po->GetMass() * (1.0 - mag) * 3.3);
-////         osg::Vec3 forceVec = up * force;
-////         po->AddForce(forceVec);
-////      }
-//
-//      //std::cout << "Angular Velocity: " << angVel << std::endl;
-////      std::cout << "Linear Velocity: " << po->GetLinearVelocity() << std::endl;
-////      std::cout << "Aero Drag: " << dragVec << std::endl;
-//
-//      float pitchTorque = -(5.0f * (hpr.y()));
-//      pitchTorque -= angVel.x() * 30.0;
-//      dtUtil::Clamp(pitchTorque, -1000.0f, 1000.0f);
-//
-//      //std::cout << "pitch Torque: " << pitchTorque << std::endl;
-//
-//      float rollTorque = -(5.0f * (hpr.z()));
-//      rollTorque -= angVel.y() * 30.0;
-//      dtUtil::Clamp(rollTorque, -1000.0f, 1000.0f);
-//
-//      //std::cout << "roll Torque: " << rollTorque << std::endl;
-//
-//      //po->AddLocalTorque(osg::Vec3(pitchTorque, rollTorque, 0.0));
-//      mHelper->Control(accelerator, steering, brakes);
-
    }
+
    ////////////////////////////////////////////////////////////////////////
    ///////////////// PROXY ////////////////////////////////////////////////
    ////////////////////////////////////////////////////////////////////////
@@ -344,6 +218,7 @@ namespace NetDemo
          renderComp->AddDynamicLight(sl);
       }
    }
+
    ///////////////////////////////////////////////////////////////////////////////////
    void PropelledVehicleActorProxy::BuildActorComponents()
    {
@@ -361,3 +236,4 @@ namespace NetDemo
       drPublishingActComp->SetMaxRotationError(0.5f);
    }
 }
+

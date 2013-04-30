@@ -18,6 +18,7 @@
  * 
  * David Guthrie
  */
+#include <prefix/SimCorePrefix.h>
 #include <SimCore/ActComps/KeyboardWheeledVehicleInputActComp.h>
 
 #include <dtCore/keyboard.h>
