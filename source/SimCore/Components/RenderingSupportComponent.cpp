@@ -208,6 +208,8 @@ namespace SimCore
          , mNVGS(0)
          , mCullVisitor(new SimCore::SimCoreCullVisitor())
       {
+         // HACK!  Should net be committed!  If it is, delete it.
+         mCullVisitor->SetEnablePhysics(false);
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////

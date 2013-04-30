@@ -22,6 +22,7 @@
 #ifndef KEYBOARDWHEELEDVEHICLEINPUTACTCOMP_H_
 #define KEYBOARDWHEELEDVEHICLEINPUTACTCOMP_H_
 
+#include <SimCore/Export.h>
 #include <SimCore/ActComps/AbstractWheeledVehicleInputActComp.h>
 
 namespace dtGame
@@ -35,9 +36,9 @@ namespace SimCore
    {
 
       /*
-       *
+       * Implements the wheeled vehicle steering, etc using keyboard inputs.
        */
-      class KeyboardWheeledVehicleInputActComp: public AbstractWheeledVehicleInputActComp
+      class SIMCORE_EXPORT KeyboardWheeledVehicleInputActComp: public AbstractWheeledVehicleInputActComp
       {
       public:
          KeyboardWheeledVehicleInputActComp();
