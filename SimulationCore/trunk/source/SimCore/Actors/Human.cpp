@@ -1335,11 +1335,6 @@ namespace SimCore
       };
 
       ////////////////////////////////////////////////////////////////////////////
-      void Human::GetWeaponMuzzles(std::vector<osg::Group*>& listToFill)
-      {
-      }
-
-      ////////////////////////////////////////////////////////////////////////////
       const dtAnim::Animatable* Human::ApplyOperatorAndGetAnimatable(const dtAI::Operator& op)
       {
          dtAnim::SequenceMixer& seqMixer = mAnimationHelper->GetSequenceMixer();

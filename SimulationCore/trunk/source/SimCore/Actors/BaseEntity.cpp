@@ -698,7 +698,7 @@ namespace SimCore
             for (; i != iend; ++i)
             {
                // If the string begins with the proper string, put it in the vector.
-               if (i->first.find(MUZZLE_NODE_PREFIX) == 0)
+               if (i->first.find(MUZZLE_NODE_PREFIX) != std::string::npos)
                {
                   listToFill.push_back(i->second.get());
                }
@@ -716,7 +716,7 @@ namespace SimCore
             for (; i != iend; ++i)
             {
                // If the string begins with the proper string, put it in the vector.
-               if (i->first.find(MUZZLE_NODE_PREFIX) == 0)
+               if (i->first.find(MUZZLE_NODE_PREFIX) != std::string::npos)
                {
                   listToFill.push_back(i->second.get());
                }
@@ -734,7 +734,7 @@ namespace SimCore
             for (; i != iend; ++i)
             {
                // If the string begins with the proper string, put it in the vector.
-               if (i->first.find(MUZZLE_NODE_PREFIX) == 0)
+               if (i->first.find(MUZZLE_NODE_PREFIX)  != std::string::npos)
                {
                   listToFill.push_back(i->second.get());
                }

@@ -277,8 +277,6 @@ namespace SimCore
             void ExecuteAction(HumanActorProxy::StanceEnum& stance = HumanActorProxy::StanceEnum::UPRIGHT_STANDING,
                      const dtUtil::RefString& animatableName = AnimationOperators::ANIM_STANDING_ACTION);
 
-            virtual void GetWeaponMuzzles(std::vector<osg::Group*>& listToFill);
-
          protected:
             virtual ~Human();
 
