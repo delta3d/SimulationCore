@@ -440,13 +440,6 @@ namespace SimCore
       bool ControlStateComponent::AttachModelOnVehicle(
          osg::Node& model, SimCore::Actors::Platform& vehicle, const std::string& dofName )
       {
-//         SimCore::ActComps::WeaponSwapActComp* wsac = NULL;
-//         vehicle.GetComponent(wsac);
-//         if (wsac != NULL)
-//         {
-//            wsac->S
-//         }
-//         // DEBUG: std::cout << "AttachModelOnVehicle: " << dofName << std::endl;
          dtUtil::NodeCollector* nodeCollector = vehicle.GetNodeCollector();
          if( nodeCollector != NULL )
          {

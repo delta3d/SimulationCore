@@ -25,7 +25,7 @@
 #include <prefix/SimCorePrefix.h>
 #include <string>
 #include <SimCore/ActComps/CamoPaintStateActComp.h>
-#include <SimCore/ActComps/WeaponSwapActComp.h>
+#include <SimCore/ActComps/WeaponInventoryActComp.h>
 #include <SimCore/ActComps/WheelActComp.h>
 #include <SimCore/ActComps/PlatformDefaultPhysicsActComp.h>
 #include <SimCore/ActComps/TrailEffectActComp.h>
@@ -354,7 +354,10 @@ namespace SimCore
          {
             // Setup the body paint component.
             AddComponent(*new SimCore::ActComps::CamoPaintStateActComp);
-            AddComponent(*new SimCore::ActComps::WeaponSwapActComp());
+            if (!HasComponent(SimCore::ActComps::WeaponInventoryActComp::TYPE))
+            {
+               AddComponent(*new SimCore::ActComps::WeaponInventoryActComp());
+            }
          }
          else
          {
@@ -1005,13 +1008,6 @@ namespace SimCore
          {
             camoPaintComp->SetParentNode(&GetScaleMatrixTransform());
             camoPaintComp->SetHiderNode(mSwitchNode.get());
-         }
-
-         dtCore::RefPtr<SimCore::ActComps::WeaponSwapActComp> weaponSwapper;
-         GetComponent(weaponSwapper);
-         if (weaponSwapper.valid())
-         {
-            weaponSwapper->SetNodeCollector(GetNodeCollector());
          }
 
          GetGameActorProxy().RegisterForMessagesAboutSelf(dtGame::MessageType::INFO_TIMER_ELAPSED, "TimeElapsedForSoundIdle");

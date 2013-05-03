@@ -186,6 +186,8 @@ namespace SimCore
             /// Build the invokables
             /*virtual*/ void BuildInvokables();
 
+            /*virtual*/ void BuildActorComponents();
+
             /*virtual*/ void CreateActor();
          protected:
             virtual ~HumanActorProxy();

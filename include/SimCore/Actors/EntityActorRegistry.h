@@ -84,6 +84,7 @@ namespace SimCore
             static dtCore::RefPtr<dtDAL::ActorType> FOUR_WHEEL_VEHICLE_CIV_ACTOR_TYPE;
             static dtCore::RefPtr<dtDAL::ActorType> FOUR_WHEEL_VEHICLE_MIL_ACTOR_TYPE;
             static dtCore::RefPtr<dtDAL::ActorType> HUMAN_PHYSICS_ACTOR_TYPE;
+            static dtCore::RefPtr<dtDAL::ActorType> WARFIGHTER_ACTOR_TYPE;
             static dtCore::RefPtr<dtDAL::ActorType> PORTAL_ACTOR_TYPE;
 
             static dtCore::RefPtr<dtDAL::ActorType> VEHICLE_CONFIG_ACTOR_TYPE;

@@ -25,11 +25,7 @@
 
 #include <SimCore/Actors/Human.h>
 
-#ifdef AGEIA_PHYSICS
-#include <NxAgeiaCharacterHelper.h>
-#else
 #include <dtPhysics/charactercontroller.h>
-#endif
 
 #include <SimCore/PhysicsTypes.h>
 
@@ -45,14 +41,10 @@ namespace SimCore
    namespace Actors
    {
       // actor
-#ifdef AGEIA_PHYSICS
-      class SIMCORE_EXPORT  HumanWithPhysicsActor : public Human, public dtAgeiaPhysX::NxAgeiaPhysicsInterface,
-                                                                             public dtAgeiaPhysX::NxAgeiaCharacterInterface
-#else
       class SIMCORE_EXPORT  HumanWithPhysicsActor : public Human
-#endif
       {
          public:
+            typedef Human BaseClass;
 
             /// Constructor
             HumanWithPhysicsActor(dtGame::GameActorProxy& proxy);
@@ -116,6 +108,7 @@ namespace SimCore
       class SIMCORE_EXPORT HumanWithPhysicsActorProxy : public HumanActorProxy
       {
          public:
+            typedef HumanActorProxy BaseClass;
 
             /// Constructor
             HumanWithPhysicsActorProxy();
