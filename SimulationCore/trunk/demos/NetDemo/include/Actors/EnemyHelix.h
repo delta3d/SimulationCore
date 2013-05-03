@@ -84,8 +84,6 @@ namespace NetDemo
 
          float mTimeSinceLastFire;
          dtCore::ObserverPtr<dtCore::Transformable> mTarget;
-         dtCore::RefPtr<SimCore::Actors::WeaponActor> mWeapon;
-         dtCore::RefPtr<SimCore::Actors::WeaponActorProxy> mWeaponProxy;
 
    };
 

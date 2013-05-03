@@ -30,7 +30,6 @@
 #include <SimCore/Components/RenderingSupportComponent.h>
 //#include <SimCore/Components/MunitionsComponent.h>
 #include <SimCore/Components/DefaultFlexibleArticulationHelper.h>
-#include <SimCore/Actors/WeaponActor.h>
 #include <dtGame/drpublishingactcomp.h>
 #include <SimCore/ApplyShaderVisitor.h>
 #include <SimCore/CollisionGroupEnum.h>
@@ -46,7 +45,6 @@
 #include <Actors/EnemyHelix.h>
 #include <Actors/EnemyMine.h>
 #include <Actors/FireBallActor.h>
-#include <Components/WeaponComponent.h>
 
 //for debug printouts
 #include <iostream>

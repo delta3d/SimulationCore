@@ -29,13 +29,8 @@
 #include <SimCore/Actors/Platform.h>
 
 #include <SimCore/Actors/MunitionParticlesActor.h>
-
-#ifdef AGEIA_PHYSICS
-#include <NxAgeiaPhysicsHelper.h>
-#else
 #include <dtPhysics/physicsactcomp.h>
 #include <dtPhysics/collisioncontact.h>
-#endif
 
 namespace dtAudio
 {

@@ -12,7 +12,6 @@
 */
 #include <dtUtil/mswin.h>
 #include <Components/InputComponent.h>
-#include <Components/WeaponComponent.h>
 #include <osgGA/GUIEventAdapter>
 
 #include <dtGame/messagetype.h>
@@ -32,6 +31,7 @@
 #include <SimCore/Components/MunitionsComponent.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
 #include <SimCore/Actors/BaseEntity.h>
+#include <SimCore/ActComps/WeaponInventoryActComp.h>
 #include <dtGame/drpublishingactcomp.h>
 
 
@@ -376,10 +376,7 @@ namespace NetDemo
 
          case 'h':
             {
-               WeaponComponent* comp = NULL;
-               GetGameManager()->GetComponentByName(WeaponComponent::DEFAULT_NAME, comp);
-
-               comp->SetCurrentWeaponIndex((comp->GetCurrentWeaponIndex() + 1) % comp->GetNumWeapons());
+               mVehicle->GetComponent<SimCore::ActComps::WeaponInventoryActComp>()->SelectNextWeapon();
             }
             break;
 
@@ -492,11 +489,10 @@ namespace NetDemo
 
       if( button == dtCore::Mouse::LeftButton )
       {
-         WeaponComponent* comp = NULL;
-         GetGameManager()->GetComponentByName(WeaponComponent::DEFAULT_NAME, comp);
-         if (comp != NULL)
+         SimCore::ActComps::WeaponInventoryActComp* weaponAC = mVehicle->GetComponent<SimCore::ActComps::WeaponInventoryActComp>();
+         if (weaponAC != NULL)
          {
-            comp->StartFiring();
+            weaponAC->StartFiring();
          }
          handled = true;
       }
@@ -515,11 +511,10 @@ namespace NetDemo
       // stop firing
       if( button == dtCore::Mouse::LeftButton )
       {
-         WeaponComponent* comp = NULL;
-         GetGameManager()->GetComponentByName(WeaponComponent::DEFAULT_NAME, comp);
-         if (comp != NULL)
+         SimCore::ActComps::WeaponInventoryActComp* weaponAC = mVehicle->GetComponent<SimCore::ActComps::WeaponInventoryActComp>();
+         if (weaponAC != NULL)
          {
-            comp->StopFiring();
+            weaponAC->StopFiring();
          }
          handled = true;
       }

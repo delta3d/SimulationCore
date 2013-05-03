@@ -85,8 +85,8 @@ namespace SimCore
          mParticles = new dtCore::ParticleSystem("Flash");
          mParticles->SetParentRelative( true );
          mParticles->LoadFile( mParticleFile );
-		 
-		 GetOSGNode()->setNodeMask(SimCore::Components::RenderingSupportComponent::DISABLE_SHADOW_NODE_MASK);
+
+         GetOSGNode()->setNodeMask(SimCore::Components::RenderingSupportComponent::DISABLE_SHADOW_NODE_MASK);
          AddChild( mParticles.get() );
 
          return true;

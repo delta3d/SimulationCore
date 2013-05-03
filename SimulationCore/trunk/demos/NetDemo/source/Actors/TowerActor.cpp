@@ -30,7 +30,6 @@
 #include <SimCore/Components/RenderingSupportComponent.h>
 //#include <SimCore/Components/MunitionsComponent.h>
 #include <SimCore/Components/DefaultFlexibleArticulationHelper.h>
-#include <SimCore/Actors/WeaponActor.h>
 #include <dtGame/drpublishingactcomp.h>
 #include <SimCore/ApplyShaderVisitor.h>
 #include <SimCore/CollisionGroupEnum.h>
@@ -46,7 +45,7 @@
 #include <Actors/FortActor.h>
 #include <Actors/EnemyHelix.h>
 #include <Actors/EnemyMine.h>
-#include <Components/WeaponComponent.h>
+#include <SimCore/ActComps/WeaponInventoryActComp.h>
 #include <Components/GameLogicComponent.h>
 
 //for debug printouts
@@ -169,47 +168,29 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////////////
    void TowerActor::OnRemovedFromWorld()
    {
-      if(mWeaponProxy.valid())
-      {
-         GetGameActorProxy().GetGameManager()->DeleteActor(*mWeaponProxy);
-      }
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
    void TowerActor::InitWeapon()
    {
-      // Get the weapon component that is used to create weapons.
-      WeaponComponent* weaponComp = NULL;
-      GetGameActorProxy().GetGameManager()->GetComponentByName(WeaponComponent::DEFAULT_NAME, weaponComp);
+      dtCore::RefPtr<SimCore::ActComps::WeaponInventoryActComp> weaponInv = new SimCore::ActComps::WeaponInventoryActComp;
 
-      if(weaponComp != NULL)
-      {
-         SimCore::Actors::WeaponActor* weapon = NULL;
+      dtCore::RefPtr<SimCore::ActComps::WeaponInventoryActComp::WeaponDescription> wd = new SimCore::ActComps::WeaponInventoryActComp::WeaponDescription;
 
-         // Create the primary weapon.
-         // --- This method will automatically add the created weapon to the world.
-         weaponComp->CreateWeapon("Weapon_MachineGun",
-            "Particle_System_Weapon_GunWithTracer",
-            "weapon_gun_flash.osg", weapon);
+      wd->SetWeaponPrototypeName("Weapon_MachineGun");
+      wd->SetShooterPrototypeName("Particle_System_Weapon_GunWithTracer");
+      wd->SetFiringParticleSystem(dtDAL::ResourceDescriptor("Particles:weapon_gun_flash.osg"));
+      wd->SetWeaponSwapRootNode("dof_gun_01");
 
-         // Customize the new weapon.
-         if(weapon != NULL)
-         {
-            // Attach the weapon to this object.
-            weapon->SetOwner(&GetGameActorProxy());
-            AddChild(weapon, "dof_gun_01");
+      dtCore::RefPtr<SimCore::Actors::WeaponActor> weapon;
 
-            // Maintain references to the weapon and its proxy.
-            mWeapon = weapon;
-            mWeaponProxy = static_cast<SimCore::Actors::WeaponActorProxy*>(&weapon->GetGameActorProxy());
+      AddComponent(*weaponInv);
 
-            mWeapon->SetFireRate(0.65f);
-         }
-      }
-      else
-      {
-         LOG_ERROR("Could not find Weapon Component to create weapon.");
-      }
+      weaponInv->CreateAndAddWeapon(*wd, true)->mWeapon->GetActor(weapon);
+
+      //slow down the rate of fire
+      weapon->SetFireRate(0.65f);
+
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
@@ -235,10 +216,7 @@ namespace NetDemo
          {
             mAIHelper->GetStateMachine().MakeCurrent(&AIStateType::AI_STATE_DIE);
 
-            if (mWeapon.valid())
-            {
-               mWeapon->SetTriggerHeld(false);
-            }
+            GetComponent<SimCore::ActComps::WeaponInventoryActComp>()->StopFiring();
          }
       }
    }
@@ -331,11 +309,7 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////////////
    void TowerActor::Shoot(float)
    {
-      if(mWeapon.valid())
-      {
-         mWeapon->SetTriggerHeld(true);
-         mWeapon->Fire();
-      }
+      GetComponent<SimCore::ActComps::WeaponInventoryActComp>()->StartFiring();
 
       //randomly search for better targets
       //temporary hack
@@ -385,10 +359,7 @@ namespace NetDemo
       }
 
 
-      if (mWeapon.valid())
-      {
-         mWeapon->SetTriggerHeld(false);
-      }
+      GetComponent<SimCore::ActComps::WeaponInventoryActComp>()->StopFiring();
    }
 
    //////////////////////////////////////////////////////////////////////

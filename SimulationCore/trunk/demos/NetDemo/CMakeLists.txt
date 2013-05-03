@@ -67,7 +67,6 @@ set(LIB_SOURCES_3
    "${SOURCE_PATH}/Components/GUIComponent.cpp"
    "${SOURCE_PATH}/Components/InputComponent.cpp"
    "${SOURCE_PATH}/Components/SpawnComponent.cpp"
-   "${SOURCE_PATH}/Components/WeaponComponent.cpp"
    )
    
 set(LIB_SOURCES_4 

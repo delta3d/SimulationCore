@@ -189,6 +189,7 @@ set( LIB_SOURCES_8
    "${SOURCE_PATH}/ActComps/TrailerHitchActComp.cpp"
    "${SOURCE_PATH}/ActComps/TrailEffectActComp.cpp"
    "${SOURCE_PATH}/ActComps/TrailEffectActComp.cpp"
+   "${SOURCE_PATH}/ActComps/WeaponInventoryActComp.cpp"
    "${SOURCE_PATH}/ActComps/WeaponSwapActComp.cpp"
    "${SOURCE_PATH}/ActComps/WheelActComp.cpp"
    )
