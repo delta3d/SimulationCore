@@ -1,5 +1,5 @@
 /* -*-c++-*-
-* Simulation Core - HumanActorProxyTests (.h & .cpp) - Using 'The MIT License'
+* Simulation Core - HumanTests (.h & .cpp) - Using 'The MIT License'
 * Copyright (C) 2005-2008, Alion Science and Technology Corporation
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -51,8 +51,11 @@
 #include <SimCore/Actors/BaseEntity.h>
 #include <SimCore/Actors/Human.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
+#include <SimCore/ActComps/WeaponInventoryActComp.h>
 
 #include <SimCore/Components/ViewerMessageProcessor.h>
+
+#include <dtPhysics/physicsactcomp.h>
 
 #include <UnitTestMain.h>
 #include <dtABC/application.h>
@@ -61,9 +64,9 @@ using dtCore::RefPtr;
 using dtCore::ObserverPtr;
 
 
-class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
+class HumanTests : public CPPUNIT_NS::TestFixture
 {
-   CPPUNIT_TEST_SUITE(HumanActorProxyTests);
+   CPPUNIT_TEST_SUITE(HumanTests);
 
       CPPUNIT_TEST(TestPlanDeployedToReady);
       CPPUNIT_TEST(TestPlanReadyToDeployed);
@@ -83,6 +86,7 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
       CPPUNIT_TEST(TestPlanActionKneeling);
       CPPUNIT_TEST(TestPlanActionProne);
       CPPUNIT_TEST(TestStartup);
+      CPPUNIT_TEST(TestActorComponents);
       CPPUNIT_TEST(TestPrimaryWeapon);
 
    CPPUNIT_TEST_SUITE_END();
@@ -601,7 +605,26 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
 
          CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_STAND_DEPLOYED.Get(), (*iter)->GetName());
       }
+
+      void TestActorComponents()
+      {
+         dtCore::RefPtr<SimCore::Actors::HumanActorProxy> humanWithPhysics;
+         dtCore::RefPtr<SimCore::Actors::HumanActorProxy> humanWarfighter;
+
+         mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::HUMAN_PHYSICS_ACTOR_TYPE, humanWithPhysics);
+         mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::WARFIGHTER_ACTOR_TYPE, humanWarfighter);
+
+         CheckActorComponents(*mHumanAP, false, false);
+         CheckActorComponents(*humanWithPhysics, true, false);
+         CheckActorComponents(*humanWarfighter, true, true);
+      }
    private:
+
+      void CheckActorComponents(SimCore::Actors::HumanActorProxy& human, bool physics, bool weapons)
+      {
+         CPPUNIT_ASSERT_EQUAL(physics, human.GetComponent<dtPhysics::PhysicsActComp>() != NULL);
+         CPPUNIT_ASSERT_EQUAL(weapons, human.GetComponent<SimCore::ActComps::WeaponInventoryActComp>() != NULL);
+      }
 
       void TestPlanShot(SimCore::Actors::HumanActorProxy::StanceEnum& stance, const std::string& expectedShotAnim,
                const std::string& expectedDeadAnim )
@@ -654,5 +677,5 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
       std::vector<std::string> mPR_Prone_To_KneelFiring;
 };
 
-CPPUNIT_TEST_SUITE_REGISTRATION(HumanActorProxyTests);
+CPPUNIT_TEST_SUITE_REGISTRATION(HumanTests);
 

@@ -45,7 +45,7 @@
 #include <SimCore/Actors/EntityActorRegistry.h>
 #include <SimCore/ActComps/CamoPaintStateActComp.h>
 #include <SimCore/ActComps/TrailEffectActComp.h>
-#include <SimCore/ActComps/WeaponSwapActComp.h>
+#include <SimCore/ActComps/WeaponInventoryActComp.h>
 #include <SimCore/ActComps/WheelActComp.h>
 
 #include <SimCore/Components/ViewerMessageProcessor.h>
@@ -238,7 +238,7 @@ namespace SimCore
 
          private:
 
-            void CheckAvailableActorComponents(SimCore::Actors::PlatformActorProxy& platform, bool physics, bool camo, bool weaponswap,
+            void CheckAvailableActorComponents(SimCore::Actors::PlatformActorProxy& platform, bool physics, bool camo, bool weaponInventory,
                      bool munitions, bool wheels, bool trailEffects)
             {
                CPPUNIT_ASSERT(platform.GetComponent<dtGame::DeadReckoningHelper>() != NULL);
@@ -247,7 +247,7 @@ namespace SimCore
                CPPUNIT_ASSERT_EQUAL(physics, platform.GetComponent<dtPhysics::PhysicsActComp>() != NULL);
 
                CPPUNIT_ASSERT_EQUAL(camo, platform.GetComponent<SimCore::ActComps::CamoPaintStateActComp>() != NULL);
-               CPPUNIT_ASSERT_EQUAL(weaponswap, platform.GetComponent<SimCore::ActComps::WeaponSwapActComp>() != NULL);
+               CPPUNIT_ASSERT_EQUAL(weaponInventory, platform.GetComponent<SimCore::ActComps::WeaponInventoryActComp>() != NULL);
                CPPUNIT_ASSERT_EQUAL(wheels, platform.GetComponent<SimCore::ActComps::WheelActComp>() != NULL);
                CPPUNIT_ASSERT_EQUAL(trailEffects, platform.GetComponent<SimCore::ActComps::TrailEffectActComp>() != NULL);
 

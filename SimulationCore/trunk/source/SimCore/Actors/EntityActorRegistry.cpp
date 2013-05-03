@@ -167,6 +167,9 @@ namespace SimCore
       RefPtr<dtDAL::ActorType> EntityActorRegistry::HUMAN_PHYSICS_ACTOR_TYPE(
                new dtDAL::ActorType("HumanWithPhysicsActor", "Entity", "Human with a physics collision mesh",
                         EntityActorRegistry::HUMAN_ACTOR_TYPE.get()));
+      RefPtr<dtDAL::ActorType> EntityActorRegistry::WARFIGHTER_ACTOR_TYPE(
+               new dtDAL::ActorType("WarfighterActor", "Entity", "Human with a physics collision mesh and weapons",
+                        EntityActorRegistry::HUMAN_PHYSICS_ACTOR_TYPE.get()));
 
       RefPtr<dtDAL::ActorType> EntityActorRegistry::PORTAL_ACTOR_TYPE(new dtDAL::ActorType("Portal", "PortalModels"));
 
@@ -315,6 +318,7 @@ namespace SimCore
          mActorFactory->RegisterType<FourWheelVehicleActorProxy>(FOUR_WHEEL_VEHICLE_MIL_ACTOR_TYPE.get());
 
          mActorFactory->RegisterType<HumanWithPhysicsActorProxy>(HUMAN_PHYSICS_ACTOR_TYPE.get());
+         mActorFactory->RegisterType<HumanWithPhysicsActorProxy>(WARFIGHTER_ACTOR_TYPE.get());
          mActorFactory->RegisterType<PagedTerrainPhysicsActorProxy>(AGEIA_TLAND_ACTOR_TYPE.get());
          mActorFactory->RegisterType<PagedTerrainPhysicsActorProxy>(PAGED_TERRAIN_PHYSICS_ACTOR_TYPE.get());
 

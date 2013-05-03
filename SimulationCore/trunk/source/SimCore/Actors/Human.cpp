@@ -24,6 +24,8 @@
 #include <prefix/SimCorePrefix.h>
 #include <SimCore/Actors/Human.h>
 #include <SimCore/VisibilityOptions.h>
+#include <SimCore/Actors/EntityActorRegistry.h>
+#include <SimCore/ActComps/WeaponInventoryActComp.h>
 
 #include <dtAnim/cal3ddatabase.h>
 #include <dtAnim/animnodebuilder.h>
@@ -42,10 +44,11 @@
 #include <dtGame/messagetype.h>
 
 
-#include <dtDAL/functor.h>
-#include <dtDAL/enginepropertytypes.h>
-#include <dtDAL/datatype.h>
-#include <dtDAL/project.h>
+#include <dtCore/functor.h>
+#include <dtCore/enginepropertytypes.h>
+#include <dtCore/datatype.h>
+#include <dtCore/project.h>
+#include <dtCore/actortype.h>
 
 #include <dtUtil/mathdefines.h>
 #include <dtUtil/log.h>
@@ -442,6 +445,22 @@ namespace SimCore
       void HumanActorProxy::BuildInvokables()
       {
          BaseClass::BuildInvokables();
+      }
+
+      ////////////////////////////////////////////////////////////////////////////
+      void HumanActorProxy::BuildActorComponents()
+      {
+         const dtDAL::ActorType& at = GetActorType();
+
+         BaseClass::BuildActorComponents();
+
+         if (at.InstanceOf(*EntityActorRegistry::WARFIGHTER_ACTOR_TYPE))
+         {
+            if (!HasComponent(SimCore::ActComps::WeaponInventoryActComp::TYPE))
+            {
+               AddComponent(*new SimCore::ActComps::WeaponInventoryActComp());
+            }
+         }
       }
 
       ////////////////////////////////////////////////////////////////////////////
