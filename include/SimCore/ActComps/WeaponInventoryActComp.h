@@ -22,6 +22,8 @@
 #ifndef WEAPONINVENTORYACTCOMP_H_
 #define WEAPONINVENTORYACTCOMP_H_
 
+#include <SimCore/Export.h>
+
 #include <dtUtil/getsetmacros.h>
 #include <dtCore/resourcedescriptor.h>
 #include <dtGame/actorcomponent.h>
@@ -32,7 +34,7 @@ namespace SimCore
 {
    namespace ActComps
    {
-      class WeaponInventoryActComp : public dtGame::ActorComponent
+      class SIMCORE_EXPORT WeaponInventoryActComp : public dtGame::ActorComponent
       {
       public:
          static const dtGame::ActorComponent::ACType TYPE;
