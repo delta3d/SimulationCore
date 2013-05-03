@@ -887,7 +887,7 @@ namespace SimCore
             {
                Wave& wave = (*iter);
                // weaken the amp as it reaches the pop point to hide some of the popping
-               float fadeRatio = sqrt((wave.mWaveLength - cameraCutPoint) / cameraCutPoint);
+               //float fadeRatio = sqrt((wave.mWaveLength - cameraCutPoint) / cameraCutPoint);
                float amp = wave.mAmplitude * mModForAmplitude;// * dtUtil::Min(1.0f, dtUtil::Max(0.0f, fadeRatio));
                float waveLength = wave.mWaveLength * mModForWaveLength;
                float speed = wave.mSpeed * mModForSpeed;

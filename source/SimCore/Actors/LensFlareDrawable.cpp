@@ -118,21 +118,20 @@ namespace SimCore
             //compute position of sun
             osg::Vec4d screenXYZ(mLensFlare->mLightPos.x(), mLensFlare->mLightPos.y(), mLensFlare->mLightPos.z(), 1.0);
             screenXYZ = cam->getViewMatrix().preMult(screenXYZ);
-            screenXYZ = cam->getProjectionMatrix().preMult(screenXYZ);          
+            screenXYZ = cam->getProjectionMatrix().preMult(screenXYZ);
             screenXYZ /= screenXYZ.w();
             screenXYZ += osg::Vec4d(1.0, 1.0, 1.0, 1.0);
             screenXYZ *= 0.5;
 
-            float depthValue = 100.0f;
-            bool occluded = true;
+            //float depthValue = 100.0f;
+            //bool occluded = true;
 
             //set depth texture
             int width = cam->getViewport()->width();
             int height = cam->getViewport()->height();
 
-            int startX = int(screenXYZ.x() * width) - 8;              
+            int startX = int(screenXYZ.x() * width) - 8;
             int startY = int(screenXYZ.y() * height) - 8;
-            
 
             bool inFrontOfCamera = (screenXYZ.w() > 0.0f) && (screenXYZ.z() > 0.0f) && (startX >= 0 && startX <= width) && (startY >= 0 && startY <= height);
 

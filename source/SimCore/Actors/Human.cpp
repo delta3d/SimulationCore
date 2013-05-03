@@ -58,6 +58,8 @@
 #include <osg/io_utils>
 #include <sstream>
 
+#include <cal3d/cal3d.h>
+
 #ifdef DELTA_WIN32
    #pragma warning(disable : 4355)
 #endif
@@ -366,7 +368,7 @@ namespace SimCore
 
       HumanActorProxy::HumanActorProxy()
       {
-         SetClassName("SimCore::Actors::Human\n");
+         SetClassName("SimCore::Actors::Human");
       }
 
       ////////////////////////////////////////////////////////////////////////////
@@ -773,13 +775,13 @@ namespace SimCore
             const std::string& nameToSend = wrapper->GetCoreMeshName(meshID);
             if (GetContainsWeaponName(tokens, nameToSend))
             {
-				//in the editor environment there may be no game manager
-			   bool alwaysShowWeapon = false;
-			   if (!GetGameActorProxy().IsInSTAGE())
-			   {
-				   dtUtil::ConfigProperties& configParams = GetGameActorProxy().GetGameManager()->GetConfiguration();
-				   alwaysShowWeapon = dtUtil::ToType<bool>(configParams.GetConfigPropertyValue(CONFIG_ALWAYS_SHOW_WEAPON, "false"));
-			   }
+               //in the editor environment there may be no game manager
+               bool alwaysShowWeapon = false;
+               if (!GetGameActorProxy().IsInSTAGE())
+               {
+                  dtUtil::ConfigProperties& configParams = GetGameActorProxy().GetGameManager()->GetConfiguration();
+                  alwaysShowWeapon = dtUtil::ToType<bool>(configParams.GetConfigPropertyValue(CONFIG_ALWAYS_SHOW_WEAPON, "false"));
+               }
                
 
                bool visibleWeapon = alwaysShowWeapon || (*mPrimaryWeaponStateEnum == HumanActorProxy::WeaponStateEnum::FIRING_POSITION)
@@ -1331,6 +1333,11 @@ namespace SimCore
             EffectList mEffects;
             mutable std::deque<dtUtil::RefString> mReplacementQueue;
       };
+
+      ////////////////////////////////////////////////////////////////////////////
+      void Human::GetWeaponMuzzles(std::vector<osg::Group*>& listToFill)
+      {
+      }
 
       ////////////////////////////////////////////////////////////////////////////
       const dtAnim::Animatable* Human::ApplyOperatorAndGetAnimatable(const dtAI::Operator& op)

@@ -56,7 +56,7 @@
 #include <Actors/FortActor.h>
 #include <Actors/FireBallActor.h>
 
-#include <Components/WeaponComponent.h>
+#include <SimCore/ActComps/WeaponInventoryActComp.h>
 
 #include <dtPhysics/physicshelper.h>
 
@@ -68,6 +68,7 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////////////
    EnemyHelixActor::EnemyHelixActor(SimCore::Actors::BasePhysicsVehicleActorProxy &proxy)
       : BaseEnemyActor(proxy)
+      , mTimeSinceLastFire()
    {
       mAIHelper = new EnemyHelixAIHelper();
       
@@ -129,48 +130,29 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////////////
    void EnemyHelixActor::OnRemovedFromWorld()
    {
-      if(mWeaponProxy.valid())
-      {
-         GetGameActorProxy().GetGameManager()->DeleteActor(*mWeaponProxy);
-      }
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
    void EnemyHelixActor::InitWeapon()
    {
-      // Get the weapon component that is used to create weapons.
-      WeaponComponent* weaponComp = NULL;
-      GetGameActorProxy().GetGameManager()->GetComponentByName(WeaponComponent::DEFAULT_NAME, weaponComp);
+      dtCore::RefPtr<SimCore::ActComps::WeaponInventoryActComp> weaponInv = new SimCore::ActComps::WeaponInventoryActComp;
 
-      if(weaponComp != NULL)
-      {
-         SimCore::Actors::WeaponActor* weapon = NULL;
+      dtCore::RefPtr<SimCore::ActComps::WeaponInventoryActComp::WeaponDescription> wd = new SimCore::ActComps::WeaponInventoryActComp::WeaponDescription;
 
-         // Create the primary weapon.
-         // --- This method will automatically add the created weapon to the world.
-         weaponComp->CreateWeapon("Weapon_MachineGun",
-            "Particle_System_Weapon_GunWithTracer",
-            "weapon_gun_flash.osg", weapon);
+      wd->SetWeaponPrototypeName("Weapon_MachineGun");
+      wd->SetShooterPrototypeName("Particle_System_Weapon_GunWithTracer");
+      wd->SetFiringParticleSystem(dtDAL::ResourceDescriptor("Particles:weapon_gun_flash.osg"));
+      wd->SetWeaponSwapRootNode("dof_hotspot_01");
 
-         // Customize the new weapon.
-         if(weapon != NULL)
-         {
-            // Attach the weapon to this object.
-            weapon->SetOwner(&GetGameActorProxy());
-            AddChild(weapon, "dof_hotspot_01");
+      AddComponent(*weaponInv);
 
-            // Maintain references to the weapon and its proxy.
-            mWeapon = weapon;
-            mWeaponProxy = static_cast<SimCore::Actors::WeaponActorProxy*>(&weapon->GetGameActorProxy());
+      dtCore::RefPtr<SimCore::Actors::WeaponActor> weapon;
 
-            //slow down the rate of fire
-            mWeapon->SetFireRate(0.65f);
-         }
-      }
-      else
-      {
-         LOG_ERROR("Could not find Weapon Component to create weapon.");
-      }
+      weaponInv->CreateAndAddWeapon(*wd, true)->mWeapon->GetActor(weapon);
+
+      //slow down the rate of fire
+      weapon->SetFireRate(0.65f);
+
    }
 
    //////////////////////////////////////////////////////////////////////
@@ -249,7 +231,7 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////////////
    void EnemyHelixActor::Shoot(float timeLeft)
    {
-      if(mWeapon.valid())
+      if(GetComponent<SimCore::ActComps::WeaponInventoryActComp>() != NULL)
       {
 
          //TODO- THIS DOESNT WORK, HOW DO WE ORIENT THE LASER
@@ -314,7 +296,7 @@ namespace NetDemo
       mAIHelper->PreSync(trans);
 
       ////////let the AI do its thing
-      mAIHelper->Update(tickMessage.GetDeltaSimTime());     
+      mAIHelper->Update(tickMessage.GetDeltaSimTime());
 
 
       EnemyHelixAIHelper* helix = dynamic_cast<EnemyHelixAIHelper*>(mAIHelper.get());
@@ -345,7 +327,7 @@ namespace NetDemo
       BaseClass::OnTickLocal(tickMessage);
 
       mTimeSinceLastFire += tickMessage.GetDeltaSimTime();
-      mWeapon->SetTriggerHeld(false);
+      GetComponent<SimCore::ActComps::WeaponInventoryActComp>()->StopFiring();
    }
 
    //////////////////////////////////////////////////////////////////////

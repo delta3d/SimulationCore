@@ -364,7 +364,7 @@ namespace NetDemo
             {
                std::stringstream ss;
                ss << "\n\tHUDScreen could not find DebugInfo line \"DebugInfo_" << (index+1) << "\"\n\n";
-               printf(ss.str().c_str());
+               printf("%s", ss.str().c_str());
             }
          //}
       }

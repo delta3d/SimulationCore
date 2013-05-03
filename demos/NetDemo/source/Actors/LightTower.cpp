@@ -58,7 +58,6 @@
 #include <Actors/FortActor.h>
 #include <Actors/EnemyHelix.h>
 #include <Actors/EnemyMine.h>
-#include <Components/WeaponComponent.h>
 
 //for debug printouts
 #include <iostream>

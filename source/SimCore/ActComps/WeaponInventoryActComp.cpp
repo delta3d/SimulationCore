@@ -1,6 +1,6 @@
 /* -*-c++-*-
  * SimulationCore
- * Copyright 2010, Alion Science and Technology
+ * Copyright 2012, David Guthrie
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -16,19 +16,23 @@
  * along with this library; if not, write to the Free Software Foundation, Inc.,
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * This software was developed by Alion Science and Technology Corporation under
- * circumstances in which the U. S. Government may have rights in the software.
- *
  * David Guthrie
  */
 #include <prefix/SimCorePrefix.h>
 #include <SimCore/ActComps/WeaponInventoryActComp.h>
+#include <SimCore/Actors/EntityActorRegistry.h>
+#include <SimCore/Actors/WeaponFlashActor.h>
 #include <dtUtil/nodecollector.h>
-#include <dtDAL/propertymacros.h>
-#include <dtDAL/project.h>
+#include <dtCore/propertymacros.h>
+#include <dtCore/project.h>
+
+#include <dtCore/arrayactorpropertycomplex.h>
+#include <dtCore/propertycontaineractorproperty.h>
 
 #include <osgSim/DOFTransform>
 #include <SimCore/Actors/IGActor.h>
+
+#include <dtGame/cascadingdeleteactorcomponent.h>
 
 #include <algorithm>
 
@@ -37,20 +41,61 @@ namespace SimCore
 
    namespace ActComps
    {
+
+      WeaponInventoryActComp::WeaponDescription::WeaponDescription()
+      : mWeaponPrototypeName("")
+      , mShooterPrototypeName("")
+      , mWeaponSwapRootNode("dof_gun_01")
+      , mWeaponHotSpotNode("hotspot_01")
+      {
+         typedef dtDAL::PropertyRegHelper<WeaponInventoryActComp::WeaponDescription&, WeaponInventoryActComp::WeaponDescription> PropRegType;
+         PropRegType propRegHelper(*this, this, "WeaponDescription");
+
+         DT_REGISTER_PROPERTY(
+            WeaponSwapRootNode,
+            "The name of the group node to look for to use as the root of the weapon.  Set this to the hotspot name if your weapon actor has no mesh.",
+            PropRegType, propRegHelper);
+
+         DT_REGISTER_PROPERTY(
+            WeaponPrototypeName,
+            "The name of the weapon prototype actor to create.  If you want the weapon to have a mesh to swap, assign it to this actor prototype.",
+            PropRegType, propRegHelper);
+
+         DT_REGISTER_PROPERTY(
+            ShooterPrototypeName,
+            "The name of the shooter prototype actor to create",
+            PropRegType, propRegHelper);
+
+         DT_REGISTER_PROPERTY(
+            WeaponHotSpotNode,
+            "The name of the node to look for to use as the fire position of the weapon.  If the weapon actor has a mesh, it will look there, otherwise on this actor.",
+            PropRegType, propRegHelper);
+
+
+         DT_REGISTER_RESOURCE_PROPERTY(dtDAL::DataType::PARTICLE_SYSTEM,
+                  FiringParticleSystem,
+            "Firing Particle System",
+            "The particle system to use for firing",
+            PropRegType, propRegHelper);
+      }
+
+      WeaponInventoryActComp::WeaponDescription::~WeaponDescription()
+      {
+      }
+
+      DT_IMPLEMENT_ACCESSOR(WeaponInventoryActComp::WeaponDescription, std::string, WeaponPrototypeName);
+      DT_IMPLEMENT_ACCESSOR(WeaponInventoryActComp::WeaponDescription, std::string, ShooterPrototypeName);
+      DT_IMPLEMENT_ACCESSOR(WeaponInventoryActComp::WeaponDescription, std::string, WeaponSwapRootNode);
+      DT_IMPLEMENT_ACCESSOR(WeaponInventoryActComp::WeaponDescription, std::string, WeaponHotSpotNode);
+      DT_IMPLEMENT_ACCESSOR(WeaponInventoryActComp::WeaponDescription, dtCore::ResourceDescriptor, FiringParticleSystem);
+
       const dtGame::ActorComponent::ACType WeaponInventoryActComp::TYPE("WeaponInventoryActComp");
 
       //////////////////////////////////////////////////////////////////////////
       WeaponInventoryActComp::WeaponInventoryActComp()
       : dtGame::ActorComponent(TYPE)
-      , mWeaponName("Default")
-      , mWeaponSwapRootNode("dof_gun_01")
-      , mWeaponHotSpotDOF("hotspot_01")
-      , mHasWeapon(false)
-      , mSwitchWeapons(false)
       , mCurrentWeapon()
-      , mWeaponToSwitchTo()
       , mWeapons()
-      , mNodeCollector()
       {
       }
 
@@ -61,223 +106,170 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      DT_IMPLEMENT_ACCESSOR_GETTER(WeaponInventoryActComp, std::string, WeaponName);
-      DT_IMPLEMENT_ACCESSOR_GETTER(WeaponInventoryActComp, std::string, WeaponSwapRootNode);
-      DT_IMPLEMENT_ACCESSOR_GETTER(WeaponInventoryActComp, std::string, WeaponHotSpotDOF);
-      DT_IMPLEMENT_ACCESSOR_GETTER(WeaponInventoryActComp, dtDAL::ResourceDescriptor, WeaponSwapMesh);
-
-      //////////////////////////////////////////////////////////////////////////
-      void WeaponInventoryActComp::SetWeaponName(const std::string& name)
-      {
-         mWeaponName = name;
-      }
-      
-      //////////////////////////////////////////////////////////////////////////
-      void WeaponInventoryActComp::SetWeaponSwapRootNode(const std::string& nodeName)
-      {
-         mWeaponSwapRootNode = nodeName;
-      }
-
-      //////////////////////////////////////////////////////////////////////////
-      void WeaponInventoryActComp::SetWeaponSwapMesh(const dtDAL::ResourceDescriptor& rd)
-      {
-         mWeaponSwapMesh = rd;
-      }
-
-      //////////////////////////////////////////////////////////////////////////
-      void WeaponInventoryActComp::SetWeaponHotSpotDOF(const std::string& rd)
-      {
-         mWeaponHotSpotDOF = rd;
-      }
-
-
-      //////////////////////////////////////////////////////////////////////////
-      dtUtil::NodeCollector* WeaponInventoryActComp::GetNodeCollector()
-      {
-         return mNodeCollector.get();
-      }
-
-      //////////////////////////////////////////////////////////////////////////
-      void WeaponInventoryActComp::SetNodeCollector( dtUtil::NodeCollector* nodeCollector )
-      {
-         mNodeCollector = nodeCollector;
-      }
-
-      //////////////////////////////////////////////////////////////////////////
       void WeaponInventoryActComp::BuildPropertyMap()
       {
+         static const dtUtil::RefString GROUPNAME("Weapon Inventory");
          typedef dtDAL::PropertyRegHelper<WeaponInventoryActComp&, WeaponInventoryActComp> PropRegType;
-         PropRegType propRegHelper(*this, this, "WeaponSwap");
+         PropRegType propRegHelper(*this, this, GROUPNAME);
 
-         DT_REGISTER_PROPERTY(
-            WeaponSwapRootNode,
-            "The name of the group node to look for to use as the root of the weapon",
-            PropRegType, propRegHelper);
+         typedef dtCore::ArrayActorPropertyComplex<dtCore::RefPtr<WeaponInventoryActComp::WeaponDescription> > WeaponDescPropType;
+         dtCore::RefPtr<WeaponDescPropType> arrayProp =
+                  new WeaponDescPropType
+                     ("Weapons", "Weapons",
+                      WeaponDescPropType::SetFuncType(this, &WeaponInventoryActComp::SetWeaponDescription),
+                      WeaponDescPropType::GetFuncType(this, &WeaponInventoryActComp::GetWeaponDescription),
+                      WeaponDescPropType::GetSizeFuncType(this, &WeaponInventoryActComp::GetNumWeaponDescriptions),
+                      WeaponDescPropType::InsertFuncType(this, &WeaponInventoryActComp::InsertWeaponDescription),
+                      WeaponDescPropType::RemoveFuncType(this, &WeaponInventoryActComp::RemoveWeaponDescription),
+                      "Tests the array with a property container by having a container that refers back to itself recursively.",
+                      GROUPNAME
+                     );
 
-         DT_REGISTER_PROPERTY(
-            WeaponName,
-            "The unique name of the weapon or weapon type",
-            PropRegType, propRegHelper);
+         dtCore::RefPtr<dtCore::BasePropertyContainerActorProperty> propContainerProp =
+                  new dtCore::SimplePropertyContainerActorProperty<WeaponInventoryActComp::WeaponDescription>("NestedPropContainer",
+                           "Nested Property Container",
+                           dtCore::SimplePropertyContainerActorProperty<WeaponInventoryActComp::WeaponDescription>::SetFuncType(arrayProp.get(), &WeaponDescPropType::SetCurrentValue),
+                           dtCore::SimplePropertyContainerActorProperty<WeaponInventoryActComp::WeaponDescription>::GetFuncType(arrayProp.get(), &WeaponDescPropType::GetCurrentValue),
+                           "", GROUPNAME);
 
-         DT_REGISTER_PROPERTY(
-            WeaponHotSpotDOF,
-            "The name of the DOF node to look for to use as the fire position of the weapon",
-            PropRegType, propRegHelper);
+         arrayProp->SetArrayProperty(*propContainerProp);
+         AddProperty(arrayProp);
 
-
-         DT_REGISTER_RESOURCE_PROPERTY(dtDAL::DataType::STATIC_MESH,
-            WeaponSwapMesh,
-            "Weapon Swap Mesh",
-            "The weapon mesh resource to use instead of the one in the model.",
-            PropRegType, propRegHelper);
       }
 
       //////////////////////////////////////////////////////////////////////////
       void WeaponInventoryActComp::OnEnteredWorld()
       {
          BaseClass::OnEnteredWorld();
-         if (!mNodeCollector.valid())
-         {
-            dtGame::GameActor* owner;
-            GetOwner(owner);
-            SetNodeCollector(new dtUtil::NodeCollector(owner->GetOSGNode(), dtUtil::NodeCollector::AllNodeTypes));
-         }
 
-         if(mWeaponSwapMesh != dtDAL::ResourceDescriptor::NULL_RESOURCE)
-         {
-            //we will configure a default weapon to use if the resource   
-            bool weaponAdded = AddWeapon(mWeaponName, mWeaponHotSpotDOF, mWeaponSwapMesh);
-            if(weaponAdded)
-            {
-               mWeaponToSwitchTo = FindWeapon(mWeaponName);
-               if(mWeaponToSwitchTo != NULL)
-               {
-                  //swap weapon is supposed to do determine if we need to unattch and do this for us but 
-                  //in cases where we start with a weapon we have to clear out the dof children 
-                  UnAttachWeapon();
-                  SwapWeapon();
-               }
-            }
-         }
+         CreateWeaponsFromDescriptions();
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void WeaponInventoryActComp::CreateWeapon(dtCore::RefPtr<WeaponDescription>& wd)
+      {
+         CreateAndAddWeapon(*wd, false);
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void WeaponInventoryActComp::CreateWeaponsFromDescriptions()
+      {
+         ForEachWeaponDescription(dtUtil::MakeFunctor(&WeaponInventoryActComp::CreateWeapon, this));
+         SelectNextWeapon();
       }
 
       //////////////////////////////////////////////////////////////////////////
       void WeaponInventoryActComp::OnRemovedFromWorld()
       {
          BaseClass::OnRemovedFromWorld();
-         mNodeCollector = NULL;
          mWeapons.clear();
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void WeaponInventoryActComp::SwapWeapon()
+      WeaponInventoryActComp::WeaponData* WeaponInventoryActComp::CreateAndAddWeapon(WeaponDescription& wd, bool makeCurrent)
       {
-         dtGame::GameActor* owner;
+         SimCore::Actors::IGActor* owner;
          GetOwner(owner);
-         if(owner != NULL)
+         if (owner == NULL)
          {
-            if(mHasWeapon)
+            return NULL;
+         }
+
+         dtGame::GameManager* gm = owner->GetGameActorProxy().GetGameManager();
+
+
+         dtCore::RefPtr<SimCore::Actors::WeaponActorProxy> weaponActor;
+         gm->CreateActorFromPrototype(wd.GetWeaponPrototypeName(), weaponActor);
+
+         if (!weaponActor.valid())
+         {
+            LOG_ERROR("No weapon actor prototype named \"" + wd.GetWeaponPrototypeName() + "\" could be found.");
+            return false;
+         }
+
+         SimCore::Actors::WeaponActor* outWeapon = NULL;
+         weaponActor->GetActor(outWeapon);
+
+         // Place the weapon into the world
+         gm->AddActor(*weaponActor, false, false);
+         outWeapon->SetOwner(&owner->GetGameActorProxy());
+         outWeapon->Emancipate();
+
+         if (!owner->IsRemote())
+         {
+
+            dtCore::RefPtr<SimCore::Actors::MunitionParticlesActorProxy> shooterActor;
+            gm->CreateActorFromPrototype(wd.GetShooterPrototypeName(), shooterActor);
+
+            if (!shooterActor.valid())
             {
-               UnAttachWeapon();
+               LOG_ERROR("No shooter actor prototype named \"" + wd.GetShooterPrototypeName() + "\" could be found.");
+               return false;
             }
 
-            AttachWeapon(mWeaponToSwitchTo.get());
-            
-            mSwitchWeapons = false;
-            mWeaponToSwitchTo = NULL;
-         }
-      }
+            SimCore::Actors::MunitionParticlesActor* shooter = NULL;
+            shooterActor->GetActor(shooter);
 
-      ////////////////////////////////////////////////////////////////////////////////
-      void WeaponInventoryActComp::Update()
-      {
-         if(mSwitchWeapons)
-         {
-            SwapWeapon();
-         }
-      }
+            // Place the shooter into the world
+            gm->AddActor(*shooterActor, false, false);
+            shooter->Emancipate();
 
-      ////////////////////////////////////////////////////////////////////////////////
-      bool WeaponInventoryActComp::AttachWeapon(WeaponDescription* wp)
-      {
-         if(mNodeCollector.valid())
-         {
-            osgSim::DOFTransform* dof = mNodeCollector->GetDOFTransform(mWeaponSwapRootNode);
-            if(dof != NULL)
+            // Delete the weapons when the actor is deleted.
+            dtGame::CascadingDeleteActorComponent::Connect(owner->GetGameActorProxy(), *weaponActor);
+
+
+            dtGame::CascadingDeleteActorComponent::Connect(owner->GetGameActorProxy(), *shooterActor);
+
+            outWeapon->SetShooter(shooterActor.get());
+
+            // Set other properties of the particle system
+            shooter->SetWeapon(*outWeapon);
+
+            // HACK: temporary play values
+            shooter->SetFrequencyOfTracers(outWeapon->GetTracerFrequency());
+
+            // Attach the shooter to the weapon's flash point
+            // the interesting part about this is that if the weapon does not have a mesh
+            // it will just add  to the root and the weapon will be at the hotspot no trouble.
+            outWeapon->AddChild(shooter, wd.GetWeaponHotSpotNode());
+
+            if (!wd.GetFiringParticleSystem().IsEmpty())
             {
-               dof->addChild(wp->mRootNode.get());
-
-               // Get access to the hot spot on the weapon model
-               dtCore::RefPtr<dtUtil::NodeCollector> weaponNodeCollector
-                  = new dtUtil::NodeCollector(wp->mRootNode.get(), dtUtil::NodeCollector::DOFTransformFlag);
-               osgSim::DOFTransform* hotspotDof = weaponNodeCollector->GetDOFTransform(wp->mHotSpotName);
-
-               if( hotspotDof != NULL )
-               {
-                  //note: this function only works if the dof hot spot has the same name on both weapons
-                  mNodeCollector->AddDOFTransform(wp->mHotSpotName, *hotspotDof);
-               }
-
-               mCurrentWeapon = wp;
-               mHasWeapon = true;
-               return true;
-            }
-         }
-         return false;
-      }
-
-      void WeaponInventoryActComp::UnAttachWeapon()
-      {
-         if(mNodeCollector.valid())
-         {
-            osgSim::DOFTransform* dof = mNodeCollector->GetDOFTransform(mWeaponSwapRootNode);
-            if(dof != NULL)
-            {
-               // clear all children of dof before adding the gun.
-               dof->removeChildren(0, dof->getNumChildren());
-
-               mNodeCollector->RemoveDOFTransform(mWeaponHotSpotDOF);
-               mHasWeapon = false;
-            }
-         }
-      }  
-
-      bool WeaponInventoryActComp::AddWeapon(const std::string weaponName, const std::string& weaponHotspotName, const dtDAL::ResourceDescriptor& meshToLoad)
-      {
-         bool isModelLoaded = false;
-         dtCore::RefPtr<osg::Node> newModel;
-
-         if (meshToLoad != dtDAL::ResourceDescriptor::NULL_RESOURCE)
-         {
-            const std::string& weaponFileName = dtDAL::Project::GetInstance().GetResourcePath(meshToLoad);
-
-            isModelLoaded = SimCore::Actors::IGActor::LoadFileStatic(weaponFileName, newModel, newModel, false);
-
-            if(isModelLoaded)
-            {
-               // Get access to the hot spot on the weapon model
-               dtCore::RefPtr<dtUtil::NodeCollector> weaponNodeCollector = new dtUtil::NodeCollector(newModel.get(), dtUtil::NodeCollector::DOFTransformFlag);
-               osgSim::DOFTransform* hotspotDof = weaponNodeCollector->GetDOFTransform(weaponHotspotName);
-
-               if(hotspotDof != NULL)
-               {
-                  dtCore::RefPtr<WeaponDescription> weaponDesc = new WeaponDescription();
-                  weaponDesc->mWeaponName = weaponName;  
-                  weaponDesc->mHotSpotName = weaponHotspotName;
-                  weaponDesc->mRootNode = newModel.get();
-                  weaponDesc->mWeaponSwapNode = hotspotDof;
-
-                  mWeapons.push_back(weaponDesc);
-                  return true;
-               }
+               std::string particleEffectFile = dtCore::Project::GetInstance().GetResourcePath(wd.GetFiringParticleSystem());
+               // Create the flash effect for the weapon
+               SimCore::Actors::WeaponFlashActor* flashDrawable = NULL;
+               dtCore::RefPtr<SimCore::Actors::WeaponFlashActorProxy> flashActor;
+               gm->CreateActor(*SimCore::Actors::EntityActorRegistry::WEAPON_FLASH_ACTOR_TYPE, flashActor);
+               flashActor->GetDrawable(flashDrawable);
+               flashDrawable->SetParticleEffect(particleEffectFile);
+               outWeapon->SetFlashActorProxy(flashActor);
+               outWeapon->AddChild(flashDrawable, wd.GetWeaponHotSpotNode());
+               gm->AddActor(*flashActor, false, false);
+               dtGame::CascadingDeleteActorComponent::Connect(*weaponActor, *flashActor);
             }
          }
 
-         return false;
+         mWeapons.push_back(new WeaponData);
+         dtCore::RefPtr<WeaponData>& weaponData = mWeapons.back();
+         weaponData->mDescription = &wd;
+         weaponData->mWeapon = weaponActor;
+
+         if (makeCurrent)
+         {
+            SelectWeapon(weaponData);
+         }
+
+         return weaponData.get();
       }
 
-      void WeaponInventoryActComp::NextWeapon()
+
+      void WeaponInventoryActComp::SelectNextWeapon()
       {
+         if (mCurrentWeapon == NULL && !mWeapons.empty())
+         {
+            SelectWeapon(mWeapons[0]);
+         }
+
          if(mWeapons.size() > 1)
          {
             int index = FindWeaponIndex(mCurrentWeapon);
@@ -289,12 +281,17 @@ namespace SimCore
                   index = 0;
                }
             }
-            SetNextWeapon(mWeapons[index]);
+            SelectWeapon(mWeapons[index]);
          }
       }
 
-      void WeaponInventoryActComp::PreviousWeapon()
+      void WeaponInventoryActComp::SelectPreviousWeapon()
       {
+         if (mCurrentWeapon == NULL && !mWeapons.empty())
+         {
+            SelectWeapon(mWeapons[0]);
+         }
+
          if(mWeapons.size() > 1)
          {
             int index = FindWeaponIndex(mCurrentWeapon);
@@ -308,30 +305,54 @@ namespace SimCore
                {
                   index = mWeapons.size() - 1;
                }
-               SetNextWeapon(mWeapons[index]);
+               SelectWeapon(mWeapons[index]);
             }
          }
       }
 
       void WeaponInventoryActComp::SelectWeapon( const std::string& weaponName )
       {
-         WeaponDescription* wp = FindWeapon(weaponName);
-         if(wp != NULL)  
+         SelectWeapon(FindWeapon(weaponName));
+      }
+
+      void WeaponInventoryActComp::SelectWeapon(WeaponData* wd)
+      {
+         SimCore::Actors::IGActor* owner = NULL;
+         GetOwner(owner);
+         if (owner == NULL)
          {
-            SetNextWeapon(wp);
+            return;
+         }
+
+         if (mCurrentWeapon.valid() && mCurrentWeapon->mWeapon.valid())
+         {
+            StopFiring();
+            owner->RemoveChild(mCurrentWeapon->mWeapon->GetDrawable());
+         }
+
+         if (wd != NULL && wd->mWeapon != NULL && wd->mDescription != NULL)
+         {
+            owner->AddChild(wd->mWeapon->GetDrawable(), wd->mDescription->GetWeaponSwapRootNode());
+            mCurrentWeapon = wd;
          }
       }
+
 
       bool WeaponInventoryActComp::HasWeapon( const std::string& weaponName ) const
       {
          return FindWeapon(weaponName) != NULL;
       }
 
-      const std::string& WeaponInventoryActComp::GetCurrentWeapon() const
+      WeaponInventoryActComp::WeaponData* WeaponInventoryActComp::GetCurrentWeapon() const
       {
-         if(mCurrentWeapon.valid())
+         return mCurrentWeapon.get();
+      }
+
+      const std::string& WeaponInventoryActComp::GetCurrentWeaponName() const
+      {
+         if (mCurrentWeapon.valid())
          {
-            return mCurrentWeapon->mWeaponName;
+            return mCurrentWeapon->mDescription->GetWeaponPrototypeName();
          }
          
          static std::string emptyString;
@@ -342,9 +363,9 @@ namespace SimCore
       {
          CompareWeaponByName(const std::string& str): mName(str) {}
 
-         bool operator()(const dtCore::RefPtr<WeaponInventoryActComp::WeaponDescription>& wp)
+         bool operator()(const dtCore::RefPtr<WeaponInventoryActComp::WeaponData>& wp)
          {
-            return mName == wp->mWeaponName;
+            return mName == wp->mDescription->GetWeaponPrototypeName();
          }
 
          const std::string& mName;
@@ -352,36 +373,44 @@ namespace SimCore
 
       void WeaponInventoryActComp::RemoveWeapon( const std::string& weaponName )
       {
-         if(mCurrentWeapon.valid() && mCurrentWeapon->mWeaponName == weaponName)
+
+         if (mCurrentWeapon.valid() && mCurrentWeapon->mDescription->GetWeaponPrototypeName() == weaponName)
          {
-            UnAttachWeapon();
+            SimCore::Actors::IGActor* owner = NULL;
+            GetOwner(owner);
+            if (owner == NULL)
+            {
+               return;
+            }
+
+            owner->RemoveChild(mCurrentWeapon->mWeapon->GetDrawable());
          }
 
          CompareWeaponByName compareWeaponByName(weaponName);
          mWeapons.erase(std::remove_if(mWeapons.begin(), mWeapons.end(), compareWeaponByName), mWeapons.end());
       }
 
-      WeaponInventoryActComp::WeaponDescription* WeaponInventoryActComp::FindWeapon( const std::string& weaponName )
+      WeaponInventoryActComp::WeaponData* WeaponInventoryActComp::FindWeapon( const std::string& weaponName )
       {
-         for(unsigned i = 0; i < mWeapons.size(); ++i)
+         CompareWeaponByName compareWeaponByName(weaponName);
+         WeaponVector::iterator i = std::find_if(mWeapons.begin(), mWeapons.end(), compareWeaponByName);
+         if (i != mWeapons.end())
          {
-            if(mWeapons[i]->mWeaponName == weaponName)
-            {
-               return mWeapons[i];
-            }
+            return i->get();
          }
+
          return NULL;
       }
 
-      const WeaponInventoryActComp::WeaponDescription* WeaponInventoryActComp::FindWeapon( const std::string& weaponName ) const
+      const WeaponInventoryActComp::WeaponData* WeaponInventoryActComp::FindWeapon( const std::string& weaponName ) const
       {
-         for(unsigned i = 0; i < mWeapons.size(); ++i)
+         CompareWeaponByName compareWeaponByName(weaponName);
+         WeaponVector::const_iterator i = std::find_if(mWeapons.begin(), mWeapons.end(), compareWeaponByName);
+         if (i != mWeapons.end())
          {
-            if(mWeapons[i]->mWeaponName == weaponName)
-            {
-               return mWeapons[i];
-            }
+            return i->get();
          }
+
          return NULL;
       }
 
@@ -389,7 +418,7 @@ namespace SimCore
       {
          for(unsigned i = 0; i < mWeapons.size(); ++i)
          {
-            if(mWeapons[i]->mWeaponName == weaponName)
+            if(mWeapons[i]->mDescription->GetWeaponPrototypeName() == weaponName)
             {
                return i;
             }
@@ -398,11 +427,11 @@ namespace SimCore
          return -1;
       }
 
-      int WeaponInventoryActComp::FindWeaponIndex( const WeaponDescription* wp ) const
+      int WeaponInventoryActComp::FindWeaponIndex( const WeaponData* wp ) const
       {
          for(unsigned i = 0; i < mWeapons.size(); ++i)
          {
-            if(mWeapons[i]->mWeaponName == wp->mWeaponName)
+            if(mWeapons[i] == wp)
             {
                return i;
             }
@@ -416,11 +445,32 @@ namespace SimCore
          return mWeapons.size();
       }
 
-      void WeaponInventoryActComp::SetNextWeapon(WeaponDescription* wp)
+      void WeaponInventoryActComp::StartFiring()
       {
-         mWeaponToSwitchTo = wp; 
-         mSwitchWeapons = true;
+         if (mCurrentWeapon.valid() && mCurrentWeapon->mWeapon.valid())
+         {
+            SimCore::Actors::WeaponActor* weaponDrawable;
+            mCurrentWeapon->mWeapon->GetDrawable(weaponDrawable);
+            weaponDrawable->SetTriggerHeld(true);
+            //if (weaponDrawable->GetFireRate() <= 0.0)
+            //{
+               weaponDrawable->Fire();
+            //}
+         }
       }
+
+      void WeaponInventoryActComp::StopFiring()
+      {
+         if (mCurrentWeapon.valid() && mCurrentWeapon->mWeapon.valid())
+         {
+            SimCore::Actors::WeaponActor* weaponDrawable;
+            mCurrentWeapon->mWeapon->GetDrawable(weaponDrawable);
+            weaponDrawable->SetTriggerHeld(false);
+         }
+      }
+
+
+      DT_IMPLEMENT_ARRAY_ACCESSOR(WeaponInventoryActComp, dtCore::RefPtr<WeaponInventoryActComp::WeaponDescription>, WeaponDescription, WeaponDescriptions, new WeaponInventoryActComp::WeaponDescription);
 
    }
 

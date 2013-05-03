@@ -69,10 +69,6 @@
 #include <SimCore/CommandLineObject.h>
 ///////////////////////////////////
 
-#ifdef AGEIA_PHYSICS
-   #include <NxAgeiaWorldComponent.h>
-#endif
-
 namespace DriverDemo
 {
    //////////////////////////////////////////////////////////////////////////

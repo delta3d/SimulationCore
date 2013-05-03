@@ -113,7 +113,7 @@ namespace DriverDemo
       FinalizeParser();
 
       // turn off showing the cursor
-      gameManager.GetApplication().GetWindow()->ShowCursor(false);
+      gameManager.GetApplication().GetWindow()->SetShowCursor(false);
 
       // call base class
       BaseClass::OnStartup(app);

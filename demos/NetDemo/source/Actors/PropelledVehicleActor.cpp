@@ -42,6 +42,7 @@
 
 #include <SimCore/Components/RenderingSupportComponent.h>
 #include <SimCore/ApplyShaderVisitor.h>
+#include <SimCore/ActComps/WeaponInventoryActComp.h>
 #include <dtGame/drpublishingactcomp.h>
 #include <dtGame/deadreckoninghelper.h>
 #include <dtGame/messagetype.h>
@@ -234,6 +235,8 @@ namespace NetDemo
       drPublishingActComp->SetMaxUpdateSendRate(5.0f);
       drPublishingActComp->SetMaxTranslationError(0.0001f);
       drPublishingActComp->SetMaxRotationError(0.5f);
+
+      AddComponent(*new SimCore::ActComps::WeaponInventoryActComp);
    }
 }
 

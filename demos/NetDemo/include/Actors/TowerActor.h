@@ -22,7 +22,6 @@
 *
 * @author Bradley Anderegg
 */
-//#ifdef AGEIA_PHYSICS
 #ifndef NETDEMO_TOWERACTOR
 #define NETDEMO_TOWERACTOR
 
@@ -99,8 +98,6 @@ namespace NetDemo
          float mSleepTime, mMaxSleepTime;
          dtCore::RefPtr<TowerAIHelper> mAIHelper;
          dtCore::RefPtr<dtAudio::Sound> mSndCollisionHit;
-         dtCore::RefPtr<SimCore::Actors::WeaponActor> mWeapon;
-         dtCore::RefPtr<SimCore::Actors::WeaponActorProxy> mWeaponProxy;
    };
 
    /// This is the proxy for the object.  It needs to build the property map, create the actor, and handle entered world.

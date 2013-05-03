@@ -219,7 +219,7 @@ namespace NetDemo
    /////////////////////////////////////////////////////////////////////////////
    void GUIComponent::ShowMouseCursor( bool enable )
    {
-      GetGameManager()->GetApplication().GetWindow()->ShowCursor( enable );
+      GetGameManager()->GetApplication().GetWindow()->SetShowCursor( enable );
    }
 
    /////////////////////////////////////////////////////////////////////////////
