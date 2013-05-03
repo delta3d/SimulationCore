@@ -269,8 +269,7 @@ void ReadIgnoreProplist(const std::string& path, std::vector<std::string>& resul
    c[fi.size] = '\0';
    std::string data(c);
 
-   dtUtil::StringTokenizer<IsEOL> tokenizer;
-   tokenizer.tokenize(resultingList, data);
+   dtUtil::StringTokenizer<IsEOL>::tokenize(resultingList, data);
 }
 
 /////////////////////////////////////////////////////////////////////
