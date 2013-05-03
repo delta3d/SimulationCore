@@ -87,7 +87,7 @@ int main(int argc, char** argv)
    osg::Timer_t start_tick = osg::Timer::instance()->tick();
 
 
-   osg::ref_ptr<LightCollector> lc = new LightCollector(node, removeLights);
+   osg::ref_ptr<LightCollector> lc = new LightCollector(node, bool(removeLights));
 
    if(verbose)
    {
@@ -119,7 +119,7 @@ int main(int argc, char** argv)
    
    if(bindShader)
    {
-      sb.BindShader(uniformName, useVertexColor);
+      sb.BindShader(uniformName, bool(useVertexColor));
    }
 
    //save file back out
