@@ -36,6 +36,8 @@
 #include <SimCore/Actors/DRGhostActor.h>
 #include <dtCore/refptr.h>
 
+#include <osgSim/DOFTransform>
+
 namespace dtAudio
 {
    class Sound;
@@ -61,8 +63,6 @@ namespace SimCore
       class HumanWithPhysicsActor;
       class HumanWithPhysicsActorProxy;
       class BasePhysicsVehicleActor;
-      //class NxAgeiaFourWheelVehicleActor;
-      //class NxAgeiaFourWheelVehicleActorProxy;
       class InteriorActor;
       class VehicleInterface;
    }
