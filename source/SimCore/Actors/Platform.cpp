@@ -817,7 +817,16 @@ namespace SimCore
 
          if (!rd.IsEmpty())
          {
-            fileName = dtDAL::Project::GetInstance().GetResourcePath(rd);
+            try
+            {
+                fileName = dtDAL::Project::GetInstance().GetResourcePath(rd);
+            }
+            catch (const dtCore::ProjectException& ex)
+            {
+                LOG_ERROR(ex.ToString());
+                // Not returning, which will make it clear any models on the actor, then keep running.
+                // It could return, but having no file is handled already, so I'm just going to let it be.
+            }
          }
 
          if (!fileName.empty())

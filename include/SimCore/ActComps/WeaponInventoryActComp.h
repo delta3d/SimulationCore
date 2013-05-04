@@ -41,7 +41,7 @@ namespace SimCore
 
          typedef dtGame::ActorComponent BaseClass;
 
-         class WeaponDescription : public dtCore::PropertyContainer
+         class SIMCORE_EXPORT WeaponDescription : public dtCore::PropertyContainer
          {
          public:
             WeaponDescription();
@@ -53,7 +53,7 @@ namespace SimCore
             DT_DECLARE_ACCESSOR(dtCore::ResourceDescriptor, FiringParticleSystem);
          };
 
-         class WeaponData : public osg::Referenced
+         class SIMCORE_EXPORT WeaponData : public osg::Referenced
          {
          public:
             dtCore::RefPtr<SimCore::Actors::WeaponActorProxy> mWeapon;
