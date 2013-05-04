@@ -102,6 +102,8 @@ namespace SimCore
                dtDAL::ResourceActorProperty* res = NULL;
                mPlatformWithPhysicsActorProxy->GetProperty(PlatformActorProxy::PROPERTY_MESH_NON_DAMAGED_ACTOR, res);
                dtDAL::ResourceDescriptor truck("StaticMeshes:NetDemo:Vehicles:Truck.ive");
+               dtDAL::ResourceDescriptor brokenresource("StaticMeshes:BrokenandNonexistent.ive");
+               CPPUNIT_ASSERT_NO_THROW_MESSAGE("Passing a missing resource should not throw an exception.", res->SetValue(brokenresource));
                res->SetValue(truck);
                mPlatformWithPhysicsActorProxy->GetProperty(PlatformActorProxy::PROPERTY_MESH_DAMAGED_ACTOR, res);
                res->SetValue(truck);
