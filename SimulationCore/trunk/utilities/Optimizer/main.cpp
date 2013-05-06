@@ -693,8 +693,7 @@ void ReadIgnoreProplist(const std::string& path, std::vector<std::string>& resul
 
    std::string data(c);
 
-   dtUtil::StringTokenizer<IsEOL> tokenizer;
-   tokenizer.tokenize(resultingList, data);
+   dtUtil::StringTokenizer<IsEOL>::tokenize(resultingList, data);
 }
 
 
