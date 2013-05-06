@@ -49,9 +49,6 @@
 #include <osg/MatrixTransform>
 #include <osg/PrimitiveSet>
 
-#include <iostream>
-#include <osg/io_utils>
-
 #include <dtPhysics/physicscomponent.h>
 #include <dtPhysics/palutil.h>
 #include <pal/palCollision.h>
