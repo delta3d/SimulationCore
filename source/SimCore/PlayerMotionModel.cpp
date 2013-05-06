@@ -86,7 +86,7 @@ namespace SimCore
             //CollideWithGround();
 
             // Physics update on the player
-            player->SetMovementTransform(movement);
+            //player->Walk(movement, 0.01);
          }
       }
    }
