@@ -328,6 +328,7 @@ namespace SimCore
          {
             StopFiring();
             owner->RemoveChild(mCurrentWeapon->mWeapon->GetDrawable());
+            mCurrentWeapon = NULL;
          }
 
          if (wd != NULL && wd->mWeapon != NULL && wd->mDescription != NULL)
