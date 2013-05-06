@@ -18,16 +18,12 @@
  *
  * This software was developed by Alion Science and Technology Corporation under
  * circumstances in which the U. S. Government may have rights in the software.
- * @author Allen Danklefsen, Curtiss Murphy
+ * Allen Danklefsen
  */
 #include <prefix/SimCorePrefix.h>
-#ifdef AGEIA_PHYSICS
-#include <NxAgeiaPhysicsHelper.h>
-#include <NxAgeiaWorldComponent.h>
-#else
+
 #include <dtPhysics/physicscomponent.h>
 #include <dtPhysics/bodywrapper.h>
-#endif
 
 #include <SimCore/Actors/PhysicsParticleSystemActor.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
@@ -50,8 +46,6 @@
 
 #include <osg/Group>
 #include <osg/MatrixTransform>
-
-#include <iostream>
 
 namespace SimCore
 {
@@ -255,7 +249,9 @@ namespace SimCore
          for(int i = 0 ; i < 5; i++)
          {
             if(!mPathOfFileToLoad[i].empty())
+            {
                ++numPaths;
+            }
          }
 
          if( numPaths <= 0 )
