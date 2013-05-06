@@ -172,38 +172,43 @@ namespace SimCore
       {
          if (nodeName.empty())
          {
-            BaseClass::AddChild(child);
-            return true;
+            return BaseClass::AddChild(child);
          }
 
-         osg::Group* group = NULL;
-
-         if (GetNodeCollector() == NULL)
+         if (child->GetOSGNode()->getNumParents() > 0)
          {
-            LoadNodeCollector();
+            return false;
          }
 
-         dtUtil::NodeCollector* nc = GetNodeCollector();
-
-         group = nc->GetMatrixTransform(nodeName);
-
-         if (group == NULL)
+         bool result = dtCore::DeltaDrawable::AddChild(child);
+         if (result)
          {
-            group = nc->GetDOFTransform(nodeName);
+             osg::Group* group = NULL;
+
+             if (GetNodeCollector() == NULL)
+             {
+                LoadNodeCollector();
+             }
+
+             dtUtil::NodeCollector* nc = GetNodeCollector();
+
+             group = nc->GetMatrixTransform(nodeName);
+
+             if (group == NULL)
+             {
+                group = nc->GetDOFTransform(nodeName);
+             }
+
+             if (group != NULL)
+             {
+                group->addChild(child->GetOSGNode());
+             }
+             else
+             {
+                GetOSGNode()->asGroup()->addChild(child->GetOSGNode());
+             }
          }
 
-         bool result = false;
-         if (group != NULL)
-         {
-            group->addChild(child->GetOSGNode());
-            result = true;
-         }
-         else
-         {
-            GetOSGNode()->asGroup()->addChild(child->GetOSGNode());
-         }
-
-         dtCore::DeltaDrawable::AddChild(child);
          return result;
       }
 
