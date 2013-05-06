@@ -585,11 +585,34 @@ namespace SimCore
          mAnimationHelper->GetSequenceMixer().RegisterAnimation(walkRunReady);
          mAnimationHelper->GetSequenceMixer().RegisterAnimation(walkRunDeployed);
 
+         dtAnim::AttachmentController& atcl = mAnimationHelper->GetAttachmentController();
+         for (unsigned i = 0; i < atcl.GetNumAttachments(); ++i)
+         {
+            AddChild(atcl.GetAttachment(i)->first, GetScaleMatrixTransform().getName());
+         }
+
          //initialize helper
          SetupPlannerHelper();
          UpdatePlanAndAnimations();
          UpdateWeapon();
+
+         SimCore::ActComps::WeaponInventoryActComp* weaponsAC = GetComponent<SimCore::ActComps::WeaponInventoryActComp>();
+         if (weaponsAC != NULL)
+         {
+            SimCore::ActComps::WeaponInventoryActComp::WeaponData* wd = weaponsAC->GetCurrentWeapon();
+            if (wd != NULL)
+            {
+                weaponsAC->SelectWeapon(NULL);
+            }
+         }
+
+         SetNodeCollector(NULL);
          LoadNodeCollector();
+                
+         if (weaponsAC != NULL)
+         {
+             weaponsAC->SelectNextWeapon();
+         }
       }
 
       ////////////////////////////////////////////////////////////////////////////

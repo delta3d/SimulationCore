@@ -147,13 +147,6 @@ namespace SimCore
       }
 */
       ////////////////////////////////////////////////////////////
-      void HumanWithPhysicsActor::SetMovementTransform(const osg::Vec3& movement)
-      {
-         //TODO: CURRENTLY NO LOCAL BEHAVIOR WITH dtPhysics in local mode
-
-      }
-
-      ////////////////////////////////////////////////////////////
       void HumanWithPhysicsActor::OnTickRemote(const dtGame::TickMessage& tickMessage)
       {
          Human::OnTickRemote(tickMessage);
@@ -194,43 +187,22 @@ namespace SimCore
 
          GetPhysicsActComp()->SetPrePhysicsCallback(dtPhysics::PhysicsActComp::UpdateCallback(this, &HumanWithPhysicsActor::PrePhysicsUpdate));
 
-         if (IsRemote())
+         dtPhysics::PhysicsObject* po = GetPhysicsActComp()->GetMainPhysicsObject();
+         // Human remote is a bad group name because the local behavior is the same.
+         po->SetCollisionGroup(CollisionGroup::GROUP_HUMAN_REMOTE);
+
+         // If the developer didn't set the origin offset to something.
+         // This is sort of a problem, because if the user WANTS no offset, they would have to set it to
+         // something really small, but not quite 0.
+         if (po->GetOriginOffset().length2() < FLT_EPSILON)
          {
-            dtPhysics::PhysicsObject* po = GetPhysicsActComp()->GetMainPhysicsObject();
-            po->SetCollisionGroup(CollisionGroup::GROUP_HUMAN_REMOTE);
-
-            // If the developer didn't set the origin offset to something.
-            // This is sort of a problem, because if the user WANTS no offset, they would have to set it to
-            // something really small, but not quite 0.
-            if (po->GetOriginOffset().length2() < FLT_EPSILON)
-            {
-               osg::Vec3 extents = po->GetExtents();
-               // Move the cylinder up half the height to sync up the origins.
-               po->SetOriginOffset(osg::Vec3(0.0f, 0.0f, (extents.x() / 2.0f) + extents.y()));
-            }
-
-
-            po->CreateFromProperties();
+            osg::Vec3 extents = po->GetExtents();
+            // Move the cylinder up half the height to sync up the origins.
+            po->SetOriginOffset(osg::Vec3(0.0f, 0.0f, (extents.x() / 2.0f) + extents.y()));
          }
-		 else
-		 {
-			dtCore::Transform xform;
-			GetTransform(xform);
-			
-			osg::Vec3 offset = xform.GetTranslation();
-			offset[2] += 0.9f; //so the character is centered at its origin
-			xform.SetTranslation(offset);
 
-			dtCore::RefPtr<dtPhysics::Geometry> charShape = dtPhysics::Geometry::CreateCapsuleGeometry(xform, 1.8f, 0.5f, 100.0f);
-			mCharacterController = new dtPhysics::CharacterController(*charShape);
-			mCharacterController->SetStepHeight(0.3);
-			mCharacterController->SetSkinWidth(0.04);
-			mCharacterController->SetMaxInclineAngle(60.0);
-			mCharacterController->Init();
-			
-			GetPhysicsActComp()->SetPostPhysicsCallback(
-               dtPhysics::PhysicsActComp::UpdateCallback(this, &HumanWithPhysicsActor::PostPhysicsUpdate));
-		 }
+
+         po->CreateFromProperties();
       }
 
       ////////////////////////////////////////////////////////////////////
@@ -241,59 +213,26 @@ namespace SimCore
          return physAC;
       }
 
+
       ////////////////////////////////////////////////////////////////////
       void HumanWithPhysicsActor::PrePhysicsUpdate()
       {
-		   dtCore::Transform xform;
-		   GetTransform(xform);
-
-		  if(IsRemote())
-		  {
-			 dtPhysics::PhysicsObject* physObj = GetPhysicsActComp()->GetMainPhysicsObject();
-			 if (physObj != NULL)
-			 {
-				physObj->SetTransformAsVisual(xform);
-			 }
-		  }
-		  else if (mCharacterController.valid())
-		  {
-			  osg::Vec3 offset = xform.GetTranslation();
-			  offset[2] += 0.9f; //so the character is centered at its origin
-
-			  mCharacterController->Warp(offset);
-		  }
+          dtCore::Transform xform;
+          GetTransform(xform);
+          dtPhysics::PhysicsObject* physObj = GetPhysicsActComp()->GetMainPhysicsObject();
+          if (physObj != NULL)
+          {
+             physObj->SetTransformAsVisual(xform);
+          }
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
       void HumanWithPhysicsActor::PostPhysicsUpdate()
       {
-         // This is ONLY called if we are LOCAL (we put the check here just in case... )
          if (!IsRemote())
          {
-			 
-		     dtCore::Transform xform;
-		     GetTransform(xform);
-
-			 osg::Vec3 newPos = mCharacterController->GetTranslation();
-			 newPos[2] -= 0.9f;
-			 xform.SetTranslation(newPos);
-
-			 SetTransform(xform);
          }
-
       }
-
-      //////////////////////////////////////////////////////////
-	  dtPhysics::CharacterController* HumanWithPhysicsActor::GetCharacterController()
-	  {
-		  return mCharacterController.get();
-	  }
-      
-	  //////////////////////////////////////////////////////////
-	  const dtPhysics::CharacterController* HumanWithPhysicsActor::GetCharacterController() const
-	  {
-		  return mCharacterController.get();
-	  }
 
       //////////////////////////////////////////////////////////
       // Proxy code
@@ -323,16 +262,13 @@ namespace SimCore
          {
             dtCore::RefPtr<dtPhysics::PhysicsActComp> physAC = new dtPhysics::PhysicsActComp();
 
-			if(IsRemote())
-			{
-				dtCore::RefPtr<dtPhysics::PhysicsObject> physicsObject = new dtPhysics::PhysicsObject("Body");
-				physicsObject->SetPrimitiveType(dtPhysics::PrimitiveType::CYLINDER);
-				physicsObject->SetMechanicsType(dtPhysics::MechanicsType::KINEMATIC);
-				physicsObject->SetCollisionGroup(SimCore::CollisionGroup::GROUP_HUMAN_LOCAL);
-				physicsObject->SetMass(100.0f);
-				physicsObject->SetExtents(osg::Vec3(1.8f, 0.5f, 0.0f));
-				physAC->AddPhysicsObject(*physicsObject);
-			}
+			dtCore::RefPtr<dtPhysics::PhysicsObject> physicsObject = new dtPhysics::PhysicsObject("Body");
+			physicsObject->SetPrimitiveType(dtPhysics::PrimitiveType::CYLINDER);
+			physicsObject->SetMechanicsType(dtPhysics::MechanicsType::KINEMATIC);
+			physicsObject->SetCollisionGroup(SimCore::CollisionGroup::GROUP_HUMAN_LOCAL);
+			physicsObject->SetMass(100.0f);
+			physicsObject->SetExtents(osg::Vec3(1.8f, 0.5f, 0.0f));
+			physAC->AddPhysicsObject(*physicsObject);
 
             AddComponent(*physAC);
          }
