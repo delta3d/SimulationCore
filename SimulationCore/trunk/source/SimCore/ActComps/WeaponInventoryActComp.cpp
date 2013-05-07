@@ -42,6 +42,8 @@ namespace SimCore
    namespace ActComps
    {
 
+      //////////////////////////////////////////////////////////////////////////
+      //////////////////////////////////////////////////////////////////////////
       WeaponInventoryActComp::WeaponDescription::WeaponDescription()
       : mWeaponPrototypeName("")
       , mShooterPrototypeName("")
@@ -88,6 +90,19 @@ namespace SimCore
       DT_IMPLEMENT_ACCESSOR(WeaponInventoryActComp::WeaponDescription, std::string, WeaponSwapRootNode);
       DT_IMPLEMENT_ACCESSOR(WeaponInventoryActComp::WeaponDescription, std::string, WeaponHotSpotNode);
       DT_IMPLEMENT_ACCESSOR(WeaponInventoryActComp::WeaponDescription, dtCore::ResourceDescriptor, FiringParticleSystem);
+
+      //////////////////////////////////////////////////////////////////////////
+      //////////////////////////////////////////////////////////////////////////
+
+      SimCore::Actors::MunitionParticlesActorProxy* WeaponInventoryActComp::WeaponData::GetShooter()
+      {
+         SimCore::Actors::WeaponActor* weaponDraw = NULL;
+         mWeapon->GetDrawable(weaponDraw);
+         return weaponDraw->GetShooter();
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      //////////////////////////////////////////////////////////////////////////
 
       const dtGame::ActorComponent::ACType WeaponInventoryActComp::TYPE("WeaponInventoryActComp");
 
@@ -217,8 +232,7 @@ namespace SimCore
             // Delete the weapons when the actor is deleted.
             dtGame::CascadingDeleteActorComponent::Connect(owner->GetGameActorProxy(), *weaponActor);
 
-
-            dtGame::CascadingDeleteActorComponent::Connect(owner->GetGameActorProxy(), *shooterActor);
+            dtGame::CascadingDeleteActorComponent::Connect(*weaponActor, *shooterActor);
 
             outWeapon->SetShooter(shooterActor.get());
 
@@ -262,7 +276,59 @@ namespace SimCore
          return weaponData.get();
       }
 
+      //////////////////////////////////////////////////////////////////////////
+      void WeaponInventoryActComp::AimWeapon(const osg::Vec3& target, bool aimShooter)
+      {
+         if (mCurrentWeapon != NULL)
+         {
+            dtCore::Transformable* weaponToAim = NULL;
+            
+            if (aimShooter)
+            {
+               mCurrentWeapon->GetShooter()->GetDrawable(weaponToAim);
+            }
+            else
+            {
+               mCurrentWeapon->mWeapon->GetDrawable(weaponToAim);
+            }
 
+            if (weaponToAim != NULL)
+            {
+               dtCore::Transform xform;
+               weaponToAim->GetTransform(xform);
+               xform.Set(xform.GetTranslation(), target, osg::Vec3(0.0, 0.0, 1.0));
+               weaponToAim->SetTransform(xform);
+            }
+         }
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void WeaponInventoryActComp::ClearWeaponAiming(const osg::Vec3& target, bool useShooter)
+      {
+         if (mCurrentWeapon != NULL)
+         {
+            dtCore::Transformable* weaponToAim = NULL;
+            
+            if (useShooter)
+            {
+               mCurrentWeapon->GetShooter()->GetDrawable(weaponToAim);
+            }
+            else
+            {
+               mCurrentWeapon->mWeapon->GetDrawable(weaponToAim);
+            }
+
+            if (weaponToAim != NULL)
+            {
+               // Identity Transform
+               dtCore::Transform xform;
+               weaponToAim->SetTransform(xform);
+            }
+         }
+      }
+
+
+      //////////////////////////////////////////////////////////////////////////
       void WeaponInventoryActComp::SelectNextWeapon()
       {
          if (mCurrentWeapon == NULL && !mWeapons.empty())
@@ -285,6 +351,7 @@ namespace SimCore
          }
       }
 
+      //////////////////////////////////////////////////////////////////////////
       void WeaponInventoryActComp::SelectPreviousWeapon()
       {
          if (mCurrentWeapon == NULL && !mWeapons.empty())
@@ -310,11 +377,13 @@ namespace SimCore
          }
       }
 
+      //////////////////////////////////////////////////////////////////////////
       void WeaponInventoryActComp::SelectWeapon( const std::string& weaponName )
       {
          SelectWeapon(FindWeapon(weaponName));
       }
 
+      //////////////////////////////////////////////////////////////////////////
       void WeaponInventoryActComp::SelectWeapon(WeaponData* wd)
       {
          SimCore::Actors::IGActor* owner = NULL;
@@ -339,16 +408,19 @@ namespace SimCore
       }
 
 
+      //////////////////////////////////////////////////////////////////////////
       bool WeaponInventoryActComp::HasWeapon( const std::string& weaponName ) const
       {
          return FindWeapon(weaponName) != NULL;
       }
 
+      //////////////////////////////////////////////////////////////////////////
       WeaponInventoryActComp::WeaponData* WeaponInventoryActComp::GetCurrentWeapon() const
       {
          return mCurrentWeapon.get();
       }
 
+      //////////////////////////////////////////////////////////////////////////
       const std::string& WeaponInventoryActComp::GetCurrentWeaponName() const
       {
          if (mCurrentWeapon.valid())
@@ -372,6 +444,7 @@ namespace SimCore
          const std::string& mName;
       };
 
+      //////////////////////////////////////////////////////////////////////////
       void WeaponInventoryActComp::RemoveWeapon( const std::string& weaponName )
       {
 
@@ -391,6 +464,7 @@ namespace SimCore
          mWeapons.erase(std::remove_if(mWeapons.begin(), mWeapons.end(), compareWeaponByName), mWeapons.end());
       }
 
+      //////////////////////////////////////////////////////////////////////////
       WeaponInventoryActComp::WeaponData* WeaponInventoryActComp::FindWeapon( const std::string& weaponName )
       {
          CompareWeaponByName compareWeaponByName(weaponName);
@@ -403,6 +477,7 @@ namespace SimCore
          return NULL;
       }
 
+      //////////////////////////////////////////////////////////////////////////
       const WeaponInventoryActComp::WeaponData* WeaponInventoryActComp::FindWeapon( const std::string& weaponName ) const
       {
          CompareWeaponByName compareWeaponByName(weaponName);
@@ -415,6 +490,7 @@ namespace SimCore
          return NULL;
       }
 
+      //////////////////////////////////////////////////////////////////////////
       int WeaponInventoryActComp::FindWeaponIndex(const std::string& weaponName) const
       {
          for(unsigned i = 0; i < mWeapons.size(); ++i)
@@ -428,6 +504,7 @@ namespace SimCore
          return -1;
       }
 
+      //////////////////////////////////////////////////////////////////////////
       int WeaponInventoryActComp::FindWeaponIndex( const WeaponData* wp ) const
       {
          for(unsigned i = 0; i < mWeapons.size(); ++i)
@@ -441,11 +518,13 @@ namespace SimCore
          return -1;
       }
 
+      //////////////////////////////////////////////////////////////////////////
       unsigned WeaponInventoryActComp::GetNumWeapons() const
       {
          return mWeapons.size();
       }
 
+      //////////////////////////////////////////////////////////////////////////
       void WeaponInventoryActComp::StartFiring()
       {
          if (mCurrentWeapon.valid() && mCurrentWeapon->mWeapon.valid())
@@ -460,6 +539,7 @@ namespace SimCore
          }
       }
 
+      //////////////////////////////////////////////////////////////////////////
       void WeaponInventoryActComp::StopFiring()
       {
          if (mCurrentWeapon.valid() && mCurrentWeapon->mWeapon.valid())
