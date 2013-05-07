@@ -34,6 +34,10 @@ namespace SimCore
 {
    namespace ActComps
    {
+      /**
+       * Allows for stage configuration of weapons, plus it supports attaching, switching, aiming,
+       * and firing these weapons.
+       */
       class SIMCORE_EXPORT WeaponInventoryActComp : public dtGame::ActorComponent
       {
       public:
@@ -59,6 +63,8 @@ namespace SimCore
             dtCore::RefPtr<SimCore::Actors::WeaponActorProxy> mWeapon;
             dtCore::RefPtr<WeaponDescription> mDescription;
             bool operator < (const WeaponData& toCompare) const;
+
+            SimCore::Actors::MunitionParticlesActorProxy* GetShooter();
          };
 
          WeaponInventoryActComp();
@@ -75,6 +81,16 @@ namespace SimCore
 
          ////////////////////////////////////////////////////////////////////////////////
          WeaponInventoryActComp::WeaponData* CreateAndAddWeapon(WeaponDescription& wd, bool makeCurrent = false);
+
+         /** 
+          * Aims the current weapon at the given target point.  This rotates the weapon actor, so if this looks funny on the model, you 
+          * may need to aim the shooter instead.  In either case, any large amount of rotation will likely look ugly, or could make a unit shoot themselves
+          * so this needs to be handled with care.
+          */ 
+         void AimWeapon(const osg::Vec3& target, bool aimShooter = false);
+
+         /// Clears any aiming rotation on the current weapon.
+         void ClearWeaponAiming(const osg::Vec3& target, bool useShooter = false);
 
          void SelectNextWeapon();
 
