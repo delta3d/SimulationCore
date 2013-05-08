@@ -84,35 +84,38 @@ namespace SimCore
          /////////////////////////////////////////////////////////////////////////////////////////////
          virtual Float AddHit(palRayHit& hit)
          {
-            dtPhysics::PhysicsObject* physObject = reinterpret_cast<dtPhysics::PhysicsObject*>(hit.m_pBody->GetUserData());
-
-            dtPhysics::PhysicsActComp* physicsHelper = NULL;
-            if (physObject != NULL)
+            if (hit.m_pBody != NULL && hit.m_pBody->GetUserData() != NULL)
             {
-               physicsHelper = dynamic_cast<dtPhysics::PhysicsActComp*>(physObject->GetUserData());
-            }
+               dtPhysics::PhysicsObject* physObject = reinterpret_cast<dtPhysics::PhysicsObject*>(hit.m_pBody->GetUserData());
 
-            dtCore::DeltaDrawable* hitTarget = NULL;
-
-            if(physicsHelper != NULL)
-            {
-               // null checked up above in the return
-               physicsHelper->GetOwner(hitTarget);
-            }
-
-            // We don't want to hit ourselves.  So, if we don't have a 'self' owner, then we take
-            // whatever hit we get.  Otherwise, we check the owner drawables
-            if (mOwnerActor == NULL || hitTarget != mOwnerActor
-                     // So we dont want to return false if collision is off, this onHit is called for
-                     // every hit along the line, and returning false tells it to stop the raycast
-                     // report, its amazing how rereading the sdk can help so much :(
-                     &&  physObject->IsCollisionResponseEnabled())
-            {
-               if (!mGotAHit || mClosestHit.m_fDistance > hit.m_fDistance)
+               dtPhysics::PhysicsActComp* physicsHelper = NULL;
+               if (physObject != NULL)
                {
-                  mClosestHitsObject = physObject;
-                  mGotAHit = true;
-                  mClosestHit = hit;
+                  physicsHelper = dynamic_cast<dtPhysics::PhysicsActComp*>(physObject->GetUserData());
+               }
+
+               dtCore::DeltaDrawable* hitTarget = NULL;
+
+               if(physicsHelper != NULL)
+               {
+                  // null checked up above in the return
+                  physicsHelper->GetOwner(hitTarget);
+               }
+
+               // We don't want to hit ourselves.  So, if we don't have a 'self' owner, then we take
+               // whatever hit we get.  Otherwise, we check the owner drawables
+               if (mOwnerActor == NULL || hitTarget != mOwnerActor
+                        // So we dont want to return false if collision is off, this onHit is called for
+                        // every hit along the line, and returning false tells it to stop the raycast
+                        // report, its amazing how rereading the sdk can help so much :(
+                        &&  physObject->IsCollisionResponseEnabled())
+               {
+                  if (!mGotAHit || mClosestHit.m_fDistance > hit.m_fDistance)
+                  {
+                     mClosestHitsObject = physObject;
+                     mGotAHit = true;
+                     mClosestHit = hit;
+                  }
                }
             }
 
