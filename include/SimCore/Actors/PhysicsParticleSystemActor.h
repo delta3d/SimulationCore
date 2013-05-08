@@ -300,6 +300,7 @@ namespace SimCore
 
          dtCore::RefPtr<dtCore::Transformable> mObj;
 
+
       protected:
          virtual ~PhysicsParticle() {}
 
