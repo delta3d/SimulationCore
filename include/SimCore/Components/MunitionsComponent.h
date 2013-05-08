@@ -120,9 +120,8 @@ namespace SimCore
             MunitionDamageTable* GetMunitionDamageTable( const std::string& entityClassName );
             const MunitionDamageTable* GetMunitionDamageTable( const std::string& entityClassName ) const;
 
-            // NOTE: Takes a ref pointer to ensure that there is an object
-            // tracking the table's memory, in case addition of the table fails.
-            bool AddMunitionDamageTable( dtCore::RefPtr<MunitionDamageTable>& table );
+            /// Adds a new munition damage table.
+            bool AddMunitionDamageTable( MunitionDamageTable& table );
 
             // Remove a damage table associated with an entity type.
             // @param entityClassName The name of the damage table to be removed.
@@ -298,6 +297,9 @@ namespace SimCore
             // useful for when we get in trouble with particles and such. If we have too 
             // many munitions, then we can simply kill off the oldest. 
             std::deque<dtCore::UniqueId> mCreatedMunitionsQueue;
+
+            // The name of the default damage table to use if an actor has none assigned.
+            std::string mDefaultDamageTableName;
 
       };
 

@@ -40,8 +40,9 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       // Munition Damage Table Code
       //////////////////////////////////////////////////////////////////////////
-      MunitionDamageTable::MunitionDamageTable( const std::string& name )
+      MunitionDamageTable::MunitionDamageTable( const std::string& name, bool isDefault )
          : mName(name)
+         , mDefault(isDefault)
       {
       }
 
@@ -125,6 +126,12 @@ namespace SimCore
       void MunitionDamageTable::Clear()
       {
          mNameToMunitionMap.clear();
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      bool MunitionDamageTable::IsDefault() const
+      {
+         return mDefault;
       }
 
    }

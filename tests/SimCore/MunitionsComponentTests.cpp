@@ -1306,9 +1306,9 @@ namespace SimCore
 
 
          // Test adding tables
-         CPPUNIT_ASSERT( mDamageComp->AddMunitionDamageTable( table1 ) );
-         CPPUNIT_ASSERT( mDamageComp->AddMunitionDamageTable( table2 ) );
-         CPPUNIT_ASSERT( mDamageComp->AddMunitionDamageTable( table3 ) );
+         CPPUNIT_ASSERT( mDamageComp->AddMunitionDamageTable( *table1 ) );
+         CPPUNIT_ASSERT( mDamageComp->AddMunitionDamageTable( *table2 ) );
+         CPPUNIT_ASSERT( mDamageComp->AddMunitionDamageTable( *table3 ) );
          CPPUNIT_ASSERT( mDamageComp->GetMunitionDamageTable( tableName1 ) == table1.get() );
          CPPUNIT_ASSERT( mDamageComp->GetMunitionDamageTable( tableName2 ) == table2.get() );
          CPPUNIT_ASSERT( mDamageComp->GetMunitionDamageTable( tableName3 ) == table3.get() );
@@ -1327,9 +1327,9 @@ namespace SimCore
          CPPUNIT_ASSERT( mDamageComp->GetMunitionDamageTable( tableName1 ) == NULL );
 
          // Re-add all tables
-         CPPUNIT_ASSERT( mDamageComp->AddMunitionDamageTable( table1 ) );
-         CPPUNIT_ASSERT( mDamageComp->AddMunitionDamageTable( table2 ) );
-         CPPUNIT_ASSERT( mDamageComp->AddMunitionDamageTable( table3 ) );
+         CPPUNIT_ASSERT( mDamageComp->AddMunitionDamageTable( *table1 ) );
+         CPPUNIT_ASSERT( mDamageComp->AddMunitionDamageTable( *table2 ) );
+         CPPUNIT_ASSERT( mDamageComp->AddMunitionDamageTable( *table3 ) );
          CPPUNIT_ASSERT( mDamageComp->GetMunitionDamageTable( tableName1 ) == table1.get() );
          CPPUNIT_ASSERT( mDamageComp->GetMunitionDamageTable( tableName2 ) == table2.get() );
          CPPUNIT_ASSERT( mDamageComp->GetMunitionDamageTable( tableName3 ) == table3.get() );
