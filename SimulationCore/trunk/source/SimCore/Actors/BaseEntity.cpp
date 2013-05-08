@@ -501,7 +501,12 @@ namespace SimCore
                   SimCore::Components::DamageHelper* helper = munitionsComp->GetHelperByEntityId(GetUniqueId());
                   if (helper != NULL)
                   {
-                     helper->SetEntityDimensions(drHelper->GetModelDimensions());
+                     osg::Vec3 dim = drHelper->GetModelDimensions();
+                     if (!dtUtil::IsFiniteVec(dim) || dim.length2() == 0)
+                     {
+                        dim.set(1.0f, 1.0f, 1.0f);
+                     }
+                     helper->SetEntityDimensions(dim);
                   }
                }
             }

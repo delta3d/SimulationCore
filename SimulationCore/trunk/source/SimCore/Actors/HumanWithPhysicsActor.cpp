@@ -262,13 +262,13 @@ namespace SimCore
          {
             dtCore::RefPtr<dtPhysics::PhysicsActComp> physAC = new dtPhysics::PhysicsActComp();
 
-			dtCore::RefPtr<dtPhysics::PhysicsObject> physicsObject = new dtPhysics::PhysicsObject("Body");
-			physicsObject->SetPrimitiveType(dtPhysics::PrimitiveType::CYLINDER);
-			physicsObject->SetMechanicsType(dtPhysics::MechanicsType::KINEMATIC);
-			physicsObject->SetCollisionGroup(SimCore::CollisionGroup::GROUP_HUMAN_LOCAL);
-			physicsObject->SetMass(100.0f);
-			physicsObject->SetExtents(osg::Vec3(1.8f, 0.5f, 0.0f));
-			physAC->AddPhysicsObject(*physicsObject);
+			   dtCore::RefPtr<dtPhysics::PhysicsObject> physicsObject = new dtPhysics::PhysicsObject("Body");
+			   physicsObject->SetPrimitiveType(dtPhysics::PrimitiveType::CYLINDER);
+			   physicsObject->SetMechanicsType(dtPhysics::MechanicsType::KINEMATIC);
+			   physicsObject->SetCollisionGroup(SimCore::CollisionGroup::GROUP_HUMAN_LOCAL);
+			   physicsObject->SetMass(100.0f);
+			   physicsObject->SetExtents(osg::Vec3(1.8f, 0.5f, 0.0f));
+			   physAC->AddPhysicsObject(*physicsObject);
 
             AddComponent(*physAC);
          }

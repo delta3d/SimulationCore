@@ -153,6 +153,11 @@ namespace SimCore
          // Load the munition table that the helper will need to reference, if one exists
          std::string tableName(entity.GetMunitionDamageTableName());
 
+         if (tableName.empty())
+         {
+            tableName = mDefaultDamageTableName;
+         }
+
          if( ! tableName.empty() )
          {
             // If the table exists, link it to the newly created helper
@@ -238,8 +243,14 @@ namespace SimCore
          std::vector<dtCore::RefPtr<MunitionDamageTable> >::iterator iter = tables.begin();
          for( ; iter != tables.end(); ++iter )
          {
+            MunitionDamageTable* curTable = iter->get();
+            const std::string& curTableName = curTable->GetName();
+            if (curTable->IsDefault())
+            {
+               mDefaultDamageTableName = curTableName;
+            }
             // Check for existing table
-            existingTable = GetMunitionDamageTable( (*iter)->GetName() );
+            existingTable = GetMunitionDamageTable( curTableName );
 
             // Replace the existing table with the new one; reduce success if insert fails
             if( existingTable != NULL && ! RemoveMunitionDamageTable( existingTable->GetName() ) )
@@ -251,7 +262,7 @@ namespace SimCore
             }
 
             // Simply add the new table; reduce success if insert fails
-            if( ! AddMunitionDamageTable( *iter ) )
+            if( ! AddMunitionDamageTable( *curTable ) )
             {
                // Reduce successes because insert failed
                successes--;
@@ -482,12 +493,10 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      bool MunitionsComponent::AddMunitionDamageTable( dtCore::RefPtr<MunitionDamageTable>& table )
+      bool MunitionsComponent::AddMunitionDamageTable( MunitionDamageTable& table )
       {
-         if( ! table.valid() ) { return false; }
-
          return mNameToMunitionDamageTableMap.insert(
-               std::make_pair( table->GetName(), table.get() )
+               std::make_pair( table.GetName(), &table )
             ).second;
       }
 

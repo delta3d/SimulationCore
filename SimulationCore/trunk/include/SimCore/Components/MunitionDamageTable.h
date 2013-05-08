@@ -65,12 +65,15 @@ namespace SimCore
             // @param entityClassName The name of the table ought to be the name
             //        of the entity class that has munition damage probability data.
             //        NOTE: this name will be used for mapping in a MunitionsComponent.
-            MunitionDamageTable( const std::string& entityClassName );
+            MunitionDamageTable( const std::string& entityClassName, bool isDefault = false );
 
             void SetName( const std::string& name );
             const std::string& GetName() const;
 
             unsigned int GetCount() const;
+
+            // @return true if this is the default muntition table for things that don't declare a table.
+            bool IsDefault() const;
 
             bool AddMunitionDamage( const dtCore::RefPtr<MunitionDamage>& newInfo );
 
@@ -90,6 +93,7 @@ namespace SimCore
          private:
             std::string mName;
             std::map<std::string, dtCore::RefPtr<MunitionDamage> > mNameToMunitionMap;
+            bool mDefault;
       };
 
    }

@@ -375,7 +375,8 @@ namespace SimCore
          // Determine if parsing is entering a new entity class declaration
          else if( element == E_ENTITY && isStartElement )
          {
-            mCurMunitionTable = new MunitionDamageTable("");
+            bool isDefault = mOutTables.empty();
+            mCurMunitionTable = new MunitionDamageTable("", isDefault);
          }
          // Determine if parsing is leaving an entity class declaration
          else if( element == E_ENTITY && ! isStartElement )
