@@ -42,7 +42,7 @@ namespace SimCore
          {
             dtCore::RefPtr<dtPhysics::PhysicsObject> physObj = new dtPhysics::PhysicsObject(PLATFORM_BODY_NAME);
             physObj->SetPrimitiveType(dtPhysics::PrimitiveType::CONVEX_HULL);
-            physObj->SetMechanicsType(dtPhysics::MechanicsType::DYNAMIC);
+            physObj->SetMechanicsType(dtPhysics::MechanicsType::KINEMATIC);
             physObj->SetMass(500.0f);
             physObj->SetCollisionGroup(SimCore::CollisionGroup::GROUP_VEHICLE_GROUND);
             AddPhysicsObject(*physObj, true);
@@ -121,7 +121,7 @@ namespace SimCore
                LOG_ERROR("The Physics object should already be created, attempting to create a another physics object.");
                physObj = new dtPhysics::PhysicsObject(PLATFORM_BODY_NAME);
                physObj->SetPrimitiveType(dtPhysics::PrimitiveType::CONVEX_HULL);
-               physObj->SetMechanicsType(dtPhysics::MechanicsType::DYNAMIC);
+               physObj->SetMechanicsType(dtPhysics::MechanicsType::KINEMATIC);
                physObj->SetCollisionGroup(SimCore::CollisionGroup::GROUP_VEHICLE_GROUND);
                physObj->SetMass(500.0f);
             }
