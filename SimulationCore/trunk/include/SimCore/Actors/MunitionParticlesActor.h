@@ -25,7 +25,7 @@
 
 #include <SimCore/Export.h>
 #include <SimCore/Actors/PhysicsParticleSystemActor.h>
-
+#include <SimCore/Actors/VolumetricLine.h>
 #include <SimCore/Components/RenderingSupportComponent.h>//for dynamic lights, cant be forward declared
 
 namespace dtCore
@@ -43,20 +43,31 @@ namespace SimCore
       class SIMCORE_EXPORT MunitionsPhysicsParticle : public PhysicsParticle
       {
       public:
+         static const float TRACER_LENGTH; 
+         static const float TRACER_WIDTH; 
          /////////////////////////////////////////////////////////////////////////////////////////////////////////
          MunitionsPhysicsParticle(SimCore::Components::RenderingSupportComponent* renderComp, const std::string& name, float ParticleLengthOfTimeOut = 10.0f, float InverseDeletionAlphaTime = 3.0f, float alphaInTime = 0.0f);
-         bool IsATracer() const {return mIsTracer;}
+
+         bool IsTracer() const;
 
          void SetLastPosition(const osg::Vec3& value);
-         const osg::Vec3& GetLastPosition() {return mLastPosition;}
+         const osg::Vec3& GetLastPosition() const;
+
+         void SetInitialPosition(const osg::Vec3& value);
+         const osg::Vec3& GetInitialPosition() const;
+
+         void CreateTracer();
+
+         SimCore::Actors::VolumetricLine* GetTracer();
+         void SetTracer(SimCore::Actors::VolumetricLine* tracer);
 
       protected:
          virtual ~MunitionsPhysicsParticle();
 
       private:
-         bool mIsTracer;
+         osg::Vec3 mInitialPosition;
          osg::Vec3 mLastPosition;
-
+         dtCore::RefPtr<SimCore::Actors::VolumetricLine> mTracer;
          dtCore::RefPtr<dtCore::Transformable> mDynamicLight;
       };
 

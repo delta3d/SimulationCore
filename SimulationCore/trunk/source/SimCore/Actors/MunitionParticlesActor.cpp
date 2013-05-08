@@ -129,13 +129,13 @@ namespace SimCore
          dtPhysics::PhysicsObject* mClosestHitsObject;
       };
 
+      ////////////////////////////////////////////////////////////////////
       MunitionsPhysicsParticle::MunitionsPhysicsParticle(SimCore::Components::RenderingSupportComponent* renderComp, const std::string& name, float ParticleLengthOfTimeOut, float InverseDeletionAlphaTime, float alphaInTime)
       : PhysicsParticle(name, ParticleLengthOfTimeOut, InverseDeletionAlphaTime, alphaInTime)
-      , mIsTracer(renderComp!=NULL)
       , mLastPosition()
       , mDynamicLight()
       {
-         if( mIsTracer )
+         if( renderComp != NULL )
          {
             SimCore::Components::RenderingSupportComponent::DynamicLight* dl =
                renderComp->AddDynamicLightByPrototypeName("Light-Tracer");
@@ -152,25 +152,95 @@ namespace SimCore
          }
       }
 
+      const float MunitionsPhysicsParticle::TRACER_LENGTH = 10.0f; 
+      const float MunitionsPhysicsParticle::TRACER_WIDTH = 0.5f; 
+
+      ////////////////////////////////////////////////////////////////////
       MunitionsPhysicsParticle::~MunitionsPhysicsParticle()
       {
       }
 
+      ////////////////////////////////////////////////////////////////////
+      bool MunitionsPhysicsParticle::IsTracer() const { return mTracer.valid();}
+
+      ////////////////////////////////////////////////////////////////////
       void MunitionsPhysicsParticle::SetLastPosition(const osg::Vec3& value)
       {
          mLastPosition = value;
 
-         if( mIsTracer && mDynamicLight.valid() )
+         if( IsTracer() && mDynamicLight.valid() )
          {
+            static const float tracerLen2 = TRACER_LENGTH * TRACER_LENGTH;
             osg::Matrix mat;
             mat(3, 0) = value[0];
             mat(3, 1) = value[1];
             mat(3, 2) = value[2];
             mDynamicLight->GetMatrixNode()->setMatrix(mat);
+
+            float dist2 = (mLastPosition - mInitialPosition).length2();
+            if (dist2 >= tracerLen2 )
+            {
+               mTracer->SetLength(TRACER_LENGTH);
+            }
+            else if (dist2 < tracerLen2 && dist2 > 0.0f)
+            {
+               mTracer->SetLength(std::sqrt(dist2));
+            }
+            else
+            {
+               mTracer->SetLength(0.0f);
+            }
          }
       }
 
+      ////////////////////////////////////////////////////////////////////
+      const osg::Vec3& MunitionsPhysicsParticle::GetLastPosition()  const
+      {
+         return mLastPosition;
+      }
 
+      ////////////////////////////////////////////////////////////////////
+      void MunitionsPhysicsParticle::SetInitialPosition(const osg::Vec3& value)
+      {
+         mInitialPosition = value;
+         SetLastPosition(value);
+      }
+
+      ////////////////////////////////////////////////////////////////////
+      const osg::Vec3& MunitionsPhysicsParticle::GetInitialPosition() const
+      {
+         return mInitialPosition;
+      }
+
+      ////////////////////////////////////////////////////////////////////
+      SimCore::Actors::VolumetricLine* MunitionsPhysicsParticle::GetTracer()
+      {
+         return mTracer;
+      }
+
+      ////////////////////////////////////////////////////////////////////
+      void MunitionsPhysicsParticle::SetTracer(SimCore::Actors::VolumetricLine* tracer)
+      {
+         if (mTracer.valid())
+         {
+            mObj->RemoveChild(mTracer);
+         }
+
+         mTracer = tracer;
+
+         if (mTracer.valid())
+         {
+            mObj->AddChild( mTracer );
+         }
+      }
+
+      ////////////////////////////////////////////////////////////////////
+      void MunitionsPhysicsParticle::CreateTracer()
+      {
+         dtCore::RefPtr<SimCore::Actors::VolumetricLine> line
+            = new SimCore::Actors::VolumetricLine( 0.0f, TRACER_WIDTH, "VolumetricLines", "TracerGroup" );
+         SetTracer(line);
+      }
 
       ////////////////////////////////////////////////////////////////////
       MunitionParticlesActor::MunitionParticlesActor(dtGame::GameActorProxy& proxy)
@@ -323,7 +393,7 @@ namespace SimCore
          osg::Vec3 xyz;
          ourTransform.GetTranslation(xyz);
 
-         particle->SetLastPosition(xyz);
+         particle->SetInitialPosition(xyz);
 
          osg::Vec4 ourTranslation;
          ourTranslation[0] = xyz[0];
@@ -365,11 +435,8 @@ namespace SimCore
                // NOTE: 1 child is for the model matrix node, used in preserving scale
                // but optimizing matrix transformations.
                if( NULL != node && node->getNumChildren() == 0 )
-               {
-                  dtCore::RefPtr<SimCore::Actors::VolumetricLine> line
-                     = new SimCore::Actors::VolumetricLine( 10.0f, 0.5f, "VolumetricLines", "TracerGroup" );
-                  particle->mObj->AddChild( line.get() );
-
+               {  
+                  particle->CreateTracer();
                   orientDrawable = true;
                   //line->SetMatrix(ourRotationMatrix);
                }
@@ -461,20 +528,20 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////
       void MunitionParticlesActor::PostPhysicsUpdate()
       {
-         bool isATracer = false;
+         bool IsTracer = false;
          std::list<dtCore::RefPtr<PhysicsParticle> >::iterator iter = mOurParticleList.begin();
          for(;iter!= mOurParticleList.end(); ++iter)
          {
             PhysicsParticle& particle = **iter;
             if(!particle.ShouldBeRemoved())
             {
-               isATracer = false;
+               IsTracer = false;
                MunitionsPhysicsParticle* munitionsParticle = dynamic_cast<MunitionsPhysicsParticle*>(&particle);
                if (munitionsParticle != NULL)
                {
-                  if(munitionsParticle->IsATracer())
+                  if(munitionsParticle->IsTracer())
                   {
-                     isATracer = true;
+                     IsTracer = true;
                   }
                }
 
@@ -484,7 +551,7 @@ namespace SimCore
                   dtCore::Transform physicsXform;
                   physicsObject->GetTransform(physicsXform);
 
-                  if (isATracer)
+                  if (IsTracer)
                   {
                      dtCore::Transform objXform;
                      osg::Vec3 pos;

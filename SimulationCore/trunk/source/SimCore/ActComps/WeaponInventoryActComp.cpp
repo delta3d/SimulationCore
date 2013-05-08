@@ -247,7 +247,8 @@ namespace SimCore
             // HACK: temporary play values
             shooter->SetFrequencyOfTracers(outWeapon->GetTracerFrequency());
 
-            shotVelocity = (shooter->GetLinearVelocityStartMax().length() + shooter->GetLinearVelocityStartMin().length()) / 2.0;
+            // Just used the forward vector.  The other axes will increase the length, but not the forward distance, so it will undershoot.
+            shotVelocity = (shooter->GetLinearVelocityStartMax().y() + shooter->GetLinearVelocityStartMin().y()) / 2.0;
 
             // Attach the shooter to the weapon's flash point
             // the interesting part about this is that if the weapon does not have a mesh

@@ -426,14 +426,18 @@ namespace SimCore
             mLifeTime += deltaTime;
 
             // Update the tracer length for stretching
-            float length = (mLastPosition-mPosition).length();
-            if( length > mMaxLength )
+            float length2 = (mLastPosition-mPosition).length2();
+            if( length2 > (mMaxLength * mMaxLength) )
             {
                mLine->SetLength( mMaxLength );
             }
-            else if( length > 0.0 && length < mMaxLength )
+            else if( length2 > 0.0 )
             {
-               mLine->SetLength( length );
+               mLine->SetLength( std::sqrt(length2) );
+            }
+            else
+            {
+               mLine->SetLength( 0.0 );
             }
          }
          else if( IsVisible() )
