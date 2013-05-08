@@ -312,14 +312,13 @@ namespace SimCore
                osg::Vec2 vec2(target.x() - pos.x(), target.y() - pos.y()); 
                double distxy = vec2.length(); 
                double z = target.z() - pos.z();
-               double s =  (v2 * v2) - (g * ((g * distxy * distxy) + (2 * z * v * v)));
+               double s =  (v2 * v2) - (g * ((g * distxy * distxy) + (2 * z * v2)));
                osg::Vec3 targetNew = target;
                if (s > 0.0)
                {
                   double sqrtS =  std::sqrt(s);
                   double shotHeight = ((v2) - sqrtS) / g;
                   double shotHeight2 = ((v2) + sqrtS) / g;
-
 
                   targetNew.z() = pos.z() + (shotHeight < shotHeight2 ? shotHeight : shotHeight2);
                }
