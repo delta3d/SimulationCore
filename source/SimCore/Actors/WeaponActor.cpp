@@ -60,7 +60,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       // Actor code
       //////////////////////////////////////////////////////////////////////////
-      WeaponActor::WeaponActor( WeaponActorProxy &proxy )
+      WeaponActor::WeaponActor( WeaponActorProxy& proxy )
          : Platform(proxy)
          , mUseBulletPhysics(false)
          , mSleeping(false)
