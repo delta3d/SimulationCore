@@ -62,6 +62,7 @@ namespace SimCore
          public:
             dtCore::RefPtr<SimCore::Actors::WeaponActorProxy> mWeapon;
             dtCore::RefPtr<WeaponDescription> mDescription;
+            float mShotVelocity; // Average shot velocity.
             bool operator < (const WeaponData& toCompare) const;
 
             SimCore::Actors::MunitionParticlesActorProxy* GetShooter();
@@ -120,6 +121,8 @@ namespace SimCore
          void StartFiring();
 
          void StopFiring();
+
+         bool IsFiring() const;
 
          DT_DECLARE_ARRAY_ACCESSOR(dtCore::RefPtr<WeaponDescription>, WeaponDescription, WeaponDescriptions);
 

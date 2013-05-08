@@ -23,6 +23,7 @@
 #include <SimCore/Actors/EntityActorRegistry.h>
 #include <SimCore/Actors/WeaponFlashActor.h>
 #include <dtUtil/nodecollector.h>
+#include <dtUtil/mathdefines.h>
 #include <dtCore/propertymacros.h>
 #include <dtCore/project.h>
 
@@ -33,6 +34,8 @@
 #include <SimCore/Actors/IGActor.h>
 
 #include <dtGame/cascadingdeleteactorcomponent.h>
+
+#include <cmath>
 
 #include <algorithm>
 
@@ -210,6 +213,8 @@ namespace SimCore
          outWeapon->SetOwner(&owner->GetGameActorProxy());
          outWeapon->Emancipate();
 
+         float shotVelocity = 0.0f;
+
          if (!owner->IsRemote())
          {
 
@@ -242,6 +247,8 @@ namespace SimCore
             // HACK: temporary play values
             shooter->SetFrequencyOfTracers(outWeapon->GetTracerFrequency());
 
+            shotVelocity = (shooter->GetLinearVelocityStartMax().length() + shooter->GetLinearVelocityStartMin().length()) / 2.0;
+
             // Attach the shooter to the weapon's flash point
             // the interesting part about this is that if the weapon does not have a mesh
             // it will just add  to the root and the weapon will be at the hotspot no trouble.
@@ -265,6 +272,7 @@ namespace SimCore
 
          mWeapons.push_back(new WeaponData);
          dtCore::RefPtr<WeaponData>& weaponData = mWeapons.back();
+         weaponData->mShotVelocity = shotVelocity;
          weaponData->mDescription = &wd;
          weaponData->mWeapon = weaponActor;
 
@@ -282,7 +290,7 @@ namespace SimCore
          if (mCurrentWeapon != NULL)
          {
             dtCore::Transformable* weaponToAim = NULL;
-            
+
             if (aimShooter)
             {
                mCurrentWeapon->GetShooter()->GetDrawable(weaponToAim);
@@ -296,7 +304,26 @@ namespace SimCore
             {
                dtCore::Transform xform;
                weaponToAim->GetTransform(xform);
-               xform.Set(xform.GetTranslation(), target, osg::Vec3(0.0, 0.0, 1.0));
+               
+               double g = 9.81f;
+               double v = mCurrentWeapon->mShotVelocity;
+               double v2 = v * v;
+               osg::Vec3 pos = xform.GetTranslation();
+               osg::Vec2 vec2(target.x() - pos.x(), target.y() - pos.y()); 
+               double distxy = vec2.length(); 
+               double z = target.z() - pos.z();
+               double s =  (v2 * v2) - (g * ((g * distxy * distxy) + (2 * z * v * v)));
+               osg::Vec3 targetNew = target;
+               if (s > 0.0)
+               {
+                  double sqrtS =  std::sqrt(s);
+                  double shotHeight = ((v2) - sqrtS) / g;
+                  double shotHeight2 = ((v2) + sqrtS) / g;
+
+
+                  targetNew.z() = pos.z() + (shotHeight < shotHeight2 ? shotHeight : shotHeight2);
+               }
+               xform.Set(xform.GetTranslation(), targetNew, osg::Vec3(0.0, 0.0, 1.0));
                weaponToAim->SetTransform(xform);
             }
          }
@@ -550,6 +577,18 @@ namespace SimCore
          }
       }
 
+      //////////////////////////////////////////////////////////////////////////
+      bool WeaponInventoryActComp::IsFiring() const
+      {
+         bool result = false;
+         if (mCurrentWeapon.valid() && mCurrentWeapon->mWeapon.valid())
+         {
+            SimCore::Actors::WeaponActor* weaponDrawable;
+            mCurrentWeapon->mWeapon->GetDrawable(weaponDrawable);
+            result = weaponDrawable->IsTriggerHeld();
+         }
+         return result;
+      }
 
       DT_IMPLEMENT_ARRAY_ACCESSOR(WeaponInventoryActComp, dtCore::RefPtr<WeaponInventoryActComp::WeaponDescription>, WeaponDescription, WeaponDescriptions, new WeaponInventoryActComp::WeaponDescription);
 
