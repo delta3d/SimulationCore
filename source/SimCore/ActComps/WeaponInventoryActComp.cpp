@@ -311,8 +311,9 @@ namespace SimCore
                double v2 = v * v;
                osg::Vec3 pos = xform.GetTranslation();
                osg::Vec2 vec2(target.x() - pos.x(), target.y() - pos.y()); 
-               double distxy = vec2.length(); 
-               double z = target.z() - pos.z();
+               double distxy = vec2.length();
+               // the arbitrary 1.5 is because origin positions of everything are on the ground, and it tends to shoot low. 
+               double z = (target.z() + 1.5f) - pos.z();
                double s =  (v2 * v2) - (g * ((g * distxy * distxy) + (2 * z * v2)));
                osg::Vec3 targetNew = target;
                if (s > 0.0)
