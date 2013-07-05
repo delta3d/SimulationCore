@@ -134,7 +134,9 @@ namespace SimCore
             {
                CPPUNIT_ASSERT(mPlatformWithPhysics->GetComponent<dtPhysics::PhysicsActComp>() != NULL);
                dtPhysics::PhysicsObject* po = mPlatformWithPhysics->GetComponent<dtPhysics::PhysicsActComp>()->GetMainPhysicsObject();
-               CPPUNIT_ASSERT_EQUAL(dtPhysics::MechanicsType::DYNAMIC, po->GetMechanicsType());
+               // Changed the physics for local to be kinematic because they works better
+               // for an object with no behavior.
+               CPPUNIT_ASSERT_EQUAL(dtPhysics::MechanicsType::KINEMATIC, po->GetMechanicsType());
                CPPUNIT_ASSERT_EQUAL(dtPhysics::PrimitiveType::CONVEX_HULL, po->GetPrimitiveType());
                CPPUNIT_ASSERT_EQUAL(dtPhysics::CollisionGroup(SimCore::CollisionGroup::GROUP_VEHICLE_GROUND), po->GetCollisionGroup());
 

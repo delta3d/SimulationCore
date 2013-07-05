@@ -413,8 +413,8 @@ void StealthViewerSettingsTests::TestAddConnectionError()
             "", "", "", "", "", StealthQt::StealthViewerSettings::CONNECTIONTYPE_CLIENTSERVER.c_str(), "127.0.0.1", "8000", "MyGame", "", "192.168.0.255", 1995,
             true, 1, 1500, 0, 0, "TestDISActorXMLFile"));
 
-   CPPUNIT_ASSERT_MESSAGE("Adding connection not should fail if the connection is Client Server and the DIS settings are empty.",
-            !settings.AddConnection("TestName", "TestMap", "",
+   CPPUNIT_ASSERT_MESSAGE("Adding connection should NOT fail if the connection is Client Server and the DIS settings are empty.",
+            settings.AddConnection("TestName", "TestMap", "",
             "", "", "", "", "", StealthQt::StealthViewerSettings::CONNECTIONTYPE_CLIENTSERVER.c_str(), "127.0.0.1", "8000", "MyGame", "1.0", "", 0,
             true, 0, 0, 0, 0, ""));
 
