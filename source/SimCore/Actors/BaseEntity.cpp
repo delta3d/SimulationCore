@@ -71,7 +71,7 @@ namespace SimCore
       {
          AddInstance(this);
       }
-      const std::string& BaseEntityActorProxy::DomainEnum::GetDisplayName() { return mDisplayName; }
+      const std::string& BaseEntityActorProxy::DomainEnum::GetDisplayName() const { return mDisplayName; }
       BaseEntityActorProxy::DomainEnum BaseEntityActorProxy::DomainEnum::AIR("AIR", "Air");
       BaseEntityActorProxy::DomainEnum BaseEntityActorProxy::DomainEnum::AMPHIBIOUS("AMPHIBIOUS", "Amphibious");
       BaseEntityActorProxy::DomainEnum BaseEntityActorProxy::DomainEnum::GROUND("GROUND", "Ground");

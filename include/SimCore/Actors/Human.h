@@ -55,11 +55,6 @@ namespace osg
    class Node;
 }
 
-//namespace dtAnim
-//{
-//   class AnimationHelper;
-//}
-
 namespace SimCore
 {
    namespace Actors
@@ -116,7 +111,7 @@ namespace SimCore
             static const dtUtil::RefString OPER_DEPLOYED_TO_READY;
             static const dtUtil::RefString OPER_READY_TO_DEPLOYED;
 
-            AnimationOperators(dtAI::PlannerHelper& plannerHelper, dtAnim::AnimationHelper& animHelper);
+            AnimationOperators(dtAI::PlannerHelper& plannerHelper);
             ~AnimationOperators();
 
          private:
@@ -124,7 +119,6 @@ namespace SimCore
             HumanOperator* AddOperator(const std::string& name);
 
             dtAI::PlannerHelper& mPlannerHelper;
-            dtCore::RefPtr<dtAnim::AnimationHelper> mAnimHelper;
             NameOperMap mOperators;
       };
 
@@ -222,11 +216,6 @@ namespace SimCore
 
             Human(dtGame::GameActorProxy& proxy);
 
-            /// Changes the file name used for the skeletal mesh
-            void SetSkeletalMesh(const dtDAL::ResourceDescriptor& fileName);
-            /// @return the file name used for the skeletal mesh
-            const dtDAL::ResourceDescriptor& GetSkeletalMesh();
-
             /// Changes the human's stance
             void SetStance(HumanActorProxy::StanceEnum& stance);
             /// @return the human's stance
@@ -279,6 +268,11 @@ namespace SimCore
             void ExecuteAction(HumanActorProxy::StanceEnum& stance = HumanActorProxy::StanceEnum::UPRIGHT_STANDING,
                      const dtUtil::RefString& animatableName = AnimationOperators::ANIM_STANDING_ACTION);
 
+
+            /// these have to be public so that they can be connected by the HumanActorProxy
+            virtual void SkeletalMeshLoadCallback(dtAnim::AnimationHelper*);
+            virtual void SkeletalMeshUnloadCallback(dtAnim::AnimationHelper*);
+
          protected:
             virtual ~Human();
 
@@ -290,17 +284,10 @@ namespace SimCore
             bool GetContainsWeaponName(const std::vector<std::string>& vec, const std::string& meshName) const;
 
 
-            void AsyncCompleteCallback() { mModelLoadedAndWaiting = true; }
-
-            // Called when model is loaded whether async or not.
-            virtual void SkeletalMeshLoadCallback();
-            virtual void SkeletalMeshUnloadCallback() {}
-
          private:
             /// Apply the effects of the operator, and get the animatable, if any, associated with it.
             const dtAnim::Animatable* ApplyOperatorAndGetAnimatable(const dtAI::Operator& op);
 
-            dtDAL::ResourceDescriptor mSkeletalMeshResource;
             std::string mIdleAnimatableName;
             std::string mRunWalkAnimatableName;
             std::string mWeaponMeshName;
@@ -308,8 +295,6 @@ namespace SimCore
             std::string mSequenceId;
 
             dtCore::RefPtr<osg::Node> mModelNode;
-
-            dtCore::RefPtr<dtAnim::AnimationHelper> mAnimationHelper;
 
             dtAI::PlannerHelper mPlannerHelper;
             dtAI::Planner mPlanner;

@@ -362,7 +362,6 @@ namespace SimCore
          AddInstance(this);
       }
 
-      const dtUtil::RefString HumanActorProxy::PROPERTY_SKELETAL_MESH("Skeletal Mesh");
       const dtUtil::RefString HumanActorProxy::PROPERTY_WEAPON_MESH("Primary Weapon Mesh Name");
       const dtUtil::RefString HumanActorProxy::PROPERTY_STANCE("Stance");
       const dtUtil::RefString HumanActorProxy::PROPERTY_PRIMARY_WEAPON_STATE("Primary Weapon State");
@@ -384,52 +383,40 @@ namespace SimCore
       {
          BaseClass::BuildPropertyMap();
 
-         Human& human = static_cast<Human&>(GetGameActor());
+         Human* human;
+         GetDrawable(human);
 
          static const dtUtil::RefString HUMAN_GROUP("Human");
 
          RemoveProperty(BaseEntityActorProxy::PROPERTY_FLAMES_PRESENT);
          RemoveProperty(BaseEntityActorProxy::PROPERTY_SMOKE_PLUME_PRESENT);
 
-         static const dtUtil::RefString PROPERTY_SKELETAL_MESH_DESC
-            ("The skeletal mesh file that defines the human's look and animation set.");
-         AddProperty(new dtDAL::ResourceActorProperty(dtDAL::DataType::SKELETAL_MESH,
-               PROPERTY_SKELETAL_MESH, PROPERTY_SKELETAL_MESH,
-               dtDAL::ResourceActorProperty::SetDescFuncType(&human, &Human::SetSkeletalMesh),
-               dtDAL::ResourceActorProperty::GetDescFuncType(&human, &Human::GetSkeletalMesh),
-               PROPERTY_SKELETAL_MESH_DESC, HUMAN_GROUP));
-
          static const dtUtil::RefString PROPERTY_STANCE_DESC
             ("The stance of the human.");
          AddProperty(new dtDAL::EnumActorProperty<HumanActorProxy::StanceEnum>(
                PROPERTY_STANCE, PROPERTY_STANCE,
-               dtDAL::EnumActorProperty<HumanActorProxy::StanceEnum>::SetFuncType(&human, &Human::SetStance),
-               dtDAL::EnumActorProperty<HumanActorProxy::StanceEnum>::GetFuncType(&human, &Human::GetStance),
+               dtDAL::EnumActorProperty<HumanActorProxy::StanceEnum>::SetFuncType(human, &Human::SetStance),
+               dtDAL::EnumActorProperty<HumanActorProxy::StanceEnum>::GetFuncType(human, &Human::GetStance),
                PROPERTY_STANCE_DESC, HUMAN_GROUP));
 
          static const dtUtil::RefString PROPERTY_PRIMARY_WEAPON_STATE_DESC
             ("The state/availability of the primary weapon.");
          AddProperty(new dtDAL::EnumActorProperty<HumanActorProxy::WeaponStateEnum>(
                PROPERTY_PRIMARY_WEAPON_STATE, PROPERTY_PRIMARY_WEAPON_STATE,
-               dtDAL::EnumActorProperty<HumanActorProxy::WeaponStateEnum>::SetFuncType(&human, &Human::SetPrimaryWeaponState),
-               dtDAL::EnumActorProperty<HumanActorProxy::WeaponStateEnum>::GetFuncType(&human, &Human::GetPrimaryWeaponState),
+               dtDAL::EnumActorProperty<HumanActorProxy::WeaponStateEnum>::SetFuncType(human, &Human::SetPrimaryWeaponState),
+               dtDAL::EnumActorProperty<HumanActorProxy::WeaponStateEnum>::GetFuncType(human, &Human::GetPrimaryWeaponState),
                PROPERTY_PRIMARY_WEAPON_STATE_DESC, HUMAN_GROUP));
 
          static const dtUtil::RefString PROPERTY_WEAPON_MESH_DESC
             ("The name of the mesh in the skeletal mesh that refers to the weapon");
          AddProperty(new dtDAL::StringActorProperty(
                PROPERTY_WEAPON_MESH, PROPERTY_WEAPON_MESH,
-               dtDAL::StringActorProperty::SetFuncType(&human, &Human::SetWeaponMeshName),
-               dtDAL::StringActorProperty::GetFuncType(&human, &Human::GetWeaponMeshName),
+               dtDAL::StringActorProperty::SetFuncType(human, &Human::SetWeaponMeshName),
+               dtDAL::StringActorProperty::GetFuncType(human, &Human::GetWeaponMeshName),
                PROPERTY_WEAPON_MESH_DESC, HUMAN_GROUP));
 
 //         static const dtUtil::RefString PROPERTY_MIN_RUN_VELOCITY_DESC
 //            ("The Minimum velocity at which the human will begin running");
-//
-//         AddProperty(new dtDAL::FloatActorProperty(*this,
-//               PROPERTY_MIN_RUN_VELOCITY, PROPERTY_MIN_RUN_VELOCITY,
-//               dtDAL::MakeFunctor(human, &Human::SetSkeletalMeshFile),
-//               PROPERTY_MIN_RUN_VELOCITY_DESC, HUMAN_GROUP));
 //
 //         static const dtUtil::RefString PROPERTY_FULL_RUN_VELOCITY_DESC
 //            ("The velocity at which the human will be fully running");
@@ -453,6 +440,27 @@ namespace SimCore
          const dtDAL::ActorType& at = GetActorType();
 
          BaseClass::BuildActorComponents();
+
+         dtAnim::AnimationHelper* animAC = NULL;
+         if (!HasComponent(dtAnim::AnimationHelper::TYPE))
+         {
+            animAC = new dtAnim::AnimationHelper();
+            AddComponent(*animAC);
+         }
+         else
+         {
+            animAC = GetComponent<dtAnim::AnimationHelper>();
+         }
+
+         if (animAC != NULL)
+         {
+            animAC->SetLoadModelAsynchronously(true);
+            animAC->SetEnableAttachingNodeToDrawable(false);
+            Human* human;
+            GetDrawable(human);
+            animAC->ModelLoadedSignal.connect_slot(human, &Human::SkeletalMeshLoadCallback);
+            animAC->ModelUnloadedSignal.connect_slot(human, &Human::SkeletalMeshUnloadCallback);
+         }
 
          if (at.InstanceOf(*EntityActorRegistry::WARFIGHTER_ACTOR_TYPE))
          {
@@ -489,12 +497,11 @@ namespace SimCore
       Human::Human(dtGame::GameActorProxy& proxy)
          : BaseEntity(proxy)
          , mWeaponMeshName("PrimaryWeapon")
-         , mAnimationHelper(new dtAnim::AnimationHelper)
          , mPlannerHelper(
                dtAI::PlannerHelper::RemainingCostFunctor(this, &Human::GetRemainingCost),
                dtAI::PlannerHelper::DesiredStateFunctor(this, &Human::IsDesiredState)
                )
-         , mAnimOperators(mPlannerHelper, *mAnimationHelper)
+         , mAnimOperators(mPlannerHelper)
          , mStance(&HumanActorProxy::StanceEnum::UPRIGHT_STANDING)
          , mPrimaryWeaponStateEnum(&HumanActorProxy::WeaponStateEnum::DEPLOYED)
          , mMinRunVelocity(0.0f)
@@ -543,14 +550,24 @@ namespace SimCore
          mPlannerHelper.SetCurrentState(initialState);
       }
 
-      void Human::SkeletalMeshLoadCallback()
+      /////////////////////////////////////////////////////////////////
+      void Human::SkeletalMeshUnloadCallback(dtAnim::AnimationHelper*)
+      {
+         SetNodeCollector(NULL);
+         osg::MatrixTransform& transform = GetScaleMatrixTransform();
+         transform.removeChild(mModelNode);
+         mModelNode = NULL;
+      }
+
+      /////////////////////////////////////////////////////////////////
+      void Human::SkeletalMeshLoadCallback(dtAnim::AnimationHelper* helper)
       {
          mModelLoadedAndWaiting = false;
 
          osg::MatrixTransform& transform = GetScaleMatrixTransform();
-         mModelNode = dtAnim::Cal3DDatabase::GetInstance().GetNodeBuilder().CreateNode(mAnimationHelper->GetModelWrapper());
+         mModelNode = helper->GetNode();
          transform.addChild(mModelNode.get());
-         mModelNode->setName(mSkeletalMeshResource.GetResourceIdentifier());
+         mModelNode->setName(helper->GetSkeletalMesh().GetResourceIdentifier());
 
          //setup speed blends
          WalkRunBlend* walkRunReady = new WalkRunBlend(*this);
@@ -558,13 +575,14 @@ namespace SimCore
          walkRunReady->SetName(AnimationOperators::ANIM_WALK_READY);
          walkRunDeployed->SetName(AnimationOperators::ANIM_WALK_DEPLOYED);
 
-         dtAnim::SequenceMixer& seqMixer = mAnimationHelper->GetSequenceMixer();
+         dtAnim::SequenceMixer& seqMixer = helper->GetSequenceMixer();
+         dtAnim::Cal3DModelWrapper* wrapper = helper->GetModelWrapper();
 
          const dtAnim::Animatable* walkReady = seqMixer.GetRegisteredAnimation("Walk Ready");
          const dtAnim::Animatable* runReady = seqMixer.GetRegisteredAnimation("Run Ready");
          if(walkReady && runReady)
          {
-            walkRunReady->SetAnimations(walkReady->Clone(mAnimationHelper->GetModelWrapper()).get(), runReady->Clone(mAnimationHelper->GetModelWrapper()).get());
+            walkRunReady->SetAnimations(walkReady->Clone(wrapper).get(), runReady->Clone(wrapper).get());
          }
          else
          {
@@ -575,17 +593,17 @@ namespace SimCore
          const dtAnim::Animatable* runDeployed = seqMixer.GetRegisteredAnimation("Run Deployed");
          if(walkDeployed && runDeployed)
          {
-            walkRunDeployed->SetAnimations(walkDeployed->Clone(mAnimationHelper->GetModelWrapper()).get(), runDeployed->Clone(mAnimationHelper->GetModelWrapper()).get());
+            walkRunDeployed->SetAnimations(walkDeployed->Clone(wrapper).get(), runDeployed->Clone(wrapper).get());
          }
          else
          {
             LOG_ERROR("Cannot load animations 'Walk Deployed' and 'Run Deployed' necessary for speed blend.")
          }
 
-         mAnimationHelper->GetSequenceMixer().RegisterAnimation(walkRunReady);
-         mAnimationHelper->GetSequenceMixer().RegisterAnimation(walkRunDeployed);
+         seqMixer.RegisterAnimation(walkRunReady);
+         seqMixer.RegisterAnimation(walkRunDeployed);
 
-         dtAnim::AttachmentController& atcl = mAnimationHelper->GetAttachmentController();
+         dtAnim::AttachmentController& atcl = helper->GetAttachmentController();
          for (unsigned i = 0; i < atcl.GetNumAttachments(); ++i)
          {
             AddChild(atcl.GetAttachment(i)->first, GetScaleMatrixTransform().getName());
@@ -616,74 +634,8 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////
-      void Human::SetSkeletalMesh(const dtDAL::ResourceDescriptor& rd)
-      {
-         if (mSkeletalMeshResource != rd)
-         {
-            mSkeletalMeshResource = rd;
-
-            osg::MatrixTransform& transform = GetScaleMatrixTransform();
-            transform.removeChildren(0, transform.getNumChildren());
-            mModelNode = NULL;
-
-            // remove any cached node collectors.
-            SetNodeCollector(NULL);
-
-            if (!rd.IsEmpty())
-            {
-               try
-               {
-                  const std::string fileName = dtDAL::Project::GetInstance().GetResourcePath(rd);
-                  if (GetGameActorProxy().IsInSTAGE())
-                  {
-                     if (mAnimationHelper->LoadModel(fileName))
-                     {
-                        SkeletalMeshLoadCallback();
-                     }
-                  }
-                  else if (GetGameActorProxy().IsInGM())
-                  {
-                     mAnimationHelper->LoadModelAsynchronously(fileName,
-                           dtAnim::AnimationHelper::AsynchLoadCompletionCallback(this, &Human::AsyncCompleteCallback));
-                  }
-               }
-               catch (const dtUtil::Exception& ex)
-               {
-                  LOG_ERROR(ex.ToString());
-                  mSkeletalMeshResource = dtDAL::ResourceDescriptor::NULL_RESOURCE;
-               }
-            }
-
-         }
-      }
-
-      ////////////////////////////////////////////////////////////////////////////
-      const dtDAL::ResourceDescriptor& Human::GetSkeletalMesh()
-      {
-         return mSkeletalMeshResource;
-      }
-
-      ////////////////////////////////////////////////////////////////////////////
       void Human::OnEnteredWorld()
       {
-         if (!mSkeletalMeshResource.IsEmpty() && (mModelNode == NULL || mModelNode->getName() != mSkeletalMeshResource.GetResourceIdentifier()))
-         {
-            try
-            {
-               const std::string fileName = dtDAL::Project::GetInstance().GetResourcePath(GetSkeletalMesh());
-               if (!fileName.empty())
-               {
-                  mAnimationHelper->LoadModelAsynchronously(fileName, dtAnim::AnimationHelper::AsynchLoadCompletionCallback(this, &Human::AsyncCompleteCallback));
-               }
-            }
-            catch (const dtUtil::Exception& ex)
-            {
-               LOG_ERROR(ex.ToString());
-               mSkeletalMeshResource = dtDAL::ResourceDescriptor::NULL_RESOURCE;
-            }
-
-         }
-
          BaseClass::OnEnteredWorld();
 
          //No burning or smoking people.
@@ -692,20 +644,11 @@ namespace SimCore
 
          SetupPlannerHelper();
 
-         if (!GetSkeletalMesh().IsEmpty())
+         if (mModelNode != NULL)
          {
             UpdatePlanAndAnimations();
          }
 
-         dtAnim::AnimationComponent* animComponent = NULL;
-
-         GetGameActorProxy().GetGameManager()->
-            GetComponentByName(dtAnim::AnimationComponent::DEFAULT_NAME, animComponent);
-
-         if (animComponent != NULL)
-         {
-            animComponent->RegisterActor(GetGameActorProxy(), *mAnimationHelper);
-         }
 
          dtGame::DeadReckoningHelper* drHelper = NULL;
          GetComponent(drHelper);
@@ -799,7 +742,7 @@ namespace SimCore
             return;
          }
 
-         dtAnim::Cal3DModelWrapper* wrapper = mAnimationHelper->GetModelWrapper();
+         dtAnim::Cal3DModelWrapper* wrapper = GetComponent<dtAnim::AnimationHelper>()->GetModelWrapper();
 
          //Can't update if the wrapper is NULL.
          if (wrapper == NULL)
@@ -1000,12 +943,7 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////
       void Human::CheckAndUpdateAnimationState()
       {
-         if (mModelLoadedAndWaiting)
-         {
-            SkeletalMeshLoadCallback();
-         }
-
-         if (!IsDesiredState(mPlannerHelper.GetCurrentState()) && !GetSkeletalMesh().IsEmpty())
+         if (!IsDesiredState(mPlannerHelper.GetCurrentState()) && mModelNode.valid())
          {
             if (mLogger.IsLevelEnabled(dtUtil::Log::LOG_DEBUG))
             {
@@ -1039,7 +977,7 @@ namespace SimCore
          if (gottaSequence)
          {
             dtAI::Planner::OperatorList::iterator i, iend;
-            dtAnim::SequenceMixer& seqMixer = mAnimationHelper->GetSequenceMixer();
+            dtAnim::SequenceMixer& seqMixer = GetComponent<dtAnim::AnimationHelper>()->GetSequenceMixer();
             dtCore::RefPtr<dtAnim::AnimationSequence> generatedSequence = new dtAnim::AnimationSequence();
 
             if (mSequenceId.empty())
@@ -1095,7 +1033,7 @@ namespace SimCore
                         mLogger.LogMessage(dtUtil::Log::LOG_DEBUG, __FUNCTION__, __LINE__,
                               "Adding animatable named \"%s\".", animatable->GetName().c_str());
                      }
-                     newAnim = animatable->Clone(mAnimationHelper->GetModelWrapper());
+                     newAnim = animatable->Clone(GetComponent<dtAnim::AnimationHelper>()->GetModelWrapper());
                      newAnim->SetStartDelay(std::max(0.0f, accumulatedStartTime));
                      newAnim->SetFadeIn(blendTime);
                      newAnim->SetFadeOut(blendTime);
@@ -1114,9 +1052,10 @@ namespace SimCore
          }
          else
          {
+            dtAnim::AnimationHelper* animAC = GetComponent<dtAnim::AnimationHelper>();
             //This is the error-out state.
-            mAnimationHelper->ClearAll(blendTime);
-            mAnimationHelper->PlayAnimation(AnimationOperators::ANIM_WALK_DEPLOYED);
+            animAC->ClearAll(blendTime);
+            animAC->PlayAnimation(AnimationOperators::ANIM_WALK_DEPLOYED);
          }
       }
 
@@ -1379,7 +1318,8 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////
       const dtAnim::Animatable* Human::ApplyOperatorAndGetAnimatable(const dtAI::Operator& op)
       {
-         dtAnim::SequenceMixer& seqMixer = mAnimationHelper->GetSequenceMixer();
+         dtAnim::AnimationHelper* animAC = GetComponent<dtAnim::AnimationHelper>();
+         dtAnim::SequenceMixer& seqMixer = animAC->GetSequenceMixer();
          op.Apply(mPlannerHelper.GetCurrentState());
 
          const dtAnim::Animatable* animatable = NULL;
@@ -1482,9 +1422,8 @@ namespace SimCore
       const dtUtil::RefString AnimationOperators::OPER_READY_TO_DEPLOYED("Ready To Deployed");
 
       ////////////////////////////////////////////////////////////////////////////
-      AnimationOperators::AnimationOperators(dtAI::PlannerHelper& plannerHelper,
-            dtAnim::AnimationHelper& animHelper):
-         mPlannerHelper(plannerHelper), mAnimHelper(&animHelper)
+      AnimationOperators::AnimationOperators(dtAI::PlannerHelper& plannerHelper):
+         mPlannerHelper(plannerHelper)
       {
          CreateOperators();
       }

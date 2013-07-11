@@ -18,8 +18,8 @@
 *
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
- * @author Matthew W. Campbell
- */
+* @author Matthew W. Campbell
+*/
 #include <prefix/SimCorePrefix.h>
 #include <SimCore/Actors/TerrainActorProxy.h>
 #include <SimCore/Components/RenderingSupportComponent.h>
@@ -59,10 +59,8 @@
 
 #include <iostream>
 
-#ifndef AGEIA_PHYSICS
 #include <dtPhysics/physicsreaderwriter.h>
 #include <dtPhysics/geometry.h>
-#endif
 
 namespace SimCore
 {
