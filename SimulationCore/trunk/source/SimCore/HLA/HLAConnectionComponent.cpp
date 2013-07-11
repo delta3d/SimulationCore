@@ -79,9 +79,17 @@ namespace SimCore
          , mRTIStandard(dtHLAGM::RTIAmbassador::RTI13_IMPLEMENTATION)
          , mRidFile()
          , mConnectionType(&ConnectionType::TYPE_NONE)
+         , mCurrentConnectionType(&ConnectionType::TYPE_NONE)
          , mServerGameVersion(1)
-         , mState(&ConnectionState::STATE_NOT_CONNECTED)
+         , mDISIPAddress()
+         , mDISPort()
+         , mDISIsBroadcastPort()
+         , mDISExerciseID()
+         , mDISSiteID()
+         , mDISApplicationID()
+         , mDISMTU()
          , mPausedDuringConnectionFrame(false)
+         , mState(&ConnectionState::STATE_NOT_CONNECTED)
       {
 
       }

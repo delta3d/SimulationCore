@@ -80,7 +80,7 @@ namespace SimCore
                   static DomainEnum SURFACE;
                   static DomainEnum MULTI;
 
-                  const std::string& GetDisplayName();
+                  const std::string& GetDisplayName() const;
                private:
                   DomainEnum(const std::string& name, const std::string& displayName);
                   const std::string mDisplayName;
