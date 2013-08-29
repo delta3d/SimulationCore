@@ -119,7 +119,7 @@ namespace SimCore
             void BuildInvokables();
 
             /// Creates the actor for this proxy
-            void CreateActor();
+            void CreateDrawable();
 
             virtual void OnEnteredWorld();
 

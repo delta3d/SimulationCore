@@ -66,7 +66,7 @@ namespace SimCore
 			   GetGameManager()->FindGameActorById(msg.GetAboutActorId(), portal);
             if(portal != NULL)
             {
-               RegisterPortal(dynamic_cast<SimCore::Actors::Portal*>(portal->GetActor()));
+               RegisterPortal(dynamic_cast<SimCore::Actors::Portal*>(portal->GetDrawable()));
             }
 		   }
 		   else if(msg.GetMessageType() == dtGame::MessageType::INFO_ACTOR_PUBLISHED)
@@ -89,7 +89,7 @@ namespace SimCore
                SimCore::Actors::PortalProxy* portal = dynamic_cast<SimCore::Actors::PortalProxy*>(ga);
                if(portal != NULL)
                {
-                  UnRegisterPortal(dynamic_cast<SimCore::Actors::Portal*>(portal->GetActor()));
+                  UnRegisterPortal(dynamic_cast<SimCore::Actors::Portal*>(portal->GetDrawable()));
                }
             }
          }

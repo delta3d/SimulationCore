@@ -159,10 +159,10 @@ namespace NetDemo
    EnemyDescriptionActorProxy::~EnemyDescriptionActorProxy(){}
 
    ///////////////////////////////////////////////////////////////////////////////////
-   void EnemyDescriptionActorProxy::CreateActor()
+   void EnemyDescriptionActorProxy::CreateDrawable()
    {
-      EnemyDescriptionActor* newActor = new EnemyDescriptionActor(*this);
-      SetActor(*newActor);
+      EnemyDescriptionActor* newDraw = new EnemyDescriptionActor(*this);
+      SetDrawable(*newDraw);
    }
 
 

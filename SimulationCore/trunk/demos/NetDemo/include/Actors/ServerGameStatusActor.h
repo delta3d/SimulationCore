@@ -208,12 +208,12 @@ namespace NetDemo
          /// Returns a useful reference to our actor. If no actor is created yet, this will likley crash.
          ServerGameStatusActor &GetActorAsGameStatus() 
          {
-            return *(static_cast<ServerGameStatusActor*>(GetActor()));
+            return *(static_cast<ServerGameStatusActor*>(GetDrawable()));
          }
 
       protected:
          virtual ~ServerGameStatusActorProxy();
-         void CreateActor();
+         void CreateDrawable();
          virtual void OnEnteredWorld();
    };
 

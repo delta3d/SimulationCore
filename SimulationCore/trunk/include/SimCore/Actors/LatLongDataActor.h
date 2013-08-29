@@ -80,7 +80,7 @@ namespace SimCore
 
             LatLongDataActorProxy();
 
-            virtual void CreateActor();
+            virtual void CreateDrawable();
 
             virtual void BuildPropertyMap();
 

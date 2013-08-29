@@ -175,7 +175,6 @@ namespace SimCore
             // MunitionTypeActor can be set from STAGE or by playback mode in AAR.
             // @param proxy The MunitionTypeActorProxy to be referenced.
             void SetMunitionTypeProxy( dtDAL::ActorProxy* proxy );
-            dtCore::DeltaDrawable* GetMunitionTypeDrawable();
 
             // This function helps to load the MunitionTypeActor that this weapon
             // will need for messaging. The actor will attempt to access the
@@ -198,7 +197,7 @@ namespace SimCore
             // NOTE: If an owner is not specified, the weapon will supply its own ID
             // as the sender for weapon fire messages.
             void SetOwner( dtDAL::ActorProxy* proxy );
-            dtCore::DeltaDrawable* GetOwner();
+            dtDAL::ActorProxy* GetOwner();
 
             // The flash actor responsible for timing and rendering the flash effects
             // produced by this weapon.
@@ -210,8 +209,7 @@ namespace SimCore
             // These functions are the same as Set/GetFlashActor except that
             // they utilize base pointers.
             // This function is used for the actor property mapping.
-            void SetFlashActorProxy( dtDAL::ActorProxy* flashProxy );
-            dtCore::DeltaDrawable* GetFlashActorDrawable();
+            void SetFlashActorProxy( dtCore::BaseActorObject* flashProxy );
 
             // Set the re-fire rate measured in seconds.
             // @param rate The time period to wait before firing another shot
@@ -480,7 +478,7 @@ namespace SimCore
             WeaponActorProxy();
 
             // Creates the actor
-            virtual void CreateActor();
+            virtual void CreateDrawable();
 
             // Adds the properties associated with this actor
             virtual void BuildPropertyMap();

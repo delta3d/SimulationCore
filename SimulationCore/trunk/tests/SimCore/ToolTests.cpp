@@ -138,7 +138,7 @@ void ToolTests::setUp()
       CPPUNIT_ASSERT(type != NULL);
       RefPtr<dtCore::ActorProxy> proxy = mGM->CreateActor(*type);
       CPPUNIT_ASSERT(proxy.valid());
-      mPlayerActor = dynamic_cast<SimCore::Actors::PlayerActor*>(proxy->GetActor());
+      mPlayerActor = dynamic_cast<SimCore::Actors::PlayerActor*>(proxy->GetDrawable());
       CPPUNIT_ASSERT(mPlayerActor.valid());
       mGM->AddActor(mPlayerActor->GetGameActorProxy(), false, false);
    }

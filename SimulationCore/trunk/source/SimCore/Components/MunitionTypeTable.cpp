@@ -70,7 +70,7 @@ namespace SimCore
          }
 
          SimCore::Actors::MunitionTypeActor* actor = 
-            dynamic_cast<SimCore::Actors::MunitionTypeActor*>(newType->GetActor());
+            dynamic_cast<SimCore::Actors::MunitionTypeActor*>(newType->GetDrawable());
 
          if( actor == NULL )
          {

@@ -154,7 +154,7 @@ namespace NetDemo
 
       protected:
          virtual ~BaseEnemyActorProxy();
-         void CreateActor();
+         void CreateDrawable();
          virtual void OnEnteredWorld();
    };
 

@@ -361,10 +361,10 @@ namespace NetDemo
    ServerGameStatusActorProxy::~ServerGameStatusActorProxy(){}
 
    ///////////////////////////////////////////////////////////////////////////////////
-   void ServerGameStatusActorProxy::CreateActor()
+   void ServerGameStatusActorProxy::CreateDrawable()
    {
       ServerGameStatusActor* newActor = new ServerGameStatusActor(*this);
-      SetActor(*newActor);
+      SetDrawable(*newActor);
    }
 
    ///////////////////////////////////////////////////////////////////////////////////

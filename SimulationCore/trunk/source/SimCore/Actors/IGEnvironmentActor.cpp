@@ -520,9 +520,9 @@ namespace SimCore
       }
 
       /// Creates the actor
-      void IGEnvironmentActorProxy::CreateActor()
+      void IGEnvironmentActorProxy::CreateDrawable()
       {
-         SetActor(*new IGEnvironmentActor(*this));
+         SetDrawable(*new IGEnvironmentActor(*this));
       }
 
       /////////////////////////////////////////////////////////////
@@ -530,7 +530,7 @@ namespace SimCore
       {
          dtGame::GameActorProxy::BuildPropertyMap();
 
-         IGEnvironmentActor* env = static_cast<IGEnvironmentActor*>(GetActor());
+         IGEnvironmentActor* env = static_cast<IGEnvironmentActor*>(GetDrawable());
 
          AddProperty(new dtDAL::BooleanActorProperty("Enable Fog", "Enable Fog",
             dtDAL::BooleanActorProperty::SetFuncType(env, &IGEnvironmentActor::SetFogEnabled),

@@ -317,7 +317,7 @@ class MessageTests : public CPPUNIT_NS::TestFixture
             RefPtr<SimCore::Actors::PlatformActorProxy> t80Proxy;
             mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE, t80Proxy);
             CPPUNIT_ASSERT(t80Proxy.valid());
-            RefPtr<SimCore::Actors::BaseEntity> t80Actor = dynamic_cast<SimCore::Actors::BaseEntity*>(t80Proxy->GetActor());
+            RefPtr<SimCore::Actors::BaseEntity> t80Actor = dynamic_cast<SimCore::Actors::BaseEntity*>(t80Proxy->GetDrawable());
             CPPUNIT_ASSERT(t80Actor.valid());
 
             if (useSubNode)
@@ -332,7 +332,7 @@ class MessageTests : public CPPUNIT_NS::TestFixture
             RefPtr<SimCore::Actors::StealthActorProxy> playerProxy;
             mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::STEALTH_ACTOR_TYPE, playerProxy);
             CPPUNIT_ASSERT(playerProxy.valid());
-            RefPtr<SimCore::Actors::StealthActor> playerActor = dynamic_cast<SimCore::Actors::StealthActor*>(playerProxy->GetActor());
+            RefPtr<SimCore::Actors::StealthActor> playerActor = dynamic_cast<SimCore::Actors::StealthActor*>(playerProxy->GetDrawable());
             CPPUNIT_ASSERT(playerActor.valid());
 
             mGM->AddActor(*t80Proxy, true, false);
@@ -413,12 +413,12 @@ class MessageTests : public CPPUNIT_NS::TestFixture
             RefPtr<SimCore::Actors::PlatformActorProxy> t80Proxy;
             mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE, t80Proxy);
             CPPUNIT_ASSERT(t80Proxy.valid());
-            RefPtr<SimCore::Actors::BaseEntity> t80Actor = dynamic_cast<SimCore::Actors::BaseEntity*>(t80Proxy->GetActor());
+            RefPtr<SimCore::Actors::BaseEntity> t80Actor = dynamic_cast<SimCore::Actors::BaseEntity*>(t80Proxy->GetDrawable());
             CPPUNIT_ASSERT(t80Actor.valid());
             RefPtr<SimCore::Actors::StealthActorProxy> playerProxy;
             mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::STEALTH_ACTOR_TYPE, playerProxy);
             CPPUNIT_ASSERT(playerProxy.valid());
-            RefPtr<SimCore::Actors::StealthActor> playerActor = dynamic_cast<SimCore::Actors::StealthActor*>(playerProxy->GetActor());
+            RefPtr<SimCore::Actors::StealthActor> playerActor = dynamic_cast<SimCore::Actors::StealthActor*>(playerProxy->GetDrawable());
             CPPUNIT_ASSERT(playerActor.valid());
 
             osg::Vec3 tankPos(0, 100, 0);
@@ -444,7 +444,7 @@ class MessageTests : public CPPUNIT_NS::TestFixture
             CPPUNIT_ASSERT_MESSAGE("The AttachToActor invokable should not be NULL", invoke != NULL);
             invoke->Invoke(aam);
 
-            CPPUNIT_ASSERT_MESSAGE("The player should now be attached to the T80", playerActor->GetParent() == t80Proxy->GetActor());
+            CPPUNIT_ASSERT_MESSAGE("The player should now be attached to the T80", playerActor->GetParent() == t80Proxy->GetDrawable());
 
             msg = mGM->GetMessageFactory().CreateMessage(dtGame::MessageType::INFO_ACTOR_DELETED);
             CPPUNIT_ASSERT(msg.valid());
@@ -649,7 +649,7 @@ class MessageTests : public CPPUNIT_NS::TestFixture
             dtCore::AppSleep(5);
             dtCore::System::GetInstance().Step();
 
-            scale = dynamic_cast<SimCore::Actors::BaseEntity&>(*mGM->FindGameActorById(id)->GetActor()).GetScaleMagnification();
+            scale = dynamic_cast<SimCore::Actors::BaseEntity&>(*mGM->FindGameActorById(id)->GetDrawable()).GetScaleMagnification();
             CPPUNIT_ASSERT_MESSAGE("The new entity added should have been scaled automatically",
                dtUtil::Equivalent(scale, magScale, 0.001f));
          }

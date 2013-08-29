@@ -316,7 +316,7 @@ namespace SimCore
 
             if ( proxy == NULL || proxy->IsRemote() ) { return; }
 
-            mPlayer = dynamic_cast<SimCore::Actors::StealthActor*>(proxy->GetActor());
+            mPlayer = dynamic_cast<SimCore::Actors::StealthActor*>(proxy->GetDrawable());
 
             if( ! mPlayer.valid() )
             {
@@ -346,7 +346,7 @@ namespace SimCore
 
             if( ! terrains.empty() )
             {
-               mIsector->SetQueryRoot( terrains[0]->GetActor() );
+               mIsector->SetQueryRoot( terrains[0]->GetDrawable() );
             }
 
             CleanupCreatedMunitionsQueue();
@@ -679,11 +679,11 @@ namespace SimCore
             // Change hitEntity to false if this is found to be the terrain actor.
             if(targetProxy != NULL)
             {
-               hitEntity = targetProxy != NULL && ( dynamic_cast<SimCore::Actors::BaseEntity*>(targetProxy->GetActor()) != NULL );
+               hitEntity = targetProxy != NULL && ( dynamic_cast<SimCore::Actors::BaseEntity*>(targetProxy->GetDrawable()) != NULL );
 
                // Check to see if we hit a person. Needs a different effect
                entityIsHuman = (hitEntity &&
-                  dynamic_cast<SimCore::Actors::Human*>(targetProxy->GetActor()) != NULL);
+                  dynamic_cast<SimCore::Actors::Human*>(targetProxy->GetDrawable()) != NULL);
             }
          }
 
@@ -699,7 +699,7 @@ namespace SimCore
             return;
          }
 
-         SimCore::Actors::DetonationActor* da = dynamic_cast<SimCore::Actors::DetonationActor*>(proxy->GetActor());
+         SimCore::Actors::DetonationActor* da = dynamic_cast<SimCore::Actors::DetonationActor*>(proxy->GetDrawable());
          if(da == NULL)
          {
             LOG_ERROR("Received a detonation actor proxy that did not contain a detonation actor. Ignoring.");
@@ -1158,7 +1158,7 @@ namespace SimCore
 
                ConvertSingleMunitionInfo(*infoProxy, *detonationProxy);
 
-               effectMapping.insert(std::make_pair(dynamic_cast<SimCore::Actors::MunitionEffectsInfoActor*>(infoProxy->GetActor()), detonationProxy->GetId()));
+               effectMapping.insert(std::make_pair(dynamic_cast<SimCore::Actors::MunitionEffectsInfoActor*>(infoProxy->GetDrawable()), detonationProxy->GetId()));
             }
          }
 
@@ -1172,7 +1172,7 @@ namespace SimCore
             curProxy = dynamic_cast<SimCore::Actors::MunitionTypeActorProxy*>(iter->get());
             if(curProxy.valid())
             {
-               SimCore::Actors::MunitionTypeActor& munitionActor = *static_cast<SimCore::Actors::MunitionTypeActor*>(curProxy->GetActor());
+               SimCore::Actors::MunitionTypeActor& munitionActor = *static_cast<SimCore::Actors::MunitionTypeActor*>(curProxy->GetDrawable());
 
                if(munitionActor.GetEffectsInfoActor() != NULL)
                { 
@@ -1192,8 +1192,8 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void MunitionsComponent::ConvertSingleMunitionInfo(SimCore::Actors::MunitionEffectsInfoActorProxy& infoProxy, SimCore::Actors::DetonationActorProxy& detonationProxy)
       {
-         SimCore::Actors::MunitionEffectsInfoActor& infoActor = *static_cast<SimCore::Actors::MunitionEffectsInfoActor*>(infoProxy.GetActor());
-         SimCore::Actors::DetonationActor& detonationActor = *static_cast<SimCore::Actors::DetonationActor*>(detonationProxy.GetActor());
+         SimCore::Actors::MunitionEffectsInfoActor& infoActor = *static_cast<SimCore::Actors::MunitionEffectsInfoActor*>(infoProxy.GetDrawable());
+         SimCore::Actors::DetonationActor& detonationActor = *static_cast<SimCore::Actors::DetonationActor*>(detonationProxy.GetDrawable());
 
          detonationActor.SetName(infoActor.GetName());
          detonationProxy.SetInitialOwnership(dtGame::GameActorProxy::Ownership::PROTOTYPE);

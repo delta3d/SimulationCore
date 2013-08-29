@@ -79,7 +79,7 @@ namespace DriverDemo
    }
 
    ///////////////////////////////////////////////////////////////////////////
-   void DriverGameEntryPoint::Initialize(dtGame::GameApplication& app, int argc, char **argv)
+   void DriverGameEntryPoint::Initialize(dtABC::BaseABC& app, int argc, char **argv)
    {
       mArgv = argv;
       mArgc = argc;
@@ -95,9 +95,8 @@ namespace DriverDemo
    }
 
    ///////////////////////////////////////////////////////////////////////////
-   void DriverGameEntryPoint::OnStartup(dtGame::GameApplication &app)
+   void DriverGameEntryPoint::OnStartup(dtABC::BaseABC& app, dtGame::GameManager& gameManager)
    {
-      dtGame::GameManager &gameManager = *app.GetGameManager();//*GetGameManager();
 
       // Change log file name
       std::string logFileName = gameManager.GetConfiguration().GetConfigPropertyValue("Delta3DLogFileName");
@@ -116,7 +115,7 @@ namespace DriverDemo
       gameManager.GetApplication().GetWindow()->SetShowCursor(false);
 
       // call base class
-      BaseClass::OnStartup(app);
+      BaseClass::OnStartup(app, gameManager);
 
 #ifndef BUILD_HLA
       // Load all of our maps (base --mapName plus AdditionalMaps

@@ -106,7 +106,7 @@ namespace NetDemo
             dtGame::GameActorProxy* gap = GetGameManager()->FindGameActorById(updateMessage.GetAboutActorId());
             if(gap != NULL)
             {
-               ServerGameStatusActor* serverStatus = static_cast<ServerGameStatusActor*>(gap->GetActor());
+               ServerGameStatusActor* serverStatus = static_cast<ServerGameStatusActor*>(gap->GetDrawable());
                UpdateGameState(serverStatus->GetGameStatus(), serverStatus->GetWaveNumber(), serverStatus->GetTimeLeftInCurState());
             }
          }
@@ -138,7 +138,7 @@ namespace NetDemo
             EnemyMothershipActorProxy* spawnProxy = dynamic_cast<EnemyMothershipActorProxy*>(*iter);
             if(spawnProxy != NULL)
             {
-               mSpawnVolumes.push_back(static_cast<EnemyMothershipActor*>(spawnProxy->GetActor()));
+               mSpawnVolumes.push_back(static_cast<EnemyMothershipActor*>(spawnProxy->GetDrawable()));
             }
          }
 
@@ -152,7 +152,7 @@ namespace NetDemo
             EnemyDescriptionActorProxy* enemyProxy = dynamic_cast<EnemyDescriptionActorProxy*>(*iter);
             if(enemyProxy != NULL)
             {
-               mEnemies.push_back(static_cast<EnemyDescriptionActor*>(enemyProxy->GetActor()));
+               mEnemies.push_back(static_cast<EnemyDescriptionActor*>(enemyProxy->GetDrawable()));
             }
          }
       }
@@ -173,7 +173,7 @@ namespace NetDemo
       if(enemyProxy.valid())
       {
          osg::Vec3 point;
-         BaseEnemyActor& enemyActor = static_cast<BaseEnemyActor&>(*(enemyProxy->GetActor()));
+         BaseEnemyActor& enemyActor = static_cast<BaseEnemyActor&>(*(enemyProxy->GetDrawable()));
 
          if(!mSpawnVolumes.empty())
          {

@@ -331,7 +331,7 @@ namespace SimCore
 
          WaterGridActorProxy();
 
-         void CreateActor();
+         void CreateDrawable();
 
          void BuildPropertyMap();
          void BuildInvokables();

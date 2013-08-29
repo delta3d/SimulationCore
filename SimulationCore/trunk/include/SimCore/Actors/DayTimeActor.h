@@ -83,7 +83,7 @@ namespace SimCore
          DayTimeActorProxy();
 
          /// Creates the actor
-         void CreateActor() { SetActor(*new DayTimeActor(*this)); }
+         void CreateDrawable() { SetDrawable(*new DayTimeActor(*this)); }
 
          /// Adds the properties associated with this actor
          void BuildPropertyMap();

@@ -36,13 +36,13 @@
 #include <dtCore/refptr.h>
 #include <dtCore/sigslot.h>
 #include <dtGame/gamemanager.h>
+#include <dtGame/gameapplication.h>
 #include <StealthViewer/GMApp/ViewWindowConfigObject.h>
 #include <vector>
 #include <dtQt/deltastepper.h>
 
 namespace dtGame
 {
-   class GameApplication;
    class LogKeyframe;
 }
 
@@ -493,7 +493,8 @@ namespace StealthQt
          QTimer mRefreshEntityInfoTimer;
          QTimer mHLAErrorTimer;
 
-         dtCore::RefPtr<dtGame::GameApplication> mApp;
+         dtGame::GameApplicationLoader* mGameLoader;
+         dtCore::RefPtr<dtGame::GameManager> mGM;
          bool mIsConnectedToANetwork;
 
          std::vector<dtCore::ObserverPtr<dtGame::GameActorProxy> > mFoundActors;

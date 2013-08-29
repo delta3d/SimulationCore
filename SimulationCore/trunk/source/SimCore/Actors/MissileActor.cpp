@@ -94,7 +94,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////
       void MissileActorProxy::LoadSmokeTrailFile(const std::string& fileName)
       {
-         MissileActor* ma = static_cast<MissileActor*>(GetActor());
+         MissileActor* ma = static_cast<MissileActor*>(GetDrawable());
 
          ma->LoadSmokeTrailFile(fileName);
       }
@@ -102,16 +102,16 @@ namespace SimCore
       //////////////////////////////////////////////////////////
       void MissileActorProxy::LoadFlameFile(const std::string& fileName)
       {
-         MissileActor* ma = static_cast<MissileActor*>(GetActor());
+         MissileActor* ma = static_cast<MissileActor*>(GetDrawable());
 
          ma->LoadFlameFile(fileName);
       }
 
       //////////////////////////////////////////////////////////
-      void MissileActorProxy::CreateActor()
+      void MissileActorProxy::CreateDrawable()
       {
          MissileActor* pActor = new MissileActor(*this);
-         SetActor(*pActor);
+         SetDrawable(*pActor);
       }
 
       //////////////////////////////////////////////////////////
@@ -270,7 +270,7 @@ namespace SimCore
          if( mSmokeTrail.valid() )
          {
             // Set the new emitter program
-            dtCore::ParticleSystem* smokeps = dynamic_cast<dtCore::ParticleSystem*> (mSmokeTrail->GetActor());
+            dtCore::ParticleSystem* smokeps = dynamic_cast<dtCore::ParticleSystem*> (mSmokeTrail->GetDrawable());
 
             if( smokeps != NULL )
             {

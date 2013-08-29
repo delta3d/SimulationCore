@@ -49,12 +49,12 @@ namespace SimCore
             /// creates and configures the HLA Component.
             virtual dtCore::RefPtr<dtHLAGM::HLAComponent> CreateAndSetupHLAComponent(dtGame::GameManager &gm);
 
-            virtual void Initialize(dtGame::GameApplication& app, int argc, char **argv);
+            virtual void Initialize(dtABC::BaseABC& app, int argc, char **argv);
 
             /// Overridden to add HLA components
             virtual void InitializeComponents(dtGame::GameManager &gm);
 
-            virtual void OnShutdown(dtGame::GameApplication& app);
+            virtual void OnShutdown(dtABC::BaseABC& app, dtGame::GameManager& gamemanager);
 
          protected:
             std::string mFederationExecutionName;

@@ -134,7 +134,7 @@ namespace SimCore
          virtual void BuildActorComponents();
       protected:
          virtual ~MunitionParticlesActorProxy();
-         void CreateActor();
+         void CreateDrawable();
       };
    }
 }

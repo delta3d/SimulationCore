@@ -178,7 +178,7 @@ namespace SimCore
             virtual void BuildInvokables();
 
             /// Creates the actor we are encapsulating
-            virtual void CreateActor() { SetActor(*new TerrainActor(*this)); }
+            virtual void CreateDrawable() { SetDrawable(*new TerrainActor(*this)); }
 
             /**
              * Gets the billboard used to represent static meshes if this proxy's

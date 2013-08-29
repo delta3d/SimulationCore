@@ -152,7 +152,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void BaseHLAGameEntryPoint::Initialize(dtGame::GameApplication& app, int argc, char **argv)
+      void BaseHLAGameEntryPoint::Initialize(dtABC::BaseABC& app, int argc, char **argv)
       {
          BaseClass::Initialize(app, argc, argv);
 
@@ -233,13 +233,12 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void BaseHLAGameEntryPoint::OnShutdown(dtGame::GameApplication &app)
+      void BaseHLAGameEntryPoint::OnShutdown(dtABC::BaseABC& app, dtGame::GameManager& gm)
       {
-         dtGame::GameManager &gameManager = *app.GetGameManager();//*GetGameManager();
          dtHLAGM::HLAComponent* hft =
-            static_cast<dtHLAGM::HLAComponent*>(gameManager.GetComponentByName(dtHLAGM::HLAComponent::DEFAULT_NAME));
+            static_cast<dtHLAGM::HLAComponent*>(gm.GetComponentByName(dtHLAGM::HLAComponent::DEFAULT_NAME));
 
-         gameManager.RemoveComponent(*hft);
+         gm.RemoveComponent(*hft);
          hft = NULL;
       }
    }

@@ -123,7 +123,7 @@ namespace StealthGM
    }
 
    ///////////////////////////////////////////////////////////////////////////
-   void StealthGameEntryPoint::Initialize(dtGame::GameApplication& app, int argc, char **argv)
+   void StealthGameEntryPoint::Initialize(dtABC::BaseABC& app, int argc, char **argv)
    {
       if(parser == NULL)
          parser = new osg::ArgumentParser(&argc, argv);
@@ -288,14 +288,12 @@ namespace StealthGM
    }
 
    ///////////////////////////////////////////////////////////////////////////
-   void StealthGameEntryPoint::OnStartup(dtGame::GameApplication& app)
+   void StealthGameEntryPoint::OnStartup(dtABC::BaseABC& app, dtGame::GameManager& gameManager)
    {
-      dtGame::GameManager &gameManager = *app.GetGameManager();//*GetGameManager();
-
       dtCore::Transform stealthStart;
       RefPtr<dtGame::GameActorProxy> ap;
 
-      SimCore::HLA::BaseHLAGameEntryPoint::OnStartup(app);
+      SimCore::HLA::BaseHLAGameEntryPoint::OnStartup(app, gameManager);
 
       // Add Input Component
       dtCore::RefPtr<StealthInputComponent> mInputComponent
@@ -358,7 +356,7 @@ namespace StealthGM
 
       // This function will initialize both the HUD and Input Component
       // with tools that have been enabled in the command line arguments.
-      InitializeTools(*app.GetGameManager());
+      InitializeTools(gameManager);
 
       // Setup Stealth Actor (ie player and camera)
       //if (mStealth == NULL)

@@ -91,10 +91,10 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////
-       void StealthActorProxy::CreateActor()
+       void StealthActorProxy::CreateDrawable()
        {
           StealthActor* pEntity = new StealthActor(*this);
-          SetActor(*pEntity);
+          SetDrawable(*pEntity);
        }
 
        //////////////////////////////////////////////////////
@@ -168,7 +168,7 @@ namespace SimCore
          xform.MakeIdentity();
          xform.SetRotation(attachRotationHPR);
 
-         BaseEntity* entity = dynamic_cast<BaseEntity*>(ga.GetActor());
+         BaseEntity* entity = dynamic_cast<BaseEntity*>(ga.GetDrawable());
          if (entity != NULL)
          {
             if (!mAttachAsThirdPerson)
@@ -195,7 +195,7 @@ namespace SimCore
          }
 
          bool foundNode = false;
-         GameActor* gameActor = dynamic_cast<GameActor*>(ga.GetActor());
+         GameActor* gameActor = dynamic_cast<GameActor*>(ga.GetDrawable());
          if (gameActor != NULL)
          {
             //we don't support named parts at his level.
@@ -204,7 +204,7 @@ namespace SimCore
               Emancipate();
             }
 
-            IGActor* igActor = dynamic_cast<IGActor*>(ga.GetActor());
+            IGActor* igActor = dynamic_cast<IGActor*>(ga.GetDrawable());
             if (igActor != NULL)
             {
                foundNode = igActor->AddChild(this, attachPointNode);

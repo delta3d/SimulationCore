@@ -265,7 +265,7 @@ namespace NetDemo
 
       while(!actorArray.empty())
       {
-         dtCore::Transformable* curr = static_cast<dtCore::Transformable*>(actorArray.back()->GetActor());
+         dtCore::Transformable* curr = static_cast<dtCore::Transformable*>(actorArray.back()->GetDrawable());
          float dist = GetDistance(*curr);
 
          if(dist < minDist)
@@ -280,7 +280,7 @@ namespace NetDemo
       GetGameActorProxy().GetGameManager()->FindActorsByType(*NetDemoActorRegistry::ENEMY_HELIX_ACTOR_TYPE, actorArray);
       while(!actorArray.empty())
       {
-         dtCore::Transformable* curr = static_cast<dtCore::Transformable*>(actorArray.back()->GetActor());
+         dtCore::Transformable* curr = static_cast<dtCore::Transformable*>(actorArray.back()->GetDrawable());
          float dist = GetDistance(*curr);
 
          if(dist < minDist)
@@ -423,9 +423,9 @@ namespace NetDemo
    LightTowerProxy::~LightTowerProxy(){}
 
    ///////////////////////////////////////////////////////////////////////////////////
-   void LightTowerProxy::CreateActor()
+   void LightTowerProxy::CreateDrawable()
    {
-      SetActor(*new LightTower(*this));
+      SetDrawable(*new LightTower(*this));
    }
 
    ///////////////////////////////////////////////////////////////////////////////////

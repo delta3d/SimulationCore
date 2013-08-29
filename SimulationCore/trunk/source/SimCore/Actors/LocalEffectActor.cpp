@@ -96,7 +96,7 @@ namespace SimCore
 
       void LocalEffectActorProxy::LoadFile(const std::string &fileName)
       {
-         LocalEffectActor *da = static_cast<LocalEffectActor*>(GetActor());
+         LocalEffectActor *da = static_cast<LocalEffectActor*>(GetDrawable());
          
          da->LoadSmokeFile(fileName);
       }

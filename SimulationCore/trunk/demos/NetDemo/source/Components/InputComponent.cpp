@@ -1266,7 +1266,7 @@ namespace NetDemo
       for(unsigned i = 0; i < numActors; i++)
       {
          // Find an entity that is not already destroyed and is also a mine, helix, etc...
-         SimCore::Actors::BaseEntity* entity = dynamic_cast<SimCore::Actors::BaseEntity*>(allGameActors[i]->GetActor());
+         SimCore::Actors::BaseEntity* entity = dynamic_cast<SimCore::Actors::BaseEntity*>(allGameActors[i]->GetDrawable());
          if (entity != NULL && entity->GetDamageState() != SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::DESTROYED && 
             (allGameActors[i]->GetActorType() == *NetDemoActorRegistry::ENEMY_MINE_ACTOR_TYPE ||
             allGameActors[i]->GetActorType() == *NetDemoActorRegistry::ENEMY_HELIX_ACTOR_TYPE))

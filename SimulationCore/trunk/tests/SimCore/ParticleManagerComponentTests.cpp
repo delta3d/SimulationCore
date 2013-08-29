@@ -447,7 +447,7 @@ namespace SimCore
          dtCore::RefPtr<SimCore::Actors::IGEnvironmentActorProxy> envProxy ;
          CreateEnvironmentActor( envProxy );
          SimCore::Actors::IGEnvironmentActor* env = dynamic_cast<SimCore::Actors::IGEnvironmentActor*>
-            (envProxy->GetActor());
+            (envProxy->GetDrawable());
          std::string forceName("Wind");
          osg::Vec3 force(-1.0,2.0,3.4);
          env->SetWind(force);

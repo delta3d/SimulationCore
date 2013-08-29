@@ -297,7 +297,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////
       void WeatherComponentTests::TestDayTimeActor()
       {
-         Actors::DayTimeActor* actor = static_cast<Actors::DayTimeActor*> (mDayTime->GetActor());
+         Actors::DayTimeActor* actor = static_cast<Actors::DayTimeActor*> (mDayTime->GetDrawable());
 
          CPPUNIT_ASSERT_MESSAGE("DayTimeActor should be valid", actor != NULL );
 
@@ -375,7 +375,7 @@ namespace SimCore
       void WeatherComponentTests::TestAtmosphereActor()
       {
          CPPUNIT_ASSERT(mAtmos != NULL);
-         Actors::UniformAtmosphereActor* actor = static_cast<Actors::UniformAtmosphereActor*> (mAtmos->GetActor());
+         Actors::UniformAtmosphereActor* actor = static_cast<Actors::UniformAtmosphereActor*> (mAtmos->GetDrawable());
 
          CPPUNIT_ASSERT_MESSAGE("UniformAtmosphereActor should be valid", actor != NULL );
 
@@ -475,7 +475,7 @@ namespace SimCore
          CPPUNIT_ASSERT_MESSAGE("WeatherComponent should NOT have an AtmosphereActor",
             mWeatherComp->GetAtmosphereActor() == NULL );
 
-         mWeatherComp->SetEphemerisEnvironment(static_cast<SimCore::Actors::IGEnvironmentActor*>(mEnv->GetActor()));
+         mWeatherComp->SetEphemerisEnvironment(static_cast<SimCore::Actors::IGEnvironmentActor*>(mEnv->GetDrawable()));
          CPPUNIT_ASSERT_MESSAGE("WeatherComponent SHOULD have an EnvironmentActor",
             mWeatherComp->GetEphemerisEnvironment() != NULL );
 
@@ -538,14 +538,14 @@ namespace SimCore
          // Test actor create messages
          // --- Test the Environment create message
 
-         mWeatherComp->SetEphemerisEnvironment(static_cast<SimCore::Actors::IGEnvironmentActor*>(mEnv->GetActor()));
+         mWeatherComp->SetEphemerisEnvironment(static_cast<SimCore::Actors::IGEnvironmentActor*>(mEnv->GetDrawable()));
          CPPUNIT_ASSERT_MESSAGE("WeatherComponent SHOULD have an EnvironmentActor",
             mWeatherComp->GetEphemerisEnvironment() != NULL );
 
          // --- Test the DayTime create message
          CPPUNIT_ASSERT_MESSAGE("WeatherComponent should NOT have an DayTimeActor",
             mWeatherComp->GetDayTimeActor() == NULL );
-         Actors::DayTimeActor* actor = static_cast<Actors::DayTimeActor*> (mDayTime->GetActor());
+         Actors::DayTimeActor* actor = static_cast<Actors::DayTimeActor*> (mDayTime->GetDrawable());
          actor->SetTime(1166207083);
          mGM->AddActor( *mDayTime, false, false );
          dtCore::System::GetInstance().Step();
@@ -624,7 +624,7 @@ namespace SimCore
 
          // Add all actors again to test reset
          // --- Test the Environment create message
-         mWeatherComp->SetEphemerisEnvironment(static_cast<SimCore::Actors::IGEnvironmentActor*>(mEnv->GetActor()));
+         mWeatherComp->SetEphemerisEnvironment(static_cast<SimCore::Actors::IGEnvironmentActor*>(mEnv->GetDrawable()));
          CPPUNIT_ASSERT_MESSAGE("WeatherComponent SHOULD have an EnvironmentActor",
             mWeatherComp->GetEphemerisEnvironment() != NULL );
 
@@ -669,7 +669,7 @@ namespace SimCore
             mAtmos.get() == mWeatherComp->GetAtmosphereActor() );
 
          SimCore::Actors::UniformAtmosphereActor* atmos =
-            dynamic_cast<SimCore::Actors::UniformAtmosphereActor*> (mAtmos->GetActor());
+            dynamic_cast<SimCore::Actors::UniformAtmosphereActor*> (mAtmos->GetDrawable());
 
          // Test update changes to the original atmosphere actor
          AtmosphereParams params = {5.0f,5000.0f,10000.0f,10.0f,20.0f,500.0f,15.0f,
@@ -690,7 +690,7 @@ namespace SimCore
          mGM->AddActor(*atmosProxy,false,false);
 
          // Get the new proxy's actor
-         atmos = dynamic_cast<SimCore::Actors::UniformAtmosphereActor*> (atmosProxy->GetActor());
+         atmos = dynamic_cast<SimCore::Actors::UniformAtmosphereActor*> (atmosProxy->GetDrawable());
 
          // Assign values to the new atmosphere actor
          AtmosphereParams params2 = {10.0f,10000.0f,20000.0f,20.0f,40.0f,1000.0f,30.0f,

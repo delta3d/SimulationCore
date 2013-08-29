@@ -139,7 +139,7 @@ namespace DriverDemo
 
       protected:
          virtual ~HoverExplodingTargetActorProxy();
-         void CreateActor();
+         void CreateDrawable();
          virtual void OnEnteredWorld();
    };
 

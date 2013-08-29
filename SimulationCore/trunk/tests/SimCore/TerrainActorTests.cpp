@@ -61,7 +61,7 @@
 #include <dtGame/gamemanager.h>
 
 #include <UnitTestMain.h>
-#include <TestComponent.h>
+#include <dtGame/testcomponent.h>
 
 using dtCore::RefPtr;
 
@@ -115,6 +115,7 @@ namespace SimCore
             if (mGameManager.valid())
             {
                mGameManager->DeleteAllActors();
+               mGameManager->Shutdown();
                mGameManager = NULL;
             }
          }
@@ -151,7 +152,7 @@ namespace SimCore
 
       void TestLoad()
       {
-         dtCore::RefPtr<TestComponent> tc = new TestComponent;
+         dtCore::RefPtr<dtGame::TestComponent> tc = new dtGame::TestComponent;
          mGameManager->AddComponent(*tc, dtGame::GameManager::ComponentPriority::HIGHEST);
 
          dtCore::RefPtr<SimCore::Actors::TerrainActorProxy> terrain;

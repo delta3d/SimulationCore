@@ -399,9 +399,9 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void DynamicParticleSystemActorProxy::CreateActor()
+      void DynamicParticleSystemActorProxy::CreateDrawable()
       {
-         SetActor( *new DynamicParticleSystemActor(*this) );
+         SetDrawable( *new DynamicParticleSystemActor(*this) );
       }
 
       //////////////////////////////////////////////////////////////////////////

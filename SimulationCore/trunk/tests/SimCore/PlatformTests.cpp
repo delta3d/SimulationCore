@@ -51,7 +51,7 @@
 #include <SimCore/Components/ViewerMessageProcessor.h>
 #include <SimCore/CollisionGroupEnum.h>
 
-#include <TestComponent.h>
+#include <dtGame/testcomponent.h>
 #include <UnitTestMain.h>
 #include <dtABC/application.h>
 

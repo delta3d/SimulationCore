@@ -112,7 +112,7 @@ namespace SimCore
             /// Returns a useful reference to our actor. If no actor is created yet, this will likely crash.
             LogicConditionalActor &GetActorAsConditional()
             {
-               return *(static_cast<LogicConditionalActor*>(GetActor()));
+               return *(static_cast<LogicConditionalActor*>(GetDrawable()));
             }
 
 

@@ -90,9 +90,9 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void BaseWaterActorProxy::CreateActor()
+      void BaseWaterActorProxy::CreateDrawable()
       {
-         SetActor( *new BaseWaterActor(*this) );
+         SetDrawable( *new BaseWaterActor(*this) );
       }
 
       //////////////////////////////////////////////////////////////////////////

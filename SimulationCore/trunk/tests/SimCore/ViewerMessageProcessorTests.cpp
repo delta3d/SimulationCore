@@ -201,10 +201,10 @@ namespace SimCore
          dtCore::System::GetInstance().Step();
 
          CPPUNIT_ASSERT_MESSAGE("The ViewerMessageProcessor should have received a player entered world message, and set its internal accordingly.",
-            mVMP->GetPlayerActor() == proxy->GetActor());
+            mVMP->GetPlayerActor() == proxy->GetDrawable());
 
          CPPUNIT_ASSERT_MESSAGE("The eye point on the DeadReckoningComponent should have been set by the ViewerMessageProcessor.",
-            drComp->GetEyePointActor() == proxy->GetActor());
+            drComp->GetEyePointActor() == proxy->GetDrawable());
       }
 
       RefPtr<SimCore::TimeValueMessage> ViewerMessageProcessorTests::BuildAndSetupTimeValueMessage()

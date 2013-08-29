@@ -81,7 +81,7 @@ namespace NetDemo
 
       protected:
          virtual ~EnemyMineActorProxy();
-         void CreateActor();
+         void CreateDrawable();
          virtual void OnEnteredWorld();
    };
 

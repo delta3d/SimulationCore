@@ -171,10 +171,10 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////////////
-      void SoundActorProxy::CreateActor()
+      void SoundActorProxy::CreateDrawable()
       {
          SoundActor* actor = new SoundActor(*this);
-         SetActor(*actor);
+         SetDrawable(*actor);
 
          // Create a sound to read the defaults.
          actor->CreateSound();

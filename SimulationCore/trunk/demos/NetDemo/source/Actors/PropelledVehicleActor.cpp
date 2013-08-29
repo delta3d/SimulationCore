@@ -155,10 +155,10 @@ namespace NetDemo
    }
 
    ////////////////////////////////////////////////////////////////////////
-   void PropelledVehicleActorProxy::CreateActor()
+   void PropelledVehicleActorProxy::CreateDrawable()
    {
       PropelledVehicleActor* pEntity = new PropelledVehicleActor(*this);
-      SetActor(*pEntity);
+      SetDrawable(*pEntity);
    }
 
    ////////////////////////////////////////////////////////////////////////

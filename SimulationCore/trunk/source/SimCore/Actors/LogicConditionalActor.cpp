@@ -110,7 +110,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void LogicConditionalActorProxy::CreateActor()
       {
-         SetActor( *new LogicConditionalActor("LogicConditional") );
+         SetDrawable( *new LogicConditionalActor("LogicConditional") );
       }
 
       //////////////////////////////////////////////////////////

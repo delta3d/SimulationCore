@@ -182,7 +182,7 @@ namespace SimCore
 
             /*virtual*/ void BuildActorComponents();
 
-            /*virtual*/ void CreateActor();
+            /*virtual*/ void CreateDrawable();
          protected:
             virtual ~HumanActorProxy();
       };

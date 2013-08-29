@@ -103,7 +103,7 @@ namespace SimCore
 
             OceanDataActorProxy();
 
-            virtual void CreateActor();
+            virtual void CreateDrawable();
 
             virtual void BuildPropertyMap();
 

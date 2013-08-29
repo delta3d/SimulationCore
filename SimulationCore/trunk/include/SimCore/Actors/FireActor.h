@@ -84,7 +84,7 @@ namespace SimCore
             virtual dtDAL::ActorProxyIcon* GetBillBoardIcon();
 
             /// Creates the actor
-            void CreateActor() { SetActor(*new FireActor(*this)); }
+            void CreateDrawable() { SetDrawable(*new FireActor(*this)); }
 
             /// Loads the file the particle system will use
             virtual void LoadFile(const std::string &fileName);

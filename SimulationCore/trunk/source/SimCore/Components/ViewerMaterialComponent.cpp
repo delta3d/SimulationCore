@@ -154,7 +154,7 @@ namespace SimCore
          // Couldnt find material... make a new one.
          dtCore::RefPtr<SimCore::Actors::ViewerMaterialActorProxy> materialToMakeProxy;
          GetGameManager()->CreateActor(*SimCore::Actors::EntityActorRegistry::MATERIAL_ACTOR_TYPE, materialToMakeProxy);
-         SimCore::Actors::ViewerMaterialActor* materialToMake = dynamic_cast<SimCore::Actors::ViewerMaterialActor*>(materialToMakeProxy->GetActor());
+         SimCore::Actors::ViewerMaterialActor* materialToMake = dynamic_cast<SimCore::Actors::ViewerMaterialActor*>(materialToMakeProxy->GetDrawable());
          materialToMake->SetName(materialName);
          mOurMaterials.push_back(materialToMake);
          return *materialToMake;

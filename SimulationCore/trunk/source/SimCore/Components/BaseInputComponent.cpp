@@ -235,7 +235,7 @@ namespace SimCore
             weatherProxy = dynamic_cast<Actors::UniformAtmosphereActorProxy*>(newProxy.get());
          }
          Actors::UniformAtmosphereActor* weatherActor =
-            static_cast<Actors::UniformAtmosphereActor*>(weatherProxy->GetActor());
+            static_cast<Actors::UniformAtmosphereActor*>(weatherProxy->GetDrawable());
 
          // Advance Weather State. 
          // CLEAR

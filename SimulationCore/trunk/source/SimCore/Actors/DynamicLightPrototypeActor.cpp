@@ -60,9 +60,10 @@ namespace SimCore
 
       }
 
-      void DynamicLightPrototypeProxy::CreateActor()
+      //////////////////////////////////////////////////////////
+      void DynamicLightPrototypeProxy::CreateDrawable()
       {
-         SetActor(*new DynamicLightPrototypeActor(*this)); 
+         SetDrawable(*new DynamicLightPrototypeActor(*this));
       }
 
       //////////////////////////////////////////////////////////
@@ -70,7 +71,7 @@ namespace SimCore
       {
          dtGame::GameActorProxy::BuildPropertyMap();
 
-         DynamicLightPrototypeActor* actor = static_cast<DynamicLightPrototypeActor*>(GetActor());
+         DynamicLightPrototypeActor* actor = static_cast<DynamicLightPrototypeActor*>(GetDrawable());
 
          static const dtUtil::RefString LIGHT_GROUP("Dynamic Light");
 
@@ -181,9 +182,9 @@ namespace SimCore
 
       }
 
-      void SpotLightPrototypeProxy::CreateActor()
+      void SpotLightPrototypeProxy::CreateDrawable()
       {
-         SetActor(*new SpotLightPrototypeActor(*this)); 
+         SetDrawable(*new SpotLightPrototypeActor(*this));
       }
 
       //////////////////////////////////////////////////////////
@@ -191,7 +192,7 @@ namespace SimCore
       {
          DynamicLightPrototypeProxy::BuildPropertyMap();
 
-         SpotLightPrototypeActor* actor = dynamic_cast<SpotLightPrototypeActor*>(GetActor());
+         SpotLightPrototypeActor* actor = dynamic_cast<SpotLightPrototypeActor*>(GetDrawable());
 
          static const dtUtil::RefString PROPERTY_USE_ABSOLUTE_DIRECTION("UseAbsoluteDirection");
          AddProperty(new dtDAL::BooleanActorProperty(PROPERTY_USE_ABSOLUTE_DIRECTION, PROPERTY_USE_ABSOLUTE_DIRECTION,

@@ -44,10 +44,10 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////
-      void InteriorActorProxy::CreateActor()
+      void InteriorActorProxy::CreateDrawable()
       {
          InteriorActor* pActor = new InteriorActor(*this);
-         SetActor(*pActor);
+         SetDrawable(*pActor);
       }
 
 

@@ -291,9 +291,9 @@ namespace SimCore
       }
 
       /////////////////////////////////////////////////////////////////////////////////
-      void OpenFlightToIVETerrainActorProxy::CreateActor()
+      void OpenFlightToIVETerrainActorProxy::CreateDrawable()
       {
-         SetActor(*new OpenFlightToIVETerrainActor(*this));
+         SetDrawable(*new OpenFlightToIVETerrainActor(*this));
       }
 
       /////////////////////////////////////////////////////////////////////////////////

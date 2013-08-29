@@ -435,7 +435,7 @@ namespace SimCore
          }
          else
          {
-            SimCore::Actors::DynamicLightPrototypeActor* dlActor = dynamic_cast<SimCore::Actors::DynamicLightPrototypeActor*>(iter->second.get()->GetActor());
+            SimCore::Actors::DynamicLightPrototypeActor* dlActor = dynamic_cast<SimCore::Actors::DynamicLightPrototypeActor*>(iter->second.get()->GetDrawable());
             result = new DynamicLight();
 
             SetDynamicLightProperties(dlActor, result);
@@ -462,7 +462,7 @@ namespace SimCore
          }
          else
          {
-            SimCore::Actors::SpotLightPrototypeActor* dlActor = dynamic_cast<SimCore::Actors::SpotLightPrototypeActor*>(iter->second.get()->GetActor());
+            SimCore::Actors::SpotLightPrototypeActor* dlActor = dynamic_cast<SimCore::Actors::SpotLightPrototypeActor*>(iter->second.get()->GetDrawable());
             result = new SpotLight();
 
             SetDynamicLightProperties(dlActor, result);
@@ -747,7 +747,7 @@ namespace SimCore
                   bool usePerGeodeLoading = true;
 
                   // Build the terrain as a static mesh, but with each geode loaded separately
-                  landActor->BuildTerrainAsStaticMesh(terrainActorProxy->GetActor()->GetOSGNode(),
+                  landActor->BuildTerrainAsStaticMesh(terrainActorProxy->GetDrawable()->GetOSGNode(),
                      "Base Terrain " + bogusIndexthing, usePerGeodeLoading);
                }
                else
@@ -1099,7 +1099,7 @@ namespace SimCore
             GetGameManager()->FindActorsByName("Terrain", toFill);
             if(!toFill.empty())
             {
-               mCullVisitor->SetTerrainNode(toFill[0]->GetActor()->GetOSGNode()->asTransform());
+               mCullVisitor->SetTerrainNode(toFill[0]->GetDrawable()->GetOSGNode()->asTransform());
             }
          }
 

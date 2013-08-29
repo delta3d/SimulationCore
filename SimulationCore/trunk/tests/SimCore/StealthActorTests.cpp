@@ -52,7 +52,7 @@
 #include <SimCore/Actors/ViewerMaterialActor.h>
 
 #include <UnitTestMain.h>
-#include <TestComponent.h>
+#include <dtGame/testcomponent.h>
 
 #if defined (WIN32) || defined (_WIN32) || defined (__WIN32__)
    #include <dtUtil/mswin.h>
@@ -82,7 +82,7 @@ class StealthActorTests : public CPPUNIT_NS::TestFixture
          mGM = new dtGame::GameManager(*mApp->GetScene());
          mGM->SetApplication( *mApp );
          mDeadReckoningComponent = new dtGame::DeadReckoningComponent("DeadReckoningComponent");
-         mTestComponent = new TestComponent();
+         mTestComponent = new dtGame::TestComponent();
          mGM->AddComponent(*mDeadReckoningComponent, dtGame::GameManager::ComponentPriority::NORMAL);
          mGM->AddComponent(*mTestComponent, dtGame::GameManager::ComponentPriority::NORMAL);
 
@@ -135,7 +135,7 @@ class StealthActorTests : public CPPUNIT_NS::TestFixture
 
       RefPtr<dtGame::GameManager> mGM;
       RefPtr<dtGame::DeadReckoningComponent> mDeadReckoningComponent;
-      RefPtr<TestComponent> mTestComponent;
+      RefPtr<dtGame::TestComponent> mTestComponent;
       RefPtr<SimCore::Actors::StealthActorProxy> mStealthProxy;
       RefPtr<SimCore::Actors::StealthActor> mStealthActor;
       RefPtr<dtABC::Application> mApp;

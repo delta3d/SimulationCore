@@ -67,7 +67,7 @@ namespace SimCore
 
          // Standard Actor Proxy Behaviors
          LogicOnEventActorProxy();
-         virtual void CreateActor();
+         virtual void CreateDrawable();
          virtual void BuildPropertyMap();
          virtual void OnEnteredWorld();
 

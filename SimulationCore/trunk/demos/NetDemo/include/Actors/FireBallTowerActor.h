@@ -106,7 +106,7 @@ namespace NetDemo
 
       protected:
          virtual ~FireBallTowerActorProxy();
-         void CreateActor();
+         void CreateDrawable();
          virtual void OnEnteredWorld();
          virtual void OnRemovedFromWorld();
    };

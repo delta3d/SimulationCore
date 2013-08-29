@@ -433,7 +433,7 @@ namespace NetDemo
          bool found = false;
          for (unsigned i = 0; i < fortActors.size(); ++i)
          {
-            FortActor* fort = static_cast<FortActor*>(fortActors[i]->GetActor());
+            FortActor* fort = static_cast<FortActor*>(fortActors[i]->GetDrawable());
             if(fort != NULL && fort->GetCurDamageRatio() >  curRatio && fort->GetCurDamageRatio() < 1.0f)
             {
                curRatio = fort->GetCurDamageRatio();

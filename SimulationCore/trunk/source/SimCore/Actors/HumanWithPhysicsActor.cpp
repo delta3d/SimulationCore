@@ -249,10 +249,10 @@ namespace SimCore
       }
 
       /// Instantiates the actor this proxy encapsulated
-      void HumanWithPhysicsActorProxy::CreateActor()
+      void HumanWithPhysicsActorProxy::CreateDrawable()
       {
          HumanWithPhysicsActor* p = new HumanWithPhysicsActor(*this);
-         SetActor(*p);
+         SetDrawable(*p);
       }
 
       //////////////////////////////////////////////////////////////////////

@@ -395,9 +395,9 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void FlareActorProxy::CreateActor()
+      void FlareActorProxy::CreateDrawable()
       {
-         SetActor( *new FlareActor(*this) );
+         SetDrawable( *new FlareActor(*this) );
       }
 
    }

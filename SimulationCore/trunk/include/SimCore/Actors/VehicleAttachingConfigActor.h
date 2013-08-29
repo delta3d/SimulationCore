@@ -76,7 +76,7 @@ namespace SimCore
 
          protected:
             virtual ~VehicleAttachingConfigActorProxy();
-            void CreateActor();
+            void CreateDrawable();
             virtual void OnEnteredWorld();
       };
    }

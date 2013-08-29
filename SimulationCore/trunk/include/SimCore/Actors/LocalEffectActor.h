@@ -126,7 +126,7 @@ namespace SimCore
             void BuildPropertyMap();
 
             /// Creates the actor
-            void CreateActor() { SetActor(*new LocalEffectActor(*this)); }
+            void CreateDrawable() { SetDrawable(*new LocalEffectActor(*this)); }
 
             /**
              * @return the billboard used to represent particle systems.

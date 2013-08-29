@@ -116,7 +116,7 @@ namespace NetDemo
 
    protected:
       virtual ~EnemyDescriptionActorProxy();
-      void CreateActor();
+      void CreateDrawable();
 
    private:
    };

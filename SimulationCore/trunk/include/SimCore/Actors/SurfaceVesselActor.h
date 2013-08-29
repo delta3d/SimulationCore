@@ -154,7 +154,7 @@ namespace SimCore
          void BuildInvokables();
 
          /// Creates the actor
-         void CreateActor();
+         void CreateDrawable();
 
          virtual void OnEnteredWorld();
 

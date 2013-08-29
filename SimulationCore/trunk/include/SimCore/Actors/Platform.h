@@ -116,7 +116,7 @@ namespace SimCore
              * By default this will create an Platform. This should be
              * overridden in all subclasses of the Platform class
              */
-            virtual void CreateActor();
+            virtual void CreateDrawable();
 
             /// mesh Resource to use for the non-damaged state.  @see #EnsureResourcesAreLoaded
             DT_DECLARE_ACCESSOR(dtDAL::ResourceDescriptor, NonDamagedResource);

@@ -101,7 +101,7 @@ namespace SimCore
       public:
          EphemerisEnvironmentActorProxy();
          /// Creates the actor
-         virtual void CreateActor();
+         virtual void CreateDrawable();
       protected:
          virtual ~EphemerisEnvironmentActorProxy();
       };

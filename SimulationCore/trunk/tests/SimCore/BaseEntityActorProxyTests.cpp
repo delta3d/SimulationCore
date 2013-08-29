@@ -72,7 +72,7 @@
 
 #include <dtCore/transformableactorproxy.h>
 
-#include <TestComponent.h>
+#include <dtGame/testcomponent.h>
 #include <UnitTestMain.h>
 #include <dtABC/application.h>
 
@@ -264,7 +264,7 @@ void BaseEntityActorProxyTests::TestPlatform()
    mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE, eap);
    CPPUNIT_ASSERT(eap.valid());
 
-   ObserverPtr<dtCore::DeltaDrawable> edraw = eap->GetActor();
+   ObserverPtr<dtCore::DeltaDrawable> edraw = eap->GetDrawable();
 
    TestBaseEntityActorProxy(*eap);
 
@@ -482,7 +482,7 @@ void BaseEntityActorProxyTests::TestHuman()
    mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::HUMAN_ACTOR_TYPE, hap);
    CPPUNIT_ASSERT(hap.valid());
 
-   ObserverPtr<dtCore::DeltaDrawable> edraw = hap->GetActor();
+   ObserverPtr<dtCore::DeltaDrawable> edraw = hap->GetDrawable();
 
    TestBaseEntityActorProxy(*hap);
 
@@ -856,7 +856,7 @@ void BaseEntityActorProxyTests::TestHumanActorUpdates()
 
 void BaseEntityActorProxyTests::TestBaseEntityActorUpdates(SimCore::Actors::BaseEntityActorProxy& eap)
 {
-   RefPtr<TestComponent> tc = new TestComponent;
+   RefPtr<dtGame::TestComponent> tc = new dtGame::TestComponent;
    mGM->AddComponent(*tc, dtGame::GameManager::ComponentPriority::HIGHEST);
 
    mGM->AddActor(eap, false, true);
@@ -1172,7 +1172,7 @@ void BaseEntityActorProxyTests::TestBaseEntityDRRegistration(SimCore::Actors::Ba
 
 void BaseEntityActorProxyTests::TestPlayerActorProxy()
 {
-   RefPtr<TestComponent> tc = new TestComponent;
+   RefPtr<dtGame::TestComponent> tc = new dtGame::TestComponent;
    mGM->AddComponent(*tc, dtGame::GameManager::ComponentPriority::HIGHEST);
    RefPtr<SimCore::Actors::PlayerActorProxy> pa;
    mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::PLAYER_ACTOR_TYPE, pa);

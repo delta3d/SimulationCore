@@ -263,7 +263,7 @@ namespace SimCore
             DetonationActorProxy();
 
             /// Creates the actor
-            void CreateActor() { SetActor(*new DetonationActor(*this)); }
+            void CreateDrawable() { SetDrawable(*new DetonationActor(*this)); }
 
             /// Builds the properties this actor has
             void BuildPropertyMap();

@@ -115,7 +115,7 @@ namespace NetDemo
 
       protected:
          virtual ~LightTowerProxy();
-         void CreateActor();
+         void CreateDrawable();
          virtual void OnEnteredWorld();
          virtual void OnRemovedFromWorld();
    };

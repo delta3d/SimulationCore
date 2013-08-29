@@ -133,10 +133,10 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////
-      void SurfaceVesselActorProxy::CreateActor()
+      void SurfaceVesselActorProxy::CreateDrawable()
       {
          SurfaceVesselActor* pActor = new SurfaceVesselActor(*this);
-         SetActor(*pActor);
+         SetDrawable(*pActor);
       }
 
       //////////////////////////////////////////////////////////

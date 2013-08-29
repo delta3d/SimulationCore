@@ -77,7 +77,7 @@ namespace SimCore
             virtual void BuildPropertyMap();
 
             /// Creates the actor we are encapsulating
-            virtual void CreateActor() { SetActor(*new BaseTerrainActor(*this)); }
+            virtual void CreateDrawable() { SetDrawable(*new BaseTerrainActor(*this)); }
 
             /**
             * Gets the billboard used to represent static meshes if this proxy's

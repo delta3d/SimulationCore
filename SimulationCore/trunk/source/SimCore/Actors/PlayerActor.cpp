@@ -93,10 +93,10 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////
-      void PlayerActorProxy::CreateActor()
+      void PlayerActorProxy::CreateDrawable()
       {
          PlayerActor* p = new PlayerActor(*this);
-         SetActor(*p);
+         SetDrawable(*p);
       }
 
       //////////////////////////////////////////////////////////

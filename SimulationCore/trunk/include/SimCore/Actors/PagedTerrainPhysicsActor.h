@@ -191,7 +191,7 @@ namespace SimCore
 
          protected:
             virtual ~PagedTerrainPhysicsActorProxy();
-            void CreateActor();
+            void CreateDrawable();
             virtual void OnEnteredWorld();
       };
 

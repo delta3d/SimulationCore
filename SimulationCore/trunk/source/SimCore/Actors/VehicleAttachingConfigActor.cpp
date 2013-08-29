@@ -102,9 +102,9 @@ namespace SimCore
       }
 
       /////////////////////////////////////////////////////////////////////////
-      void VehicleAttachingConfigActorProxy::CreateActor()
+      void VehicleAttachingConfigActorProxy::CreateDrawable()
       {
-         SetActor(*new VehicleAttachingConfigActor(*this));
+         SetDrawable(*new VehicleAttachingConfigActor(*this));
       }
 
       /////////////////////////////////////////////////////////////////////////

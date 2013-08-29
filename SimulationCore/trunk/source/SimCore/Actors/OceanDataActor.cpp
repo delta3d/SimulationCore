@@ -120,9 +120,9 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void OceanDataActorProxy::CreateActor()
+      void OceanDataActorProxy::CreateDrawable()
       {
-         SetActor( *new OceanDataActor(*this) );
+         SetDrawable( *new OceanDataActor(*this) );
       }
 
       //////////////////////////////////////////////////////////

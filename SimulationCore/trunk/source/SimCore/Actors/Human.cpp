@@ -472,10 +472,10 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////
-      void HumanActorProxy::CreateActor()
+      void HumanActorProxy::CreateDrawable()
       {
          Human* human = new Human(*this);
-         SetActor(*human);
+         SetDrawable(*human);
       }
 
       ////////////////////////////////////////////////////////////////////////////

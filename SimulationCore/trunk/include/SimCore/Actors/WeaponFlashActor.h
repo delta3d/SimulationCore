@@ -140,7 +140,7 @@ namespace SimCore
             WeaponFlashActorProxy();
 
             // Creates the actor
-            void CreateActor() { SetActor(*new WeaponFlashActor(*this)); }
+            void CreateDrawable() { SetDrawable(*new WeaponFlashActor(*this)); }
 
             // Adds the properties associated with this actor
             void BuildPropertyMap();
