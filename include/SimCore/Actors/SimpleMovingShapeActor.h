@@ -102,7 +102,7 @@ namespace SimCore
 
          //virtual void OnRemovedFromWorld() { }
 
-         virtual void CreateActor();
+         virtual void CreateDrawable();
          virtual void BuildPropertyMap();
 
          unsigned ComputeNumParticles(const osg::Vec3& dims);

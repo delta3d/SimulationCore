@@ -123,7 +123,7 @@ namespace SimCore
          virtual void BuildPropertyMap();
 
          /// Creates the actor
-         void CreateActor() { SetActor(*new UniformAtmosphereActor(*this)); }
+         void CreateDrawable() { SetDrawable(*new UniformAtmosphereActor(*this)); }
 
       protected:
 

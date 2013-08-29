@@ -308,7 +308,7 @@ namespace SimCore
                osg::Vec3 dirVec = currentPosition - lastPosition;
                ray.SetDirection(dirVec);
 
-               MunitionRaycastReport report(mWeapon.valid() ? mWeapon->GetOwner() : NULL);
+               MunitionRaycastReport report(mWeapon.valid() && mWeapon->GetOwner() != NULL ? mWeapon->GetOwner()->GetDrawable() : NULL);
 
                // CR: Create the bit mask once rather than every time the method is called.
                static const dtPhysics::CollisionGroupFilter GROUPS_FLAGS =
@@ -615,9 +615,9 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////
-      void MunitionParticlesActorProxy::CreateActor()
+      void MunitionParticlesActorProxy::CreateDrawable()
       {
-         SetActor(*new MunitionParticlesActor(*this));
+         SetDrawable(*new MunitionParticlesActor(*this));
       }
    }
 }

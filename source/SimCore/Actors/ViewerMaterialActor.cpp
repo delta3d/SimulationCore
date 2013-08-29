@@ -61,7 +61,7 @@ namespace SimCore
          const std::string VISLGROUP   = "Visual Material Types";
          const std::string OTHRGROUP   = "Other Types or Multiple Material Types";
 
-         ViewerMaterialActor *actor = dynamic_cast<ViewerMaterialActor*>(GetActor());
+         ViewerMaterialActor *actor = dynamic_cast<ViewerMaterialActor*>(GetDrawable());
 
          AddProperty(new dtDAL::ColorRgbaActorProperty("Base Color Value", "Base Color Value",
             dtDAL::MakeFunctor(*actor, &ViewerMaterialActor::SetBaseColorvalue),
@@ -88,10 +88,6 @@ namespace SimCore
             dtDAL::MakeFunctorRet(*actor, &ViewerMaterialActor::GetRestitution),
             "Ageia Material Setting - coefficient of restitution -- 0 makes the object bounce as little as possible, higher values up to 1.0 result in more bounce. Note that values close to or above 1 may cause stability problems and/or increasing energy. Range: [0,1]", PHYSGROUP));
 
-         AddProperty(new dtDAL::StringActorProperty("SceneName", "SceneName",
-            dtDAL::MakeFunctor(*actor, &ViewerMaterialActor::SetSceneName),
-            dtDAL::MakeFunctorRet(*actor, &ViewerMaterialActor::GetSceneName),
-            "What is the name of the scene this material resides in; only need for physics materials.", PHYSGROUP));
 
          AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::SOUND,
             "SmallHitSoundEffect", "SmallHitSoundEffect",  dtDAL::MakeFunctor(*actor, &ViewerMaterialActor::SetSmallHitSoundEffect),
@@ -166,86 +162,12 @@ namespace SimCore
             dtDAL::MakeFunctorRet(*actor, &ViewerMaterialActor::GetPhysicsParticleLookupStringFive),
             "", VISLGROUP));
 
-         AddProperty(new dtDAL::FloatActorProperty("Shininess", "Shininess",
-            dtDAL::MakeFunctor(*actor, &ViewerMaterialActor::SetShinyness),
-            dtDAL::MakeFunctorRet(*actor, &ViewerMaterialActor::GetShinyness),
-            "", SHADGROUP));
-
-         AddProperty(new dtDAL::FloatActorProperty("Moisture", "Moisture",
-            dtDAL::MakeFunctor(*actor, &ViewerMaterialActor::SetWetness),
-            dtDAL::MakeFunctorRet(*actor, &ViewerMaterialActor::GetWetness),
-            "", PHYSGROUP));
-
-         AddProperty(new dtDAL::FloatActorProperty("Reflectivity", "Reflectivity",
-            dtDAL::MakeFunctor(*actor, &ViewerMaterialActor::SetReflectivity),
-            dtDAL::MakeFunctorRet(*actor, &ViewerMaterialActor::GetReflectivity),
-            "", PHYSGROUP));
-
-         AddProperty(new dtDAL::FloatActorProperty("Softness", "Softness",
-            dtDAL::MakeFunctor(*actor, &ViewerMaterialActor::SetSoftness),
-            dtDAL::MakeFunctorRet(*actor, &ViewerMaterialActor::GetSoftness),
-            "", PHYSGROUP));
-
-         AddProperty(new dtDAL::FloatActorProperty("Stretchiness", "Stretchiness",
-            dtDAL::MakeFunctor(*actor, &ViewerMaterialActor::SetStretchiness),
-            dtDAL::MakeFunctorRet(*actor, &ViewerMaterialActor::GetStretchiness),
-            "", PHYSGROUP));
-
-         AddProperty(new dtDAL::FloatActorProperty("Flammibility", "Flammibility",
-            dtDAL::MakeFunctor(*actor, &ViewerMaterialActor::SetFlammibility),
-            dtDAL::MakeFunctorRet(*actor, &ViewerMaterialActor::GetFlammibility),
-            "", PHYSGROUP));
-
-         AddProperty(new dtDAL::FloatActorProperty("WindResistance", "WindResistance",
-            dtDAL::MakeFunctor(*actor, &ViewerMaterialActor::SetWindResistance),
-            dtDAL::MakeFunctorRet(*actor, &ViewerMaterialActor::GetWindResistance),
-            "", PHYSGROUP));
-
-         AddProperty(new dtDAL::FloatActorProperty("Bumpiness", "Bumpiness",
-            dtDAL::MakeFunctor(*actor, &ViewerMaterialActor::SetBumpiness),
-            dtDAL::MakeFunctorRet(*actor, &ViewerMaterialActor::GetBumpiness),
-            "", SHADGROUP));
-
-         AddProperty(new dtDAL::FloatActorProperty("SelfIllumination", "SelfIllumination",
-            dtDAL::MakeFunctor(*actor, &ViewerMaterialActor::SetSelfIlluminating),
-            dtDAL::MakeFunctorRet(*actor, &ViewerMaterialActor::GetSelfIlluminating),
-            "", VISLGROUP));
-
-         AddProperty(new dtDAL::FloatActorProperty("Inflatability", "Inflatability",
-            dtDAL::MakeFunctor(*actor, &ViewerMaterialActor::SetInflatableness),
-            dtDAL::MakeFunctorRet(*actor, &ViewerMaterialActor::GetInflatableness),
-            "", PHYSGROUP));
-
-         AddProperty(new dtDAL::FloatActorProperty("RefractionAmount", "RefractionAmount",
-            dtDAL::MakeFunctor(*actor, &ViewerMaterialActor::SetRefractionAmount),
-            dtDAL::MakeFunctorRet(*actor, &ViewerMaterialActor::GetRefractionAmount),
-            "", PHYSGROUP));
-
-         AddProperty(new dtDAL::FloatActorProperty("Pressureization", "Pressureization",
-            dtDAL::MakeFunctor(*actor, &ViewerMaterialActor::SetPressureization),
-            dtDAL::MakeFunctorRet(*actor, &ViewerMaterialActor::GetPressureization),
-            "", PHYSGROUP));
-
-         AddProperty(new dtDAL::FloatActorProperty("Temperature", "Temperature",
-            dtDAL::MakeFunctor(*actor, &ViewerMaterialActor::SetTemperature),
-            dtDAL::MakeFunctorRet(*actor, &ViewerMaterialActor::GetTemperature),
-            "", VISLGROUP));
-
-         AddProperty(new dtDAL::FloatActorProperty("SoundDensityValue", "SoundDensityValue",
-            dtDAL::MakeFunctor(*actor, &ViewerMaterialActor::SetSoundDensityValue),
-            dtDAL::MakeFunctorRet(*actor, &ViewerMaterialActor::GetSoundDensityValue),
-            "", SFXGROUP));
-
-         AddProperty(new dtDAL::FloatActorProperty("ParticleSpoutAmount", "ParticleSpoutAmount",
-            dtDAL::MakeFunctor(*actor, &ViewerMaterialActor::SetParticleSpoutAmount),
-            dtDAL::MakeFunctorRet(*actor, &ViewerMaterialActor::GetParticleSpoutAmount),
-            "", PARTGROUP));
       }
 
       // Creates the actor
-      void ViewerMaterialActorProxy::CreateActor()
+      void ViewerMaterialActorProxy::CreateDrawable()
       {
-         SetActor(*new ViewerMaterialActor(*this));
+         SetDrawable(*new ViewerMaterialActor(*this));
       }
 
       //////////////////////////////////////////////////////////
@@ -257,21 +179,6 @@ namespace SimCore
          , m_PHYS_DynamicFriction(0.5f)
          , m_PHYS_StaticFriction(0.5f)
          , m_PHYS_Restitution(0.2f)
-         , m_OTHR_Wetness(0.0f)
-         , m_OTHR_Softness(0.0f)
-         , m_OTHR_Stretchiness(0.0f)
-         , m_OTHR_Flammability(0.0f)
-         , m_OTHR_Temperature(0.0f)
-         , m_OTHR_WindResistance(0.0f)
-         , m_OTHR_Inflatableness(0.0f)
-         , m_OTHR_Pressurization(0.0f)
-         , m_SHAD_Bumpiness(0.0f)
-         , m_SFX_DensityForSound(0.0f)
-         , m_VISL_Shininess(0.0f)
-         , m_VISL_Reflectivity(0.0f)
-         , m_VISL_Refraction(0.0f)
-         , m_VISL_SelfIlluminating(0.0f)
-         , m_PART_SpoutAmount(0.0f)
       {
          SetPhysicsParticleLookupStringOne("");
          SetPhysicsParticleLookupStringTwo("");

@@ -306,7 +306,7 @@ namespace SimCore
                      {
                         dtCore::Transform detonationTransform;
                         GetTransform(detonationTransform);
-                        PhysicsParticleSystemActor* ourSpewingParticleSystemOfDoom = dynamic_cast<PhysicsParticleSystemActor*>(ourActualActorProxy->GetActor());
+                        PhysicsParticleSystemActor* ourSpewingParticleSystemOfDoom = dynamic_cast<PhysicsParticleSystemActor*>(ourActualActorProxy->GetDrawable());
                         ourSpewingParticleSystemOfDoom->SetTransform(detonationTransform);
                         ourSpewingParticleSystemOfDoom->ToggleEmitter(true);
                         GetGameActorProxy().GetGameManager()->AddActor(ourSpewingParticleSystemOfDoom->GetGameActorProxy(), false, false);

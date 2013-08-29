@@ -121,7 +121,7 @@ namespace SimCore
             virtual void BuildPropertyMap();
 
             /// Creates the actor we are encapsulating
-            virtual void CreateActor();
+            virtual void CreateDrawable();
 
             /**
             *  We override this method to clear the database pager.

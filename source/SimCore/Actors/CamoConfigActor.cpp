@@ -344,9 +344,9 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void CamoConfigActorProxy::CreateActor()
+      void CamoConfigActorProxy::CreateDrawable()
       {
-         SetActor(*new CamoConfigActor());
+         SetDrawable(*new CamoConfigActor());
       }
 
       //////////////////////////////////////////////////////////////////////////

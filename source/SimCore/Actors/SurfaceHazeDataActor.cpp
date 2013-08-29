@@ -78,9 +78,9 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void SurfaceHazeDataActorProxy::CreateActor()
+      void SurfaceHazeDataActorProxy::CreateDrawable()
       {
-         SetActor( *new SurfaceHazeDataActor(*this) );
+         SetDrawable( *new SurfaceHazeDataActor(*this) );
       }
 
       //////////////////////////////////////////////////////////

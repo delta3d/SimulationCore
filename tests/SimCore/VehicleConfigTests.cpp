@@ -100,7 +100,7 @@ void VehicleConfigTests::TestFunction()
 {
    dtCore::RefPtr<dtGame::GameActorProxy> obj;
    mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::VEHICLE_CONFIG_ACTOR_TYPE, obj);
-   dtCore::RefPtr<SimCore::Actors::VehicleAttachingConfigActor> objActor = dynamic_cast<SimCore::Actors::VehicleAttachingConfigActor*>(obj->GetActor());
+   dtCore::RefPtr<SimCore::Actors::VehicleAttachingConfigActor> objActor = dynamic_cast<SimCore::Actors::VehicleAttachingConfigActor*>(obj->GetDrawable());
 
    CPPUNIT_ASSERT(objActor.valid());
    

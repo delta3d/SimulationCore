@@ -136,10 +136,10 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
-      void PlatformActorProxy::CreateActor()
+      void PlatformActorProxy::CreateDrawable()
       {
          Platform* pEntity = new Platform(*this);
-         SetActor(*pEntity);
+         SetDrawable(*pEntity);
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
@@ -301,7 +301,7 @@ namespace SimCore
       {
          BaseClass::BuildInvokables();
 
-         Platform* actor = static_cast<Platform*>(GetActor());
+         Platform* actor = static_cast<Platform*>(GetDrawable());
 
          AddInvokable(*new dtGame::Invokable(Platform::INVOKABLE_TICK_CONTROL_STATE,
             dtUtil::MakeFunctor(&Platform::TickControlState, actor)));

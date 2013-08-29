@@ -44,7 +44,7 @@ namespace SimCore
          DECLARE_ENUM(DynamicLightType);
       public:
          static DynamicLightType UNKNOWN; // Default. We don't know what it is.
-         static DynamicLightType FIRE; // Most fires. Typically flicer and have relatively short range. May or may not move.
+         static DynamicLightType FIRE; // Most fires. Typically flicker and have relatively short range. May or may not move.
          static DynamicLightType TRACER; // Typically VERY fast, short range light. 
          static DynamicLightType HEADLIGHT; // Fairly bright but relatively short range.
          static DynamicLightType FLARE; // extremely bright, high intensity, huge range lights.
@@ -165,8 +165,7 @@ namespace SimCore
          /// Constructor
          DynamicLightPrototypeProxy();
 
-         /// Creates the actor
-         void CreateActor();
+         void CreateDrawable();
 
          /// Adds the properties associated with this actor
          virtual void BuildPropertyMap();
@@ -226,8 +225,8 @@ namespace SimCore
          /// Constructor
          SpotLightPrototypeProxy();
 
-         /// Creates the actor
-         void CreateActor();
+         /// Creates the drawable
+         void CreateDrawable();
 
          /// Adds the properties associated with this actor
          virtual void BuildPropertyMap();

@@ -145,7 +145,7 @@ namespace SimCore
 
          protected:
             virtual ~FourWheelVehicleActorProxy();
-            void CreateActor();
+            void CreateDrawable();
             virtual void OnEnteredWorld();
       };
 

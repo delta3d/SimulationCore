@@ -632,9 +632,9 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////
       PhysicsParticleSystemActorProxy::~PhysicsParticleSystemActorProxy(){}
       ////////////////////////////////////////////////////////////////////
-      void PhysicsParticleSystemActorProxy::CreateActor()
+      void PhysicsParticleSystemActorProxy::CreateDrawable()
       {
-         SetActor(*new PhysicsParticleSystemActor(*this));
+         SetDrawable(*new PhysicsParticleSystemActor(*this));
       }
 
       ////////////////////////////////////////////////////////////////////

@@ -96,7 +96,7 @@ namespace SimCore
 
          protected:
             virtual ~TextureProjectorActorProxy();
-            void CreateActor();
+            void CreateDrawable();
             virtual void OnEnteredWorld();
       };
    }

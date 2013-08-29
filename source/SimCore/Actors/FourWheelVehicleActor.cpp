@@ -103,7 +103,7 @@ namespace SimCore
 
          if (!IsRemote() && mVehiclesPortal.valid() )
          {
-            Portal* portal = dynamic_cast<Portal*>(mVehiclesPortal->GetActor());
+            Portal* portal = dynamic_cast<Portal*>(mVehiclesPortal->GetDrawable());
             portal->SetActorLink(NULL);
             GetGameActorProxy().GetGameManager()->DeleteActor(*mVehiclesPortal.get());
             mVehiclesPortal = NULL;
@@ -182,7 +182,7 @@ namespace SimCore
             // Create portals to get in and out of our vehicle
             GetGameActorProxy().GetGameManager()->CreateActor(
                      *EntityActorRegistry::PORTAL_ACTOR_TYPE, mVehiclesPortal);
-            Portal* portal = dynamic_cast<Portal*>(mVehiclesPortal->GetActor());
+            Portal* portal = dynamic_cast<Portal*>(mVehiclesPortal->GetDrawable());
             portal->SetActorLink(&GetGameActorProxy());
             portal->SetPortalName(GetName());
             portal->SetIsOpen(true);
@@ -298,7 +298,7 @@ namespace SimCore
             GetGameActorProxy().GetGameManager()->FindActorsByType(*EntityActorRegistry::INTERIOR_ACTOR_TYPE.get() , toFillin);
             if (toFillin.size())
             {
-               InteriorActor* ourInterior = dynamic_cast<InteriorActor*>(toFillin[0]->GetActor());
+               InteriorActor* ourInterior = dynamic_cast<InteriorActor*>(toFillin[0]->GetDrawable());
                if (ourInterior != NULL)
                {
                   steeringWheel = ourInterior->GetSteeringWheelDOF("dof_steering_wheel");
@@ -574,9 +574,9 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////
       FourWheelVehicleActorProxy::~FourWheelVehicleActorProxy(){}
       ///////////////////////////////////////////////////////////////////////////////////
-      void FourWheelVehicleActorProxy::CreateActor()
+      void FourWheelVehicleActorProxy::CreateDrawable()
       {
-         SetActor(*new FourWheelVehicleActor(*this));
+         SetDrawable(*new FourWheelVehicleActor(*this));
       }
 
       ///////////////////////////////////////////////////////////////////////////////////

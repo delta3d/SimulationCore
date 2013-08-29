@@ -307,9 +307,9 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void LogicOnEventActorProxy::CreateActor()
+      void LogicOnEventActorProxy::CreateDrawable()
       {
-         SetActor( *new LogicOnEventActor(*this) );
+         SetDrawable( *new LogicOnEventActor(*this) );
       }
 
       //////////////////////////////////////////////////////////

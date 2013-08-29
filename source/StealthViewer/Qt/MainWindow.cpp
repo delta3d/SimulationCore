@@ -191,7 +191,7 @@ namespace StealthQt
 
       show();
 
-      dtQt::OSGGraphicsWindowQt* graphicsWindow = dynamic_cast<dtQt::OSGGraphicsWindowQt*>(mApp->GetWindow()->GetOsgViewerGraphicsWindow());
+      dtQt::OSGGraphicsWindowQt* graphicsWindow = dynamic_cast<dtQt::OSGGraphicsWindowQt*>(mGM->GetApplication().GetWindow()->GetOsgViewerGraphicsWindow());
       if (graphicsWindow != NULL)
       {
          QGLWidget* oglWidget = graphicsWindow->GetQGLWidget();
@@ -407,11 +407,12 @@ namespace StealthQt
 
       try
       {
-         mApp = new dtGame::GameApplication(appArgc, appArgv);
-         mApp->SetGameLibraryName(appLibName);
-         mApp->Config();
+         mGameLoader = new dtGame::GameApplicationLoader(appArgc, appArgv);
+         mGameLoader->SetGameLibraryName(appLibName);
+         mGameLoader->Config();
 
-         StealthViewerData::GetInstance().GetViewWindowConfigObject().CreateMainViewWindow(*mApp->GetGameManager());
+         mGM = mGameLoader->GetGameManager();
+         StealthViewerData::GetInstance().GetViewWindowConfigObject().CreateMainViewWindow(*mGM);
       }
       catch (const dtUtil::Exception& ex)
       {
@@ -439,7 +440,7 @@ namespace StealthQt
    void MainWindow::OnHLAWindowActionTriggered()
    {
       SimCore::HLA::HLAConnectionComponent* comp = NULL;
-      mApp->GetGameManager()->GetComponentByName(SimCore::HLA::HLAConnectionComponent::DEFAULT_NAME, comp);
+      mGM->GetComponentByName(SimCore::HLA::HLAConnectionComponent::DEFAULT_NAME, comp);
 
       if (comp == NULL)
       {
@@ -452,7 +453,7 @@ namespace StealthQt
       mIsConnectedToANetwork = comp->GetConnectionState() !=
          SimCore::HLA::HLAConnectionComponent::ConnectionState::STATE_NOT_CONNECTED;
 
-      HLAWindow window(*mApp->GetGameManager(), this, NULL, mIsConnectedToANetwork, mCurrentConnectionName);
+      HLAWindow window(*mGM, this, NULL, mIsConnectedToANetwork, mCurrentConnectionName);
 
       connect(&window, SIGNAL(ConnectedToNetwork(QString)), this, SLOT(OnConnectToNetwork(QString)));
       connect(&window, SIGNAL(DisconnectedFromNetwork()), this, SLOT(OnDisconnectFromNetwork()));
@@ -935,8 +936,8 @@ namespace StealthQt
          mUi->mRecordStartButton->setText(tr("Stop"));
          mUi->mRecordDurationLineEdit->setText("0");
          mDurationTimer.start();
-         mRecordingStartTime = mApp->GetGameManager()->GetSimulationTime();
-         mRecordingStopTime = mApp->GetGameManager()->GetSimulationTime();
+         mRecordingStartTime = mGM->GetSimulationTime();
+         mRecordingStopTime = mGM->GetSimulationTime();
       }
       else
       {
@@ -1063,8 +1064,8 @@ namespace StealthQt
       {
          // Turn off paused in case the playback ended and paused the GM.
          // It will continue to be paused afterward.
-         if (mApp->GetGameManager()->IsPaused())
-            mApp->GetGameManager()->SetPaused(false);
+         if (mGM->IsPaused())
+            mGM->SetPaused(false);
 
          recConfig.JoinNetwork();
          mUi->mPlaybackOptionsGroupBox->hide();
@@ -1294,7 +1295,7 @@ namespace StealthQt
       mUi->mSearchEntityTableWidget->setHorizontalHeaderLabels(headers);
 
       EntitySearch::FindEntities(mFoundActors,
-               *mApp->GetGameManager(),
+               *mGM,
                mUi->mSearchCallSignLineEdit->text().toStdString(),
                mUi->mSearchForceComboBox->currentText().toStdString(),
                mUi->mSearchDamageStateComboBox->currentText().toStdString());
@@ -1359,7 +1360,7 @@ namespace StealthQt
          const dtCore::UniqueId id(item->data(Qt::UserRole).toString().toStdString());
 
          // Retrieve proxy from the GM just to make sure it exists.
-         dtGame::GameActorProxy* proxy = mApp->GetGameManager()->FindGameActorById(id);
+         dtGame::GameActorProxy* proxy = mGM->FindGameActorById(id);
          if (proxy != NULL)
          {
             StealthViewerData::GetInstance().GetGeneralConfigObject().AttachToActor(id);
@@ -1749,7 +1750,7 @@ namespace StealthQt
    ///////////////////////////////////////////////////////////////////////////////
    void MainWindow::AddConfigObjectsToViewerComponent()
    {
-      dtGame::GameManager* gm = mApp->GetGameManager();
+      dtGame::GameManager* gm = mGM;
       dtGame::GMComponent* gmComp =
          gm->GetComponentByName(StealthGM::ViewerConfigComponent::DEFAULT_NAME);
 
@@ -2090,7 +2091,7 @@ namespace StealthQt
    void MainWindow::ConnectSigSlots()
    {
       dtGame::GMComponent* gmComp =
-         mApp->GetGameManager()->GetComponentByName("LogController");
+         mGM->GetComponentByName("LogController");
       if (gmComp == NULL)
          return;
 
@@ -2156,7 +2157,7 @@ namespace StealthQt
 
    void MainWindow::OnDurationTimerElapsed()
    {
-      dtGame::GameManager& gm = *mApp->GetGameManager();
+      dtGame::GameManager& gm = *mGM;
       double curSimtime = gm.GetSimulationTime();
       mRecordingStopTime = curSimtime;
 
@@ -2192,7 +2193,7 @@ namespace StealthQt
    {
       SimCore::HLA::HLAConnectionComponent* comp =
          static_cast<SimCore::HLA::HLAConnectionComponent*>
-      (mApp->GetGameManager()->GetComponentByName(SimCore::HLA::HLAConnectionComponent::DEFAULT_NAME));
+      (mGM->GetComponentByName(SimCore::HLA::HLAConnectionComponent::DEFAULT_NAME));
 
       if (comp->GetConnectionState() == SimCore::HLA::HLAConnectionComponent::ConnectionState::STATE_ERROR)
       {
@@ -2242,7 +2243,7 @@ namespace StealthQt
       QString id = currentItem->data(Qt::UserRole).toString();
 
       // Retrieve proxy from the GM
-      dtGame::GameActorProxy *proxy = mApp->GetGameManager()->FindGameActorById(dtCore::UniqueId(id.toStdString()));
+      dtGame::GameActorProxy *proxy = mGM->FindGameActorById(dtCore::UniqueId(id.toStdString()));
       if (proxy != NULL)
       {
          UpdateEntityInfoData(*proxy);
@@ -2320,7 +2321,7 @@ namespace StealthQt
 
       // Make sure we still pick up the signals from these events. This is important
       // for the UI to update itself properly
-      HLAWindow window(*mApp->GetGameManager(), this, NULL, mIsConnectedToANetwork, mCurrentConnectionName);
+      HLAWindow window(*mGM, this, NULL, mIsConnectedToANetwork, mCurrentConnectionName);
 
       connect(&window, SIGNAL(ConnectedToNetwork(QString)), this, SLOT(OnConnectToNetwork(QString)));
       connect(&window, SIGNAL(DisconnectedFromNetwork()), this, SLOT(OnDisconnectFromNetwork()));
@@ -2376,7 +2377,7 @@ namespace StealthQt
       std::ostringstream oss;
       // Get the StealthHUD so we can get the coordinate Converter. Makes our coordinates be location specific.
       StealthGM::StealthHUD* hudComponent = dynamic_cast<StealthGM::StealthHUD*>
-      (mApp->GetGameManager()->GetComponentByName(StealthGM::StealthHUD::DEFAULT_NAME));
+      (mGM->GetComponentByName(StealthGM::StealthHUD::DEFAULT_NAME));
       if (hudComponent == NULL)
       {
          throw dtGame::InvalidParameterException(

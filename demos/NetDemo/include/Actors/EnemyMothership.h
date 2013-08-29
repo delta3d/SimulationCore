@@ -89,7 +89,7 @@ namespace NetDemo
 
    protected:
       virtual ~EnemyMothershipActorProxy();
-      void CreateActor();
+      void CreateDrawable();
       virtual void OnEnteredWorld();
       virtual void OnRemovedFromWorld();
    };

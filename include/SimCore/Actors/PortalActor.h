@@ -36,16 +36,16 @@ namespace SimCore
       class SIMCORE_EXPORT Portal : public dtGame::GameActor
       {
          public:
-            Portal(dtGame::GameActorProxy &proxy);
-
-            ///////////////////////////////////////////
-            dtCore::DeltaDrawable* GetActorLink();
+            Portal(dtGame::GameActorProxy& proxy);
 
             //////////////////////////////////////////////////////////////////
-            void  SetActorLink(dtDAL::ActorProxy* proxy)
+            void  SetActorLink(dtCore::BaseActorObject* linked)
             {
-               GetGameActorProxy().SetLinkedActor("ActorLink", proxy);
+               mLinked = linked;
             }
+
+            /// TODO change this api to return the Base Actor Object.
+            dtCore::DeltaDrawable* GetActorLink() {return mLinked->GetDrawable();}
 
             ///////////////////////////////////////////
             bool operator==(const Portal& portal) const
@@ -67,6 +67,7 @@ namespace SimCore
             virtual ~Portal(){}
 
          private:
+            dtCore::RefPtr<dtCore::BaseActorObject> mLinked;
             bool                                   mIsOpen;
             std::string                            mPortalName;
             float                                  mTimeToSendOut;
@@ -83,7 +84,7 @@ namespace SimCore
 
          protected:
             virtual ~PortalProxy();
-            void CreateActor();
+            void CreateDrawable();
             virtual void OnEnteredWorld();
       };
    }

@@ -72,11 +72,11 @@ namespace NetDemo
    //////////////////////////////////////////////////////////////////////////////
    osg::BoundingBox SpawnVolumeActor::GetBoundingBox()
    {
-      Transformable::CollisionGeomType *type = GetCollisionGeomType();
+      dtCore::CollisionGeomType* type = GetCollisionGeomType();
 
       osg::BoundingBox bb;
 
-      if (type == &Transformable::CollisionGeomType::CUBE)
+      if (type == &dtCore::CollisionGeomType::CUBE)
       {
          std::vector<float> dimensions;
          GetCollisionGeomDimensions(dimensions);
@@ -97,9 +97,9 @@ namespace NetDemo
    {
       osg::Vec3 pos;
 
-      Transformable::CollisionGeomType *type = GetCollisionGeomType();
+      dtCore::CollisionGeomType* type = GetCollisionGeomType();
 
-      if (type == &Transformable::CollisionGeomType::CUBE)
+      if (type == &dtCore::CollisionGeomType::CUBE)
       {
          dtCore::Transform trans;
          GetTransform(trans);
@@ -116,9 +116,9 @@ namespace NetDemo
    //////////////////////////////////////////////////////////////////////////////
    bool SpawnVolumeActor::IsPointInVolume(osg::Vec3 pos)
    {
-      Transformable::CollisionGeomType *type = GetCollisionGeomType();
+      dtCore::CollisionGeomType* type = GetCollisionGeomType();
 
-      if (type == &Transformable::CollisionGeomType::CUBE)
+      if (type == &dtCore::CollisionGeomType::CUBE)
       {
          dtCore::Transform transform;
          GetTransform(transform);
@@ -186,10 +186,10 @@ namespace NetDemo
    SpawnVolumeActorProxy::~SpawnVolumeActorProxy(){}
 
    ///////////////////////////////////////////////////////////////////////////////////
-   void SpawnVolumeActorProxy::CreateActor()
+   void SpawnVolumeActorProxy::CreateDrawable()
    {
       SpawnVolumeActor* newActor = new SpawnVolumeActor(*this);
-      SetActor(*newActor);
+      SetDrawable(*newActor);
    }
 
 
@@ -234,15 +234,6 @@ namespace NetDemo
    void SpawnVolumeActorProxy::EnemyArraySetIndex(int index)
    {
       mEnemyArrayIndex = index;
-
-      // Get the actor at the current index and put it into the non-index slot.
-      std::string name = "Enemy";
-      name += dtUtil::ToString(mEnemyArrayIndex);
-      dtDAL::ActorProxy* proxy = GetLinkedActor(name);
-      if (proxy)
-      {
-         SetLinkedActor("Enemy", proxy);
-      }
    }
 
    ////////////////////////////////////////////////////////////////////////////////

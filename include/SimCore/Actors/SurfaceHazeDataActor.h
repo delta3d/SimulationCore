@@ -71,7 +71,7 @@ namespace SimCore
 
             SurfaceHazeDataActorProxy();
 
-            virtual void CreateActor();
+            virtual void CreateDrawable();
 
             virtual void BuildPropertyMap();
 

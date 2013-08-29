@@ -162,7 +162,7 @@ namespace SimCore
 
             virtual void BuildPropertyMap();
             virtual void BuildInvokables();
-            virtual void CreateActor();
+            virtual void CreateDrawable();
          protected:
             void SetAssociatedEntity(dtDAL::ActorProxy* assocEntity);
             dtCore::DeltaDrawable* GetAssociatedEntity();

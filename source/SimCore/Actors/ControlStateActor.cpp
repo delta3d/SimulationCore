@@ -530,14 +530,12 @@ namespace SimCore
 
          if( proxy != NULL )
          {
-            mEntity = dynamic_cast<Platform*>(proxy->GetActor());
+            mEntity = dynamic_cast<Platform*>(proxy->GetDrawable());
          }
          else
          {
             mEntity = NULL;
          }
-
-         GetGameActorProxy().SetLinkedActor("EntityID", proxy);
 
          // DEBUG:
          //if( proxy != NULL )
@@ -547,14 +545,9 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      dtCore::DeltaDrawable* ControlStateActor::GetEntity()
+      Platform* ControlStateActor::GetEntity()
       {
-         dtDAL::ActorProxy* proxy = GetGameActorProxy().GetLinkedActor("EntityID");
-         if( proxy == NULL )
-         {
-            return NULL;
-         }
-         return proxy->GetActor();
+         return mEntity.get();
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -794,7 +787,7 @@ namespace SimCore
 
          AddProperty(new dtDAL::ActorActorProperty( *this, "EntityID", "EntityID",
             dtDAL::ActorActorProperty::SetFuncType( actor, &ControlStateActor::SetEntity ),
-            dtDAL::ActorActorProperty::GetFuncType( actor, &ControlStateActor::GetEntity ),
+            dtDAL::ActorActorProperty::GetFuncType( ),
             "SimCore::Actors::Platform",
             "Entity to which the control state points and modifies"));
 

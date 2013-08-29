@@ -128,7 +128,7 @@ namespace NetDemo
 
       protected:
          virtual ~HoverVehicleActorProxy();
-         void CreateActor();
+         void CreateDrawable();
          virtual void OnEnteredWorld();
    };
 

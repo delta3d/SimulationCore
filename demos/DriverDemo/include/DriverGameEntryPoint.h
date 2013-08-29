@@ -56,7 +56,7 @@ namespace DriverDemo
           * Called to initialize the game application.
           * @param app the current application
           */
-         virtual void Initialize(dtGame::GameApplication& app, int argc, char **argv);
+         virtual void Initialize(dtABC::BaseABC& app, int argc, char **argv);
 
          /**
           * Override the method to create the game manager.
@@ -67,7 +67,7 @@ namespace DriverDemo
           * Called after all startup related code is run.
           * @param app the current application
           */
-         virtual void OnStartup(dtGame::GameApplication& app);
+         virtual void OnStartup(dtABC::BaseABC& app, dtGame::GameManager& gameManager);
 
          virtual void InitializeComponents(dtGame::GameManager& gm);
 

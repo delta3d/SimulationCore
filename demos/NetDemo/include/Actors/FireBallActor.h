@@ -93,7 +93,7 @@ namespace NetDemo
          void BuildPropertyMap();
 
          /// Creates the actor
-         void CreateActor() { SetActor(*new FireBallActor(*this)); }
+         void CreateDrawable() { SetDrawable(*new FireBallActor(*this)); }
 
          virtual void BuildActorComponents();
 

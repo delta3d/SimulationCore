@@ -1055,7 +1055,7 @@ namespace DriverDemo
          = dynamic_cast<SimCore::Actors::WeaponActorProxy*>
          (gm->CreateActorFromPrototype(proxyArray[0]->GetId()).get());
       outWeapon = weaponProxy.valid() ?
-         static_cast<SimCore::Actors::WeaponActor*> (weaponProxy->GetActor()) : NULL;
+         static_cast<SimCore::Actors::WeaponActor*> (weaponProxy->GetDrawable()) : NULL;
 
       if( ! outWeapon.valid() )
       {
@@ -1091,7 +1091,7 @@ namespace DriverDemo
             if( proxy != NULL )
             {
                SimCore::Actors::MunitionParticlesActor* shooter
-                  = dynamic_cast<SimCore::Actors::MunitionParticlesActor*>(ourActualActorProxy->GetActor());
+                  = dynamic_cast<SimCore::Actors::MunitionParticlesActor*>(ourActualActorProxy->GetDrawable());
 
                // Set other properties of the particle system
                shooter->SetWeapon( *outWeapon );
@@ -1113,7 +1113,7 @@ namespace DriverDemo
       SimCore::Actors::WeaponFlashActor* flash = NULL;
       dtCore::RefPtr<SimCore::Actors::WeaponFlashActorProxy> flashProxy;
       gm->CreateActor( *SimCore::Actors::EntityActorRegistry::WEAPON_FLASH_ACTOR_TYPE, flashProxy );
-      flash = static_cast<SimCore::Actors::WeaponFlashActor*>(flashProxy->GetActor());
+      flash = static_cast<SimCore::Actors::WeaponFlashActor*>(flashProxy->GetDrawable());
       std::stringstream flashFilePath;
       flashFilePath << "Particles/" << flashEffectFile;
       flash->SetParticleEffect( flashFilePath.str() );
@@ -1524,7 +1524,7 @@ namespace DriverDemo
       for(unsigned i = 0; i < numActors; i++)
       {
          // Find an entity that is not already destroyed and is also a mine, helix, etc...
-         SimCore::Actors::BaseEntity* entity = dynamic_cast<SimCore::Actors::BaseEntity*>(allGameActors[i]->GetActor());
+         SimCore::Actors::BaseEntity* entity = dynamic_cast<SimCore::Actors::BaseEntity*>(allGameActors[i]->GetDrawable());
          if (entity != NULL && entity->GetDamageState() != SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::DESTROYED && 
             (allGameActors[i]->GetActorType() == *DriverActorRegistry::HOVER_TARGET_ACTOR_TYPE ||
             allGameActors[i]->GetActorType() == *DriverActorRegistry::HOVER_EXPLODING_TARGET_ACTOR_TYPE))

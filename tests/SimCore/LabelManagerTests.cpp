@@ -122,8 +122,8 @@ class LabelManagerTests : public CPPUNIT_NS::TestFixture
          osg::ShapeDrawable* sd = new osg::ShapeDrawable(box, NULL);
          geode->addDrawable(sd);
 
-         mPlatform1->GetActor()->GetOSGNode()->asGroup()->addChild(geode.get());
-         mPlatform2->GetActor()->GetOSGNode()->asGroup()->addChild(geode.get());
+         mPlatform1->GetDrawable()->GetOSGNode()->asGroup()->addChild(geode.get());
+         mPlatform2->GetDrawable()->GetOSGNode()->asGroup()->addChild(geode.get());
 
          dtCore::Transform xform;
          dtCore::Camera* camera = GetGlobalApplication().GetCamera();

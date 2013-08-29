@@ -32,8 +32,8 @@ namespace StealthGM
 
    ////////////////////////////////////////////////////////////////////
    PreferencesVisibilityConfigObject::PreferencesVisibilityConfigObject()
-   : mEntityOptions(new SimCore::VisibilityOptions)
-   , mBFGCloseTops(SimCore::Actors::BattlefieldGraphicsActorProxy::GetGlobalEnableTopGeometry())
+   : mBFGCloseTops(SimCore::Actors::BattlefieldGraphicsActorProxy::GetGlobalEnableTopGeometry())
+   , mEntityOptions(new SimCore::VisibilityOptions)
    {
    }
 

@@ -45,7 +45,7 @@
 #include <SimCore/Actors/PositionMarker.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
 
-#include <TestComponent.h>
+#include <dtGame/testcomponent.h>
 #include <UnitTestMain.h>
 #include <dtABC/application.h>
 

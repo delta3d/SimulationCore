@@ -141,7 +141,7 @@ namespace DriverDemo
 
       protected:
          virtual ~HoverVehicleActorProxy();
-         void CreateActor();
+         void CreateDrawable();
          virtual void OnEnteredWorld();
    };
 

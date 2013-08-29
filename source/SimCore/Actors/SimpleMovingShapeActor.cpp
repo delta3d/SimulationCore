@@ -192,9 +192,9 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////
-      void SimpleMovingShapeActorProxy::CreateActor()
+      void SimpleMovingShapeActorProxy::CreateDrawable()
       {
-         SetActor(*new dtGame::GameActor(*this));
+         SetDrawable(*new dtGame::GameActor(*this));
       }
 
       ////////////////////////////////////////////////////////////////////////////

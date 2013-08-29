@@ -275,9 +275,9 @@ namespace NetDemo
    FortActorProxy::~FortActorProxy(){}
 
    ///////////////////////////////////////////////////////////////////////////////////
-   void FortActorProxy::CreateActor()
+   void FortActorProxy::CreateDrawable()
    {
-      SetActor(*new FortActor(*this));
+      SetDrawable(*new FortActor(*this));
    }
 
    ///////////////////////////////////////////////////////////////////////////////////

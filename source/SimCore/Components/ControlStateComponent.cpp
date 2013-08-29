@@ -142,7 +142,7 @@ namespace SimCore
             dtDAL::ActorProxy* proxy = GetGameManager()->FindActorById( controlState.GetEntityID() );
             if( proxy != NULL )
             {
-               return dynamic_cast<SimCore::Actors::Platform*>(proxy->GetActor());
+               return dynamic_cast<SimCore::Actors::Platform*>(proxy->GetDrawable());
             }
          }
          return NULL;
@@ -161,7 +161,7 @@ namespace SimCore
             if( proxy != NULL
                && proxy->GetActorType() == *SimCore::Actors::EntityActorRegistry::CONTROL_STATE_ACTOR_TYPE )
             {
-               return static_cast<SimCore::Actors::ControlStateActor*>(proxy->GetActor());
+               return static_cast<SimCore::Actors::ControlStateActor*>(proxy->GetDrawable());
             }
          }
 
@@ -306,7 +306,7 @@ namespace SimCore
 
                         dtDAL::ActorProxy* proxy = GetGameManager()->FindActorById(vehicleID);
                         SimCore::Actors::Platform* vehicle = proxy != NULL
-                           ? dynamic_cast<SimCore::Actors::Platform*>(proxy->GetActor()) : NULL;
+                           ? dynamic_cast<SimCore::Actors::Platform*>(proxy->GetDrawable()) : NULL;
 
                         if( vehicle != NULL && vehicleControlInfo != NULL && vehicleControlInfo->mWeaponModel.valid() )
                         {
@@ -331,7 +331,7 @@ namespace SimCore
                      {
                         dtDAL::ActorProxy* proxy = GetGameManager()->FindActorById(vehicleID);
                         SimCore::Actors::Platform* vehicle = proxy != NULL
-                           ? dynamic_cast<SimCore::Actors::Platform*>(proxy->GetActor()) : NULL;
+                           ? dynamic_cast<SimCore::Actors::Platform*>(proxy->GetDrawable()) : NULL;
 
                         if( vehicle != NULL )
                         {
@@ -417,7 +417,7 @@ namespace SimCore
          {
             if( controlStates[i] != NULL )
             {
-               curControl = static_cast<SimCore::Actors::ControlStateActor*>(controlStates[i]->GetActor());
+               curControl = static_cast<SimCore::Actors::ControlStateActor*>(controlStates[i]->GetDrawable());
 
                // Determine if the current control state is referencing the specified vehicle.
                if( curControl->GetEntityID() == vehicleID )

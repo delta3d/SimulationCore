@@ -84,7 +84,7 @@ namespace SimCore
             MultipleDetonationActorProxy();
 
             /// Creates the actor
-            void CreateActor() { SetActor(*new MultipleDetonationActor(*this)); }
+            void CreateDrawable() { SetDrawable(*new MultipleDetonationActor(*this)); }
 
             /// Builds the properties this actor has
             void BuildPropertyMap();

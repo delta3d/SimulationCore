@@ -126,7 +126,7 @@ namespace SimCore
 
             virtual bool IsPlaceable() const {return false;}
 
-            virtual void CreateActor();
+            virtual void CreateDrawable();
 
             virtual void BuildPropertyMap();
 

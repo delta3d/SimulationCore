@@ -362,7 +362,7 @@ namespace SimCore
          }
          if (result)
          {
-            SimCore::Actors::BaseEntity* entity = dynamic_cast<SimCore::Actors::BaseEntity*>(proxy.GetActor());
+            SimCore::Actors::BaseEntity* entity = dynamic_cast<SimCore::Actors::BaseEntity*>(proxy.GetDrawable());
             // We don't want a label for something that isn't visible.
             if (entity == NULL || !entity->IsVisible())
             {
@@ -459,7 +459,7 @@ namespace SimCore
          {
             OpenThreads::ScopedLock<OpenThreads::Mutex> lock(mTaskMutex);
 
-            SimCore::Actors::BaseEntity* entity = dynamic_cast<SimCore::Actors::BaseEntity*>(actor.GetActor());
+            SimCore::Actors::BaseEntity* entity = dynamic_cast<SimCore::Actors::BaseEntity*>(actor.GetDrawable());
             if (entity != NULL)
             {
                label = new SimCore::Components::HUDLabel(

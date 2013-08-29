@@ -106,7 +106,7 @@ namespace SimCore
             virtual ~HumanWithPhysicsActorProxy();
 
             /// Instantiates the actor this proxy encapsulated
-            virtual void CreateActor();
+            virtual void CreateDrawable();
 
             /// Overridden to force upright rotations on the Dead Reckoning Helper
             void BuildActorComponents();

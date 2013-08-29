@@ -190,7 +190,7 @@ namespace SimCore
             const dtCore::UniqueId& GetEntityID() const;
 
             void SetEntity( dtDAL::ActorProxy* proxy );
-            dtCore::DeltaDrawable* GetEntity();
+            Platform* GetEntity();
 
             void SetStationType( int stationType );
             int GetStationType() const;
@@ -293,7 +293,7 @@ namespace SimCore
             ControlStateProxy();
 
             // Creates the associated actor
-            virtual void CreateActor() { SetActor(*new ControlStateActor(*this)); }
+            virtual void CreateDrawable() { SetDrawable(*new ControlStateActor(*this)); }
 
             // Adds the properties associated with this actor
             virtual void BuildPropertyMap();

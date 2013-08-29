@@ -49,16 +49,15 @@
 
 #include <dtAudio/audiomanager.h>
 
-#include <dtDAL/actorproxy.h>
-#include <dtDAL/actorproperty.h>
-#include <dtDAL/project.h>
-#include <dtDAL/resourcedescriptor.h>
-#include <dtDAL/map.h>
-#include <dtDAL/enginepropertytypes.h>
-#include <dtDAL/projectconfig.h>
+#include <dtCore/baseactorobject.h>
+#include <dtCore/actorproperty.h>
+#include <dtCore/project.h>
+#include <dtCore/resourcedescriptor.h>
+#include <dtCore/map.h>
+#include <dtCore/enginepropertytypes.h>
+#include <dtCore/projectconfig.h>
 
 #include <dtGame/gamemanager.h>
-#include <dtGame/gameapplication.h>
 #include <dtGame/deadreckoningcomponent.h>
 #include <dtGame/gamemanager.h>
 #include <dtGame/exceptionenum.h>
@@ -68,6 +67,7 @@
 #include <dtAnim/animationcomponent.h>
 #include <dtAnim/cal3ddatabase.h>
 #include <dtAnim/animnodebuilder.h>
+#include <dtABC/application.h>
 
 #include <osg/ArgumentParser>
 #include <osg/ApplicationUsage>
@@ -100,24 +100,27 @@ namespace SimCore
    : parser(NULL)
    , mMissingRequiredCommandLineOption(false)
    , mIsUIRunning(false)
+   , mStartedAudio(false)
    {
    }
 
    //////////////////////////////////////////////////////////////////////////
    BaseGameEntryPoint::~BaseGameEntryPoint()
    {
-      if (parser != NULL)
-      {
-         delete parser;
-         parser = NULL;
-      }
+      delete parser;
+      parser = NULL;
 
-      //this needs to be moved
-      dtAudio::AudioManager::Destroy();
+      // This has to be in the destructor because
+      // OnShutdown happens before the GM shutdown, and sounds can get freed after that.
+      if (mStartedAudio)
+      {
+         dtAudio::AudioManager::Destroy();
+         mStartedAudio = false;
+      }
    }
 
    //////////////////////////////////////////////////////////////////////////
-   void BaseGameEntryPoint::Initialize(dtGame::GameApplication& app, int argc, char **argv)
+   void BaseGameEntryPoint::Initialize(dtABC::BaseABC& app, int argc, char **argv)
    {
       mMissingRequiredCommandLineOption = false;
 
@@ -176,16 +179,22 @@ namespace SimCore
          }
       }
 
+      mStartedAudio = false;
+
       try
       {
-         dtAudio::AudioManager::Instantiate();
+         if (!dtAudio::AudioManager::IsInitialized())
+         {
+            dtAudio::AudioManager::Instantiate();
+            mStartedAudio = true;
+         }
       }
       catch(const dtUtil::Exception& e)
       {
          dtAudio::AudioManager::Destroy();
          throw e;
       }
-      catch(const std::exception &e)
+      catch(const std::exception& e)
       {
          std::ostringstream ss;
          ss << "std::exception caught of type: \"" << typeid(e).name() << ". Its message is: "
@@ -253,12 +262,12 @@ namespace SimCore
          if (fileUtils.DirExists(mProjectPath))
          {
             LOG_INFO("The project context \"" + mProjectPath + "\" is a directory has been found. Attempting config project");
-            dtDAL::Project::GetInstance().SetContext(mProjectPath);
+            dtCore::Project::GetInstance().SetContext(mProjectPath);
          }
          else if (fileUtils.FileExists(mProjectPath))
          {
             LOG_INFO("The project context \"" + mProjectPath + "\" is a file.  Attempting to load as a project config.");
-            dtDAL::Project::GetInstance().SetupFromProjectConfigFile(mProjectPath);
+            dtCore::Project::GetInstance().SetupFromProjectConfigFile(mProjectPath);
          }
          else
          {
@@ -280,7 +289,7 @@ namespace SimCore
    {
       if(!mIsUIRunning)
       {
-         std::set<std::string> mapNames = dtDAL::Project::GetInstance().GetMapNames();
+         std::set<std::string> mapNames = dtCore::Project::GetInstance().GetMapNames();
          bool containsMap = false;
          for(std::set<std::string>::iterator i = mapNames.begin(); i != mapNames.end(); ++i)
             if(*i == mMapName)
@@ -298,8 +307,9 @@ namespace SimCore
    }
 
    //////////////////////////////////////////////////////////////////////////
-   void BaseGameEntryPoint::AssignAspectRatio(dtGame::GameApplication& app)
+   void BaseGameEntryPoint::AssignAspectRatio(dtGame::GameManager& gm)
    {
+      dtABC::Application& app = gm.GetApplication();
       app.GetCamera()->SetProjectionResizePolicy(osg::Camera::FIXED);
 
       //The command line arg takes precidence, followed by the config file option.
@@ -334,13 +344,11 @@ namespace SimCore
    }
 
    //////////////////////////////////////////////////////////////////////////
-   void BaseGameEntryPoint::OnStartup(dtGame::GameApplication& app)
+   void BaseGameEntryPoint::OnStartup(dtABC::BaseABC& app, dtGame::GameManager& gameManager)
    {
 
-      AssignProjectContext(*app.GetGameManager());
+      AssignProjectContext(gameManager);
       PreLoadMap();
-
-      dtGame::GameManager& gameManager = *app.GetGameManager();
 
       dtCore::Camera* camera = gameManager.GetApplication().GetCamera();
 
@@ -364,7 +372,7 @@ namespace SimCore
       camera->SetPerspectiveParams(60.0f, 1.6,
                              PLAYER_NEAR_CLIP_PLANE,
                              PLAYER_FAR_CLIP_PLANE);
-      AssignAspectRatio(app);
+      AssignAspectRatio(gameManager);
 
 	   camera->AddChild(dtAudio::AudioManager::GetListener());
 
@@ -422,13 +430,17 @@ namespace SimCore
       weatherComp->UpdateFog();
 
       munitionsComp->SetMunitionConfigFileName(
-         app.GetConfigPropertyValue(CONFIG_PROP_MUNITION_CONFIG_FILE, "Configs:MunitionsConfig.xml"));
+         gameManager.GetConfiguration().GetConfigPropertyValue(CONFIG_PROP_MUNITION_CONFIG_FILE, "Configs:MunitionsConfig.xml"));
 
       InitializeComponents(gameManager);
 
-      // CURT - This conflicts with requirement request to make it a parameter but can't
-      // support various munition types.
-      //SimCore::Actors::DetonationActor::SetLingeringShotSecs(mLingeringShotEffectSecs);
+   }
+
+   /////////////////////////////////////////////////////////////////////////////////////////
+   void BaseGameEntryPoint::OnShutdown(dtABC::BaseABC& app, dtGame::GameManager& gameManager)
+   {
+      delete parser;
+      parser = NULL;
    }
 
    DT_IMPLEMENT_ACCESSOR(BaseGameEntryPoint, std::string, MapName);

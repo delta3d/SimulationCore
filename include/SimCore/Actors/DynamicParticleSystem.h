@@ -143,7 +143,7 @@ namespace SimCore
             
             DynamicParticleSystemActorProxy();
 
-            virtual void CreateActor();
+            virtual void CreateDrawable();
 
             virtual void BuildPropertyMap();
 

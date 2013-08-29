@@ -96,9 +96,8 @@ void ViewerMaterialsTests::TestFunction()
 {
    CPPUNIT_ASSERT_MESSAGE("Material Component not initialized", (mMaterialComponent != NULL));
    
-   SimCore::Actors::ViewerMaterialActor& viewMaterial = mMaterialComponent->CreateOrChangeMaterialByFID(100);
-   viewMaterial.SetBumpiness(1.0f);
-   CPPUNIT_ASSERT_MESSAGE("Viewer material unable to be set 0.o", viewMaterial.GetBumpiness() == 1.0f);
+   /*SimCore::Actors::ViewerMaterialActor& viewMaterial = */
+   mMaterialComponent->CreateOrChangeMaterialByFID(100);
    
    dtCore::RefPtr<dtGame::Message> reflkjasdfo;
    mGM->GetMessageFactory().CreateMessage(dtGame::MessageType::INFO_MAP_LOADED, reflkjasdfo);

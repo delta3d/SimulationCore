@@ -108,7 +108,7 @@ namespace SimCore
          void BuildInvokables();
 
          /// Creates the actor
-         void CreateActor();
+         void CreateDrawable();
 
          void LoadSmokeTrailFile(const std::string& fileName);
 

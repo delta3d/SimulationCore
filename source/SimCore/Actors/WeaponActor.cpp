@@ -519,8 +519,7 @@ namespace SimCore
       void WeaponActor::SetMunitionTypeProxy( dtDAL::ActorProxy* proxy )
       {
          mMunitionType = proxy != NULL ?
-            dynamic_cast<MunitionTypeActor*> (proxy->GetActor()) : NULL;
-         GetGameActorProxy().SetLinkedActor("Munition Type", proxy);
+            dynamic_cast<MunitionTypeActor*> (proxy->GetDrawable()) : NULL;
 
          if( mMunitionType.valid() )
          {
@@ -529,24 +528,15 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      dtCore::DeltaDrawable* WeaponActor::GetMunitionTypeDrawable()
-      {
-         dtDAL::ActorProxy* proxy = GetGameActorProxy().GetLinkedActor("Munition Type");
-         return proxy != NULL ? proxy->GetActor() : NULL;
-      }
-
-      //////////////////////////////////////////////////////////////////////////
       void WeaponActor::SetOwner( dtDAL::ActorProxy* proxy )
       {
          mOwner = proxy;
-         GetGameActorProxy().SetLinkedActor("Owner", proxy);
       }
 
       //////////////////////////////////////////////////////////////////////////
-      dtCore::DeltaDrawable* WeaponActor::GetOwner()
+      dtDAL::ActorProxy* WeaponActor::GetOwner()
       {
-         dtDAL::ActorProxy* proxy = GetGameActorProxy().GetLinkedActor("Owner");
-         return proxy != NULL ? proxy->GetActor() : NULL;
+         return mOwner.get();
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -571,15 +561,7 @@ namespace SimCore
       void WeaponActor::SetFlashActorProxy( dtDAL::ActorProxy* flashProxy )
       {
          mFlash = flashProxy != NULL ?
-            dynamic_cast<WeaponFlashActor*> (flashProxy->GetActor()) : NULL;
-         GetGameActorProxy().SetLinkedActor("FlashActor", flashProxy );
-      }
-
-      //////////////////////////////////////////////////////////////////////////
-      dtCore::DeltaDrawable* WeaponActor::GetFlashActorDrawable()
-      {
-         dtDAL::ActorProxy* proxy = GetGameActorProxy().GetLinkedActor("FlashActor");
-         return proxy != NULL ? proxy->GetActor() : NULL;
+            dynamic_cast<WeaponFlashActor*> (flashProxy->GetDrawable()) : NULL;
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -860,10 +842,10 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void WeaponActorProxy::CreateActor()
+      void WeaponActorProxy::CreateDrawable()
       {
          WeaponActor& actor = *new WeaponActor(*this);
-         SetActor(actor);
+         SetDrawable(actor);
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -990,21 +972,21 @@ namespace SimCore
 
          AddProperty(new dtDAL::ActorActorProperty( *this, "Munition Type", "Munition Type",
             dtDAL::ActorActorProperty::SetFuncType( actor, &WeaponActor::SetMunitionTypeProxy ),
-            dtDAL::ActorActorProperty::GetFuncType( actor, &WeaponActor::GetMunitionTypeDrawable ),
+            dtDAL::ActorActorProperty::GetFuncType( ),
             MunitionTypeActorProxy::CLASS_NAME,
             "A reference to the MunitionTypeActor that will have data related to the munition this weapon will fire.",
             groupMunitions));
 
          AddProperty(new dtDAL::ActorActorProperty( *this, "Owner", "Owner",
             dtDAL::ActorActorProperty::SetFuncType( actor, &WeaponActor::SetOwner ),
-            dtDAL::ActorActorProperty::GetFuncType( actor, &WeaponActor::GetOwner ),
+            dtDAL::ActorActorProperty::GetFuncType(  ),
             "", // anything might be able to own a weapon
             "A reference to the owning actor that is published on the network and that will need to send its ID in weapon fire messages.",
             groupActors));
 
          AddProperty(new dtDAL::ActorActorProperty( *this, "Flash Actor", "Flash Actor",
             dtDAL::ActorActorProperty::SetFuncType( actor, &WeaponActor::SetFlashActorProxy ),
-            dtDAL::ActorActorProperty::GetFuncType( actor, &WeaponActor::GetFlashActorDrawable ),
+            dtDAL::ActorActorProperty::GetFuncType(  ),
             WeaponFlashActorProxy::CLASS_NAME,
             "A reference to the flash actor responsible for timing and rendering flash effects.",
             groupActors));

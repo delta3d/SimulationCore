@@ -59,7 +59,7 @@ namespace SimCore
 
          AddProperty(new dtDAL::ActorActorProperty(*this, "ActorLink", "ActorLink",
             dtDAL::ActorActorProperty::SetFuncType(actor, &Portal::SetActorLink),
-            dtDAL::ActorActorProperty::GetFuncType(actor, &Portal::GetActorLink),
+            dtDAL::ActorActorProperty::GetFuncType(),
             "SimCore::Actors::Platform",
             "Portal Attached", GROUP));
 
@@ -76,9 +76,9 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////
-      void PortalProxy::CreateActor()
+      void PortalProxy::CreateDrawable()
       {
-         SetActor(*new Portal(*this));
+         SetDrawable(*new Portal(*this));
       }
 
       ///////////////////////////////////////////////////////
@@ -117,18 +117,6 @@ namespace SimCore
          mIsOpen(false)
       {
          mTimeToSendOut = 10.0f;
-      }
-
-      ///////////////////////////////////////////
-      dtCore::DeltaDrawable* Portal::GetActorLink()
-      {
-         dtDAL::ActorProxy* proxy = GetGameActorProxy().GetLinkedActor("ActorLink");
-         if(proxy == NULL)
-         {
-            LOG_DEBUG("Get Material Actor [NULL].");
-            return NULL;
-         }
-         return proxy->GetActor();
       }
 
       ///////////////////////////////////////////////////////

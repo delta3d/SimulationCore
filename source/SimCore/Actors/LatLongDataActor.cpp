@@ -90,9 +90,9 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void LatLongDataActorProxy::CreateActor()
+      void LatLongDataActorProxy::CreateDrawable()
       {
-         SetActor( *new LatLongDataActor(*this) );
+         SetDrawable( *new LatLongDataActor(*this) );
       }
 
       //////////////////////////////////////////////////////////

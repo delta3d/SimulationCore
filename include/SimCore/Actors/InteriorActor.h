@@ -67,7 +67,7 @@ namespace SimCore
             InteriorActorProxy();
 
             /// Creates the actor
-            virtual void CreateActor();
+            virtual void CreateDrawable();
 
          protected:
 

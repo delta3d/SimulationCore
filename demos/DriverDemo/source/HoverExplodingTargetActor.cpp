@@ -250,7 +250,7 @@ namespace DriverDemo
             //std::cout << "Exploding Target was hit! Going to start chasing player [" <<
             //   shooterProxy->GetName() << "]." << std::endl;
             mPlayerWeAreChasing = dynamic_cast<SimCore::Actors::BasePhysicsVehicleActor *>
-               (shooterProxy->GetActor());
+               (shooterProxy->GetDrawable());
 
             // Turn on highlight if not already on
             bool wasChasingActive = mChasingModeActive;
@@ -369,9 +369,9 @@ namespace DriverDemo
    ///////////////////////////////////////////////////////////////////////////////////
    HoverExplodingTargetActorProxy::~HoverExplodingTargetActorProxy(){}
    ///////////////////////////////////////////////////////////////////////////////////
-   void HoverExplodingTargetActorProxy::CreateActor()
+   void HoverExplodingTargetActorProxy::CreateDrawable()
    {
-      SetActor(*new HoverExplodingTargetActor(*this));
+      SetDrawable(*new HoverExplodingTargetActor(*this));
    }
 
    ///////////////////////////////////////////////////////////////////////////////////

@@ -189,7 +189,7 @@ namespace NetDemo
       //GetGameManager()->CreateActor(*SimCore::Actors::EntityActorRegistry::PLAYER_ACTOR_TYPE, ap);
       GetGameManager()->CreateActor(*NetDemo::NetDemoActorRegistry::PLAYER_STATUS_ACTOR_TYPE, ap);
       //mPlayerStatus = static_cast<SimCore::Actors::PlayerActor*>(ap->GetActor());
-      mPlayerStatus = static_cast<NetDemo::PlayerStatusActor*>(ap->GetActor());
+      mPlayerStatus = static_cast<NetDemo::PlayerStatusActor*>(ap->GetDrawable());
       // make the camera a child
       dtCore::Camera* cam = GetGameManager()->GetApplication().GetCamera();
       cam->Emancipate();
@@ -570,7 +570,7 @@ namespace NetDemo
          mCurrentTerrainPrototypeName, newDrawLandActorProxy, "Check your additional maps in config.xml (compare to config_example.xml).");
       newDrawLandActorProxy->SetName("Terrain"); // has to be named 'Terrain' or it won't do ground clamping and other stuff
       mCurrentTerrainDrawActor = dynamic_cast<SimCore::Actors::TerrainActor*>
-         (newDrawLandActorProxy->GetActor());
+         (newDrawLandActorProxy->GetDrawable());
       dtCore::RefPtr<dtGame::DRPublishingActComp> drpac = NULL;
       mCurrentTerrainDrawActor->GetComponent(drpac);
       if (!drpac.valid())

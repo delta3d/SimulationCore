@@ -74,7 +74,7 @@ namespace NetDemo
 
       PropelledVehicleActorProxy();
 
-      virtual void CreateActor();
+      virtual void CreateDrawable();
 
       /**
        * Build the properties common to all platform objects

@@ -517,10 +517,10 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////
-      void PositionMarkerActorProxy::CreateActor()
+      void PositionMarkerActorProxy::CreateDrawable()
       {
          PositionMarker* marker = new PositionMarker(*this);
-         SetActor(*marker);
+         SetDrawable(*marker);
       }
 
       ////////////////////////////////////////////////////////////////////////
@@ -586,9 +586,7 @@ namespace SimCore
          AddProperty(new dtDAL::ActorActorProperty(*this,
             PROPERTY_ASSOCIATED_ENTITY, PROPERTY_ASSOCIATED_ENTITY,
             dtDAL::ActorActorProperty::SetFuncType(this, &PositionMarkerActorProxy::SetAssociatedEntity),
-//          Why doesn't this work?
-//            dtDAL::ActorActorProperty::GetFuncType(pm, &PositionMarker::GetAssociatedEntity),
-            dtDAL::ActorActorProperty::GetFuncType(this, &PositionMarkerActorProxy::GetAssociatedEntity),
+            dtDAL::ActorActorProperty::GetFuncType(),
             PROPERTY_ASSOCIATED_ENTITY_DESC, POSITION_MARKER_GROUP));
 
          static const dtUtil::RefString PROPERTY_MARKER_COLOR_DESC("The color of the marker.");
@@ -666,9 +664,8 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////
       void PositionMarkerActorProxy::SetAssociatedEntity(dtDAL::ActorProxy* assocEntity)
       {
-         SetLinkedActor(PROPERTY_ASSOCIATED_ENTITY, assocEntity);
          PositionMarker* pm = NULL;
-         GetActor(pm);
+         GetDrawable(pm);
 
          ///I want it to crash if pm is NULL;
          if (assocEntity == NULL)
@@ -678,17 +675,9 @@ namespace SimCore
          else
          {
             BaseEntity* entity = NULL;;
-            assocEntity->GetActor(entity);
+            assocEntity->GetDrawable(entity);
             pm->SetAssociatedEntity(entity);
          }
-      }
-
-      ////////////////////////////////////////////////////////////////////////
-      dtCore::DeltaDrawable* PositionMarkerActorProxy::GetAssociatedEntity()
-      {
-         PositionMarker* pm = NULL;
-         GetActor(pm);
-         return pm->GetAssociatedEntity();
       }
 
    }

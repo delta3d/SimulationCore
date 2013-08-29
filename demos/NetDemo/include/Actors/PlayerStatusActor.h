@@ -189,13 +189,13 @@ namespace NetDemo
          /// Returns a useful reference to our actor. If no actor is created yet, this will likley crash.
          PlayerStatusActor &GetActorAsPlayerStatus()
          {
-            return *(static_cast<PlayerStatusActor*>(GetActor()));
+            return *(static_cast<PlayerStatusActor*>(GetDrawable()));
          }
 
 
       protected:
          virtual ~PlayerStatusActorProxy();
-         void CreateActor();
+         void CreateDrawable();
          virtual void OnEnteredWorld();
    };
 

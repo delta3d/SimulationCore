@@ -57,7 +57,7 @@
 #include <SimCore/Actors/EntityActorRegistry.h>
 #include <SimCore/Actors/StealthActor.h>
 
-#include <TestComponent.h>
+#include <dtGame/testcomponent.h>
 #include <UnitTestMain.h>
 
 using dtCore::RefPtr;
@@ -81,7 +81,7 @@ class ViewerNetworkPublishingComponentTests : public CPPUNIT_NS::TestFixture
          mGM->SetApplication( *mApp );
          RefPtr<SimCore::Components::ViewerNetworkPublishingComponent> rulesComp = new SimCore::Components::ViewerNetworkPublishingComponent;
          mGM->AddComponent(*rulesComp, dtGame::GameManager::ComponentPriority::NORMAL);
-         mTestComp = new TestComponent;
+         mTestComp = new dtGame::TestComponent;
          mGM->AddComponent(*mTestComp, dtGame::GameManager::ComponentPriority::NORMAL);
 
          RefPtr<dtDAL::ActorProxy> ap = mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::STEALTH_ACTOR_TYPE);
@@ -89,7 +89,7 @@ class ViewerNetworkPublishingComponentTests : public CPPUNIT_NS::TestFixture
          CPPUNIT_ASSERT(ap.valid());
 
          mStealthActor =
-            dynamic_cast<SimCore::Actors::StealthActor*>(ap->GetActor());
+            dynamic_cast<SimCore::Actors::StealthActor*>(ap->GetDrawable());
 
          CPPUNIT_ASSERT(mStealthActor.valid());
          mGM->AddActor(mStealthActor->GetGameActorProxy(), false, true);
@@ -244,8 +244,7 @@ class ViewerNetworkPublishingComponentTests : public CPPUNIT_NS::TestFixture
          else
          {
             bool result = mTestComp->FindDispatchNetworkMessageOfType(SimCore::MessageType::STEALTH_ACTOR_TRANSLATION).valid();
-            CPPUNIT_ASSERT_MESSAGE("No stealth actor Translation message should have been sent",
-              !result);
+            CPPUNIT_ASSERT_MESSAGE("No stealth actor Translation message should have been sent", !result);
          }
 
          mTestComp->reset();
@@ -253,7 +252,7 @@ class ViewerNetworkPublishingComponentTests : public CPPUNIT_NS::TestFixture
       }
 
       RefPtr<dtGame::GameManager> mGM;
-      RefPtr<TestComponent> mTestComp;
+      RefPtr<dtGame::TestComponent> mTestComp;
       RefPtr<SimCore::Actors::StealthActor> mStealthActor;
       RefPtr<dtABC::Application> mApp;
 };

@@ -107,7 +107,7 @@ void LM_OpenFLTTerainTests::TestFunction()
    CPPUNIT_ASSERT(obj->GetHideDTCorePhysicsProps());
    CPPUNIT_ASSERT_MESSAGE("dtCore physics properties should be hidden.", obj->GetProperty("Show Collision Geometry") == NULL);
 
-   dtCore::RefPtr<SimCore::Actors::OpenFlightToIVETerrainActor> objActor = dynamic_cast<SimCore::Actors::OpenFlightToIVETerrainActor*>(obj->GetActor());
+   dtCore::RefPtr<SimCore::Actors::OpenFlightToIVETerrainActor> objActor = dynamic_cast<SimCore::Actors::OpenFlightToIVETerrainActor*>(obj->GetDrawable());
 
    objActor->SetPagingMinX(1.5);
    CPPUNIT_ASSERT(objActor->GetPagingMinX() == 1.5);

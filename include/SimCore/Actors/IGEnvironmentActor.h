@@ -188,7 +188,7 @@ namespace SimCore
          IGEnvironmentActorProxy();
 
          /// Creates the actor
-         virtual void CreateActor();
+         virtual void CreateDrawable();
 
          /// Adds the properties associated with this actor
          virtual void BuildPropertyMap();

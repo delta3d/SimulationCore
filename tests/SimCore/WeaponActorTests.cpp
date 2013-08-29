@@ -340,7 +340,7 @@ namespace SimCore
          CPPUNIT_ASSERT_MESSAGE( "GameManager should be able to create a MunitionTypeActor",
             munitionTypeProxy.valid() );
          SimCore::Actors::MunitionTypeActor* munitionType
-            = static_cast<SimCore::Actors::MunitionTypeActor*>(munitionTypeProxy->GetActor());
+            = static_cast<SimCore::Actors::MunitionTypeActor*>(munitionTypeProxy->GetDrawable());
          munitionType->SetName( munitionName );
 
          // --- Entity as an owner
@@ -367,11 +367,9 @@ namespace SimCore
          CPPUNIT_ASSERT( mWeapon->GetMunitionType() == NULL );
 
          // --- A munition type will be needed later for a successful fired shot
-         CPPUNIT_ASSERT_MESSAGE( "WeaponActor munition type drawable should be NULL by default",
-            mWeapon->GetMunitionTypeDrawable() == NULL );
          mWeapon->SetMunitionTypeProxy( munitionTypeProxy.get() );
-         CPPUNIT_ASSERT( mWeapon->GetMunitionTypeDrawable() != NULL );
          CPPUNIT_ASSERT( mWeapon->GetMunitionTypeName() == munitionName );
+         CPPUNIT_ASSERT(mWeapon->GetMunitionType() == munitionTypeProxy->GetDrawable());
 
          CPPUNIT_ASSERT_MESSAGE( "WeaponActor owner should be NULL by default",
             mWeapon->GetOwner() == NULL );
@@ -382,9 +380,9 @@ namespace SimCore
          //     entity goes out of scope.
          mWeapon->SetOwner( NULL );
          proxy = NULL;
-         dtCore::DeltaDrawable* drawable = mWeapon->GetOwner();
+         dtCore::BaseActorObject* owner = mWeapon->GetOwner();
          CPPUNIT_ASSERT_MESSAGE( "WeaponActor should NOT continue to hold onto its owner's memory",
-            drawable == NULL );
+            owner == NULL );
 
 
 

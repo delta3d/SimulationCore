@@ -141,12 +141,12 @@ namespace SimCore
             /// Returns a useful reference to our actor. If no actor is created yet, this will likely crash.
             DRGhostActor& GetActorAsDRGhostActor()
             {
-               return *(static_cast<DRGhostActor*>(GetActor()));
+               return *(static_cast<DRGhostActor*>(GetDrawable()));
             }
 
          protected:
             virtual ~DRGhostActorProxy();
-            void CreateActor();
+            void CreateDrawable();
             virtual void OnEnteredWorld();
             virtual void OnRemovedFromWorld();
       };

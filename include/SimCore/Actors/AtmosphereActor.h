@@ -106,7 +106,7 @@ namespace SimCore
          AtmosphereActorProxy();
 
          /// Creates the actor
-         void CreateActor() { SetActor(*new AtmosphereActor(*this)); }
+         void CreateDrawable() { SetDrawable(*new AtmosphereActor(*this)); }
 
          /// Adds the properties associated with this actor
          virtual void BuildPropertyMap();

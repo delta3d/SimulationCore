@@ -231,7 +231,7 @@ namespace SimCore
          if(mAtmosphere.valid())
          {
             Actors::UniformAtmosphereActor* atmosActor =
-               static_cast<Actors::UniformAtmosphereActor*>(mAtmosphere->GetActor());
+               static_cast<Actors::UniformAtmosphereActor*>(mAtmosphere->GetDrawable());
 
             if(atmosActor != NULL)
             {
@@ -363,7 +363,7 @@ namespace SimCore
             //enable lens flare
             //std::cout << std::endl << "Enabling lens flare" << std::endl << std::endl;
 
-            //mEnvironmentActor->SetEnableLensFlare(true);
+            mEnvironmentActor->SetEnableLensFlare(true);
 
          }
 
@@ -384,7 +384,7 @@ namespace SimCore
                LOGN_DEBUG("WeatherComponent.cpp","Setting Environment Actor to: Id\"" + proxy->GetId().ToString()
                           + "\" Actor Type: \"" + proxy->GetActorType().GetFullName() + "\"");
                SetEphemerisEnvironment(static_cast<SimCore::Actors::IGEnvironmentActor*>
-                  (igproxy->GetActor()));
+                  (igproxy->GetDrawable()));
             }
          }
          // Check for application state changes
@@ -412,7 +412,7 @@ namespace SimCore
             if(mUpdatesEnabled)
             {
                Actors::DayTimeActor* timeActor =
-                  static_cast<Actors::DayTimeActor*>(mDayTime->GetActor());
+                  static_cast<Actors::DayTimeActor*>(mDayTime->GetDrawable());
 
                float offset = mEnvironmentActor->GetDateTime().GetGMTOffset();
                dtUtil::DateTime dt(dtUtil::DateTime::TimeOrigin::GMT_TIME);
@@ -476,7 +476,7 @@ namespace SimCore
          if (mAtmosphere.valid())
          {
             Actors::UniformAtmosphereActor* atmosActor =
-               static_cast<Actors::UniformAtmosphereActor*>(mAtmosphere->GetActor());
+               static_cast<Actors::UniformAtmosphereActor*>(mAtmosphere->GetDrawable());
 
             // Change Clouds
             // TODO

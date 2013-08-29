@@ -87,7 +87,7 @@ namespace SimCore
          virtual void BuildActorComponents();
 
          /// Instantiates the actor this proxy encapsulated
-         virtual void CreateActor();
+         virtual void CreateDrawable();
       };
    }
 }

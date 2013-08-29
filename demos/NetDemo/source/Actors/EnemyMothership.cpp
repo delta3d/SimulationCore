@@ -177,7 +177,7 @@ namespace NetDemo
 
       for (unsigned i = 0; i < actors.size(); ++i)
       {
-         FortActor* f = static_cast<FortActor*>(actors[i]->GetActor());
+         FortActor* f = static_cast<FortActor*>(actors[i]->GetDrawable());
 
          dtCore::Transform trans;
          f->GetTransform(trans);
@@ -317,9 +317,9 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////////////
    EnemyMothershipActorProxy::~EnemyMothershipActorProxy(){}
    ///////////////////////////////////////////////////////////////////////////////////
-   void EnemyMothershipActorProxy::CreateActor()
+   void EnemyMothershipActorProxy::CreateDrawable()
    {
-      SetActor(*new EnemyMothershipActor(*this));
+      SetDrawable(*new EnemyMothershipActor(*this));
    }
 
    ///////////////////////////////////////////////////////////////////////////////////

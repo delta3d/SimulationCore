@@ -78,7 +78,7 @@ namespace SimCore
       /// Loads the file the particle system will use
       void FireActorProxy::LoadFile(const std::string &fileName) 
       {
-         FireActor *fa = static_cast<FireActor*>(GetActor());
+         FireActor *fa = static_cast<FireActor*>(GetDrawable());
       
          fa->LoadFireFile(fileName); 
       }

@@ -162,7 +162,7 @@ namespace StealthGM
          }
 
          dtActors::CoordinateConfigActor &ccActor =
-            static_cast<dtActors::CoordinateConfigActor&>(*proxies[0]->GetActor());
+            static_cast<dtActors::CoordinateConfigActor&>(*proxies[0]->GetDrawable());
 
          SetCoordinateConverter(ccActor.GetCoordinateConverter());
       }

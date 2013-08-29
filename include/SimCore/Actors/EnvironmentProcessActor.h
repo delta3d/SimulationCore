@@ -130,7 +130,7 @@ namespace SimCore
 
          virtual ~EnvironmentProcessActorProxy();
 
-         virtual void CreateActor();
+         virtual void CreateDrawable();
          virtual void BuildPropertyMap();
 
          virtual void OnRemovedFromWorld();

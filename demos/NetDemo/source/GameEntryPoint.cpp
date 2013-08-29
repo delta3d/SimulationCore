@@ -52,7 +52,8 @@ namespace NetDemo
 
    ///////////////////////////////////////////////////////////////////////////
    GameEntryPoint::GameEntryPoint()
-      : mIsServer(true)
+      : mArgv(NULL)
+      , mIsServer(true)
    {
    }
 
@@ -63,7 +64,7 @@ namespace NetDemo
    }
 
    ///////////////////////////////////////////////////////////////////////////
-   void GameEntryPoint::Initialize(dtGame::GameApplication& app, int argc, char** argv)
+   void GameEntryPoint::Initialize(dtABC::BaseABC& app, int argc, char** argv)
    {
       mArgv = argv;
       mArgc = argc;
@@ -81,14 +82,14 @@ namespace NetDemo
    }
 
    ///////////////////////////////////////////////////////////////////////////
-   void GameEntryPoint::OnStartup(dtGame::GameApplication& app)
+   void GameEntryPoint::OnStartup(dtABC::BaseABC& app, dtGame::GameManager& gameManager)
    {
-      BaseClass::OnStartup(app);
+      BaseClass::OnStartup(app, gameManager);
 
       FinalizeParser();
 
       GameLogicComponent* gameAppComp = NULL;
-      app.GetGameManager()->GetComponentByName(GameLogicComponent::DEFAULT_NAME, gameAppComp);
+      gameManager.GetComponentByName(GameLogicComponent::DEFAULT_NAME, gameAppComp);
       gameAppComp->SetMapName( GetMapName() );
    }
 

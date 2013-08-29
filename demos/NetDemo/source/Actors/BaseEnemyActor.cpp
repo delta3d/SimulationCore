@@ -339,7 +339,7 @@ namespace NetDemo
 
       for (unsigned i = 0; i < actors.size(); ++i)
       {
-         TowerActor* f = static_cast<TowerActor*>(actors[i]->GetActor());
+         TowerActor* f = static_cast<TowerActor*>(actors[i]->GetDrawable());
 
          dtCore::Transform trans;
          f->GetTransform(trans);
@@ -391,9 +391,9 @@ namespace NetDemo
    BaseEnemyActorProxy::~BaseEnemyActorProxy(){}
 
    ///////////////////////////////////////////////////////////////////////////////////
-   void BaseEnemyActorProxy::CreateActor()
+   void BaseEnemyActorProxy::CreateDrawable()
    {
-      SetActor(*new BaseEnemyActor(*this));
+      SetDrawable(*new BaseEnemyActor(*this));
    }
 
    ///////////////////////////////////////////////////////////////////////////////////

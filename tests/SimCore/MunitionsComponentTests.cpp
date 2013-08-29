@@ -1032,17 +1032,17 @@ namespace SimCore
          dtCore::RefPtr<SimCore::Actors::MunitionTypeActorProxy> proxy5;
          dtCore::RefPtr<SimCore::Actors::MunitionTypeActorProxy> proxy6;
          mGM->CreateActor( *SimCore::Actors::EntityActorRegistry::MUNITION_TYPE_ACTOR_TYPE, proxy1 );
-         munition1 = dynamic_cast<SimCore::Actors::MunitionTypeActor*> (proxy1->GetActor());
+         munition1 = dynamic_cast<SimCore::Actors::MunitionTypeActor*> (proxy1->GetDrawable());
          mGM->CreateActor( *SimCore::Actors::EntityActorRegistry::MUNITION_TYPE_ACTOR_TYPE, proxy2 );
-         munition2 = dynamic_cast<SimCore::Actors::MunitionTypeActor*> (proxy2->GetActor());
+         munition2 = dynamic_cast<SimCore::Actors::MunitionTypeActor*> (proxy2->GetDrawable());
          mGM->CreateActor( *SimCore::Actors::EntityActorRegistry::MUNITION_TYPE_ACTOR_TYPE, proxy3 );
-         munition3 = dynamic_cast<SimCore::Actors::MunitionTypeActor*> (proxy3->GetActor());
+         munition3 = dynamic_cast<SimCore::Actors::MunitionTypeActor*> (proxy3->GetDrawable());
          mGM->CreateActor( *SimCore::Actors::EntityActorRegistry::MUNITION_TYPE_ACTOR_TYPE, proxy4 );
-         munition4 = dynamic_cast<SimCore::Actors::MunitionTypeActor*> (proxy4->GetActor());
+         munition4 = dynamic_cast<SimCore::Actors::MunitionTypeActor*> (proxy4->GetDrawable());
          mGM->CreateActor( *SimCore::Actors::EntityActorRegistry::MUNITION_TYPE_ACTOR_TYPE, proxy5 );
-         munition5 = dynamic_cast<SimCore::Actors::MunitionTypeActor*> (proxy5->GetActor());
+         munition5 = dynamic_cast<SimCore::Actors::MunitionTypeActor*> (proxy5->GetDrawable());
          mGM->CreateActor( *SimCore::Actors::EntityActorRegistry::MUNITION_TYPE_ACTOR_TYPE, proxy6 );
-         munition6 = dynamic_cast<SimCore::Actors::MunitionTypeActor*> (proxy6->GetActor());
+         munition6 = dynamic_cast<SimCore::Actors::MunitionTypeActor*> (proxy6->GetDrawable());
 
          // --- Set names and DIS identifiers
          munition6->SetDISIdentifierByString( "1 2 3 0 0 0 0" );
@@ -1894,7 +1894,7 @@ namespace SimCore
 
          CPPUNIT_ASSERT_MESSAGE("GameManager should be able create a MunitionEffectInfoActorProxy", proxy );
          SimCore::Actors::MunitionEffectsInfoActor* effectsInfo
-            = static_cast<SimCore::Actors::MunitionEffectsInfoActor*>(proxy->GetActor());
+            = static_cast<SimCore::Actors::MunitionEffectsInfoActor*>(proxy->GetDrawable());
 
          CPPUNIT_ASSERT( effectsInfo != NULL );
 
@@ -2020,7 +2020,7 @@ namespace SimCore
          dtCore::RefPtr<dtDAL::ActorProxy> proxy;
          mGM->CreateActor( *SimCore::Actors::EntityActorRegistry::MUNITION_TYPE_ACTOR_TYPE, proxy );
          dtCore::RefPtr<SimCore::Actors::MunitionTypeActor> munitionType
-            = dynamic_cast<SimCore::Actors::MunitionTypeActor*>(proxy->GetActor());
+            = dynamic_cast<SimCore::Actors::MunitionTypeActor*>(proxy->GetDrawable());
 
          // MunitionTypeActor is not drawable so it should have a NULL OSG node.
          CPPUNIT_ASSERT( munitionType->GetOSGNode() == NULL );
@@ -2068,11 +2068,9 @@ namespace SimCore
          dtCore::RefPtr<dtDAL::ActorProxy> proxy2;
          mGM->CreateActor( *SimCore::Actors::EntityActorRegistry::MUNITION_EFFECTS_INFO_ACTOR_TYPE, proxy2 );
          dtCore::RefPtr<SimCore::Actors::MunitionEffectsInfoActor> effectsInfo
-            = static_cast<SimCore::Actors::MunitionEffectsInfoActor*>(proxy2->GetActor());
-         CPPUNIT_ASSERT( munitionType->GetEffectsInfoDrawable() == NULL );
+            = static_cast<SimCore::Actors::MunitionEffectsInfoActor*>(proxy2->GetDrawable());
          CPPUNIT_ASSERT( munitionType->GetEffectsInfoActor() == NULL );
          munitionType->SetEffectsInfoActor( proxy2.get() );
-         CPPUNIT_ASSERT( munitionType->GetEffectsInfoDrawable() == effectsInfo.get() );
          CPPUNIT_ASSERT( munitionType->GetEffectsInfoActor() == effectsInfo.get() );
       }
 
@@ -2196,7 +2194,7 @@ namespace SimCore
          dtCore::RefPtr<SimCore::Actors::BaseEntityActorProxy> proxy;
          mGM->CreateActor( *SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE, proxy );
          CPPUNIT_ASSERT_MESSAGE("GameManager should be able to create an BaseEntityActorProxy", proxy.valid() );
-         SimCore::Actors::BaseEntity* entity = static_cast<SimCore::Actors::BaseEntity*>(proxy->GetActor());
+         SimCore::Actors::BaseEntity* entity = static_cast<SimCore::Actors::BaseEntity*>(proxy->GetDrawable());
          CPPUNIT_ASSERT_MESSAGE("GameManager should be able to create an Entity", entity != NULL );
 
          CPPUNIT_ASSERT_MESSAGE("WeaponEffect owner should be NULL by default",
@@ -2377,10 +2375,10 @@ namespace SimCore
          CPPUNIT_ASSERT_MESSAGE("GameManager should be able to create an BaseEntityActorProxy", proxy2.valid() );
          CPPUNIT_ASSERT_MESSAGE("GameManager should be able to create an BaseEntityActorProxy", proxy3.valid() );
          CPPUNIT_ASSERT_MESSAGE("GameManager should be able to create an BaseEntityActorProxy", proxy4.valid() );
-         SimCore::Actors::BaseEntity* entity1 = static_cast<SimCore::Actors::BaseEntity*>(proxy1->GetActor());
-         SimCore::Actors::BaseEntity* entity2 = static_cast<SimCore::Actors::BaseEntity*>(proxy2->GetActor());
-         SimCore::Actors::BaseEntity* entity3 = static_cast<SimCore::Actors::BaseEntity*>(proxy3->GetActor());
-         SimCore::Actors::BaseEntity* entity4 = static_cast<SimCore::Actors::BaseEntity*>(proxy4->GetActor());
+         SimCore::Actors::BaseEntity* entity1 = static_cast<SimCore::Actors::BaseEntity*>(proxy1->GetDrawable());
+         SimCore::Actors::BaseEntity* entity2 = static_cast<SimCore::Actors::BaseEntity*>(proxy2->GetDrawable());
+         SimCore::Actors::BaseEntity* entity3 = static_cast<SimCore::Actors::BaseEntity*>(proxy3->GetDrawable());
+         SimCore::Actors::BaseEntity* entity4 = static_cast<SimCore::Actors::BaseEntity*>(proxy4->GetDrawable());
          CPPUNIT_ASSERT_MESSAGE("GameManager should be able to create an Entity", entity1 != NULL );
          CPPUNIT_ASSERT_MESSAGE("GameManager should be able to create an Entity", entity2 != NULL );
          CPPUNIT_ASSERT_MESSAGE("GameManager should be able to create an Entity", entity3 != NULL );
@@ -2425,7 +2423,7 @@ namespace SimCore
          CPPUNIT_ASSERT_MESSAGE("GameManager should be able create a MunitionEffectInfoActorProxy",
             effectInfoProxy.valid() );
          SimCore::Actors::MunitionEffectsInfoActor* effectsInfo
-            = static_cast<SimCore::Actors::MunitionEffectsInfoActor*>(effectInfoProxy->GetActor());
+            = static_cast<SimCore::Actors::MunitionEffectsInfoActor*>(effectInfoProxy->GetDrawable());
          CPPUNIT_ASSERT( effectsInfo != NULL );
          effectsInfo->SetFireFlashTime( 0.5f );
          effectsInfo->SetTracerLight( SimCore::Components::TracerEffect::DEFAULT_TRACER_LIGHT.Get() );

@@ -291,7 +291,7 @@ namespace StealthGM
             {
                // Update the stealth actor with a reference to the terrain
                // with which it will collide.
-               mStealthMM->SetCollidableGeometry(toFill[0]->GetActor());
+               mStealthMM->SetCollidableGeometry(toFill[0]->GetDrawable());
             }
             mStealthMM->SetEnabled(GetStealthActor()->GetAttachAsThirdPerson());
 
@@ -441,7 +441,7 @@ namespace StealthGM
 
             mStealthActorProxy = static_cast<SimCore::Actors::StealthActorProxy*> (proxy.get());
 
-            SetStealthActor(static_cast<SimCore::Actors::StealthActor*>(mStealthActorProxy->GetActor()));
+            SetStealthActor(static_cast<SimCore::Actors::StealthActor*>(mStealthActorProxy->GetDrawable()));
          
          }
 
@@ -672,7 +672,7 @@ namespace StealthGM
                bool fly = mStealthMM->IsEnabled();
                mStealthMM->SetEnabled(!fly);
                mAttachedMM->SetEnabled(fly);
-               GetGameManager()->GetApplication().GetWindow()->ShowCursor(!fly);
+               GetGameManager()->GetApplication().GetWindow()->SetShowCursor(!fly);
             }
          }
          break;
@@ -742,7 +742,7 @@ namespace StealthGM
 
                   dtCore::Transform xform;
                   GetGameManager()->GetApplication().GetCamera()->GetTransform(xform);
-                  lrf->FindIntersectionPoint(*mTerrainActor->GetActor(), xform);
+                  lrf->FindIntersectionPoint(*mTerrainActor->GetDrawable(), xform);
                }
             }
             break;
@@ -1142,7 +1142,7 @@ namespace StealthGM
          mCycleIndex = mCycleIndex % actors.size();
 
       RefPtr<dtDAL::ActorProxy> ap = actors[mCycleIndex];
-      if (ap->GetActor() != GetStealthActor() && ap != mTerrainActor &&
+      if (ap->GetDrawable() != GetStealthActor() && ap != mTerrainActor &&
          ap.get() != GetGameManager()->GetEnvironmentActor())
       {
          RefPtr<dtGame::Message> nMsg = GetGameManager()->GetMessageFactory().CreateMessage(SimCore::MessageType::ATTACH_TO_ACTOR);
@@ -1161,7 +1161,7 @@ namespace StealthGM
             atamsg->SetAttachToActor(dtCore::UniqueId(""));
 
             dtCore::Transform objectxform;
-            dtCore::Transformable *t = dynamic_cast<dtCore::Transformable*>(ap->GetActor());
+            dtCore::Transformable *t = dynamic_cast<dtCore::Transformable*>(ap->GetDrawable());
             if (t != NULL)
             {
                t->GetTransform(objectxform);

@@ -113,7 +113,7 @@ namespace NetDemo
 
       protected:
          virtual ~TowerActorProxy();
-         void CreateActor();
+         void CreateDrawable();
          virtual void OnEnteredWorld();
          virtual void OnRemovedFromWorld();
    };

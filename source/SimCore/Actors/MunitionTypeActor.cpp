@@ -263,13 +263,13 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void MunitionEffectsInfoActorProxy::CreateActor()
       {
-         SetActor( *new MunitionEffectsInfoActor(*this) );
+         SetDrawable( *new MunitionEffectsInfoActor(*this) );
       }
 
       //////////////////////////////////////////////////////////////////////////
       void MunitionEffectsInfoActorProxy::BuildPropertyMap()
       {
-         MunitionEffectsInfoActor& actor = static_cast<MunitionEffectsInfoActor&>(*GetActor());
+         MunitionEffectsInfoActor& actor = static_cast<MunitionEffectsInfoActor&>(*GetDrawable());
 
          static const dtUtil::RefString groupFly("Fly Effects");
          static const dtUtil::RefString groupFire("Fire Effects");
@@ -574,27 +574,20 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void MunitionTypeActorProxy::CreateActor()
       {
-         SetActor( *new MunitionTypeActor(*this) );
+         SetDrawable( *new MunitionTypeActor(*this) );
       }
 
       //////////////////////////////////////////////////////////////////////////
       void MunitionTypeActorProxy::SetEffectsInfoActor( dtDAL::ActorProxy* proxy )
       {
-         MunitionTypeActor* actor = static_cast<MunitionTypeActor*>(GetActor());
+         MunitionTypeActor* actor = static_cast<MunitionTypeActor*>(GetDrawable());
          actor->SetEffectsInfoActor( proxy );
-      }
-
-      //////////////////////////////////////////////////////////////////////////
-      dtCore::DeltaDrawable* MunitionTypeActorProxy::GetEffectsInfoDrawable()
-      {
-         MunitionTypeActor* actor = static_cast<MunitionTypeActor*>(GetActor());
-         return actor->GetEffectsInfoDrawable();
       }
 
       //////////////////////////////////////////////////////////////////////////
       void MunitionTypeActorProxy::BuildPropertyMap()
       {
-         MunitionTypeActor& actor = static_cast<MunitionTypeActor&>(*GetActor());
+         MunitionTypeActor& actor = static_cast<MunitionTypeActor&>(*GetDrawable());
 
          typedef dtDAL::PropertyRegHelper<MunitionTypeActorProxy&, MunitionTypeActor> RegHelperType;
          RegHelperType propReg(*this, &actor, "Detonation");
@@ -639,7 +632,7 @@ namespace SimCore
 
          AddProperty(new dtDAL::ActorActorProperty( *this, "Effects Info", "Effects Info",
             dtDAL::ActorActorProperty::SetFuncType( this, &MunitionTypeActorProxy::SetEffectsInfoActor ),
-            dtDAL::ActorActorProperty::GetFuncType( this, &MunitionTypeActorProxy::GetEffectsInfoDrawable ),
+            dtDAL::ActorActorProperty::GetFuncType( ),
             MunitionEffectsInfoActorProxy::CLASS_NAME,
             "A reference to the collection of effect resource file paths, for sound, models and particle systems",
             "Munition Effects"
@@ -693,15 +686,7 @@ namespace SimCore
       void MunitionTypeActor::SetEffectsInfoActor( dtDAL::ActorProxy* proxy )
       {
          mEffects = proxy != NULL ?
-            dynamic_cast<MunitionEffectsInfoActor*> (proxy->GetActor()) : NULL;
-         mProxy->SetLinkedActor("Effects Info", proxy);
-      }
-
-      //////////////////////////////////////////////////////////////////////////
-      dtCore::DeltaDrawable* MunitionTypeActor::GetEffectsInfoDrawable()
-      {
-         dtDAL::ActorProxy* proxy = mProxy->GetLinkedActor("Effects Info");
-         return proxy != NULL ? proxy->GetActor() : NULL;
+            dynamic_cast<MunitionEffectsInfoActor*> (proxy->GetDrawable()) : NULL;
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -728,20 +713,6 @@ namespace SimCore
       DetonationActorProxy* MunitionTypeActor::GetDetonationActorPrototype()
       {
          return mDetonationPrototype.get();
-      }
-
-      //////////////////////////////////////////////////////////////////////////
-      dtCore::DeltaDrawable* MunitionTypeActor::GetDetonationActorPrototypeDrawable()
-      {
-         if(mDetonationPrototype.valid())
-         {
-            return mDetonationPrototype->GetActor();
-         }
-         else
-         {
-            return NULL;
-         }
-
       }
    }
 }

@@ -86,7 +86,7 @@ namespace NetDemo
 
    protected:
       virtual ~SpawnVolumeActorProxy();
-      void CreateActor();
+      void CreateDrawable();
       virtual void OnEnteredWorld();
 
       /**

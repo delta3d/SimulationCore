@@ -130,7 +130,7 @@ namespace SimCore
 
             virtual void BuildPropertyMap();
 
-            virtual void CreateActor();
+            virtual void CreateDrawable();
 
          protected:
             virtual ~FlareActorProxy();

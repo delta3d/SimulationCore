@@ -308,7 +308,6 @@ namespace SimCore
             virtual bool IsPlaceable() const { return false; }
 
             void SetEffectsInfoActor( dtDAL::ActorProxy* proxy );
-            dtCore::DeltaDrawable* GetEffectsInfoDrawable();
 
          protected:
             virtual ~MunitionTypeActorProxy();
@@ -358,12 +357,10 @@ namespace SimCore
             std::string GetDISIdentifierString() const;
 
             void SetEffectsInfoActor(dtDAL::ActorProxy* proxy);
-            dtCore::DeltaDrawable* GetEffectsInfoDrawable();
             const MunitionEffectsInfoActor* GetEffectsInfoActor() const;
 
             void SetDetonationActorPrototype(dtDAL::ActorProxy* proxy);
             DetonationActorProxy* GetDetonationActorPrototype();
-            dtCore::DeltaDrawable* GetDetonationActorPrototypeDrawable();
 
             DT_DECLARE_ACCESSOR_INLINE(dtCore::UniqueId, DetonationActor);
 

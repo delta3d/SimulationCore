@@ -192,7 +192,7 @@ namespace SimCore
          if(ap.valid() && dynamic_cast<SimCore::Actors:: StealthActorProxy*>(ap.get()) == NULL)
          {
             //Must dynamic cast here because the GetActor template does a static cast.
-            BaseEntity* eap = dynamic_cast<BaseEntity*>(ap->GetActor());
+            BaseEntity* eap = dynamic_cast<BaseEntity*>(ap->GetDrawable());
             if (eap != NULL)
             {
                eap->SetScaleMagnification(osg::Vec3(mMagnification, mMagnification, mMagnification));
@@ -214,7 +214,7 @@ namespace SimCore
          }
 
          //Must dynamic cast here because the GetActor template does a static cast.
-         SimCore::Actors::IGActor* ig = dynamic_cast<SimCore::Actors::IGActor*>(ap->GetActor());
+         SimCore::Actors::IGActor* ig = dynamic_cast<SimCore::Actors::IGActor*>(ap->GetDrawable());
          if (ig != NULL)
          {
             // The happens every time we get an update, but it must happen after the properties
@@ -244,7 +244,7 @@ namespace SimCore
                   static_cast<BaseEntity&>(eap->GetGameActor()).SetScaleMagnification(osg::Vec3(mMagnification, mMagnification, mMagnification));
             }
             //Must dynamic cast here because the GetActor template does a static cast.
-            SimCore::Actors::IGActor* ig = dynamic_cast<SimCore::Actors::IGActor*>(ap->GetActor());
+            SimCore::Actors::IGActor* ig = dynamic_cast<SimCore::Actors::IGActor*>(ap->GetDrawable());
             if (ig != NULL)
             {
                ig->SetVisible(ig->ShouldBeVisible(*mVisibilityOptions));
@@ -375,7 +375,7 @@ namespace SimCore
             if (!AcceptPlayer(*proxy))
                return;
 
-            mPlayer = dynamic_cast<SimCore::Actors::StealthActor*>(proxy->GetActor());
+            mPlayer = dynamic_cast<SimCore::Actors::StealthActor*>(proxy->GetDrawable());
 
             if(mPlayer == NULL)
             {
@@ -451,7 +451,7 @@ namespace SimCore
                entity->SetScaleMagnification(osg::Vec3(mMagnification, mMagnification, mMagnification));
             }
 
-            SimCore::Actors::IGActor* ig = dynamic_cast<SimCore::Actors::IGActor*>(ap.GetActor());
+            SimCore::Actors::IGActor* ig = dynamic_cast<SimCore::Actors::IGActor*>(ap.GetDrawable());
             if (ig != NULL)
             {
                ig->SetVisible(ig->ShouldBeVisible(mVisibilityOptions));

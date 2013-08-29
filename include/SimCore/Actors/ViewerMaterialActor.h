@@ -62,34 +62,6 @@ namespace SimCore
          friend class ViewerMaterialActorProxy;
          public:
 
-            ///@return The value of m_VISL_Shininess
-            float GetShinyness()                            {return m_VISL_Shininess;}
-            ///@return The value of m_OTHR_Wetness
-            float GetWetness()                              {return m_OTHR_Wetness;}
-            ///@return The value of m_VISL_Reflectivity
-            float GetReflectivity()                         {return m_VISL_Reflectivity;}
-            ///@return The value of m_OTHR_Softness
-            float GetSoftness()                             {return m_OTHR_Softness;}
-            ///@return The value of m_OTHR_Stretchiness
-            float GetStretchiness()                         {return m_OTHR_Stretchiness;}
-            ///@return The value of m_OTHR_Flammability
-            float GetFlammibility()                         {return m_OTHR_Flammability;}
-            ///@return The value of m_OTHR_WindResistance
-            float GetWindResistance()                       {return m_OTHR_WindResistance;}
-            ///@return The value of m_SHAD_Bumpiness
-            float GetBumpiness()                            {return m_SHAD_Bumpiness;}
-            ///@return The value of m_VISL_SelfIlluminating
-            float GetSelfIlluminating()                     {return m_VISL_SelfIlluminating;}
-            ///@return The value of m_OTHR_Inflatableness
-            float GetInflatableness()                       {return m_OTHR_Inflatableness;}
-            ///@return The value of m_VISL_Refraction
-            float GetRefractionAmount()                     {return m_VISL_Refraction;}
-            ///@return The value of m_OTHR_Pressurization
-            float GetPressureization()                      {return m_OTHR_Pressurization;}
-            ///@return The value of m_OTHR_Temperature
-            float GetTemperature()                          {return m_OTHR_Temperature;}
-            ///@return The value of m_SFX_DensityForSound
-            float GetSoundDensityValue()                    {return m_SFX_DensityForSound;}
             ///@return The value of m_SFX_SmallHit
             std::string GetSmallHitSoundEffect()           {return m_SFX_SmallHit;}
             ///@return The value of m_SFX_MediumHit
@@ -110,8 +82,6 @@ namespace SimCore
             osg::Vec4 GetBaseColorvalue()                  {return m_VISL_BaseColor;}
             ///@return The value of m_VISL_HighlightColor
             osg::Vec4 GetHighlighteColorvalue()            {return m_VISL_HighlightColor;}
-            ///@return The value of m_PART_SpoutAmount
-            float GetParticleSpoutAmount()                 {return m_PART_SpoutAmount;}
             ///@return The value of m_PART_DustTrail
             std::string GetDustTrailEffect()               {return m_PART_DustTrail;}
             ///@return The value of m_PART_SmallHit
@@ -126,8 +96,6 @@ namespace SimCore
             float    GetStaticFriction()                    {return m_PHYS_StaticFriction;}
             ///@return The value of dynamic friction (0.5 default)
             float    GetDynamicFriction()                   {return m_PHYS_DynamicFriction;}
-            /// @return The scene name the physics is loaded in.
-            std::string GetSceneName() const                {return m_PHYS_SceneName;}
             /// @return The physics particle system to use
             std::string GetPhysicsParticleLookupStringOne() {return m_VISL_PhysicsParticleOne;}
             /// @return The physics particle system to use
@@ -140,33 +108,6 @@ namespace SimCore
             std::string GetPhysicsParticleLookupStringFive(){return m_VISL_PhysicsParticleFive;}
 
             ///@param value The value for shinyness - shader / visual for an object
-            void SetShinyness(float value)                        {m_VISL_Shininess = value;}
-            ///@param value The value for moisture / wetness of an object
-            void SetWetness(float value)                          {m_OTHR_Wetness = value;}
-            ///@param value The value for reflectivity - visual
-            void SetReflectivity(float value)                     {m_VISL_Reflectivity = value;}
-            ///@param value The value it is soft, physics / visual / auditory
-            void SetSoftness(float value)                         {m_OTHR_Softness = value;}
-            ///@param value The value that a value can stretch - post processing shader or physics
-            void SetStretchiness(float value)                     {m_OTHR_Stretchiness = value;}
-            ///@param value The value if it can catch on fire
-            void SetFlammibility(float value)                     {m_OTHR_Flammability = value;}
-            ///@param value The value for wind resistance - dont know what this could be used for.
-            void SetWindResistance(float value)                   {m_OTHR_WindResistance = value;}
-            ///@param value The value for bumpmapping or not - shader
-            void SetBumpiness(float value)                        {m_SHAD_Bumpiness = value;}
-            ///@param value The value if it self illuminates - shader maybe?
-            void SetSelfIlluminating(float value)                 {m_VISL_SelfIlluminating = value;}
-            ///@param value The value of inflatability of an object (balloon)
-            void SetInflatableness(float value)                   {m_OTHR_Inflatableness = value;}
-            ///@param value The value of refraction for use.
-            void SetRefractionAmount(float value)                 {m_VISL_Refraction = value;}
-            ///@param value The value Pressurization of an object, terrain code you can read in.
-            void SetPressureization(float value)                  {m_OTHR_Pressurization = value;}
-            ///@param value The value of temperature / useful for ir
-            void SetTemperature(float value)                      {m_OTHR_Temperature = value;}
-            ///@param value The value for density of sound. for calculations
-            void SetSoundDensityValue(float value)                {m_SFX_DensityForSound = value;}
             ///@param value The value string the file is loaded from.
             void SetSmallHitSoundEffect(const std::string& value) {m_SFX_SmallHit = value;}
             ///@param value The value string the file is loaded from.
@@ -187,8 +128,6 @@ namespace SimCore
             void SetBaseColorvalue(const osg::Vec4& value)        {m_VISL_BaseColor = value;}
             ///@param value The value for use with decals / particles
             void SetHighlighteColorvalue(const osg::Vec4& value)  {m_VISL_HighlightColor = value;}
-            ///@param value The value to use with particle spouts.
-            void SetParticleSpoutAmount(float value)              {m_PART_SpoutAmount = value;}
             ///@param value The value of the particle sys to load in for dust trails
             void SetDustTrailEffect(const std::string& value)     {m_PART_DustTrail = value;}
             ///@param value The value of the small hit particle effect to load in.
@@ -203,8 +142,6 @@ namespace SimCore
             void SetStaticFriction(float value)                   {m_PHYS_StaticFriction = value;}
             ///@param value The value of dynamic friction (0.5 default)
             void SetDynamicFriction(float value)                  {m_PHYS_DynamicFriction = value;}
-            /// @param value The value of the scene name (default is "Default").
-            void SetSceneName(const std::string& name)            {m_PHYS_SceneName=name;}
             /// @param value The name of the physics particle system prototype to look up in the map
             void SetPhysicsParticleLookupStringOne(const std::string& name) {m_VISL_PhysicsParticleOne = name;}
             /// @param value The name of the physics particle system prototype to look up in the map
@@ -338,7 +275,7 @@ namespace SimCore
             virtual bool IsPlaceable() const { return false;}
 
             // Creates the actor
-            void CreateActor();
+            void CreateDrawable();
 
          protected:
             virtual ~ViewerMaterialActorProxy();

@@ -26,7 +26,7 @@
 #include <dtGame/gameentrypoint.h>
 #include <SimCore/Export.h>
 #include <dtCore/refptr.h>
-#include <dtDAL/actorproxy.h>
+#include <dtCore/baseactorobject.h>
 #include <osg/Vec3>
 #include <string>
 #include <dtUtil/getsetmacros.h>
@@ -39,12 +39,6 @@ namespace osg
 namespace dtGame
 {
    class GameManager;
-   class GameApplication;
-}
-
-namespace dtDAL
-{
-   class BaseActorObject;
 }
 
 namespace SimCore
@@ -92,16 +86,18 @@ namespace SimCore
           * @param argv array of string pointers to the arguments.
           * @throwns dtUtil::Exception if initialization fails.
           */
-         virtual void Initialize(dtGame::GameApplication& app, int argc, char **argv);
+         virtual void Initialize(dtABC::BaseABC& app, int argc, char **argv);
 
          /**
           * Called after all startup related code is run.
           * @param gameManager The game manager to init
           */
-         virtual void OnStartup(dtGame::GameApplication &app);
+         virtual void OnStartup(dtABC::BaseABC& app, dtGame::GameManager& gameManager);
+
+         virtual void OnShutdown(dtABC::BaseABC& app, dtGame::GameManager& gameManager);
 
          /// May be overridden to allow subclassed to add components
-         virtual void InitializeComponents(dtGame::GameManager &gm) {};
+         virtual void InitializeComponents(dtGame::GameManager& gm) {};
 
          /**
           * called from external to 'end' the parser so anyone can
@@ -126,7 +122,7 @@ namespace SimCore
          void SetUIRunning(bool uiRunning) { mIsUIRunning = uiRunning; }
 
          /// reads the values of command line parameters and config options set the project context
-         void AssignProjectContext(dtGame::GameManager &gm);
+         void AssignProjectContext(dtGame::GameManager& gm);
          /// if the UI is not enabled, will load the map specified on the command line.
          void PreLoadMap();
 
@@ -136,7 +132,7 @@ namespace SimCore
           * warning. setting to the aspect ratio to anything other than 1.33 or 1.6 will result
           * in incorrect results for the binoculars and laser range finder.
           */
-         void AssignAspectRatio(dtGame::GameApplication& app);
+         void AssignAspectRatio(dtGame::GameManager& gm);
 
          /// Destructor
          virtual ~BaseGameEntryPoint();
@@ -154,6 +150,8 @@ namespace SimCore
 
       private:
          bool mIsUIRunning;
+         // If the audio was started by this class, or was already running.
+         bool mStartedAudio;
    };
 }
 #endif

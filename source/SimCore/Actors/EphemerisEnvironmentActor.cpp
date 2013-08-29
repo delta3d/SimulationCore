@@ -296,9 +296,9 @@ namespace SimCore
       }
 
       /////////////////////////////////////////////////////////////
-      void EphemerisEnvironmentActorProxy::CreateActor()
+      void EphemerisEnvironmentActorProxy::CreateDrawable()
       {
-         SetActor( *new EphemerisEnvironmentActor(*this) );
+         SetDrawable( *new EphemerisEnvironmentActor(*this) );
       }
 
       /////////////////////////////////////////////////////////////

@@ -42,7 +42,7 @@
 #include <SimCore/Actors/Platform.h>
 #include <SimCore/ActComps/TrailEffectActComp.h>
 
-#include <TestComponent.h>
+#include <dtGame/testcomponent.h>
 #include <UnitTestMain.h>
 #include <dtABC/application.h>
 

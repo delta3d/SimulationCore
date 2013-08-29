@@ -588,9 +588,9 @@ namespace SimCore
          //////////////////////////////////////////////////////////////////////
          PagedTerrainPhysicsActorProxy::~PagedTerrainPhysicsActorProxy(){}
          //////////////////////////////////////////////////////////////////////
-         void PagedTerrainPhysicsActorProxy::CreateActor()
+         void PagedTerrainPhysicsActorProxy::CreateDrawable()
          {
-            SetActor(*new PagedTerrainPhysicsActor(*this));
+            SetDrawable(*new PagedTerrainPhysicsActor(*this));
          }
          //////////////////////////////////////////////////////////////////////
          void PagedTerrainPhysicsActorProxy::OnEnteredWorld()

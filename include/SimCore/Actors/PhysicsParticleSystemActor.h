@@ -269,7 +269,7 @@ namespace SimCore
 
       protected:
          virtual ~PhysicsParticleSystemActorProxy();
-         void CreateActor();
+         void CreateDrawable();
          virtual void OnEnteredWorld();
          virtual void OnRemovedFromWorld();
       };

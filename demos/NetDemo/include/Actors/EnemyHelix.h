@@ -90,15 +90,15 @@ namespace NetDemo
    /// This is the proxy for the object.  It needs to build the property map, create the actor, and handle entered world.
    class NETDEMO_EXPORT EnemyHelixActorProxy : public BaseEnemyActorProxy
    {
-      public:
-         typedef BaseEnemyActorProxy BaseClass;
+   public:
+      typedef BaseEnemyActorProxy BaseClass;
 
-         EnemyHelixActorProxy();
-         virtual void BuildPropertyMap();
+      EnemyHelixActorProxy();
+      virtual void BuildPropertyMap();
 
-      protected:
-         virtual ~EnemyHelixActorProxy();
-         void CreateActor();
+   protected:
+      virtual ~EnemyHelixActorProxy();
+      void CreateDrawable();
    };
 
 }

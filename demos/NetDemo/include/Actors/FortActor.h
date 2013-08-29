@@ -139,7 +139,7 @@ namespace NetDemo
 
       protected:
          virtual ~FortActorProxy();
-         void CreateActor();
+         void CreateDrawable();
          virtual void OnEnteredWorld();
    };
 

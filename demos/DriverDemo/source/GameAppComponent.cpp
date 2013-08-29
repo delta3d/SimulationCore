@@ -171,7 +171,7 @@ namespace DriverDemo
             GetGameManager()->CreateActorFromPrototype(toFill.front()->GetId());
          if(ourActualActorProxy != NULL)
          {
-            vehicle = dynamic_cast<SimCore::Actors::BasePhysicsVehicleActor*>(ourActualActorProxy->GetActor());
+            vehicle = dynamic_cast<SimCore::Actors::BasePhysicsVehicleActor*>(ourActualActorProxy->GetDrawable());
             if (vehicle != NULL)
             {
                vehicle->SetArticulationHelper( new DriverArticulationHelper );
@@ -246,7 +246,7 @@ namespace DriverDemo
       GetGameManager()->CreateActor(*SimCore::Actors::EntityActorRegistry::PLAYER_ACTOR_TYPE, ap);
 
       // make the stealh aware
-      mStealth = static_cast<SimCore::Actors::PlayerActor*>(ap->GetActor());
+      mStealth = static_cast<SimCore::Actors::PlayerActor*>(ap->GetDrawable());
 
       // make the camera a child
       mStealth->AddChild(GetGameManager()->GetApplication().GetCamera());

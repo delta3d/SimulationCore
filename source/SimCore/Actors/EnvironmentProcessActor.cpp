@@ -89,9 +89,9 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////
-      void EnvironmentProcessActorProxy::CreateActor()
+      void EnvironmentProcessActorProxy::CreateDrawable()
       {
-         SetActor(*new dtGame::GameActor(*this));
+         SetDrawable(*new dtGame::GameActor(*this));
       }
 
       //////////////////////////////////////////////////////////////////////////////

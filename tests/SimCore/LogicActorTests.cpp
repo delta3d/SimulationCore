@@ -57,7 +57,7 @@
 #include <dtCore/gameeventmanager.h>
 
 
-#include <TestComponent.h>
+#include <dtGame/testcomponent.h>
 #include <UnitTestMain.h>
 #include <dtABC/application.h>
 
@@ -94,7 +94,7 @@ class LogicActorTests: public CPPUNIT_NS::TestFixture
       void CheckGameEventReceived(dtCore::GameEvent *gameEvent, bool shouldExist, const std::string& message);
 
       dtCore::RefPtr<dtGame::GameManager> mGM;
-      dtCore::RefPtr<TestComponent> mTestComponent;
+      dtCore::RefPtr<dtGame::TestComponent> mTestComponent;
 
 };
 
@@ -109,7 +109,7 @@ void LogicActorTests::setUp()
    mGM->SetApplication(GetGlobalApplication());
 
    // Test component tracks messages and game events
-   mTestComponent = new TestComponent;
+   mTestComponent = new dtGame::TestComponent;
    mGM->AddComponent(*mTestComponent, dtGame::GameManager::ComponentPriority::NORMAL);
 }
 
@@ -135,7 +135,7 @@ void LogicActorTests::TestConditionalActor()
    CPPUNIT_ASSERT(lcap.valid());
 
    SimCore::Actors::LogicConditionalActor& lcapActor = 
-      static_cast<SimCore::Actors::LogicConditionalActor&>(*lcap->GetActor());
+      static_cast<SimCore::Actors::LogicConditionalActor&>(*lcap->GetDrawable());
    CPPUNIT_ASSERT_MESSAGE("Default condition should be false", !lcapActor.GetIsTrue());
    CPPUNIT_ASSERT_MESSAGE("Default true event should be NULL", lcapActor.GetTrueEvent() == NULL);
    CPPUNIT_ASSERT_MESSAGE("Default false event should be NULL", lcapActor.GetFalseEvent() == NULL);
@@ -192,14 +192,14 @@ void LogicActorTests::TestLogicOnEventActor()
    dtCore::RefPtr<SimCore::Actors::LogicConditionalActorProxy> lcap1;
    mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::LOGIC_CONDITIONAL_ACTOR_TYPE, lcap1);
    CPPUNIT_ASSERT(lcap1.valid());
-   SimCore::Actors::LogicConditionalActor& lcap1Actor = static_cast<SimCore::Actors::LogicConditionalActor&>(*lcap1->GetActor());
+   SimCore::Actors::LogicConditionalActor& lcap1Actor = static_cast<SimCore::Actors::LogicConditionalActor&>(*lcap1->GetDrawable());
    mGM->AddActor(*lcap1);
 
    // Conditional 2
    dtCore::RefPtr<SimCore::Actors::LogicConditionalActorProxy> lcap2;
    mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::LOGIC_CONDITIONAL_ACTOR_TYPE, lcap2);
    CPPUNIT_ASSERT(lcap2.valid());
-   SimCore::Actors::LogicConditionalActor& lcap2Actor = static_cast<SimCore::Actors::LogicConditionalActor&>(*lcap2->GetActor());
+   SimCore::Actors::LogicConditionalActor& lcap2Actor = static_cast<SimCore::Actors::LogicConditionalActor&>(*lcap2->GetDrawable());
    mGM->AddActor(*lcap2);
 
    // On Event Actor

@@ -278,7 +278,7 @@ namespace StealthGM
             SimCore::Actors::TerrainActorProxy* proxy =
                static_cast<SimCore::Actors::TerrainActorProxy*>(proxies[0]);
 
-            binos->Update(*proxy->GetActor());
+            binos->Update(*proxy->GetDrawable());
          }
       }
       ////////////////////////////////////////////////////////////////////////////////
