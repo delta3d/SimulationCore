@@ -552,10 +552,6 @@ namespace SimCore
       void TrailEffectActComp::OnRemovedFromActor(dtGame::GameActor& actor)
       {
          BaseClass::OnRemovedFromActor(actor);
-
-         UnregisterTickHandlers();
-
-         DetachParticles();
       }
 
       //////////////////////////////////////////////////////////////////////////
