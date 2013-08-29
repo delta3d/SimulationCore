@@ -170,24 +170,8 @@ namespace SimCore
 
       void BaseHUD::InitializeCEGUI()
       {
-         dtABC::Application &app = GetGameManager()->GetApplication();
+         dtABC::Application& app = GetGameManager()->GetApplication();
          // Initialize CEGUI
-#if CEGUI_VERSION_MAJOR == 0 && CEGUI_VERSION_MINOR < 7
-         mGUI = new dtGUI::CEUIDrawable(app.GetWindow(), app.GetKeyboard(), app.GetMouse(), mScriptModule);
-         osg::Node* guiOSGNode = mGUI->GetOSGNode();
-         std::string path = dtUtil::FindFileInPathList(mSchemeFile);
-         if(path.empty())
-         {
-            throw dtUtil::Exception(BaseHUDException::INIT_ERROR,
-               "Failed to find the scheme file : " + mSchemeFile, __FILE__, __LINE__);
-         }
-
-         std::string dir = path.substr(0, path.length() - (mSchemeFile.length() - std::string("CEGUI").length()) );
-         dtUtil::FileUtils::GetInstance().PushDirectory(dir);
-         try
-         {
-            CEGUI::SchemeManager::getSingleton().loadScheme(path);
-#else
          mGUI = new dtGUI::GUI(app.GetCamera(), app.GetKeyboard(), app.GetMouse());
          osg::Group* guiOSGNode = &mGUI->GetRootNode();
          mGUI->SetScriptModule(mScriptModule);         
@@ -195,7 +179,6 @@ namespace SimCore
          try
          {
             mGUI->LoadScheme(mSchemeFile);
-#endif
          }
          catch(CEGUI::Exception &e)
          {
@@ -203,7 +186,6 @@ namespace SimCore
             oss << "CEGUI while setting up BaseHUD: " << e.getMessage().c_str();
             throw BaseHUDInitException(oss.str(), __FILE__, __LINE__);
          }
-         dtUtil::FileUtils::GetInstance().PopDirectory();
 
          guiOSGNode->getOrCreateStateSet()->setRenderBinDetails(SimCore::Components::RenderingSupportComponent::RENDER_BIN_HUD, "RenderBin");
          CEGUI::System::getSingleton().setDefaultFont("DejaVuSans-10");
