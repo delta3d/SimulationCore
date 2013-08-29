@@ -438,7 +438,6 @@ namespace SimCore
       /////////////////////////////////////////////////////////////////////
       BaseEntity::~BaseEntity()
       {
-         SetFlamesPresent(false);
       }
 
       DT_IMPLEMENT_ACCESSOR(BaseEntity, float, MaxDamageAmount);
