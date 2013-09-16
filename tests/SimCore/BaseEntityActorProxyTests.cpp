@@ -91,7 +91,11 @@ class BaseEntityActorProxyTests : public CPPUNIT_NS::TestFixture
       CPPUNIT_TEST(TestPlatformDelayedLoading);
       CPPUNIT_TEST(TestPlatformOnEnteredWorldLoading);
       CPPUNIT_TEST(TestPlatformHeadlights);
+      CPPUNIT_TEST(TestPlatformSwitchToLocal);
+      CPPUNIT_TEST(TestPlatformSwitchToRemote);
       CPPUNIT_TEST(TestHuman);
+      CPPUNIT_TEST(TestHumanSwitchToLocal);
+      CPPUNIT_TEST(TestHumanSwitchToRemote);
       CPPUNIT_TEST(TestPlatformScaleMagnification);
       CPPUNIT_TEST(TestHumanScaleMagnification);
       CPPUNIT_TEST(TestPlatformActorUpdates);
@@ -116,7 +120,11 @@ public:
    void TestPlatformDelayedLoading();
    void TestPlatformOnEnteredWorldLoading();
    void TestPlatformHeadlights();
+   void TestPlatformSwitchToLocal();
+   void TestPlatformSwitchToRemote();
    void TestHuman();
+   void TestHumanSwitchToLocal();
+   void TestHumanSwitchToRemote();
    void TestPlatformScaleMagnification();
    void TestHumanScaleMagnification();
    void TestPlatformActorUpdates();
@@ -476,6 +484,44 @@ void BaseEntityActorProxyTests::TestPlatformHeadlights()
 
 }
 
+void BaseEntityActorProxyTests::TestPlatformSwitchToLocal()
+{
+   RefPtr<SimCore::Actors::BaseEntityActorProxy> eap;
+   mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE, eap);
+   CPPUNIT_ASSERT(eap.valid());
+
+   mGM->AddActor(*eap, true, false);
+
+   dtCore::System::GetInstance().Step();
+
+   CPPUNIT_ASSERT(eap->IsRemote());
+
+   mGM->SwitchActorToLocal(*eap);
+
+   CPPUNIT_ASSERT(!eap->IsRemote());
+   //TODO somehow this needs to test that the data is not in a bad state.
+}
+
+void BaseEntityActorProxyTests::TestPlatformSwitchToRemote()
+{
+   RefPtr<SimCore::Actors::BaseEntityActorProxy> eap;
+   mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE, eap);
+   CPPUNIT_ASSERT(eap.valid());
+
+   mGM->AddActor(*eap, false, false);
+
+   dtCore::System::GetInstance().Step();
+
+   CPPUNIT_ASSERT(!eap->IsRemote());
+
+   mGM->SwitchActorToRemote(*eap);
+
+   CPPUNIT_ASSERT(eap->IsRemote());
+
+   //TODO somehow this needs to test that the data is not in a bad state.
+
+}
+
 void BaseEntityActorProxyTests::TestHuman()
 {
    RefPtr<SimCore::Actors::HumanActorProxy> hap;
@@ -515,6 +561,45 @@ void BaseEntityActorProxyTests::TestHuman()
    edraw = NULL;
 
 }
+
+void BaseEntityActorProxyTests::TestHumanSwitchToLocal()
+{
+   RefPtr<SimCore::Actors::BaseEntityActorProxy> eap;
+   mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::HUMAN_ACTOR_TYPE, eap);
+   CPPUNIT_ASSERT(eap.valid());
+
+   mGM->AddActor(*eap, true, false);
+
+   dtCore::System::GetInstance().Step();
+
+   CPPUNIT_ASSERT(eap->IsRemote());
+
+   mGM->SwitchActorToLocal(*eap);
+
+   CPPUNIT_ASSERT(!eap->IsRemote());
+
+   //TODO somehow this needs to test that the data is not in a bad state.
+}
+
+void BaseEntityActorProxyTests::TestHumanSwitchToRemote()
+{
+   RefPtr<SimCore::Actors::BaseEntityActorProxy> eap;
+   mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::HUMAN_ACTOR_TYPE, eap);
+   CPPUNIT_ASSERT(eap.valid());
+
+   mGM->AddActor(*eap, false, false);
+
+   dtCore::System::GetInstance().Step();
+
+   CPPUNIT_ASSERT(!eap->IsRemote());
+
+   mGM->SwitchActorToRemote(*eap);
+
+   CPPUNIT_ASSERT(eap->IsRemote());
+
+   //TODO somehow this needs to test that the data is not in a bad state.
+}
+
 
 void BaseEntityActorProxyTests::TestBaseEntityVisOpts(SimCore::Actors::BaseEntityActorProxy& eap)
 {
