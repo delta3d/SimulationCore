@@ -199,7 +199,7 @@ namespace SimCore
       }
 
       /////////////////////////////////////////////////////////////////////////////
-      void LogicOnEventActor::SendGameEventMessage(dtDAL::GameEvent& gameEvent)
+      void LogicOnEventActor::SendGameEventMessage(dtCore::GameEvent& gameEvent)
       {
          dtGame::GameManager* gm = GetGameActorProxy().GetGameManager();
          if( gm != NULL )
