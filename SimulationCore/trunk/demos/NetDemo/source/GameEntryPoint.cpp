@@ -101,8 +101,6 @@ namespace NetDemo
          new SimCore::Components::ViewerMessageProcessor();
       gm.AddComponent(*defaultProcessor, dtGame::GameManager::ComponentPriority::HIGHEST);
 
-      // This call does a fair bit of work. For one thing, it causes the HLA component
-      // to connect to the federation.
       BaseClass::InitializeComponents(gm);
 
       // Our GameAppComponent does a lot of the game based logic such as state management,

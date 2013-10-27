@@ -173,7 +173,14 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////////////
    void TowerActor::InitWeapon()
    {
-      dtCore::RefPtr<SimCore::ActComps::WeaponInventoryActComp> weaponInv = new SimCore::ActComps::WeaponInventoryActComp;
+      dtCore::RefPtr<SimCore::ActComps::WeaponInventoryActComp> weaponInv;
+      GetComponent(weaponInv);
+
+      if (!weaponInv.valid())
+      {
+         weaponInv = new SimCore::ActComps::WeaponInventoryActComp;
+         AddComponent(*weaponInv);
+      }
 
       dtCore::RefPtr<SimCore::ActComps::WeaponInventoryActComp::WeaponDescription> wd = new SimCore::ActComps::WeaponInventoryActComp::WeaponDescription;
 
@@ -183,8 +190,6 @@ namespace NetDemo
       wd->SetWeaponSwapRootNode("dof_gun_01");
 
       dtCore::RefPtr<SimCore::Actors::WeaponActor> weapon;
-
-      AddComponent(*weaponInv);
 
       weaponInv->CreateAndAddWeapon(*wd, true)->mWeapon->GetActor(weapon);
 

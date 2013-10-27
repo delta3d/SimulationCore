@@ -130,10 +130,11 @@ namespace SimCore
          typedef dtDAL::PropertyRegHelper<WeaponInventoryActComp&, WeaponInventoryActComp> PropRegType;
          PropRegType propRegHelper(*this, this, GROUPNAME);
 
+         static const dtUtil::RefString PROPERTY_WEAPONS("Weapons");
          typedef dtCore::ArrayActorPropertyComplex<dtCore::RefPtr<WeaponInventoryActComp::WeaponDescription> > WeaponDescPropType;
          dtCore::RefPtr<WeaponDescPropType> arrayProp =
                   new WeaponDescPropType
-                     ("Weapons", "Weapons",
+                     (PROPERTY_WEAPONS, PROPERTY_WEAPONS,
                       WeaponDescPropType::SetFuncType(this, &WeaponInventoryActComp::SetWeaponDescription),
                       WeaponDescPropType::GetFuncType(this, &WeaponInventoryActComp::GetWeaponDescription),
                       WeaponDescPropType::GetSizeFuncType(this, &WeaponInventoryActComp::GetNumWeaponDescriptions),
