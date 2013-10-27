@@ -27,10 +27,10 @@
 #include <prefix/SimCorePrefix.h>
 #include <SimCore/Actors/WaterGridActor.h>
 
-#include <dtDAL/functor.h>
-#include <dtDAL/enginepropertytypes.h>
-#include <dtDAL/actorproxyicon.h>
-#include <dtDAL/project.h>
+#include <dtCore/functor.h>
+#include <dtCore/enginepropertytypes.h>
+#include <dtCore/actorproxyicon.h>
+#include <dtCore/project.h>
 
 #include <dtGame/messagetype.h>
 #include <dtGame/basemessages.h>
@@ -652,7 +652,7 @@ namespace SimCore
 
            
          osg::Texture2D* foamTexture2D = new osg::Texture2D();
-         std::string foamTextureFile = dtDAL::Project::GetInstance().GetResourcePath(dtDAL::ResourceDescriptor("Textures:OceanFoam.tga"));
+         std::string foamTextureFile = dtCore::Project::GetInstance().GetResourcePath(dtCore::ResourceDescriptor("Textures:OceanFoam.tga"));
          osg::Image* newImage = osgDB::readImageFile(foamTextureFile);
          if (newImage == NULL)
          {
@@ -1887,41 +1887,41 @@ namespace SimCore
          WaterGridActor* actor = NULL;
          GetActor(actor);
 
-         AddProperty(new dtDAL::ColorRgbaActorProperty(PROPERTY_WATER_COLOR, PROPERTY_WATER_COLOR,
-            dtDAL::ColorRgbaActorProperty::SetFuncType(actor,&WaterGridActor::SetWaterColor),
-            dtDAL::ColorRgbaActorProperty::GetFuncType(actor,&WaterGridActor::GetWaterColor),
+         AddProperty(new dtCore::ColorRgbaActorProperty(PROPERTY_WATER_COLOR, PROPERTY_WATER_COLOR,
+            dtCore::ColorRgbaActorProperty::SetFuncType(actor,&WaterGridActor::SetWaterColor),
+            dtCore::ColorRgbaActorProperty::GetFuncType(actor,&WaterGridActor::GetWaterColor),
             "Sets the color of the water.", GROUPNAME));
 
-         AddProperty(new dtDAL::EnumActorProperty<WaterGridActor::ChoppinessSettings>(PROPERTY_CHOPPINESS, PROPERTY_CHOPPINESS,
-            dtDAL::EnumActorProperty<WaterGridActor::ChoppinessSettings>::SetFuncType(actor, &WaterGridActor::SetChoppiness),
-            dtDAL::EnumActorProperty<WaterGridActor::ChoppinessSettings>::GetFuncType(actor, &WaterGridActor::GetChoppiness),
+         AddProperty(new dtCore::EnumActorProperty<WaterGridActor::ChoppinessSettings>(PROPERTY_CHOPPINESS, PROPERTY_CHOPPINESS,
+            dtCore::EnumActorProperty<WaterGridActor::ChoppinessSettings>::SetFuncType(actor, &WaterGridActor::SetChoppiness),
+            dtCore::EnumActorProperty<WaterGridActor::ChoppinessSettings>::GetFuncType(actor, &WaterGridActor::GetChoppiness),
             "Sets the choppiness for the water.", GROUPNAME));
 
-         AddProperty(new dtDAL::EnumActorProperty<WaterGridActor::SeaState>("Sea State", "Sea State",
-            dtDAL::EnumActorProperty<WaterGridActor::SeaState>::SetFuncType(actor, &WaterGridActor::SetSeaState),
-            dtDAL::EnumActorProperty<WaterGridActor::SeaState>::GetFuncType(actor, &WaterGridActor::GetSeaState),
+         AddProperty(new dtCore::EnumActorProperty<WaterGridActor::SeaState>("Sea State", "Sea State",
+            dtCore::EnumActorProperty<WaterGridActor::SeaState>::SetFuncType(actor, &WaterGridActor::SetSeaState),
+            dtCore::EnumActorProperty<WaterGridActor::SeaState>::GetFuncType(actor, &WaterGridActor::GetSeaState),
             "The Sea State number based on the Beaufort wind force scale.", GROUPNAME));
 
       }
 
       /////////////////////////////////////////////////////////////////////////////
-      const dtDAL::ActorProxy::RenderMode& WaterGridActorProxy::GetRenderMode()
+      const dtCore::ActorProxy::RenderMode& WaterGridActorProxy::GetRenderMode()
       {
-         return dtDAL::ActorProxy::RenderMode::DRAW_BILLBOARD_ICON;
+         return dtCore::ActorProxy::RenderMode::DRAW_BILLBOARD_ICON;
       }
 
 
       /////////////////////////////////////////////////////////////////////////////
-      dtDAL::ActorProxyIcon* WaterGridActorProxy::GetBillBoardIcon()
+      dtCore::ActorProxyIcon* WaterGridActorProxy::GetBillBoardIcon()
       {
          if(!mBillBoardIcon.valid())
          {
-            dtDAL::ActorProxyIcon::ActorProxyIconConfig config;
+            dtCore::ActorProxyIcon::ActorProxyIconConfig config;
             config.mForwardVector = false;
             config.mUpVector = false;
             config.mScale = 1.0;
 
-            mBillBoardIcon = new dtDAL::ActorProxyIcon(dtDAL::ActorProxyIcon::IMAGE_BILLBOARD_STATICMESH, config);
+            mBillBoardIcon = new dtCore::ActorProxyIcon(dtCore::ActorProxyIcon::IMAGE_BILLBOARD_STATICMESH, config);
          }
 
          return mBillBoardIcon.get();
