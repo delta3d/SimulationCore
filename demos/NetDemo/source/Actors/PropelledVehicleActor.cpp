@@ -223,7 +223,9 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////////////
    void PropelledVehicleActorProxy::BuildActorComponents()
    {
-      BaseClass::BuildActorComponents();
+	  AddComponent(*new SimCore::ActComps::WeaponInventoryActComp);
+
+	  BaseClass::BuildActorComponents();
 
       dtGame::DRPublishingActComp* drPublishingActComp = NULL;
       GetComponent(drPublishingActComp);
@@ -235,8 +237,6 @@ namespace NetDemo
       drPublishingActComp->SetMaxUpdateSendRate(5.0f);
       drPublishingActComp->SetMaxTranslationError(0.0001f);
       drPublishingActComp->SetMaxRotationError(0.5f);
-
-      AddComponent(*new SimCore::ActComps::WeaponInventoryActComp);
    }
 }
 
