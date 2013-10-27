@@ -360,11 +360,6 @@ namespace SimCore
          if (mTrailerActor != NULL)
          {
             ResetTrailerActor();
-            
-            if(mTrailerActor->GetParent() != NULL)          
-            {
-               mTrailerActor->Emancipate();
-            }
          }
 
          delete mHitchJoint;
