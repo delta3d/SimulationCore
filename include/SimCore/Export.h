@@ -44,4 +44,8 @@
 #   endif 
 #endif
 
+#ifdef __clang__
+
+#endif
+
 #endif
