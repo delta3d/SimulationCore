@@ -56,12 +56,12 @@ namespace StealthGM
           * Applies the updates of this object. This method must be overridden in
           * all subclasses
           */
-         virtual void ApplyChanges(dtGame::GameManager &gameManager) = 0;
+         virtual void ApplyChanges(dtGame::GameManager&) = 0;
 
          /**
           * Called when the map changes, or whenever the config component feels it's necessary.
           */
-         virtual void Reset(dtGame::GameManager &gameManager) {};
+         virtual void Reset(dtGame::GameManager&) {};
 
       protected:
 

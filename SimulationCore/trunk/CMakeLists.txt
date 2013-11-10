@@ -29,15 +29,6 @@ MARK_AS_ADVANCED(BUILD_WITH_PCH)
 
 OPTION(BUILD_STEALTH_VIEWER "Build the Stealth Viewer" ON)
 
-IF (WIN32)
-   OPTION(BUILD_WITH_MP "Enables the /MP multi-processor compiler option for Visual Studio 2005 and above" OFF)
-   MARK_AS_ADVANCED(BUILD_WITH_MP)
-   IF(BUILD_WITH_MP)
-     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
-   ENDIF(BUILD_WITH_MP)
-   SET(CMAKE_DEBUG_POSTFIX  "d")
-ENDIF (WIN32)
-
 # We want to build SONAMES shared librariess
 SET(DELTA32_SONAMES TRUE)
 
@@ -49,97 +40,8 @@ SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMakeModules;/usr/local/share/cmake/M
 FIND_PACKAGE(OpenGL REQUIRED)
 
 # Add macro functions 
-INCLUDE(UtilityMacros)
+include(UtilityMacros)
 
-IF(APPLE)
-   FIND_LIBRARY(CARBON_LIBRARY Carbon)
-   FIND_LIBRARY(APPSERVICES_LIBRARY ApplicationServices)
-   FIND_LIBRARY(IOKIT_LIBRARY IOKit)
-   FIND_LIBRARY(COREFOUNDATION_LIBRARY CoreFoundation)
-   FIND_LIBRARY(AGL_LIBRARY AGL)
-   FIND_LIBRARY(COCOA_LIBRARY Cocoa)
- 
-   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wnewline-eof -pipe")
-
-   SET(CMAKE_C_FLAGS "-pipe -Wnewline-eof")
-
-   if (NOT CMAKE_OSX_ARCHITECTURES)
-     set(CMAKE_OSX_ARCHITECTURES "i386")
-   endif()
-
-   if (NOT CMAKE_OSX_SYSROOT)
-     set(CMAKE_OSX_SYSROOT "/Developer/SDKs/MacOSX10.6.sdk")
-   endif()
-
-   if (NOT CMAKE_OSX_DEPLOYMENT_TARGET)
-     # use 10.6 because 10.5 isn't properly supported any longer
-     set(CMAKE_OSX_DEPLOYMENT_TARGET "10.6")
-   endif()
-
-   SET(CMAKE_EXE_LINKER_FLAGS "-F/Library/Frameworks" )
-   SET(CMAKE_SHARED_LINKER_FLAGS "-Wl,-single_module -compatibility_version 3 -current_version 3 -F/Library/Frameworks" )
-   INCLUDE_DIRECTORIES(${CMAKE_OSX_SYSROOT}/usr/include/malloc)
-   # this is an ugly hack to fix what seems to be a problem on OS X 10.8
-   # when building with the 10.6 sdk.  Unfortunatly, this will break if 
-   # building as x86_64.  Need to find a better solution for this.  Maybe
-   # they'll just fix the bug.  I have to build with the 10.6 sdk because of
-   # cegui, which also forces the 32 bit problem :-/
-   INCLUDE_DIRECTORIES(${CMAKE_OSX_SYSROOT}/usr/include/c++/4.2.1/i686-apple-darwin10)
-ELSE (APPLE)
-   #We only want X11 if we are not running on OSX, but still with a unix-like environment 
-   IF(UNIX)
-       FIND_PACKAGE(X11)
-       FIND_LIBRARY(XXF86VM_LIBRARY Xxf86vm)
-       SET(${X11_LIBRARIES} "${X11_LIBRARIES} ${XXF86VM_LIBRARY}")
-   ENDIF(UNIX)
-
-ENDIF(APPLE)
-
-IF(UNIX)
-     # Some Unicies need explicit linkage to the Math library or the build fails.
-    FIND_LIBRARY(MATH_LIBRARY m)
-
-    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-non-virtual-dtor")
-ENDIF (UNIX)
-        
-IF(WIN32)
-    ADD_DEFINITIONS(-D_SCL_SECURE_NO_WARNINGS)
-    ADD_DEFINITIONS(-D_CRT_SECURE_NO_DEPRECATE)
-    #needed for net plugin
-    SET (SimulationCore_SOCKET_LIBS wsock32)
-    ADD_DEFINITIONS(-DNOMINMAX)
-########################################################################################################
-# the foolowing options are MSVC specific,
-# the first SimulationCore_MSVC_VERSIONED_DLL activate a custom build-time layout that should allow to run examples and application 
-# fron bin folder without requiring installation step.
-# it also prepend "osg${OPENSCENEGRAPH_SOVERSION}-" to only .dll files, leaving .lib files untouched in lib
-# it also use a hack to get rid of Debug and Release folder in MSVC projects 
-# all the .dll and .pdb are in bin and all the .lib and .exp are in lib
-# 
-# the second option disable incremental linking in debug build , that is enabled by default by CMake
-##########################################################################################################
-
-    IF(MSVC)
-        SET(CMAKE_MODULE_LINKER_FLAGS "/NODEFAULTLIB:python25_d;libc.lib;licmt;libcd;libcmtd")
-        SET(CMAKE_SHARED_LINKER_FLAGS "/NODEFAULTLIB:python25_d;libc.lib;licmt;libcd;libcmtd")
-        SET(CMAKE_EXE_LINKER_FLAGS "/NODEFAULTLIB:python25_d;libc.lib;licmt;libcd;libcmtd")
-        IF(${CMAKE_MAJOR_VERSION} EQUAL 2 AND ${CMAKE_MINOR_VERSION} EQUAL 4 AND ${CMAKE_PATCH_VERSION} LESS 7)
-            MESSAGE("Warning:  disabling versioned options 2.4.6 exibits inconsintencies in .pdb naming, at least under MSVC, suggested upgrading at least to 2.4.7")
-            SET(SimulationCore_MSVC_VERSIONED_DLL OFF)
-            SET(SimulationCore_MSVC_DEBUG_INCREMENTAL_LINK ON)
-        ELSE(${CMAKE_MAJOR_VERSION} EQUAL 2 AND ${CMAKE_MINOR_VERSION} EQUAL 4 AND ${CMAKE_PATCH_VERSION} LESS 7)
-            OPTION(SimulationCore_MSVC_VERSIONED_DLL "Set to ON to build OpenSceneGraph with versioned dll names" ON)
-            MARK_AS_ADVANCED(SimulationCore_MSVC_VERSIONED_DLL)
-            OPTION(SimulationCore_MSVC_DEBUG_INCREMENTAL_LINK "Set to OFF to build OpenSceneGraph without incremental linking in debug (release is off by default)" ON)
-            MARK_AS_ADVANCED(SimulationCore_MSVC_DEBUG_INCREMENTAL_LINK)
-            IF(NOT SimulationCore_MSVC_DEBUG_INCREMENTAL_LINK)
-                SET(CMAKE_MODULE_LINKER_FLAGS_DEBUG "/debug /INCREMENTAL:NO")
-                SET(CMAKE_SHARED_LINKER_FLAGS_DEBUG "/debug /INCREMENTAL:NO")
-                SET(CMAKE_EXE_LINKER_FLAGS_DEBUG "/debug /INCREMENTAL:NO")
-            ENDIF(NOT SimulationCore_MSVC_DEBUG_INCREMENTAL_LINK)
-        ENDIF(${CMAKE_MAJOR_VERSION} EQUAL 2 AND ${CMAKE_MINOR_VERSION} EQUAL 4 AND ${CMAKE_PATCH_VERSION} LESS 7)
-    ENDIF(MSVC)
-ENDIF(WIN32)
 
 
 ################################################################################
@@ -166,6 +68,8 @@ FIND_PACKAGE(Delta3D REQUIRED)
 IF (DELTA3D_FOUND)
    #look for module loaders in delta3d CMakeModules
    SET(CMAKE_MODULE_PATH "${DELTA_DIR}/CMakeModules;${CMAKE_MODULE_PATH}")
+
+   include(PlatformConfiguration)
 
    INCLUDE(PCHMacros)
 
