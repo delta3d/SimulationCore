@@ -133,7 +133,7 @@ namespace SimCore
 
          dtCore::Transform xform;
          xform.SetTranslation(startPoint);
-//         SimCore::Utils::KeepBodyOnGround(xform, 0.0f, 0.0f, 0.0f);
+//         SimCore::Utils::KeepBodyOnGround(xform, 0.0f, 0.0f, 0.0f, 0.0f);
 
          SimCore::Actors::TerrainActor* terrain =  GetTerrainActor(comp);
          if(terrain != NULL)
