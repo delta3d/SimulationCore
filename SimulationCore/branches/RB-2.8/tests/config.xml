@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="iso-8859-1" standalone="no" ?>
+
+<!-- 
+To run the NetDemo, use the below startup settings for Visual Studio:
+NOTE - XML doesn't allow two dashes together. So, replace '-' with double dashes below
+
+GameStart.exe
+-configFileName config.xml NetDemo -mapName NetDemo
+C:\Curtiss\Projects\Delta3D\SimulationCore\demos\NetDemo (as appropriate)
+-->
+
+<Application xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="application.xsd">
+    <Window Name="Net Demo" X="50" Y="25" Width="1280" Height="800" PixelDepth="24" RefreshRate="60" ShowCursor="1" FullScreen="0" ChangeDisplayResolution="0" VSync="1" MultiSample="2" RealizeUponCreate="1"/>
+    <!-- Note - the VSync setting does not currently work on Windows. It is always on.  -->
+    <Scene Name="defaultScene" />
+    <Camera Name="defaultCam" WindowInstance="Net Demo"  />
+    <View Name="defaultView" CameraInstance="defaultCam" 
+	    SceneInstance="defaultScene" /> 
+
+    <GlobalLog Level="Error" />
+    <Log Level="Error" />
+    <!--Log Name="gameactor.cpp" Level="Warn" /--> <!-- Example on how to set log levels -->
+
+    <Properties>
+      <!-- Delta3D Settings -->
+      <Property Name="DeveloperMode">true</Property>
+      <Property Name="GameManager.Statistics.Interval">0</Property>
+      <Property Name="GameManager.Statistics.ToConsole">false</Property>
+      <Property Name="AspectRatio">1.6</Property>
+      <Property Name="System.SimFrameRate">30</Property>
+      <Property Name="System.MaxTimeBetweenDraws">0.2</Property>
+      <Property Name="System.UseFixedTimeStep">false</Property>
+      <Property Name="UseGPUCharacterSkinning">true</Property>
+      <!--<Property Name="dtAudio.NumSources">16</Property>-->
+
+      <Property Name="System.DatabasePager.PrecompileObjects">true</Property>
+      <Property Name="System.DatabasePager.MaxObjectsToCompilePerFrame">40</Property>
+      <Property Name="System.DatabasePager.MinObjectCompileTime">0.002</Property>
+      <Property Name="System.DatabasePager.TargetFrameRate">60</Property>
+      <!--<Property Name="System.DatabasePager.DrawablePolicy">???</Property> DL (for Display list), VA (for VertexArray), VBO (for Vertex Buffer Objects) or DoNotModify (whatever is in the source) --> 
+      <Property Name="System.DatabasePager.DrawablePolicy">DL</Property>
+      <Property Name="System.DatabasePager.ThreadPriority">DEFAULT</Property>
+      <Property Name="System.DatabasePager.ExpiryDelay">5.0</Property>  
+
+      <!-- dtPhysics -->
+      <Property Name="dtPhysics.PhysicsEngine">Bullet</Property>  <!-- Bullet Novodex ODE -->
+      <Property Name="dtPhysics.PalPluginPath">../dtPhysics/ext/PalPlugins/</Property>
+      <Property Name="dtPhysics.EnableStepPhysicsInBackground">true</Property>
+      <Property Name="dtPhysics.NumProcessingElements">1</Property>
+      <Property Name="dtPhysics.SolverIterationCount">10</Property>
+      <Property Name="dtPhysics.TicksPerSecond">60</Property>
+      <Property Name="dtPhysics.DebugDrawRange">100.0</Property>
+
+
+
+      <!-- SimCore Settings -->
+      <Property Name="MunitionsComponent.MaximumActiveMunitions">200</Property>
+      <Property Name="SimCore.Articulation.ReverseHeading">false</Property>
+      <Property Name="DefaultMunition">Medium HE</Property>
+      <Property Name="Binoculars.ImageOverride">Periscope</Property>
+      <!--<Property Name="Feature.ReticleItemText">true</Property>-->
+
+      <!-- SimCore Demo Settings -->
+      <Property Name="MunitionsConfigFile">Configs:NetDemoMunitionsConfig.xml</Property>
+      
+      <Property Name="NetDemo.DefaultPlayMode">FOUR_WHEEL</Property><!--FOUR_WHEEL  HOVER -->
+      <Property Name="NetDemo.DefaultHoverVehiclePrototype">Hover Vehicle</Property>
+      <!--Property Name="NetDemo.DefaultWheeledVehiclePrototype">HMMWV</Property--> 
+      <!-- Property Name="NetDemo.DefaultWheeledVehiclePrototype">Truck</Property--> 
+      <Property Name="NetDemo.DefaultWheeledVehiclePrototype">Propelled Vehicle</Property> 
+      <!--Property Name="NetDemo.DefaultWheeledVehicleTrailerPrototype">Trailer</Property--> 
+      <Property Name="HasBinocs">true</Property>
+      <Property Name="HasCompass">true</Property>
+      <Property Name="HasGPS">true</Property>
+      <Property Name="HasNightVision">true</Property>
+      <Property Name="HasMapTool">false</Property>
+
+      <!-- dtNetGM Settings -->
+      <Property Name="dtNetGM.On">true</Property>
+      <Property Name="dtNetGM.Role">Server</Property> <!-- Server or client -->
+      <Property Name="dtNetGM.ServerPort">7329</Property> <!-- 7329 or 8932 -->
+      <Property Name="dtNetGM.ServerHost">127.0.0.1</Property> <!-- localhost -->
+
+
+      <!-- Net Demo  -->
+      <!-- Property Name="ProjectPath">./ProjectConfig.dtproj</Property -->
+      <Property Name="AdditionalMap1">DriverActors</Property> 
+      <Property Name="AdditionalMap2">NetDemoPrototypes2</Property> 
+      <Property Name="AdditionalMap3">NetDemoPrototypes</Property> 
+      <Property Name="AdditionalMap4">NetDemoActors</Property>
+      <Property Name="AdditionalMap5">DemoMunitionTypesMap</Property>
+
+
+    </Properties>
+
+</Application>

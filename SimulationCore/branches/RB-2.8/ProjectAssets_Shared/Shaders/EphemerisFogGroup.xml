@@ -1,0 +1,18 @@
+<shaderlist>
+   <shadergroup name="EphemerisFogGroup">
+      <shader name="EphemFog" default="yes">
+
+         <source type="Vertex">Shaders/Base/ephemeris_functions.vert</source>
+         <source type="Fragment">Shaders/Base/fragment_functions.frag</source>
+         <source type="Fragment">Shaders/Base/ephemeris_functions.frag</source>
+         <source type="Vertex">Shaders/Base/ephemeris_fog.vert</source>
+         <source type="Fragment">Shaders/Base/ephemeris_fog.frag</source>
+         <parameter name="DistanceForCompleteFog">
+            <float defaultValue="1500.0"/>
+         </parameter>
+         <parameter name="DistanceForHorizonFog">
+            <float defaultValue="1501.0"/>
+         </parameter>
+      </shader>
+   </shadergroup>
+</shaderlist>

@@ -1,0 +1,30 @@
+<shaderlist>
+   <shadergroup name="WaterGroup">
+      <shader name="WaterShader" default="yes">
+         <source type="Vertex">Shaders/Base/vertex_functions.vert</source>
+         <source type="Vertex">Shaders/Base/water.vert</source>
+         <source type="Fragment">Shaders/Base/fragment_functions.frag</source>
+         <source type="Fragment">Shaders/Base/water_functions.frag</source>
+         <source type="Fragment">Shaders/Base/water.frag</source>
+      </shader>
+      <shader name="TextureWave" default="no">
+         <source type="Vertex">Shaders/Base/vertex_functions.vert</source>
+         <source type="Vertex">Shaders/Base/texture_wave.vert</source>
+         <source type="Fragment">Shaders/Base/fragment_functions.frag</source>
+         <source type="Fragment">Shaders/Base/texture_wave.frag</source>
+      </shader>
+      <shader name="WaveTest" default="no">
+         <source type="Vertex">Shaders/Base/vertex_functions.vert</source>
+         <source type="Vertex">Shaders/Base/wave_test.vert</source>
+         <source type="Fragment">Shaders/Base/fragment_functions.frag</source>
+         <source type="Fragment">Shaders/Base/wave_test.frag</source>
+      </shader>
+      <shader name="UnderWater" default="no">
+         <source type="Vertex">Shaders/Base/vertex_functions.vert</source>
+         <source type="Vertex">Shaders/Base/underwater.vert</source>
+         <source type="Fragment">Shaders/Base/fragment_functions.frag</source>
+         <source type="Fragment">Shaders/Base/water_functions.frag</source>
+         <source type="Fragment">Shaders/Base/underwater.frag</source>
+      </shader>
+   </shadergroup>
+</shaderlist>

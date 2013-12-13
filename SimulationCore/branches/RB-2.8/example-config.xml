@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="iso-8859-1" standalone="no" ?>
+
+<!-- 
+
+This config file must be renamed to config.xml in order for StealthQt to
+find it.  It shows an example set of values one may set
+
+-->
+
+<Application xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="application.xsd">
+    <Window Name="Delta3D IG" X="100" Y="100" Width="1280" Height="800" PixelDepth="24" RefreshRate="60" ShowCursor="1" FullScreen="0" ChangeDisplayResolution="0" />
+    <Scene Name="defaultScene" />
+    <Camera Name="defaultCam" WindowInstance="Delta3D IG"  />
+    <View Name="defaultView" CameraInstance="defaultCam" 
+        SceneInstance="defaultScene" />    
+    
+    <Log Level="Error" />
+    <Log Name="gameactor.cpp" Level="Warn" />
+    <Log Name="hlacomponent.cpp"  Level="Warn" />
+    <Log Name="BaseInputComponent.cpp" Level="Warn" />
+    <Log Name="BaseEntity.cpp" Level="Warn" />
+
+    <Properties>
+      <Property Name="ProjectPath">./demos/ProjectAssets</Property>
+      <Property Name="AdditionalMap1">DriverPrototypes</Property> 
+      <Property Name="AdditionalMap2">DriverMaterials</Property> 
+      <Property Name="AdditionalMap3">DriverActors</Property> 
+      <Property Name="UseGPUCharacterSkinning">true</Property>
+      <Property Name="DeveloperMode">true</Property>
+      <Property Name="GameManager.Statistics.Interval">0</Property>
+      <Property Name="GameManager.Statistics.ToConsole">false</Property>      
+      <Property Name="AspectRatio">1.6</Property>
+
+      <Property Name="DefaultMunition">Medium HE</Property>
+      <Property Name="MunitionsComponent.MaximumActiveMunitions">200</Property>
+
+      <Property Name="System.SimFrameRate">60</Property>
+      <Property Name="System.MaxTimeBetweenDraws">0.1</Property>
+      <Property Name="System.UseFixedTimeStep">false</Property>
+      
+      <!-- 
+           These are left commented out, so the defaults for the terrain
+           data base pager are preserved.  The values shown here are not
+	   necessarily the defaults but are values that have worked well 
+	   for some projects
+      -->
+      <!--
+      <Property Name="System.DatabasePager.PrecompileObjects">false</Property>
+      <Property Name="System.DatabasePager.MaxObjectsToCompilePerFrame">40</Property>
+      <Property Name="System.DatabasePager.MinObjectCompileTime">0.005</Property>
+      <Property Name="System.DatabasePager.TargetFrameRate">60</Property>
+      <Property Name="System.DatabasePager.DrawablePolicy">VBO</Property>
+      <Property Name="System.DatabasePager.ThreadPriority">DEFAULT</Property>
+      <Property Name="System.DatabasePager.ExpiryDelay">10.0</Property>
+      -->
+      <!--Options for DrawablePolicy are DL (for Display list), VA (for VertexArray), VBO (for Vertex Buffer Objects) or DoNotModify (whatever is in the source) --> 
+
+      <Property Name="HasBinocs">true</Property>
+      <Property Name="HasCompass">false</Property>
+      <Property Name="HasGPS">false</Property>
+      <Property Name="HasNightVision">false</Property>
+      <Property Name="HasMapTool">false</Property>
+    </Properties>
+
+</Application>
