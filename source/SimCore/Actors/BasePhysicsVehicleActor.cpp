@@ -442,7 +442,7 @@ namespace SimCore
          {
             if (GetPerformAboveGroundSafetyCheck())
             {
-               if (SimCore::Utils::KeepBodyOnGround(xform, mTerrainPresentDropHeight, mTerrainPresentDropHeight * 0.9f, mTerrainPresentDropHeight * 1.1f))
+               if (SimCore::Utils::KeepBodyOnGround(xform, GetBoundingBox().zMax() - GetBoundingBox().zMin(), mTerrainPresentDropHeight, mTerrainPresentDropHeight * 0.9f, mTerrainPresentDropHeight * 1.1f))
                {
                   SetTransform(xform);
                   // TODO should this be an accessor and have a constant?
@@ -463,7 +463,7 @@ namespace SimCore
          }
          else
          {
-            if (SimCore::Utils::KeepBodyOnGround(xform, mTerrainPresentDropHeight))
+            if (SimCore::Utils::KeepBodyOnGround(xform, GetBoundingBox().zMax() - GetBoundingBox().zMin(), mTerrainPresentDropHeight))
             {
                SetTransform(xform);
             }
