@@ -31,6 +31,7 @@
 #include <dtABC/application.h>
 #include <dtDAL/project.h>
 #include <dtUtil/stringutils.h>
+#include <dtUtil/mathdefines.h>
 #include <dtCore/batchisector.h>
 #include <dtCore/transform.h>
 #include <sstream>
@@ -213,8 +214,8 @@ namespace Utils
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
-   bool KeepBodyOnGround(dtPhysics::TransformType& transformToUpdate, float dropHeight,
-            float maxDepthBelow, float maxHeightAbove, dtPhysics::CollisionGroupFilter collisionFlags)
+   bool KeepBodyOnGround(dtPhysics::TransformType& transformToUpdate, float bodyHeight, float dropHeight,
+            float maxDepthBelow, float maxHeightAbove, float testRange, dtPhysics::CollisionGroupFilter collisionFlags)
    {
       // assume we are under earth unless we get proof otherwise.
       // because some checks could THINK we are under earth, especially if you drive / move
@@ -222,17 +223,21 @@ namespace Utils
       bool underearth = maxDepthBelow >= 0.0f;
       bool tooHigh = maxHeightAbove >= 0.0f;
 
+      if (testRange <= 0.0f)
+      {
+         testRange = 1000.0f;
+      }
+
       dtPhysics::VectorType pos;
       transformToUpdate.GetTranslation(pos);
-
 
       osg::Vec3 normal(0.0, 0.0, 1.0);
 
       osg::Vec3 hp;
       osg::Vec3 endPos = pos;
       osg::Vec3 startPos = pos;
-      startPos[2] -= 100.0f;
-      endPos[2] += 100.0f;
+      startPos[2] -= testRange / 2.0f;
+      endPos[2] += testRange / 2.0f;
       float offsettodo = maxDepthBelow;
       float tooHighOffset = maxHeightAbove;
 
@@ -247,7 +252,7 @@ namespace Utils
 
       if (!hits.empty())
       {
-         float largestDistance = 0.0f;
+         float shortestDistance = testRange;
 
          std::vector<dtPhysics::RayCast::Report>::const_iterator i, iend;
          i = hits.begin();
@@ -256,22 +261,24 @@ namespace Utils
          {
             const dtPhysics::RayCast::Report& report = *i;
 
-            if (largestDistance < report.mDistance)
+            float distance = dtUtil::Abs(pos.z() - report.mHitPos.z());
+            if (shortestDistance > distance || report.mHitPos.z() - hp.z() < bodyHeight)
             {
                hp = report.mHitPos;
-               largestDistance = report.mDistance;
+               shortestDistance = distance;
                normal = report.mHitNormal;
+
+               if (underearth && pos[2] + offsettodo > report.mHitPos.z())
+               {
+                  underearth = false;
+               }
+
+               if (tooHigh && pos[2] - tooHighOffset < report.mHitPos.z())
+               {
+                  tooHigh = false;
+               }
             }
 
-            if (underearth && pos[2] + offsettodo > report.mHitPos.z())
-            {
-               underearth = false;
-            }
-
-            if (tooHigh && pos[2] - tooHighOffset < report.mHitPos.z())
-            {
-               tooHigh = false;
-            }
          }
       }
       else
@@ -287,6 +294,7 @@ namespace Utils
          // Setting to the highest position in either case.
          pos.z() = hp[2] + dropHeight;
          osg::Matrix rot;
+         transformToUpdate.GetRotation(rot);
          OrientTransform(transformToUpdate, rot, pos, normal);
       }
       return result;

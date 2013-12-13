@@ -100,14 +100,16 @@ namespace Utils
     * Uses a physics ray cast to check if an object's transform is too high or two low and should be adjusted to be on the terrain.
     * @param transformToUpdate current transform of the body of actor that should be updated to keep it on the ground
     *                          if necessary.
+    * @param bodyHeight The height of the body.  This is used because it ignore lower hits if one smaller that the height of the body is found, i.e. it won't fit in there.
     * @param dropHeight The height above the highest terrain point found to set the transform if it is adject
     * @param maxDepthBelow The depth below the lowest point hit at which point it should move it back up, or < 0 to ignore
     * @param maxHeightAbove The depth above the highest point at which point it should move it back up, or < 0 to ignore
+    * @param testRange the range (half above and half below) to use for a raycast.  Anything less than 0 will be set to the default.
     * @param collisionFlags Physics collision flags to use as a filter for the raycast.
     * @return true if an adjustment was made.
     */
-   bool SIMCORE_EXPORT KeepBodyOnGround(dtPhysics::TransformType& transformToUpdate, float dropHeight = 0.5f,
-            float maxDepthBelow = 5.0f, float maxHeightAbove = 20.0f,
+   bool SIMCORE_EXPORT KeepBodyOnGround(dtPhysics::TransformType& transformToUpdate, float bodyHeight = 1.0f, float dropHeight = 0.5f,
+            float maxDepthBelow = 5.0f, float maxHeightAbove = 20.0f, float testRange = 1000.0f,
             dtPhysics::CollisionGroupFilter collisionFlags = 1 << SimCore::CollisionGroup::GROUP_TERRAIN);
 }
 }
