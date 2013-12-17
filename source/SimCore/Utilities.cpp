@@ -262,7 +262,8 @@ namespace Utils
             const dtPhysics::RayCast::Report& report = *i;
 
             float distance = dtUtil::Abs(pos.z() - report.mHitPos.z());
-            if (shortestDistance > distance || report.mHitPos.z() - hp.z() < bodyHeight)
+            float distBtwHits = dtUtil::Abs(report.mHitPos.z() - hp.z());
+            if (shortestDistance > distance || distBtwHits < bodyHeight)
             {
                hp = report.mHitPos;
                shortestDistance = distance;
