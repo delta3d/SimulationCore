@@ -130,7 +130,7 @@ namespace Utils
       xform.GetTranslation(pos);
 
       osg::Vec3 hp;
-      dtCore::RefPtr<dtCore::BatchIsector> iSector = new dtCore::BatchIsector();
+      std::shared_ptr<dtCore::BatchIsector> iSector = new dtCore::BatchIsector();
       //iSector->SetScene( &GetGameActorProxy().GetGameManager()->GetScene() );
       iSector->SetQueryRoot(&terrainActor);
       dtCore::BatchIsector::SingleISector& SingleISector = iSector->EnableAndGetISector(0);

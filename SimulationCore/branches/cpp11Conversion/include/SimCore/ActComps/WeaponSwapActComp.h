@@ -30,7 +30,7 @@
 #include <dtUtil/nodecollector.h>
 #include <dtDAL/resourcedescriptor.h>
 
-#include <dtCore/observerptr.h>
+#include <dtUtil/refcountedbase.h>
 
 #include <SimCore/Export.h>
 
@@ -52,15 +52,15 @@ namespace SimCore
 
          static const ActorComponent::ACType TYPE;
 
-         class SIMCORE_EXPORT WeaponDescription : public osg::Referenced
+         class SIMCORE_EXPORT WeaponDescription : public std::enable_shared_from_this
          {
             public:
-               typedef osg::Referenced BaseClass;
+               typedef std::enable_shared_from_this BaseClass;
 
                std::string mWeaponName;
                std::string mHotSpotName;
-               dtCore::RefPtr<osg::Node> mRootNode;
-               dtCore::RefPtr<osgSim::DOFTransform> mWeaponSwapNode;
+               osg::ref_ptr<osg::Node> mRootNode;
+               osg::ref_ptr<osgSim::DOFTransform> mWeaponSwapNode;
                
          };
 
@@ -110,13 +110,13 @@ namespace SimCore
          bool mHasWeapon;
          bool mSwitchWeapons;
          
-         dtCore::RefPtr<WeaponDescription> mCurrentWeapon;
-         dtCore::ObserverPtr<WeaponDescription> mWeaponToSwitchTo;
+         std::shared_ptr<WeaponDescription> mCurrentWeapon;
+         std::weak_ptr<WeaponDescription> mWeaponToSwitchTo;
 
-         typedef std::vector<dtCore::RefPtr<WeaponDescription> > WeaponArray;
+         typedef std::vector<std::shared_ptr<WeaponDescription> > WeaponArray;
          WeaponArray mWeapons;
 
-         dtCore::RefPtr<dtUtil::NodeCollector> mNodeCollector;
+         std::shared_ptr<dtUtil::NodeCollector> mNodeCollector;
       };
 
    }

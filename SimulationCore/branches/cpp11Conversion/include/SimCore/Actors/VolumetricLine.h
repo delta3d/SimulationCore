@@ -29,7 +29,7 @@
 #include <SimCore/Export.h>
 #include <osg/Array>
 #include <osg/Geometry>
-#include <dtCore/refptr.h>
+#include <dtUtil/refcountedbase.h>
 #include <dtCore/transformable.h>
 
 
@@ -61,9 +61,9 @@ namespace SimCore
             virtual ~VolumetricLine() {}
 
          private:
-            dtCore::RefPtr<osg::Geometry>  mGeom;
-            dtCore::RefPtr<osg::Vec3Array> mVerts;
-            dtCore::RefPtr<osg::Vec4Array> mData;
+            osg::ref_ptr<osg::Geometry>  mGeom;
+            osg::ref_ptr<osg::Vec3Array> mVerts;
+            osg::ref_ptr<osg::Vec4Array> mData;
       };
 
    }

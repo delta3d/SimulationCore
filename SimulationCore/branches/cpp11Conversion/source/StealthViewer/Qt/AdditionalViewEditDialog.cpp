@@ -102,7 +102,7 @@ namespace StealthQt
    void AdditionalViewEditDialog::SetOkButtonEnabled(bool enabled)
    {
       QPushButton* buttonOk = mUi->buttonBox->button(QDialogButtonBox::Ok);
-      if(buttonOk != NULL)
+      if(buttonOk != nullptr)
       {
          buttonOk->setEnabled(enabled);
       }
@@ -115,7 +115,7 @@ namespace StealthQt
         StealthViewerData::GetInstance().GetViewWindowConfigObject();
 
       StealthGM::ViewWindowWrapper* vww = viewConfig.GetViewWindow(stdName);
-      return !stdName.empty() && (vww == NULL || vww == mViewWindow.get());
+      return !stdName.empty() && (vww == nullptr || vww == mViewWindow.get());
    }
 
    ////////////////////////////////////////////////////////////////////////
@@ -152,9 +152,9 @@ namespace StealthQt
    AdditionalViewEditDialog::~AdditionalViewEditDialog()
    {
       delete mUi;
-      mUi = NULL;
+      mUi = nullptr;
       delete mFOVWidget;
-      mFOVWidget = NULL;
+      mFOVWidget = nullptr;
    }
 
    ////////////////////////////////////////////////////////////////////////

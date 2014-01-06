@@ -71,7 +71,7 @@ namespace StealthGM
    , mReconnectOnStartup(true)
    , mAutoRefreshEntityInfo(true)
    , mDetachFromActor(false)
-   , mInputComponent(NULL)
+   , mInputComponent(nullptr)
    , mShouldAutoAttachToEntity(false)
    {
    }
@@ -86,9 +86,9 @@ namespace StealthGM
       if (GetShouldAutoAttachToEntity() && !IsStealthActorCurrentlyAttached()
                && !GetAutoAttachEntityCallsign().empty())
       {
-         dtDAL::ActorProxy* proxy = NULL;
+         dtDAL::ActorProxy* proxy = nullptr;
          gameManager.FindActorByName(GetAutoAttachEntityCallsign(), proxy);
-         if (proxy != NULL)
+         if (proxy != nullptr)
          {
             AttachToActor(proxy->GetId());
          }
@@ -127,7 +127,7 @@ namespace StealthGM
 
    void PreferencesGeneralConfigObject::AttachOrDetach(dtGame::GameManager& gameManager)
    {
-      if(!mAttachActorId.ToString().empty() && mInputComponent->GetStealthActor() != NULL)
+      if(!mAttachActorId.ToString().empty() && mInputComponent->GetStealthActor() != nullptr)
       {
          if(mAttachActorId == mInputComponent->GetStealthActor()->GetUniqueId())
          {
@@ -135,7 +135,7 @@ namespace StealthGM
          }
          else
          {
-            dtCore::RefPtr<dtGame::Message> msg =
+            std::shared_ptr<dtGame::Message> msg =
                gameManager.GetMessageFactory().CreateMessage(SimCore::MessageType::ATTACH_TO_ACTOR);
 
             SimCore::AttachToActorMessage &ataMsg =
@@ -153,9 +153,9 @@ namespace StealthGM
       }
 
       // DETACH - Send an attach message with no actor
-      if (mDetachFromActor && mInputComponent->GetStealthActor() != NULL)
+      if (mDetachFromActor && mInputComponent->GetStealthActor() != nullptr)
       {
-         dtCore::RefPtr<dtGame::Message> msg =
+         std::shared_ptr<dtGame::Message> msg =
             gameManager.GetMessageFactory().CreateMessage(SimCore::MessageType::ATTACH_TO_ACTOR);
          SimCore::AttachToActorMessage &ataMsg = static_cast<SimCore::AttachToActorMessage&>(*msg);
          ataMsg.SetAboutActorId(mInputComponent->GetStealthActor()->GetUniqueId());
@@ -171,7 +171,7 @@ namespace StealthGM
    //////////////////////////////////////////////////////////////////////////
    void PreferencesGeneralConfigObject::Reattach()
    {
-      if (mInputComponent.valid() && mInputComponent->GetStealthActor() != NULL)
+      if (mInputComponent.valid() && mInputComponent->GetStealthActor() != nullptr)
       {
          if (mInputComponent->GetStealthActor()->IsAttachedToActor())
          {
@@ -185,7 +185,7 @@ namespace StealthGM
    {
       bool result = false;
 
-      if (mInputComponent.valid() && mInputComponent->GetStealthActor() != NULL)
+      if (mInputComponent.valid() && mInputComponent->GetStealthActor() != nullptr)
       {
          result = mInputComponent->GetStealthActor()->IsAttachedToActor();
       }
@@ -214,7 +214,7 @@ namespace StealthGM
       PreferencesGeneralConfigObject::PerformanceMode* modeVal =
          PreferencesGeneralConfigObject::PerformanceMode::GetValueForName(mode);
 
-      if (modeVal != NULL)
+      if (modeVal != nullptr)
       {
          SetPerformanceMode(*modeVal);
       }

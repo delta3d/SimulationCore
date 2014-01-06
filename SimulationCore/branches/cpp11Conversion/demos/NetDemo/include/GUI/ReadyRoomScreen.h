@@ -58,7 +58,7 @@ namespace NetDemo
 
             ReadyRoomScreen();
 
-            virtual void Setup(dtGame::GameManager& gm, SimCore::Components::HUDGroup* root = NULL);
+            virtual void Setup(dtGame::GameManager& gm, SimCore::Components::HUDGroup* root = nullptr);
 
             void UpdatePlayerList();
 
@@ -66,10 +66,10 @@ namespace NetDemo
             virtual ~ReadyRoomScreen();
 
          private:
-            dtCore::RefPtr<dtGame::GameManager> mGM;
+            std::shared_ptr<dtGame::GameManager> mGM;
 
             // Animation Controllers
-//            dtCore::RefPtr<SimCore::GUI::PositionController> mPlayerListPos;
+//            std::shared_ptr<SimCore::GUI::PositionController> mPlayerListPos;
 
             // Special Widgets
             CEGUI::ItemListbox* mListPlayers;

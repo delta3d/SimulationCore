@@ -44,8 +44,8 @@ namespace SimCore
       {
       public:
          typedef dtGame::GameActorProxy BaseClass;
-         typedef std::vector<dtCore::RefPtr<dtDAL::NamedGroupParameter> > RecordList;
-         typedef std::vector<dtCore::RefPtr<SimpleMovingShapeActorProxy> > CreatedActorList;
+         typedef std::vector<std::shared_ptr<dtDAL::NamedGroupParameter> > RecordList;
+         typedef std::vector<std::shared_ptr<SimpleMovingShapeActorProxy> > CreatedActorList;
 
          enum EnvironmentRecordTypeCode
          {
@@ -113,7 +113,7 @@ namespace SimCore
          DT_DECLARE_ACCESSOR(int, LastUpdateSequenceNumber);
 
          void SetRecords(const dtDAL::NamedGroupParameter& groupParam);
-         dtCore::RefPtr<dtDAL::NamedGroupParameter> GetRecords() const;
+         std::shared_ptr<dtDAL::NamedGroupParameter> GetRecords() const;
 
          const CreatedActorList& GetCreatedActors();
 
@@ -124,9 +124,9 @@ namespace SimCore
          virtual void OnRecordsChange(const RecordList& records);
 
          // This takes a ref ptr by reference because it's called from a functor
-         virtual void OnRecordChange(const dtCore::RefPtr<dtDAL::NamedGroupParameter>& record);
+         virtual void OnRecordChange(const std::shared_ptr<dtDAL::NamedGroupParameter>& record);
 
-         virtual void OnStateTypeChange(const dtCore::RefPtr<dtDAL::NamedGroupParameter>& record);
+         virtual void OnStateTypeChange(const std::shared_ptr<dtDAL::NamedGroupParameter>& record);
 
          virtual ~EnvironmentProcessActorProxy();
 

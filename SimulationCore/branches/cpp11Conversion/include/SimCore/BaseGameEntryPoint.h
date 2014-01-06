@@ -25,7 +25,7 @@
 
 #include <dtGame/gameentrypoint.h>
 #include <SimCore/Export.h>
-#include <dtCore/refptr.h>
+#include <dtUtil/refcountedbase.h>
 #include <dtCore/baseactorobject.h>
 #include <osg/Vec3>
 #include <string>
@@ -139,7 +139,7 @@ namespace SimCore
 
          osg::ArgumentParser* parser;
 
-         dtCore::RefPtr<dtDAL::BaseActorObject> terrainActor;
+         std::shared_ptr<dtDAL::BaseActorObject> terrainActor;
 
          std::string mProjectPath;
          float mAspectRatio;

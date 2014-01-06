@@ -83,9 +83,9 @@ namespace NetDemo
       //return incomingDamage * float(!IsEnemyActor(gap));
       float result = incomingDamage;
 
-      GameLogicComponent* comp = NULL;
+      GameLogicComponent* comp = nullptr;
       GetGameActorProxy().GetGameManager()->GetComponentByName( GameLogicComponent::DEFAULT_NAME, comp );
-      if (comp != NULL)
+      if (comp != nullptr)
       {
          int difficulty = comp->GetGameDifficulty(); // 0 = minimal, 1 = normal, 2 = hard
          if(difficulty == 0)
@@ -121,7 +121,7 @@ namespace NetDemo
       {
 
          // Setup our articulation helper for the vehicle
-         dtCore::RefPtr<SimCore::Components::DefaultFlexibleArticulationHelper> articHelper =
+         std::shared_ptr<SimCore::Components::DefaultFlexibleArticulationHelper> articHelper =
             new SimCore::Components::DefaultFlexibleArticulationHelper();
          articHelper->SetEntity(this);
          articHelper->AddArticulation("dof_turret_01",
@@ -130,7 +130,7 @@ namespace NetDemo
             SimCore::Components::DefaultFlexibleArticulationHelper::ARTIC_TYPE_ELEVATION, "dof_turret_01");
          SetArticulationHelper(articHelper.get());
 
-         mAIHelper->Init(NULL);
+         mAIHelper->Init(nullptr);
 
          //this will allow the AI to actually move us
          mAIHelper->GetPhysicsModel()->SetPhysicsActComp(GetPhysicsActComp());
@@ -156,7 +156,7 @@ namespace NetDemo
       }
 
       // Attach a special shader.
-      dtCore::RefPtr<SimCore::ApplyShaderVisitor> visitor = new SimCore::ApplyShaderVisitor();
+      std::shared_ptr<SimCore::ApplyShaderVisitor> visitor = new SimCore::ApplyShaderVisitor();
       visitor->AddNodeName("Eye360");
       visitor->SetShaderName("ColorPulseShader");
       visitor->SetShaderGroup("CustomizableVehicleShaderGroup");
@@ -173,7 +173,7 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////////////
    void TowerActor::InitWeapon()
    {
-      dtCore::RefPtr<SimCore::ActComps::WeaponInventoryActComp> weaponInv;
+      std::shared_ptr<SimCore::ActComps::WeaponInventoryActComp> weaponInv;
       GetComponent(weaponInv);
 
       if (!weaponInv.valid())
@@ -182,14 +182,14 @@ namespace NetDemo
          AddComponent(*weaponInv);
       }
 
-      dtCore::RefPtr<SimCore::ActComps::WeaponInventoryActComp::WeaponDescription> wd = new SimCore::ActComps::WeaponInventoryActComp::WeaponDescription;
+      std::shared_ptr<SimCore::ActComps::WeaponInventoryActComp::WeaponDescription> wd = new SimCore::ActComps::WeaponInventoryActComp::WeaponDescription;
 
       wd->SetWeaponPrototypeName("Weapon_MachineGun");
       wd->SetShooterPrototypeName("Particle_System_Weapon_GunWithTracer");
       wd->SetFiringParticleSystem(dtDAL::ResourceDescriptor("Particles:weapon_gun_flash.osg"));
       wd->SetWeaponSwapRootNode("dof_gun_01");
 
-      dtCore::RefPtr<SimCore::Actors::WeaponActor> weapon;
+      std::shared_ptr<SimCore::Actors::WeaponActor> weapon;
 
       weaponInv->CreateAndAddWeapon(*wd, true)->mWeapon->GetActor(weapon);
 
@@ -231,7 +231,7 @@ namespace NetDemo
    void TowerActor::FindTarget(float)
    {
       float minDist = 250.0;
-      dtCore::Transformable* enemy = NULL;
+      dtCore::Transformable* enemy = nullptr;
 
       std::vector<dtDAL::ActorProxy*> actorArray;
       GetGameActorProxy().GetGameManager()->FindActorsByType(*NetDemoActorRegistry::ENEMY_MINE_ACTOR_TYPE, actorArray);
@@ -266,7 +266,7 @@ namespace NetDemo
          actorArray.pop_back();
       }   
 
-      if(enemy != NULL)
+      if(enemy != nullptr)
       {
          mAIHelper->SetCurrentTarget(*enemy);
       }
@@ -331,7 +331,7 @@ namespace NetDemo
 
       dtUtil::NodeCollector* nodes = GetNodeCollector();
       osgSim::DOFTransform* dof = nodes->GetDOFTransform("dof_turret_01");
-      if (dof != NULL)
+      if (dof != nullptr)
       {
          osg::Vec3 hpr, hprLast;
          dtCore::Transform trans;
@@ -356,7 +356,7 @@ namespace NetDemo
          {
             dof->setCurrentHPR(hpr);
 
-            if(GetArticulationHelper() != NULL)
+            if(GetArticulationHelper() != nullptr)
             {
                GetArticulationHelper()->HandleUpdatedDOFOrientation(*dof, hpr - hprLast, hpr);
             }
@@ -407,7 +407,7 @@ namespace NetDemo
    {
       BaseClass::OnRemovedFromWorld();
 
-      TowerActor* actor = NULL;
+      TowerActor* actor = nullptr;
       GetActor(actor);      
       actor->OnRemovedFromWorld();
    }
@@ -418,10 +418,10 @@ namespace NetDemo
       BaseClass::BuildActorComponents();
 
 
-      dtPhysics::PhysicsActComp* physAC = NULL;
+      dtPhysics::PhysicsActComp* physAC = nullptr;
       GetComponent(physAC);
       // Add our initial body.
-      dtCore::RefPtr<dtPhysics::PhysicsObject> physicsObject = new dtPhysics::PhysicsObject("VehicleBody");
+      std::shared_ptr<dtPhysics::PhysicsObject> physicsObject = new dtPhysics::PhysicsObject("VehicleBody");
       physAC->AddPhysicsObject(*physicsObject);
       physicsObject->SetPrimitiveType(dtPhysics::PrimitiveType::CONVEX_HULL);
       physicsObject->SetMass(30000.0f);
@@ -429,9 +429,9 @@ namespace NetDemo
       physicsObject->SetMechanicsType(dtPhysics::MechanicsType::STATIC);
 
 
-      dtGame::DRPublishingActComp* drPublishingActComp = NULL;
+      dtGame::DRPublishingActComp* drPublishingActComp = nullptr;
       GetComponent(drPublishingActComp);
-      if (drPublishingActComp == NULL)
+      if (drPublishingActComp == nullptr)
       {
          LOG_ERROR("CRITICAL ERROR - No DR Publishing Actor Component.");
          return;

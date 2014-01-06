@@ -30,8 +30,8 @@
 #include <dtCore/system.h>
 #include <dtCore/scene.h>
 
-#include <dtCore/refptr.h>
-#include <dtCore/observerptr.h>
+#include <dtUtil/refcountedbase.h>
+#include <dtUtil/refcountedbase.h>
 #include <dtUtil/mathdefines.h>
 
 #include <UnitTestMain.h>
@@ -83,19 +83,19 @@ namespace SimCore
 
          void tearDown()
          {
-            mRenderingSupportComponent = NULL;
+            mRenderingSupportComponent = nullptr;
 
             if (mGM.valid())
             {
                mGM->DeleteAllActors(true);
-               mGM = NULL;
+               mGM = nullptr;
             }
             dtCore::System::GetInstance().Stop();
          }
 
          void TestDynamicLightClass()
          {
-            dtCore::RefPtr<RenderingSupportComponent::DynamicLight> light1 = new RenderingSupportComponent::DynamicLight;
+            std::shared_ptr<RenderingSupportComponent::DynamicLight> light1 = new RenderingSupportComponent::DynamicLight;
             CPPUNIT_ASSERT_EQUAL_MESSAGE("Dynamic lights should default to omni-directional",
                      RenderingSupportComponent::LightType::OMNI_DIRECTIONAL, light1->GetLightType());
             TestSingleLight(*light1);
@@ -103,7 +103,7 @@ namespace SimCore
 
          void TestSpotLightClass()
          {
-            dtCore::RefPtr<RenderingSupportComponent::SpotLight> light1 = new RenderingSupportComponent::SpotLight;
+            std::shared_ptr<RenderingSupportComponent::SpotLight> light1 = new RenderingSupportComponent::SpotLight;
             CPPUNIT_ASSERT_EQUAL_MESSAGE("Spot lights should default to omni-directional",
                      RenderingSupportComponent::LightType::SPOT_LIGHT, light1->GetLightType());
             TestSingleLight(*light1);
@@ -121,17 +121,17 @@ namespace SimCore
 
          void TestAddRemoveLight()
          {
-            dtCore::RefPtr<RenderingSupportComponent::SpotLight> light1 = new RenderingSupportComponent::SpotLight;
+            std::shared_ptr<RenderingSupportComponent::SpotLight> light1 = new RenderingSupportComponent::SpotLight;
             RenderingSupportComponent::LightID id = mRenderingSupportComponent->AddDynamicLight(light1.get());
             CPPUNIT_ASSERT_EQUAL(id, light1->GetId());
-            dtCore::RefPtr<RenderingSupportComponent::DynamicLight> light1Ret = mRenderingSupportComponent->GetDynamicLight(id);
+            std::shared_ptr<RenderingSupportComponent::DynamicLight> light1Ret = mRenderingSupportComponent->GetDynamicLight(id);
             CPPUNIT_ASSERT(light1.get() == light1Ret.get());
             light1Ret = mRenderingSupportComponent->GetDynamicLight(id + 1);
             CPPUNIT_ASSERT(!light1Ret.valid());
 
-            dtCore::ObserverPtr<RenderingSupportComponent::SpotLight> light1ob = light1.get();
+            std::weak_ptr<RenderingSupportComponent::SpotLight> light1ob = light1.get();
 
-            light1 = NULL;
+            light1 = nullptr;
             CPPUNIT_ASSERT(light1ob.valid());
 
             mRenderingSupportComponent->RemoveDynamicLight(id);
@@ -145,20 +145,20 @@ namespace SimCore
 
          void TestNVGS()
          {
-            CPPUNIT_ASSERT(mRenderingSupportComponent->GetNVGS() == NULL);
+            CPPUNIT_ASSERT(mRenderingSupportComponent->GetNVGS() == nullptr);
             CPPUNIT_ASSERT(!mRenderingSupportComponent->GetEnableNVGS());
             mRenderingSupportComponent->SetEnableNVGS(true);
             CPPUNIT_ASSERT_MESSAGE("NO nvgs render feature was set, so it should not be possible to enable the NVGS.",
                      !mRenderingSupportComponent->GetEnableNVGS());
 
             mRenderingSupportComponent->SetNVGS(new TestRenderFeature);
-            dtCore::ObserverPtr<const RenderingSupportComponent::RenderFeature> rndrFeatOb = mRenderingSupportComponent->GetNVGS();
+            std::weak_ptr<const RenderingSupportComponent::RenderFeature> rndrFeatOb = mRenderingSupportComponent->GetNVGS();
             CPPUNIT_ASSERT(rndrFeatOb.valid());
 
             mRenderingSupportComponent->SetEnableNVGS(true);
             CPPUNIT_ASSERT(mRenderingSupportComponent->GetEnableNVGS());
 
-            mRenderingSupportComponent->SetNVGS(NULL);
+            mRenderingSupportComponent->SetNVGS(nullptr);
             CPPUNIT_ASSERT(!mRenderingSupportComponent->GetEnableNVGS());
             CPPUNIT_ASSERT(!rndrFeatOb.valid());
             //Can't really test the cleanup because render features don't have a shutdown, just an INIT.
@@ -194,15 +194,15 @@ namespace SimCore
 
          void TestAutoDeleteLights()
          {
-            dtCore::RefPtr<RenderingSupportComponent::SpotLight> light1 = new RenderingSupportComponent::SpotLight;
-            dtCore::RefPtr<RenderingSupportComponent::SpotLight> light2 = new RenderingSupportComponent::SpotLight;
-            dtCore::RefPtr<RenderingSupportComponent::SpotLight> light3 = new RenderingSupportComponent::SpotLight;
-            dtCore::RefPtr<RenderingSupportComponent::SpotLight> light4 = new RenderingSupportComponent::SpotLight;
+            std::shared_ptr<RenderingSupportComponent::SpotLight> light1 = new RenderingSupportComponent::SpotLight;
+            std::shared_ptr<RenderingSupportComponent::SpotLight> light2 = new RenderingSupportComponent::SpotLight;
+            std::shared_ptr<RenderingSupportComponent::SpotLight> light3 = new RenderingSupportComponent::SpotLight;
+            std::shared_ptr<RenderingSupportComponent::SpotLight> light4 = new RenderingSupportComponent::SpotLight;
 
             light1->mAutoDeleteAfterMaxTime = true;
             light1->mMaxTime = 10.0f;
 
-            dtCore::RefPtr<dtCore::Transformable> tformable = new dtCore::Transformable;
+            std::shared_ptr<dtCore::Transformable> tformable = new dtCore::Transformable;
             light2->mAutoDeleteLightOnTargetNull = true;
             light2->mTarget = tformable.get();
 
@@ -225,12 +225,12 @@ namespace SimCore
             CPPUNIT_ASSERT_MESSAGE("the fading light intensity should have decreased some.", light3->mIntensity < 1.0f);
             float oldIntensity = light3->mIntensity;
 
-            tformable = NULL;
+            tformable = nullptr;
 
             mRenderingSupportComponent->TimeoutAndDeleteLights(7.1f);
 
-            CPPUNIT_ASSERT(mRenderingSupportComponent->GetDynamicLight(light1->GetId()) == NULL);
-            CPPUNIT_ASSERT(mRenderingSupportComponent->GetDynamicLight(light2->GetId()) == NULL);
+            CPPUNIT_ASSERT(mRenderingSupportComponent->GetDynamicLight(light1->GetId()) == nullptr);
+            CPPUNIT_ASSERT(mRenderingSupportComponent->GetDynamicLight(light2->GetId()) == nullptr);
             CPPUNIT_ASSERT(mRenderingSupportComponent->GetDynamicLight(light3->GetId()) == light3.get());
             CPPUNIT_ASSERT(mRenderingSupportComponent->GetDynamicLight(light4->GetId()) == light4.get());
 
@@ -238,9 +238,9 @@ namespace SimCore
 
             mRenderingSupportComponent->TimeoutAndDeleteLights(2.0f);
 
-            CPPUNIT_ASSERT(mRenderingSupportComponent->GetDynamicLight(light1->GetId()) == NULL);
-            CPPUNIT_ASSERT(mRenderingSupportComponent->GetDynamicLight(light2->GetId()) == NULL);
-            CPPUNIT_ASSERT(mRenderingSupportComponent->GetDynamicLight(light3->GetId()) == NULL);
+            CPPUNIT_ASSERT(mRenderingSupportComponent->GetDynamicLight(light1->GetId()) == nullptr);
+            CPPUNIT_ASSERT(mRenderingSupportComponent->GetDynamicLight(light2->GetId()) == nullptr);
+            CPPUNIT_ASSERT(mRenderingSupportComponent->GetDynamicLight(light3->GetId()) == nullptr);
             CPPUNIT_ASSERT(mRenderingSupportComponent->GetDynamicLight(light4->GetId()) == light4.get());
 
             CPPUNIT_ASSERT_MESSAGE("the fading light intensity should less that or equal to zero.", light3->mIntensity <= 0.0f);
@@ -248,13 +248,13 @@ namespace SimCore
 
          void TestTransformDynamicLights()
          {
-            dtCore::RefPtr<RenderingSupportComponent::DynamicLight> light1 = new RenderingSupportComponent::DynamicLight;
+            std::shared_ptr<RenderingSupportComponent::DynamicLight> light1 = new RenderingSupportComponent::DynamicLight;
             TestTransformSingleLight(*light1);
          }
 
          void TestTransformSpotLights()
          {
-            dtCore::RefPtr<RenderingSupportComponent::SpotLight> light1 = new RenderingSupportComponent::SpotLight;
+            std::shared_ptr<RenderingSupportComponent::SpotLight> light1 = new RenderingSupportComponent::SpotLight;
             light1->mUseAbsoluteDirection = false;
             TestTransformSingleLight(*light1);
 
@@ -281,7 +281,7 @@ namespace SimCore
             mRenderingSupportComponent->SetMaxSpotLights(4);
             mRenderingSupportComponent->SetMaxDynamicLights(4);
 
-            dtCore::RefPtr<RenderingSupportComponent::DynamicLight> lights[8];
+            std::shared_ptr<RenderingSupportComponent::DynamicLight> lights[8];
 
             for (unsigned i = 0; i < 4; ++i)
             {
@@ -309,7 +309,7 @@ namespace SimCore
             GetGlobalApplication().GetCamera()->SetTransform(xform);
 
             mRenderingSupportComponent->TransformAndSortLights();
-            dtCore::RefPtr<osg::StateSet> ss = new osg::StateSet;
+            osg::ref_ptr<osg::StateSet> ss = new osg::StateSet;
             osg::Uniform* lightArray = ss->getOrCreateUniform("dynamic lights", osg::Uniform::FLOAT_VEC4, mRenderingSupportComponent->GetMaxDynamicLights() * 3);
             osg::Uniform* spotLightArray = ss->getOrCreateUniform("spot lights", osg::Uniform::FLOAT_VEC4, mRenderingSupportComponent->GetMaxSpotLights() * 4);
             mRenderingSupportComponent->UpdateDynamicLightUniforms(lightArray, spotLightArray);
@@ -359,12 +359,12 @@ namespace SimCore
             CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0f, testLight.mRadius, 0.01f);
             CPPUNIT_ASSERT_EQUAL_MESSAGE("The light id should be the same as the current static counter value", testLight.GetCurrentLightIdCounter(), testLight.GetId());
             CPPUNIT_ASSERT(!testLight.mAutoDeleteLightOnTargetNull);
-            CPPUNIT_ASSERT_MESSAGE("Dynamic lights should have no target by default", testLight.mTarget == NULL);
+            CPPUNIT_ASSERT_MESSAGE("Dynamic lights should have no target by default", testLight.mTarget == nullptr);
          }
 
          void TestTransformSingleLight(RenderingSupportComponent::DynamicLight& testLight)
          {
-            dtCore::RefPtr<dtCore::Transformable> xformable = new dtCore::Transformable;
+            std::shared_ptr<dtCore::Transformable> xformable = new dtCore::Transformable;
 
             mGM->GetScene().AddChild(xformable.get());
 
@@ -386,8 +386,8 @@ namespace SimCore
 
          }
 
-         dtCore::RefPtr<dtGame::GameManager> mGM;
-         dtCore::RefPtr<SimCore::Components::RenderingSupportComponent> mRenderingSupportComponent;
+         std::shared_ptr<dtGame::GameManager> mGM;
+         std::shared_ptr<SimCore::Components::RenderingSupportComponent> mRenderingSupportComponent;
       };
 
       CPPUNIT_TEST_SUITE_REGISTRATION(RenderingSupportComponentTests);

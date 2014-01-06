@@ -112,18 +112,18 @@ namespace NetDemo
 
       // We can't add components while in a tick message, so we add both components up front.
       // SERVER COMPONENT
-      dtCore::RefPtr<dtNetGM::ServerNetworkComponent> serverComp =
+      std::shared_ptr<dtNetGM::ServerNetworkComponent> serverComp =
          new ForwardingServerNetComponent(gameName, gameVersion);
       GetGameManager()->AddComponent(*serverComp, dtGame::GameManager::ComponentPriority::NORMAL);
       // CLIENT COMPONENT
-      dtCore::RefPtr<dtNetGM::ClientNetworkComponent> clientComp =
+      std::shared_ptr<dtNetGM::ClientNetworkComponent> clientComp =
          new dtNetGM::ClientNetworkComponent(gameName, gameVersion);
       GetGameManager()->AddComponent(*clientComp, dtGame::GameManager::ComponentPriority::NORMAL);
 
       // Get the vehicle type set in the config file.
       std::string vehicleTypeValue = GetGameManager()->GetConfiguration().GetConfigPropertyValue("NetDemo.DefaultPlayMode","FOUR_WHEEL");
       PlayerStatusActor::VehicleTypeEnum* vehicleType = PlayerStatusActor::VehicleTypeEnum::GetValueForName(vehicleTypeValue);
-      if(vehicleType != NULL)
+      if(vehicleType != nullptr)
       {
          mVehicleType = vehicleType;
       }
@@ -151,8 +151,8 @@ namespace NetDemo
       }
       else if (dtGame::MessageType::INFO_MAP_UNLOADED == messageType)
       {
-         mCurrentTerrainDrawActor = NULL;
-         mServerGameStatusProxy = NULL;
+         mCurrentTerrainDrawActor = nullptr;
+         mServerGameStatusProxy = nullptr;
 
          // We do this after the map is unloaded so that we delete our objects on the network.
          DisconnectFromNetwork();
@@ -182,7 +182,7 @@ namespace NetDemo
    //////////////////////////////////////////////////////////////////////////
    void GameLogicComponent::InitializePlayer()
    {
-      dtCore::RefPtr<dtGame::GameActorProxy> ap;
+      std::shared_ptr<dtGame::GameActorProxy> ap;
 
       // Every player always has a player actor. On some apps, it is an overkill, but
       // we use it anyway, for consistency. It allows tools, position, ability to have an avatar, walk, run, jump, etc.
@@ -209,11 +209,11 @@ namespace NetDemo
 
       //////////////TEMP HACK
       // Set the starting position from a player start actor in the map.
-      //dtActors::PlayerStartActorProxy* startPosProxy = NULL;
+      //dtActors::PlayerStartActorProxy* startPosProxy = nullptr;
       //GetGameManager()->FindActorByType(*dtActors::EngineActorRegistry::PLAYER_START_ACTOR_TYPE, startPosProxy);
-      //if (startPosProxy != NULL)
+      //if (startPosProxy != nullptr)
       //{
-      //   dtCore::Transformable* actor = NULL;
+      //   dtCore::Transformable* actor = nullptr;
       //   startPosProxy->GetActor(actor);
       //   dtCore::Transform xform;
       //   actor->GetTransform(xform);
@@ -232,14 +232,14 @@ namespace NetDemo
       if (mIsServer && updateMessage.GetActorType() == NetDemoActorRegistry::PLAYER_STATUS_ACTOR_TYPE)
       {
          // Find the actor in the GM
-         PlayerStatusActorProxy* statusActorProxy = NULL;
+         PlayerStatusActorProxy* statusActorProxy = nullptr;
          GetGameManager()->FindGameActorById(updateMessage.GetAboutActorId(), statusActorProxy);
-         if (statusActorProxy == NULL)
+         if (statusActorProxy == nullptr)
          {
             return;
          }
 
-         PlayerStatusActor* statusActor = NULL;
+         PlayerStatusActor* statusActor = nullptr;
          statusActorProxy->GetActor(statusActor);
 
          HandlePlayerStatusUpdated(statusActor);
@@ -251,11 +251,11 @@ namespace NetDemo
       {
          // Find the actor in the GM
          dtGame::GameActorProxy* gap = GetGameManager()->FindGameActorById(updateMessage.GetAboutActorId());
-         if (gap == NULL)
+         if (gap == nullptr)
          {
             return;
          }
-         ServerGameStatusActor* serverStatus = NULL;
+         ServerGameStatusActor* serverStatus = nullptr;
          gap->GetActor(serverStatus);
 
          // If not the server, do a print out...
@@ -357,7 +357,7 @@ namespace NetDemo
       dtNetGM::ClientNetworkComponent *networkComponent =
          dynamic_cast<dtNetGM::ClientNetworkComponent *>(mNetworkComp.get());
 
-      if (mIsConnectedToNetwork && !mIsServer && networkComponent != NULL)
+      if (mIsConnectedToNetwork && !mIsServer && networkComponent != nullptr)
       {
          networkComponent->SendRequestConnectionMessage();
       }
@@ -398,7 +398,7 @@ namespace NetDemo
 
       dtNetGM::ServerNetworkComponent* serverComp;
       GetGameManager()->GetComponentByName(dtNetGM::ServerNetworkComponent::DEFAULT_NAME, serverComp);
-      if( serverComp != NULL )
+      if( serverComp != nullptr )
       {
          result = serverComp->SetupServer(serverPort);
          if (result)
@@ -408,7 +408,7 @@ namespace NetDemo
             mNetworkComp = serverComp;
 
             // Start a repeating timer - to update terrain
-            GetGameManager()->SetTimer(TIMER_UPDATE_TERRAIN, NULL, 3.0f, true, true);
+            GetGameManager()->SetTimer(TIMER_UPDATE_TERRAIN, nullptr, 3.0f, true, true);
          }
       }
       else
@@ -427,7 +427,7 @@ namespace NetDemo
 
       dtNetGM::ClientNetworkComponent* clientComp;
       GetGameManager()->GetComponentByName(dtNetGM::ClientNetworkComponent::DEFAULT_NAME, clientComp);
-      if( clientComp != NULL )
+      if( clientComp != nullptr )
       {
          result = clientComp->SetupClient(serverIPAddress, serverPort);
          if (result)
@@ -450,10 +450,10 @@ namespace NetDemo
          // SERVER
          if (mIsServer)
          {
-            GetGameManager()->ClearTimer(TIMER_UPDATE_TERRAIN, NULL);
+            GetGameManager()->ClearTimer(TIMER_UPDATE_TERRAIN, nullptr);
          }
 
-         mNetworkComp = NULL;
+         mNetworkComp = nullptr;
          mIsConnectedToNetwork = false;
       }
    }
@@ -471,7 +471,7 @@ namespace NetDemo
       }
       else if (state == SimCore::Components::StateType::STATE_LOADING)
       {
-         if (mPlayerStatus != NULL)
+         if (mPlayerStatus != nullptr)
             mPlayerStatus->SetPlayerStatus(PlayerStatusActor::PlayerStatusEnum::LOADING);
          SimCore::Utils::LoadMaps(*GetGameManager(), mMapName);
          // When loaded, we trap the MAP_LOADED message and finish our setup
@@ -486,9 +486,9 @@ namespace NetDemo
       }
       else if (state == NetDemoState::STATE_GAME_READYROOM)
       {
-         if (mPlayerStatus != NULL)
+         if (mPlayerStatus != nullptr)
             mPlayerStatus->SetPlayerStatus(PlayerStatusActor::PlayerStatusEnum::IN_GAME_READYROOM);
-         if (mServerGameStatusProxy != NULL)
+         if (mServerGameStatusProxy != nullptr)
             mServerGameStatusProxy->GetActorAsGameStatus().SetGameStatus
                (ServerGameStatusActor::ServerGameStatusEnum::READY_ROOM);
          mStartTheGameOnNextGameRunning = true;
@@ -513,11 +513,11 @@ namespace NetDemo
 
       // Probably not necessary (since close map deletes all), but clear out stuff we already created
       //ClearPreviousGameStuff();
-      mPlayerStatus = NULL;
-      mCurrentTerrainDrawActor = NULL;
-      mServerGameStatusProxy = NULL;
-      mPlayerOwnedVehicle = NULL;
-      mServerCreatedFortActor = NULL;
+      mPlayerStatus = nullptr;
+      mCurrentTerrainDrawActor = nullptr;
+      mServerGameStatusProxy = nullptr;
+      mPlayerOwnedVehicle = nullptr;
+      mServerCreatedFortActor = nullptr;
 
       GetGameManager()->DeleteAllActors();
 
@@ -532,7 +532,7 @@ namespace NetDemo
       {
          // Delete the visible terrain
          GetGameManager()->DeleteActor(mCurrentTerrainDrawActor->GetGameActorProxy());
-         mCurrentTerrainDrawActor = NULL;
+         mCurrentTerrainDrawActor = nullptr;
          mCurrentTerrainPrototypeName = "";
          //mLogger.LogMessage(dtUtil::Log::LOG_ALWAYS, __FUNCTION__, __LINE__, "Now unloading the previous terrain.");
       }
@@ -546,9 +546,9 @@ namespace NetDemo
       for (unsigned i = 0; i < actors.size(); ++i)
       {
          dtDAL::ActorProxy* curProto  = actors[i];
-         dtCore::RefPtr<dtGame::GameActorProxy> newActor;
+         std::shared_ptr<dtGame::GameActorProxy> newActor;
          GetGameManager()->CreateActorFromPrototype(curProto->GetId(), newActor);
-         if (newActor == NULL)
+         if (newActor == nullptr)
          {
             LOG_ERROR("Creating prototype \"" + curProto->GetName() + "\" with type \"" + type.GetFullName() + "\" failed for an unknown reason.");
          }
@@ -565,13 +565,13 @@ namespace NetDemo
       if (mCurrentTerrainPrototypeName.empty())
          return;
 
-      dtCore::RefPtr<SimCore::Actors::TerrainActorProxy> newDrawLandActorProxy = NULL;
+      std::shared_ptr<SimCore::Actors::TerrainActorProxy> newDrawLandActorProxy = nullptr;
       SimCore::Utils::CreateActorFromPrototypeWithException(*GetGameManager(),
          mCurrentTerrainPrototypeName, newDrawLandActorProxy, "Check your additional maps in config.xml (compare to config_example.xml).");
       newDrawLandActorProxy->SetName("Terrain"); // has to be named 'Terrain' or it won't do ground clamping and other stuff
       mCurrentTerrainDrawActor = dynamic_cast<SimCore::Actors::TerrainActor*>
          (newDrawLandActorProxy->GetDrawable());
-      dtCore::RefPtr<dtGame::DRPublishingActComp> drpac = NULL;
+      std::shared_ptr<dtGame::DRPublishingActComp> drpac = nullptr;
       mCurrentTerrainDrawActor->GetComponent(drpac);
       if (!drpac.valid())
       {
@@ -621,7 +621,7 @@ namespace NetDemo
       {
          //////////////////////////
          // Create the server game status actor
-         dtCore::RefPtr<dtGame::GameActorProxy> ap;
+         std::shared_ptr<dtGame::GameActorProxy> ap;
          GetGameManager()->CreateActor(*NetDemo::NetDemoActorRegistry::SERVER_GAME_STATUS_ACTOR_TYPE, ap);
          mServerGameStatusProxy = dynamic_cast<ServerGameStatusActorProxy*> (ap.get());
          ServerGameStatusActor &gameStatus = mServerGameStatusProxy->GetActorAsGameStatus();
@@ -674,11 +674,11 @@ namespace NetDemo
                std::string trailerPrototype = GetGameManager()->GetConfiguration().GetConfigPropertyValue(WHEELED_VEHICLE_TRAILER_PROTOTYPE, "");
                if (!trailerPrototype.empty())
                {
-                  dtCore::RefPtr<SimCore::Actors::FourWheelVehicleActorProxy> trailer;
+                  std::shared_ptr<SimCore::Actors::FourWheelVehicleActorProxy> trailer;
                   SimCore::Utils::CreateActorFromPrototypeWithException(*GetGameManager(),
                            trailerPrototype, trailer, "Check your additional maps in config.xml (compare to config_example.xml).");
 
-                  dtCore::RefPtr<SimCore::ActComps::TrailerHitchActComp> trailerAC = new SimCore::ActComps::TrailerHitchActComp();
+                  std::shared_ptr<SimCore::ActComps::TrailerHitchActComp> trailerAC = new SimCore::ActComps::TrailerHitchActComp();
 
                   mPlayerOwnedVehicle->AddComponent(*trailerAC);
 
@@ -689,7 +689,7 @@ namespace NetDemo
                }
             }
 
-            SimCore::Actors::BasePhysicsVehicleActor* vehicleActor = NULL;
+            SimCore::Actors::BasePhysicsVehicleActor* vehicleActor = nullptr;
             mPlayerOwnedVehicle->GetActor(vehicleActor);
             vehicleActor->SetHasDriver(true);
             GetGameManager()->AddActor(*mPlayerOwnedVehicle, false, true);
@@ -707,13 +707,13 @@ namespace NetDemo
       {
          mPlayerStatus->SetAttachedVehicleID(dtCore::UniqueId(""));
          GetGameManager()->DeleteActor(*mPlayerOwnedVehicle);
-         mPlayerOwnedVehicle = NULL;
+         mPlayerOwnedVehicle = nullptr;
       }
 
       if (mServerCreatedFortActor.valid())
       {
          GetGameManager()->DeleteActor(*mServerCreatedFortActor);
-         mServerCreatedFortActor = NULL;
+         mServerCreatedFortActor = nullptr;
       }
 
    }

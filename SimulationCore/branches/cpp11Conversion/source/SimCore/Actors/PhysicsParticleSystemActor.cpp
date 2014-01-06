@@ -177,7 +177,7 @@ namespace SimCore
          for(; i != iend; ++i)
          {
             PhysicsParticle& particle = **i;
-            if (particle.GetPhysicsObject()->GetBaseBodyWrapper() != NULL)
+            if (particle.GetPhysicsObject()->GetBaseBodyWrapper() != nullptr)
             {
                LOG_ERROR("During a Reset, got a particle that is not yet cleaned up by the physics helper.");
             }
@@ -196,11 +196,11 @@ namespace SimCore
          mPhysicsActComp->RemovePhysicsObject(*whichOne.GetPhysicsObject());
          whichOne.GetPhysicsObject()->CleanUp();
 
-         if (whichOne.mObj->GetParent() != NULL)
+         if (whichOne.mObj->GetParent() != nullptr)
          {
             whichOne.mObj->Emancipate();
          }
-         else if(whichOne.mObj->GetSceneParent() != NULL)
+         else if(whichOne.mObj->GetSceneParent() != nullptr)
          {
             RemoveChild(whichOne.mObj.get());
          }
@@ -210,7 +210,7 @@ namespace SimCore
       void PhysicsParticleSystemActor::AddParticle()
       {
          dtCore::UniqueId id;
-         dtCore::RefPtr<PhysicsParticle> particle = new PhysicsParticle(id.ToString(), mParticleLengthOfStay);
+         std::shared_ptr<PhysicsParticle> particle = new PhysicsParticle(id.ToString(), mParticleLengthOfStay);
 
          dtCore::Transform ourTransform;
          GetTransform(ourTransform);
@@ -269,7 +269,7 @@ namespace SimCore
             LoadParticleResource(*particle, referenceString);
          }
 
-         dtCore::RefPtr<dtPhysics::PhysicsObject> newObject = new dtPhysics::PhysicsObject(id.ToString());
+         std::shared_ptr<dtPhysics::PhysicsObject> newObject = new dtPhysics::PhysicsObject(id.ToString());
 
          //////////////////////////////////////////////////////////////////////////
          // Set up the physics values for the object
@@ -342,8 +342,8 @@ namespace SimCore
                const std::string &resourceFile)
       {
          // LOAD Object File - most of the time, it will be in the cache
-         dtCore::RefPtr<osg::Node> cachedOriginalNode;
-         dtCore::RefPtr<osg::Node> copiedNode;
+         osg::ref_ptr<osg::Node> cachedOriginalNode;
+         osg::ref_ptr<osg::Node> copiedNode;
          if (!SimCore::Actors::IGActor::LoadFileStatic(resourceFile, cachedOriginalNode, copiedNode, true))
          {
             /*throw dtUtil::Exception(dtGame::ExceptionEnum::INVALID_PARAMETER,
@@ -485,7 +485,7 @@ namespace SimCore
          //RemoveProperty("Translation");
          //RemoveProperty("Scale");
 
-         PhysicsParticleSystemActor* actor = NULL;
+         PhysicsParticleSystemActor* actor = nullptr;
          GetActor(actor);
 
          AddProperty(new dtDAL::EnumActorProperty<PhysicsParticleSystemActor::TwoDOrThreeDTypeEnum>("TwoDOrThreeDTypeEnum", "TwoDOrThreeDTypeEnum",
@@ -657,7 +657,7 @@ namespace SimCore
          BaseClass::BuildActorComponents();
          if (!HasComponent(dtPhysics::PhysicsActComp::TYPE))
          {
-            dtCore::RefPtr<dtPhysics::PhysicsActComp> physAC = new dtPhysics::PhysicsActComp();
+            std::shared_ptr<dtPhysics::PhysicsActComp> physAC = new dtPhysics::PhysicsActComp();
             physAC->SetDefaultCollisionGroup(SimCore::CollisionGroup::GROUP_PARTICLE);
             AddComponent(*physAC);
          }
@@ -667,24 +667,24 @@ namespace SimCore
       void PhysicsParticleSystemActorProxy::OnRemovedFromWorld()
       {
          dtGame::GameActorProxy::OnRemovedFromWorld();
-         PhysicsParticleSystemActor* actor = NULL;
+         PhysicsParticleSystemActor* actor = nullptr;
          GetActor(actor);
 
          // Clear all existing particles
-         if( actor != NULL )
+         if( actor != nullptr )
          {
             actor->ResetParticleSystem();
          }
       }
 
       //////////////////////////////////////////////////////////////////////////
-      dtCore::RefPtr<dtDAL::ActorProperty> PhysicsParticleSystemActorProxy::GetDeprecatedProperty(const std::string& name)
+      std::shared_ptr<dtDAL::ActorProperty> PhysicsParticleSystemActorProxy::GetDeprecatedProperty(const std::string& name)
       {
-         dtCore::RefPtr<dtDAL::ActorProperty> depProp = BaseClass::GetDeprecatedProperty(name);
+         std::shared_ptr<dtDAL::ActorProperty> depProp = BaseClass::GetDeprecatedProperty(name);
 
          if (!depProp.valid())
          {
-            PhysicsParticleSystemActor* actor = NULL;
+            PhysicsParticleSystemActor* actor = nullptr;
             GetActor(actor);
             depProp = actor->GetPhysicsActComp().GetDeprecatedProperty(name);
          }
@@ -718,7 +718,7 @@ namespace SimCore
          mBeenHit = false;
          mName = name;
          mNeedsToBeDeleted = false;
-         mPhysicsObject = NULL;
+         mPhysicsObject = nullptr;
       }
 
       /////////////////////////////////////////////////////////////////////////////////////////////////////////

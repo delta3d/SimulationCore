@@ -246,7 +246,7 @@ namespace SimCore
                   SimCore::Components::RenderingSupportComponent::DEFAULT_NAME,
                   renderComp);
 
-            if( renderComp != NULL )
+            if( renderComp != nullptr )
             {
                SimCore::Components::RenderingSupportComponent::DynamicLight* dl =
                   renderComp->AddDynamicLightByPrototypeName( GetLightName() );
@@ -306,7 +306,7 @@ namespace SimCore
       {
          BaseEntityActorProxy::BuildPropertyMap();
 
-         FlareActor* actor = NULL;
+         FlareActor* actor = nullptr;
          GetActor(actor);
 
          AddProperty(new dtDAL::IntActorProperty(

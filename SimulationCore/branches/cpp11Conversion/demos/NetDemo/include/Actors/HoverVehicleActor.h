@@ -110,7 +110,7 @@ namespace NetDemo
 
          ///////////////////////////////////////////////////
          // Sound effects
-         dtCore::RefPtr<dtAudio::Sound> mSndCollisionHit;
+         std::shared_ptr<dtAudio::Sound> mSndCollisionHit;
          ///////////////////////////////////////////////////
 
          bool mVehicleIsTurret;

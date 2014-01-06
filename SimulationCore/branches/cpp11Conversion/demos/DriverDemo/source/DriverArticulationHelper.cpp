@@ -55,9 +55,9 @@ namespace DriverDemo
    }
 
    ////////////////////////////////////////////////////////////////////////////////
-   dtCore::RefPtr<dtDAL::NamedGroupParameter> DriverArticulationHelper::BuildGroupProperty()
+   std::shared_ptr<dtDAL::NamedGroupParameter> DriverArticulationHelper::BuildGroupProperty()
    {
-      dtCore::RefPtr<dtDAL::NamedGroupParameter> articArrayProp 
+      std::shared_ptr<dtDAL::NamedGroupParameter> articArrayProp 
          = new dtDAL::NamedGroupParameter( GetArticulationArrayPropertyName() );
 
       if( mDOFTurret.valid() )
@@ -98,10 +98,10 @@ namespace DriverDemo
    ////////////////////////////////////////////////////////////////////////////////
    void DriverArticulationHelper::UpdateDOFReferences( dtUtil::NodeCollector* nodeCollector )
    {
-      if( nodeCollector == NULL )
+      if( nodeCollector == nullptr )
       {
-         mDOFTurret = NULL;
-         mDOFWeapon = NULL;
+         mDOFTurret = nullptr;
+         mDOFWeapon = nullptr;
       }
       else
       {
@@ -173,7 +173,7 @@ namespace DriverDemo
    {
       if( mEntity.valid() )
       {
-         dtGame::DeadReckoningHelper* drHelper = NULL;
+         dtGame::DeadReckoningHelper* drHelper = nullptr;
          mEntity->GetComponent(drHelper);
          drHelper->AddToDeadReckonDOF( dofName, position, velocity );
       }

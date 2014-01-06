@@ -61,7 +61,7 @@
 #include <SimCore/Actors/TerrainActorProxy.h>
 #include <SimCore/Actors/Human.h>
 
-using dtCore::RefPtr;
+using std::shared_ptr;
 
 namespace SimCore
 {
@@ -124,7 +124,7 @@ namespace SimCore
 
          DamageHelper* newHelper = CreateDamageHelper(entity, autoNotifyNetwork, maxDamageAmount);
 
-         if( newHelper == NULL ) { return false; }
+         if( newHelper == nullptr ) { return false; }
 
          bool success = mIdToHelperMap.insert(
                std::make_pair( entity.GetUniqueId(), newHelper )
@@ -140,7 +140,7 @@ namespace SimCore
                << std::endl;
             LOG_WARNING( ss.str() );
          }
-         else if (dtUtil::Log::GetInstance().IsLevelEnabled(dtUtil::Log::LOG_DEBUG))
+         else if (dtUtil::Log::GetInstance()->IsLevelEnabled(dtUtil::Log::LOG_DEBUG))
          {
             std::stringstream ss;
             ss << "Munition Component registered entity \""
@@ -161,7 +161,7 @@ namespace SimCore
          if( ! tableName.empty() )
          {
             // If the table exists, link it to the newly created helper
-            dtCore::RefPtr<MunitionDamageTable> table = GetMunitionDamageTable( tableName );
+            std::shared_ptr<MunitionDamageTable> table = GetMunitionDamageTable( tableName );
             newHelper->SetMunitionDamageTable( table );
 
             std::stringstream ss;
@@ -185,7 +185,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       bool MunitionsComponent::Unregister( const dtCore::UniqueId& entityId )
       {
-         std::map< dtCore::UniqueId, dtCore::RefPtr<DamageHelper> >::iterator itor =
+         std::map< dtCore::UniqueId, std::shared_ptr<DamageHelper> >::iterator itor =
             mIdToHelperMap.find( entityId );
 
          if( itor != mIdToHelperMap.end() )
@@ -230,17 +230,17 @@ namespace SimCore
          }
 
          // Capture new tables in a vector
-         std::vector<dtCore::RefPtr<MunitionDamageTable> > tables;
+         std::vector<std::shared_ptr<MunitionDamageTable> > tables;
 
          // Parse the new table data
-         dtCore::RefPtr<MunitionsConfig> mParser = new MunitionsConfig();
+         std::shared_ptr<MunitionsConfig> mParser = new MunitionsConfig();
          unsigned int successes =
             mParser->LoadMunitionTables( resourcePath, tables );
-         mParser = NULL;
+         mParser = nullptr;
 
          // Iterate through new tables and add/replace them into the table map
-         MunitionDamageTable* existingTable = NULL;
-         std::vector<dtCore::RefPtr<MunitionDamageTable> >::iterator iter = tables.begin();
+         MunitionDamageTable* existingTable = nullptr;
+         std::vector<std::shared_ptr<MunitionDamageTable> >::iterator iter = tables.begin();
          for( ; iter != tables.end(); ++iter )
          {
             MunitionDamageTable* curTable = iter->get();
@@ -253,7 +253,7 @@ namespace SimCore
             existingTable = GetMunitionDamageTable( curTableName );
 
             // Replace the existing table with the new one; reduce success if insert fails
-            if( existingTable != NULL && ! RemoveMunitionDamageTable( existingTable->GetName() ) )
+            if( existingTable != nullptr && ! RemoveMunitionDamageTable( existingTable->GetName() ) )
             {
                std::stringstream ss;
                ss << "Failure: MunitionsComponent.LoadMunitionDamageTables could not remove existing munition table \""
@@ -314,7 +314,7 @@ namespace SimCore
             dtGame::GameActorProxy* proxy
                = GetGameManager()->FindGameActorById(message.GetAboutActorId());
 
-            if ( proxy == NULL || proxy->IsRemote() ) { return; }
+            if ( proxy == nullptr || proxy->IsRemote() ) { return; }
 
             mPlayer = dynamic_cast<SimCore::Actors::StealthActor*>(proxy->GetDrawable());
 
@@ -328,7 +328,7 @@ namespace SimCore
          {
             if( mPlayer.valid() && message.GetAboutActorId() == mPlayer->GetUniqueId() )
             {
-               mPlayer = NULL;
+               mPlayer = nullptr;
             }
 
             Unregister( message.GetAboutActorId() );
@@ -354,7 +354,7 @@ namespace SimCore
          else if (type == dtGame::MessageType::INFO_RESTARTED
             || type == dtGame::MessageType::INFO_MAP_UNLOAD_BEGIN)
          {
-            mPlayer = NULL;
+            mPlayer = nullptr;
             ClearCreatedMunitionsQueue();
             ClearRegisteredEntities();
             ClearTables();
@@ -376,7 +376,7 @@ namespace SimCore
 
          const SimCore::Actors::MunitionTypeActor* munitionType = FindMunitionForMessage(detMessage);
 
-         if (munitionType != NULL)
+         if (munitionType != nullptr)
          {
             // Is this Direct Fire?
             bool isDirect = !munitionType->GetFamily().IsExplosive();
@@ -386,7 +386,7 @@ namespace SimCore
                {
                   // For indirect, only
                   DamageHelper* helper = GetHelperByEntityId( message.GetAboutActorId() );
-                  if (helper != NULL)
+                  if (helper != nullptr)
                   {
                      helper->ProcessDetonationMessage( detMessage, *munitionType, true );
                   }
@@ -396,7 +396,7 @@ namespace SimCore
             {
                // Since this is indirect fire, everything has to process the detonation in case
                // they have damage from the effect of the explosion
-               std::map<dtCore::UniqueId, dtCore::RefPtr<DamageHelper> >::iterator iter =
+               std::map<dtCore::UniqueId, std::shared_ptr<DamageHelper> >::iterator iter =
                   mIdToHelperMap.begin();
 
                for( ; iter != mIdToHelperMap.end(); ++iter )
@@ -426,21 +426,21 @@ namespace SimCore
 
          const SimCore::Actors::MunitionTypeActor* munitionType = FindMunitionForMessage(shotMessage);
 
-         if (munitionType != NULL)
+         if (munitionType != nullptr)
          {
-            DamageHelper* helper = NULL;
+            DamageHelper* helper = nullptr;
             // Is this Direct Fire?
             if (! message.GetAboutActorId().ToString().empty())
             {
                helper = GetHelperByEntityId( message.GetAboutActorId() );
-               if( helper != NULL )
+               if( helper != nullptr )
                {
                   helper->ProcessShotMessage( shotMessage, *munitionType, true );
                }
             }
             else // this is Indirect Fire
             {
-               std::map<dtCore::UniqueId, dtCore::RefPtr<DamageHelper> >::iterator iter =
+               std::map<dtCore::UniqueId, std::shared_ptr<DamageHelper> >::iterator iter =
                   mIdToHelperMap.begin();
 
                for( ; iter != mIdToHelperMap.end(); ++iter )
@@ -468,28 +468,28 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       DamageHelper* MunitionsComponent::GetHelperByEntityId( const dtCore::UniqueId& id )
       {
-         std::map<dtCore::UniqueId, dtCore::RefPtr<DamageHelper> >::iterator iter =
+         std::map<dtCore::UniqueId, std::shared_ptr<DamageHelper> >::iterator iter =
             mIdToHelperMap.find( id );
 
-         return iter != mIdToHelperMap.end() ? iter->second.get() : NULL;
+         return iter != mIdToHelperMap.end() ? iter->second.get() : nullptr;
       }
 
       //////////////////////////////////////////////////////////////////////////
       MunitionDamageTable* MunitionsComponent::GetMunitionDamageTable( const std::string& entityClassName )
       {
-         std::map<std::string, dtCore::RefPtr<MunitionDamageTable> >::iterator iter =
+         std::map<std::string, std::shared_ptr<MunitionDamageTable> >::iterator iter =
             mNameToMunitionDamageTableMap.find( entityClassName );
 
-         return iter != mNameToMunitionDamageTableMap.end() ? iter->second.get() : NULL;
+         return iter != mNameToMunitionDamageTableMap.end() ? iter->second.get() : nullptr;
       }
 
       //////////////////////////////////////////////////////////////////////////
       const MunitionDamageTable* MunitionsComponent::GetMunitionDamageTable( const std::string& entityClassName ) const
       {
-         std::map<std::string, dtCore::RefPtr<MunitionDamageTable> >::const_iterator iter =
+         std::map<std::string, std::shared_ptr<MunitionDamageTable> >::const_iterator iter =
             mNameToMunitionDamageTableMap.find( entityClassName );
 
-         return iter != mNameToMunitionDamageTableMap.end() ? iter->second.get() : NULL;
+         return iter != mNameToMunitionDamageTableMap.end() ? iter->second.get() : nullptr;
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -503,7 +503,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       bool MunitionsComponent::RemoveMunitionDamageTable( const std::string& entityClassName )
       {
-         std::map<std::string, dtCore::RefPtr<MunitionDamageTable> >::iterator iter =
+         std::map<std::string, std::shared_ptr<MunitionDamageTable> >::iterator iter =
             mNameToMunitionDamageTableMap.find( entityClassName );
 
          if( iter != mNameToMunitionDamageTableMap.end() )
@@ -517,7 +517,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void MunitionsComponent::ClearTables()
       {
-         std::map<std::string, dtCore::RefPtr<MunitionDamageTable> >::iterator iter =
+         std::map<std::string, std::shared_ptr<MunitionDamageTable> >::iterator iter =
             mNameToMunitionDamageTableMap.begin();
 
          for( ; iter != mNameToMunitionDamageTableMap.end(); ++iter )
@@ -535,7 +535,7 @@ namespace SimCore
       void MunitionsComponent::SetDamage( SimCore::Actors::BaseEntity& entity, DamageType& damage )
       {
          DamageHelper* helper = GetHelperByEntityId( entity.GetUniqueId() );
-         if( helper != NULL )
+         if( helper != nullptr )
          {
             helper->SetDamage( damage );
          }
@@ -552,7 +552,7 @@ namespace SimCore
          const SimCore::Actors::MunitionEffectsInfoActor* effects
             = GetMunitionEffectsInfo( munitionType, "" );// NO DEFAULT EFFECT FOR NOW: GetDefaultMunitionName() );
 
-         if( effects == NULL )
+         if( effects == nullptr )
          {
             std::ostringstream ss;
             ss << "Munition \"" << munitionName << "\" does not have effects defined for it."
@@ -563,7 +563,7 @@ namespace SimCore
 
          // Find the remote actor who sent the fire message so that flash and
          // sound effects can be applied to it.
-         dtCore::RefPtr<SimCore::Actors::BaseEntityActorProxy> proxy
+         std::shared_ptr<SimCore::Actors::BaseEntityActorProxy> proxy
             = dynamic_cast<SimCore::Actors::BaseEntityActorProxy*>
             (GetGameManager()->FindActorById( message.GetSendingActorId() ));
 
@@ -572,15 +572,15 @@ namespace SimCore
          if ( ! proxy.valid()) { return; }
 
          // Access the entity directly instead of though a proxy
-         SimCore::Actors::BaseEntity* entity = NULL;
+         SimCore::Actors::BaseEntity* entity = nullptr;
          proxy->GetDrawable(entity);
 
-         if (entity == NULL) { return; }
+         if (entity == nullptr) { return; }
 
          osg::Group* bestNode = entity->GetWeaponMuzzleForDirection(message.GetInitialVelocityVector());
 
          // Attach a flash effect if a DOF was found.
-         if( bestNode != NULL )
+         if( bestNode != nullptr )
          {
             // Get the player's location in the world so that sound effects can
             // be attenuated when created in 3D space.
@@ -618,13 +618,13 @@ namespace SimCore
                if( probability == 1.0f || dtUtil::RandFloat( 0.0f, 1.0f ) < probability )
                {
                   // ...generate a tracer effect request...
-                  dtCore::RefPtr<MunitionEffectRequest> effectRequest
+                  std::shared_ptr<MunitionEffectRequest> effectRequest
                      = new MunitionEffectRequest( quantity, 0.05f, *effects );
                   effectRequest->SetVelocity( message.GetInitialVelocityVector() );
                   effectRequest->SetOwner( entity );
                   effectRequest->SetMunitionModelFile( munitionType.GetModel() );
 
-                  if( entity != NULL && bestNode != NULL )
+                  if( entity != nullptr && bestNode != nullptr )
                   {
                      // ...from the fire point on the firing entity.
                      osg::Matrix mtx;
@@ -677,13 +677,13 @@ namespace SimCore
             dtDAL::ActorProxy * targetProxy = GetGameManager()->FindActorById(message.GetAboutActorId());
             // Note - the mIsector here is kinda wonky cause it holds the terrain Drawable.
             // Change hitEntity to false if this is found to be the terrain actor.
-            if(targetProxy != NULL)
+            if(targetProxy != nullptr)
             {
-               hitEntity = targetProxy != NULL && ( dynamic_cast<SimCore::Actors::BaseEntity*>(targetProxy->GetDrawable()) != NULL );
+               hitEntity = targetProxy != nullptr && ( dynamic_cast<SimCore::Actors::BaseEntity*>(targetProxy->GetDrawable()) != nullptr );
 
                // Check to see if we hit a person. Needs a different effect
                entityIsHuman = (hitEntity &&
-                  dynamic_cast<SimCore::Actors::Human*>(targetProxy->GetDrawable()) != NULL);
+                  dynamic_cast<SimCore::Actors::Human*>(targetProxy->GetDrawable()) != nullptr);
             }
          }
 
@@ -692,7 +692,7 @@ namespace SimCore
          RunIsectorForFIDCodes(hitEntity, message, fidID);
          
          // Prepare a detonation actor to be placed into the scene
-         dtCore::RefPtr<SimCore::Actors::DetonationActorProxy>  proxy = CreateDetonationPrototype(message);
+         std::shared_ptr<SimCore::Actors::DetonationActorProxy>  proxy = CreateDetonationPrototype(message);
          if(!proxy.valid())
          {
             LOG_ERROR("Unable to create detonation prototype, aborting ApplyDetonationEffects()");
@@ -700,12 +700,12 @@ namespace SimCore
          }
 
          SimCore::Actors::DetonationActor* da = dynamic_cast<SimCore::Actors::DetonationActor*>(proxy->GetDrawable());
-         if(da == NULL)
+         if(da == nullptr)
          {
             LOG_ERROR("Received a detonation actor proxy that did not contain a detonation actor. Ignoring.");
 
             //set proxy to null if we do not have a valid detonation actor
-            proxy = NULL;
+            proxy = nullptr;
             return;
          }
 
@@ -732,7 +732,7 @@ namespace SimCore
          GetGameManager()->GetComponentByName(
                SimCore::Components::ViewerMaterialComponent::DEFAULT_NAME, materialComponent);
 
-         if(materialComponent != NULL)
+         if(materialComponent != nullptr)
          {
             SimCore::Actors::ViewerMaterialActor& viewerMaterial
                = materialComponent->CreateOrChangeMaterialByFID(fidID);
@@ -817,7 +817,7 @@ namespace SimCore
          const SimCore::Actors::MunitionTypeActor* munitionType =
             GetMunitionTypeTable()->GetMunitionType( munitionTypeName );
 
-         if( munitionType == NULL ) { return EMPTY; }
+         if( munitionType == nullptr ) { return EMPTY; }
 
          return munitionType->GetDamageType();
       }
@@ -840,14 +840,14 @@ namespace SimCore
          if( ! mMunitionTypeTable.valid() )
          {
             LOG_ERROR("Cannot acquire munition, no MunitionTypeTable exists.");
-            return NULL;
+            return nullptr;
          }
 
          // Obtain the closest matching registered munition type.
          const SimCore::Actors::MunitionTypeActor* munitionType
             = mMunitionTypeTable->GetMunitionType( munitionName );
 
-         if( munitionType == NULL )
+         if( munitionType == nullptr )
          {
             // Attempt access to the specified default munition.
             munitionType = mMunitionTypeTable->GetMunitionType( defaultMunitionName );
@@ -856,7 +856,7 @@ namespace SimCore
             oss << "Received a detonation with an invalid munition \""
                << munitionName << "\". Attempting default munition \""
                << defaultMunitionName << "\".\n\tDefault munition "
-               << (munitionType==NULL?"NOT found":"found") << std::endl;
+               << (munitionType==nullptr?"NOT found":"found") << std::endl;
             LOG_WARNING( oss.str() );
          }
 
@@ -873,7 +873,7 @@ namespace SimCore
             dynamic_cast<const SimCore::Actors::MunitionEffectsInfoActor*>
             (munition.GetEffectsInfoActor());
 
-         if( effects == NULL )
+         if( effects == nullptr )
          {
             std::ostringstream oss;
             oss << "Munition \"" << munition.GetName() << "\" has no effects assign to it."
@@ -882,7 +882,7 @@ namespace SimCore
 
             const SimCore::Actors::MunitionTypeActor* defaultMunitionType
                = GetMunition( defaultMunitionName );
-            if( defaultMunitionType != NULL )
+            if( defaultMunitionType != nullptr )
             {
                effects = dynamic_cast<const SimCore::Actors::MunitionEffectsInfoActor*>
                   (defaultMunitionType->GetEffectsInfoActor());
@@ -908,7 +908,7 @@ namespace SimCore
          // check to see if the unique id exists in the GM (return false) or not (return true).
          bool operator()(const dtCore::UniqueId idToCheck)
          {
-            bool bFound = theGM.FindActorById(idToCheck) == NULL;
+            bool bFound = theGM.FindActorById(idToCheck) == nullptr;
             return bFound;
          }
 
@@ -960,7 +960,7 @@ namespace SimCore
             mCreatedMunitionsQueue.pop_front();
 
             dtDAL::ActorProxy *frontProxy = GetGameManager()->FindActorById(frontId);
-            if (frontProxy != NULL)
+            if (frontProxy != nullptr)
                GetGameManager()->DeleteActor(*frontProxy);
          }
       }
@@ -1025,9 +1025,9 @@ namespace SimCore
 
             SingleISector.GetHitPoint(hp);
             const osg::Drawable* drawable = SingleISector.GetIntersectionHit(0)._drawable.get();
-            if( drawable != NULL && drawable->getStateSet() != NULL)
+            if( drawable != nullptr && drawable->getStateSet() != nullptr)
             {
-               RefPtr<const osg::IntArray> mOurList
+               std::shared_ptr<const osg::IntArray> mOurList
                   = dynamic_cast<const osg::IntArray*>(drawable->getStateSet()->getUserData());
                if( mOurList.valid() )
                {
@@ -1046,7 +1046,7 @@ namespace SimCore
                }
             }
 
-            if (dtUtil::Log::GetInstance().IsLevelEnabled(dtUtil::Log::LOG_DEBUG))
+            if (dtUtil::Log::GetInstance()->IsLevelEnabled(dtUtil::Log::LOG_DEBUG))
             {
                std::ostringstream ss;
                ss << "Found a hit - old z " << pos.z() << " new z " << hp.z();
@@ -1063,19 +1063,19 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      dtCore::RefPtr<SimCore::Actors::DetonationActorProxy> MunitionsComponent::CreateDetonationPrototype(const DetonationMessage& message)
+      std::shared_ptr<SimCore::Actors::DetonationActorProxy> MunitionsComponent::CreateDetonationPrototype(const DetonationMessage& message)
       {
-         dtCore::RefPtr<SimCore::Actors::DetonationActorProxy> proxy;
+         std::shared_ptr<SimCore::Actors::DetonationActorProxy> proxy;
 
-         if(GetMunitionTypeTable() == NULL)
+         if(GetMunitionTypeTable() == nullptr)
          {
-            LOG_ERROR("Unable to create detonation, munition type table is NULL");
+            LOG_ERROR("Unable to create detonation, munition type table is nullptr");
          }
          else
          {
             SimCore::Actors::MunitionTypeActor* munitionType = GetMunitionTypeTable()->GetMunitionType(message.GetMunitionType());
 
-            if(munitionType != NULL)
+            if(munitionType != nullptr)
             {
                GetGameManager()->CreateActorFromPrototype(munitionType->GetDetonationActor(), proxy);
             }
@@ -1096,7 +1096,7 @@ namespace SimCore
          GetGameManager()->FindActorsByType(*SimCore::Actors::EntityActorRegistry::MUNITION_TYPE_ACTOR_TYPE, proxies);
 
          // Declare variable for the loop
-         dtCore::RefPtr<SimCore::Actors::MunitionTypeActorProxy> curProxy = NULL;
+         std::shared_ptr<SimCore::Actors::MunitionTypeActorProxy> curProxy = nullptr;
          unsigned int munitions = 0;
 
          // Populate the table with valid MunitionTypeActors
@@ -1118,7 +1118,7 @@ namespace SimCore
       void MunitionsComponent::ConvertMunitionInfoActorsToDetonationActors(const std::string& mapName)
       {
          // Load the map file
-         dtDAL::Map* map = NULL;
+         dtDAL::Map* map = nullptr;
          try
          {
             map = &dtDAL::Project::GetInstance().GetMap(mapName);
@@ -1139,19 +1139,19 @@ namespace SimCore
 
          //now iterate through all the munition info's
          dtDAL::Map& actorMap = *map;
-         std::vector<dtCore::RefPtr<dtDAL::ActorProxy> > proxies;
+         std::vector<std::shared_ptr<dtDAL::ActorProxy> > proxies;
          actorMap.GetAllProxies(proxies);
 
-         dtCore::RefPtr<SimCore::Actors::MunitionEffectsInfoActorProxy> infoProxy = NULL;
+         std::shared_ptr<SimCore::Actors::MunitionEffectsInfoActorProxy> infoProxy = nullptr;
 
          // Populate the table with valid MunitionTypeActors
-         std::vector<dtCore::RefPtr<dtDAL::ActorProxy> >::iterator iter = proxies.begin();
+         std::vector<std::shared_ptr<dtDAL::ActorProxy> >::iterator iter = proxies.begin();
          for(; iter != proxies.end(); ++iter)
          {
             infoProxy = dynamic_cast<SimCore::Actors::MunitionEffectsInfoActorProxy*>(iter->get());
             if(infoProxy.valid())
             {
-               dtCore::RefPtr<SimCore::Actors::DetonationActorProxy> detonationProxy;
+               std::shared_ptr<SimCore::Actors::DetonationActorProxy> detonationProxy;
                GetGameManager()->CreateActor(*SimCore::Actors::EntityActorRegistry::DETONATION_ACTOR_TYPE, detonationProxy);
 
                map->AddProxy(*detonationProxy);
@@ -1163,7 +1163,7 @@ namespace SimCore
          }
 
          //Now assign the id's to the munition types
-         dtCore::RefPtr<SimCore::Actors::MunitionTypeActorProxy> curProxy = NULL;
+         std::shared_ptr<SimCore::Actors::MunitionTypeActorProxy> curProxy = nullptr;
 
          // Populate the table with valid MunitionTypeActors
          iter = proxies.begin();
@@ -1174,7 +1174,7 @@ namespace SimCore
             {
                SimCore::Actors::MunitionTypeActor& munitionActor = *static_cast<SimCore::Actors::MunitionTypeActor*>(curProxy->GetDrawable());
 
-               if(munitionActor.GetEffectsInfoActor() != NULL)
+               if(munitionActor.GetEffectsInfoActor() != nullptr)
                { 
                   InfoToIdMap::iterator iter = effectMapping.find(munitionActor.GetEffectsInfoActor());
                   if(iter != effectMapping.end())

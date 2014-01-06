@@ -54,7 +54,7 @@ namespace SimCore
             /// Destructor
             virtual ~BaseTerrainActor();
 
-            dtCore::RefPtr<osg::Node> mTerrainNode;
+            osg::ref_ptr<osg::Node> mTerrainNode;
             
             std::string mLoadedFile;
 
@@ -84,7 +84,7 @@ namespace SimCore
             * render mode is RenderMode::DRAW_BILLBOARD_ICON.
             * @return a pointer to the icon
             */
-            //virtual dtDAL::ActorProxyIcon* GetBillBoardIcon(); 
+            //virtual dtDAL::ActorProxyIconPtr GetBillBoardIcon(); 
 
             /**
             * Gets the current render mode for positional lights.

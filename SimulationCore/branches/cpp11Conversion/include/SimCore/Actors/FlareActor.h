@@ -102,7 +102,7 @@ namespace SimCore
             std::string mModelType;
             std::string mParticleFileName;
             std::string mLightName;
-            dtCore::RefPtr<dtCore::ParticleSystem> mParticles;
+            std::shared_ptr<dtCore::ParticleSystem> mParticles;
       };
 
 

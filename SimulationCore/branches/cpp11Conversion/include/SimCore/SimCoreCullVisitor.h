@@ -25,7 +25,7 @@
 #define SIM_CORE_CULL_VISITOR
 
 #include <SimCore/Export.h>
-#include <dtCore/observerptr.h>
+#include <dtUtil/refcountedbase.h>
 #include <SimCore/Actors/PagedTerrainPhysicsActor.h>
 #include <osgUtil/CullVisitor>
 #include <osg/Transform>
@@ -90,11 +90,11 @@ namespace SimCore
 
       private:
          /// we feed the terrain data through here, it loads the physics
-         dtCore::ObserverPtr<SimCore::Actors::PagedTerrainPhysicsActor>  mLandActor;
+         std::weak_ptr<SimCore::Actors::PagedTerrainPhysicsActor>  mLandActor;
 
          /// this is the top level transform node of the terrain, for knowing when
          /// we are in the terrain
-         dtCore::ObserverPtr<osg::Transform>             mTerrainNode;
+         osg::observer_ptr<osg::Transform>             mTerrainNode;
 
          /// are we in the terrain currently? mNodeWeCheckAgainst passed, so work
          /// is being done this frame

@@ -64,8 +64,8 @@ public:
    };
 
    
-   typedef osg::ref_ptr<osg::StateSet> StateSetRefPtr;
-   typedef std::map<StateSetRefPtr, CollapsedDrawable*, CompareStateSet<StateSetRefPtr> > DrawableMapping;
+   typedef osg::ref_ptr<osg::StateSet> StateSetstd::shared_ptr;
+   typedef std::map<StateSetstd::shared_ptr, CollapsedDrawable*, CompareStateSet<StateSetstd::shared_ptr> > DrawableMapping;
    DrawableMapping mDrawableMap;
 
    float mCombineDistance;
@@ -176,7 +176,7 @@ public:
          {
             osg::Texture* texture = dynamic_cast<osg::Texture*>(ss->getTextureAttribute(i, osg::Texture::TEXTURE));
 
-            if (texture != NULL)
+            if (texture != nullptr)
             {
                texture->setFilter(osg::Texture::MIN_FILTER, osg::Texture::LINEAR_MIPMAP_LINEAR);
                texture->setFilter(osg::Texture::MAG_FILTER, osg::Texture::LINEAR);
@@ -193,7 +193,7 @@ public:
          if(mRemoveAlpha)
          {
             osg::BlendFunc* bf = dynamic_cast<osg::BlendFunc*>(ss->getAttribute(osg::StateAttribute::BLENDFUNC));
-            if(bf != NULL || ss->getRenderingHint() == osg::StateSet::TRANSPARENT_BIN)
+            if(bf != nullptr || ss->getRenderingHint() == osg::StateSet::TRANSPARENT_BIN)
             {
                //skip this drawable
                return;
@@ -202,7 +202,7 @@ public:
 
          DrawableMapping::iterator iter = mDrawableMap.find(ss);
          
-         CollapsedDrawable* cd = NULL;      
+         CollapsedDrawable* cd = nullptr;      
 
          osg::ref_ptr<osg::ComputeBoundsVisitor> cbv = new osg::ComputeBoundsVisitor();
          geode.accept(*cbv);

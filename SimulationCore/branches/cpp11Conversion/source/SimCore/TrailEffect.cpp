@@ -200,8 +200,8 @@ namespace SimCore
       mData = new osg::Vec4Array(vertexCount);
       mVerts = new osg::Vec3Array(vertexCount);
       mIndices = new osg::DrawElementsUInt(osg::PrimitiveSet::TRIANGLE_STRIP, vertexCount);
-      dtCore::RefPtr<osg::Vec3Array> norms = new osg::Vec3Array(vertexCount);
-      dtCore::RefPtr<osg::Vec2Array> uvs = new osg::Vec2Array(vertexCount);
+      osg::ref_ptr<osg::Vec3Array> norms = new osg::Vec3Array(vertexCount);
+      osg::ref_ptr<osg::Vec2Array> uvs = new osg::Vec2Array(vertexCount);
 
       // Initialize the array elements.
       float uCoord = 0.0f;
@@ -232,7 +232,7 @@ namespace SimCore
       }
 
       // STATES
-      dtCore::RefPtr<osg::StateSet> states = GetOSGNode()->getOrCreateStateSet();
+      osg::ref_ptr<osg::StateSet> states = GetOSGNode()->getOrCreateStateSet();
       states->setMode(GL_BLEND,osg::StateAttribute::ON);
       states->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
       states->setRenderingHint( osg::StateSet::TRANSPARENT_BIN );
@@ -248,12 +248,12 @@ namespace SimCore
       mGeom->setTexCoordArray(0, uvs.get());
 
       // GEODE (GEOMETRY NODE)
-      dtCore::RefPtr<osg::Geode> geode = new osg::Geode;
+      osg::ref_ptr<osg::Geode> geode = new osg::Geode;
       geode->addDrawable(mGeom.get());
       GetMatrixNode()->addChild(geode.get());
 
       // Attach the shader
-      dtCore::RefPtr<dtCore::ShaderProgram> protoShader
+      std::shared_ptr<dtCore::ShaderProgram> protoShader
          = dtCore::ShaderManager::GetInstance().FindShaderPrototype("TrailEffectShader","TrailEffectShaderGroup");
       if(protoShader.valid())
       {
@@ -272,17 +272,17 @@ namespace SimCore
       mCurrentIndex = 0;
       if(mGeom.valid())
       {
-         mGeom->setTexCoordArray(0, NULL);
-         mGeom->setColorArray(NULL);
-         mGeom->setNormalArray(NULL);
-         mGeom->setVertexArray(NULL);
+         mGeom->setTexCoordArray(0, nullptr);
+         mGeom->setColorArray(nullptr);
+         mGeom->setNormalArray(nullptr);
+         mGeom->setVertexArray(nullptr);
       }
       
-      mGeom = NULL;
-      mVerts = NULL;
-      mData = NULL;
-      mIndices = NULL;
-      mShader = NULL;
+      mGeom = nullptr;
+      mVerts = nullptr;
+      mData = nullptr;
+      mIndices = nullptr;
+      mShader = nullptr;
    }
 
    /////////////////////////////////////////////////////////////////////////////
@@ -292,7 +292,7 @@ namespace SimCore
       {
          dtCore::ShaderParamFloat* param = dynamic_cast<dtCore::ShaderParamFloat*>
             (mShader->FindParameter(paramName));
-         if(param != NULL)
+         if(param != nullptr)
          {
             param->SetValue(mWidth);
          }

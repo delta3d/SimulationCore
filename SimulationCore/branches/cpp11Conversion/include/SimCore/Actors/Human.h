@@ -36,7 +36,7 @@
 
 #include <dtUtil/enumeration.h>
 
-#include <dtCore/refptr.h>
+#include <dtUtil/refcountedbase.h>
 #include <dtAnim/animationhelper.h>
 #include <dtDAL/resourcedescriptor.h>
 
@@ -294,7 +294,7 @@ namespace SimCore
 
             std::string mSequenceId;
 
-            dtCore::RefPtr<osg::Node> mModelNode;
+            osg::ref_ptr<osg::Node> mModelNode;
 
             dtAI::PlannerHelper mPlannerHelper;
             dtAI::Planner mPlanner;

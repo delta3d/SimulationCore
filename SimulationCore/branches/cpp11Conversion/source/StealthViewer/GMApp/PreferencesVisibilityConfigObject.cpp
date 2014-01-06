@@ -95,9 +95,9 @@ namespace StealthGM
    {
       if (IsUpdated())
       {
-         StealthGM::StealthHUD* hud = NULL;
+         StealthGM::StealthHUD* hud = nullptr;
          gameManager.GetComponentByName(StealthGM::StealthHUD::DEFAULT_NAME, hud);
-         if (hud != NULL)
+         if (hud != nullptr)
          {
             SimCore::Components::LabelManager& lm = hud->GetLabelManager();
             lm.SetOptions(GetLabelOptions());
@@ -107,9 +107,9 @@ namespace StealthGM
             LOG_ERROR("Attempted to update the label manager options, but on StealthHUD component could be found");
          }
 
-         SimCore::Components::ViewerMessageProcessor* vmp = NULL;
+         SimCore::Components::ViewerMessageProcessor* vmp = nullptr;
          gameManager.GetComponentByName(SimCore::Components::ViewerMessageProcessor::DEFAULT_NAME, vmp);
-         if (vmp != NULL)
+         if (vmp != nullptr)
          {
             vmp->SetVisibilityOptions(*mEntityOptions);
          }

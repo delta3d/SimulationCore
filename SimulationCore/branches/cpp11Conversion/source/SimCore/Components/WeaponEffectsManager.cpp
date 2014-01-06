@@ -43,7 +43,7 @@
 
 
 
-using dtCore::RefPtr;
+using std::shared_ptr;
 
 namespace SimCore
 {
@@ -59,7 +59,7 @@ namespace SimCore
             public:
                EntityNodeVisitor()
                   : mFoundNode(false)
-                  , mNode(NULL)
+                  , mNode(nullptr)
                {
                   setTraversalMode( osg::NodeVisitor::TRAVERSE_ACTIVE_CHILDREN );
                }
@@ -85,7 +85,7 @@ namespace SimCore
                void Reset()
                {
                   mFoundNode = false;
-                  mNode = NULL;
+                  mNode = nullptr;
                }
 
             protected:
@@ -298,9 +298,9 @@ namespace SimCore
          SimCore::Components::RenderingSupportComponent* renderComp;
          mGM->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME, renderComp);
 
-         if( renderComp != NULL )
+         if( renderComp != nullptr )
          {
-            SimCore::Components::RenderingSupportComponent::DynamicLight* dl = NULL;
+            SimCore::Components::RenderingSupportComponent::DynamicLight* dl = nullptr;
             if( ! mDynamicLightEnabled )
             {
                dl = renderComp->AddDynamicLightByPrototypeName( mTracerLightName.Get() );
@@ -326,10 +326,10 @@ namespace SimCore
          SimCore::Components::RenderingSupportComponent* renderComp;
          mGM->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME, renderComp);
 
-         if( renderComp != NULL )
+         if( renderComp != nullptr )
          {
             SimCore::Components::RenderingSupportComponent::DynamicLight* dl = renderComp->GetDynamicLight(mDynamicLightID);
-            if( dl != NULL && mDynamicLightEnabled )
+            if( dl != nullptr && mDynamicLightEnabled )
             {
                dl->mIntensity = 0.0f;
                renderComp->RemoveDynamicLight(mDynamicLightID);
@@ -665,7 +665,7 @@ namespace SimCore
 
             RemoveChild( mSound.get() );
             dtAudio::Sound* soundPointer = mSound.release();
-            if( soundPointer != NULL )
+            if( soundPointer != nullptr )
             {
 //               dtAudio::AudioManager::GetInstance().FreeSound( soundPointer );
             }
@@ -784,7 +784,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void WeaponEffect::SetFlash( dtCore::ParticleSystem* flash )
       {
-         if( mFlash.valid() ) { mFlash->SetParent( NULL ); }
+         if( mFlash.valid() ) { mFlash->SetParent( nullptr ); }
 
          mFlash = flash;
 
@@ -825,12 +825,12 @@ namespace SimCore
                // Set the parent of the flash explicitly.
                // This will be used like a boolean to determine if the flash has
                // already been attached to the DOF.
-               if( mFlash.valid() && mFlash->GetParent() == NULL )
+               if( mFlash.valid() && mFlash->GetParent() == nullptr )
                {
                   mFlash->SetParent( this );
                   mParentNode->addChild( mFlash->GetOSGNode() );
                }
-               if( mSound.valid() && mSound->GetParent() == NULL )
+               if( mSound.valid() && mSound->GetParent() == nullptr )
                {
                   mSound->SetParent( this );
                   mParentNode->addChild( mSound->GetOSGNode() );
@@ -846,23 +846,23 @@ namespace SimCore
       {
          if( mParentNode.valid() )
          {
-            if( mFlash.valid() && mFlash->GetParent() != NULL )
+            if( mFlash.valid() && mFlash->GetParent() != nullptr )
             {
                mParentNode->removeChild( mFlash->GetOSGNode() );
-               mFlash->SetParent( NULL );
+               mFlash->SetParent( nullptr );
             }
-            if( mSound.valid() && mSound->GetParent() != NULL )
+            if( mSound.valid() && mSound->GetParent() != nullptr )
             {
                mParentNode->removeChild( mSound->GetOSGNode() );
-               mSound->SetParent( NULL );
+               mSound->SetParent( nullptr );
             }
          }
-         mParentNode = NULL;
+         mParentNode = nullptr;
 
          if( ! mOwner.valid() ) { return false; }
 
          mOwner->RemoveChild( this );
-         mOwner = NULL;
+         mOwner = nullptr;
 
          return true;
       }
@@ -870,15 +870,15 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void WeaponEffect::Clear( bool releaseOldSound )
       {
-         Detach(); // sets the DOF and owner to NULL
-         mFlash = NULL;
-         SetSound( NULL, releaseOldSound );
+         Detach(); // sets the DOF and owner to nullptr
+         mFlash = nullptr;
+         SetSound( nullptr, releaseOldSound );
       }
 
       //////////////////////////////////////////////////////////////////////////
       bool WeaponEffect::LoadSound( const std::string& filePath )
       {
-         mSound = NULL;
+         mSound = nullptr;
          mSound = dtAudio::AudioManager::GetInstance().NewSound();
 
          if (! mSound.valid())
@@ -895,7 +895,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       bool WeaponEffect::LoadFlash( const std::string& filePath )
       {
-         dtCore::RefPtr<dtCore::ParticleSystem> flash = new dtCore::ParticleSystem;
+         std::shared_ptr<dtCore::ParticleSystem> flash = new dtCore::ParticleSystem;
          flash->SetParentRelative(true);
 
          if (! flash.valid())
@@ -922,9 +922,9 @@ namespace SimCore
          SimCore::Components::RenderingSupportComponent* renderComp;
          mGM->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME, renderComp);
 
-         if (renderComp != NULL)
+         if (renderComp != nullptr)
          {
-            SimCore::Components::RenderingSupportComponent::DynamicLight* dl = NULL;
+            SimCore::Components::RenderingSupportComponent::DynamicLight* dl = nullptr;
             if (! mDynamicLightEnabled)
             {
                //dl = new SimCore::Components::RenderingSupportComponent::DynamicLight();
@@ -953,10 +953,10 @@ namespace SimCore
          SimCore::Components::RenderingSupportComponent* renderComp;
          mGM->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME, renderComp);
 
-         if (renderComp != NULL)
+         if (renderComp != nullptr)
          {
             SimCore::Components::RenderingSupportComponent::DynamicLight* dl = renderComp->GetDynamicLight(mDynamicLightID);
-            if (dl != NULL && mDynamicLightEnabled)
+            if (dl != nullptr && mDynamicLightEnabled)
             {
                dl->mIntensity = 0.0f;
                renderComp->RemoveDynamicLight(mDynamicLightID);
@@ -997,10 +997,10 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void WeaponEffectsManager::SetGameManager( dtGame::GameManager* gameManager )
       {
-         if( gameManager == NULL )
+         if( gameManager == nullptr )
          {
             mIsector->Reset();
-            mIsector->SetScene( NULL );
+            mIsector->SetScene( nullptr );
          }
 
          mGM = gameManager;
@@ -1090,12 +1090,12 @@ namespace SimCore
          const std::string& objectId = owner.GetUniqueId().ToString();
 
          // Determine if an effect has already been assigned to the specified entity.
-         std::map<std::string, dtCore::RefPtr<WeaponEffect> >::iterator foundEffectIter
+         std::map<std::string, std::shared_ptr<WeaponEffect> >::iterator foundEffectIter
             = mEntityToEffectMap.find( objectId );
          bool foundEffect = foundEffectIter != mEntityToEffectMap.end();
 
          // Ready a new effect
-         dtCore::RefPtr<WeaponEffect> newEffect = ! foundEffect
+         std::shared_ptr<WeaponEffect> newEffect = ! foundEffect
             ? new WeaponEffect : foundEffectIter->second.get();
 
          // Set the other effect data if this is a new weapon effect.
@@ -1158,16 +1158,16 @@ namespace SimCore
          bool isTracerEffect = ! effectsInfo.GetTracerShaderName().empty();
 
          // Find a recyclable effect.
-         MunitionEffect* effect = NULL;
-         MunitionEffect* curEffect = NULL;
+         MunitionEffect* effect = nullptr;
+         MunitionEffect* curEffect = nullptr;
          MunitionEffectArray::iterator curEffectIter = mMunitionEffects.begin();
          MunitionEffectArray::iterator endEffectArray = mMunitionEffects.end();
          for( ; curEffectIter != endEffectArray; ++curEffectIter )
          {
             curEffect = curEffectIter->get();
-            if( curEffect != NULL && ! curEffect->IsActive() )
+            if( curEffect != nullptr && ! curEffect->IsActive() )
             {
-               if( isTracerEffect == (dynamic_cast<TracerEffect*>(curEffect) != NULL) )
+               if( isTracerEffect == (dynamic_cast<TracerEffect*>(curEffect) != nullptr) )
                {
                   effect = curEffect;
                   break;
@@ -1176,7 +1176,7 @@ namespace SimCore
          }
 
          // Create a new effect if one could not be recycled.
-         if( effect == NULL )
+         if( effect == nullptr )
          {
             if( isTracerEffect )
             {
@@ -1191,7 +1191,7 @@ namespace SimCore
             }
             else
             {
-               dtCore::RefPtr<osg::Node> modelNode
+               osg::ref_ptr<osg::Node> modelNode
                   = osgDB::readNodeFile( effectRequest.GetMunitionModelFile() );
 
                if( modelNode.valid() )
@@ -1199,7 +1199,7 @@ namespace SimCore
                   effect = new MunitionEffect;
 
                   osg::Group* group = dynamic_cast<osg::Group*>(effect->GetOSGNode());
-                  if( group != NULL )
+                  if( group != nullptr )
                   {
                      group->addChild( modelNode.get() );
                   }
@@ -1211,7 +1211,7 @@ namespace SimCore
                }
             }
 
-            if( effect != NULL )
+            if( effect != nullptr )
             {
                effect->SetGameManager( mGM.get() );
 
@@ -1223,7 +1223,7 @@ namespace SimCore
             }
          }
 
-         bool success = effect != NULL;
+         bool success = effect != nullptr;
 
          // Set position and velocity on the new/recycled tracer effect.
          if( success )
@@ -1271,7 +1271,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      bool WeaponEffectsManager::AddMunitionEffectRequest( dtCore::RefPtr<MunitionEffectRequest>& effectRequest )
+      bool WeaponEffectsManager::AddMunitionEffectRequest( std::shared_ptr<MunitionEffectRequest>& effectRequest )
       {
          if( ! effectRequest.valid() )
          {
@@ -1301,7 +1301,7 @@ namespace SimCore
 
          bool deleteEffectRequest = false;
          bool firstEffectRequestProcessed = false;
-         MunitionEffectRequest* curRequest = NULL;
+         MunitionEffectRequest* curRequest = nullptr;
          MunitionEffectRequestList::iterator iter(--mTracerRequests.end());
          while( ! firstEffectRequestProcessed )
          {
@@ -1309,10 +1309,10 @@ namespace SimCore
             deleteEffectRequest = false;
             curRequest = iter->get();
 
-            if( curRequest == NULL ) // This should not happen
+            if( curRequest == nullptr ) // This should not happen
             {
                deleteEffectRequest = true;
-               LOG_WARNING( "WeaponEffectsManager acquired a NULL MunitionEffectRequest" );
+               LOG_WARNING( "WeaponEffectsManager acquired a nullptr MunitionEffectRequest" );
             }
             else
             {
@@ -1391,7 +1391,7 @@ namespace SimCore
          }
 
          // Iterate through all effects and update their times.
-         std::map<std::string, dtCore::RefPtr<WeaponEffect> >::iterator iter
+         std::map<std::string, std::shared_ptr<WeaponEffect> >::iterator iter
             = mEntityToEffectMap.begin();
          for( ; iter != mEntityToEffectMap.end(); ++iter )
          {
@@ -1417,18 +1417,18 @@ namespace SimCore
       {
          unsigned recycleCount = 0;
          std::vector<std::string> deleteList;
-         std::map<std::string, dtCore::RefPtr<WeaponEffect> >::iterator iter
+         std::map<std::string, std::shared_ptr<WeaponEffect> >::iterator iter
             = mEntityToEffectMap.begin();
 
          // Find any effects that need to be freed
-         WeaponEffect* curEffect = NULL;
+         WeaponEffect* curEffect = nullptr;
          for( ; iter != mEntityToEffectMap.end(); ++iter )
          {
             curEffect = iter->second.get();
-            if( curEffect == NULL || curEffect->GetOwner() == NULL
+            if( curEffect == nullptr || curEffect->GetOwner() == nullptr
                || curEffect->GetTimeSinceFlash() >= mEffectTimeMax )
             {
-               if( curEffect != NULL ) { curEffect->Clear( true ); }
+               if( curEffect != nullptr ) { curEffect->Clear( true ); }
                deleteList.push_back( iter->first );
             }
          }
@@ -1441,7 +1441,7 @@ namespace SimCore
          std::vector<std::string>::iterator deleteIter = deleteList.begin();
          for( ; deleteIter != deleteList.end(); ++deleteIter )
          {
-            std::map<std::string, dtCore::RefPtr<WeaponEffect> >::iterator foundIter
+            std::map<std::string, std::shared_ptr<WeaponEffect> >::iterator foundIter
                = mEntityToEffectMap.find( *deleteIter );
 
             if( foundIter != mEntityToEffectMap.end() )
@@ -1510,13 +1510,13 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void WeaponEffectsManager::ClearWeaponEffects()
       {
-         std::map<std::string, dtCore::RefPtr<WeaponEffect> >::iterator iter
+         std::map<std::string, std::shared_ptr<WeaponEffect> >::iterator iter
             = mEntityToEffectMap.begin();
 
          for( ; iter != mEntityToEffectMap.end(); ++iter )
          {
             iter->second->Clear( true );
-            iter->second = NULL;
+            iter->second = nullptr;
          }
 
          if( ! mEntityToEffectMap.empty() ) { mEntityToEffectMap.clear(); }
@@ -1559,7 +1559,7 @@ namespace SimCore
             return maxTime;
          }
 
-         dtCore::RefPtr<WeaponEffectUtils::EntityNodeVisitor> subNodeVisitor
+         std::shared_ptr<WeaponEffectUtils::EntityNodeVisitor> subNodeVisitor
             = new WeaponEffectUtils::EntityNodeVisitor;
          dtCore::BatchIsector::SingleISector& isector = mIsector->EnableAndGetISector(0);
          osg::Vec3 endPoint( weaponFirePoint + (initialVelocity*maxTime) );
@@ -1570,9 +1570,9 @@ namespace SimCore
             if( isector.GetNumberOfHits() > 0 )
             {
                // Check for self-collision?
-               if( owner != NULL )
+               if( owner != nullptr )
                {
-                  const osg::Geode* geode = NULL;
+                  const osg::Geode* geode = nullptr;
                   dtCore::BatchIsector::HitList& hitList = isector.GetHitList();
                   dtCore::BatchIsector::HitList::iterator curHitIter = hitList.begin();
                   dtCore::BatchIsector::HitList::iterator endHitList = hitList.end();
@@ -1583,7 +1583,7 @@ namespace SimCore
                      // Get the drawable of the current hit.
                      const osg::NodePath& nodePath = hit.getNodePath();
                      geode = dynamic_cast<osg::Geode*>(nodePath.back());
-                     if (geode == NULL)
+                     if (geode == nullptr)
                      {
                         continue;
                      }

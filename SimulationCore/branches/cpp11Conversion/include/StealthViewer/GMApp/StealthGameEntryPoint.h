@@ -24,7 +24,7 @@
 #define STEALTH_GAME_ENTRY_POINT_H_
 
 #include <dtUtil/exception.h>
-#include <dtCore/refptr.h>
+#include <dtUtil/refcountedbase.h>
 #include <SimCore/HLA/BaseHLAGameEntryPoint.h>
 #include <StealthViewer/GMApp/Export.h>
 #include <StealthViewer/GMApp/StealthHUD.h>
@@ -86,7 +86,7 @@ namespace StealthGM
          /**
           * Override the method to create the game manager.
           */
-         //virtual dtCore::ObserverPtr<dtGame::GameManager> CreateGameManager(dtCore::Scene& scene);
+         //virtual std::weak_ptr<dtGame::GameManager> CreateGameManager(dtCore::Scene& scene);
 
          /**
           * Called after all startup related code is run.
@@ -106,13 +106,13 @@ namespace StealthGM
          virtual void HLAConnectionComponentSetup(dtGame::GameManager& gm);
 
       private:
-         //dtCore::RefPtr<dtGame::DeadReckoningComponent> mDrComp;
-         dtCore::ObserverPtr<SimCore::Actors::StealthActor> mStealth;
+         //std::shared_ptr<dtGame::DeadReckoningComponent> mDrComp;
+         std::weak_ptr<SimCore::Actors::StealthActor> mStealth;
 
-         dtCore::RefPtr<StealthHUD> mHudGUI;
+         std::shared_ptr<StealthHUD> mHudGUI;
 
-         dtCore::RefPtr<dtGame::LogController> mLogController;
-         dtCore::RefPtr<dtGame::ServerLoggerComponent> mServerLogger;
+         std::shared_ptr<dtGame::LogController> mLogController;
+         std::shared_ptr<dtGame::ServerLoggerComponent> mServerLogger;
          bool mEnableLogging;
          bool mEnablePlayback;
          bool mHasBinoculars;

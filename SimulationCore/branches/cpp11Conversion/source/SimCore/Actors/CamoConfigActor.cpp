@@ -102,8 +102,8 @@ namespace SimCore
             typedef std::stack<std::string> ElementStack;
             ElementStack mElements;
 
-            dtCore::RefPtr<CamoConfigActor> mConfigActor;
-            dtCore::RefPtr<CamoParams> mCurCamoParams;
+            std::shared_ptr<CamoConfigActor> mConfigActor;
+            std::shared_ptr<CamoParams> mCurCamoParams;
             dtDAL::ResourceDescriptor mDefaultPatternTexture;
       };
 
@@ -197,7 +197,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       const CamoParams* CamoConfigActor::GetCamoParamsByName(const std::string& name) const
       {
-         const CamoParams* params = NULL;
+         const CamoParams* params = nullptr;
          CamoParamsMap::const_iterator curIter = mCamoMap.begin();
          CamoParamsMap::const_iterator endIter = mCamoMap.end();
 
@@ -216,7 +216,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       const CamoParams* CamoConfigActor::GetCamoParamsByCamoId(CamoParams::CamoId id) const
       {
-         const CamoParams* params = NULL;
+         const CamoParams* params = nullptr;
          CamoParamsMap::const_iterator foundIter = mCamoMap.find(id);
 
          if(foundIter != mCamoMap.end())
@@ -238,7 +238,7 @@ namespace SimCore
 
             std::ostringstream oss;
             oss << "Could not add camo \"" << params.GetName() << "\" because ";
-            if(existingCamo != NULL)
+            if(existingCamo != nullptr)
             {
                oss << "camo \"" << existingCamo->GetName()
                   << "\" already has id " << existingCamo->GetId() << ".\n\n";
@@ -315,13 +315,13 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       osg::Node* CamoConfigActor::GetOSGNode()
       {
-         return NULL;
+         return nullptr;
       }
       
       //////////////////////////////////////////////////////////////////////////
       const osg::Node* CamoConfigActor::GetOSGNode() const
       {
-         return NULL;
+         return nullptr;
       }
 
 
@@ -353,7 +353,7 @@ namespace SimCore
       void CamoConfigActorProxy::BuildPropertyMap()
       {
          // NOTE: Not calling BaseClass::BuildPropertyMap since has unwanted properties.
-         CamoConfigActor* actor = NULL;
+         CamoConfigActor* actor = nullptr;
          GetActor(actor);
 
          typedef dtDAL::PropertyRegHelper<CamoConfigActorProxy&, CamoConfigActor> PropRegType;
@@ -482,7 +482,7 @@ namespace SimCore
                      << mCurCamoParams->GetName() <<"\" (" << mCurCamoParams->GetId() << ").\n\n";
                   LOG_WARNING(oss.str());
                }
-               mCurCamoParams = NULL;
+               mCurCamoParams = nullptr;
             }
          }
       }

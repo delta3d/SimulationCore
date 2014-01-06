@@ -111,21 +111,21 @@ namespace DriverDemo
 
          ///////////////////////////////////////////////////
          // Sound effects
-         dtCore::RefPtr<dtAudio::Sound> mSndCollisionHit;
+         std::shared_ptr<dtAudio::Sound> mSndCollisionHit;
          ///////////////////////////////////////////////////
 
          osg::Vec3 mGoalLocation;       /// The general location we want to be.
-         dtCore::ObserverPtr<SimCore::Actors::BasePhysicsVehicleActor> mPlayerWeAreChasing;
+         std::weak_ptr<SimCore::Actors::BasePhysicsVehicleActor> mPlayerWeAreChasing;
 
          float mTimeSinceKilled;        /// How long it's been since the target was killed, delete after like 20 seconds
          float mTimeSinceBorn;          /// How long we've been alive - so we can time out after a while.
          float mTimeSinceWasHit;        /// How long since a player hit us - so we can blow up while chasing the player.
 
          bool mChasingModeActive;     // When active, we are chasing a player and highlighted red.
-         dtCore::RefPtr<dtCore::ShaderProgram> mCurrentShader;
+         std::shared_ptr<dtCore::ShaderProgram> mCurrentShader;
          std::string mCurrentShaderName;
 
-         dtCore::RefPtr<VehicleShield> mShield;
+         std::shared_ptr<VehicleShield> mShield;
    };
 
    /// This is the proxy for the object.  It needs to build the property map, create the actor, and handle entered world.

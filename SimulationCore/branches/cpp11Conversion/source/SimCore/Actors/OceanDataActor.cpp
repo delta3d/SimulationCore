@@ -132,7 +132,7 @@ namespace SimCore
 
          const std::string GROUP("Ocean Data");
 
-         OceanDataActor* actor = NULL;
+         OceanDataActor* actor = nullptr;
          GetActor( actor );
 
          // INTEGER PEORPERTIES

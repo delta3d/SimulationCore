@@ -133,25 +133,25 @@ class ClampedMotionModelTests : public CPPUNIT_NS::TestFixture
       //////////////////////////////////////////////////////////////
       void tearDown()
       {
-         mMotionModel = NULL;
+         mMotionModel = nullptr;
 
          if (mGM.valid())
          {
             mGM->DeleteAllActors(true);
          }
-         mGM = NULL;
+         mGM = nullptr;
 
-         mApp = NULL;
+         mApp = nullptr;
          dtCore::System::GetInstance().Stop();
       }
 
       //////////////////////////////////////////////////////////////
       void TestProperties()
       {
-         mMotionModel->SetTarget( NULL );
-         CPPUNIT_ASSERT( mMotionModel->GetTarget() == NULL );
+         mMotionModel->SetTarget( nullptr );
+         CPPUNIT_ASSERT( mMotionModel->GetTarget() == nullptr );
          mMotionModel->SetTarget( mTarget.get() );
-         CPPUNIT_ASSERT( mMotionModel->GetTarget() != NULL );
+         CPPUNIT_ASSERT( mMotionModel->GetTarget() != nullptr );
 
          float limit = 30.0f;
          CPPUNIT_ASSERT( mMotionModel->GetLeftRightLimit() < 0.0f );
@@ -309,11 +309,11 @@ class ClampedMotionModelTests : public CPPUNIT_NS::TestFixture
 
 
    private:
-      dtCore::RefPtr<dtGame::GameManager> mGM;
-      dtCore::RefPtr<TestClampedMotionModel> mMotionModel;
-      dtCore::RefPtr<dtCore::Transformable> mTarget;
-      dtCore::RefPtr<dtCore::Transformable> mAttachable;
-      dtCore::RefPtr<dtABC::Application> mApp;
+      std::shared_ptr<dtGame::GameManager> mGM;
+      std::shared_ptr<TestClampedMotionModel> mMotionModel;
+      std::shared_ptr<dtCore::Transformable> mTarget;
+      std::shared_ptr<dtCore::Transformable> mAttachable;
+      std::shared_ptr<dtABC::Application> mApp;
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(ClampedMotionModelTests);

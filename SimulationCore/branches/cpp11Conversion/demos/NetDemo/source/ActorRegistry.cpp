@@ -34,59 +34,59 @@
 #include <dtCore/shadermanager.h>
 #include <dtCore/scene.h>
 
-using dtCore::RefPtr;
+using std::shared_ptr;
 
 namespace NetDemo
 {
 
-   RefPtr<dtDAL::ActorType> NetDemoActorRegistry::HOVER_VEHICLE_ACTOR_TYPE(
+   std::shared_ptr<dtDAL::ActorType> NetDemoActorRegistry::HOVER_VEHICLE_ACTOR_TYPE(
       new dtDAL::ActorType("HoverActor", "NetDemo", "A floaty drivable vehicle for Driver Demo",
       SimCore::Actors::EntityActorRegistry::MILITARY_GROUND_PLATFORM_ACTOR_TYPE.get()));
 
-   RefPtr<dtDAL::ActorType> NetDemoActorRegistry::PLAYER_STATUS_ACTOR_TYPE(
+   std::shared_ptr<dtDAL::ActorType> NetDemoActorRegistry::PLAYER_STATUS_ACTOR_TYPE(
       new dtDAL::ActorType("PlayerStatusActor", "NetDemo", "Status of each real player such as game state, team, and vehicle for NetDemo",
       SimCore::Actors::EntityActorRegistry::PLAYER_ACTOR_TYPE.get()));
 
-   RefPtr<dtDAL::ActorType> NetDemoActorRegistry::SERVER_GAME_STATUS_ACTOR_TYPE(
+   std::shared_ptr<dtDAL::ActorType> NetDemoActorRegistry::SERVER_GAME_STATUS_ACTOR_TYPE(
       new dtDAL::ActorType("ServerGameStatusActor", "NetDemo", "Status of the overall game - controlled by the server. "));
 
-   RefPtr<dtDAL::ActorType> NetDemoActorRegistry::PROPELLED_VEHICLE_ACTOR_TYPE(
+   std::shared_ptr<dtDAL::ActorType> NetDemoActorRegistry::PROPELLED_VEHICLE_ACTOR_TYPE(
       new dtDAL::ActorType("Propelled Vehicle Actor", "NetDemo", "The propelled vehicle is basically a wheeled vehicle with a jet engine attached.",
             SimCore::Actors::EntityActorRegistry::FOUR_WHEEL_VEHICLE_MIL_ACTOR_TYPE.get()));
 
 
-   RefPtr<dtDAL::ActorType> NetDemoActorRegistry::TOWER_ACTOR_TYPE(
+   std::shared_ptr<dtDAL::ActorType> NetDemoActorRegistry::TOWER_ACTOR_TYPE(
       new dtDAL::ActorType("Tower Actor", "NetDemo", "A generic tower with a turret, used for defense.",
       SimCore::Actors::EntityActorRegistry::MILITARY_GROUND_PLATFORM_ACTOR_TYPE.get()));
 
-   RefPtr<dtDAL::ActorType> NetDemoActorRegistry::FORT_ACTOR_TYPE(
+   std::shared_ptr<dtDAL::ActorType> NetDemoActorRegistry::FORT_ACTOR_TYPE(
       new dtDAL::ActorType("FortActor", "NetDemo", "The team base - when destroyed the team looses.",
       SimCore::Actors::EntityActorRegistry::MILITARY_GROUND_PLATFORM_ACTOR_TYPE.get()));
 
-   RefPtr<dtDAL::ActorType> NetDemoActorRegistry::ENEMY_MINE_ACTOR_TYPE(
+   std::shared_ptr<dtDAL::ActorType> NetDemoActorRegistry::ENEMY_MINE_ACTOR_TYPE(
       new dtDAL::ActorType("EnemyMineActor", "NetDemo", "Flies around and destroys self near base",
       SimCore::Actors::EntityActorRegistry::MILITARY_AIR_PLATFORM_ACTOR_TYPE.get()));
 
-   RefPtr<dtDAL::ActorType> NetDemoActorRegistry::ENEMY_HELIX_ACTOR_TYPE(
+   std::shared_ptr<dtDAL::ActorType> NetDemoActorRegistry::ENEMY_HELIX_ACTOR_TYPE(
       new dtDAL::ActorType("EnemyHelixActor", "NetDemo", "A more sophisticated enemy then the enemy mine.",
       SimCore::Actors::EntityActorRegistry::MILITARY_AIR_PLATFORM_ACTOR_TYPE.get()));
 
-   RefPtr<dtDAL::ActorType> NetDemoActorRegistry::ENEMY_MOTHERSHIP_ACTOR_TYPE(
+   std::shared_ptr<dtDAL::ActorType> NetDemoActorRegistry::ENEMY_MOTHERSHIP_ACTOR_TYPE(
       new dtDAL::ActorType("EnemyMothershipActor", "NetDemo", "The motherhship spawns the other enemies.",
       SimCore::Actors::EntityActorRegistry::MILITARY_AIR_PLATFORM_ACTOR_TYPE.get()));
 
-   RefPtr<dtDAL::ActorType> NetDemoActorRegistry::ENEMY_DESCRIPTION_TYPE(
+   std::shared_ptr<dtDAL::ActorType> NetDemoActorRegistry::ENEMY_DESCRIPTION_TYPE(
       new dtDAL::ActorType("EnemyDecriptionActor", "NetDemo", "Describes the attributes of an enemy prototype."));
 
-   RefPtr<dtDAL::ActorType> NetDemoActorRegistry::LIGHT_TOWER_ACTOR_TYPE(
+   std::shared_ptr<dtDAL::ActorType> NetDemoActorRegistry::LIGHT_TOWER_ACTOR_TYPE(
       new dtDAL::ActorType("LightTower", "NetDemo", "A light tower with a tracking spot light, for a front line of defense.",
       SimCore::Actors::EntityActorRegistry::MILITARY_GROUND_PLATFORM_ACTOR_TYPE.get()));
 
-   RefPtr<dtDAL::ActorType> NetDemoActorRegistry::FIREBALL_TOWER_ACTOR_TYPE(
+   std::shared_ptr<dtDAL::ActorType> NetDemoActorRegistry::FIREBALL_TOWER_ACTOR_TYPE(
       new dtDAL::ActorType("FireBallTower", "NetDemo", "A tower which shoots a powerful fireball for a last line of defense.",
       SimCore::Actors::EntityActorRegistry::MILITARY_GROUND_PLATFORM_ACTOR_TYPE.get()));
 
-   RefPtr<dtDAL::ActorType> NetDemoActorRegistry::FIREBALL_ACTOR_TYPE(
+   std::shared_ptr<dtDAL::ActorType> NetDemoActorRegistry::FIREBALL_ACTOR_TYPE(
       new dtDAL::ActorType("FireBall", "NetDemo", "A blazing fireball shot through the fireball tower.",
       SimCore::Actors::EntityActorRegistry::MILITARY_AIR_PLATFORM_ACTOR_TYPE.get()));
 

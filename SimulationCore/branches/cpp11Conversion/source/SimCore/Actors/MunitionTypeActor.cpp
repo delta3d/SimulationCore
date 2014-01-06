@@ -441,8 +441,8 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      osg::Node* MunitionEffectsInfoActor::GetOSGNode() { return NULL; }
-      const osg::Node* MunitionEffectsInfoActor::GetOSGNode() const { return NULL; }
+      osg::Node* MunitionEffectsInfoActor::GetOSGNode() { return nullptr; }
+      const osg::Node* MunitionEffectsInfoActor::GetOSGNode() const { return nullptr; }
 
       //////////////////////////////////////////////////////////////////////////
       MunitionEffectsInfoActorProxy& MunitionEffectsInfoActor::GetProxy() { return *mProxy; }
@@ -685,8 +685,8 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void MunitionTypeActor::SetEffectsInfoActor( dtDAL::ActorProxy* proxy )
       {
-         mEffects = proxy != NULL ?
-            dynamic_cast<MunitionEffectsInfoActor*> (proxy->GetDrawable()) : NULL;
+         mEffects = proxy != nullptr ?
+            dynamic_cast<MunitionEffectsInfoActor*> (proxy->GetDrawable()) : nullptr;
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -698,14 +698,14 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void MunitionTypeActor::SetDetonationActorPrototype(dtDAL::ActorProxy* proxy)
       {
-         if(proxy != NULL)
+         if(proxy != nullptr)
          {
             DetonationActorProxy* detonProxy = dynamic_cast<DetonationActorProxy*>(proxy);
             mDetonationPrototype = detonProxy;
          }
          else
          {
-            mDetonationPrototype = NULL;
+            mDetonationPrototype = nullptr;
          }
       }
 

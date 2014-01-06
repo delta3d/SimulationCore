@@ -70,7 +70,7 @@ namespace NetDemo
 //            const dtGame::ActorUpdateMessage& acm =
 //                     static_cast<const dtGame::ActorUpdateMessage&>(message);
 //            const dtDAL::ActorType* at = acm.GetActorType();
-//            if (at != NULL && at->InstanceOf())
+//            if (at != nullptr && at->InstanceOf())
 //         }
 //      }
    }

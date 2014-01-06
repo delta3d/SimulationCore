@@ -114,9 +114,9 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      dtCore::RefPtr<dtDAL::NamedGroupParameter> BaseControl::GetAsGroupParameter() const
+      std::shared_ptr<dtDAL::NamedGroupParameter> BaseControl::GetAsGroupParameter() const
       {
-         dtCore::RefPtr<dtDAL::NamedGroupParameter> groupParam
+         std::shared_ptr<dtDAL::NamedGroupParameter> groupParam
             = new dtDAL::NamedGroupParameter( GetName() );
 
          return groupParam;
@@ -274,35 +274,35 @@ namespace SimCore
             = dynamic_cast<const dtDAL::NamedFloatParameter*>
             (groupParam.GetParameter( PARAM_NAME_VALUE_MIN ));
 
-         if( param != NULL )
+         if( param != nullptr )
             mMinValue = param->GetValue();
 
          // Set max value
          param = dynamic_cast<const dtDAL::NamedFloatParameter*>
             (groupParam.GetParameter( PARAM_NAME_VALUE_MAX ));
 
-         if( param != NULL )
+         if( param != nullptr )
             mMaxValue = param->GetValue();
 
          // Set value
          param = dynamic_cast<const dtDAL::NamedFloatParameter*>
             (groupParam.GetParameter( PARAM_NAME_VALUE ));
 
-         if( param != NULL )
+         if( param != nullptr )
             mValue = param->GetValue();
       }
 
       //////////////////////////////////////////////////////////////////////////
-      dtCore::RefPtr<dtDAL::NamedGroupParameter> ContinuousControl::GetAsGroupParameter() const
+      std::shared_ptr<dtDAL::NamedGroupParameter> ContinuousControl::GetAsGroupParameter() const
       {
-         dtCore::RefPtr<dtDAL::NamedGroupParameter> groupParam
+         std::shared_ptr<dtDAL::NamedGroupParameter> groupParam
             = BaseControl::GetAsGroupParameter();
 
          if( ! groupParam.valid() )
-            return NULL;
+            return nullptr;
 
          // Set min value
-         dtCore::RefPtr<dtDAL::NamedFloatParameter> paramValue
+         std::shared_ptr<dtDAL::NamedFloatParameter> paramValue
             = new dtDAL::NamedFloatParameter( PARAM_NAME_VALUE_MIN );
          paramValue->SetValue( mMinValue );
          groupParam->AddParameter( *paramValue );
@@ -443,7 +443,7 @@ namespace SimCore
             = dynamic_cast<const dtDAL::NamedUnsignedIntParameter*>
             (groupParam.GetParameter( PARAM_NAME_TOTAL_STATES ));
 
-         if( paramTotalStates != NULL )
+         if( paramTotalStates != nullptr )
             mTotalStates = paramTotalStates->GetValue();
 
          // Set current state
@@ -451,27 +451,27 @@ namespace SimCore
             = dynamic_cast<const dtDAL::NamedIntParameter*>
             (groupParam.GetParameter( PARAM_NAME_CURRENT_STATE ));
 
-         if( paramCurrentState != NULL )
+         if( paramCurrentState != nullptr )
             mCurrentState = paramCurrentState->GetValue();
       }
 
       //////////////////////////////////////////////////////////////////////////
-      dtCore::RefPtr<dtDAL::NamedGroupParameter> DiscreteControl::GetAsGroupParameter() const
+      std::shared_ptr<dtDAL::NamedGroupParameter> DiscreteControl::GetAsGroupParameter() const
       {
-         dtCore::RefPtr<dtDAL::NamedGroupParameter> groupParam
+         std::shared_ptr<dtDAL::NamedGroupParameter> groupParam
             = BaseControl::GetAsGroupParameter();
 
          if( ! groupParam.valid() )
-            return NULL;
+            return nullptr;
 
          // Set total states
-         dtCore::RefPtr<dtDAL::NamedUnsignedIntParameter> paramTotalStates
+         std::shared_ptr<dtDAL::NamedUnsignedIntParameter> paramTotalStates
             = new dtDAL::NamedUnsignedIntParameter( PARAM_NAME_TOTAL_STATES );
          paramTotalStates->SetValue( mTotalStates );
          groupParam->AddParameter( *paramTotalStates );
 
          // Set current state
-         dtCore::RefPtr<dtDAL::NamedIntParameter> paramCurrentState
+         std::shared_ptr<dtDAL::NamedIntParameter> paramCurrentState
             = new dtDAL::NamedIntParameter( PARAM_NAME_CURRENT_STATE );
          paramCurrentState->SetValue( mCurrentState );
          groupParam->AddParameter( *paramCurrentState );
@@ -528,17 +528,17 @@ namespace SimCore
       {
          Platform* oldEntity = mEntity.get();
 
-         if( proxy != NULL )
+         if( proxy != nullptr )
          {
             mEntity = dynamic_cast<Platform*>(proxy->GetDrawable());
          }
          else
          {
-            mEntity = NULL;
+            mEntity = nullptr;
          }
 
          // DEBUG:
-         //if( proxy != NULL )
+         //if( proxy != nullptr )
          //   std::cout << "ControlState: " << GetUniqueId() << " -> " << proxy->GetId() << std::endl;
 
          mChanged = mEntity.get() != oldEntity;
@@ -576,30 +576,30 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      const std::map<const std::string, dtCore::RefPtr<DiscreteControl> >&
+      const std::map<const std::string, std::shared_ptr<DiscreteControl> >&
          ControlStateActor::GetDiscreteControls() const
       {
          return mDiscreteTypes;
       }
 
       //////////////////////////////////////////////////////////////////////////
-      const std::map<const std::string, dtCore::RefPtr<ContinuousControl> >&
+      const std::map<const std::string, std::shared_ptr<ContinuousControl> >&
          ControlStateActor::GetContinuousControls() const
       {
          return mContinuousTypes;
       }
 
       //////////////////////////////////////////////////////////////////////////
-      bool ControlStateActor::AddControl( dtCore::RefPtr<BaseControl>& control )
+      bool ControlStateActor::AddControl( std::shared_ptr<BaseControl>& control )
       {
          if( ! control.valid() )
             return false;
 
-         if( dynamic_cast<DiscreteControl*>(control.get()) != NULL )
+         if( dynamic_cast<DiscreteControl*>(control.get()) != nullptr )
          {
             return AddControlToMap( static_cast<DiscreteControl&>(*control), mDiscreteTypes );
          }
-         else if( dynamic_cast<ContinuousControl*>(control.get()) != NULL )
+         else if( dynamic_cast<ContinuousControl*>(control.get()) != nullptr )
          {
             return AddControlToMap( static_cast<ContinuousControl&>(*control), mContinuousTypes );
          }
@@ -607,7 +607,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      bool ControlStateActor::AddControl( dtCore::RefPtr<DiscreteControl>& control )
+      bool ControlStateActor::AddControl( std::shared_ptr<DiscreteControl>& control )
       {
          if( ! control.valid() )
             return false;
@@ -616,7 +616,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      bool ControlStateActor::AddControl( dtCore::RefPtr<ContinuousControl>& control )
+      bool ControlStateActor::AddControl( std::shared_ptr<ContinuousControl>& control )
       {
          if( ! control.valid() )
             return false;
@@ -627,14 +627,14 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       bool ControlStateActor::RemoveControl( BaseControl* control )
       {
-         if( control == NULL )
+         if( control == nullptr )
             return false;
 
-         if( dynamic_cast<DiscreteControl*>(control) != NULL )
+         if( dynamic_cast<DiscreteControl*>(control) != nullptr )
          {
             return RemoveControlFromMap( control->GetEncodableName(), mDiscreteTypes );
          }
-         else if( dynamic_cast<ContinuousControl*>(control) != NULL )
+         else if( dynamic_cast<ContinuousControl*>(control) != nullptr )
          {
             return RemoveControlFromMap( control->GetEncodableName(), mContinuousTypes );
          }
@@ -680,7 +680,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void ControlStateActor::Clear()
       {
-         mEntity = NULL;
+         mEntity = nullptr;
          mStationType = 0;
          mContinuousTypes.clear();
          mDiscreteTypes.clear();
@@ -719,7 +719,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      dtCore::RefPtr<dtDAL::NamedGroupParameter> ControlStateActor::GetDiscreteControlsAsGroupParameter() const
+      std::shared_ptr<dtDAL::NamedGroupParameter> ControlStateActor::GetDiscreteControlsAsGroupParameter() const
       {
          return GetMapAsGroupParameter( mDiscreteTypes, PARAM_NAME_ARRAY_DISCRETE_CONTROLS );
       }
@@ -731,7 +731,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      dtCore::RefPtr<dtDAL::NamedGroupParameter> ControlStateActor::GetContinuousControlsAsGroupParameter() const
+      std::shared_ptr<dtDAL::NamedGroupParameter> ControlStateActor::GetContinuousControlsAsGroupParameter() const
       {
          return GetMapAsGroupParameter( mContinuousTypes, PARAM_NAME_ARRAY_CONTINUOUS_CONTROLS );
       }
@@ -782,7 +782,7 @@ namespace SimCore
       {
          dtGame::GameActorProxy::BuildPropertyMap();
 
-         ControlStateActor* actor = NULL;
+         ControlStateActor* actor = nullptr;
          GetActor(actor);
 
          AddProperty(new dtDAL::ActorActorProperty( *this, "EntityID", "EntityID",

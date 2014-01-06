@@ -28,8 +28,8 @@
 // INCLUDE DIRECTIVES
 ////////////////////////////////////////////////////////////////////////////////
 #include <SimCore/Export.h>
-#include <osg/Referenced>
-#include <dtCore/refptr.h>
+#include <dtUtil/refcountedbase.h>
+#include <dtUtil/refcountedbase.h>
 
 
 
@@ -50,7 +50,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       // Munition Type Table Code
       //////////////////////////////////////////////////////////////////////////
-      class SIMCORE_EXPORT MunitionTypeTable : public osg::Referenced
+      class SIMCORE_EXPORT MunitionTypeTable : public std::enable_shared_from_this
       {
          public:
 
@@ -65,7 +65,7 @@ namespace SimCore
             // @param newType The new MunitionTypeActor to be added to this table.
             // @return TRUE if addition was successful. FALSE usually means another
             //         entry with the same name exists in this table.
-            bool AddMunitionType( const dtCore::RefPtr<SimCore::Actors::MunitionTypeActorProxy>& newType );
+            bool AddMunitionType( const std::shared_ptr<SimCore::Actors::MunitionTypeActorProxy>& newType );
 
             // Remove a MunitionTypeActor by name.
             // @param name The name of the MunitionTypeActor to be removed.
@@ -80,7 +80,7 @@ namespace SimCore
             // Access a MunitionTypeActor that is identified by the specified name.
             // @param name The name of the MunitionTypeActor to be found.
             // @return The MunitionTypeActor that has the specified name.
-            //         NULL if no MunitionTypeActor was found with the name.
+            //         nullptr if no MunitionTypeActor was found with the name.
             SimCore::Actors::MunitionTypeActor* GetMunitionType( const std::string& name );
             const SimCore::Actors::MunitionTypeActor* GetMunitionType( const std::string& name ) const;
 
@@ -90,14 +90,14 @@ namespace SimCore
             // @param exactMatch Determine if this function should perform an exact match.
             // @return The MunitionTypeActor with the closest or exactly matching DIS
             //         identifier as that specified by the parameter dis.
-            //         NULL if there was no match.
+            //         nullptr if there was no match.
             const SimCore::Actors::MunitionTypeActor* GetMunitionTypeByDIS( const SimCore::Actors::DISIdentifier& dis, bool exactMatch = false ) const;
             const SimCore::Actors::MunitionTypeActor* GetMunitionTypeByDIS( const std::string& dis, bool exactMatch = false ) const;
 
             // Access this table's sorted list directly.
             // @return The list of MunitionTypeActors sorted by DIS identifiers,
             //         from low to high numbers (identifier numbers are read from left to right).
-            const std::vector<dtCore::RefPtr<SimCore::Actors::MunitionTypeActor> >& GetOrderedList() const { return mOrderedList; }
+            const std::vector<std::shared_ptr<SimCore::Actors::MunitionTypeActor> >& GetOrderedList() const { return mOrderedList; }
 
             // Query the number of entries in this table with in a separate sorted list.
             // The list is sorted by DIS identifier.
@@ -129,8 +129,8 @@ namespace SimCore
             void RemoveMunitionTypeFromOrderedList( const SimCore::Actors::MunitionTypeActor& oldType );
 
          private:
-            std::map<std::string, dtCore::RefPtr<SimCore::Actors::MunitionTypeActor> > mNameToMunitionMap;
-            std::vector<dtCore::RefPtr<SimCore::Actors::MunitionTypeActor> > mOrderedList; // ordered list
+            std::map<std::string, std::shared_ptr<SimCore::Actors::MunitionTypeActor> > mNameToMunitionMap;
+            std::vector<std::shared_ptr<SimCore::Actors::MunitionTypeActor> > mOrderedList; // ordered list
       };
 
    }

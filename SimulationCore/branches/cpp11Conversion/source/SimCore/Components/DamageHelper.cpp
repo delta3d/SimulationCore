@@ -53,7 +53,7 @@ namespace SimCore
          , mMaxDamageAmount(maxDamageAmount)
          , mLastNotifiedDamageState(&DamageType::DAMAGE_NONE)
          , mCurrentDamageState(&DamageType::DAMAGE_NONE)
-         //, mLastDRAlgorithm(NULL)
+         //, mLastDRAlgorithm(nullptr)
          , mScratchProbs(new DamageProbability(""))
          , mDamageLevels(new DamageProbability("DamageLevels"))
       {
@@ -69,7 +69,7 @@ namespace SimCore
          , mMaxDamageAmount(maxDamageAmount)
          , mLastNotifiedDamageState(&DamageType::DAMAGE_NONE)
          , mCurrentDamageState(&DamageType::DAMAGE_NONE)
-         //, mLastDRAlgorithm(NULL)
+         //, mLastDRAlgorithm(nullptr)
          , mEntity(&entity)
          , mScratchProbs(new DamageProbability(""))
          , mDamageLevels(new DamageProbability("DamageLevels"))
@@ -91,7 +91,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       DamageType& DamageHelper::GetGreaterDamageState( DamageType& damageToCompare ) const
       {
-         if( mCurrentDamageState == NULL // NULL damage state should not happen
+         if( mCurrentDamageState == nullptr // nullptr damage state should not happen
             || *mCurrentDamageState == DamageType::DAMAGE_NONE ) { return damageToCompare; }
 
          if( *mCurrentDamageState == DamageType::DAMAGE_KILL
@@ -123,7 +123,7 @@ namespace SimCore
 //         const MunitionDamage* munition = 
 //            mTable->GetMunitionDamage( message.GetMunitionType().GetName() );
 
-//         if( munition == NULL ) { return; }
+//         if( munition == nullptr ) { return; }
 
          // TODO: Get quantity of bullets that hit
          // Run through each and modify integrity of vehicle
@@ -152,7 +152,7 @@ namespace SimCore
 
          const MunitionDamage* munitionDamage = mTable->GetMunitionDamage( munition.GetDamageType() );
 
-         if( munitionDamage == NULL )
+         if( munitionDamage == nullptr )
          {
             std::ostringstream ss;
             ss << "DamageHelper.ProcessDetonationMessage: Unable to locate munition \"" 
@@ -264,7 +264,7 @@ namespace SimCore
                mEntity->SetMobilityDisabled(false);
                mEntity->SetFirepowerDisabled(false);
                mEntity->SetDamageState( SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::NO_DAMAGE );
-               //if( mLastDRAlgorithm != NULL )
+               //if( mLastDRAlgorithm != nullptr )
                //{
                //   mEntity->GetDeadReckoningHelper().SetDeadReckoningAlgorithm( *mLastDRAlgorithm );
                //}
@@ -301,7 +301,7 @@ namespace SimCore
                // This checks for the property.  The reason is that removing the property is the way we stopped external sims
                // from wantonly setting humans to be on fire.  Thus I check it here also to be consistent since this code would otherwise
                // have the same bug.  
-               if (NULL != mEntity->GetGameActorProxy().GetProperty(SimCore::Actors::BaseEntityActorProxy::PROPERTY_FLAMES_PRESENT))
+               if (nullptr != mEntity->GetGameActorProxy().GetProperty(SimCore::Actors::BaseEntityActorProxy::PROPERTY_FLAMES_PRESENT))
                {
                   mEntity->SetFlamesPresent( true );
                }

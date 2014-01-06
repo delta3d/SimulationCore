@@ -136,8 +136,8 @@ namespace SimCore
          bool mDirtyFlag;
          bool mEnableTopGeometry;
          static bool mEnableTopGeometryGlobal;
-         dtCore::RefPtr<osg::Geode> mGeode;
-         dtCore::RefPtr<osg::Geode> mTopGeode;
+         osg::ref_ptr<osg::Geode> mGeode;
+         osg::ref_ptr<osg::Geode> mTopGeode;
 
       };
 

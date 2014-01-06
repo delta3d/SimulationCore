@@ -83,7 +83,7 @@ namespace SimCore
       {
          BaseClass::BuildPropertyMap();
 
-         MultipleDetonationActor* da = NULL;
+         MultipleDetonationActor* da = nullptr;
          GetActor(da);
 
          static const dtUtil::RefString groupImpactEffects("Multiple Detonation Effects");
@@ -134,7 +134,7 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////
       void MultipleDetonationActor::CreateRandomOffsets()
       {
-         dtCore::RefPtr<dtCore::BatchIsector> isector = new dtCore::BatchIsector(&GetGameActorProxy().GetGameManager()->GetScene());
+         std::shared_ptr<dtCore::BatchIsector> isector = new dtCore::BatchIsector(&GetGameActorProxy().GetGameManager()->GetScene());
 
          osg::Vec3 down(0.0f, 0.0f, -1.0f);
 
@@ -226,10 +226,10 @@ namespace SimCore
                SimCore::Components::RenderingSupportComponent* renderComp;
                GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME, renderComp);
 
-               if(renderComp != NULL)
+               if(renderComp != nullptr)
                {
                   SimCore::Components::RenderingSupportComponent::DynamicLight* dl = renderComp->AddDynamicLightByPrototypeName(GetGroundImpactLight());
-                  if(dl != NULL)
+                  if(dl != nullptr)
                   {
                      dl->mTarget = mExplosionArray[i].get();
                   }
@@ -247,7 +247,7 @@ namespace SimCore
           
 			for(int i = 0; i < mNumDetonations; ++i)
             {
-               dtCore::RefPtr<dtCore::ParticleSystem> particleSys = new dtCore::ParticleSystem();
+               std::shared_ptr<dtCore::ParticleSystem> particleSys = new dtCore::ParticleSystem();
                AddChild(particleSys.get());
 
                Components::ParticleInfoAttributeFlags attrs = { true, false };
@@ -272,7 +272,7 @@ namespace SimCore
 
             for(int i = 0; i < mNumDetonations; ++i)
             {
-               dtCore::RefPtr<dtCore::ParticleSystem> particleSys = new dtCore::ParticleSystem();
+               std::shared_ptr<dtCore::ParticleSystem> particleSys = new dtCore::ParticleSystem();
                AddChild(particleSys.get());
 
                Components::ParticleInfoAttributeFlags attrs = { true, false };

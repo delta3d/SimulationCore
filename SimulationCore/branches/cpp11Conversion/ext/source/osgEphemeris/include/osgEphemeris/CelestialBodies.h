@@ -31,7 +31,7 @@
 
 
 
-#include <osg/Referenced>
+#include <dtUtil/refcountedbase.h>
 #include <osgEphemeris/Export.h>
 
 namespace osgEphemeris {
@@ -42,7 +42,7 @@ class Sun;
     \brief A super class for all celestial bodies - Used Internally.
 
     */
-class OSGEPHEMERIS_EXPORT CelestialBody: public osg::Referenced
+class OSGEPHEMERIS_EXPORT CelestialBody: public std::enable_shared_from_this
 {
     public:
         CelestialBody(double Nf, double Ns,

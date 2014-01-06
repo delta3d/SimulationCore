@@ -69,7 +69,7 @@ namespace SimCore
          MunitionsConfig();
 
          unsigned int LoadMunitionTables( const std::string& filePath, 
-            std::vector<dtCore::RefPtr<MunitionDamageTable> >& outTables );
+            std::vector<std::shared_ptr<MunitionDamageTable> >& outTables );
 
 
 
@@ -115,7 +115,7 @@ namespace SimCore
          // Entity Resolver inherited interface:
          virtual xercesc::InputSource* resolveEntity(
             const XMLCh* const publicId,
-            const XMLCh* const systemId) { return NULL; }
+            const XMLCh* const systemId) { return nullptr; }
 
       protected:
 
@@ -153,7 +153,7 @@ namespace SimCore
 
       private:
 
-         dtCore::RefPtr<dtUtil::Log> mLogger;
+         std::shared_ptr<dtUtil::Log> mLogger;
          xercesc::SAX2XMLReader* mXercesParser;
          ParseLevel mLevel;
          ParseLevel mLastLevel;
@@ -163,10 +163,10 @@ namespace SimCore
 
          std::string mCurMunitionRangeName;
 
-         dtCore::RefPtr<DamageProbability> mCurProbs;
-         dtCore::RefPtr<MunitionDamage> mCurMunitionDamage;
-         dtCore::RefPtr<MunitionDamageTable> mCurMunitionTable;
-         std::vector<dtCore::RefPtr<MunitionDamageTable> > mOutTables;
+         std::shared_ptr<DamageProbability> mCurProbs;
+         std::shared_ptr<MunitionDamage> mCurMunitionDamage;
+         std::shared_ptr<MunitionDamageTable> mCurMunitionTable;
+         std::vector<std::shared_ptr<MunitionDamageTable> > mOutTables;
 
          static const std::string LOG_NAME;
 

@@ -60,16 +60,16 @@ namespace SimCore
          /**
           * Constructor.
           *
-          * @param keyboard the keyboard instance, or NULL to
+          * @param keyboard the keyboard instance, or nullptr to
           * avoid creating default input mappings
-          * @param mouse the mouse instance, or NULL to avoid
+          * @param mouse the mouse instance, or nullptr to avoid
           * creating default input mappings
           * @param useSimTimeForSpeed true if the motion model should use the 
           * simulation time, which can be scaled, for motion or false if it 
           * should use the real time.
           */
-         StealthMotionModel(dtCore::Keyboard* keyboard = NULL,
-                  dtCore::Mouse* mouse = NULL, 
+         StealthMotionModel(dtCore::Keyboard* keyboard = nullptr,
+                  dtCore::Mouse* mouse = nullptr, 
                   dtCore::FlyMotionModel::BehaviorOptions options = dtCore::FlyMotionModel::OPTION_DEFAULT);
 
          void SetCollideWithGround( bool collideWithGround ) { mCollideWithGround = collideWithGround; }
@@ -194,12 +194,12 @@ namespace SimCore
          /**
           * A reference to the Scene, used for ground following.
           */
-         dtCore::RefPtr<dtCore::Scene> mScene;
+         std::shared_ptr<dtCore::Scene> mScene;
 
          /**
           * An ISector reference used in ground collision.
           */
-         dtCore::RefPtr<dtCore::Isector> mIsector; 
+         std::shared_ptr<dtCore::Isector> mIsector; 
 
          /**
           * Resets the isector collision ray back to default parameters

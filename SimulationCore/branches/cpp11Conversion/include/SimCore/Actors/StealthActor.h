@@ -89,9 +89,9 @@ namespace SimCore
 
             /**
              * Helper method to actually do attaching and detaching
-             * @param ataMsg A pointer to the attach message.  NULL, or an empty attach id mean to detach.
+             * @param ataMsg A pointer to the attach message.  nullptr, or an empty attach id mean to detach.
              */
-            void AttachOrDetachActor(const AttachToActorMessage* ataMsg = NULL);
+            void AttachOrDetachActor(const AttachToActorMessage* ataMsg = nullptr);
             void DoDetach();
             virtual void DoAttach(dtGame::GameActorProxy& ga, const std::string& attachPointNode,
                const osg::Vec3& attachRotationHPR);

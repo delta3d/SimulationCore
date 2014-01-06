@@ -56,7 +56,7 @@
 #include <UnitTestMain.h>
 #include <dtABC/application.h>
 
-using dtCore::RefPtr;
+using std::shared_ptr;
 
 class HLAConfigTests : public CPPUNIT_NS::TestFixture
 {
@@ -72,8 +72,8 @@ class HLAConfigTests : public CPPUNIT_NS::TestFixture
       void TestLoadBasicConfigXML();
    private:
       dtUtil::Log* logger;
-      RefPtr<dtHLAGM::HLAComponent> mTranslator;
-      RefPtr<dtGame::GameManager> mGameManager;
+      std::shared_ptr<dtHLAGM::HLAComponent> mTranslator;
+      std::shared_ptr<dtGame::GameManager> mGameManager;
 };
 
 // Registers the fixture into the 'registry'
@@ -95,9 +95,9 @@ void HLAConfigTests::setUp()
 // Called implicitly by CPPUNIT when the app terminates
 void HLAConfigTests::tearDown()
 {
-   mTranslator = NULL;
+   mTranslator = nullptr;
 
-   mGameManager = NULL;
+   mGameManager = nullptr;
 
 }
 

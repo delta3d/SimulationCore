@@ -267,7 +267,7 @@ public:
     typedef std::set< osg::ref_ptr<Triangle> >                                  TriangleSet;
     typedef std::map< osg::ref_ptr<Triangle>, unsigned int, dereference_less >  TriangleMap;
 
-    struct Point : public osg::Referenced
+    struct Point : public std::enable_shared_from_this
     {
         Point(): _protected(false), _index(0) {}
         
@@ -313,7 +313,7 @@ public:
 
     };
 
-    struct Edge : public osg::Referenced
+    struct Edge : public std::enable_shared_from_this
     {
         Edge(): _errorMetric(0.0), _maximumDeviation(1.0) {}
         
@@ -410,7 +410,7 @@ public:
 
     };
 
-    struct Triangle : public osg::Referenced
+    struct Triangle : public std::enable_shared_from_this
     {
         Triangle() {}
         
@@ -630,7 +630,7 @@ public:
         unsigned int result = 0;
         if (!(triangle->_p1))
         {
-            osg::notify(osg::NOTICE)<<"testTriangle("<<triangle<<") _p1==NULL"<<std::endl;
+            osg::notify(osg::NOTICE)<<"testTriangle("<<triangle<<") _p1==nullptr"<<std::endl;
             ++result;
         }
         else if (triangle->_p1->_triangles.count(triangle)==0) 
@@ -641,7 +641,7 @@ public:
 
         if (!(triangle->_p2))
         {
-            osg::notify(osg::NOTICE)<<"testTriangle("<<triangle<<") _p2==NULL"<<std::endl;
+            osg::notify(osg::NOTICE)<<"testTriangle("<<triangle<<") _p2==nullptr"<<std::endl;
             ++result;
         }
         else if (triangle->_p2->_triangles.count(triangle)==0) 
@@ -652,7 +652,7 @@ public:
 
         if (!(triangle->_p3))
         {
-            osg::notify(osg::NOTICE)<<"testTriangle("<<triangle<<") _p3==NULL"<<std::endl;
+            osg::notify(osg::NOTICE)<<"testTriangle("<<triangle<<") _p3==nullptr"<<std::endl;
             ++result;
         }
         else if (triangle->_p3->_triangles.count(triangle)==0) 

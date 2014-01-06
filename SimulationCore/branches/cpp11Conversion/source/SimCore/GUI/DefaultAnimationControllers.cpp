@@ -62,7 +62,7 @@ namespace SimCore
       Vec2Controller::Vec2Controller( AnimCallbackSetVec2* callback )
          : BaseClass(dtUtil::MakeFunctor(&VecInterpolator<osg::Vec2>::GetInterpolatedTarget))
       {
-         if( callback != NULL )
+         if( callback != nullptr )
          {
             SetTargetSetCallback( callback );
          }
@@ -81,7 +81,7 @@ namespace SimCore
       Vec3Controller::Vec3Controller( AnimCallbackSetVec3* callback )
          : BaseClass(dtUtil::MakeFunctor(&VecInterpolator<osg::Vec3>::GetInterpolatedTarget))
       {
-         if( callback != NULL )
+         if( callback != nullptr )
          {
             SetTargetSetCallback( callback );
          }
@@ -100,7 +100,7 @@ namespace SimCore
       Vec4Controller::Vec4Controller( AnimCallbackSetVec4* callback )
          : BaseClass(dtUtil::MakeFunctor(&VecInterpolator<osg::Vec4>::GetInterpolatedTarget))
       {
-         if( callback != NULL )
+         if( callback != nullptr )
          {
             SetTargetSetCallback( callback );
          }
@@ -119,7 +119,7 @@ namespace SimCore
       BoundsController::BoundsController( AnimCallbackSetVec4* callback )
          : BaseClass(dtUtil::MakeFunctor(&BoundsInterpolator::GetInterpolatedTarget))
       {
-         if( callback != NULL )
+         if( callback != nullptr )
          {
             SetTargetSetCallback( callback );
          }

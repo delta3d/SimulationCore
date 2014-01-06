@@ -43,7 +43,7 @@
 #include <dtDAL/resourcedescriptor.h>
 
 #include <dtCore/system.h>
-#include <dtCore/refptr.h>
+#include <dtUtil/refcountedbase.h>
 #include <dtCore/scene.h>
 
 #include <dtUtil/macros.h>
@@ -60,7 +60,7 @@
 #include <UnitTestMain.h>
 #include <dtABC/application.h>
 
-using dtCore::RefPtr;
+using std::shared_ptr;
 using dtCore::ObserverPtr;
 
 
@@ -106,24 +106,24 @@ class HumanTests : public CPPUNIT_NS::TestFixture
 
       void tearDown()
       {
-         mHumanAP = NULL;
+         mHumanAP = nullptr;
 
          if (mGM.valid())
          {
             mGM->DeleteAllActors(true);
-            mGM = NULL;
+            mGM = nullptr;
          }
          dtCore::System::GetInstance().Stop();
       }
 
       void TestPrimaryWeapon()
       {
-         SimCore::Actors::Human* human = NULL;
+         SimCore::Actors::Human* human = nullptr;
          mHumanAP->GetActor(human);
 
          dtDAL::StringActorProperty* meshNameProp;
          mHumanAP->GetProperty(SimCore::Actors::HumanActorProxy::PROPERTY_WEAPON_MESH, meshNameProp);
-         CPPUNIT_ASSERT(meshNameProp != NULL);
+         CPPUNIT_ASSERT(meshNameProp != nullptr);
 
          CPPUNIT_ASSERT_EQUAL(std::string("PrimaryWeapon"), meshNameProp->GetValue());
          CPPUNIT_ASSERT_EQUAL(std::string("PrimaryWeapon"), human->GetWeaponMeshName());
@@ -137,7 +137,7 @@ class HumanTests : public CPPUNIT_NS::TestFixture
 
       void TestPlanReadyToDeployed()
       {
-         SimCore::Actors::Human* human = NULL;
+         SimCore::Actors::Human* human = nullptr;
          mHumanAP->GetActor(human);
 
          human->SetStance(SimCore::Actors::HumanActorProxy::StanceEnum::UPRIGHT_WALKING);
@@ -169,7 +169,7 @@ class HumanTests : public CPPUNIT_NS::TestFixture
       {
          try
          {
-            SimCore::Actors::Human* human = NULL;
+            SimCore::Actors::Human* human = nullptr;
             mHumanAP->GetActor(human);
 
             human->SetStance(SimCore::Actors::HumanActorProxy::StanceEnum::UPRIGHT_STANDING);
@@ -204,7 +204,7 @@ class HumanTests : public CPPUNIT_NS::TestFixture
 
       void TestPlanStandingToKneelingDeployed()
       {
-         SimCore::Actors::Human* human = NULL;
+         SimCore::Actors::Human* human = nullptr;
          mHumanAP->GetActor(human);
 
          human->SetStance(SimCore::Actors::HumanActorProxy::StanceEnum::UPRIGHT_STANDING);
@@ -234,13 +234,13 @@ class HumanTests : public CPPUNIT_NS::TestFixture
 
       void TestPlanStandingToCrouchingNoWeaponMoving()
       {
-         SimCore::Actors::Human* human = NULL;
+         SimCore::Actors::Human* human = nullptr;
          mHumanAP->GetActor(human);
 
          human->SetStance(SimCore::Actors::HumanActorProxy::StanceEnum::UPRIGHT_STANDING);
          human->SetPrimaryWeaponState(SimCore::Actors::HumanActorProxy::WeaponStateEnum::NO_WEAPON);
 
-         dtGame::DeadReckoningHelper* drHelper = NULL;
+         dtGame::DeadReckoningHelper* drHelper = nullptr;
          mHumanAP->GetComponent(drHelper);
 
          drHelper->SetLastKnownVelocity(osg::Vec3(0.0f, 0.0f, 0.0f));
@@ -272,10 +272,10 @@ class HumanTests : public CPPUNIT_NS::TestFixture
 
       void TestCrouchingNoWeaponMovingToCrawlingReady()
       {
-         SimCore::Actors::Human* human = NULL;
+         SimCore::Actors::Human* human = nullptr;
          mHumanAP->GetActor(human);
 
-         dtGame::DeadReckoningHelper* drHelper = NULL;
+         dtGame::DeadReckoningHelper* drHelper = nullptr;
          mHumanAP->GetComponent(drHelper);
 
          human->SetStance(SimCore::Actors::HumanActorProxy::StanceEnum::CROUCHING);
@@ -373,10 +373,10 @@ class HumanTests : public CPPUNIT_NS::TestFixture
 
       void TestPlanWalkingReadyToKneelingDeployed()
       {
-         SimCore::Actors::Human* human = NULL;
+         SimCore::Actors::Human* human = nullptr;
          mHumanAP->GetActor(human);
 
-         dtGame::DeadReckoningHelper* drHelper = NULL;
+         dtGame::DeadReckoningHelper* drHelper = nullptr;
          mHumanAP->GetComponent(drHelper);
 
          human->SetStance(SimCore::Actors::HumanActorProxy::StanceEnum::UPRIGHT_WALKING);
@@ -417,10 +417,10 @@ class HumanTests : public CPPUNIT_NS::TestFixture
 
       void TestPlanActionStanding()
       {
-         SimCore::Actors::Human* human = NULL;
+         SimCore::Actors::Human* human = nullptr;
          mHumanAP->GetActor(human);
 
-         dtGame::DeadReckoningHelper* drHelper = NULL;
+         dtGame::DeadReckoningHelper* drHelper = nullptr;
          mHumanAP->GetComponent(drHelper);
 
          human->SetStance(SimCore::Actors::HumanActorProxy::StanceEnum::CROUCHING);
@@ -468,13 +468,13 @@ class HumanTests : public CPPUNIT_NS::TestFixture
 
       void TestPlanActionKneeling()
       {
-         SimCore::Actors::Human* human = NULL;
+         SimCore::Actors::Human* human = nullptr;
          mHumanAP->GetActor(human);
 
          human->SetStance(SimCore::Actors::HumanActorProxy::StanceEnum::UPRIGHT_STANDING);
          human->SetPrimaryWeaponState(SimCore::Actors::HumanActorProxy::WeaponStateEnum::NO_WEAPON);
 
-         dtGame::DeadReckoningHelper* drHelper = NULL;
+         dtGame::DeadReckoningHelper* drHelper = nullptr;
          mHumanAP->GetComponent(drHelper);
 
          drHelper->SetLastKnownVelocity(osg::Vec3(1.5f, 1.5f, 1.5f));
@@ -523,14 +523,14 @@ class HumanTests : public CPPUNIT_NS::TestFixture
 
       void TestPlanActionProne()
       {
-         SimCore::Actors::Human* human = NULL;
+         SimCore::Actors::Human* human = nullptr;
          mHumanAP->GetActor(human);
          //human->SetMaxTimePerIteration(2.00);
 
          human->SetStance(SimCore::Actors::HumanActorProxy::StanceEnum::UPRIGHT_STANDING);
          human->SetPrimaryWeaponState(SimCore::Actors::HumanActorProxy::WeaponStateEnum::NO_WEAPON);
 
-         dtGame::DeadReckoningHelper* drHelper = NULL;
+         dtGame::DeadReckoningHelper* drHelper = nullptr;
          mHumanAP->GetComponent(drHelper);
 
          drHelper->SetLastKnownVelocity(osg::Vec3(1.5f, 1.5f, 1.5f));
@@ -582,10 +582,10 @@ class HumanTests : public CPPUNIT_NS::TestFixture
 
       void TestStartup()
       {
-         SimCore::Actors::Human* human = NULL;
+         SimCore::Actors::Human* human = nullptr;
          mHumanAP->GetActor(human);
 
-         dtGame::DeadReckoningHelper* drHelper = NULL;
+         dtGame::DeadReckoningHelper* drHelper = nullptr;
          mHumanAP->GetComponent(drHelper);
 
          human->SetStance(SimCore::Actors::HumanActorProxy::StanceEnum::UPRIGHT_WALKING);
@@ -608,8 +608,8 @@ class HumanTests : public CPPUNIT_NS::TestFixture
 
       void TestActorComponents()
       {
-         dtCore::RefPtr<SimCore::Actors::HumanActorProxy> humanWithPhysics;
-         dtCore::RefPtr<SimCore::Actors::HumanActorProxy> humanWarfighter;
+         std::shared_ptr<SimCore::Actors::HumanActorProxy> humanWithPhysics;
+         std::shared_ptr<SimCore::Actors::HumanActorProxy> humanWarfighter;
 
          mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::HUMAN_PHYSICS_ACTOR_TYPE, humanWithPhysics);
          mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::WARFIGHTER_ACTOR_TYPE, humanWarfighter);
@@ -622,14 +622,14 @@ class HumanTests : public CPPUNIT_NS::TestFixture
 
       void CheckActorComponents(SimCore::Actors::HumanActorProxy& human, bool physics, bool weapons)
       {
-         CPPUNIT_ASSERT_EQUAL(physics, human.GetComponent<dtPhysics::PhysicsActComp>() != NULL);
-         CPPUNIT_ASSERT_EQUAL(weapons, human.GetComponent<SimCore::ActComps::WeaponInventoryActComp>() != NULL);
+         CPPUNIT_ASSERT_EQUAL(physics, human.GetComponent<dtPhysics::PhysicsActComp>() != nullptr);
+         CPPUNIT_ASSERT_EQUAL(weapons, human.GetComponent<SimCore::ActComps::WeaponInventoryActComp>() != nullptr);
       }
 
       void TestPlanShot(SimCore::Actors::HumanActorProxy::StanceEnum& stance, const std::string& expectedShotAnim,
                const std::string& expectedDeadAnim )
       {
-         SimCore::Actors::Human* human = NULL;
+         SimCore::Actors::Human* human = nullptr;
          mHumanAP->GetActor(human);
 
          human->SetStance(stance);
@@ -669,8 +669,8 @@ class HumanTests : public CPPUNIT_NS::TestFixture
          CPPUNIT_ASSERT_EQUAL(expectedDeadAnim, (*iter)->GetName());
       }
 
-      RefPtr<dtGame::GameManager> mGM;
-      RefPtr<SimCore::Actors::HumanActorProxy> mHumanAP;
+      std::shared_ptr<dtGame::GameManager> mGM;
+      std::shared_ptr<SimCore::Actors::HumanActorProxy> mHumanAP;
 
       std::vector<std::string> mPR_UprightWalk_To_KneelFiring;
       std::vector<std::string> mPR_KneelFiring_To_ProneDeployed;

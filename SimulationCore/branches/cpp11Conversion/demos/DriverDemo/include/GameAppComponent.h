@@ -29,7 +29,7 @@
 // project includes needed
 #include <SimCore/Components/BaseGameAppComponent.h>
 #include <SimCore/Actors/BasePhysicsVehicleActor.h>
-#include <dtCore/refptr.h>
+#include <dtUtil/refcountedbase.h>
 #include <osg/ArgumentParser>
 
 namespace dtGame
@@ -96,7 +96,7 @@ namespace DriverDemo
          virtual ~GameAppComponent(void);
 
       private:
-         dtCore::RefPtr<SimCore::Actors::StealthActor> mStealth;
+         std::shared_ptr<SimCore::Actors::StealthActor> mStealth;
 
          // if this is set to true, we are waiting for a vehicle to join the network
          // with the name of the group sent in.

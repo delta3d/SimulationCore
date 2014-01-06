@@ -44,8 +44,8 @@
 
 #include <dtCore/system.h>
 #include <dtCore/scene.h>
-#include <dtCore/refptr.h>
-#include <dtCore/observerptr.h>
+#include <dtUtil/refcountedbase.h>
+#include <dtUtil/refcountedbase.h>
 
 #include <dtUtil/macros.h>
 #include <dtUtil/mathdefines.h>
@@ -79,7 +79,7 @@
 #include <osg/MatrixTransform>
 #include <osgSim/DOFTransform>
 
-using dtCore::RefPtr;
+using std::shared_ptr;
 using dtCore::ObserverPtr;
 
 
@@ -148,9 +148,9 @@ private:
    void TestPlatformLoadMesh(SimCore::Actors::Platform* platform,
          SimCore::Actors::BaseEntityActorProxy::DamageStateEnum& state);
 
-   RefPtr<dtGame::GameManager> mGM;
-   RefPtr<dtGame::DeadReckoningComponent> mDeadReckoningComponent;
-   RefPtr<SimCore::Components::TimedDeleterComponent> mTimerDeleterComponent;
+   std::shared_ptr<dtGame::GameManager> mGM;
+   std::shared_ptr<dtGame::DeadReckoningComponent> mDeadReckoningComponent;
+   std::shared_ptr<SimCore::Components::TimedDeleterComponent> mTimerDeleterComponent;
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(BaseEntityActorProxyTests);
@@ -172,74 +172,74 @@ void BaseEntityActorProxyTests::setUp()
 
 void BaseEntityActorProxyTests::tearDown()
 {
-   mDeadReckoningComponent = NULL;
-   mTimerDeleterComponent = NULL;
+   mDeadReckoningComponent = nullptr;
+   mTimerDeleterComponent = nullptr;
 
    if (mGM.valid())
    {
       mGM->DeleteAllActors(true);
-      mGM = NULL;
+      mGM = nullptr;
    }
    dtCore::System::GetInstance().Stop();
 }
 
 void BaseEntityActorProxyTests::TestPlatformDelayedLoading()
 {
-   RefPtr<SimCore::Actors::PlatformActorProxy> eap;
+   std::shared_ptr<SimCore::Actors::PlatformActorProxy> eap;
    mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE, eap);
    CPPUNIT_ASSERT(eap.valid());
 
    CPPUNIT_ASSERT(!eap->GetHasLoadedResources());
 
-   SimCore::Actors::Platform* platform = NULL;
+   SimCore::Actors::Platform* platform = nullptr;
    eap->GetActor(platform);
 
    dtCore::ResourceDescriptor happySphere("StaticMeshes:physics_happy_sphere.ive");
 
    eap->SetNonDamagedResource(happySphere);
-   CPPUNIT_ASSERT(platform->GetNonDamagedFileNode() == NULL);
+   CPPUNIT_ASSERT(platform->GetNonDamagedFileNode() == nullptr);
    eap->SetDamagedResource(happySphere);
-   CPPUNIT_ASSERT(platform->GetDamagedFileNode() == NULL);
+   CPPUNIT_ASSERT(platform->GetDamagedFileNode() == nullptr);
    eap->SetDestroyedResource(happySphere);
-   CPPUNIT_ASSERT(platform->GetDestroyedFileNode() == NULL);
+   CPPUNIT_ASSERT(platform->GetDestroyedFileNode() == nullptr);
 
    CPPUNIT_ASSERT(!eap->GetHasLoadedResources());
 
    eap->EnsureResourcesAreLoaded();
    CPPUNIT_ASSERT(eap->GetHasLoadedResources());
 
-   CPPUNIT_ASSERT(platform->GetNonDamagedFileNode() != NULL);
-   CPPUNIT_ASSERT(platform->GetDamagedFileNode() != NULL);
-   CPPUNIT_ASSERT(platform->GetDestroyedFileNode() != NULL);
+   CPPUNIT_ASSERT(platform->GetNonDamagedFileNode() != nullptr);
+   CPPUNIT_ASSERT(platform->GetDamagedFileNode() != nullptr);
+   CPPUNIT_ASSERT(platform->GetDestroyedFileNode() != nullptr);
 
-   dtCore::RefPtr<osg::Node> backupNode;
+   osg::ref_ptr<osg::Node> backupNode;
 
    // Now that the resources are loaded, go ahead and change the values to see if they change immediately.
    backupNode = platform->GetNonDamagedFileNode();
    eap->SetNonDamagedResource(dtCore::ResourceDescriptor::NULL_RESOURCE);
-   CPPUNIT_ASSERT(platform->GetNonDamagedFileNode() == NULL);
+   CPPUNIT_ASSERT(platform->GetNonDamagedFileNode() == nullptr);
    eap->SetNonDamagedResource(happySphere);
-   CPPUNIT_ASSERT(platform->GetNonDamagedFileNode() != NULL);
+   CPPUNIT_ASSERT(platform->GetNonDamagedFileNode() != nullptr);
    CPPUNIT_ASSERT(platform->GetNonDamagedFileNode() != backupNode);
 
    backupNode = platform->GetDamagedFileNode();
    eap->SetDamagedResource(dtCore::ResourceDescriptor::NULL_RESOURCE);
-   CPPUNIT_ASSERT(platform->GetDamagedFileNode() == NULL);
+   CPPUNIT_ASSERT(platform->GetDamagedFileNode() == nullptr);
    eap->SetDamagedResource(happySphere);
-   CPPUNIT_ASSERT(platform->GetDamagedFileNode() != NULL);
+   CPPUNIT_ASSERT(platform->GetDamagedFileNode() != nullptr);
    CPPUNIT_ASSERT(platform->GetDamagedFileNode() != backupNode);
 
    backupNode = platform->GetDamagedFileNode();
    eap->SetDamagedResource(dtCore::ResourceDescriptor::NULL_RESOURCE);
-   CPPUNIT_ASSERT(platform->GetDamagedFileNode() == NULL);
+   CPPUNIT_ASSERT(platform->GetDamagedFileNode() == nullptr);
    eap->SetDamagedResource(happySphere);
-   CPPUNIT_ASSERT(platform->GetDamagedFileNode() != NULL);
+   CPPUNIT_ASSERT(platform->GetDamagedFileNode() != nullptr);
    CPPUNIT_ASSERT(platform->GetDamagedFileNode() != backupNode);
 }
 
 void BaseEntityActorProxyTests::TestPlatformOnEnteredWorldLoading()
 {
-   RefPtr<SimCore::Actors::PlatformActorProxy> eap;
+   std::shared_ptr<SimCore::Actors::PlatformActorProxy> eap;
    mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE, eap);
    CPPUNIT_ASSERT(eap.valid());
 
@@ -247,37 +247,37 @@ void BaseEntityActorProxyTests::TestPlatformOnEnteredWorldLoading()
 
    CPPUNIT_ASSERT(!eap->GetHasLoadedResources());
 
-   SimCore::Actors::Platform* platform = NULL;
+   SimCore::Actors::Platform* platform = nullptr;
    eap->GetActor(platform);
 
    eap->SetNonDamagedResource(happySphere);
-   CPPUNIT_ASSERT(platform->GetNonDamagedFileNode() == NULL);
+   CPPUNIT_ASSERT(platform->GetNonDamagedFileNode() == nullptr);
    eap->SetDamagedResource(happySphere);
-   CPPUNIT_ASSERT(platform->GetDamagedFileNode() == NULL);
+   CPPUNIT_ASSERT(platform->GetDamagedFileNode() == nullptr);
    eap->SetDestroyedResource(happySphere);
-   CPPUNIT_ASSERT(platform->GetDestroyedFileNode() == NULL);
+   CPPUNIT_ASSERT(platform->GetDestroyedFileNode() == nullptr);
 
    mGM->AddActor(*eap, false, false);
 
    CPPUNIT_ASSERT(eap->GetHasLoadedResources());
 
-   CPPUNIT_ASSERT(platform->GetNonDamagedFileNode() != NULL);
-   CPPUNIT_ASSERT(platform->GetDamagedFileNode() != NULL);
-   CPPUNIT_ASSERT(platform->GetDestroyedFileNode() != NULL);
+   CPPUNIT_ASSERT(platform->GetNonDamagedFileNode() != nullptr);
+   CPPUNIT_ASSERT(platform->GetDamagedFileNode() != nullptr);
+   CPPUNIT_ASSERT(platform->GetDestroyedFileNode() != nullptr);
 }
 
 void BaseEntityActorProxyTests::TestPlatform()
 {
-   RefPtr<SimCore::Actors::PlatformActorProxy> eap;
+   std::shared_ptr<SimCore::Actors::PlatformActorProxy> eap;
    mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE, eap);
    CPPUNIT_ASSERT(eap.valid());
 
-   ObserverPtr<dtCore::DeltaDrawable> edraw = eap->GetDrawable();
+   std::weak_ptr<dtCore::DeltaDrawable> edraw = eap->GetDrawable();
 
    TestBaseEntityActorProxy(*eap);
 
 
-   SimCore::Actors::Platform* platform = NULL;
+   SimCore::Actors::Platform* platform = nullptr;
    eap->GetActor(platform);
 
    TestPlatformLoadMesh(platform, SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::NO_DAMAGE);
@@ -285,7 +285,7 @@ void BaseEntityActorProxyTests::TestPlatform()
    TestPlatformLoadMesh(platform, SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::MODERATE_DAMAGE);
    TestPlatformLoadMesh(platform, SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::DESTROYED);
 
-   dtCore::RefPtr<SimCore::VisibilityOptions> visOpts = new SimCore::VisibilityOptions;
+   std::shared_ptr<SimCore::VisibilityOptions> visOpts = new SimCore::VisibilityOptions;
    SimCore::BasicVisibilityOptions basicVisOpts;
    basicVisOpts.SetAllTrue();
    basicVisOpts.mPlatforms = false;
@@ -297,53 +297,53 @@ void BaseEntityActorProxyTests::TestPlatform()
 
    TestBaseEntityVisOpts(*eap);
 
-   dtCore::ActorProperty* prop = NULL;
+   dtCore::ActorProperty* prop = nullptr;
 
    osg::Vec3 vec;
    vec.set(1.14, 8.21, 7.85);
    prop = eap->GetProperty("EngineSmokePosition");
-   CPPUNIT_ASSERT_MESSAGE("The engine smoke position property should not be NULL", prop != NULL);
+   CPPUNIT_ASSERT_MESSAGE("The engine smoke position property should not be nullptr", prop != nullptr);
    static_cast<dtCore::Vec3ActorProperty*>(prop)->SetValue(vec);
    CPPUNIT_ASSERT_MESSAGE("GetValue should return what was set", static_cast<dtCore::Vec3ActorProperty*>(prop)->GetValue() == vec);
 
    bool b = true;
    prop = eap->GetProperty("EngineSmokeOn");
-   CPPUNIT_ASSERT_MESSAGE("The engine smoke on property should not be NULL", prop != NULL);
+   CPPUNIT_ASSERT_MESSAGE("The engine smoke on property should not be nullptr", prop != nullptr);
    static_cast<dtCore::BooleanActorProperty*>(prop)->SetValue(b);
    CPPUNIT_ASSERT_MESSAGE("GetValue should return what was set", static_cast<dtCore::BooleanActorProperty*>(prop)->GetValue());
 
    prop = eap->GetProperty("Engine smoke particles");
-   CPPUNIT_ASSERT_MESSAGE("The \"Engine smoke particles\" property should not be NULL", prop != NULL);
+   CPPUNIT_ASSERT_MESSAGE("The \"Engine smoke particles\" property should not be nullptr", prop != nullptr);
    dtCore::ResourceDescriptor rd = static_cast<dtCore::ResourceActorProperty*>(prop)->GetValue();
-   CPPUNIT_ASSERT_MESSAGE("\"Engine smoke particles\" value should not be NULL", !rd.IsEmpty());
+   CPPUNIT_ASSERT_MESSAGE("\"Engine smoke particles\" value should not be nullptr", !rd.IsEmpty());
    CPPUNIT_ASSERT_EQUAL_MESSAGE("\"Engine smoke particles\" value should be", rd.GetResourceIdentifier(), std::string("Particles:smoke.osg"));
 
    mGM->DeleteActor(*eap);
    dtCore::System::GetInstance().Step();
 
    CPPUNIT_ASSERT_EQUAL(1, eap->referenceCount());
-   eap = NULL;
+   eap = nullptr;
    CPPUNIT_ASSERT(!edraw.valid());
-   edraw = NULL;
+   edraw = nullptr;
 
 }
 
 void BaseEntityActorProxyTests::TestPlatformLoadMesh(SimCore::Actors::Platform* platform,
       SimCore::Actors::BaseEntityActorProxy::DamageStateEnum& state)
 {
-   CPPUNIT_ASSERT(platform->GetNodeCollector() == NULL);
+   CPPUNIT_ASSERT(platform->GetNodeCollector() == nullptr);
 
    if (state ==  SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::NO_DAMAGE)
    {
-      CPPUNIT_ASSERT(platform->GetNonDamagedFileNode() == NULL);
+      CPPUNIT_ASSERT(platform->GetNonDamagedFileNode() == nullptr);
    }
 
    dtCore::ResourceDescriptor happySphere("StaticMeshes:physics_happy_sphere.ive");
 
    platform->LoadDamageableFile(happySphere, state);
-   dtCore::RefPtr<osg::Node> currentNode = NULL;
+   osg::ref_ptr<osg::Node> currentNode = nullptr;
 
-   dtCore::RefPtr<const dtUtil::NodeCollector> nodeCollector = platform->GetNodeCollector();
+   std::shared_ptr<const dtUtil::NodeCollector> nodeCollector = platform->GetNodeCollector();
 
    if (state ==  SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::NO_DAMAGE)
    {
@@ -366,10 +366,10 @@ void BaseEntityActorProxyTests::TestPlatformLoadMesh(SimCore::Actors::Platform* 
       CPPUNIT_ASSERT(!nodeCollector.valid());
    }
 
-   CPPUNIT_ASSERT(currentNode != NULL);
-   CPPUNIT_ASSERT(currentNode->getParent(0)->getUserData() != NULL);
+   CPPUNIT_ASSERT(currentNode != nullptr);
+   CPPUNIT_ASSERT(currentNode->getParent(0)->getUserData() != nullptr);
    osg::Node* copiedNode = dynamic_cast<osg::Node*>(currentNode->getParent(0)->getUserData());
-   CPPUNIT_ASSERT(copiedNode != NULL);
+   CPPUNIT_ASSERT(copiedNode != nullptr);
    CPPUNIT_ASSERT(std::string(dtCore::Project::GetInstance().GetContext(0) + dtUtil::FileUtils::PATH_SEPARATOR + "StaticMeshes" + dtUtil::FileUtils::PATH_SEPARATOR + "physics_happy_sphere.ive") ==
          currentNode->getParent(0)->getName() ||
    std::string(dtCore::Project::GetInstance().GetContext(1) + dtUtil::FileUtils::PATH_SEPARATOR + "StaticMeshes" + dtUtil::FileUtils::PATH_SEPARATOR + "physics_happy_sphere.ive") ==
@@ -432,33 +432,33 @@ void BaseEntityActorProxyTests::TestPlatformLoadMesh(SimCore::Actors::Platform* 
 
    if (state ==  SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::NO_DAMAGE)
    {
-      CPPUNIT_ASSERT(platform->GetNonDamagedFileNode() == NULL);
-      CPPUNIT_ASSERT_MESSAGE("It should have deleted the node collector on model unload", platform->GetNodeCollector() == NULL);
+      CPPUNIT_ASSERT(platform->GetNonDamagedFileNode() == nullptr);
+      CPPUNIT_ASSERT_MESSAGE("It should have deleted the node collector on model unload", platform->GetNodeCollector() == nullptr);
    }
    else if (state ==  SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::SLIGHT_DAMAGE)
    {
-      CPPUNIT_ASSERT(platform->GetDamagedFileNode() == NULL);
+      CPPUNIT_ASSERT(platform->GetDamagedFileNode() == nullptr);
    }
    else if (state ==  SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::MODERATE_DAMAGE)
    {
-      CPPUNIT_ASSERT(platform->GetDamagedFileNode() == NULL);
+      CPPUNIT_ASSERT(platform->GetDamagedFileNode() == nullptr);
    }
    else if (state ==  SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::DESTROYED)
    {
-      CPPUNIT_ASSERT(platform->GetDestroyedFileNode() == NULL);
+      CPPUNIT_ASSERT(platform->GetDestroyedFileNode() == nullptr);
    }
 }
 
 void BaseEntityActorProxyTests::TestPlatformHeadlights()
 {
-   RefPtr<SimCore::Actors::BaseEntityActorProxy> eap;
+   std::shared_ptr<SimCore::Actors::BaseEntityActorProxy> eap;
    mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE, eap);
    CPPUNIT_ASSERT(eap.valid());
 
-   dtCore::BooleanActorProperty* prop = NULL;
+   dtCore::BooleanActorProperty* prop = nullptr;
 
    eap->GetProperty(SimCore::Actors::PlatformActorProxy::PROPERTY_HEAD_LIGHTS_ENABLED, prop);
-   CPPUNIT_ASSERT_MESSAGE("The head lights property should not be NULL", prop != NULL);
+   CPPUNIT_ASSERT_MESSAGE("The head lights property should not be nullptr", prop != nullptr);
    std::stringstream textMessage;
    textMessage << "The default value of \""
          << static_cast<std::string>(SimCore::Actors::PlatformActorProxy::PROPERTY_HEAD_LIGHTS_ENABLED) << "\" should be false.";
@@ -475,7 +475,7 @@ void BaseEntityActorProxyTests::TestPlatformHeadlights()
 
    prop->SetValue(false);
    CPPUNIT_ASSERT(!prop->GetValue());
-   eap->SetGameManager(NULL);
+   eap->SetGameManager(nullptr);
    prop->SetValue(true);
    CPPUNIT_ASSERT_MESSAGE("With no game manager set, you should still be able to set the value to true and have it stick so it will work in stage",
          prop->GetValue());
@@ -486,7 +486,7 @@ void BaseEntityActorProxyTests::TestPlatformHeadlights()
 
 void BaseEntityActorProxyTests::TestPlatformSwitchToLocal()
 {
-   RefPtr<SimCore::Actors::BaseEntityActorProxy> eap;
+   std::shared_ptr<SimCore::Actors::BaseEntityActorProxy> eap;
    mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE, eap);
    CPPUNIT_ASSERT(eap.valid());
 
@@ -504,7 +504,7 @@ void BaseEntityActorProxyTests::TestPlatformSwitchToLocal()
 
 void BaseEntityActorProxyTests::TestPlatformSwitchToRemote()
 {
-   RefPtr<SimCore::Actors::BaseEntityActorProxy> eap;
+   std::shared_ptr<SimCore::Actors::BaseEntityActorProxy> eap;
    mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE, eap);
    CPPUNIT_ASSERT(eap.valid());
 
@@ -524,22 +524,22 @@ void BaseEntityActorProxyTests::TestPlatformSwitchToRemote()
 
 void BaseEntityActorProxyTests::TestHuman()
 {
-   RefPtr<SimCore::Actors::HumanActorProxy> hap;
+   std::shared_ptr<SimCore::Actors::HumanActorProxy> hap;
    mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::HUMAN_ACTOR_TYPE, hap);
    CPPUNIT_ASSERT(hap.valid());
 
-   ObserverPtr<dtCore::DeltaDrawable> edraw = hap->GetDrawable();
+   std::weak_ptr<dtCore::DeltaDrawable> edraw = hap->GetDrawable();
 
    TestBaseEntityActorProxy(*hap);
 
    SimCore::Actors::Human* human;
    hap->GetActor(human);
 
-   CPPUNIT_ASSERT(human->GetNodeCollector() == NULL);
+   CPPUNIT_ASSERT(human->GetNodeCollector() == nullptr);
    human->LoadNodeCollector();
-   CPPUNIT_ASSERT(human->GetNodeCollector() != NULL);
+   CPPUNIT_ASSERT(human->GetNodeCollector() != nullptr);
 
-   dtCore::RefPtr<SimCore::VisibilityOptions> visOpts = new SimCore::VisibilityOptions;
+   std::shared_ptr<SimCore::VisibilityOptions> visOpts = new SimCore::VisibilityOptions;
    SimCore::BasicVisibilityOptions basicVisOpts;
    basicVisOpts.SetAllTrue();
    basicVisOpts.mDismountedInfantry = false;
@@ -556,15 +556,15 @@ void BaseEntityActorProxyTests::TestHuman()
    dtCore::System::GetInstance().Step();
 
    CPPUNIT_ASSERT_EQUAL(1, hap->referenceCount());
-   hap = NULL;
+   hap = nullptr;
    CPPUNIT_ASSERT(!edraw.valid());
-   edraw = NULL;
+   edraw = nullptr;
 
 }
 
 void BaseEntityActorProxyTests::TestHumanSwitchToLocal()
 {
-   RefPtr<SimCore::Actors::BaseEntityActorProxy> eap;
+   std::shared_ptr<SimCore::Actors::BaseEntityActorProxy> eap;
    mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::HUMAN_ACTOR_TYPE, eap);
    CPPUNIT_ASSERT(eap.valid());
 
@@ -583,7 +583,7 @@ void BaseEntityActorProxyTests::TestHumanSwitchToLocal()
 
 void BaseEntityActorProxyTests::TestHumanSwitchToRemote()
 {
-   RefPtr<SimCore::Actors::BaseEntityActorProxy> eap;
+   std::shared_ptr<SimCore::Actors::BaseEntityActorProxy> eap;
    mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::HUMAN_ACTOR_TYPE, eap);
    CPPUNIT_ASSERT(eap.valid());
 
@@ -609,7 +609,7 @@ void BaseEntityActorProxyTests::TestBaseEntityVisOpts(SimCore::Actors::BaseEntit
    entity->SetDomain(SimCore::Actors::BaseEntityActorProxy::DomainEnum::GROUND);
    entity->SetForceAffiliation(SimCore::Actors::BaseEntityActorProxy::ForceEnum::FRIENDLY);
 
-   dtCore::RefPtr<SimCore::VisibilityOptions> visOpts = new SimCore::VisibilityOptions;
+   std::shared_ptr<SimCore::VisibilityOptions> visOpts = new SimCore::VisibilityOptions;
    SimCore::BasicVisibilityOptions basicVisOpts = visOpts->GetBasicOptions();
    basicVisOpts.SetAllFalse();
    basicVisOpts.mDismountedInfantry = true;
@@ -690,23 +690,23 @@ void BaseEntityActorProxyTests::TestBaseEntityActorProxy(SimCore::Actors::BaseEn
    //make the actor
    mGM->AddActor(eap, true, false);
 
-   CPPUNIT_ASSERT(eap.GetGameManager() != NULL);
+   CPPUNIT_ASSERT(eap.GetGameManager() != nullptr);
 
-   dtCore::ActorProperty *prop = NULL;
-   BaseEntity* entity = NULL;
+   dtCore::ActorProperty *prop = nullptr;
+   BaseEntity* entity = nullptr;
    eap.GetActor( entity );
    CPPUNIT_ASSERT_MESSAGE("BaseEntity should be valid when being accessed from its proxy.",
-         entity != NULL);
+         entity != nullptr);
 
    prop = eap.GetProperty("Firepower Disabled");
-   CPPUNIT_ASSERT_MESSAGE("The firepower property should not be NULL", prop != NULL);
+   CPPUNIT_ASSERT_MESSAGE("The firepower property should not be nullptr", prop != nullptr);
    CPPUNIT_ASSERT_MESSAGE("The default value of \"Firepower Disabled\" should be false.",
          !static_cast<dtCore::BooleanActorProperty*>(prop)->GetValue());
    static_cast<dtCore::BooleanActorProperty*>(prop)->SetValue(true);
    CPPUNIT_ASSERT(static_cast<dtCore::BooleanActorProperty*>(prop)->GetValue());
 
    prop = eap.GetProperty("Mobility Disabled");
-   CPPUNIT_ASSERT_MESSAGE("The mobility property should not be NULL", prop != NULL);
+   CPPUNIT_ASSERT_MESSAGE("The mobility property should not be nullptr", prop != nullptr);
    CPPUNIT_ASSERT_MESSAGE("The default value of \"Mobility Disabled\" should be false.",
          !static_cast<dtCore::BooleanActorProperty*>(prop)->GetValue());
    static_cast<dtCore::BooleanActorProperty*>(prop)->SetValue(true);
@@ -714,33 +714,33 @@ void BaseEntityActorProxyTests::TestBaseEntityActorProxy(SimCore::Actors::BaseEn
 
    osg::Vec3 vec(5.0f, 5.0f, 5.0f);
    prop = eap.GetProperty("Angular Velocity Vector");
-   CPPUNIT_ASSERT_MESSAGE("The angular velocity vector property should not be NULL", prop != NULL);
+   CPPUNIT_ASSERT_MESSAGE("The angular velocity vector property should not be nullptr", prop != nullptr);
    static_cast<dtCore::Vec3fActorProperty*>(prop)->SetValue(vec);
    CPPUNIT_ASSERT_MESSAGE("GetValue should return what was set",
          static_cast<dtCore::Vec3fActorProperty*>(prop)->GetValue() == vec);
 
    prop = eap.GetProperty("Last Known Translation");
-   CPPUNIT_ASSERT_MESSAGE("The last known translation property should not be NULL", prop != NULL);
+   CPPUNIT_ASSERT_MESSAGE("The last known translation property should not be nullptr", prop != nullptr);
    static_cast<dtCore::Vec3fActorProperty*>(prop)->SetValue(vec);
    CPPUNIT_ASSERT_MESSAGE("GetValue should return what was set",
          static_cast<dtCore::Vec3fActorProperty*>(prop)->GetValue() == vec);
    static_cast<dtCore::Vec3fActorProperty*>(prop)->SetValue(osg::Vec3(0.0f, 0.0f, 0.0f));
 
    prop = eap.GetProperty("Last Known Rotation");
-   CPPUNIT_ASSERT_MESSAGE("The last known rotation property should not be NULL", prop != NULL);
+   CPPUNIT_ASSERT_MESSAGE("The last known rotation property should not be nullptr", prop != nullptr);
    static_cast<dtCore::Vec3fActorProperty*>(prop)->SetValue(vec);
    CPPUNIT_ASSERT_MESSAGE("GetValue should return what was set", static_cast<dtCore::Vec3fActorProperty*>(prop)->GetValue() == vec);
    static_cast<dtCore::Vec3fActorProperty*>(prop)->SetValue(osg::Vec3(0.0f, 0.0f, 0.0f));
 
    vec.set(2.3f, 1.4f, 8.3f);
    prop = eap.GetProperty("Velocity Vector");
-   CPPUNIT_ASSERT_MESSAGE("The velocity vector property should not be NULL", prop != NULL);
+   CPPUNIT_ASSERT_MESSAGE("The velocity vector property should not be nullptr", prop != nullptr);
    static_cast<dtCore::Vec3fActorProperty*>(prop)->SetValue(vec);
    CPPUNIT_ASSERT_MESSAGE("GetValue should return what was set", static_cast<dtCore::Vec3fActorProperty*>(prop)->GetValue() == vec);
 
    prop = eap.GetProperty("Damage State");
    dtCore::AbstractEnumActorProperty *aep = dynamic_cast<dtCore::AbstractEnumActorProperty*>(prop);
-   CPPUNIT_ASSERT_MESSAGE("The abstract enum property should not be NULL", aep != NULL);
+   CPPUNIT_ASSERT_MESSAGE("The abstract enum property should not be nullptr", aep != nullptr);
    aep->SetValueFromString("Destroyed");
    CPPUNIT_ASSERT_MESSAGE("GetValue should return what was set", aep->GetEnumValue().GetName() == "Destroyed");
    aep->SetValueFromString("No Damage");
@@ -748,7 +748,7 @@ void BaseEntityActorProxyTests::TestBaseEntityActorProxy(SimCore::Actors::BaseEn
 
    prop = eap.GetProperty(BaseEntityActorProxy::PROPERTY_DOMAIN);
    aep = dynamic_cast<dtCore::AbstractEnumActorProperty*>(prop);
-   CPPUNIT_ASSERT_MESSAGE("The abstract enum property should not be NULL", aep != NULL);
+   CPPUNIT_ASSERT_MESSAGE("The abstract enum property should not be nullptr", aep != nullptr);
    CPPUNIT_ASSERT_MESSAGE("Property should be defaulted to GROUND domain.", aep->GetEnumValue().GetName()
          == BaseEntityActorProxy::DomainEnum::GROUND.GetName());
    CPPUNIT_ASSERT(entity->GetDomain() == BaseEntityActorProxy::DomainEnum::GROUND);
@@ -765,7 +765,7 @@ void BaseEntityActorProxyTests::TestBaseEntityActorProxy(SimCore::Actors::BaseEn
 
    prop = eap.GetProperty("Force Affiliation");
    aep = dynamic_cast<dtCore::AbstractEnumActorProperty*>(prop);
-   CPPUNIT_ASSERT_MESSAGE("The abstract enum property for \"Force Affiliation\" should not be NULL", aep != NULL);
+   CPPUNIT_ASSERT_MESSAGE("The abstract enum property for \"Force Affiliation\" should not be nullptr", aep != nullptr);
    CPPUNIT_ASSERT_MESSAGE("The \"Force Affiliation\" should default to NEUTRAL", aep->GetEnumValue() == SimCore::Actors::BaseEntityActorProxy::ForceEnum::NEUTRAL);
    aep->SetValueFromString("FRIENDLY");
    CPPUNIT_ASSERT_MESSAGE("The \"Force Affiliation\" should now be friendly", aep->GetEnumValue() == SimCore::Actors::BaseEntityActorProxy::ForceEnum::FRIENDLY);
@@ -777,7 +777,7 @@ void BaseEntityActorProxyTests::TestBaseEntityActorProxy(SimCore::Actors::BaseEn
 
    prop = eap.GetProperty("GroundClampType");
    aep = dynamic_cast<dtCore::AbstractEnumActorProperty*>(prop);
-   CPPUNIT_ASSERT_MESSAGE("The abstract enum property for \"GroundClampType\" should not be NULL", aep != NULL);
+   CPPUNIT_ASSERT_MESSAGE("The abstract enum property for \"GroundClampType\" should not be nullptr", aep != nullptr);
    CPPUNIT_ASSERT_MESSAGE("The \"GroundClampType\" should default to KEEP_ABOVE", 
          aep->GetEnumValue() == dtGame::GroundClampTypeEnum::KEEP_ABOVE);
    aep->SetValueFromString("Full");
@@ -790,36 +790,36 @@ void BaseEntityActorProxyTests::TestBaseEntityActorProxy(SimCore::Actors::BaseEn
    CPPUNIT_ASSERT(static_cast<dtCore::FloatActorProperty*>(offsetProp)->GetValue() == 1.3f);
 
    dtCore::ActorProperty* drawingProp = eap.GetProperty("DrawingModel");
-   CPPUNIT_ASSERT(drawingProp != NULL);
+   CPPUNIT_ASSERT(drawingProp != nullptr);
    CPPUNIT_ASSERT_MESSAGE("The default value of drawing should be true.", static_cast<dtCore::BooleanActorProperty*>(drawingProp)->GetValue());
    static_cast<dtCore::BooleanActorProperty*>(drawingProp)->SetValue(false);
    CPPUNIT_ASSERT(!static_cast<dtCore::BooleanActorProperty*>(drawingProp)->GetValue());
 
    vec.set(4.3f, 8.1f, 7.69f);
    prop = eap.GetProperty("Acceleration Vector");
-   CPPUNIT_ASSERT_MESSAGE("The acceleration property property should not be NULL", prop != NULL);
+   CPPUNIT_ASSERT_MESSAGE("The acceleration property property should not be nullptr", prop != nullptr);
    static_cast<dtCore::Vec3fActorProperty*>(prop)->SetValue(vec);
    CPPUNIT_ASSERT_MESSAGE("GetValue should return what was set", static_cast<dtCore::Vec3fActorProperty*>(prop)->GetValue() == vec);
 
    SimCore::Actors::HumanActorProxy *hap = dynamic_cast<SimCore::Actors::HumanActorProxy*>(&eap);
-   if(hap == NULL)
+   if(hap == nullptr)
    {
       bool b = true;
       prop = eap.GetProperty("FlamesPresent");
-      CPPUNIT_ASSERT_MESSAGE("The flames present property should not be NULL", prop != NULL);
+      CPPUNIT_ASSERT_MESSAGE("The flames present property should not be nullptr", prop != nullptr);
       static_cast<dtCore::BooleanActorProperty*>(prop)->SetValue(b);
       CPPUNIT_ASSERT_MESSAGE("GetValue should return what was set", static_cast<dtCore::BooleanActorProperty*>(prop)->GetValue());
 
       prop = eap.GetProperty("SmokePlumePresent");
-      CPPUNIT_ASSERT_MESSAGE("The smoke plume present on property should not be NULL", prop != NULL);
+      CPPUNIT_ASSERT_MESSAGE("The smoke plume present on property should not be nullptr", prop != nullptr);
       static_cast<dtCore::BooleanActorProperty*>(prop)->SetValue(b);
       CPPUNIT_ASSERT_MESSAGE("GetValue should return what was set", static_cast<dtCore::BooleanActorProperty*>(prop)->GetValue());
    }
 
    dtCore::ActorProperty *ap = eap.GetProperty("Service");
-   CPPUNIT_ASSERT(ap != NULL);
+   CPPUNIT_ASSERT(ap != nullptr);
    dtCore::AbstractEnumActorProperty *aeap = dynamic_cast<dtCore::AbstractEnumActorProperty*>(ap);
-   CPPUNIT_ASSERT(aeap != NULL);
+   CPPUNIT_ASSERT(aeap != nullptr);
    dtUtil::Enumeration &e = aeap->GetEnumValue();
    CPPUNIT_ASSERT_MESSAGE("The service property should default to Marines", e == SimCore::Actors::BaseEntityActorProxy::ServiceEnum::MARINES);
    aeap->SetEnumValue(SimCore::Actors::BaseEntityActorProxy::ServiceEnum::ARMY);
@@ -827,42 +827,42 @@ void BaseEntityActorProxyTests::TestBaseEntityActorProxy(SimCore::Actors::BaseEn
    CPPUNIT_ASSERT_MESSAGE("The service property should return what was set", newE == SimCore::Actors::BaseEntityActorProxy::ServiceEnum::ARMY);
 
    prop = eap.GetProperty("Smoke plume particles");
-   CPPUNIT_ASSERT_MESSAGE("The \"Smoke plume particles\" property should not be NULL", prop != NULL);
+   CPPUNIT_ASSERT_MESSAGE("The \"Smoke plume particles\" property should not be nullptr", prop != nullptr);
    dtCore::ResourceDescriptor rd = static_cast<dtCore::ResourceActorProperty*>(prop)->GetValue();
-   CPPUNIT_ASSERT_MESSAGE("\"Smoke plume particles\" value should not be NULL", !rd.IsEmpty());
+   CPPUNIT_ASSERT_MESSAGE("\"Smoke plume particles\" value should not be nullptr", !rd.IsEmpty());
    CPPUNIT_ASSERT_EQUAL_MESSAGE("\"Smoke plume particles\" value should be", rd.GetResourceIdentifier(), std::string("Particles:smoke.osg"));
 
    prop = eap.GetProperty("Fire particles");
-   CPPUNIT_ASSERT_MESSAGE("The \"Fire particles\" property should not be NULL", prop != NULL);
+   CPPUNIT_ASSERT_MESSAGE("The \"Fire particles\" property should not be nullptr", prop != nullptr);
    rd = static_cast<dtCore::ResourceActorProperty*>(prop)->GetValue();
-   CPPUNIT_ASSERT_MESSAGE("\"Fire particles\" value should not be NULL", !rd.IsEmpty());
+   CPPUNIT_ASSERT_MESSAGE("\"Fire particles\" value should not be nullptr", !rd.IsEmpty());
    CPPUNIT_ASSERT_EQUAL_MESSAGE("\"Fire particles\" value should be", rd.GetResourceIdentifier(), std::string("Particles:fire.osg"));
 
    std::string munitionTableName("LARGE EXPLOSION");
    prop = eap.GetProperty("Munition Damage Table");
-   CPPUNIT_ASSERT_MESSAGE("The \"Munition Damage Table\" property should not be NULL", prop != NULL);
+   CPPUNIT_ASSERT_MESSAGE("The \"Munition Damage Table\" property should not be nullptr", prop != nullptr);
    static_cast<dtCore::StringActorProperty*>(prop)->SetValue(munitionTableName);
    CPPUNIT_ASSERT_MESSAGE("GetValue should return what was set", static_cast<dtCore::StringActorProperty*>(prop)->GetValue() == munitionTableName);
 
    std::string testValue("This Is A Test String");
-   dtCore::StringActorProperty* strProp = NULL;
+   dtCore::StringActorProperty* strProp = nullptr;
    strProp = dynamic_cast<dtCore::StringActorProperty*>(eap.GetProperty(SimCore::Actors::BaseEntityActorProxy::PROPERTY_ENTITY_TYPE_ID));
-   CPPUNIT_ASSERT_MESSAGE("The \"" + SimCore::Actors::BaseEntityActorProxy::PROPERTY_ENTITY_TYPE_ID.Get() + "\" property should not be NULL", strProp != NULL);
+   CPPUNIT_ASSERT_MESSAGE("The \"" + SimCore::Actors::BaseEntityActorProxy::PROPERTY_ENTITY_TYPE_ID.Get() + "\" property should not be nullptr", strProp != nullptr);
    strProp->SetValue(testValue);
    CPPUNIT_ASSERT( strProp->GetValue() == testValue );
 
    strProp = dynamic_cast<dtCore::StringActorProperty*>(eap.GetProperty(SimCore::Actors::BaseEntityActorProxy::PROPERTY_MAPPING_NAME));
-   CPPUNIT_ASSERT_MESSAGE("The \"" + SimCore::Actors::BaseEntityActorProxy::PROPERTY_MAPPING_NAME.Get() + "\" property should not be NULL", strProp != NULL);
+   CPPUNIT_ASSERT_MESSAGE("The \"" + SimCore::Actors::BaseEntityActorProxy::PROPERTY_MAPPING_NAME.Get() + "\" property should not be nullptr", strProp != nullptr);
    strProp->SetValue(testValue);
    CPPUNIT_ASSERT( strProp->GetValue() == testValue );
 
    CPPUNIT_ASSERT(eap.GetHideDTCorePhysicsProps());
-   CPPUNIT_ASSERT_MESSAGE("dtCore physics properties should be hidden.", eap.GetProperty("Show Collision Geometry") == NULL);
+   CPPUNIT_ASSERT_MESSAGE("dtCore physics properties should be hidden.", eap.GetProperty("Show Collision Geometry") == nullptr);
 }
 
 void BaseEntityActorProxyTests::TestPlatformScaleMagnification()
 {
-   RefPtr<SimCore::Actors::PlatformActorProxy> eap;
+   std::shared_ptr<SimCore::Actors::PlatformActorProxy> eap;
    mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE, eap);
    CPPUNIT_ASSERT(eap.valid());
 
@@ -871,7 +871,7 @@ void BaseEntityActorProxyTests::TestPlatformScaleMagnification()
 
 void BaseEntityActorProxyTests::TestHumanScaleMagnification()
 {
-   RefPtr<SimCore::Actors::HumanActorProxy> hap;
+   std::shared_ptr<SimCore::Actors::HumanActorProxy> hap;
    mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::HUMAN_ACTOR_TYPE, hap);
    CPPUNIT_ASSERT(hap.valid());
 
@@ -883,12 +883,12 @@ void BaseEntityActorProxyTests::TestScaleMagnification(SimCore::Actors::BaseEnti
    //make the actor
    mGM->AddActor(eap, true, false);
 
-   dtCore::ActorProperty* prop = NULL;
-   dtCore::Vec3ActorProperty* v3Prop = NULL;
+   dtCore::ActorProperty* prop = nullptr;
+   dtCore::Vec3ActorProperty* v3Prop = nullptr;
 
    osg::Vec3 defScale(4.3f, 8.1f, 7.69f);
    prop = eap.GetProperty("Default Scale");
-   CPPUNIT_ASSERT_MESSAGE("The Default Scale property should not be NULL", prop != NULL);
+   CPPUNIT_ASSERT_MESSAGE("The Default Scale property should not be nullptr", prop != nullptr);
    CPPUNIT_ASSERT_MESSAGE("The Default Scale property type should be Vec3", prop->GetPropertyType() == dtCore::DataType::VEC3);
    v3Prop = static_cast<dtCore::Vec3ActorProperty*>(prop);
    CPPUNIT_ASSERT_EQUAL_MESSAGE("Default Scale should default to 1, 1, 1", osg::Vec3(1.0f, 1.0f, 1.0f), v3Prop->GetValue());
@@ -897,7 +897,7 @@ void BaseEntityActorProxyTests::TestScaleMagnification(SimCore::Actors::BaseEnti
 
    osg::Vec3 scaleMag(3.0f, 3.7f, 3.9f);
    prop = eap.GetProperty("Scale Magnification Factor");
-   CPPUNIT_ASSERT_MESSAGE("The Scale Magnification Factor property should not be NULL", prop != NULL);
+   CPPUNIT_ASSERT_MESSAGE("The Scale Magnification Factor property should not be nullptr", prop != nullptr);
    CPPUNIT_ASSERT_MESSAGE("The Scale Magnification Factor property type should be Vec3", prop->GetPropertyType() == dtCore::DataType::VEC3);
    v3Prop = static_cast<dtCore::Vec3ActorProperty*>(prop);
    CPPUNIT_ASSERT_EQUAL_MESSAGE("Scale Magnification Factor should default to 1, 1, 1.", osg::Vec3(1.0f, 1.0f, 1.0f), v3Prop->GetValue());
@@ -906,7 +906,7 @@ void BaseEntityActorProxyTests::TestScaleMagnification(SimCore::Actors::BaseEnti
 
    prop = eap.GetProperty("Model Scale");
    v3Prop = static_cast<dtCore::Vec3ActorProperty*>(prop);
-   CPPUNIT_ASSERT(prop != NULL);
+   CPPUNIT_ASSERT(prop != nullptr);
 
    osg::Vec3 expectedScale;
    for (int i = 0; i < 3; ++i)
@@ -923,7 +923,7 @@ void BaseEntityActorProxyTests::TestScaleMagnification(SimCore::Actors::BaseEnti
 
 void BaseEntityActorProxyTests::TestPlatformActorUpdates()
 {
-   RefPtr<SimCore::Actors::PlatformActorProxy> eap;
+   std::shared_ptr<SimCore::Actors::PlatformActorProxy> eap;
    mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE, eap);
    CPPUNIT_ASSERT(eap.valid());
 
@@ -932,7 +932,7 @@ void BaseEntityActorProxyTests::TestPlatformActorUpdates()
 
 void BaseEntityActorProxyTests::TestHumanActorUpdates()
 {
-   RefPtr<SimCore::Actors::HumanActorProxy> hap;
+   std::shared_ptr<SimCore::Actors::HumanActorProxy> hap;
    mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::HUMAN_ACTOR_TYPE, hap);
    CPPUNIT_ASSERT(hap.valid());
 
@@ -941,15 +941,15 @@ void BaseEntityActorProxyTests::TestHumanActorUpdates()
 
 void BaseEntityActorProxyTests::TestBaseEntityActorUpdates(SimCore::Actors::BaseEntityActorProxy& eap)
 {
-   RefPtr<dtGame::TestComponent> tc = new dtGame::TestComponent;
+   std::shared_ptr<dtGame::TestComponent> tc = new dtGame::TestComponent;
    mGM->AddComponent(*tc, dtGame::GameManager::ComponentPriority::HIGHEST);
 
    mGM->AddActor(eap, false, true);
 
-   dtGame::DeadReckoningHelper* drHelper = NULL;
+   dtGame::DeadReckoningHelper* drHelper = nullptr;
    eap.GetComponent(drHelper);
 
-   dtGame::DRPublishingActComp* drPubAC = NULL;
+   dtGame::DRPublishingActComp* drPubAC = nullptr;
    eap.GetComponent(drPubAC);
 
    SimCore::Actors::BaseEntity& entityActor = static_cast<SimCore::Actors::BaseEntity&>(eap.GetGameActor());
@@ -1003,7 +1003,7 @@ void BaseEntityActorProxyTests::TestBaseEntityActorUpdates(SimCore::Actors::Base
    float timeUntilUpdate2 = drPubAC->GetTimeUntilNextFullUpdate();
 
    /// TEST the time Until Update processing
-   RefPtr<const dtGame::TickMessage> tickMessage = static_cast<const dtGame::TickMessage*>(
+   std::shared_ptr<const dtGame::TickMessage> tickMessage = static_cast<const dtGame::TickMessage*>(
          tc->FindProcessMessageOfType(dtGame::MessageType::TICK_LOCAL).get());
    float tickTime = tickMessage->GetDeltaSimTime();
    CPPUNIT_ASSERT_EQUAL_MESSAGE("The time until the next update should decrement by the step time",
@@ -1022,7 +1022,7 @@ void BaseEntityActorProxyTests::TestBaseEntityActorUpdates(SimCore::Actors::Base
 
    dtCore::System::GetInstance().Step();
 
-   RefPtr<const dtGame::ActorUpdateMessage> update1 =
+   std::shared_ptr<const dtGame::ActorUpdateMessage> update1 =
          static_cast<const dtGame::ActorUpdateMessage*>(tc->FindProcessMessageOfType(
                dtGame::MessageType::INFO_ACTOR_UPDATED).get());
 
@@ -1062,7 +1062,7 @@ void BaseEntityActorProxyTests::TestBaseEntityActorUpdates(SimCore::Actors::Base
 
    dtCore::System::GetInstance().Step();
 
-   RefPtr<const dtGame::ActorUpdateMessage> update2 =
+   std::shared_ptr<const dtGame::ActorUpdateMessage> update2 =
          static_cast<const dtGame::ActorUpdateMessage*>(tc->FindProcessMessageOfType(
                dtGame::MessageType::INFO_ACTOR_UPDATED).get());
 
@@ -1086,11 +1086,11 @@ void BaseEntityActorProxyTests::TestEntityUpdateToFromStream()
    /// or from playback seem to 'blip' with the wrong X or Y pos.
 
    // create an actor - any entity will do
-   RefPtr<SimCore::Actors::PlatformActorProxy> eap;
+   std::shared_ptr<SimCore::Actors::PlatformActorProxy> eap;
    mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE, eap);
    CPPUNIT_ASSERT(eap.valid());
 
-   dtGame::DeadReckoningHelper* drHelper = NULL;
+   dtGame::DeadReckoningHelper* drHelper = nullptr;
    eap->GetComponent(drHelper);
 
 
@@ -1112,7 +1112,7 @@ void BaseEntityActorProxyTests::TestEntityUpdateToFromStream()
       drHelper->SetLastKnownRotation(newRot);
 
       // generate an update message 
-      dtCore::RefPtr<dtGame::Message> updateMsg =
+      std::shared_ptr<dtGame::Message> updateMsg =
             mGM->GetMessageFactory().CreateMessage(dtGame::MessageType::INFO_ACTOR_UPDATED);
       dtGame::ActorUpdateMessage *message = static_cast<dtGame::ActorUpdateMessage *>(updateMsg.get());
       eap->PopulateActorUpdate(*message);
@@ -1122,7 +1122,7 @@ void BaseEntityActorProxyTests::TestEntityUpdateToFromStream()
       message->ToDataStream(dataStream);
 
       // from stream. 
-      dtCore::RefPtr<dtGame::ActorUpdateMessage> messageFromStream = new dtGame::ActorUpdateMessage;
+      std::shared_ptr<dtGame::ActorUpdateMessage> messageFromStream = new dtGame::ActorUpdateMessage;
       messageFromStream->FromDataStream(dataStream);
 
       // Get pos & rot from the message
@@ -1152,7 +1152,7 @@ void BaseEntityActorProxyTests::TestEntityUpdateToFromStream()
 
 void BaseEntityActorProxyTests::TestPlatformDRRegistration()
 {
-   RefPtr<SimCore::Actors::PlatformActorProxy> eap;
+   std::shared_ptr<SimCore::Actors::PlatformActorProxy> eap;
    mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE, eap);
    CPPUNIT_ASSERT(eap.valid());
 
@@ -1168,7 +1168,7 @@ void BaseEntityActorProxyTests::TestPlatformDRRegistration()
 
 void BaseEntityActorProxyTests::TestHumanDRRegistration()
 {
-   RefPtr<SimCore::Actors::HumanActorProxy> hap;
+   std::shared_ptr<SimCore::Actors::HumanActorProxy> hap;
    mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::HUMAN_ACTOR_TYPE, hap);
    CPPUNIT_ASSERT(hap.valid());
 
@@ -1206,7 +1206,7 @@ void BaseEntityActorProxyTests::TestBaseEntityDRRegistration(SimCore::Actors::Ba
 
    osg::Vec3 setVec = osg::Vec3(1.0, 1.2, 1.3);
 
-   dtGame::DeadReckoningHelper* drHelper = NULL;
+   dtGame::DeadReckoningHelper* drHelper = nullptr;
    actor.GetComponent(drHelper);
 
    drHelper->SetLastKnownTranslation(setVec);
@@ -1257,16 +1257,16 @@ void BaseEntityActorProxyTests::TestBaseEntityDRRegistration(SimCore::Actors::Ba
 
 void BaseEntityActorProxyTests::TestPlayerActorProxy()
 {
-   RefPtr<dtGame::TestComponent> tc = new dtGame::TestComponent;
+   std::shared_ptr<dtGame::TestComponent> tc = new dtGame::TestComponent;
    mGM->AddComponent(*tc, dtGame::GameManager::ComponentPriority::HIGHEST);
-   RefPtr<SimCore::Actors::PlayerActorProxy> pa;
+   std::shared_ptr<SimCore::Actors::PlayerActorProxy> pa;
    mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::PLAYER_ACTOR_TYPE, pa);
-   CPPUNIT_ASSERT(pa != NULL);
+   CPPUNIT_ASSERT(pa != nullptr);
 
    mGM->AddActor(*pa, false, false);
    dtCore::AppSleep(10);
    dtCore::System::GetInstance().Step();
-   RefPtr<const dtGame::Message> msg =
+   std::shared_ptr<const dtGame::Message> msg =
          tc->FindProcessMessageOfType(dtGame::MessageType::INFO_PLAYER_ENTERED_WORLD);
 
    CPPUNIT_ASSERT_MESSAGE("A player entered the world, a player enter world message should have been found", msg.valid());
@@ -1287,7 +1287,7 @@ void BaseEntityActorProxyTests::TestPlayerActorProxy()
 void BaseEntityActorProxyTests::TestDetonationActorProxy()
 {
    //SimCore::Actors::DetonationActor::SetLingeringShotSecs(2);
-   RefPtr<SimCore::Actors::DetonationActorProxy> dap;
+   std::shared_ptr<SimCore::Actors::DetonationActorProxy> dap;
    mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::DETONATION_ACTOR_TYPE, dap);
    CPPUNIT_ASSERT(dap.valid());
    SimCore::Actors::DetonationActor *da =
@@ -1317,15 +1317,15 @@ void BaseEntityActorProxyTests::TestDetonationActorProxy()
 
    //Make sure these don't ACTUALLY get deleted before the end of test.
    //This is a work around for a bug is sigslot.h
-   std::vector<RefPtr<SimCore::Actors::DetonationActorProxy> > detList;
-   std::vector<RefPtr<dtAudio::Sound> > soundList;
+   std::vector<std::shared_ptr<SimCore::Actors::DetonationActorProxy> > detList;
+   std::vector<std::shared_ptr<dtAudio::Sound> > soundList;
 
    SimCore::Actors::DetonationActor::IMPACT_TYPE curType = SimCore::Actors::DetonationActor::IMPACT_ENTITY;
 
    const unsigned short int numDets = 20;
    for(unsigned int i = 0; i < numDets; i++)
    {
-      RefPtr<SimCore::Actors::DetonationActorProxy> d;
+      std::shared_ptr<SimCore::Actors::DetonationActorProxy> d;
       mGM->CreateActor("Effects", "Detonation Actor", d);
       SimCore::Actors::DetonationActor& detActor = static_cast<SimCore::Actors::DetonationActor&>(d->GetGameActor());
       detActor.SetSmokeLifeTime(0.001);
@@ -1348,19 +1348,19 @@ void BaseEntityActorProxyTests::TestDetonationActorProxy()
       case SimCore::Actors::DetonationActor::IMPACT_ENTITY:
          // The sound isn't null even though the entity dosen't have one because the ground impact version
          // will take over if it doesn't
-         CPPUNIT_ASSERT(detActor.GetSound() != NULL);
+         CPPUNIT_ASSERT(detActor.GetSound() != nullptr);
          soundList.push_back(detActor.GetSound());
          CPPUNIT_ASSERT(std::string(detActor.GetSound()->GetFilename()).find("silence.wav") != std::string::npos);
          curType = SimCore::Actors::DetonationActor::IMPACT_HUMAN;
          break;
       case SimCore::Actors::DetonationActor::IMPACT_HUMAN:
-         CPPUNIT_ASSERT(detActor.GetSound() != NULL);
+         CPPUNIT_ASSERT(detActor.GetSound() != nullptr);
          soundList.push_back(detActor.GetSound());
          CPPUNIT_ASSERT(std::string(detActor.GetSound()->GetFilename()).find("tank_fire.wav") != std::string::npos);
          curType = SimCore::Actors::DetonationActor::IMPACT_TERRAIN;
          break;
       case SimCore::Actors::DetonationActor::IMPACT_TERRAIN:
-         CPPUNIT_ASSERT(detActor.GetSound() != NULL);
+         CPPUNIT_ASSERT(detActor.GetSound() != nullptr);
          CPPUNIT_ASSERT(std::string(detActor.GetSound()->GetFilename()).find("silence.wav") != std::string::npos);
          soundList.push_back(detActor.GetSound());
          curType = SimCore::Actors::DetonationActor::IMPACT_ENTITY;
@@ -1385,11 +1385,11 @@ void BaseEntityActorProxyTests::TestDetonationActorProxy()
 
    for (unsigned i = 0; i < detList.size(); ++i)
    {
-      SimCore::Actors::DetonationActor* detActor = NULL;
+      SimCore::Actors::DetonationActor* detActor = nullptr;
       detList[i]->GetActor(detActor);
-      CPPUNIT_ASSERT(detActor != NULL);
-      // The sound should have been set the NULL.
-      CPPUNIT_ASSERT(detActor->GetSound() == NULL);
+      CPPUNIT_ASSERT(detActor != nullptr);
+      // The sound should have been set the nullptr.
+      CPPUNIT_ASSERT(detActor->GetSound() == nullptr);
    }
 
    for (unsigned i = 0; i < soundList.size(); ++i)
@@ -1399,14 +1399,14 @@ void BaseEntityActorProxyTests::TestDetonationActorProxy()
    }
 
    //must delete the actor before shutting down the audio manager.
-   dap = NULL;
+   dap = nullptr;
 }
 
 void BaseEntityActorProxyTests::TestDetonationSoundDelay()
 {
    mGM->AddComponent(*new SimCore::Components::ViewerMessageProcessor, dtGame::GameManager::ComponentPriority::HIGHEST);
 
-   RefPtr<SimCore::Actors::DetonationActorProxy> dap;
+   std::shared_ptr<SimCore::Actors::DetonationActorProxy> dap;
    mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::DETONATION_ACTOR_TYPE, dap);
    CPPUNIT_ASSERT(dap.valid());
    SimCore::Actors::DetonationActor &da = static_cast<SimCore::Actors::DetonationActor&>(dap->GetGameActor());
@@ -1438,11 +1438,11 @@ void BaseEntityActorProxyTests::TestDetonationSoundDelay()
 
 void BaseEntityActorProxyTests::TestBaseWaterActorProxy()
 {
-   RefPtr<SimCore::Actors::BaseWaterActorProxy> waterProxy;
+   std::shared_ptr<SimCore::Actors::BaseWaterActorProxy> waterProxy;
    mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::BASE_WATER_ACTOR_TYPE, waterProxy);
 
    CPPUNIT_ASSERT(waterProxy.valid());
-   SimCore::Actors::BaseWaterActor* waterActor = NULL;
+   SimCore::Actors::BaseWaterActor* waterActor = nullptr;
    waterProxy->GetActor( waterActor );
    const SimCore::Actors::BaseWaterActor* constWaterActor = waterActor;
 
@@ -1467,13 +1467,13 @@ void BaseEntityActorProxyTests::TestBaseWaterActorProxy()
 
 void BaseEntityActorProxyTests::TestFindMuzzleNodes()
 {
-   RefPtr<SimCore::Actors::PlatformActorProxy> eap;
+   std::shared_ptr<SimCore::Actors::PlatformActorProxy> eap;
    mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE, eap);
    CPPUNIT_ASSERT(eap.valid());
 
    CPPUNIT_ASSERT(!eap->GetHasLoadedResources());
 
-   SimCore::Actors::Platform* platform = NULL;
+   SimCore::Actors::Platform* platform = nullptr;
    eap->GetActor(platform);
 
    dtCore::ResourceDescriptor happySphere("StaticMeshes:physics_happy_sphere.ive");
@@ -1502,13 +1502,13 @@ public:
    // Don't try this at home.
    : BaseEntity(*new dtGame::GameActorProxy)
    {
-      dtCore::RefPtr<osgSim::DOFTransform> dof = new osgSim::DOFTransform();
+      osg::ref_ptr<osgSim::DOFTransform> dof = new osgSim::DOFTransform();
       dof->setName(SimCore::Actors::BaseEntity::MUZZLE_NODE_PREFIX + "01");
       GetScaleMatrixTransform().addChild(dof);
-      dtCore::RefPtr<osg::MatrixTransform> mt = new osg::MatrixTransform();
+      osg::ref_ptr<osg::MatrixTransform> mt = new osg::MatrixTransform();
       mt->setName(SimCore::Actors::BaseEntity::MUZZLE_NODE_PREFIX + "02");
       dof->addChild(mt);
-      dtCore::RefPtr<osg::Group> gp = new osg::Group();
+      osg::ref_ptr<osg::Group> gp = new osg::Group();
       gp->setName(SimCore::Actors::BaseEntity::MUZZLE_NODE_PREFIX + "03");
       dof->addChild(gp);
 
@@ -1529,7 +1529,7 @@ public:
 
 void BaseEntityActorProxyTests::TestFindMuzzleNodesWithDirection()
 {
-   dtCore::RefPtr<SubBaseEntityManualModel> entity = new SubBaseEntityManualModel;
+   std::shared_ptr<SubBaseEntityManualModel> entity = new SubBaseEntityManualModel;
    osg::Vec3 dir(0.0, -1.0, 0.0);
 
    std::vector<osg::Group*> muzzles;
@@ -1537,7 +1537,7 @@ void BaseEntityActorProxyTests::TestFindMuzzleNodesWithDirection()
    CPPUNIT_ASSERT_EQUAL(3U, unsigned(muzzles.size()));
 
    osg::Group* matchingMuzzle = entity->GetWeaponMuzzleForDirection(dir);
-   CPPUNIT_ASSERT(matchingMuzzle != NULL);
+   CPPUNIT_ASSERT(matchingMuzzle != nullptr);
    CPPUNIT_ASSERT_EQUAL(SimCore::Actors::BaseEntity::MUZZLE_NODE_PREFIX + "02", matchingMuzzle->getName());
 
 }

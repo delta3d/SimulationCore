@@ -100,9 +100,9 @@ namespace DriverDemo
    //////////////////////////////////////////////////////////////////////////
    void GameAppComponent::InitializeCommandLineOptionsAndRead(osg::ArgumentParser* parser)
    {
-      if(parser == NULL)
+      if(parser == nullptr)
       {
-         LOG_ERROR("Parser is NULL in InitializeCommandLineOptionsAndRead\
+         LOG_ERROR("Parser is nullptr in InitializeCommandLineOptionsAndRead\
                    , no initing will occur");
          return;
       }
@@ -117,14 +117,14 @@ namespace DriverDemo
       // Get the start heading for the player
       float heading = 0.0f;
       parser->read( "--startHeading", heading );
-      dtCore::RefPtr<dtDAL::NamedFloatParameter> paramHeading
+      std::shared_ptr<dtDAL::NamedFloatParameter> paramHeading
          = new dtDAL::NamedFloatParameter(CMD_LINE_START_HEADING, heading);
       commandLineObject->AddParameter(paramHeading.get());
 
       std::string prototypeName;
       if(parser->read("--" + CMD_LINE_VEHICLE_PROTOTYPE_NAME, prototypeName))
       {
-         dtCore::RefPtr<dtDAL::NamedStringParameter> parameter
+         std::shared_ptr<dtDAL::NamedStringParameter> parameter
             = new dtDAL::NamedStringParameter(CMD_LINE_VEHICLE_PROTOTYPE_NAME, prototypeName);
          commandLineObject->AddParameter(parameter.get());
       }
@@ -139,14 +139,14 @@ namespace DriverDemo
    //////////////////////////////////////////////////////////////////////////
    SimCore::Actors::BasePhysicsVehicleActor* GameAppComponent::CreateNewVehicle()
    {
-      SimCore::Actors::BasePhysicsVehicleActor* vehicle = NULL;
+      SimCore::Actors::BasePhysicsVehicleActor* vehicle = nullptr;
       std::string vehicleName = "Hover_Vehicle"; // The default. Change with command line args.
 
       SimCore::CommandLineObject* commandLineObject = GetCommandLineObject();
-      if(commandLineObject == NULL)
+      if(commandLineObject == nullptr)
       {
          LOG_ERROR("commandLineObject is null, InitializeVehicle will not occur");
-         return NULL;
+         return nullptr;
       }
 
       // look up the prototype name from the command line args. If the user supplied one,
@@ -154,7 +154,7 @@ namespace DriverDemo
       const dtDAL::NamedStringParameter* vehiclePrototypeName
          = dynamic_cast<const dtDAL::NamedStringParameter*>
          (commandLineObject->GetParameter(GameAppComponent::CMD_LINE_VEHICLE_PROTOTYPE_NAME));
-      if( vehiclePrototypeName != NULL )
+      if( vehiclePrototypeName != nullptr )
       {
          vehicleName = vehiclePrototypeName->GetValue();
       }
@@ -167,12 +167,12 @@ namespace DriverDemo
       // CREATE OUR NEW VEHICLE
       if(!toFill.empty())
       {
-         dtCore::RefPtr<dtDAL::ActorProxy> ourActualActorProxy =
+         std::shared_ptr<dtDAL::ActorProxy> ourActualActorProxy =
             GetGameManager()->CreateActorFromPrototype(toFill.front()->GetId());
-         if(ourActualActorProxy != NULL)
+         if(ourActualActorProxy != nullptr)
          {
             vehicle = dynamic_cast<SimCore::Actors::BasePhysicsVehicleActor*>(ourActualActorProxy->GetDrawable());
-            if (vehicle != NULL)
+            if (vehicle != nullptr)
             {
                vehicle->SetArticulationHelper( new DriverArticulationHelper );
 
@@ -185,7 +185,7 @@ namespace DriverDemo
                const dtDAL::NamedFloatParameter* paramHeading
                   = dynamic_cast<const dtDAL::NamedFloatParameter*>
                   (commandLineObject->GetParameter(GameAppComponent::CMD_LINE_START_HEADING));
-               if( paramHeading != NULL )
+               if( paramHeading != nullptr )
                {
                   dtCore::Transform theTransform;
                   vehicle->GetTransform(theTransform);
@@ -225,22 +225,22 @@ namespace DriverDemo
    {
       DriverInputComponent* mInputComponent = dynamic_cast<DriverInputComponent*>
          (GetGameManager()->GetComponentByName(DriverInputComponent::DEFAULT_NAME));
-      if(mInputComponent == NULL)
+      if(mInputComponent == nullptr)
       {
          LOG_ERROR("Input component is null, initialize player will not occur");
          return;
       }
 
-      SimCore::CommandLineObject* commandLineObject = NULL;
+      SimCore::CommandLineObject* commandLineObject = nullptr;
       commandLineObject = GetCommandLineObject();
 
-      if(commandLineObject == NULL)
+      if(commandLineObject == nullptr)
       {
          LOG_ERROR("commandLineObject is null, initialize player will not occur");
          return;
       }
 
-      dtCore::RefPtr<dtGame::GameActorProxy> ap;
+      std::shared_ptr<dtGame::GameActorProxy> ap;
 
       // create a player actor, walk run jump and drink :)
       GetGameManager()->CreateActor(*SimCore::Actors::EntityActorRegistry::PLAYER_ACTOR_TYPE, ap);

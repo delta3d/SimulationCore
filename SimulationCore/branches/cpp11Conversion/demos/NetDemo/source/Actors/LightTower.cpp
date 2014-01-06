@@ -90,10 +90,10 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////////////
    void LightTower::CreateLights()
    {
-      SimCore::Components::RenderingSupportComponent* rsc = NULL;
+      SimCore::Components::RenderingSupportComponent* rsc = nullptr;
       GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME, rsc);
 
-      if(rsc != NULL)
+      if(rsc != nullptr)
       {
          mTargetLight->mTarget = this;
          mTargetLight->mIntensity = 0.0f;        
@@ -149,7 +149,7 @@ namespace NetDemo
       {
 
          // Setup our articulation helper for the vehicle
-         dtCore::RefPtr<SimCore::Components::DefaultFlexibleArticulationHelper> articHelper =
+         std::shared_ptr<SimCore::Components::DefaultFlexibleArticulationHelper> articHelper =
             new SimCore::Components::DefaultFlexibleArticulationHelper();
          articHelper->SetEntity(this);
          articHelper->AddArticulation("dof_turret_01",
@@ -158,7 +158,7 @@ namespace NetDemo
             SimCore::Components::DefaultFlexibleArticulationHelper::ARTIC_TYPE_ELEVATION, "dof_turret_01");
          SetArticulationHelper(articHelper.get());
 
-         mAIHelper->Init(NULL);
+         mAIHelper->Init(nullptr);
 
          //this will allow the AI to actually move us
          mAIHelper->GetPhysicsModel()->SetPhysicsActComp(GetPhysicsActComp());
@@ -187,7 +187,7 @@ namespace NetDemo
       }
 
       // Attach a special shader.
-      dtCore::RefPtr<SimCore::ApplyShaderVisitor> visitor = new SimCore::ApplyShaderVisitor();
+      std::shared_ptr<SimCore::ApplyShaderVisitor> visitor = new SimCore::ApplyShaderVisitor();
       visitor->AddNodeName("Eye360");
       visitor->SetShaderName("ColorPulseShader");
       visitor->SetShaderGroup("CustomizableVehicleShaderGroup");
@@ -226,10 +226,10 @@ namespace NetDemo
          // Mark the AI as 'dead' so we stop 'steering'
          if(IsMobilityDisabled())
          {
-            SimCore::Components::RenderingSupportComponent* rsc = NULL;
+            SimCore::Components::RenderingSupportComponent* rsc = nullptr;
             GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME, rsc);
 
-            if(rsc != NULL)
+            if(rsc != nullptr)
             {
                rsc->RemoveDynamicLight(mMainLight->GetId());
                rsc->RemoveDynamicLight(mTargetLight->GetId());
@@ -257,7 +257,7 @@ namespace NetDemo
    void LightTower::FindTarget(float)
    {
       float minDist = 250.0;
-      dtCore::Transformable* enemy = NULL;
+      dtCore::Transformable* enemy = nullptr;
 
       std::vector<dtDAL::ActorProxy*> actorArray;
       GetGameActorProxy().GetGameManager()->FindActorsByType(*NetDemoActorRegistry::ENEMY_MINE_ACTOR_TYPE, actorArray);
@@ -292,7 +292,7 @@ namespace NetDemo
          actorArray.pop_back();
       }   
 
-      if(enemy != NULL)
+      if(enemy != nullptr)
       {
          mAIHelper->SetCurrentTarget(*enemy);
       }
@@ -330,7 +330,7 @@ namespace NetDemo
 
       dtUtil::NodeCollector* nodes = GetNodeCollector();
       osgSim::DOFTransform* dof = nodes->GetDOFTransform("dof_turret_01");
-      if (dof != NULL)
+      if (dof != nullptr)
       {
          osg::Vec3 hpr, hprLast;
          dtCore::Transform trans;
@@ -356,7 +356,7 @@ namespace NetDemo
             dtUtil::Clamp(hpr[1], osg::DegreesToRadians(-10.0f), osg::DegreesToRadians(10.0f));
             dof->setCurrentHPR(hpr);
 
-            if(GetArticulationHelper() != NULL)
+            if(GetArticulationHelper() != nullptr)
             {
                GetArticulationHelper()->HandleUpdatedDOFOrientation(*dof, hpr - hprLast, hpr);
             }
@@ -387,7 +387,7 @@ namespace NetDemo
       //orient the light
       dtUtil::NodeCollector* nodes = GetNodeCollector();
       osgSim::DOFTransform* dof = nodes->GetDOFTransform("dof_turret_01");
-      if (dof != NULL && mTargetLight != NULL)
+      if (dof != nullptr && mTargetLight != nullptr)
       {
          osg::Vec3 hpr, hprLast;
          hpr = dof->getCurrentHPR();
@@ -439,7 +439,7 @@ namespace NetDemo
    {
       BaseClass::OnRemovedFromWorld();
 
-      LightTower* actor = NULL;
+      LightTower* actor = nullptr;
       GetActor(actor);      
       actor->OnRemovedFromWorld();
    }
@@ -449,19 +449,19 @@ namespace NetDemo
       BaseClass::BuildActorComponents();
 
 
-      dtPhysics::PhysicsActComp* physAC = NULL;
+      dtPhysics::PhysicsActComp* physAC = nullptr;
       GetComponent(physAC);
       // Add our initial body.
-      dtCore::RefPtr<dtPhysics::PhysicsObject> physicsObject = new dtPhysics::PhysicsObject("VehicleBody");
+      std::shared_ptr<dtPhysics::PhysicsObject> physicsObject = new dtPhysics::PhysicsObject("VehicleBody");
       physAC->AddPhysicsObject(*physicsObject);
       physicsObject->SetPrimitiveType(dtPhysics::PrimitiveType::CONVEX_HULL);
       physicsObject->SetMass(30000.0f);
       //physicsObject->SetExtents(osg::Vec3(1.5f, 1.5f, 1.5f));
       physicsObject->SetMechanicsType(dtPhysics::MechanicsType::STATIC);
 
-      dtGame::DRPublishingActComp* drPublishingActComp = NULL;
+      dtGame::DRPublishingActComp* drPublishingActComp = nullptr;
       GetComponent(drPublishingActComp);
-      if (drPublishingActComp == NULL)
+      if (drPublishingActComp == nullptr)
       {
          LOG_ERROR("CRITICAL ERROR - No DR Publishing Actor Component.");
          return;

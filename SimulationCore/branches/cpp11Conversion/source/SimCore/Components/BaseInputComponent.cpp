@@ -43,7 +43,7 @@
 #include <dtGame/messagefactory.h>
 #include <dtPhysics/physicscomponent.h>
 
-using dtCore::RefPtr;
+using std::shared_ptr;
 using SimCore::MessageType;
 
 namespace SimCore
@@ -59,7 +59,7 @@ namespace SimCore
          , mEntityMagnification(1.0f)
          , mTestWeatherMode(TEST_WEATHER_CLEAR)
       {
-         mLogger = &dtUtil::Log::GetInstance("BaseInputComponent.cpp");
+         mLogger = dtUtil::Log::GetInstance("BaseInputComponent.cpp");
          //mMouseListener = new BaseMouseListener(*this);
          //mKeyboardListener = new BaseKeyboardListener(*this);
       }
@@ -74,7 +74,7 @@ namespace SimCore
       {
          mEntityMagnification = newMag;
          dtUtil::Clamp(mEntityMagnification, 1.0f, 8.0f);
-         RefPtr<dtGame::Message> msg = GetGameManager()->GetMessageFactory().CreateMessage(MessageType::MAGNIFICATION);
+         std::shared_ptr<dtGame::Message> msg = GetGameManager()->GetMessageFactory().CreateMessage(MessageType::MAGNIFICATION);
          MagnificationMessage &magMsg = static_cast<MagnificationMessage&>(*msg);
          magMsg.SetMagnification(mEntityMagnification);
          magMsg.SetSource(*new dtGame::MachineInfo);
@@ -90,7 +90,7 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////
       SimCore::Actors::StealthActor* BaseInputComponent::GetStealthActor()
       {
-         return mStealthActor.get();
+         return mStealthActor;
       }
 
       ////////////////////////////////////////////////////////////////////
@@ -194,9 +194,9 @@ namespace SimCore
       {
          if (SimCore::Utils::IsDevModeOn(*GetGameManager()))
          {
-            dtPhysics::PhysicsComponent* physicsComponent = NULL;
+            dtPhysics::PhysicsComponent* physicsComponent = nullptr;
             GetGameManager()->GetComponentByName(dtPhysics::PhysicsComponent::DEFAULT_NAME, physicsComponent);
-            if (physicsComponent != NULL)
+            if (physicsComponent != nullptr)
             {
                physicsComponent->SetNextDebugDrawMode();
             }
@@ -223,12 +223,12 @@ namespace SimCore
          }
 
          // look to find an actor already existing atmosphere
-         dtCore::RefPtr<dtGame::GameActorProxy> newProxy;
-         Actors::UniformAtmosphereActorProxy* weatherProxy = NULL;
+         std::shared_ptr<dtGame::GameActorProxy> newProxy;
+         Actors::UniformAtmosphereActorProxy* weatherProxy = nullptr;
          GetGameManager()->FindActorByType(*SimCore::Actors::EntityActorRegistry::UNIFORM_ATMOSPHERE_ACTOR_TYPE, weatherProxy);
 
          // if one doesn't already exist, then we create it.
-         if (weatherProxy == NULL)
+         if (weatherProxy == nullptr)
          {
             GetGameManager()->CreateActor
                (*SimCore::Actors::EntityActorRegistry::UNIFORM_ATMOSPHERE_ACTOR_TYPE, newProxy);
@@ -341,7 +341,7 @@ namespace SimCore
       {
          if(msg.GetMessageType() == dtGame::MessageType::INFO_MAP_UNLOAD_BEGIN)
          {
-            SetStealthActor(NULL);
+            SetStealthActor(nullptr);
          }
       }
    }

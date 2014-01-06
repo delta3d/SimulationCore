@@ -41,7 +41,7 @@
 #include <UnitTestMain.h>
 #include <dtABC/application.h>
 
-using dtCore::RefPtr;
+using std::shared_ptr;
 
 class PauseResumeTests : public CPPUNIT_NS::TestFixture
 {
@@ -71,8 +71,8 @@ public:
 
 private:
 
-   RefPtr<dtGame::GameManager> mGM;
-   RefPtr<dtGame::MachineInfo> mMachineInfo;
+   std::shared_ptr<dtGame::GameManager> mGM;
+   std::shared_ptr<dtGame::MachineInfo> mMachineInfo;
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(PauseResumeTests);
@@ -98,8 +98,8 @@ void PauseResumeTests::tearDown()
    dtCore::System::GetInstance().Stop();
 
    mGM->DeleteAllActors(true);
-   mGM = NULL;
-   mMachineInfo = NULL;
+   mGM = nullptr;
+   mMachineInfo = nullptr;
 }
 
 void PauseResumeTests::TestPauseAndResume()
@@ -107,10 +107,10 @@ void PauseResumeTests::TestPauseAndResume()
    mGM->AddComponent(*new dtGame::DefaultMessageProcessor, dtGame::GameManager::ComponentPriority::HIGHEST);
    mGM->AddComponent(*new dtGame::DeadReckoningComponent, dtGame::GameManager::ComponentPriority::HIGHER);
 
-   RefPtr<dtGame::GameActorProxy> proxy = mGM->CreateRemoteGameActor(*SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE);
+   std::shared_ptr<dtGame::GameActorProxy> proxy = mGM->CreateRemoteGameActor(*SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE);
    CPPUNIT_ASSERT(proxy.valid());
    SimCore::Actors::BaseEntityActorProxy *gap = dynamic_cast<SimCore::Actors::BaseEntityActorProxy*>(proxy.get());
-   CPPUNIT_ASSERT(gap != NULL);
+   CPPUNIT_ASSERT(gap != nullptr);
    mGM->AddActor(*gap, true, false);
 
    mGM->SetPaused(true);

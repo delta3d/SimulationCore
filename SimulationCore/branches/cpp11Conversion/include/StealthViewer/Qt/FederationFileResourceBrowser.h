@@ -42,7 +42,7 @@ namespace StealthQt
       public:
 
          /// Constructor
-         FederationFileResourceBrowser(QWidget *parent = NULL);
+         FederationFileResourceBrowser(QWidget *parent = nullptr);
 
          /// Destructor
          virtual ~FederationFileResourceBrowser();

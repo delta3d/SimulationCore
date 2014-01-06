@@ -80,26 +80,26 @@ class ViewerMaterialsTests : public CPPUNIT_NS::TestFixture
          dtCore::System::GetInstance().Stop();
          
          mGM->DeleteAllActors(true);
-         mGM = NULL;
+         mGM = nullptr;
       }
 
       void TestFunction();
 
    private:
-      dtCore::RefPtr<SimCore::Components::ViewerMaterialComponent> mMaterialComponent;
-     dtCore::RefPtr<dtGame::GameManager> mGM;
+      std::shared_ptr<SimCore::Components::ViewerMaterialComponent> mMaterialComponent;
+     std::shared_ptr<dtGame::GameManager> mGM;
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(ViewerMaterialsTests);
    
 void ViewerMaterialsTests::TestFunction()
 {
-   CPPUNIT_ASSERT_MESSAGE("Material Component not initialized", (mMaterialComponent != NULL));
+   CPPUNIT_ASSERT_MESSAGE("Material Component not initialized", (mMaterialComponent != nullptr));
    
    /*SimCore::Actors::ViewerMaterialActor& viewMaterial = */
    mMaterialComponent->CreateOrChangeMaterialByFID(100);
    
-   dtCore::RefPtr<dtGame::Message> reflkjasdfo;
+   std::shared_ptr<dtGame::Message> reflkjasdfo;
    mGM->GetMessageFactory().CreateMessage(dtGame::MessageType::INFO_MAP_LOADED, reflkjasdfo);
    mGM->SendMessage(*reflkjasdfo.get());
    dtCore::System::GetInstance().Step();

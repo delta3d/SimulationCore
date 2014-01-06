@@ -180,11 +180,11 @@ namespace NetDemo
          bool mIsServer;
          bool mIsConnectedToNetwork;
 
-         //dtCore::RefPtr<SimCore::Actors::StealthActor> mStealth;
+         //std::shared_ptr<SimCore::Actors::StealthActor> mStealth;
          /// Each client & server has one player status that they are publishing.
-         dtCore::RefPtr<PlayerStatusActor> mPlayerStatus;
-         dtCore::RefPtr<SimCore::Actors::BasePhysicsVehicleActorProxy> mPlayerOwnedVehicle;
-         dtCore::RefPtr<FortActorProxy> mServerCreatedFortActor;
+         std::shared_ptr<PlayerStatusActor> mPlayerStatus;
+         std::shared_ptr<SimCore::Actors::BasePhysicsVehicleActorProxy> mPlayerOwnedVehicle;
+         std::shared_ptr<FortActorProxy> mServerCreatedFortActor;
 
          /// This holds the terrain prototype we want to load once we enter LOADING state.
          std::string mTerrainToLoad;
@@ -193,17 +193,17 @@ namespace NetDemo
          std::string mCurrentTerrainPrototypeName;
 
          /// The current DRAWING terrain actor. This actor comes and goes - it's the visible geometry, not physics.
-         dtCore::RefPtr<dtGame::GameActor> mCurrentTerrainDrawActor;
+         std::shared_ptr<dtGame::GameActor> mCurrentTerrainDrawActor;
 
          // Reference to the State Component to control automatic transitions.
-         //dtCore::ObserverPtr<StateComponent> mStateComp;
+         //std::weak_ptr<StateComponent> mStateComp;
 
          std::string mMapName;
 
          /// May be either a Network or Client component. We create it when we connect
-         dtCore::RefPtr<dtNetGM::NetworkComponent> mNetworkComp;
+         std::shared_ptr<dtNetGM::NetworkComponent> mNetworkComp;
 
-         dtCore::RefPtr<ServerGameStatusActorProxy> mServerGameStatusProxy;
+         std::shared_ptr<ServerGameStatusActorProxy> mServerGameStatusProxy;
 
          bool mStartTheGameOnNextGameRunning;
 
@@ -223,15 +223,15 @@ namespace NetDemo
    bool GameLogicComponent::FindActor(const dtCore::UniqueId& actorId, T_Actor*& outActor)
    {
       // Get the actor to which the message refers.
-      dtDAL::ActorProxy* proxy = NULL;
+      dtDAL::ActorProxy* proxy = nullptr;
       GetGameManager()->FindActorById(actorId, proxy);
 
-      if(proxy != NULL)
+      if(proxy != nullptr)
       {
          proxy->GetActor(outActor);
       }
 
-      return outActor != NULL;
+      return outActor != nullptr;
    }
 
 }

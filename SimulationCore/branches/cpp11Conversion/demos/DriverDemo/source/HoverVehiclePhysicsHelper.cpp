@@ -43,7 +43,7 @@ namespace DriverDemo
       , mForceBoostFactor(0.25)
    {
       // non properties
-      dtCore::RefPtr<dtPhysics::PhysicsObject> physicsObject = new dtPhysics::PhysicsObject("VehicleBody");
+      std::shared_ptr<dtPhysics::PhysicsObject> physicsObject = new dtPhysics::PhysicsObject("VehicleBody");
       AddPhysicsObject(*physicsObject);
       physicsObject->SetPrimitiveType(dtPhysics::PrimitiveType::SPHERE);
       physicsObject->SetMass(1000.0f);
@@ -81,7 +81,7 @@ namespace DriverDemo
       bool accelForward, bool accelReverse, bool accelLeft, bool accelRight)
    {
       deltaTime = (deltaTime > 0.2) ? 0.2 : deltaTime;  // cap at 0.2 second to avoid rare 'freak' outs.
-      dtPhysics::PhysicsObject* physicsObject = GetMainPhysicsObject();  // Tick Local protects us from NULL.
+      dtPhysics::PhysicsObject* physicsObject = GetMainPhysicsObject();  // Tick Local protects us from nullptr.
       float weight = physicsObject->GetMass();
 
       // First thing we do is try to make sure we are hovering...
@@ -108,7 +108,7 @@ namespace DriverDemo
       physicsObject->ApplyImpulse(dir * upForce * deltaTime);
 
       // Get the forward vector and the perpendicular side (right) vector.
-      dtGame::GameActor* actor = NULL;
+      dtGame::GameActor* actor = nullptr;
       GetOwner( actor );
       osg::Matrix matrix;
       dtCore::Transformable::GetAbsoluteMatrix( actor->GetOSGNode(), matrix);
@@ -170,7 +170,7 @@ namespace DriverDemo
 
       // TEST HACK STUFF
       /*dtCore::Keyboard *keyboard = GetPhysicsGameActorProxy().GetGameManager()->GetApplication().GetKeyboard();
-      if(keyboard == NULL)
+      if(keyboard == nullptr)
          return;
       if(keyboard->GetKeyState('q'))
       {
@@ -244,7 +244,7 @@ namespace DriverDemo
       //if(!IsRemote())
       //{
          dtPhysics::Material *material = dtPhysics::PhysicsWorld::GetInstance().GetMaterials().GetMaterial("FrictionLessMaterial");
-         if (material == NULL )
+         if (material == nullptr )
          {
             dtPhysics::MaterialDef fallbackFriction;
             fallbackFriction.SetStaticFriction(0.0f);

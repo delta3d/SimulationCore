@@ -61,7 +61,7 @@ namespace NetDemo
             virtual void Reset();
 
             virtual void Setup(GameLogicComponent& logicComp,
-               SimCore::Components::HUDGroup* root = NULL);
+               SimCore::Components::HUDGroup* root = nullptr);
 
             void SetFortDamageRatio(float damageRatio);
 
@@ -95,18 +95,18 @@ namespace NetDemo
             float mDamageMeterTimer;
             float mDamageMeterLevel;
             osg::Vec4 mDamageMeterColor;
-            dtCore::RefPtr<GameLogicComponent> mLogicComp;
+            std::shared_ptr<GameLogicComponent> mLogicComp;
 
             // Animation Controllers
-			dtCore::RefPtr<SimCore::GUI::PositionController> mControlHelpPos;
-			dtCore::RefPtr<SimCore::GUI::PositionController> mControlDebugInfoPos;
+			std::shared_ptr<SimCore::GUI::PositionController> mControlHelpPos;
+			std::shared_ptr<SimCore::GUI::PositionController> mControlDebugInfoPos;
 
             // Special Widgets
             CEGUI::Window* mFortPoints;
             CEGUI::Window* mDamageMeter_Fort;
             CEGUI::Window* mScore;
-			dtCore::RefPtr<SimCore::Components::HUDElement> mHelp;
-			dtCore::RefPtr<SimCore::Components::HUDElement> mDebugInfo;
+			std::shared_ptr<SimCore::Components::HUDElement> mHelp;
+			std::shared_ptr<SimCore::Components::HUDElement> mDebugInfo;
       };
    }
 }

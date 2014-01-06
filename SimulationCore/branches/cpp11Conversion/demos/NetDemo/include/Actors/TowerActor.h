@@ -96,8 +96,8 @@ namespace NetDemo
       private:
 
          float mSleepTime, mMaxSleepTime;
-         dtCore::RefPtr<TowerAIHelper> mAIHelper;
-         dtCore::RefPtr<dtAudio::Sound> mSndCollisionHit;
+         std::shared_ptr<TowerAIHelper> mAIHelper;
+         std::shared_ptr<dtAudio::Sound> mSndCollisionHit;
    };
 
    /// This is the proxy for the object.  It needs to build the property map, create the actor, and handle entered world.

@@ -33,7 +33,7 @@
 namespace SimCore
 {
    ///////////////////////////////////////////////////////////////////
-   MUserStream::MUserStream(const char* filename, bool load) : fp(NULL)
+   MUserStream::MUserStream(const char* filename, bool load) : fp(nullptr)
    {
       fp = fopen(filename, load ? "rb" : "wb");
    }
@@ -154,7 +154,7 @@ namespace SimCore
    }
 
    ///////////////////////////////////////////////////////////////////
-   MMemoryWriteBuffer::MMemoryWriteBuffer() : currentSize(0), maxSize(0), data(NULL)
+   MMemoryWriteBuffer::MMemoryWriteBuffer() : currentSize(0), maxSize(0), data(nullptr)
    {
    }
 

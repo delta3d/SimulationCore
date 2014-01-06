@@ -63,12 +63,12 @@ namespace SimCore
    {
       const std::vector<dtUtil::Enumeration*>& weaponTypes = WeaponTypeEnum::Enumerate();
 
-      const WeaponTypeEnum* curType = NULL;
+      const WeaponTypeEnum* curType = nullptr;
       unsigned limit = weaponTypes.size();
       for( unsigned i = 0; i < limit; ++i )
       {
          curType = dynamic_cast<const WeaponTypeEnum*>(weaponTypes[i]);
-         if( curType != NULL )
+         if( curType != nullptr )
          {
             outFileList.push_back( curType->mModelResource );
          }

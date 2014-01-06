@@ -52,7 +52,7 @@ namespace StealthQt
       QDialog(parent),
       mUi(new Ui::HLAWindow),
       mIsConnected(isConnected),
-      mHLAComp(NULL),
+      mHLAComp(nullptr),
       mCurrentConnectionName(currentConnectionName),
       mCancelConnectProcess(false)
    {
@@ -62,7 +62,7 @@ namespace StealthQt
 
       // Display saved connections
       QStringList toDisplay;
-      toDisplay = (settings != NULL) ? settings->GetConnectionNames()
+      toDisplay = (settings != nullptr) ? settings->GetConnectionNames()
                 : StealthViewerData::GetInstance().GetSettings().GetConnectionNames();
 
       mUi->mNetworkListWidget->addItems(toDisplay);
@@ -71,7 +71,7 @@ namespace StealthQt
          static_cast<SimCore::HLA::HLAConnectionComponent*>
          (gm.GetComponentByName(SimCore::HLA::HLAConnectionComponent::DEFAULT_NAME));
 
-      mUi->mConnectPushButton->setEnabled(!mIsConnected && mUi->mNetworkListWidget->currentItem() != NULL);
+      mUi->mConnectPushButton->setEnabled(!mIsConnected && mUi->mNetworkListWidget->currentItem() != nullptr);
       mUi->mDisconnectPushButton->setEnabled(mIsConnected);
       mUi->mEditPushButton->setEnabled(false);
       mUi->mDeletePushButton->setEnabled(false);
@@ -95,7 +95,7 @@ namespace StealthQt
    HLAWindow::~HLAWindow()
    {
       delete mUi;
-      mUi = NULL;
+      mUi = nullptr;
    }
 
    //////////////////////////////////////////////////////////////
@@ -128,7 +128,7 @@ namespace StealthQt
    //////////////////////////////////////////////////////////////
    void HLAWindow::OnConnect(bool checked)
    {
-      if( mHLAComp == NULL )
+      if( mHLAComp == nullptr )
       {
          QMessageBox::warning(this, tr("Error"),
             tr("Cannot connect to network because network component was not initialized."), QMessageBox::Ok);
@@ -155,7 +155,7 @@ namespace StealthQt
       }
 
       QListWidgetItem *currentItem = mUi->mNetworkListWidget->currentItem();
-      if(currentItem == NULL)
+      if(currentItem == nullptr)
       {
          QMessageBox::warning(this, tr("Error"),
             tr("Please select a network connection from the list"), QMessageBox::Ok);
@@ -194,7 +194,7 @@ namespace StealthQt
       if(result == QMessageBox::Yes)
       {
          // Disconnect from network
-         if(mHLAComp != NULL)
+         if(mHLAComp != nullptr)
          {
             mHLAComp->Disconnect();
          }
@@ -205,7 +205,7 @@ namespace StealthQt
          mUi->mDisconnectPushButton->setEnabled(false);
          mUi->mConnectPushButton->setEnabled(true);
 
-         if(mUi->mNetworkListWidget->currentItem() != NULL)
+         if(mUi->mNetworkListWidget->currentItem() != nullptr)
          {
             mUi->mEditPushButton->setEnabled(true);
             mUi->mDeletePushButton->setEnabled(true);
@@ -253,7 +253,7 @@ namespace StealthQt
    void HLAWindow::OnEdit(bool checked)
    {
       QListWidgetItem *currentItem = mUi->mNetworkListWidget->currentItem();
-      if(currentItem == NULL)
+      if(currentItem == nullptr)
       {
          QMessageBox::information(this, tr("Error"),
             tr("Please select a network connection to edit."), QMessageBox::Ok);
@@ -285,7 +285,7 @@ namespace StealthQt
          return;
 
       QListWidgetItem *currentItem = mUi->mNetworkListWidget->currentItem();
-      if(currentItem == NULL)
+      if(currentItem == nullptr)
       {
          QMessageBox::information(this, tr("Error"),
             tr("Please select a network connection to delete."), QMessageBox::Ok);
@@ -333,7 +333,7 @@ namespace StealthQt
          unsigned int disMTU = properties[19].toUInt();
          std::string disActorXMLFile = properties[20].toStdString();
 
-         if(mHLAComp != NULL)
+         if(mHLAComp != nullptr)
          {
             // Assign the primary map to load
             mHLAComp->AddMap(map);
@@ -421,7 +421,7 @@ namespace StealthQt
    //////////////////////////////////////////////////////////////
    void HLAWindow::OnListItemActivated(QListWidgetItem *item)
    {
-      if(item != NULL)
+      if(item != nullptr)
       {
          QString str = item->text();
 

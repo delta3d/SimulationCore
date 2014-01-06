@@ -83,7 +83,7 @@ namespace NetDemo
       {
 
          // Setup our articulation helper for the vehicle
-         dtCore::RefPtr<SimCore::Components::DefaultFlexibleArticulationHelper> articHelper =
+         std::shared_ptr<SimCore::Components::DefaultFlexibleArticulationHelper> articHelper =
             new SimCore::Components::DefaultFlexibleArticulationHelper();
          articHelper->SetEntity(this);
          articHelper->AddArticulation("dof_turret_01",
@@ -99,7 +99,7 @@ namespace NetDemo
       SimCore::Components::RenderingSupportComponent* renderComp;
       GetGameActorProxy().GetGameManager()->GetComponentByName(
          SimCore::Components::RenderingSupportComponent::DEFAULT_NAME, renderComp);
-      if(renderComp != NULL)
+      if(renderComp != nullptr)
       {
          //Add a spot light
          mMainLight = new SimCore::Components::RenderingSupportComponent::DynamicLight();
@@ -114,10 +114,10 @@ namespace NetDemo
       }
 
       //add a shape volume for the beam
-      SimCore::Components::VolumeRenderingComponent* vrc = NULL;
+      SimCore::Components::VolumeRenderingComponent* vrc = nullptr;
       GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::VolumeRenderingComponent::DEFAULT_NAME, vrc); 
       
-      if(vrc != NULL)
+      if(vrc != nullptr)
       {
          SimCore::Components::VolumeRenderingComponent::ShapeVolumeRecord* svr = new SimCore::Components::VolumeRenderingComponent::ShapeVolumeRecord();
          svr->mPosition.set(1.0f, 30.0f, 1.0f);
@@ -144,9 +144,9 @@ namespace NetDemo
       //return incomingDamage * float(!IsEnemyActor(gap));
       float result = incomingDamage;
 
-      GameLogicComponent* comp = NULL;
+      GameLogicComponent* comp = nullptr;
       GetGameActorProxy().GetGameManager()->GetComponentByName( GameLogicComponent::DEFAULT_NAME, comp );
-      if (comp != NULL)
+      if (comp != nullptr)
       {
          int difficulty = comp->GetGameDifficulty(); // 0 = minimal, 1 = normal, 2 = hard
          if(difficulty == 0)
@@ -200,7 +200,7 @@ namespace NetDemo
 
       dtUtil::NodeCollector *nodes = GetNodeCollector();
       osgSim::DOFTransform *dof = nodes->GetDOFTransform("dof_turret_01");
-      if (dof != NULL)
+      if (dof != nullptr)
       {
          // Spin the turret in a circle every few seconds
          osg::Vec3 hpr = dof->getCurrentHPR() * 57.29578;
@@ -209,7 +209,7 @@ namespace NetDemo
          hpr[0] += hprChange[0];
          dof->setCurrentHPR(hpr * 0.0174533); // convert degrees to radians
          // Let the artics decide if the actor is dirty or not
-         if(GetArticulationHelper() != NULL)
+         if(GetArticulationHelper() != nullptr)
          {
             GetArticulationHelper()->HandleUpdatedDOFOrientation(*dof, hprChange, hpr);
          }
@@ -219,10 +219,10 @@ namespace NetDemo
       {
          mLightIsOn = false;
 
-         SimCore::Components::RenderingSupportComponent* rsc = NULL;
+         SimCore::Components::RenderingSupportComponent* rsc = nullptr;
          GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME, rsc);
 
-         if(rsc != NULL)
+         if(rsc != nullptr)
          {
             rsc->RemoveDynamicLight(mMainLight->GetId());
          }
@@ -232,11 +232,11 @@ namespace NetDemo
       mTimeSinceLightsWereUpdated += tickMessage.GetDeltaSimTime();
       if(mTimeSinceLightsWereUpdated > 1.0f)
       {
-		 SimCore::Components::RenderingSupportComponent* rsComp = NULL;
+		 SimCore::Components::RenderingSupportComponent* rsComp = nullptr;
 
          GetGameActorProxy().GetGameManager()->GetComponentByName( SimCore::Components::RenderingSupportComponent::DEFAULT_NAME, rsComp);
 
-         if(rsComp != NULL)
+         if(rsComp != nullptr)
          {
             rsComp->FindBestLights(*this);
          }
@@ -265,7 +265,7 @@ namespace NetDemo
       const std::string VEH_GROUP   = "Fort Values";
       BaseClass::BuildPropertyMap();
 
-//      FortActor* actor = NULL;
+//      FortActor* actor = nullptr;
 //      GetActor(actor);
 
       // Add properties
@@ -292,10 +292,10 @@ namespace NetDemo
       BaseClass::BuildActorComponents();
 
 
-      dtPhysics::PhysicsActComp* physAC = NULL;
+      dtPhysics::PhysicsActComp* physAC = nullptr;
       GetComponent(physAC);
       // Add our initial body.
-      dtCore::RefPtr<dtPhysics::PhysicsObject> physicsObject = new dtPhysics::PhysicsObject("VehicleBody");
+      std::shared_ptr<dtPhysics::PhysicsObject> physicsObject = new dtPhysics::PhysicsObject("VehicleBody");
       physAC->AddPhysicsObject(*physicsObject);
       physicsObject->SetPrimitiveType(dtPhysics::PrimitiveType::CONVEX_HULL);
       physicsObject->SetMass(30000.0f);
@@ -303,9 +303,9 @@ namespace NetDemo
       physicsObject->SetMechanicsType(dtPhysics::MechanicsType::STATIC);
 
 
-      dtGame::DRPublishingActComp* drPublishingActComp = NULL;
+      dtGame::DRPublishingActComp* drPublishingActComp = nullptr;
       GetComponent(drPublishingActComp);
-      if (drPublishingActComp == NULL)
+      if (drPublishingActComp == nullptr)
       {
          LOG_ERROR("CRITICAL ERROR - No DR Publishing Actor Component.");
          return;

@@ -57,8 +57,8 @@ class StealthViewerHLAWindowTests : public CPPUNIT_NS::TestFixture
    private:
 
       QApplication *mQApp;
-      dtCore::RefPtr<dtGame::GameManager> mGM;
-      dtCore::RefPtr<dtABC::Application> mApp;
+      std::shared_ptr<dtGame::GameManager> mGM;
+      std::shared_ptr<dtABC::Application> mApp;
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(StealthViewerHLAWindowTests);
@@ -87,10 +87,10 @@ void StealthViewerHLAWindowTests::setUp()
 void StealthViewerHLAWindowTests::tearDown()
 {
    delete mQApp;
-   mQApp = NULL;
+   mQApp = nullptr;
 
-   mGM = NULL;
-   mApp = NULL;
+   mGM = nullptr;
+   mApp = nullptr;
 }
 
 void StealthViewerHLAWindowTests::TestDisplaySavedConnections()
@@ -98,15 +98,15 @@ void StealthViewerHLAWindowTests::TestDisplaySavedConnections()
    StealthQt::StealthViewerSettings settings("UnitTest");
    settings.ClearAllSettings(true);
 
-   StealthQt::HLAWindow *window = new StealthQt::HLAWindow(*mGM, NULL, &settings);
+   StealthQt::HLAWindow *window = new StealthQt::HLAWindow(*mGM, nullptr, &settings);
 
    QListWidgetItem *shouldBeNULL = window->GetNetworkListWidget()->item(0);
 
    CPPUNIT_ASSERT_MESSAGE("Initially, the widget should be empty",
-       shouldBeNULL == NULL);
+       shouldBeNULL == nullptr);
 
    delete window;
-   window = NULL;
+   window = nullptr;
 
    // Clear just in case another unit test already created this file
    settings.ClearAllSettings(true);
@@ -145,14 +145,14 @@ void StealthViewerHLAWindowTests::TestDisplaySavedConnections()
 
    CPPUNIT_ASSERT_EQUAL((unsigned int)(1), settings.GetNumConnections());
 
-   window = new StealthQt::HLAWindow(*mGM, NULL, &settings);
+   window = new StealthQt::HLAWindow(*mGM, nullptr, &settings);
 
    int count = window->GetNetworkListWidget()->count();
    CPPUNIT_ASSERT_EQUAL_MESSAGE("The number of items in the widget should equal the number\
                                  of saved connections.", 1, count);
 
    QListWidgetItem *item = window->GetNetworkListWidget()->item(0);
-   CPPUNIT_ASSERT(item != NULL);
+   CPPUNIT_ASSERT(item != nullptr);
 
    CPPUNIT_ASSERT_MESSAGE("Now that a settings file has been created with data\
                           written to it, the list widget should contain the name\
@@ -162,15 +162,15 @@ void StealthViewerHLAWindowTests::TestDisplaySavedConnections()
    settings.ClearAllSettings(true);
 
    delete window;
-   window = NULL;
+   window = nullptr;
 
-   window = new StealthQt::HLAWindow(*mGM, NULL, &settings);
+   window = new StealthQt::HLAWindow(*mGM, nullptr, &settings);
 
    count = window->GetNetworkListWidget()->count();
    CPPUNIT_ASSERT_EQUAL_MESSAGE("The number of items in the widget should default to 0",
                                  0, count);
 
    item = window->GetNetworkListWidget()->item(0);
-   CPPUNIT_ASSERT(item == NULL);
+   CPPUNIT_ASSERT(item == nullptr);
 }
 

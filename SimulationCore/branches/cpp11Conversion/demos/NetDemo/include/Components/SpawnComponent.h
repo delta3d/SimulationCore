@@ -76,10 +76,10 @@ namespace NetDemo
 
    private:
 
-      typedef std::vector<dtCore::RefPtr<EnemyMothershipActor> > EnemyMothershipArray;
+      typedef std::vector<std::shared_ptr<EnemyMothershipActor> > EnemyMothershipArray;
       EnemyMothershipArray mSpawnVolumes;
 
-      typedef std::vector<dtCore::RefPtr<EnemyDescriptionActor> > EnemyDescArray;
+      typedef std::vector<std::shared_ptr<EnemyDescriptionActor> > EnemyDescArray;
       EnemyDescArray mEnemies;
 
       void Tick(float dt);

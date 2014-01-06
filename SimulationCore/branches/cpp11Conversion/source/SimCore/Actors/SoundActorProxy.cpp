@@ -108,7 +108,7 @@ namespace SimCore
             mSound->Clear();
             mSound->Emancipate();
             dtAudio::AudioManager::GetInstance().FreeSound(mSound.get());
-            mSound = NULL;
+            mSound = nullptr;
          }
       }
 
@@ -161,7 +161,7 @@ namespace SimCore
       {
          dtAudio::Sound* snd = static_cast<SoundActor&>(GetGameActor()).GetSound();
 
-         if (snd != NULL)
+         if (snd != nullptr)
          {
             if (snd->GetFilename())
             {
@@ -411,7 +411,7 @@ namespace SimCore
       }
 //      void SoundActorProxy::SetSoundResource(const dtDAL::ResourceDescriptor* soundResource)
 //      {
-//         if (soundResource == NULL)
+//         if (soundResource == nullptr)
 //         {
 //            mSoundResource = dtDAL::ResourceDescriptor("");
 //         }
@@ -426,7 +426,7 @@ namespace SimCore
 //      {
 //         if (mSoundResource.GetResourceIdentifier().empty())
 //         {
-//            return NULL;
+//            return nullptr;
 //         }
 //
 //         return &mSoundResource;
@@ -477,7 +477,7 @@ namespace SimCore
          SoundActor* soundActor;
          GetActor(soundActor);
          dtAudio::Sound* sound = soundActor->GetSound();
-         if (sound == NULL)
+         if (sound == nullptr)
          {
             soundActor->CreateSound();
             sound = soundActor->GetSound();
@@ -523,7 +523,7 @@ namespace SimCore
          SoundActor* soundActor;
          GetActor(soundActor);
          dtAudio::Sound* sound = soundActor->GetSound();
-         if (sound != NULL)
+         if (sound != nullptr)
          {
             sound->Stop();
             soundActor->DestroySound();
@@ -542,9 +542,9 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////////////
-      dtDAL::ActorProxyIcon* SoundActorProxy::GetBillBoardIcon()
+      dtDAL::ActorProxyIconPtr SoundActorProxy::GetBillBoardIcon()
       {
-         if (!mBillBoardIcon.valid())
+         if (!mBillBoardIcon)
          {
             mBillBoardIcon =
                      new dtDAL::ActorProxyIcon(dtDAL::ActorProxyIcon::IMAGE_BILLBOARD_SOUND);
@@ -556,7 +556,7 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////
       dtAudio::Sound* SoundActorProxy::GetSound()
       {
-         SoundActor* actor = NULL;
+         SoundActor* actor = nullptr;
          GetActor(actor);
          return actor->GetSound();
       }
@@ -564,7 +564,7 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////
       const dtAudio::Sound* SoundActorProxy::GetSound() const
       {
-         const SoundActor* actor = NULL;
+         const SoundActor* actor = nullptr;
          GetActor(actor);
          return actor->GetSound();
       }

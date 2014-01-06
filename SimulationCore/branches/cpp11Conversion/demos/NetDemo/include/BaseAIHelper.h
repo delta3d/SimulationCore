@@ -46,7 +46,7 @@ namespace NetDemo
    class EnemyDescriptionActor;
 
    class NETDEMO_EXPORT BaseAIHelper: public BaseAIControllable,
-                                      public osg::Referenced
+                                      public std::enable_shared_from_this
    {
    public:
       typedef BaseAIControllable BaseClass;
@@ -110,10 +110,10 @@ namespace NetDemo
 
    //private:
 
-      dtCore::RefPtr<dtAI::FSM::FactoryType> mFactory;
+      std::shared_ptr<dtAI::FSM::FactoryType> mFactory;
       dtAI::FSM mStateMachine;
-      dtCore::RefPtr<AISteeringModel> mSteeringModel;
-      dtCore::RefPtr<AIPhysicsModel> mPhysicsModel;
+      std::shared_ptr<AISteeringModel> mSteeringModel;
+      std::shared_ptr<AIPhysicsModel> mPhysicsModel;
       
       BaseSteeringTargeter* mDefaultTargeter;
 

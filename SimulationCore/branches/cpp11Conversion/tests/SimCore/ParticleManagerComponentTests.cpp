@@ -33,7 +33,7 @@
 #include <dtActors/engineactorregistry.h>
 
 #include <dtCore/system.h>
-#include <dtCore/refptr.h>
+#include <dtUtil/refcountedbase.h>
 #include <dtCore/scene.h>
 #include <dtCore/uniqueid.h>
 #include <dtCore/camera.h>
@@ -99,10 +99,10 @@ namespace SimCore
             virtual ~ParticleLayerRef() {}
 
          private:
-            dtCore::ObserverPtr<osg::Geode> mGeode;
-            dtCore::ObserverPtr<osg::MatrixTransform> mXform;
-            dtCore::ObserverPtr<osgParticle::ModularEmitter> mEmitter;
-            dtCore::ObserverPtr<osgParticle::ParticleSystem> mParticles;
+            osg::observer_ptr<osg::Geode> mGeode;
+            osg::observer_ptr<osg::MatrixTransform> mXform;
+            std::weak_ptr<osgParticle::ModularEmitter> mEmitter;
+            std::weak_ptr<osgParticle::ParticleSystem> mParticles;
       };
 
 
@@ -164,40 +164,40 @@ namespace SimCore
             // Convenience function for simulating time advancement
             void AdvanceTime( float timeDelta );
 
-            void CreateEnvironmentActor( dtCore::RefPtr<SimCore::Actors::IGEnvironmentActorProxy>& ptr );
+            void CreateEnvironmentActor( std::shared_ptr<SimCore::Actors::IGEnvironmentActorProxy>& ptr );
             // NOTE: spawnParticles causes a time delay and ticks the system
             // so that the particle system has both live and dead particles.
             // Avoid spawning particles as much as possible because this slows
             // down the unit tests.
-            void CreateParticleSystem( dtCore::RefPtr<dtCore::ParticleSystem>& ptr,
+            void CreateParticleSystem( std::shared_ptr<dtCore::ParticleSystem>& ptr,
                bool spawnParticles = false );
 
             void AddParticlesToScene( dtCore::ParticleSystem& ps );
             void RemoveParticlesFromScene( dtCore::ParticleSystem& ps );
 
             bool ParticleSystemHasForce( const std::string& forceName,
-               dtCore::ParticleSystem& ps, osg::Vec3* outForce = NULL );
+               dtCore::ParticleSystem& ps, osg::Vec3* outForce = nullptr );
 
             void TestParticleInfo();
             void TestProperties();
             void TestMessageProcessing();
             void TestForceOrientations();
 
-            typedef std::vector<dtCore::RefPtr<ParticleLayerRef> > ParticleLayerRefList;
+            typedef std::vector<std::shared_ptr<ParticleLayerRef> > ParticleLayerRefList;
             void GetParticleLayerRefs( dtCore::ParticleSystem& particles, ParticleLayerRefList& outLayerRefs );
             void SubTestParticleLayerRefs( const ParticleLayerRefList& layerRefs );
 
          protected:
          private:
 
-            dtCore::RefPtr<dtGame::GameManager> mGM;
-            dtCore::RefPtr<TestParticleManagerComponent> mParticleComp;
-            dtCore::RefPtr<dtGame::MachineInfo> mMachineInfo;
-            dtCore::RefPtr<dtABC::Application> mApp;
+            std::shared_ptr<dtGame::GameManager> mGM;
+            std::shared_ptr<TestParticleManagerComponent> mParticleComp;
+            std::shared_ptr<dtGame::MachineInfo> mMachineInfo;
+            std::shared_ptr<dtABC::Application> mApp;
 
-            dtCore::RefPtr<dtCore::ParticleSystem> mPS;
-            dtCore::RefPtr<dtCore::ParticleSystem> mPS2;
-            dtCore::RefPtr<dtCore::ParticleSystem> mPS3;
+            std::shared_ptr<dtCore::ParticleSystem> mPS;
+            std::shared_ptr<dtCore::ParticleSystem> mPS2;
+            std::shared_ptr<dtCore::ParticleSystem> mPS3;
       };
 
       CPPUNIT_TEST_SUITE_REGISTRATION(ParticleManagerComponentTests);
@@ -235,18 +235,18 @@ namespace SimCore
       {
          dtCore::System::GetInstance().Stop();
 
-         mPS = NULL;
-         mPS2 = NULL;
-         mPS3 = NULL;
+         mPS = nullptr;
+         mPS2 = nullptr;
+         mPS3 = nullptr;
 
          if (mGM.valid())
          {
             mGM->DeleteAllActors(true);
          }
 
-         mGM = NULL;
-         mApp = NULL;
-         mMachineInfo = NULL;
+         mGM = nullptr;
+         mApp = nullptr;
+         mMachineInfo = nullptr;
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -263,7 +263,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void ParticleManagerComponentTests::CreateParticleSystem( dtCore::RefPtr<dtCore::ParticleSystem>& ptr, bool spawnParticles )
+      void ParticleManagerComponentTests::CreateParticleSystem( std::shared_ptr<dtCore::ParticleSystem>& ptr, bool spawnParticles )
       {
          ptr = new dtCore::ParticleSystem("TestParticleSystem");
          CPPUNIT_ASSERT_MESSAGE("ParticleSystem must be obtainable from file", ptr.valid() );
@@ -273,7 +273,7 @@ namespace SimCore
 
          CPPUNIT_ASSERT(path != (project.GetContext() + "/"));
 
-         CPPUNIT_ASSERT(ptr->LoadFile(path) != NULL);
+         CPPUNIT_ASSERT(ptr->LoadFile(path) != nullptr);
 
          CPPUNIT_ASSERT_MESSAGE("Particles should be valid", ptr.valid() );
 
@@ -313,7 +313,7 @@ namespace SimCore
       void ParticleManagerComponentTests::AddParticlesToScene( dtCore::ParticleSystem& ps )
       {
          mGM->GetScene().AddChild(&ps);
-         dtCore::RefPtr<dtGame::Message> msg;
+         std::shared_ptr<dtGame::Message> msg;
          mGM->GetMessageFactory().CreateMessage(dtGame::MessageType::INFO_ACTOR_UPDATED,msg);
          msg->SetAboutActorId(ps.GetUniqueId());
          mGM->SendMessage(*msg);
@@ -328,7 +328,7 @@ namespace SimCore
 
       //////////////////////////////////////////////////////////////////////////
       void ParticleManagerComponentTests::CreateEnvironmentActor(
-         dtCore::RefPtr<SimCore::Actors::IGEnvironmentActorProxy>& ptr )
+         std::shared_ptr<SimCore::Actors::IGEnvironmentActorProxy>& ptr )
       {
          mGM->CreateActor( *SimCore::Actors::EntityActorRegistry::ENVIRONMENT_ACTOR_TYPE, ptr );
          CPPUNIT_ASSERT_MESSAGE("IGEnvironmentActor must be obtainable from the EntityActorRegistry", ptr.valid() );
@@ -343,8 +343,8 @@ namespace SimCore
          const std::string& forceName,
          dtCore::ParticleSystem& ps, osg::Vec3* outForce )
       {
-         dtCore::ParticleLayer* curLayer = NULL;
-         osgParticle::ForceOperator* forceOp = NULL;
+         dtCore::ParticleLayer* curLayer = nullptr;
+         osgParticle::ForceOperator* forceOp = nullptr;
 
          // Go through all particle layers and apply the force to each
          dtCore::ParticleSystem::LayerList& layers = ps.GetAllLayers();
@@ -367,11 +367,11 @@ namespace SimCore
                forceOp = dynamic_cast<osgParticle::ForceOperator*>
                   (program.getOperator(op));
 
-               if( forceOp == NULL ) { continue; }
+               if( forceOp == nullptr ) { continue; }
 
                if(forceOp->getName() == forceName)
                {
-                  if( outForce != NULL )
+                  if( outForce != nullptr )
                   {
                      *outForce = forceOp->getForce();
                   }
@@ -388,14 +388,14 @@ namespace SimCore
          // Create the particle system with particles already ticked into existence.
          CreateParticleSystem(mPS,true);
 
-         dtCore::RefPtr<ParticleInfo> info = new ParticleInfo;
+         std::shared_ptr<ParticleInfo> info = new ParticleInfo;
 
          // NOTE: commented out sections are place holders for unused functions
          // that will be implemented.
 
          // Test default values
-         CPPUNIT_ASSERT_MESSAGE("Default particles should be NULL",
-            info->GetParticleSystem() == NULL );
+         CPPUNIT_ASSERT_MESSAGE("Default particles should be nullptr",
+            info->GetParticleSystem() == nullptr );
 //         CPPUNIT_ASSERT_MESSAGE("Default particle priority should be NORMAL",
 //            info->GetPriority() == ParticlePriority::NORMAL );
          CPPUNIT_ASSERT_MESSAGE("Default live particle count should be 0",
@@ -412,7 +412,7 @@ namespace SimCore
          ParticleInfoAttributeFlags flags2 = {true,true};
          info->Set( *mPS, &flags2, ParticlePriority::LOW );
 //         CPPUNIT_ASSERT_MESSAGE("ParticleInfo particles should be valid",
-//            info->GetParticleSystem() != NULL );
+//            info->GetParticleSystem() != nullptr );
 //         CPPUNIT_ASSERT_MESSAGE("Set particle priority should be LOW",
 //            info->GetPriority() == ParticlePriority::NORMAL );
          flags = &info->GetAttributeFlags();
@@ -444,7 +444,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void ParticleManagerComponentTests::TestProperties()
       {
-         dtCore::RefPtr<SimCore::Actors::IGEnvironmentActorProxy> envProxy ;
+         std::shared_ptr<SimCore::Actors::IGEnvironmentActorProxy> envProxy ;
          CreateEnvironmentActor( envProxy );
          SimCore::Actors::IGEnvironmentActor* env = dynamic_cast<SimCore::Actors::IGEnvironmentActor*>
             (envProxy->GetDrawable());
@@ -453,7 +453,7 @@ namespace SimCore
          env->SetWind(force);
 
          // Notify this component that the environment actor's wind has changed.
-         dtCore::RefPtr<dtGame::ActorUpdateMessage> msg;
+         std::shared_ptr<dtGame::ActorUpdateMessage> msg;
          mGM->GetMessageFactory().CreateMessage(dtGame::MessageType::INFO_ACTOR_UPDATED,msg);
          msg->SetAboutActorId(envProxy->GetId());
          mGM->SendMessage(*msg);
@@ -556,7 +556,7 @@ namespace SimCore
          // the component's update timer functionality. The component does not listen for
          // deletes of the particles individually, but rather waits for the update timer
          // to cycle before it updates all its references to the particles systems.
-         // If the weak pointers to the particle systems go NULL, the component will
+         // If the weak pointers to the particle systems go nullptr, the component will
          // remove the weak references and updates global particle info accordingly.
          // Advancement of time should allow the timer to cycle and send the tick messages.
 
@@ -581,7 +581,7 @@ namespace SimCore
 
 
          // Prepare a message that will simulate the update timer elapsing.
-         dtCore::RefPtr<dtGame::TimerElapsedMessage> timerMsg;
+         std::shared_ptr<dtGame::TimerElapsedMessage> timerMsg;
          mGM->GetMessageFactory().CreateMessage(dtGame::MessageType::INFO_TIMER_ELAPSED,timerMsg);
          timerMsg->SetTimerName(mParticleComp->GetUpdateTimerName());
 
@@ -605,10 +605,10 @@ namespace SimCore
          CPPUNIT_ASSERT_MESSAGE("ParticleSystem 3 should be registered.",
             totalParticles > 0 );
 
-         // NOTE: About setting the 3 tested particle systems to NULL...
+         // NOTE: About setting the 3 tested particle systems to nullptr...
          // With the new OSG 2.2, a system step is required so that the
          // OSG particle systems can be garbage collected when the containing
-         // Delta particle system object goes NULL. It seems the OSG garbage
+         // Delta particle system object goes nullptr. It seems the OSG garbage
          // collection is either asynchronous or running a frame behind than
          // what is expected.
          // An OSG CullVisitor has been known to temporarily reference the
@@ -617,7 +617,7 @@ namespace SimCore
 
          // Send particle system delete messages out of order
          RemoveParticlesFromScene(*mPS2);
-         mPS2 = NULL;
+         mPS2 = nullptr;
          dtCore::System::GetInstance().Step();
          SubTestParticleLayerRefs( layerRefs2 );
          mParticleComp->ProcessMessage(*timerMsg);
@@ -637,7 +637,7 @@ namespace SimCore
 
          // --- Remove another particle system
          RemoveParticlesFromScene(*mPS);
-         mPS = NULL;
+         mPS = nullptr;
          dtCore::System::GetInstance().Step();
          SubTestParticleLayerRefs( layerRefs1 );
          mParticleComp->ProcessMessage(*timerMsg);
@@ -655,7 +655,7 @@ namespace SimCore
 
          // --- Remove another particle system
          RemoveParticlesFromScene(*mPS3);
-         mPS3 = NULL;
+         mPS3 = nullptr;
          dtCore::System::GetInstance().Step();
          SubTestParticleLayerRefs( layerRefs3 );
          mParticleComp->ProcessMessage(*timerMsg);
@@ -688,15 +688,15 @@ namespace SimCore
             mParticleComp->HasRegistered(id3));
 
          // Send a restart message.
-         dtCore::RefPtr<dtGame::Message> msg;
+         std::shared_ptr<dtGame::Message> msg;
          mGM->GetMessageFactory().CreateMessage(dtGame::MessageType::INFO_RESTARTED,msg);
          mGM->SendMessage(*msg);
          dtCore::System::GetInstance().Step();
 
          // Verify that all particle systems have been removed.
-         mPS = NULL;
-         mPS2 = NULL;
-         mPS3 = NULL;
+         mPS = nullptr;
+         mPS2 = nullptr;
+         mPS3 = nullptr;
          CPPUNIT_ASSERT_MESSAGE("ParticleSystem 1 should NOT be registered.",
             ! mParticleComp->HasRegistered(id1));
          CPPUNIT_ASSERT_MESSAGE("ParticleSystem 2 should NOT be registered.",
@@ -759,9 +759,9 @@ namespace SimCore
          dtCore::System::GetInstance().Step();
 
          // Verify that all particle systems have been removed.
-         mPS = NULL;
-         mPS2 = NULL;
-         mPS3 = NULL;
+         mPS = nullptr;
+         mPS2 = nullptr;
+         mPS3 = nullptr;
          CPPUNIT_ASSERT_MESSAGE("ParticleSystem 1 should NOT be registered.",
             ! mParticleComp->HasRegistered(id1));
          CPPUNIT_ASSERT_MESSAGE("ParticleSystem 2 should NOT be registered.",
@@ -781,11 +781,11 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void ParticleManagerComponentTests::TestForceOrientations()
       {
-         dtCore::RefPtr<dtCore::Transformable> parentScene = new dtCore::Transformable;
-         dtCore::RefPtr<dtCore::Transformable> object1 = new dtCore::Transformable;
-         dtCore::RefPtr<dtCore::Transformable> object2 = new dtCore::Transformable;
-         dtCore::RefPtr<dtCore::Transformable> object3 = new dtCore::Transformable;
-         dtCore::RefPtr<dtCore::Transformable> object4 = new dtCore::Transformable;
+         std::shared_ptr<dtCore::Transformable> parentScene = new dtCore::Transformable;
+         std::shared_ptr<dtCore::Transformable> object1 = new dtCore::Transformable;
+         std::shared_ptr<dtCore::Transformable> object2 = new dtCore::Transformable;
+         std::shared_ptr<dtCore::Transformable> object3 = new dtCore::Transformable;
+         std::shared_ptr<dtCore::Transformable> object4 = new dtCore::Transformable;
          parentScene->AddChild(object1.get());
          parentScene->AddChild(object2.get());
          parentScene->AddChild(object3.get());
@@ -866,23 +866,23 @@ namespace SimCore
             curLayerRef != layerRefs.end();
             ++curLayerRef, ++curLayerIndex )
          {
-            std::vector<const osg::Referenced*> layerNodes;
+            std::vector<const std::enable_shared_from_this*> layerNodes;
             layerNodes.push_back( (*curLayerRef)->GetGeode() );
             layerNodes.push_back( (*curLayerRef)->GetParticleSystem() ); // Not a Node like the rest.
             layerNodes.push_back( (*curLayerRef)->GetEmitter() );
             layerNodes.push_back( (*curLayerRef)->GetTransform() );
 
-            std::vector<const osg::Referenced*>::const_iterator curNode = layerNodes.begin();
+            std::vector<const std::enable_shared_from_this*>::const_iterator curNode = layerNodes.begin();
             for( ; curNode != layerNodes.end(); ++curNode )
             {
                unsigned parentCount = 0;
                unsigned refCount = 0;
                std::string nodeName;
 
-               if( *curNode != NULL )
+               if( *curNode != nullptr )
                {
                   const osg::Node* node = dynamic_cast<const osg::Node*>(*curNode);
-                  if( node != NULL )
+                  if( node != nullptr )
                   {
                      nodeName = node->className();
                      parentCount = node->getNumParents();
@@ -895,11 +895,11 @@ namespace SimCore
                }
 
                std::stringstream ss;
-               ss << "ParticleLayer[" << curLayerIndex << "] should have a NULL "
+               ss << "ParticleLayer[" << curLayerIndex << "] should have a nullptr "
                   << nodeName << " but has:\n\tRef Count =\t"
                   << refCount << "\n\tParent Count = \t"
                   << parentCount << std::endl;
-               CPPUNIT_ASSERT_MESSAGE( ss.str(), *curNode == NULL );
+               CPPUNIT_ASSERT_MESSAGE( ss.str(), *curNode == nullptr );
             }
 
          }

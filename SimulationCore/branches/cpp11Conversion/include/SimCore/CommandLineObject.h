@@ -28,9 +28,9 @@
 #include <SimCore/Export.h>
 
 #include <dtCore/export.h>
-#include <dtCore/refptr.h>
+#include <dtUtil/refcountedbase.h>
 
-#include <osg/Referenced>
+#include <dtUtil/refcountedbase.h>
 
 #include <vector>
 #include <string>
@@ -45,7 +45,7 @@ namespace SimCore
    ///////////////////////////////////////////////////////
    //    The Object
    ///////////////////////////////////////////////////////
-   class SIMCORE_EXPORT CommandLineObject : public osg::Referenced
+   class SIMCORE_EXPORT CommandLineObject : public std::enable_shared_from_this
    {
       public:
          /// Constructor
@@ -69,7 +69,7 @@ namespace SimCore
          virtual ~CommandLineObject();
 
       private:
-         std::vector<dtCore::RefPtr<dtCore::NamedParameter> > mParametersVec;
+         std::vector<std::shared_ptr<dtCore::NamedParameter> > mParametersVec;
    };
 } // namespace
 #endif

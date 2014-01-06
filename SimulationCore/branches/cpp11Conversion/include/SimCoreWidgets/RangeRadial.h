@@ -57,7 +57,7 @@ class QDESIGNER_WIDGET_EXPORT RangeRadial : public QWidget
       Q_PROPERTY( QColor pieColor READ getPieColor WRITE setPieColor )
 
    public:
-      RangeRadial( QWidget* parent = NULL );
+      RangeRadial( QWidget* parent = nullptr );
 
       void onCreated();
 

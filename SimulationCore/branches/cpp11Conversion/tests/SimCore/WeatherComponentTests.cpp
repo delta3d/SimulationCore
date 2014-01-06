@@ -33,7 +33,7 @@
 #include <dtActors/engineactorregistry.h>
 
 #include <dtCore/system.h>
-#include <dtCore/refptr.h>
+#include <dtUtil/refcountedbase.h>
 #include <dtCore/scene.h>
 #include <dtCore/uniqueid.h>
 #include <dtCore/camera.h>
@@ -61,7 +61,7 @@
 
 #include <UnitTestMain.h>
 
-using dtCore::RefPtr;
+using std::shared_ptr;
 
 namespace SimCore
 {
@@ -188,9 +188,9 @@ namespace SimCore
             void setUp();
             void tearDown();
 
-            void CreateEnvironmentActor( dtCore::RefPtr<Actors::IGEnvironmentActorProxy>& ptr );
-            void CreateAtmosphereActor( dtCore::RefPtr<Actors::UniformAtmosphereActorProxy>& ptr );
-            void CreateDayTimeActor( dtCore::RefPtr<Actors::DayTimeActorProxy>& ptr );
+            void CreateEnvironmentActor( std::shared_ptr<Actors::IGEnvironmentActorProxy>& ptr );
+            void CreateAtmosphereActor( std::shared_ptr<Actors::UniformAtmosphereActorProxy>& ptr );
+            void CreateDayTimeActor( std::shared_ptr<Actors::DayTimeActorProxy>& ptr );
 
             // Returns the total IDs registered to the component
             void AdvanceSimTime( double deltaTime );
@@ -215,14 +215,14 @@ namespace SimCore
          protected:
          private:
 
-            dtCore::RefPtr<dtGame::GameManager> mGM;
-            dtCore::RefPtr<TestWeatherComponent> mWeatherComp;
-            dtCore::RefPtr<dtGame::MachineInfo> mMachineInfo;
-            dtCore::RefPtr<dtABC::Application> mApp;
+            std::shared_ptr<dtGame::GameManager> mGM;
+            std::shared_ptr<TestWeatherComponent> mWeatherComp;
+            std::shared_ptr<dtGame::MachineInfo> mMachineInfo;
+            std::shared_ptr<dtABC::Application> mApp;
 
-            dtCore::RefPtr<Actors::IGEnvironmentActorProxy> mEnv;
-            dtCore::RefPtr<Actors::UniformAtmosphereActorProxy> mAtmos;
-            dtCore::RefPtr<Actors::DayTimeActorProxy> mDayTime;
+            std::shared_ptr<Actors::IGEnvironmentActorProxy> mEnv;
+            std::shared_ptr<Actors::UniformAtmosphereActorProxy> mAtmos;
+            std::shared_ptr<Actors::DayTimeActorProxy> mDayTime;
       };
 
       CPPUNIT_TEST_SUITE_REGISTRATION(WeatherComponentTests);
@@ -262,33 +262,33 @@ namespace SimCore
       {
          dtCore::System::GetInstance().Stop();
 
-         mApp = NULL;
+         mApp = nullptr;
 
          if (mGM.valid())
          {
             mGM->DeleteAllActors(true);
          }
 
-         mGM = NULL;
-         mMachineInfo = NULL;
+         mGM = nullptr;
+         mMachineInfo = nullptr;
       }
 
       //////////////////////////////////////////////////////////////
-      void WeatherComponentTests::CreateEnvironmentActor( dtCore::RefPtr<Actors::IGEnvironmentActorProxy>& ptr )
+      void WeatherComponentTests::CreateEnvironmentActor( std::shared_ptr<Actors::IGEnvironmentActorProxy>& ptr )
       {
          mGM->CreateActor( *Actors::EntityActorRegistry::ENVIRONMENT_ACTOR_TYPE, ptr );
          CPPUNIT_ASSERT_MESSAGE("IGEnvironmentActor must be obtainable from the EntityActorRegistry", ptr.valid() );
       }
 
       //////////////////////////////////////////////////////////////
-      void WeatherComponentTests::CreateAtmosphereActor( dtCore::RefPtr<Actors::UniformAtmosphereActorProxy>& ptr )
+      void WeatherComponentTests::CreateAtmosphereActor( std::shared_ptr<Actors::UniformAtmosphereActorProxy>& ptr )
       {
          mGM->CreateActor( *Actors::EntityActorRegistry::UNIFORM_ATMOSPHERE_ACTOR_TYPE, ptr );
          CPPUNIT_ASSERT_MESSAGE("UniformAtmosphereActor must be obtainable from the EntityActorRegistry", ptr.valid() );
       }
 
       //////////////////////////////////////////////////////////////
-      void WeatherComponentTests::CreateDayTimeActor( dtCore::RefPtr<Actors::DayTimeActorProxy>& ptr )
+      void WeatherComponentTests::CreateDayTimeActor( std::shared_ptr<Actors::DayTimeActorProxy>& ptr )
       {
          mGM->CreateActor( *Actors::EntityActorRegistry::DAYTIME_ACTOR_TYPE, ptr );
          CPPUNIT_ASSERT_MESSAGE("DayTimeActor must be obtainable from the EntityActorRegistry", ptr.valid() );
@@ -299,7 +299,7 @@ namespace SimCore
       {
          Actors::DayTimeActor* actor = static_cast<Actors::DayTimeActor*> (mDayTime->GetDrawable());
 
-         CPPUNIT_ASSERT_MESSAGE("DayTimeActor should be valid", actor != NULL );
+         CPPUNIT_ASSERT_MESSAGE("DayTimeActor should be valid", actor != nullptr );
 
          CPPUNIT_ASSERT_MESSAGE("Year should be 0",
             actor->GetYear() == 0 );
@@ -374,10 +374,10 @@ namespace SimCore
       //////////////////////////////////////////////////////////////
       void WeatherComponentTests::TestAtmosphereActor()
       {
-         CPPUNIT_ASSERT(mAtmos != NULL);
+         CPPUNIT_ASSERT(mAtmos != nullptr);
          Actors::UniformAtmosphereActor* actor = static_cast<Actors::UniformAtmosphereActor*> (mAtmos->GetDrawable());
 
-         CPPUNIT_ASSERT_MESSAGE("UniformAtmosphereActor should be valid", actor != NULL );
+         CPPUNIT_ASSERT_MESSAGE("UniformAtmosphereActor should be valid", actor != nullptr );
 
          // Note: the tested values are random and have no relevance.
 
@@ -473,11 +473,11 @@ namespace SimCore
          TestDayTimeActor();
 
          CPPUNIT_ASSERT_MESSAGE("WeatherComponent should NOT have an AtmosphereActor",
-            mWeatherComp->GetAtmosphereActor() == NULL );
+            mWeatherComp->GetAtmosphereActor() == nullptr );
 
          mWeatherComp->SetEphemerisEnvironment(static_cast<SimCore::Actors::IGEnvironmentActor*>(mEnv->GetDrawable()));
          CPPUNIT_ASSERT_MESSAGE("WeatherComponent SHOULD have an EnvironmentActor",
-            mWeatherComp->GetEphemerisEnvironment() != NULL );
+            mWeatherComp->GetEphemerisEnvironment() != nullptr );
 
          // Test setting the base elevation (from which fog changes are calculated for the view)
          double testValue = mWeatherComp->GetBaseElevation() + 1000.0;
@@ -540,25 +540,25 @@ namespace SimCore
 
          mWeatherComp->SetEphemerisEnvironment(static_cast<SimCore::Actors::IGEnvironmentActor*>(mEnv->GetDrawable()));
          CPPUNIT_ASSERT_MESSAGE("WeatherComponent SHOULD have an EnvironmentActor",
-            mWeatherComp->GetEphemerisEnvironment() != NULL );
+            mWeatherComp->GetEphemerisEnvironment() != nullptr );
 
          // --- Test the DayTime create message
          CPPUNIT_ASSERT_MESSAGE("WeatherComponent should NOT have an DayTimeActor",
-            mWeatherComp->GetDayTimeActor() == NULL );
+            mWeatherComp->GetDayTimeActor() == nullptr );
          Actors::DayTimeActor* actor = static_cast<Actors::DayTimeActor*> (mDayTime->GetDrawable());
          actor->SetTime(1166207083);
          mGM->AddActor( *mDayTime, false, false );
          dtCore::System::GetInstance().Step();
          CPPUNIT_ASSERT_MESSAGE("WeatherComponent SHOULD have an DayTimeActor",
-            mWeatherComp->GetDayTimeActor() != NULL );
+            mWeatherComp->GetDayTimeActor() != nullptr );
 
          // --- Test the Atmosphere create message
          CPPUNIT_ASSERT_MESSAGE("WeatherComponent should NOT have an AtmosphereActor",
-            mWeatherComp->GetAtmosphereActor() == NULL );
+            mWeatherComp->GetAtmosphereActor() == nullptr );
          mGM->AddActor( *mAtmos, false, false );
          dtCore::System::GetInstance().Step();
          CPPUNIT_ASSERT_MESSAGE("WeatherComponent SHOULD have an AtmosphereActor",
-            mWeatherComp->GetAtmosphereActor() != NULL );
+            mWeatherComp->GetAtmosphereActor() != nullptr );
 
          // Prepare to capture and test the time set on
          // the weather component's environment actor.
@@ -582,12 +582,12 @@ namespace SimCore
          //const dtActors::BasicEnvironmentActorProxy* env =
          //   dynamic_cast<const dtActors::BasicEnvironmentActorProxy*> (mWeatherComp->GetEphemerisEnvironment());
          //CPPUNIT_ASSERT_MESSAGE("WeatherComponent SHOULD have an IEnvGameActorProxy",
-         //   env != NULL );
+         //   env != nullptr );
 
          //const dtActors::BasicEnvironmentActor* envActor =
          //   dynamic_cast<const dtActors::BasicEnvironmentActor*> (&env->GetGameActor());
          //CPPUNIT_ASSERT_MESSAGE("WeatherComponent's IEnvGameActorProxy SHOULD have an EnvironmentActor",
-         //   envActor != NULL );
+         //   envActor != nullptr );
 
          // --- Test the captured values
          /*envActor->GetTimeAndDate(year, month, day, hour, minute, second);
@@ -616,29 +616,29 @@ namespace SimCore
 
          // --- Test the DayTime delete message
          CPPUNIT_ASSERT_MESSAGE("WeatherComponent should NOT have an DayTimeActor",
-            mWeatherComp->GetDayTimeActor() == NULL );
+            mWeatherComp->GetDayTimeActor() == nullptr );
 
          // --- Test the Atmosphere delete message
          CPPUNIT_ASSERT_MESSAGE("WeatherComponent should NOT have an AtmosphereActor",
-            mWeatherComp->GetAtmosphereActor() == NULL );
+            mWeatherComp->GetAtmosphereActor() == nullptr );
 
          // Add all actors again to test reset
          // --- Test the Environment create message
          mWeatherComp->SetEphemerisEnvironment(static_cast<SimCore::Actors::IGEnvironmentActor*>(mEnv->GetDrawable()));
          CPPUNIT_ASSERT_MESSAGE("WeatherComponent SHOULD have an EnvironmentActor",
-            mWeatherComp->GetEphemerisEnvironment() != NULL );
+            mWeatherComp->GetEphemerisEnvironment() != nullptr );
 
          // --- Test the DayTime create message
          mGM->AddActor( *mDayTime, false, false );
          dtCore::System::GetInstance().Step();
          CPPUNIT_ASSERT_MESSAGE("WeatherComponent SHOULD have an DayTimeActor",
-            mWeatherComp->GetDayTimeActor() != NULL );
+            mWeatherComp->GetDayTimeActor() != nullptr );
 
          // --- Test the Atmosphere create message
          mGM->AddActor( *mAtmos, false, false );
          dtCore::System::GetInstance().Step();
          CPPUNIT_ASSERT_MESSAGE("WeatherComponent SHOULD have an AtmosphereActor",
-            mWeatherComp->GetAtmosphereActor() != NULL );
+            mWeatherComp->GetAtmosphereActor() != nullptr );
 
 
 
@@ -646,17 +646,17 @@ namespace SimCore
          mWeatherComp->Clear();
 
          CPPUNIT_ASSERT_MESSAGE("WeatherComponent should NOT have an AtmosphereActor",
-            mWeatherComp->GetAtmosphereActor() == NULL );
+            mWeatherComp->GetAtmosphereActor() == nullptr );
          CPPUNIT_ASSERT_MESSAGE("WeatherComponent should still have a DayTimeActor.  See the comments in the code.",
-            mWeatherComp->GetDayTimeActor() != NULL );
+            mWeatherComp->GetDayTimeActor() != nullptr );
          CPPUNIT_ASSERT_MESSAGE("WeatherComponent should NOT have an Environment Actor",
-            mWeatherComp->GetEphemerisEnvironment() == NULL );
+            mWeatherComp->GetEphemerisEnvironment() == nullptr );
 
 
 
          // Simulate the environment loading from a map file
          dtCore::System::GetInstance().Step();
-         RefPtr<dtGame::Message> msg =
+         std::shared_ptr<dtGame::Message> msg =
             mGM->GetMessageFactory().CreateMessage( dtGame::MessageType::INFO_MAP_LOADED );
          mGM->SendMessage( *msg );
          dtCore::System::GetInstance().Step();
@@ -682,7 +682,7 @@ namespace SimCore
 
          // Create a new atmosphere actor that will replace the original
          // atmosphere actor.
-         dtCore::RefPtr<SimCore::Actors::UniformAtmosphereActorProxy> atmosProxy;
+         std::shared_ptr<SimCore::Actors::UniformAtmosphereActorProxy> atmosProxy;
          CreateAtmosphereActor( atmosProxy );
 
          // Validate new atmosphere actor proxy
@@ -715,7 +715,7 @@ namespace SimCore
          const AtmosphereParams& params, SimCore::Actors::UniformAtmosphereActor& atmos )
       {
          // Create the update message
-         dtCore::RefPtr<dtGame::ActorUpdateMessage> msg;
+         std::shared_ptr<dtGame::ActorUpdateMessage> msg;
          mGM->GetMessageFactory().CreateMessage(dtGame::MessageType::INFO_ACTOR_UPDATED, msg);
 
          // Ensure message is valid
@@ -812,7 +812,7 @@ namespace SimCore
 
          AssignAtmosphereValues(params, atmos);
 
-         dtCore::RefPtr<dtGame::ActorUpdateMessage> msg;
+         std::shared_ptr<dtGame::ActorUpdateMessage> msg;
          mGM->GetMessageFactory().CreateMessage(dtGame::MessageType::INFO_ACTOR_UPDATED, msg);
 
          // Ensure message is valid

@@ -131,7 +131,7 @@ namespace SimCore
       void HLAConnectionComponent::DoReconnectToNetwork()
       {
          // Look for a coordinate config actor.
-         dtActors::CoordinateConfigActor* ccActor = NULL;
+         dtActors::CoordinateConfigActor* ccActor = nullptr;
          std::vector<dtDAL::ActorProxy*> proxies;
          GetGameManager()->FindActorsByType(*dtActors::EngineActorRegistry::COORDINATE_CONFIG_ACTOR_TYPE, proxies);
          if(proxies.empty())
@@ -169,7 +169,7 @@ namespace SimCore
       void HLAConnectionComponent::DoConnectToHLA(dtActors::CoordinateConfigActor* ccActor)
       {
          dtHLAGM::HLAComponent* hlaComp = GetHLAComponent();
-         if (hlaComp == NULL)
+         if (hlaComp == nullptr)
          {
             throw dtGame::InvalidParameterException(
                "Failed to find the HLAComponent on the GameManager. Aborting...", __FILE__, __LINE__);
@@ -190,7 +190,7 @@ namespace SimCore
          }
 
          // Use our coordinate converter if we have one
-         if (ccActor != NULL)
+         if (ccActor != nullptr)
          {
             hlaComp->GetCoordinateConverter() = ccActor->GetCoordinateConverter();
             std::vector<dtHLAGM::DDMRegionCalculator*> calcs;
@@ -198,7 +198,7 @@ namespace SimCore
             for (size_t i = 0; i < calcs.size(); ++i)
             {
                dtHLAGM::DDMCalculatorGeographic* geoCalc = dynamic_cast<dtHLAGM::DDMCalculatorGeographic*>(calcs[i]);
-               if (geoCalc != NULL)
+               if (geoCalc != nullptr)
                {
                   geoCalc->SetCoordinateConverter(ccActor->GetCoordinateConverter());
                }
@@ -215,7 +215,7 @@ namespace SimCore
          // Find the existing client component. If none exists, then create it.
          dtNetGM::ClientNetworkComponent* clientNetworkComponent;
          GetGameManager()->GetComponentByName(dtNetGM::ClientNetworkComponent::DEFAULT_NAME, clientNetworkComponent);
-         if(clientNetworkComponent == NULL)
+         if(clientNetworkComponent == nullptr)
          {
             mState = &HLAConnectionComponent::ConnectionState::STATE_ERROR;
             throw dtGame::InvalidParameterException(
@@ -223,7 +223,7 @@ namespace SimCore
          }
 
          // Setup our client and then send a client connection request.
-         if (clientNetworkComponent != NULL)
+         if (clientNetworkComponent != nullptr)
          {
             std::string noticeMessage = "Setting up client networking component for host[" + mServerIPAddress + 
                "] using port[" + mServerPort + "].";
@@ -254,7 +254,7 @@ namespace SimCore
             throw SimCore::IGException("You have tried to connect when no maps have been specified. \
                 Please specify the name of the map to load for this connection", __FILE__, __LINE__);
          }
-         else if (GetGameManager() == NULL)
+         else if (GetGameManager() == nullptr)
          {
             throw dtUtil::Exception(
                "You have tried to connect without adding this component to the Game Manager.", __FILE__, __LINE__);
@@ -306,9 +306,9 @@ namespace SimCore
             //LOG_WARNING("Creating new client networking component during connection.");
             dtNetGM::ClientNetworkComponent* clientNetworkComponent;
             GetGameManager()->GetComponentByName(dtNetGM::ClientNetworkComponent::DEFAULT_NAME, clientNetworkComponent);
-            if(clientNetworkComponent == NULL) // if not already created, create one. Remove this eventually, see two lines down.
+            if(clientNetworkComponent == nullptr) // if not already created, create one. Remove this eventually, see two lines down.
             {
-               dtCore::RefPtr<dtNetGM::ClientNetworkComponent> clientNetworkComponent = 
+               std::shared_ptr<dtNetGM::ClientNetworkComponent> clientNetworkComponent = 
                   new dtNetGM::ClientNetworkComponent(mServerGameName, mServerGameVersion);
                // NOTE - The GM needs to be modified to support adding a component during a message - 12/21/09 CMM
                GetGameManager()->AddComponent(*clientNetworkComponent, dtGame::GameManager::ComponentPriority::NORMAL);
@@ -319,7 +319,7 @@ namespace SimCore
          {
             dtDIS::MasterComponent* disComponent;
             GetGameManager()->GetComponentByName(dtDIS::MasterComponent::DEFAULT_NAME, disComponent);
-            if(disComponent != NULL) // if it was already created, remove the old one and replace it with a new one
+            if(disComponent != nullptr) // if it was already created, remove the old one and replace it with a new one
             {
                GetGameManager()->RemoveComponent(*disComponent);
             }
@@ -359,13 +359,13 @@ namespace SimCore
             SimCore::Components::TimedDeleterComponent *deleterComp =
                dynamic_cast<SimCore::Components::TimedDeleterComponent*> (GetGameManager()->
                GetComponentByName(SimCore::Components::TimedDeleterComponent::DEFAULT_NAME));
-            if (deleterComp != NULL)
+            if (deleterComp != nullptr)
                deleterComp->Clear();
 
 
             // DISCONNECT HLA
             dtHLAGM::HLAComponent* hlaComp = GetHLAComponent();
-            if (hlaComp != NULL && hlaComp->IsConnectedToFederation())
+            if (hlaComp != nullptr && hlaComp->IsConnectedToFederation())
             {
                try
                {
@@ -380,7 +380,7 @@ namespace SimCore
             // DISCONNECT CLIENT SERVER
             dtNetGM::ClientNetworkComponent* clientNetworkComponent;
             GetGameManager()->GetComponentByName(dtNetGM::ClientNetworkComponent::DEFAULT_NAME, clientNetworkComponent);
-            if(clientNetworkComponent != NULL)
+            if(clientNetworkComponent != nullptr)
             {
                if (clientNetworkComponent->IsConnectedClient())
                {
@@ -405,7 +405,7 @@ namespace SimCore
 
          // check HLA.
          dtHLAGM::HLAComponent* hlaComp = GetHLAComponent();
-         if (hlaComp != NULL && hlaComp->IsConnectedToFederation())
+         if (hlaComp != nullptr && hlaComp->IsConnectedToFederation())
          {
             return true;
          }
@@ -413,7 +413,7 @@ namespace SimCore
          // check client server
          dtNetGM::ClientNetworkComponent* clientNetworkComponent;
          GetGameManager()->GetComponentByName(dtNetGM::ClientNetworkComponent::DEFAULT_NAME, clientNetworkComponent);
-         if(clientNetworkComponent != NULL && clientNetworkComponent->IsConnectedClient())
+         if(clientNetworkComponent != nullptr && clientNetworkComponent->IsConnectedClient())
          {
             return true;
          }

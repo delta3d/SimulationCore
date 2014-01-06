@@ -47,7 +47,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       GameStateComponent::GameStateComponent(const std::string& name)
          : BaseClass(name)
-         , mCurrentState(NULL)
+         , mCurrentState(nullptr)
       {
       }
 
@@ -92,7 +92,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void GameStateComponent::SendGameStateChangedMessage(const GameState::Type& oldState, const GameState::Type& newState)
       {
-         dtCore::RefPtr<GameStateChangedMessage> gscm;
+         std::shared_ptr<GameStateChangedMessage> gscm;
          GetGameManager()->GetMessageFactory().CreateMessage(MessageType::GAME_STATE_CHANGED, gscm);
          gscm->SetOldState(oldState);
          gscm->SetNewState(newState);
@@ -113,7 +113,7 @@ namespace SimCore
          {
             return mCurrentState->GetType();
          }
-         return NULL;
+         return nullptr;
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -124,14 +124,14 @@ namespace SimCore
          {
             return (*iter).second.get();
          }
-         return NULL;
+         return nullptr;
       }
 
       //////////////////////////////////////////////////////////////////////////
       void GameStateComponent::MakeCurrent(const StateType* pState)
       {
          GameState* state = GetState(pState);
-         if(state == NULL)
+         if(state == nullptr)
          {
             LOG_ERROR("No GameState object found for StateType '" + pState->GetName() + ".'");
          }
@@ -145,7 +145,7 @@ namespace SimCore
       bool GameStateComponent::DoStateTransition(const std::string& pEvent)
       {
          EventType* et = EventType::GetValueForName(pEvent);
-         if(et != NULL)
+         if(et != nullptr)
          {
             return DoStateTransition(et);
          }
@@ -159,9 +159,9 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       bool GameStateComponent::DoStateTransition(const EventType* pEvent)
       {
-         if(pEvent == NULL)
+         if(pEvent == nullptr)
          {
-            LOG_ERROR("NULL is invalid parameter to function!");
+            LOG_ERROR("nullptr is invalid parameter to function!");
             return false;
          }
 
@@ -176,16 +176,16 @@ namespace SimCore
          }
 
          LOG_ERROR( "Unable to handle event: " + pEvent->GetName() + " from state: "
-            + (mCurrentState.valid() ? mCurrentState->GetName() : "NULL") );
+            + (mCurrentState.valid() ? mCurrentState->GetName() : "nullptr") );
          return false;
       }
 
       //////////////////////////////////////////////////////////////////////////
       void GameStateComponent::OnStateChange(GameState* pState)
       {
-         if(pState == NULL)
+         if(pState == nullptr)
          {
-            LOG_ERROR("NULL is invalid parameter to function!");
+            LOG_ERROR("nullptr is invalid parameter to function!");
          }
          else
          {
@@ -207,16 +207,16 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       GameState* GameStateComponent::AddState(const StateType* pStateType)
       {
-         GameState* newState = NULL;
+         GameState* newState = nullptr;
 
-         if(pStateType == NULL)
+         if(pStateType == nullptr)
          {
-            LOG_ERROR("NULL is an invalid argument!");
+            LOG_ERROR("nullptr is an invalid argument!");
          }
          else
          {
             newState = GetState(pStateType);
-            if(newState == NULL)
+            if(newState == nullptr)
             {
                newState = new GameState(pStateType);
                mStates.insert(std::make_pair(pStateType, newState));
@@ -233,7 +233,7 @@ namespace SimCore
          GameState* realFrom = AddState(fromState);
          GameState* realTo = AddState(toState);
 
-         if(realFrom != NULL && realTo != NULL)
+         if(realFrom != nullptr && realTo != nullptr)
          {
             // checking the transition map's keys
             TransitionMap::key_type key(eventType, realFrom);
@@ -258,7 +258,7 @@ namespace SimCore
          GameState* fromState = GetState(from);
          GameState* toState = GetState(to);
 
-         if(fromState != NULL && toState != NULL)
+         if(fromState != nullptr && toState != nullptr)
          {
             // Returns true if any elements were removed from the EventMap
             TransitionMap::key_type key( eventType, fromState);
@@ -280,7 +280,7 @@ namespace SimCore
       bool GameStateComponent::IsInState(const GameStateComponent::GameStateType& state) const
       {
          const GameStateType* currentState = GetCurrentState();
-         return currentState != NULL && state == *currentState;
+         return currentState != nullptr && state == *currentState;
       }
 
       //////////////////////////////////////////////////////////////////////////

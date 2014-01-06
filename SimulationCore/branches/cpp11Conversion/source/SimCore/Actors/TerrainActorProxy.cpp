@@ -87,7 +87,7 @@ namespace SimCore
       {
          if (!mFileToLoad.empty())
          {
-            dtCore::RefPtr<osgDB::ReaderWriter::Options> options;
+            osg::ref_ptr<osgDB::ReaderWriter::Options> options;
             if (mLoadOptions.valid())
             {
                options = mLoadOptions;
@@ -134,13 +134,13 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////
       void LoadNodeTask::ResetData()
       {
-         mLoadedNode = NULL;
+         mLoadedNode = nullptr;
          mComplete = false;
       }
 
       DT_IMPLEMENT_ACCESSOR(LoadNodeTask, bool, UseFileCaching);
       DT_IMPLEMENT_ACCESSOR(LoadNodeTask, std::string, FileToLoad);
-      DT_IMPLEMENT_ACCESSOR(LoadNodeTask, dtCore::RefPtr<osgDB::ReaderWriter::Options>, LoadOptions);
+      DT_IMPLEMENT_ACCESSOR(LoadNodeTask, osg::ref_ptr<osgDB::ReaderWriter::Options>, LoadOptions);
 
       ///////////////////////////////////////////////////////////////////////////////
       ///////////////////////////////////////////////////////////////////////////////
@@ -164,7 +164,7 @@ namespace SimCore
       void TerrainActorProxy::BuildPropertyMap()
       {
          dtGame::GameActorProxy::BuildPropertyMap();
-         TerrainActor* ta = NULL;
+         TerrainActor* ta = nullptr;
          GetActor(ta);
 
          static const dtUtil::RefString GROUP_("Terrain");
@@ -206,9 +206,9 @@ namespace SimCore
       }
 
       /////////////////////////////////////////////////////////////////////////////
-      dtDAL::ActorProxyIcon* TerrainActorProxy::GetBillBoardIcon()
+      dtDAL::ActorProxyIconPtr TerrainActorProxy::GetBillBoardIcon()
       {
-         if (!mBillBoardIcon.valid())
+         if (!mBillBoardIcon)
          {
             mBillBoardIcon = new dtDAL::ActorProxyIcon("billboards/staticmesh.png");
          }
@@ -221,7 +221,7 @@ namespace SimCore
       {
          BaseClass::BuildActorComponents();
 
-         dtCore::RefPtr<dtPhysics::PhysicsActComp> physAC = new dtPhysics::PhysicsActComp();
+         std::shared_ptr<dtPhysics::PhysicsActComp> physAC = new dtPhysics::PhysicsActComp();
 
          AddComponent(*physAC);
 
@@ -250,9 +250,9 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////
       void TerrainActorProxy::HandleNodeLoaded(const dtGame::TimerElapsedMessage& timerElapsed)
       {
-         TerrainActor* ta = NULL;
+         TerrainActor* ta = nullptr;
          GetActor(ta);
-         if (ta != NULL)
+         if (ta != nullptr)
          {
             if (ta->CheckForTerrainLoaded())
             {
@@ -352,7 +352,7 @@ namespace SimCore
          }
 
          // For STAGE
-         if (GetGameActorProxy().GetGameManager() == NULL)
+         if (GetGameActorProxy().GetGameManager() == nullptr)
          {
             return;
          }
@@ -362,10 +362,10 @@ namespace SimCore
             dtCore::Transform xform;
             GetTransform(xform);
 
-            dtPhysics::PhysicsComponent* comp = NULL;
+            dtPhysics::PhysicsComponent* comp = nullptr;
             GetGameActorProxy().GetGameManager()->GetComponentByName(dtPhysics::PhysicsComponent::DEFAULT_NAME, comp);
 
-            if (comp != NULL)
+            if (comp != nullptr)
             {
                bool loadSuccess = false;
 
@@ -452,7 +452,7 @@ namespace SimCore
             mHelper->SetName(GetName());
          }
 
-         dtCore::RefPtr<dtGame::Message> terrainMessage;
+         std::shared_ptr<dtGame::Message> terrainMessage;
          GetGameActorProxy().GetGameManager()->GetMessageFactory().CreateMessage(SimCore::MessageType::INFO_TERRAIN_LOADED, terrainMessage);
          terrainMessage->SetAboutActorId(GetUniqueId());
          GetGameActorProxy().GetGameManager()->SendMessage(*terrainMessage);
@@ -476,7 +476,7 @@ namespace SimCore
                   dtCore::Transform geometryWorld;
                   GetTransform(geometryWorld);
 
-                  dtCore::RefPtr<dtPhysics::PhysicsObject> newTile = new dtPhysics::PhysicsObject(fileToLoad);
+                  std::shared_ptr<dtPhysics::PhysicsObject> newTile = new dtPhysics::PhysicsObject(fileToLoad);
                   newTile->SetTransform(geometryWorld);
                   newTile->SetMechanicsType(dtPhysics::MechanicsType::STATIC);
                   newTile->SetPrimitiveType(dtPhysics::PrimitiveType::TERRAIN_MESH);
@@ -487,7 +487,7 @@ namespace SimCore
                   vertData.mVertices = &(data.mVertices->at(0)[0]);
                   vertData.mNumVertices = data.mVertices->size();
 
-                  dtCore::RefPtr<dtPhysics::Geometry> geom = dtPhysics::Geometry::CreateConcaveGeometry(geometryWorld, vertData, 0);
+                  std::shared_ptr<dtPhysics::Geometry> geom = dtPhysics::Geometry::CreateConcaveGeometry(geometryWorld, vertData, 0);
                   newTile->CreateFromGeometry(*geom);
 
                   newTile->SetCollisionGroup(SimCore::CollisionGroup::GROUP_TERRAIN);
@@ -515,7 +515,7 @@ namespace SimCore
          }
 
          //Don't actually load the file unless we are in the scene.
-         if (GetSceneParent() != NULL)
+         if (GetSceneParent() != nullptr)
          {
             //We should always clear the geometry.  If LoadFile fails, we should have no geometry.
             if (GetMatrixNode()->getNumChildren() != 0)
@@ -523,9 +523,9 @@ namespace SimCore
                GetMatrixNode()->removeChild(0, GetMatrixNode()->getNumChildren());
             }
             // If the terrain changes, unload the physics.
-            dtPhysics::PhysicsActComp* pac = NULL;
+            dtPhysics::PhysicsActComp* pac = nullptr;
             GetComponent(pac);
-            if (pac != NULL)
+            if (pac != nullptr)
             {
                pac->CleanUp();
             }
@@ -548,7 +548,7 @@ namespace SimCore
                mLoadNodeTask->SetUseFileCaching(mLoadTerrainMeshWithCaching);
                mLoadNodeTask->SetFileToLoad(fileName);
 
-               dtCore::RefPtr<osgDB::ReaderWriter::Options> options;
+               osg::ref_ptr<osgDB::ReaderWriter::Options> options;
                if (!options.valid())
                {
                   options = new osgDB::ReaderWriter::Options;
@@ -604,7 +604,7 @@ namespace SimCore
          // It is "complete" so wait to make sure the task clears the thread pool.
          mLoadNodeTask->WaitUntilComplete();
 
-         if (mLoadNodeTask->GetLoadedNode() != NULL)
+         if (mLoadNodeTask->GetLoadedNode() != nullptr)
          {
             mTerrainNode = mLoadNodeTask->GetLoadedNode();
 
@@ -628,7 +628,7 @@ namespace SimCore
                SetShaderGroup(shaderToSet);
             }
 
-            mLoadNodeTask = NULL;
+            mLoadNodeTask = nullptr;
          }
 
          return true;

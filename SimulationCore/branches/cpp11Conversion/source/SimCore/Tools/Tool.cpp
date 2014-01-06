@@ -38,7 +38,7 @@ namespace SimCore
       Tool::Tool(CEGUI::Window *window) : 
          mMainWindow(window),
          mIsEnabled(false),
-         mStealthActor(NULL)
+         mStealthActor(nullptr)
       {
 
       }

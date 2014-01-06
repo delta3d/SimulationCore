@@ -97,9 +97,9 @@ namespace SimCore
          if(!IsRemote() && mVehiclesPortal.valid() )
          {
             Portal* portal = dynamic_cast<Portal*>(mVehiclesPortal->GetActor());
-            portal->SetActorLink(NULL);
+            portal->SetActorLink(nullptr);
             GetGameActorProxy().GetGameManager()->DeleteActor(*mVehiclesPortal.get());
-            mVehiclesPortal = NULL;
+            mVehiclesPortal = nullptr;
          }
 
       }
@@ -182,7 +182,7 @@ namespace SimCore
          // do sound here
          // if the vehicle is moving
 
-         if(mSndVehicleIdleLoop == NULL)
+         if(mSndVehicleIdleLoop == nullptr)
             return;
 
          if(mSndVehicleIdleLoop->IsPlaying() == false)
@@ -198,7 +198,7 @@ namespace SimCore
             float tick           = 0.0f;
             if(GetMPH() < GetSound_gear_change_low())
             {
-               if(mLastGearChange != FIRST_GEAR && mSndAcceleration != NULL)
+               if(mLastGearChange != FIRST_GEAR && mSndAcceleration != nullptr)
                {
                   mSndAcceleration->Play();
                }
@@ -208,7 +208,7 @@ namespace SimCore
                tick = (maxpitchBend - minpitchBend) / dif;
                pitchBend = maxpitchBend  - (dis * tick) + mLastGearChange * .1;
             }
-            else if(GetMPH() < GetSound_gear_change_medium()  && mSndAcceleration != NULL)
+            else if(GetMPH() < GetSound_gear_change_medium()  && mSndAcceleration != nullptr)
             {
                if(mLastGearChange != SECOND_GEAR)
                {
@@ -220,7 +220,7 @@ namespace SimCore
                tick = (maxpitchBend - minpitchBend) / dif;
                pitchBend = maxpitchBend  - (dis * tick) + mLastGearChange * .1;
             }
-            else if(GetMPH() < GetSound_gear_change_high()  && mSndAcceleration != NULL)
+            else if(GetMPH() < GetSound_gear_change_high()  && mSndAcceleration != nullptr)
             {
                if(mLastGearChange != THIRD_GEAR)
                {
@@ -234,7 +234,7 @@ namespace SimCore
             }
             else if(GetMPH() < GetFourWheelPhysicsHelper()->GetVehicleMaxMPH())
             {
-               if(mLastGearChange != FOURTH_GEAR  && mSndAcceleration != NULL)
+               if(mLastGearChange != FOURTH_GEAR  && mSndAcceleration != nullptr)
                {
                   mSndAcceleration->Play();
                }
@@ -281,10 +281,10 @@ namespace SimCore
             if(toFillin.size())
             {
                InteriorActor* ourInterior = dynamic_cast<InteriorActor*>(toFillin[0]->GetActor());
-               if(ourInterior != NULL)
+               if(ourInterior != nullptr)
                {
                   steeringWheel = ourInterior->GetSteeringWheelDOF("dof_steering_wheel");
-                  if(steeringWheel != NULL)
+                  if(steeringWheel != nullptr)
                   {
                      osg::Vec3 HPR = steeringWheel->getCurrentHPR();
                      HPR[0] = GetFourWheelPhysicsHelper()->GetWheelShape(1)->getSteerAngle() * 4;
@@ -320,19 +320,19 @@ namespace SimCore
       {
          BasePhysicsVehicleActor::ResetVehicle();
 
-         if(mSndIgnition != NULL)
+         if(mSndIgnition != nullptr)
          {
             if(!mSndIgnition->IsPlaying())
                mSndIgnition->Play();
          }
 
-         if(mSndBrake != NULL)
+         if(mSndBrake != nullptr)
          {
             if(mSndBrake->IsPlaying())
                mSndBrake->Stop();
          }
 
-         if(mSndVehicleIdleLoop != NULL)
+         if(mSndVehicleIdleLoop != nullptr)
          {
             mSndVehicleIdleLoop->SetPitch(1.0f);
             if(!mSndVehicleIdleLoop->IsPlaying())
@@ -344,7 +344,7 @@ namespace SimCore
       void NxAgeiaFourWheelVehicleActor::UpdateVehicleTorquesAndAngles(float deltaTime)
       {
          dtCore::Keyboard *keyboard = GetGameActorProxy().GetGameManager()->GetApplication().GetKeyboard();
-         if(keyboard == NULL)
+         if(keyboard == nullptr)
             return;
 
          bool steeredThisFrame = true;

@@ -87,8 +87,8 @@ namespace SimCore
 
       private:
 
-         dtCore::RefPtr<dtCore::ParticleSystem> mFlame;
-         dtCore::RefPtr<dtActors::ParticleSystemActorProxy> mSmokeTrail;
+         std::shared_ptr<dtCore::ParticleSystem> mFlame;
+         std::shared_ptr<dtActors::ParticleSystemActorProxy> mSmokeTrail;
 
          bool mLastTranslationSet;
          bool mLastRotationSet;

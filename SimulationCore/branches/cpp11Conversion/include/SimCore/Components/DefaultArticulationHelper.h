@@ -28,7 +28,7 @@
 // INCLUDE DIRECTIVES
 ////////////////////////////////////////////////////////////////////////////////
 #include <SimCore/Export.h>
-#include <dtCore/refptr.h>
+#include <dtUtil/refcountedbase.h>
 #include <SimCore/Components/ArticulationHelper.h>
 
 
@@ -60,7 +60,7 @@ namespace SimCore
          public:
             DefaultArticulationHelper();
 
-            virtual dtCore::RefPtr<dtDAL::NamedGroupParameter> BuildGroupProperty();
+            virtual std::shared_ptr<dtDAL::NamedGroupParameter> BuildGroupProperty();
 
             virtual void UpdateDOFReferences( dtUtil::NodeCollector* nodeCollector );
 

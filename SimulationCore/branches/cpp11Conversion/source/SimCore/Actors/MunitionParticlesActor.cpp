@@ -74,7 +74,7 @@ namespace SimCore
          MunitionRaycastReport(dtCore::DeltaDrawable* ownerActor)
          : mGotAHit(false)
          , mOwnerActor(ownerActor)
-         , mClosestHitsObject(NULL)
+         , mClosestHitsObject(nullptr)
          {
          }
 
@@ -84,19 +84,19 @@ namespace SimCore
          /////////////////////////////////////////////////////////////////////////////////////////////
          virtual Float AddHit(palRayHit& hit)
          {
-            if (hit.m_pBody != NULL && hit.m_pBody->GetUserData() != NULL)
+            if (hit.m_pBody != nullptr && hit.m_pBody->GetUserData() != nullptr)
             {
                dtPhysics::PhysicsObject* physObject = reinterpret_cast<dtPhysics::PhysicsObject*>(hit.m_pBody->GetUserData());
 
-               dtPhysics::PhysicsActComp* physicsHelper = NULL;
-               if (physObject != NULL)
+               dtPhysics::PhysicsActComp* physicsHelper = nullptr;
+               if (physObject != nullptr)
                {
                   physicsHelper = dynamic_cast<dtPhysics::PhysicsActComp*>(physObject->GetUserData());
                }
 
-               dtCore::DeltaDrawable* hitTarget = NULL;
+               dtCore::DeltaDrawable* hitTarget = nullptr;
 
-               if(physicsHelper != NULL)
+               if(physicsHelper != nullptr)
                {
                   // null checked up above in the return
                   physicsHelper->GetOwner(hitTarget);
@@ -104,7 +104,7 @@ namespace SimCore
 
                // We don't want to hit ourselves.  So, if we don't have a 'self' owner, then we take
                // whatever hit we get.  Otherwise, we check the owner drawables
-               if (mOwnerActor == NULL || hitTarget != mOwnerActor
+               if (mOwnerActor == nullptr || hitTarget != mOwnerActor
                         // So we dont want to return false if collision is off, this onHit is called for
                         // every hit along the line, and returning false tells it to stop the raycast
                         // report, its amazing how rereading the sdk can help so much :(
@@ -135,7 +135,7 @@ namespace SimCore
       , mLastPosition()
       , mDynamicLight()
       {
-         if( renderComp != NULL )
+         if( renderComp != nullptr )
          {
             SimCore::Components::RenderingSupportComponent::DynamicLight* dl =
                renderComp->AddDynamicLightByPrototypeName("Light-Tracer");
@@ -237,7 +237,7 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////
       void MunitionsPhysicsParticle::CreateTracer()
       {
-         dtCore::RefPtr<SimCore::Actors::VolumetricLine> line
+         std::shared_ptr<SimCore::Actors::VolumetricLine> line
             = new SimCore::Actors::VolumetricLine( 0.0f, TRACER_WIDTH, "VolumetricLines", "TracerGroup" );
          SetTracer(line);
       }
@@ -266,7 +266,7 @@ namespace SimCore
          {
             MunitionsPhysicsParticle* munitionsParticle = dynamic_cast<MunitionsPhysicsParticle*>((*iter).get());
 
-   //         if (object == NULL)
+   //         if (object == nullptr)
    //            continue;
 
             (*iter)->UpdateTime(ElapsedTime);
@@ -291,7 +291,7 @@ namespace SimCore
       bool MunitionParticlesActor::ResolveISectorCollision(MunitionsPhysicsParticle& particleToCheck)
       {
          dtPhysics::PhysicsObject* physicsObject = particleToCheck.GetPhysicsObject();
-         if (physicsObject != NULL && mWeapon.valid())
+         if (physicsObject != nullptr && mWeapon.valid())
          {
             osg::Vec3 lastPosition = particleToCheck.GetLastPosition();
 
@@ -308,7 +308,7 @@ namespace SimCore
                osg::Vec3 dirVec = currentPosition - lastPosition;
                ray.SetDirection(dirVec);
 
-               MunitionRaycastReport report(mWeapon.valid() && mWeapon->GetOwner() != NULL ? mWeapon->GetOwner()->GetDrawable() : NULL);
+               MunitionRaycastReport report(mWeapon.valid() && mWeapon->GetOwner() != nullptr ? mWeapon->GetOwner()->GetDrawable() : nullptr);
 
                // CR: Create the bit mask once rather than every time the method is called.
                static const dtPhysics::CollisionGroupFilter GROUPS_FLAGS =
@@ -333,16 +333,16 @@ namespace SimCore
 
                   dtPhysics::PhysicsActComp* physActComp = dynamic_cast<dtPhysics::PhysicsActComp*>(report.mClosestHitsObject->GetUserData());
 
-                  if (report.mClosestHitsObject != NULL && physActComp != NULL)
+                  if (report.mClosestHitsObject != nullptr && physActComp != nullptr)
                   {
-                        dtGame::GameActor* ga = NULL;
+                        dtGame::GameActor* ga = nullptr;
                         physActComp->GetOwner(ga);
 
                         mWeapon->ReceiveContactReport(contactReport, &ga->GetGameActorProxy());
                   }
                   else
                   {
-                     mWeapon->ReceiveContactReport(contactReport, NULL);
+                     mWeapon->ReceiveContactReport(contactReport, nullptr);
                   }
 
                   return true;
@@ -374,7 +374,7 @@ namespace SimCore
          bool isTracer = GetSystemToUseTracers() && mCurrentTracerRoundNumber >= mFrequencyOfTracers;
 
          //we obtain the rendering support component so that the particle effect can add a dynamic light effect
-         SimCore::Components::RenderingSupportComponent* renderComp = NULL;
+         SimCore::Components::RenderingSupportComponent* renderComp = nullptr;
 
          if (isTracer)
          {
@@ -385,7 +385,7 @@ namespace SimCore
 
 
          dtCore::UniqueId id;
-         dtCore::RefPtr<MunitionsPhysicsParticle> particle = new MunitionsPhysicsParticle(renderComp, id.ToString(), mParticleLengthOfStay);
+         std::shared_ptr<MunitionsPhysicsParticle> particle = new MunitionsPhysicsParticle(renderComp, id.ToString(), mParticleLengthOfStay);
 
          dtCore::Transform ourTransform;
          GetTransform(ourTransform);
@@ -434,7 +434,7 @@ namespace SimCore
                // Avoid adding another tracer geometry if this is a recycled particle.
                // NOTE: 1 child is for the model matrix node, used in preserving scale
                // but optimizing matrix transformations.
-               if( NULL != node && node->getNumChildren() == 0 )
+               if( nullptr != node && node->getNumChildren() == 0 )
                {  
                   particle->CreateTracer();
                   orientDrawable = true;
@@ -469,8 +469,8 @@ namespace SimCore
          xform.Set(ourRotationMatrix);
          xform.SetTranslation(osg::Vec3(ourTranslation.x(), ourTranslation.y(), ourTranslation.z()));
 
-         dtPhysics::PhysicsObject* newActor = NULL;
-         dtCore::RefPtr<dtPhysics::PhysicsObject> newObject = new dtPhysics::PhysicsObject(id.ToString());
+         dtPhysics::PhysicsObject* newActor = nullptr;
+         std::shared_ptr<dtPhysics::PhysicsObject> newObject = new dtPhysics::PhysicsObject(id.ToString());
          newObject->SetCollisionGroup(collisionGroupToSendIn);
          newObject->SetMechanicsType(dtPhysics::MechanicsType::DYNAMIC);
          newObject->SetMass(mPhysicsActComp->GetMass());
@@ -529,7 +529,7 @@ namespace SimCore
       void MunitionParticlesActor::PostPhysicsUpdate()
       {
          bool IsTracer = false;
-         std::list<dtCore::RefPtr<PhysicsParticle> >::iterator iter = mOurParticleList.begin();
+         std::list<std::shared_ptr<PhysicsParticle> >::iterator iter = mOurParticleList.begin();
          for(;iter!= mOurParticleList.end(); ++iter)
          {
             PhysicsParticle& particle = **iter;
@@ -537,7 +537,7 @@ namespace SimCore
             {
                IsTracer = false;
                MunitionsPhysicsParticle* munitionsParticle = dynamic_cast<MunitionsPhysicsParticle*>(&particle);
-               if (munitionsParticle != NULL)
+               if (munitionsParticle != nullptr)
                {
                   if(munitionsParticle->IsTracer())
                   {
@@ -584,7 +584,7 @@ namespace SimCore
          const std::string GROUP = "MunitionParticlesActor";
 
          PhysicsParticleSystemActorProxy::BuildPropertyMap();
-         MunitionParticlesActor* actor = NULL;
+         MunitionParticlesActor* actor = nullptr;
          GetActor(actor);
 
          AddProperty(new dtDAL::IntActorProperty("FrequencyOfTracers", "FrequencyOfTracers",
@@ -606,9 +606,9 @@ namespace SimCore
       {
          BaseClass::BuildActorComponents();
 
-         dtPhysics::PhysicsActComp* physAC = NULL;
+         dtPhysics::PhysicsActComp* physAC = nullptr;
          GetComponent(physAC);
-         if (physAC != NULL)
+         if (physAC != nullptr)
          {
             physAC->SetDefaultCollisionGroup(SimCore::CollisionGroup::GROUP_BULLET);
          }

@@ -42,7 +42,7 @@
 #include <UnitTestMain.h>
 #include <dtABC/application.h>
 
-using dtCore::RefPtr;
+using std::shared_ptr;
 
 namespace SimCore
 {
@@ -67,7 +67,7 @@ namespace SimCore
 
          void tearDown()
          {
-            mTranslator = NULL;
+            mTranslator = nullptr;
          }
 
          void TestTimeConversion()
@@ -76,12 +76,12 @@ namespace SimCore
             dtHLAGM::OneToManyMapping::ParameterDefinition pd("doubleTime", dtDAL::DataType::DOUBLE, "", false);
             otm.GetParameterDefinitions().push_back(pd);
 
-            dtCore::RefPtr<dtGame::DoubleMessageParameter> timeParam = new dtGame::DoubleMessageParameter("doubleTime");
+            std::shared_ptr<dtGame::DoubleMessageParameter> timeParam = new dtGame::DoubleMessageParameter("doubleTime");
 
             char* buffer = new char[4];
             try
             {
-               std::vector<dtCore::RefPtr<dtGame::MessageParameter> > parameters;
+               std::vector<std::shared_ptr<dtGame::MessageParameter> > parameters;
                parameters.push_back(timeParam);
 
                // the datastream will delete the buffer.
@@ -102,7 +102,7 @@ namespace SimCore
             try
             {
                timeParam->SetValue(43433.25);
-               std::vector<dtCore::RefPtr<const dtGame::MessageParameter> > parameters;
+               std::vector<std::shared_ptr<const dtGame::MessageParameter> > parameters;
                parameters.push_back(timeParam);
 
                // size must be passed in by reference
@@ -132,8 +132,8 @@ namespace SimCore
             otmD.GetParameterDefinitions().push_back(pdV3D);
             otmF.GetParameterDefinitions().push_back(pdV3F);
 
-            dtCore::RefPtr<dtGame::Vec3dMessageParameter> vecDoubleParam = new dtGame::Vec3dMessageParameter("testVec3Double");
-            dtCore::RefPtr<dtGame::Vec3fMessageParameter> vecFloatParam = new dtGame::Vec3fMessageParameter("testVec3Float");
+            std::shared_ptr<dtGame::Vec3dMessageParameter> vecDoubleParam = new dtGame::Vec3dMessageParameter("testVec3Double");
+            std::shared_ptr<dtGame::Vec3fMessageParameter> vecFloatParam = new dtGame::Vec3fMessageParameter("testVec3Float");
 
             double epsilon = 0.001;
 
@@ -145,8 +145,8 @@ namespace SimCore
             osg::Vec3f testValueF(10.11f, -121.314f, 1516.17f);
             try
             {
-               std::vector<dtCore::RefPtr<dtGame::MessageParameter> > parametersD;
-               std::vector<dtCore::RefPtr<dtGame::MessageParameter> > parametersF;
+               std::vector<std::shared_ptr<dtGame::MessageParameter> > parametersD;
+               std::vector<std::shared_ptr<dtGame::MessageParameter> > parametersF;
                parametersD.push_back(vecDoubleParam);
                parametersF.push_back(vecFloatParam);
 
@@ -179,8 +179,8 @@ namespace SimCore
             {
                vecDoubleParam->SetValue(testValueD2);
                vecFloatParam->SetValue(testValueF2);
-               std::vector<dtCore::RefPtr<const dtGame::MessageParameter> > parametersD;
-               std::vector<dtCore::RefPtr<const dtGame::MessageParameter> > parametersF;
+               std::vector<std::shared_ptr<const dtGame::MessageParameter> > parametersD;
+               std::vector<std::shared_ptr<const dtGame::MessageParameter> > parametersF;
                parametersD.push_back(vecDoubleParam);
                parametersF.push_back(vecFloatParam);
 
@@ -222,7 +222,7 @@ namespace SimCore
 
       private:
          dtUtil::Log* mLogger;
-         RefPtr<HLACustomParameterTranslator> mTranslator;
+         std::shared_ptr<HLACustomParameterTranslator> mTranslator;
       };
 
       // Registers the fixture into the 'registry'

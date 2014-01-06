@@ -80,7 +80,7 @@ namespace SimCore
          public:
             typedef AnimationController<osg::Vec2> BaseClass;
 
-            Vec2Controller( AnimCallbackSetVec2* callback = NULL );
+            Vec2Controller( AnimCallbackSetVec2* callback = nullptr );
 
          protected:
             virtual ~Vec2Controller();
@@ -96,7 +96,7 @@ namespace SimCore
          public:
             typedef AnimationController<osg::Vec3> BaseClass;
 
-            Vec3Controller( AnimCallbackSetVec3* callback = NULL );
+            Vec3Controller( AnimCallbackSetVec3* callback = nullptr );
 
          protected:
             virtual ~Vec3Controller();
@@ -112,7 +112,7 @@ namespace SimCore
          public:
             typedef AnimationController<osg::Vec4> BaseClass;
 
-            Vec4Controller( AnimCallbackSetVec4* callback = NULL );
+            Vec4Controller( AnimCallbackSetVec4* callback = nullptr );
 
          protected:
             virtual ~Vec4Controller();
@@ -128,7 +128,7 @@ namespace SimCore
          public:
             typedef AnimationController<osg::Vec4> BaseClass;
 
-            BoundsController( AnimCallbackSetVec4* callback = NULL );
+            BoundsController( AnimCallbackSetVec4* callback = nullptr );
 
          protected:
             virtual ~BoundsController();

@@ -51,7 +51,7 @@ namespace StealthQt
       Q_OBJECT
 
    public:
-      AdditionalViewDockWidget(const QGLFormat& format, QWidget* parent = NULL, const QGLWidget* sharedContextWidget = NULL, Qt::WindowFlags f = 0);
+      AdditionalViewDockWidget(const QGLFormat& format, QWidget* parent = nullptr, const QGLWidget* sharedContextWidget = nullptr, Qt::WindowFlags f = 0);
       virtual ~AdditionalViewDockWidget();
 
 //      void SetQGLWidget(QGLWidget* widgetChild);
@@ -69,7 +69,7 @@ namespace StealthQt
    protected:
       virtual void closeEvent(QCloseEvent *e);
    private:
-      dtCore::RefPtr<StealthGM::ViewWindowWrapper> mViewWrapper;
+      std::shared_ptr<StealthGM::ViewWindowWrapper> mViewWrapper;
    };
 }
 

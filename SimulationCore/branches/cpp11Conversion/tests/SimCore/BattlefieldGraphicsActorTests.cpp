@@ -59,8 +59,8 @@ namespace SimCore
             void TestVisibilityOptions();
 
          private:
-            dtCore::RefPtr<dtGame::GameManager> mGM;
-            dtCore::RefPtr<BattlefieldGraphicsActorProxy> mActor;
+            std::shared_ptr<dtGame::GameManager> mGM;
+            std::shared_ptr<BattlefieldGraphicsActorProxy> mActor;
       };
 
       CPPUNIT_TEST_SUITE_REGISTRATION(BattlefieldGraphicsActorTests);
@@ -89,10 +89,10 @@ namespace SimCore
       {
          try
          {
-            mActor = NULL;
+            mActor = nullptr;
 
             mGM->DeleteAllActors(true);
-            mGM = NULL;
+            mGM = nullptr;
          }
          catch (const dtUtil::Exception& ex)
          {
@@ -147,10 +147,10 @@ namespace SimCore
 
       void BattlefieldGraphicsActorTests::TestVisibilityOptions()
       {
-         IGActor* drawable = NULL;
+         IGActor* drawable = nullptr;
          mActor->GetDrawable(drawable);
-         CPPUNIT_ASSERT(drawable != NULL);
-         dtCore::RefPtr<VisibilityOptions> vo = new VisibilityOptions();
+         CPPUNIT_ASSERT(drawable != nullptr);
+         std::shared_ptr<VisibilityOptions> vo = new VisibilityOptions();
 
          BasicVisibilityOptions bvo;
          bvo.SetAllFalse();

@@ -105,10 +105,10 @@ namespace NetDemo
    GUIComponent::GUIComponent( const std::string& name )
       : BaseClass(name)
       , mScriptModule(new dtGUI::ScriptModule)
-      , mCurrentHoveredWidget(NULL)
-      , mInputServerPort(NULL)
-      , mInputServerIP(NULL)
-      , mListVehicleType(NULL)
+      , mCurrentHoveredWidget(nullptr)
+      , mInputServerPort(nullptr)
+      , mInputServerIP(nullptr)
+      , mListVehicleType(nullptr)
       , mCurrentButtonIndex(0)
    {
    }
@@ -209,7 +209,7 @@ namespace NetDemo
       mEffectsOverlay->addChild(mBackground.get());
 
       // Attach a special shader.
-      dtCore::RefPtr<SimCore::ApplyShaderVisitor> visitor = new SimCore::ApplyShaderVisitor();
+      std::shared_ptr<SimCore::ApplyShaderVisitor> visitor = new SimCore::ApplyShaderVisitor();
       visitor->AddNodeName("UFOBeam");
       visitor->SetShaderName("ColorPulseShader");
       visitor->SetShaderGroup("CustomizableVehicleShaderGroup");
@@ -267,11 +267,11 @@ namespace NetDemo
       else if(messageType == dtGame::MessageType::INFO_MAP_LOADED)
       {
          // Get the reference to the player.
-         dtGame::GameActorProxy* proxy = NULL;
+         dtGame::GameActorProxy* proxy = nullptr;
          GetGameManager()->FindActorByType(*NetDemoActorRegistry::PLAYER_STATUS_ACTOR_TYPE, proxy);
-         if(proxy != NULL)
+         if(proxy != nullptr)
          {
-            PlayerStatusActor* player = NULL;
+            PlayerStatusActor* player = nullptr;
             proxy->GetActor(player);
             mPlayer = player;
          }
@@ -374,7 +374,7 @@ namespace NetDemo
       mEffectsOverlay = new osg::MatrixTransform;
       mEffectsOverlay->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
 
-      dtCore::RefPtr<osg::Projection> projection = new osg::Projection;
+      osg::ref_ptr<osg::Projection> projection = new osg::Projection;
       projection->setMatrix(osg::Matrix::ortho2D(0.0f ,1.0f, 0.0f, 1.0f));
       projection->addChild(mEffectsOverlay.get());
 
@@ -415,7 +415,7 @@ namespace NetDemo
       if(actorType == *NetDemoActorRegistry::PLAYER_STATUS_ACTOR_TYPE)
       {
          // Get the actor to which the message refers.
-         NetDemo::PlayerStatusActor* playerStats = NULL;
+         NetDemo::PlayerStatusActor* playerStats = nullptr;
          if(mAppComp->FindActor(actorId, playerStats))
          {
             // Process the actor.
@@ -434,7 +434,7 @@ namespace NetDemo
          for (unsigned i = 0; i < fortActors.size(); ++i)
          {
             FortActor* fort = static_cast<FortActor*>(fortActors[i]->GetDrawable());
-            if(fort != NULL && fort->GetCurDamageRatio() >  curRatio && fort->GetCurDamageRatio() < 1.0f)
+            if(fort != nullptr && fort->GetCurDamageRatio() >  curRatio && fort->GetCurDamageRatio() < 1.0f)
             {
                curRatio = fort->GetCurDamageRatio();
                found = true;
@@ -502,7 +502,7 @@ namespace NetDemo
    {
       if( ! mAppComp.valid() )
       {
-         GameLogicComponent* comp = NULL;
+         GameLogicComponent* comp = nullptr;
          GetGameManager()->GetComponentByName( GameLogicComponent::DEFAULT_NAME, comp );
          mAppComp = comp;
       }
@@ -540,7 +540,7 @@ namespace NetDemo
    /////////////////////////////////////////////////////////////////////////////
    void GUIComponent::OnOptionSelect()
    {
-      if(mCurrentHoveredWidget != NULL)
+      if(mCurrentHoveredWidget != nullptr)
       {
          // Simulate the button being pressed by the mouse cursor.
          HandleButton(*mCurrentHoveredWidget);
@@ -562,7 +562,7 @@ namespace NetDemo
    {
       const CEGUI::Window* button = GetWidgetFromEventArgs(args);
 
-      if(button != NULL)
+      if(button != nullptr)
       {
          HandleButton(*button);
       }
@@ -589,10 +589,10 @@ namespace NetDemo
       //const CEGUI::Window* button = GetWidgetFromEventArgs(args);
 
       // Disable special hover effects.
-      /*if(button != NULL && mCurrentHoveredWidget != NULL)
+      /*if(button != nullptr && mCurrentHoveredWidget != nullptr)
       {
          SetHoverEffectEnabled(false);
-         mCurrentHoveredWidget = NULL;
+         mCurrentHoveredWidget = nullptr;
       }*/
 
       // Let CEGUI know the button has been handled.
@@ -627,7 +627,7 @@ namespace NetDemo
    /////////////////////////////////////////////////////////////////////////////
    void GUIComponent::SetButtonFocused(const CEGUI::Window* button)
    {
-      if(button != NULL)
+      if(button != nullptr)
       {
          mCurrentHoveredWidget = button;
          SetHoverEffectOnElement(*button);
@@ -676,10 +676,10 @@ namespace NetDemo
          if(mListVehicleType->getSelectedCount() > 0)
          {
             CEGUI::ItemEntry* listItem = mListVehicleType->getFirstSelectedItem();
-            if(listItem != NULL)
+            if(listItem != nullptr)
             {
                std::string selectedValue(listItem->getText().c_str());
-               PlayerStatusActor::VehicleTypeEnum* vehicleType = NULL;
+               PlayerStatusActor::VehicleTypeEnum* vehicleType = nullptr;
                if(selectedValue == "Truck")
                {
                   vehicleType = &PlayerStatusActor::VehicleTypeEnum::FOUR_WHEEL;
@@ -689,7 +689,7 @@ namespace NetDemo
                   vehicleType = &PlayerStatusActor::VehicleTypeEnum::HOVER;
                }
 
-               if(vehicleType != NULL)
+               if(vehicleType != nullptr)
                {
                   mAppComp->SetVehicleType(*vehicleType);
                }
@@ -700,10 +700,10 @@ namespace NetDemo
          if(mServerMode->getSelectedCount() > 0)
          {
             CEGUI::ItemEntry* listItem = mServerMode->getFirstSelectedItem();
-            if(listItem != NULL)
+            if(listItem != nullptr)
             {
                std::string selectedValue(listItem->getText().c_str());
-               //PlayerStatusActor::VehicleTypeEnum* vehicleType = NULL;
+               //PlayerStatusActor::VehicleTypeEnum* vehicleType = nullptr;
                if(selectedValue == "Client")
                {
                   GetGameManager()->GetGMSettings().SetServerRole(false);
@@ -722,7 +722,7 @@ namespace NetDemo
          if(mDifficulty->getSelectedCount() > 0)
          {
             CEGUI::ItemEntry* listItem = mDifficulty->getFirstSelectedItem();
-            if(listItem != NULL)
+            if(listItem != nullptr)
             {
                std::string selectedValue(listItem->getText().c_str());
                if(selectedValue == "Easiest")
@@ -759,8 +759,8 @@ namespace NetDemo
    /////////////////////////////////////////////////////////////////////////////
    void GUIComponent::BindButtons( CEGUI::Window& rootWindow )
    {
-      CEGUI::Window* curChild = NULL;
-      CEGUI::PushButton* button = NULL;
+      CEGUI::Window* curChild = nullptr;
+      CEGUI::PushButton* button = nullptr;
       typedef std::vector<CEGUI::Window*> CEGUIChildList;
       CEGUIChildList childList;
 
@@ -826,11 +826,11 @@ namespace NetDemo
       SetHoverEffectEnabled(false);
 
       const GameStateType* currentState = mAppComp->GetCurrentState();
-      if(currentState != NULL)
+      if(currentState != nullptr)
       {
          // Obtain the current screen.
          SimpleScreen* currentScreen = dynamic_cast<SimpleScreen*>(GetScreenForState(*currentState));
-         if(currentScreen != NULL)
+         if(currentScreen != nullptr)
          {
             // Get all the buttons for the current screen.
             ActionButtonFilter filter;
@@ -860,18 +860,18 @@ namespace NetDemo
       {
          using namespace SimCore::Components;
          GameState* gameState = GetAppComponent()->GetState(&state);
-         if(gameState != NULL)
+         if(gameState != nullptr)
          {
             typedef dtUtil::Functor<void,TYPELIST_0()> VoidFunc;
 
             // Bind Entry method.
             VoidFunc enterFunc(&screen, &Screen::OnEnter);
-            dtCore::RefPtr<dtUtil::Command0<void> > comEnter = new dtUtil::Command0<void>(enterFunc);
+            std::shared_ptr<dtUtil::Command0<void> > comEnter = new dtUtil::Command0<void>(enterFunc);
             gameState->AddEntryCommand(comEnter.get());
 
             // Bind Exit method.
             VoidFunc exitFunc(&screen, &Screen::OnExit);
-            dtCore::RefPtr<dtUtil::Command0<void> > comExit = new dtUtil::Command0<void>(exitFunc);
+            std::shared_ptr<dtUtil::Command0<void> > comExit = new dtUtil::Command0<void>(exitFunc);
             gameState->AddExitCommand(comExit);
          }
          else
@@ -890,7 +890,7 @@ namespace NetDemo
    Screen* GUIComponent::GetScreenForState(const GameStateType& state)
    {
       StateScreenMap::const_iterator foundIter = mStateScreenMap.find(&state);
-      return foundIter != mStateScreenMap.end() ? foundIter->second : NULL;
+      return foundIter != mStateScreenMap.end() ? foundIter->second : nullptr;
    }
 
    /////////////////////////////////////////////////////////////////////////////

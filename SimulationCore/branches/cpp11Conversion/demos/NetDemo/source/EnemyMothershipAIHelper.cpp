@@ -128,7 +128,7 @@ namespace NetDemo
       BaseClass::SetupFunctors();
 
       dtAI::NPCState* state = GetStateMachine().GetState(&AIStateType::AI_STATE_ATTACK);
-      if(state != NULL)
+      if(state != nullptr)
       {
          state->SetUpdate(dtAI::NPCState::UpdateFunctor(this, &EnemyMothershipAIHelper::Attack));
       }
@@ -143,7 +143,7 @@ namespace NetDemo
    {
       dtAI::NPCState* npcState = BaseClass::GetStateMachine().GetCurrentState();
       AttackState* attackState = dynamic_cast<AttackState*>(npcState);
-      if(attackState != NULL && attackState->mStateData.mTarget.valid())
+      if(attackState != nullptr && attackState->mStateData.mTarget.valid())
       {
          dtCore::Transform xform;
          attackState->mStateData.mTarget->GetTransform(xform);
@@ -167,7 +167,7 @@ namespace NetDemo
    {
       dtAI::NPCState* npcState = BaseClass::GetStateMachine().GetState(&AIStateType::AI_STATE_ATTACK);
       AttackState* attackState = dynamic_cast<AttackState*>(npcState);
-      if(attackState != NULL)
+      if(attackState != nullptr)
       {
          attackState->mStateData.mTarget = &target;
          //let the system know we have targeted a new entity

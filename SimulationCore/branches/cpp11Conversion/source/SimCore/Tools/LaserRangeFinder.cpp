@@ -51,9 +51,9 @@ namespace SimCore
    {
       LaserRangeFinder::LaserRangeFinder(dtCore::Camera &camera, CEGUI::Window *mainWindow)
          : Binoculars(camera, mainWindow, true),
-           mOverlay(NULL)//,
-           //mElevationText(NULL)//,
-           //mIntersectionText(NULL)
+           mOverlay(nullptr)//,
+           //mElevationText(nullptr)//,
+           //mIntersectionText(nullptr)
       {
          using namespace Components;
 
@@ -64,7 +64,7 @@ namespace SimCore
             //mIntersectionText = wm->createWindow("WindowsLook/StaticText" , "lrf_intersection_text");
             mElevationText    = wm->createWindow("WindowsLook/StaticText",  "lrf_elevation_text");
 
-            if(mainWindow != NULL)
+            if(mainWindow != nullptr)
                mainWindow->addChildWindow(mOverlay);
             mOverlay->setPosition(CEGUI::UVector2(cegui_reldim(0.0f), cegui_reldim(0.0f)));
             mOverlay->setSize(CEGUI::UVector2(cegui_reldim(1.0f), cegui_reldim(1.0f)));
@@ -104,17 +104,17 @@ namespace SimCore
 
       LaserRangeFinder::~LaserRangeFinder()
       {
-         if(mIntersectionText != NULL)
+         if(mIntersectionText != nullptr)
          {
             mOverlay->removeChildWindow(mIntersectionText);
             mIntersectionText->destroy();
          }
-         if(mElevationText != NULL)
+         if(mElevationText != nullptr)
          {
             mOverlay->removeChildWindow(mElevationText);
             mElevationText->destroy();
          }
-         if(mMainWindow != NULL)
+         if(mMainWindow != nullptr)
          {
             mMainWindow->removeChildWindow(mOverlay);
             mOverlay->destroy();
@@ -142,7 +142,7 @@ namespace SimCore
 
       void LaserRangeFinder::FindIntersectionPoint(dtCore::DeltaDrawable &terrain, const dtCore::Transform &xform)
       {
-         if(!IsEnabled() )//|| GetPlayerActor() == NULL)
+         if(!IsEnabled() )//|| GetPlayerActor() == nullptr)
             return;
 
          if(!mIsector.valid())

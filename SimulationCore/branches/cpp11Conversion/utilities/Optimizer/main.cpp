@@ -119,7 +119,7 @@ public:
             osg::Group* parent = node.getParent(i);
             osg::LOD* lod = dynamic_cast<osg::LOD*>(parent);
 
-            if(lod == NULL)
+            if(lod == nullptr)
             {
                osg::ref_ptr<osg::LOD> lodNode = new osg::LOD();
 
@@ -335,7 +335,7 @@ OcclusionQueryVisitor::addOQN( osg::Node& node )
       while (np--)
       {
          osg::Group* parent = dynamic_cast<osg::Group*>( node.getParent( np ) );
-         if (parent != NULL)
+         if (parent != nullptr)
          {
             osg::ref_ptr<osg::OcclusionQueryNode> oqn = new osg::OcclusionQueryNode();
             oqn->addChild( &node );
@@ -425,13 +425,13 @@ public:
       for (unsigned i = 0; i < node.getNumDrawables();)
       {
           osg::Geometry* geom = dynamic_cast<osg::Geometry*>(node.getDrawable(i));
-          if (geom != NULL)
+          if (geom != nullptr)
           {
               for (unsigned j = 0; j < geom->getNumPrimitiveSets();)
               {
                   // If it an index array AND it has a zero size, then delete it.  It does nothing.
                   osg::DrawElements* ps = dynamic_cast<osg::DrawElements*>(geom->getPrimitiveSet(j));
-                  if (ps != NULL && ps->getTotalDataSize() == 0)
+                  if (ps != nullptr && ps->getTotalDataSize() == 0)
                   {
                       geom->removePrimitiveSet(j, 1);
                       std::cout << "Removing Primitive set." << std::endl;

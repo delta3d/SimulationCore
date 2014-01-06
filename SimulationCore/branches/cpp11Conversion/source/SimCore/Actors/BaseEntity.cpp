@@ -186,7 +186,7 @@ namespace SimCore
          DT_REGISTER_PROPERTY_WITH_NAME_AND_LABEL(SmokePlumePresent, PROPERTY_SMOKE_PLUME_PRESENT, "Smoke Plume Present",
                   "Enables full entity smoking", PropRegType, propRegHelper);
 
-         dtCore::RefPtr<dtDAL::ResourceActorProperty>  rp = new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::PARTICLE_SYSTEM,
+         std::shared_ptr<dtDAL::ResourceActorProperty>  rp = new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::PARTICLE_SYSTEM,
             "Smoke plume particles", "Smoke plume particles",
             dtDAL::ResourceActorProperty::SetFuncType(&e, &BaseEntity::SetSmokePlumesFile),
             "This is the file for the smoke particles", BASE_ENTITY_GROUP);
@@ -333,7 +333,7 @@ namespace SimCore
          // DEAD RECKONING - ACT COMPONENT
          if (!HasComponent(dtGame::DeadReckoningHelper::TYPE)) // not added by a subclass
          {
-            dtCore::RefPtr<dtGame::DeadReckoningHelper> deadReckoningHelper = new dtGame::DeadReckoningHelper();
+            std::shared_ptr<dtGame::DeadReckoningHelper> deadReckoningHelper = new dtGame::DeadReckoningHelper();
 
             // attempt to fix the z-fighting on treads and wheels that are
             // very close to the ground. We move the vehicle up about 3-4 inches...
@@ -346,7 +346,7 @@ namespace SimCore
          // DEAD RECKONING - PUBLISHING ACTOR COMPONENT
          if (!HasComponent(dtGame::DRPublishingActComp::TYPE)) // not added by a subclass
          {
-            dtCore::RefPtr<dtGame::DRPublishingActComp> drPublishingActComp = new dtGame::DRPublishingActComp();
+            std::shared_ptr<dtGame::DRPublishingActComp> drPublishingActComp = new dtGame::DRPublishingActComp();
             AddComponent(*drPublishingActComp);  // Add AFTER the DRhelper.
          }
       }
@@ -489,7 +489,7 @@ namespace SimCore
                SimCore::Components::MunitionsComponent* munitionsComp;
                GetGameActorProxy().GetGameManager()->GetComponentByName
                   (SimCore::Components::MunitionsComponent::DEFAULT_NAME, munitionsComp);
-               if (munitionsComp != NULL && !munitionsComp->HasRegistered(GetUniqueId()))
+               if (munitionsComp != nullptr && !munitionsComp->HasRegistered(GetUniqueId()))
                {
                   // Changed to the second parameter to false because the entity does the update itself now.
                   munitionsComp->Register(*this, false, GetMaxDamageAmount());
@@ -498,7 +498,7 @@ namespace SimCore
                   // damage to occur to really large objects - previously large buildings were too 'far' 
                   // away from teh impact even though it was a direct hit.
                   SimCore::Components::DamageHelper* helper = munitionsComp->GetHelperByEntityId(GetUniqueId());
-                  if (helper != NULL)
+                  if (helper != nullptr)
                   {
                      osg::Vec3 dim = drHelper->GetModelDimensions();
                      if (!dtUtil::IsFiniteVec(dim) || dim.length2() == 0)
@@ -579,7 +579,7 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////
       dtGame::DRPublishingActComp* BaseEntity::GetDRPublishingActComp()
       {
-         dtGame::DRPublishingActComp* drPubAC = NULL;
+         dtGame::DRPublishingActComp* drPubAC = nullptr;
          GetComponent(drPubAC);
          return drPubAC;
       }
@@ -587,7 +587,7 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////
       dtGame::DeadReckoningHelper& BaseEntity::GetDeadReckoningHelper()
       {
-         dtGame::DeadReckoningHelper* drAC = NULL;
+         dtGame::DeadReckoningHelper* drAC = nullptr;
          GetComponent(drAC);
          return *drAC;
       }
@@ -595,7 +595,7 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////
       const dtGame::DeadReckoningHelper& BaseEntity::GetDeadReckoningHelper() const
       {
-         const dtGame::DeadReckoningHelper* drAC = NULL;
+         const dtGame::DeadReckoningHelper* drAC = nullptr;
          GetComponent(drAC);
          return *drAC;
       }
@@ -643,8 +643,8 @@ namespace SimCore
          float lastDotProd = -1.0f;
          osg::Vec3 trajectoryNormal( facingDirection );
          trajectoryNormal.normalize();
-         osg::Group* curNode = NULL;
-         osg::Group* bestNode = NULL;
+         osg::Group* curNode = nullptr;
+         osg::Group* bestNode = nullptr;
 
          std::vector<osg::Group*> listToFill;
 
@@ -668,7 +668,7 @@ namespace SimCore
                curDotProd = weaponDirection * trajectoryNormal;
             }
 
-            if ( bestNode == NULL || curDotProd > lastDotProd )
+            if ( bestNode == nullptr || curDotProd > lastDotProd )
             {
                bestNode = curNode;
                lastDotProd = curDotProd;
@@ -686,7 +686,7 @@ namespace SimCore
          // points on the entity's model geometry.
          dtUtil::NodeCollector* nodeCollector = GetNodeCollector();
 
-         if ( nodeCollector == NULL ) { return; }
+         if ( nodeCollector == nullptr ) { return; }
 
          // most things won't have many hotspots.
          listToFill.reserve(4);
@@ -765,7 +765,7 @@ namespace SimCore
             Components::ParticleInfoAttributeFlags attrs = {true,true};
             RegisterParticleSystem(*mFlamesSystem,&attrs);
 
-            if (mFireLightID == 0 && GetGameActorProxy().GetGameManager() != NULL)
+            if (mFireLightID == 0 && GetGameActorProxy().GetGameManager() != nullptr)
             {
                // HACK: Add lights with copied code
                SimCore::Components::RenderingSupportComponent* renderComp;
@@ -773,7 +773,7 @@ namespace SimCore
                   SimCore::Components::RenderingSupportComponent::DEFAULT_NAME,
                   renderComp);
 
-               if (renderComp != NULL)
+               if (renderComp != nullptr)
                {
                   SimCore::Components::RenderingSupportComponent::DynamicLight* dl =
                      renderComp->AddDynamicLightByPrototypeName("Light-Entity-Flames");
@@ -789,17 +789,17 @@ namespace SimCore
             {
                UnregisterParticleSystem(*mFlamesSystem);
                RemoveChild(mFlamesSystem.get());
-               mFlamesSystem = NULL;
+               mFlamesSystem = nullptr;
             }
-            if (mFireLightID != 0 && GetGameActorProxy().GetGameManager() != NULL)
+            if (mFireLightID != 0 && GetGameActorProxy().GetGameManager() != nullptr)
             {
-               // HACK: Remove the fire light since a NULL target does not remove it.
+               // HACK: Remove the fire light since a nullptr target does not remove it.
                SimCore::Components::RenderingSupportComponent* renderComp;
                GetGameActorProxy().GetGameManager()->GetComponentByName(
                   SimCore::Components::RenderingSupportComponent::DEFAULT_NAME,
                   renderComp);
 
-               if (renderComp != NULL)
+               if (renderComp != nullptr)
                {
                   renderComp->RemoveDynamicLight(mFireLightID);
                }
@@ -835,7 +835,7 @@ namespace SimCore
             {
                UnregisterParticleSystem(*mSmokePlumesSystem);
                RemoveChild(mSmokePlumesSystem.get());
-               mSmokePlumesSystem = NULL;
+               mSmokePlumesSystem = nullptr;
             }
          }
          mSmokePlumePresent = enable;
@@ -966,10 +966,10 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////
       void BaseEntity::CauseFullUpdate()
       {
-         dtGame::DRPublishingActComp* drPubAC = NULL;
+         dtGame::DRPublishingActComp* drPubAC = nullptr;
          GetComponent(drPubAC);
 
-         if (!IsRemote() && drPubAC != NULL && GetGameActorProxy().IsInGM())
+         if (!IsRemote() && drPubAC != nullptr && GetGameActorProxy().IsInGM())
          {
             drPubAC->ForceFullUpdateAtNextOpportunity();
          }

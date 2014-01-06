@@ -84,7 +84,7 @@ namespace SimCore
       {
          IGActor::AddedToScene(scene);
 
-         if (scene != NULL)
+         if (scene != nullptr)
          {
             //Actually load the file, even if it's empty string so that if someone were to
             //load a mesh, remove it from the scene, then try to clear the mesh, this actor will still
@@ -101,7 +101,7 @@ namespace SimCore
       void OpenFlightToIVETerrainActor::LoadTerrain()
       {
          //Don't actually load the file unless
-         if (GetSceneParent() != NULL)
+         if (GetSceneParent() != nullptr)
          {
             //We should always clear the geometry.  If LoadFile fails, we should have no geometry.
             if (GetMatrixNode()->getNumChildren() != 0)
@@ -217,7 +217,7 @@ namespace SimCore
       {
          const std::string TERRAIN_GROUP_NAME = "LM_Terrain_Properties";
          BaseClass::BuildPropertyMap();
-         OpenFlightToIVETerrainActor* ta = NULL;
+         OpenFlightToIVETerrainActor* ta = nullptr;
          GetActor(ta);
 
          AddProperty(new dtDAL::FloatActorProperty("mPaging_Min_X", "mPaging_Min_X",

@@ -148,9 +148,9 @@ namespace StealthGM
          void HandleHelpPressed();
          StealthHUD* GetHUDComponent();
 
-         dtCore::RefPtr<SimCore::StealthMotionModel> mStealthMM;
+         std::shared_ptr<SimCore::StealthMotionModel> mStealthMM;
 
-         dtCore::RefPtr<StealthHUD>    mHUDComponent;
+         std::shared_ptr<StealthHUD>    mHUDComponent;
          dtCore::UniqueId              mCurrentActorId;
          unsigned int                  mCycleIndex;
 
@@ -164,9 +164,9 @@ namespace StealthGM
          int mTicksToLogStateChange;
          int mTicksToRestartPlayback;
          const dtGame::LogStateEnumeration* mTargetLogState;
-         dtCore::RefPtr<dtGame::LogController> mLogController;
+         std::shared_ptr<dtGame::LogController> mLogController;
 
-         dtCore::RefPtr<dtGame::MachineInfo> mMachineInfo;
+         std::shared_ptr<dtGame::MachineInfo> mMachineInfo;
 
          // JSAF vars needed for joining and leaving a federation
          std::string mExecutionName;
@@ -174,9 +174,9 @@ namespace StealthGM
          std::string mFederateName;
          std::string mRidFile;
          std::string mRtiImplementation;
-         dtCore::RefPtr<dtHLAGM::HLAComponent> mHLA;
+         std::shared_ptr<dtHLAGM::HLAComponent> mHLA;
 
-         std::map<SimCore::MessageType*, dtCore::RefPtr<SimCore::Tools::Tool> > mToolList;
+         std::map<SimCore::MessageType*, std::shared_ptr<SimCore::Tools::Tool> > mToolList;
          bool mFirstPersonAttachMode;
          bool mHasUI;
          bool mCollideWithGround;
@@ -184,7 +184,7 @@ namespace StealthGM
          float mCountDownToPeriodicProcessing;
 
          // Ensures stealth actor persists between map changes.
-         dtCore::RefPtr<SimCore::Actors::StealthActorProxy> mStealthActorProxy;
+         std::shared_ptr<SimCore::Actors::StealthActorProxy> mStealthActorProxy;
    };
 }
 #endif

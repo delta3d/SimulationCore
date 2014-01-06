@@ -57,7 +57,7 @@
 #include <CEGUI.h>
 
 
-using dtCore::RefPtr;
+using std::shared_ptr;
 
 class ToolTests : public CPPUNIT_NS::TestFixture
 {
@@ -94,16 +94,16 @@ public:
 
 private:
 
-   RefPtr<dtGame::GameManager> mGM;
+   std::shared_ptr<dtGame::GameManager> mGM;
 #if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
-   RefPtr<dtGUI::CEUIDrawable> mGUI;
+   std::shared_ptr<dtGUI::CEUIDrawable> mGUI;
 #else
-   RefPtr<dtGUI::GUI> mGUI;
+   std::shared_ptr<dtGUI::GUI> mGUI;
 #endif
    // The constructor call to the GUI member assumes that an
    // application has been instantiated.
-   RefPtr<dtABC::Application> mApp;
-   RefPtr<SimCore::Actors::PlayerActor> mPlayerActor;
+   std::shared_ptr<dtABC::Application> mApp;
+   std::shared_ptr<SimCore::Actors::PlayerActor> mPlayerActor;
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(ToolTests);
@@ -135,8 +135,8 @@ void ToolTests::setUp()
    try
    {
       const dtCore::ActorType *type = mGM->FindActorType("Player Actor", "Player Actor");
-      CPPUNIT_ASSERT(type != NULL);
-      RefPtr<dtCore::ActorProxy> proxy = mGM->CreateActor(*type);
+      CPPUNIT_ASSERT(type != nullptr);
+      std::shared_ptr<dtCore::ActorProxy> proxy = mGM->CreateActor(*type);
       CPPUNIT_ASSERT(proxy.valid());
       mPlayerActor = dynamic_cast<SimCore::Actors::PlayerActor*>(proxy->GetDrawable());
       CPPUNIT_ASSERT(mPlayerActor.valid());
@@ -156,24 +156,24 @@ void ToolTests::tearDown()
       mGM->DeleteAllActors(true);
    }
 
-   mGM = NULL;
-   mPlayerActor = NULL;
+   mGM = nullptr;
+   mPlayerActor = nullptr;
 
 #if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
    if (mGUI.valid())
       mGUI->Emancipate();
 #endif
 
-   mGUI = NULL;
-   mApp = NULL;
+   mGUI = nullptr;
+   mApp = nullptr;
 }
 
 void ToolTests::TestBinoculars()
 {
-   RefPtr<SimCore::Tools::Binoculars> binos;
+   std::shared_ptr<SimCore::Tools::Binoculars> binos;
    try
    {
-      binos = new SimCore::Tools::Binoculars(*mApp->GetCamera(), NULL);
+      binos = new SimCore::Tools::Binoculars(*mApp->GetCamera(), nullptr);
       binos->SetPlayerActor(mPlayerActor.get());
    }
    catch(const CEGUI::Exception &e)
@@ -196,10 +196,10 @@ void ToolTests::TestBinoculars()
 
 void ToolTests::TestLRF()
 {
-   RefPtr<SimCore::Tools::LaserRangeFinder> lrf;
+   std::shared_ptr<SimCore::Tools::LaserRangeFinder> lrf;
    try
    {
-      lrf = new SimCore::Tools::LaserRangeFinder(*mApp->GetCamera(), NULL);
+      lrf = new SimCore::Tools::LaserRangeFinder(*mApp->GetCamera(), nullptr);
       lrf->SetPlayerActor(mPlayerActor.get());
    }
    catch(CEGUI::Exception &e)
@@ -219,10 +219,10 @@ void ToolTests::TestLRF()
 
 void ToolTests::TestCompass()
 {
-   RefPtr<SimCore::Tools::Compass> compass;
+   std::shared_ptr<SimCore::Tools::Compass> compass;
    try
    {
-      compass = new SimCore::Tools::Compass(NULL, *dtABC::Application::GetInstance(0)->GetCamera(), 0.0f);
+      compass = new SimCore::Tools::Compass(nullptr, *dtABC::Application::GetInstance(0)->GetCamera(), 0.0f);
       compass->SetPlayerActor(mPlayerActor.get());
    }
    catch(CEGUI::Exception &e)
@@ -239,10 +239,10 @@ void ToolTests::TestCompass()
 
 void ToolTests::TestGPS()
 {
-   RefPtr<SimCore::Tools::GPS> gps;
+   std::shared_ptr<SimCore::Tools::GPS> gps;
    try
    {
-      gps = new SimCore::Tools::GPS(NULL);
+      gps = new SimCore::Tools::GPS(nullptr);
       gps->SetPlayerActor(mPlayerActor.get());
    }
    catch(CEGUI::Exception &e)
@@ -260,8 +260,8 @@ void ToolTests::TestGPS()
 
 void ToolTests::TestPlayerProperty()
 {
-   RefPtr<SimCore::Tools::Binoculars> binos = new SimCore::Tools::Binoculars(*mApp->GetCamera(), NULL);
-   CPPUNIT_ASSERT(binos->GetPlayerActor() == NULL);
+   std::shared_ptr<SimCore::Tools::Binoculars> binos = new SimCore::Tools::Binoculars(*mApp->GetCamera(), nullptr);
+   CPPUNIT_ASSERT(binos->GetPlayerActor() == nullptr);
    binos->SetPlayerActor(mPlayerActor.get());
    CPPUNIT_ASSERT(binos->GetPlayerActor() == mPlayerActor.get());
 }
@@ -294,9 +294,9 @@ void ToolTests::TestEnableToolProperty()
 
    SimCore::Actors::PlayerActorProxy &pap = static_cast<SimCore::Actors::PlayerActorProxy&>(mPlayerActor->GetGameActorProxy());
    dtCore::ActorProperty *ap = pap.GetProperty("Enabled Tool");
-   CPPUNIT_ASSERT_MESSAGE("The Enabled Tool property should not be NULL", ap != NULL);
+   CPPUNIT_ASSERT_MESSAGE("The Enabled Tool property should not be nullptr", ap != nullptr);
    dtCore::AbstractEnumActorProperty *aep = dynamic_cast<dtCore::AbstractEnumActorProperty*>(ap);
-   CPPUNIT_ASSERT(aep != NULL);
+   CPPUNIT_ASSERT(aep != nullptr);
    aep->SetEnumValue(SimCore::MessageType::GPS);
    CPPUNIT_ASSERT_MESSAGE("GetEnumValue should return GPS", aep->GetEnumValue() == SimCore::MessageType::GPS);
    CPPUNIT_ASSERT_MESSAGE("The player should have the correct tool enabled", mPlayerActor->GetEnabledTool() == SimCore::MessageType::GPS);
@@ -307,6 +307,6 @@ void ToolTests::TestEnableToolProperty()
    CPPUNIT_ASSERT_MESSAGE("Trying to set an invalid tool should not have worked", mPlayerActor->GetEnabledTool() == SimCore::MessageType::NO_TOOL);
    mPlayerActor->AddTool(*binos, const_cast<SimCore::MessageType&>(SimCore::MessageType::STEALTH_ACTOR_FOV));
    SimCore::Tools::Tool *tool = mPlayerActor->GetTool(const_cast<SimCore::MessageType&>(SimCore::MessageType::STEALTH_ACTOR_FOV));
-   CPPUNIT_ASSERT_MESSAGE("The invalid tool should be NULL", tool == NULL);
+   CPPUNIT_ASSERT_MESSAGE("The invalid tool should be nullptr", tool == nullptr);
    */
 }

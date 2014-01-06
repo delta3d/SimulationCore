@@ -29,7 +29,7 @@ namespace NetDemo
 {
 
    /////////////////////////////////////////////////////////////////////////////
-   dtCore::RefPtr<dtDAL::ObjectType> NetDemoWaypointTypes::CHECKPOINT(new dtDAL::ObjectType("Checkpoint", "NetDemoWaypointTypes"));
+   std::shared_ptr<dtDAL::ObjectType> NetDemoWaypointTypes::CHECKPOINT(new dtDAL::ObjectType("Checkpoint", "NetDemoWaypointTypes"));
 
 
    /////////////////////////////////////////////////////////////////////////////

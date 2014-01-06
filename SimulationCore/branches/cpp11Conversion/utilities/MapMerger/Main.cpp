@@ -138,7 +138,7 @@ void SyncProperties(const dtDAL::ActorProxy& from, dtDAL::ActorProxy& to, std::s
       if (ignorePropsSet.find(curProp.GetName()) == ignorePropsSet.end())
       {
          dtDAL::ActorProperty* toProp = to.GetProperty(curProp.GetName());
-         if (toProp == NULL)
+         if (toProp == nullptr)
          {
             std::cerr << "Proxies with the same Id, don't have the same properties??" << std::endl
                << "   Actor Id: \"" << from.GetId().ToString() << std::endl 
@@ -176,16 +176,16 @@ void SyncProperties(const dtDAL::ActorProxy& from, dtDAL::ActorProxy& to, std::s
 /////////////////////////////////////////////////////////////////////
 void MergeProxies(dtDAL::Map& mapFrom, dtDAL::Map& mapTo, std::set<std::string> ignorePropsSet)
 {
-   std::vector<dtCore::RefPtr<dtDAL::ActorProxy> > proxiesFrom;
+   std::vector<std::shared_ptr<dtDAL::ActorProxy> > proxiesFrom;
    mapFrom.GetAllProxies(proxiesFrom);
-   std::vector<dtCore::RefPtr<dtDAL::ActorProxy> >::iterator i, iend;
+   std::vector<std::shared_ptr<dtDAL::ActorProxy> >::iterator i, iend;
    i = proxiesFrom.begin();
    iend = proxiesFrom.end();
    for (; i != iend; ++i)
    {
       dtDAL::ActorProxy& mapFromProxyCurrent = **i;
       dtDAL::ActorProxy* foundProxy = mapTo.GetProxyById(mapFromProxyCurrent.GetId());
-      if (foundProxy != NULL)
+      if (foundProxy != nullptr)
       {
          SyncProperties(mapFromProxyCurrent, *foundProxy, ignorePropsSet);
       }
@@ -211,7 +211,7 @@ void MergeEvents(dtDAL::Map& mapFrom, dtDAL::Map& mapTo)
    {
       dtDAL::GameEvent* curEvent =  *i;
       dtDAL::GameEvent* foundEvent = mapToEventMan.FindEvent(curEvent->GetUniqueId());
-      if (foundEvent != NULL)
+      if (foundEvent != nullptr)
       {
          if (foundEvent->GetDescription() != curEvent->GetDescription() && 
             foundEvent->GetName() != curEvent->GetName())

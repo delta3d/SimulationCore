@@ -26,7 +26,7 @@
 #include <map>
 #include <string>
 
-#include <osg/Referenced>
+#include <dtUtil/refcountedbase.h>
 #include <osg/ref_ptr>
 
 #include <osgEphemeris/Export.h>
@@ -38,7 +38,7 @@ namespace osgEphemeris {
    \brief A callback pure virtual super class for updating EphemerisData at run-time.
    */
 
-class OSGEPHEMERIS_EXPORT EphemerisUpdateCallback : public virtual osg::Referenced
+class OSGEPHEMERIS_EXPORT EphemerisUpdateCallback : public virtual std::enable_shared_from_this
 {
     public:
         /** Default constructor.  

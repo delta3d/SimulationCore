@@ -61,7 +61,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void ConversationComponent::ClearData()
       {
-         mCurrentConversation = NULL;
+         mCurrentConversation = nullptr;
          mConversations.clear();
       }
 
@@ -83,7 +83,7 @@ namespace SimCore
          if(!mCurrentConversation.valid() && !mConversations.empty())
          {
             mCurrentConversation = (*mConversations.begin()).second.get();
-            LOG_ERROR("Restarting to first conversation because the current conversation was NULL");
+            LOG_ERROR("Restarting to first conversation because the current conversation was nullptr");
          }
 
          return mCurrentConversation.get();
@@ -124,7 +124,7 @@ namespace SimCore
             //in which case we need to increment our current conversations game event
             //NOTE: if we do not do this it will be a problem if we disable our current interaction between
             //  the conversation becoming current and the user opening the phone ui         
-            if(mCurrentConversation.valid() && mCurrentConversation->GetCurrentInteraction() != NULL)
+            if(mCurrentConversation.valid() && mCurrentConversation->GetCurrentInteraction() != nullptr)
             {
                if(!mCurrentConversation->GetCurrentInteraction()->GetEnable())
                {
@@ -134,7 +134,7 @@ namespace SimCore
             }
 
             //if we changed our interaction send a message
-            if(interactionChanged && mCurrentConversation.valid() && mCurrentConversation->GetCurrentInteraction() != NULL)
+            if(interactionChanged && mCurrentConversation.valid() && mCurrentConversation->GetCurrentInteraction() != nullptr)
             {
                SendInteractionChangedMessage(mCurrentConversation->GetCurrentInteraction());
             }
@@ -147,7 +147,7 @@ namespace SimCore
       {
          bool success = false;
 
-         if(r != NULL && mCurrentConversation.valid() && mCurrentConversation->GetCurrentInteraction() != NULL)
+         if(r != nullptr && mCurrentConversation.valid() && mCurrentConversation->GetCurrentInteraction() != nullptr)
          {
             if(mCurrentConversation->GetCurrentInteraction()->HasResponse(*r))
             {
@@ -166,9 +166,9 @@ namespace SimCore
                }
 
                //we might need to return bool here if the interaction changed
-               //for now we are returning either a new interaction or NULL
+               //for now we are returning either a new interaction or nullptr
                Interaction* i = mCurrentConversation->HandleResponse(r);
-               if(i != NULL)
+               if(i != nullptr)
                {
                   SendInteractionChangedMessage(i);
                }
@@ -186,12 +186,12 @@ namespace SimCore
       void ConversationComponent::SendInteractionChangedMessage(const Interaction* i)
       {
          dtGame::GameManager& mgr = *GetGameManager();
-         dtCore::RefPtr<dtGame::Message> msg = 
+         std::shared_ptr<dtGame::Message> msg = 
             mgr.GetMessageFactory().CreateMessage(MessageType::INTERACTION_CHANGED);
 
          InteractionChangedMessage& gem = static_cast<InteractionChangedMessage&>(*msg);
          
-         //in the context that this is called above we do not need to NULL check mCurrentConversation
+         //in the context that this is called above we do not need to nullptr check mCurrentConversation
          gem.SetConversationName(mCurrentConversation->GetName());
          gem.SetInteractionText(i->GetInteractionText());
          
@@ -230,7 +230,7 @@ namespace SimCore
       void ConversationComponent::SendConversationResponseMessage(const Response* r )
       {
          dtGame::GameManager& mgr = *GetGameManager();
-         dtCore::RefPtr<dtGame::Message> msg = 
+         std::shared_ptr<dtGame::Message> msg = 
             mgr.GetMessageFactory().CreateMessage(MessageType::CONVERSATION_RESPONSE);
 
          ConversationResponseMessage& gem = static_cast<ConversationResponseMessage&>(*msg);
@@ -244,7 +244,7 @@ namespace SimCore
       void ConversationComponent::SendGameEvent(const dtDAL::GameEvent* pEvent )
       {
          dtGame::GameManager& mgr = *GetGameManager();
-         dtCore::RefPtr<dtGame::Message> msg = 
+         std::shared_ptr<dtGame::Message> msg = 
             mgr.GetMessageFactory().CreateMessage(dtGame::MessageType::INFO_GAME_EVENT);
 
          dtGame::GameEventMessage& gem = static_cast<dtGame::GameEventMessage&>(*msg);
@@ -257,7 +257,7 @@ namespace SimCore
       void ConversationComponent::LoadConversationConfig( const std::string& filename )
       {
          //before we load the conversations seed the random number generator
-         srand(time(NULL));
+         srand(time(nullptr));
 
          //attempt to load conversation xml
          std::string fileWithPath = dtDAL::Project::GetInstance().GetContext() + dtUtil::FileUtils::PATH_SEPARATOR + "Conversations" + dtUtil::FileUtils::PATH_SEPARATOR + filename;
@@ -340,7 +340,7 @@ namespace SimCore
          {
             if( typeiter != results.end() )
             {
-               dtCore::RefPtr<Conversation> conv = new Conversation(Conversation::
+               std::shared_ptr<Conversation> conv = new Conversation(Conversation::
                   RegisterConversationFunctor(mManager, &ConversationComponent::RegisterConversation));
                
                if(!conv->LoadConversation((*typeiter).second))

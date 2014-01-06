@@ -51,7 +51,7 @@ namespace SimCore
          //std::cout << "Resetting and deleting all actors:\n";
 
          // Delete the objects sharing the found index
-         dtCore::RefPtr<dtDAL::ActorProxy> curProxy;
+         std::shared_ptr<dtDAL::ActorProxy> curProxy;
 
          std::map<std::string, dtCore::UniqueId>::iterator i = mTimerToIDMap.begin();
          for( ; i != mTimerToIDMap.end(); ++i )
@@ -69,7 +69,7 @@ namespace SimCore
          std::map<dtCore::UniqueId, std::string>::iterator i2 = mIDToTimerMap.begin();
          for( ; i2 != mIDToTimerMap.end(); ++i2 )
          {
-            GetGameManager()->ClearTimer( i2->second, NULL );
+            GetGameManager()->ClearTimer( i2->second, nullptr );
          }
 
          // Clear the lists
@@ -129,7 +129,7 @@ namespace SimCore
 
             // Create the associated timer
             const std::string &timerName = CreateTimerNameFromId( id );
-            GetGameManager()->SetTimer( timerName, NULL, simWaitTime );
+            GetGameManager()->SetTimer( timerName, nullptr, simWaitTime );
 
             // Register the ID and timer name
             bool ok = mTimerToIDMap.insert(std::make_pair(timerName, id)).second;
@@ -186,7 +186,7 @@ namespace SimCore
          else if( message.GetMessageType() == dtGame::MessageType::INFO_TIMER_ELAPSED )
          {
             // Check that an ID is not in the message;
-            // NULL proxys are registered with the timers,
+            // nullptr proxys are registered with the timers,
             // thus the elapsed timer will not be able to access
             // the associated ID from within the GameManager.
             if( message.GetAboutActorId().ToString().empty() )
@@ -197,7 +197,7 @@ namespace SimCore
                const std::string &timerName = timeElapseMessage.GetTimerName();
 
                // Delete the objects sharing the found index
-               dtCore::RefPtr<dtDAL::ActorProxy> proxy = NULL;
+               std::shared_ptr<dtDAL::ActorProxy> proxy = nullptr;
                std::map<std::string, dtCore::UniqueId>::iterator i = mTimerToIDMap.find(timerName);
                if( i != mTimerToIDMap.end() )
                {

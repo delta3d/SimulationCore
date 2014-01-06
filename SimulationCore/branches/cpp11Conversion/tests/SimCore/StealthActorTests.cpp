@@ -62,7 +62,7 @@
    #define SLEEP(milliseconds) usleep(((milliseconds) * 1000))
 #endif
 
-using dtCore::RefPtr;
+using std::shared_ptr;
 
 class StealthActorTests : public CPPUNIT_NS::TestFixture
 {
@@ -97,15 +97,15 @@ class StealthActorTests : public CPPUNIT_NS::TestFixture
 
       void tearDown()
       {
-         mStealthProxy = NULL;
-         mStealthActor = NULL;
-         mDeadReckoningComponent = NULL;
-         mTestComponent = NULL;
-         mApp = NULL;
+         mStealthProxy = nullptr;
+         mStealthActor = nullptr;
+         mDeadReckoningComponent = nullptr;
+         mTestComponent = nullptr;
+         mApp = nullptr;
          if (mGM.valid())
          {
             mGM->DeleteAllActors(true);
-            mGM = NULL;
+            mGM = nullptr;
          }
          dtCore::System::GetInstance().Stop();
       }
@@ -121,10 +121,10 @@ class StealthActorTests : public CPPUNIT_NS::TestFixture
             !mStealthActor->GetAttachAsThirdPerson());
 
          dtGame::Invokable *invoke = mStealthActor->GetGameActorProxy().GetInvokable("AttachToActor");
-         CPPUNIT_ASSERT_MESSAGE("The AttachToActor invokable should not be NULL", invoke != NULL);
+         CPPUNIT_ASSERT_MESSAGE("The AttachToActor invokable should not be nullptr", invoke != nullptr);
 
          invoke = mStealthActor->GetGameActorProxy().GetInvokable("WarpToPosition");
-         CPPUNIT_ASSERT_MESSAGE("The WarpToPosition invokable should not be NULL", invoke != NULL);
+         CPPUNIT_ASSERT_MESSAGE("The WarpToPosition invokable should not be nullptr", invoke != nullptr);
 
       }
 
@@ -133,12 +133,12 @@ class StealthActorTests : public CPPUNIT_NS::TestFixture
 
    private:
 
-      RefPtr<dtGame::GameManager> mGM;
-      RefPtr<dtGame::DeadReckoningComponent> mDeadReckoningComponent;
-      RefPtr<dtGame::TestComponent> mTestComponent;
-      RefPtr<SimCore::Actors::StealthActorProxy> mStealthProxy;
-      RefPtr<SimCore::Actors::StealthActor> mStealthActor;
-      RefPtr<dtABC::Application> mApp;
+      std::shared_ptr<dtGame::GameManager> mGM;
+      std::shared_ptr<dtGame::DeadReckoningComponent> mDeadReckoningComponent;
+      std::shared_ptr<dtGame::TestComponent> mTestComponent;
+      std::shared_ptr<SimCore::Actors::StealthActorProxy> mStealthProxy;
+      std::shared_ptr<SimCore::Actors::StealthActor> mStealthActor;
+      std::shared_ptr<dtABC::Application> mApp;
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(StealthActorTests);

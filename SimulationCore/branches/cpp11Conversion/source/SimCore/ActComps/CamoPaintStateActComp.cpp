@@ -141,7 +141,7 @@ namespace SimCore
          mCamoId = camoId;
 
          const SimCore::Actors::CamoParams* camo = GetCamoParameters(camoId);
-         if(camo != NULL)
+         if(camo != nullptr)
          {
             SetPaintColor1(camo->GetColor1());
             SetPaintColor2(camo->GetColor2());
@@ -165,7 +165,7 @@ namespace SimCore
          {
             // Determine some node to get the dimensions from.
             // If the hider node is not specified, get the parent.
-            osg::Node* node = NULL;
+            osg::Node* node = nullptr;
             if(mHiderNode.valid())
             {
                node = mHiderNode.get();
@@ -180,7 +180,7 @@ namespace SimCore
             }
 
             // Set the dimensions of the conceal mesh.
-            if(node != NULL)
+            if(node != nullptr)
             {
                osg::ComputeBoundsVisitor visitor;
                visitor.apply(*node);
@@ -309,25 +309,25 @@ namespace SimCore
       {
          using namespace SimCore::Actors;
 
-         const CamoParams* camo = NULL;
+         const CamoParams* camo = nullptr;
 
-         dtGame::GameActor* actor = NULL;
+         dtGame::GameActor* actor = nullptr;
          GetOwner(actor);
-         if(actor != NULL)
+         if(actor != nullptr)
          {
             dtGame::GameManager* gm = actor->GetGameActorProxy().GetGameManager();
-            if(gm != NULL)
+            if(gm != nullptr)
             {
-               dtDAL::ActorProxy* proxy = NULL;
+               dtDAL::ActorProxy* proxy = nullptr;
                gm->FindActorByType(*EntityActorRegistry::CAMO_CONFIG_ACTOR_TYPE, proxy);
 
-               CamoConfigActor* actor = NULL;
-               if(proxy != NULL)
+               CamoConfigActor* actor = nullptr;
+               if(proxy != nullptr)
                {
                   proxy->GetActor(actor);
                }
 
-               if(actor != NULL)
+               if(actor != nullptr)
                {
                   camo = actor->GetCamoParamsByCamoId(camoId);
                }
@@ -360,12 +360,12 @@ namespace SimCore
                if(shaderGroupName.empty())
                {
                   // Find the shader group name applied to the owner.
-                  dtDAL::ActorProperty* shaderProp = NULL;
+                  dtDAL::ActorProperty* shaderProp = nullptr;
                   dtGame::GameActor* gameActor = dynamic_cast<dtGame::GameActor*>(GetOwner());
-                  if(gameActor != NULL)
+                  if(gameActor != nullptr)
                   {
                      shaderProp = gameActor->GetGameActorProxy().GetProperty("ShaderGroup");
-                     if(shaderProp != NULL)
+                     if(shaderProp != nullptr)
                      {
                         shaderGroupName = (shaderProp->ToString());
                      }
@@ -375,8 +375,8 @@ namespace SimCore
                // Find the shader prototype that the owner used.
                ShaderManager& sm = ShaderManager::GetInstance();
                ShaderGroup* shaderGroup = sm.FindShaderGroupPrototype(shaderGroupName);
-               ShaderProgram* shader = shaderGroup == NULL ? NULL : shaderGroup->GetDefaultShader();
-               if(shader != NULL)
+               ShaderProgram* shader = shaderGroup == nullptr ? nullptr : shaderGroup->GetDefaultShader();
+               if(shader != nullptr)
                {
                   // Assign a copy of the shader.
                   sm.AssignShaderFromPrototype(*shader, node);

@@ -31,7 +31,7 @@
 #include <SimCore/Export.h>
 #include <osg/MatrixTransform>
 #include <osg/Vec2>
-#include <dtCore/observerptr.h>
+#include <dtUtil/refcountedbase.h>
 #include <SimCore/ActComps/BodyPaintStateActComp.h>
 
 
@@ -120,10 +120,10 @@ namespace SimCore
          private:
             bool mEnteredWorld;
             osg::Vec4 mOriginalConcealMeshDims; // Captures originally set values before entering the sim world.
-            dtCore::RefPtr<osg::Node> mConcealMeshNode;
-            dtCore::RefPtr<osg::MatrixTransform> mOffsetNode;
-            dtCore::ObserverPtr<osg::Node> mHiderNode;
-            dtCore::ObserverPtr<osg::Group> mParentNode;
+            osg::ref_ptr<osg::Node> mConcealMeshNode;
+            osg::ref_ptr<osg::MatrixTransform> mOffsetNode;
+            osg::observer_ptr<osg::Node> mHiderNode;
+            osg::observer_ptr<osg::Group> mParentNode;
       };
 
    }

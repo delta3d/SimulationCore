@@ -33,7 +33,7 @@
 #include <QtGui/QMainWindow>
 #include <QtGui/QCheckBox>
 #include <QtCore/QTimer>
-#include <dtCore/refptr.h>
+#include <dtUtil/refcountedbase.h>
 #include <dtCore/sigslot.h>
 #include <dtGame/gamemanager.h>
 #include <dtGame/gameapplication.h>
@@ -494,10 +494,10 @@ namespace StealthQt
          QTimer mHLAErrorTimer;
 
          dtGame::GameApplicationLoader* mGameLoader;
-         dtCore::RefPtr<dtGame::GameManager> mGM;
+         std::shared_ptr<dtGame::GameManager> mGM;
          bool mIsConnectedToANetwork;
 
-         std::vector<dtCore::ObserverPtr<dtGame::GameActorProxy> > mFoundActors;
+         std::vector<std::weak_ptr<dtGame::GameActorProxy> > mFoundActors;
 
          QDoubleValidator* mLODScaleValidator;
          QDoubleValidator* mLatValidator;

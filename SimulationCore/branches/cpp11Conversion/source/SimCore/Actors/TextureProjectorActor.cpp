@@ -63,7 +63,7 @@ namespace SimCore
       /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       void TextureProjectorActor::OnEnteredWorld()
       {
-         if(mEntityToAttachTo == NULL)
+         if(mEntityToAttachTo == nullptr)
          {
             LOG_ERROR("mEntityToAttachTo was null when TextureProjectorActor was\
                       trying to OnEnteredWorld(), Bailing out");
@@ -74,7 +74,7 @@ namespace SimCore
             dynamic_cast<Components::TextureProjectorComponent*>(
                      GetGameActorProxy().GetGameManager()->GetComponentByName(
                               Components::TextureProjectorComponent::DEFAULT_NAME));
-         if(tpComponent == NULL)
+         if(tpComponent == nullptr)
          {
             LOG_ERROR("Couldnt find texture projector component bailing out,\
                       make sure it was initialized first!");
@@ -82,7 +82,7 @@ namespace SimCore
          }
 
          osg::ref_ptr<osg::Image> spotImage  = osgDB::readImageFile( mImageProjectorFile );
-         if(spotImage == NULL)
+         if(spotImage == nullptr)
          {
             LOG_ERROR("Couldnt find image file for the projectors image file.\
                       Bailing out of function OnEnteredWorld()!");

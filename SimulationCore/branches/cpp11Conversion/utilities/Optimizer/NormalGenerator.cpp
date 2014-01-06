@@ -9,13 +9,13 @@ namespace LevelCompiler
 {
 
 NormalGenerator::NormalGenerator()
-:    osg::Referenced(),
+:    std::enable_shared_from_this(),
     N_(new osg::Vec3Array)
 {
 }
 
 NormalGenerator::NormalGenerator(const NormalGenerator &copy, const osg::CopyOp &copyop)
-:    osg::Referenced(copy),
+:    std::enable_shared_from_this(copy),
     N_(static_cast<osg::Vec3Array *>(copyop(copy.N_.get())))
 {
 }
@@ -25,7 +25,7 @@ bool NormalGenerator::ValidateNormals(osg::Geometry* geo)
    const osg::Array* vx = geo->getVertexArray();
    const osg::Array* nx = geo->getNormalArray();
 
-   if(vx != NULL && nx != NULL)
+   if(vx != nullptr && nx != nullptr)
    {
       bool validNormals = false;
       
@@ -61,7 +61,7 @@ void NormalGenerator::Generate(osg::Geometry* geo)
     if (!vx) return;
 
     unsigned int vertex_count = vx->getNumElements();
-    if (geo->getVertexIndices() == NULL) 
+    if (geo->getVertexIndices() == nullptr) 
     {
         N_->assign(vertex_count, osg::Vec3());
     }
@@ -243,7 +243,7 @@ void NormalGenerator::compute(osg::PrimitiveSet *pset, const osg::Array* vx, int
 bool NormalGenerator::verify(const osg::Array* pArray)
 {
    const osg::Vec3Array* normArray = dynamic_cast<const osg::Vec3Array*>(pArray);
-   if(normArray != NULL)
+   if(normArray != nullptr)
    {
       unsigned count = normArray->size();
       

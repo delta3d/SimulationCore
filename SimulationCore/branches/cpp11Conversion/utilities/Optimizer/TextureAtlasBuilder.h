@@ -156,7 +156,7 @@ class osgutil_export TextureAtlasBuilder
      * Free space within an atlas can be managed as a list,
      * vector, or set of Rectangles.
      */
-    class Rectangle : public osg::Referenced
+    class Rectangle : public std::enable_shared_from_this
     {
     public:
         Rectangle():
@@ -211,7 +211,7 @@ class osgutil_export TextureAtlasBuilder
                   i < end();
                   i++ )
             {
-                *i = NULL;
+                *i = nullptr;
             }
         }
 
@@ -246,7 +246,7 @@ class osgutil_export TextureAtlasBuilder
     // forward declare
     class Atlas;
 
-    class Source : public osg::Referenced
+    class Source : public std::enable_shared_from_this
     {
     public:
         Source():
@@ -281,7 +281,7 @@ class osgutil_export TextureAtlasBuilder
 
     typedef std::vector< osg::ref_ptr<Source> > SourceList;
 
-    class Atlas : public osg::Referenced
+    class Atlas : public std::enable_shared_from_this
     {
     public:
         Atlas(unsigned int width, unsigned height, unsigned margin):

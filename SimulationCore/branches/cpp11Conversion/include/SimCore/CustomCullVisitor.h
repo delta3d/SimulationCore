@@ -24,7 +24,7 @@
 #define CUSTOM_CULL_VISITOR
 
 #include <SimCore/Export.h>
-#include <dtCore/observerptr.h>
+#include <dtUtil/refcountedbase.h>
 #include <osgUtil/CullVisitor>
 #include <osg/Transform>
 #include <osg/Geode>
@@ -66,7 +66,7 @@ namespace SimCore
  
          /// this is the top level transform node of the terrain, for knowing when
          /// we are in the terrain
-         static dtCore::ObserverPtr<osg::Transform>             mTerrainNode;
+         static osg::observer_ptr<osg::Transform>             mTerrainNode;
 
          static std::vector<int>                                mFIDCodes;
          

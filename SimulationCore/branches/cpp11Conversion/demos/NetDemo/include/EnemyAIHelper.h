@@ -54,7 +54,7 @@ namespace NetDemo
 
          float GetDistance(const osg::Vec3& pos);
          void SetCurrentTarget(dtCore::Transformable& target);
-         void ChangeSteeringBehavior(dtCore::RefPtr<SteeringBehaviorType> newBehavior);
+         void ChangeSteeringBehavior(std::shared_ptr<SteeringBehaviorType> newBehavior);
 
       protected:
          EnemyAIHelper(const EnemyAIHelper&);  //not implemented by design

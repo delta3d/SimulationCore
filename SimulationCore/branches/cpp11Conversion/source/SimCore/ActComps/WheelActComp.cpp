@@ -59,7 +59,7 @@ namespace SimCore
       public:
          DOFAxle(osgSim::DOFTransform* left, osgSim::DOFTransform* right)
          {
-            if (left != NULL)
+            if (left != nullptr)
             {
                mWheelDofs[0] = left;
                mWheelDofs[1] = right;
@@ -67,10 +67,10 @@ namespace SimCore
             else
             {
                mWheelDofs[0] = right;
-               mWheelDofs[1] = NULL;
+               mWheelDofs[1] = nullptr;
             }
 
-            if (mWheelDofs[0] == NULL)
+            if (mWheelDofs[0] == nullptr)
             {
                throw dtUtil::Exception("Can't create an axle with no wheels", __FILE__, __LINE__);
             }
@@ -83,7 +83,7 @@ namespace SimCore
             unsigned result = 0;
             for (unsigned i = 0; i < 2; ++i)
             {
-               if (mWheelDofs[i] != NULL)
+               if (mWheelDofs[i] != nullptr)
                {
                   ++result;
                }
@@ -163,14 +163,14 @@ namespace SimCore
             if (whichWheel < GetNumWheels())
             {
                osg::Node* nodeToMove = mWheelDofs[whichWheel]->getParent(0);
-               if (nodeToMove == NULL)
+               if (nodeToMove == nullptr)
                {
                   LOG_ERROR("Unable to move the wheel base transform because the node doesn't have one.")
                   return;
                }
 
                osg::Matrix worldMat;
-               if (worldRelative && nodeToMove->getParent(0) != NULL)
+               if (worldRelative && nodeToMove->getParent(0) != nullptr)
                {
                   dtCore::Transformable::GetAbsoluteMatrix(nodeToMove->getParent(0), worldMat);
                }
@@ -182,7 +182,7 @@ namespace SimCore
                removeScale.Get(relMat);
 
                osgSim::DOFTransform* dof = dynamic_cast<osgSim::DOFTransform*>(nodeToMove);
-               if (dof != NULL)
+               if (dof != nullptr)
                {
                   dtCore::Transform tmp;
                   tmp.Set(relMat);
@@ -196,7 +196,7 @@ namespace SimCore
                else
                {
                   osg::MatrixTransform* matTrans = dynamic_cast<osg::MatrixTransform*>(nodeToMove);
-                  if (matTrans != NULL)
+                  if (matTrans != nullptr)
                   {
                      matTrans->setMatrix(relMat);
                   }
@@ -210,7 +210,7 @@ namespace SimCore
             if (whichWheel < GetNumWheels())
             {
                osg::Node* parentNode = mWheelDofs[whichWheel]->getParent(0);
-               if (parentNode != NULL)
+               if (parentNode != nullptr)
                {
                   if (worldRelative)
                   {
@@ -232,7 +232,7 @@ namespace SimCore
       private:
          virtual ~DOFAxle() {}
 
-         dtCore::RefPtr<osgSim::DOFTransform> mWheelDofs[2];
+         osg::ref_ptr<osgSim::DOFTransform> mWheelDofs[2];
       };
 
       IMPLEMENT_ENUM(WheelActComp::AutoUpdateModeEnum);
@@ -292,14 +292,14 @@ namespace SimCore
             FindAxles();
          }
 
-         dtGame::GameActor* actor = NULL;
+         dtGame::GameActor* actor = nullptr;
          GetOwner(actor);
 
          if (GetAutoUpdateMode() == AutoUpdateModeEnum::LOCAL_AND_REMOTE
                   || actor->IsRemote() && GetAutoUpdateMode() == AutoUpdateModeEnum::REMOTE_ONLY)
          {
             std::string tickInvokable = "Tick Remote " + GetType().Get();
-            if (actor->GetGameActorProxy().GetInvokable(tickInvokable) == NULL)
+            if (actor->GetGameActorProxy().GetInvokable(tickInvokable) == nullptr)
             {
                actor->GetGameActorProxy().AddInvokable(*new dtGame::Invokable(tickInvokable,
                   dtUtil::MakeFunctor(&WheelActComp::Update, this)));
@@ -323,20 +323,20 @@ namespace SimCore
       /////////////////////////////////////////////////////
       void WheelActComp::FindAxles(dtUtil::NodeCollector* nodeCollector)
       {
-         dtCore::RefPtr<dtUtil::NodeCollector> nodeCollectorPtr = nodeCollector;
+         std::shared_ptr<dtUtil::NodeCollector> nodeCollectorPtr = nodeCollector;
          if (!nodeCollectorPtr.valid())
          {
-            SimCore::Actors::IGActor* igActor = NULL;
+            SimCore::Actors::IGActor* igActor = nullptr;
             GetOwner(igActor);
-            if (igActor != NULL)
+            if (igActor != nullptr)
             {
                nodeCollectorPtr = igActor->GetNodeCollector();
             }
             else
             {
-               dtCore::DeltaDrawable* dd = NULL;
+               dtCore::DeltaDrawable* dd = nullptr;
                GetOwner(dd);
-               if (dd != NULL)
+               if (dd != nullptr)
                {
                   nodeCollectorPtr = new dtUtil::NodeCollector(dd->GetOSGNode(), dtUtil::NodeCollector::AllNodeTypes);
                }
@@ -362,10 +362,10 @@ namespace SimCore
                lookupString = mWheelNodePrefix + rightString + indexString;
                osgSim::DOFTransform* wheelRight = nodeCollectorPtr->GetDOFTransform(lookupString);
 
-               found = wheelLeft != NULL || wheelRight != NULL;
+               found = wheelLeft != nullptr || wheelRight != nullptr;
                if (found)
                {
-                  dtCore::RefPtr<Axle> newAxle = new DOFAxle(wheelLeft, wheelRight);
+                  std::shared_ptr<Axle> newAxle = new DOFAxle(wheelLeft, wheelRight);
                   // default only the first axle to steer.
                   newAxle->SetIsSteerable(axle == 1);
                   mAxles.push_back(newAxle);
@@ -380,26 +380,26 @@ namespace SimCore
          }
       }
 
-      DT_IMPLEMENT_ARRAY_ACCESSOR(WheelActComp, dtCore::RefPtr<Axle>, Axle, Axles, NULL)
+      DT_IMPLEMENT_ARRAY_ACCESSOR(WheelActComp, std::shared_ptr<Axle>, Axle, Axles, nullptr)
 
       /////////////////////////////////////////////////////
       void WheelActComp::Update(const dtGame::TickMessage& msg)
       {
-         dtGame::GameActor* actor = NULL;
+         dtGame::GameActor* actor = nullptr;
          GetOwner(actor);
 
-         if (actor == NULL)
+         if (actor == nullptr)
          {
             LOG_ERROR("The owner actor is not a transformable!  Can't rotate the wheels.");
             return;
          }
 
-         dtGame::DeadReckoningHelper* drHelper = NULL;
+         dtGame::DeadReckoningHelper* drHelper = nullptr;
          actor->GetComponent(drHelper);
 
          osg::Vec3 vvec;
          float curHeading = 0.0f;
-         if (drHelper != NULL)
+         if (drHelper != nullptr)
          {
             vvec = drHelper->GetCurrentInstantVelocity();
             curHeading = drHelper->GetCurrentDeadReckonedRotation()[0];

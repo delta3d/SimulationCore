@@ -70,7 +70,7 @@ namespace SimCore
    /////////////////////////////////////////////////////////////////////////////
    // PARTICLE UTILS CODE
    /////////////////////////////////////////////////////////////////////////////
-   class SIMCORE_EXPORT ParticleUtils : public osg::Referenced
+   class SIMCORE_EXPORT ParticleUtils : public std::enable_shared_from_this
    {
       public:
          ParticleUtils();
@@ -79,7 +79,7 @@ namespace SimCore
           * Access a single particle layer by index from the specified Delta3D particle system.
           * @param ps Delta3D particle system from which a particle layer is being accessed.
           * @param index Layer index.
-          * @return Particle layer; NULL if not found.
+          * @return Particle layer; nullptr if not found.
           */
          dtCore::ParticleLayer* GetLayer( dtCore::ParticleSystem& ps, unsigned index = 0 ) const;
          const dtCore::ParticleLayer* GetLayer( const dtCore::ParticleSystem& ps,
@@ -89,7 +89,7 @@ namespace SimCore
           * Access the emitter from a specified Delta3D particle system layer.
           * @param ps Delta3D particle system that contains layers.
           * @param layerName Name of the layer to be accessed.
-          * @return Emitter of a particle layer; NULL if not found.
+          * @return Emitter of a particle layer; nullptr if not found.
           */
          osgParticle::ModularEmitter* GetEmitter(
             dtCore::ParticleSystem& ps, const std::string& layerName ) const;
@@ -134,7 +134,7 @@ namespace SimCore
    /////////////////////////////////////////////////////////////////////////////
    // PARTICLE SYSTEM SETTINGS
    /////////////////////////////////////////////////////////////////////////////
-   class SIMCORE_EXPORT ParticleSystemSettings : public osg::Referenced
+   class SIMCORE_EXPORT ParticleSystemSettings : public std::enable_shared_from_this
    {
       public:
          ParticleSystemSettings();
@@ -190,8 +190,8 @@ namespace SimCore
          virtual ~InterpolatorParticleUtils();
 
       private:
-         dtCore::RefPtr<ParticleSystemSettings> mStart;
-         dtCore::RefPtr<ParticleSystemSettings> mEnd;
+         std::shared_ptr<ParticleSystemSettings> mStart;
+         std::shared_ptr<ParticleSystemSettings> mEnd;
    };
 
 
@@ -243,9 +243,9 @@ namespace SimCore
       private:
          dtCore::ParticleLayer* mLayer;
          osgParticle::Particle mDefaultParticle; // Particle as set for the current layer.
-         dtCore::RefPtr<ParticleSystemSettings> mDefaultSettings;
+         std::shared_ptr<ParticleSystemSettings> mDefaultSettings;
 
-         class SIMCORE_EXPORT InterpParams : public osg::Referenced
+         class SIMCORE_EXPORT InterpParams : public std::enable_shared_from_this
          {
             public:
                InterpParams();
@@ -263,7 +263,7 @@ namespace SimCore
          };
 
          // This is an interpolation tracker for each particle system property.
-         typedef std::map<ParticlePropertyEnum, dtCore::RefPtr<InterpParams> > PropertyInterpolateMap;
+         typedef std::map<ParticlePropertyEnum, std::shared_ptr<InterpParams> > PropertyInterpolateMap;
          PropertyInterpolateMap mInterpMap;
    };
 

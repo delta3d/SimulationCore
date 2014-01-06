@@ -54,7 +54,7 @@ namespace StealthGM
       gameManager.GetComponentByName(StealthGM::StealthInputComponent::DEFAULT_NAME, inputComponent);
 
       // Shouldn't happen, but better safe than sorry
-      if(inputComponent == NULL)
+      if(inputComponent == nullptr)
          return;
 
       SimCore::HLA::HLAConnectionComponent *hlaComp;
@@ -69,7 +69,7 @@ namespace StealthGM
 
       if(mEndPlayback)
       {
-         if(hlaComp != NULL)
+         if(hlaComp != nullptr)
             inputComponent->SetConnectionParameters(hlaComp->GetFedEx(), 
                                                     hlaComp->GetFedFile(), 
                                                     hlaComp->GetFedName());
@@ -104,7 +104,7 @@ namespace StealthGM
 
       if(mRestartPlayback)
       {
-         if(hlaComp != NULL)
+         if(hlaComp != nullptr)
             inputComponent->SetConnectionParameters(hlaComp->GetFedEx(), 
             hlaComp->GetFedFile(), 
             hlaComp->GetFedName());

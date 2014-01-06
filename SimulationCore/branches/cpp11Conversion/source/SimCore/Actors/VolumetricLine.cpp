@@ -40,7 +40,7 @@ namespace SimCore
                const std::string& shaderName, const std::string& shaderGroup )
       : dtCore::Transformable("VolumetricLine")
       {
-         dtCore::RefPtr<dtCore::ShaderProgram> shader = 
+         std::shared_ptr<dtCore::ShaderProgram> shader = 
                   dtCore::ShaderManager::GetInstance().FindShaderPrototype( shaderName, shaderGroup );
 
          if( ! shader.valid() ) { return; }
@@ -68,14 +68,14 @@ namespace SimCore
          (*mVerts)[3].set( start );
 
          // NORMALS
-         dtCore::RefPtr<osg::Vec3Array> norms = new osg::Vec3Array( 4 );
+         osg::ref_ptr<osg::Vec3Array> norms = new osg::Vec3Array( 4 );
          (*norms)[0].set( 0.0f, -1.0f, 0.0f ); // point to end
          (*norms)[1].set( 0.0f, 1.0f, 0.0f ); // point to start
          (*norms)[2].set( 0.0f, 1.0f, 0.0f ); // point to start
          (*norms)[3].set( 0.0f, -1.0f, 0.0f ); // point to end
 
          // STATES
-         dtCore::RefPtr<osg::StateSet> states = new osg::StateSet();
+         osg::ref_ptr<osg::StateSet> states = new osg::StateSet();
          states->setMode(GL_BLEND,osg::StateAttribute::ON);
          states->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
          states->setRenderingHint( osg::StateSet::TRANSPARENT_BIN );
@@ -91,7 +91,7 @@ namespace SimCore
          // Make sure the geometry knows that it is a quad
          mGeom->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::QUADS, 0, mVerts->size()));
 
-         dtCore::RefPtr<osg::Geode> geode = new osg::Geode;
+         osg::ref_ptr<osg::Geode> geode = new osg::Geode;
          geode->setStateSet( states.get() );
          geode->addDrawable( mGeom.get() );
 

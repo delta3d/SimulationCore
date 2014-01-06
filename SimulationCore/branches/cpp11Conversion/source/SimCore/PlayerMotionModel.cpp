@@ -60,7 +60,7 @@ namespace SimCore
    void PlayerMotionModel::OnMessage(MessageData *data)
    {
       if(data->message == dtCore::System::MESSAGE_POST_EVENT_TRAVERSAL &&
-         GetTarget() != NULL &&
+         GetTarget() != nullptr &&
          IsEnabled())
       {
          osg::Vec3 movement, position;
@@ -74,7 +74,7 @@ namespace SimCore
 
          // If physics, force the physics to update the player
          SimCore::Actors::HumanWithPhysicsActor* player = dynamic_cast<SimCore::Actors::HumanWithPhysicsActor*>(GetTarget());
-         if(player != NULL)
+         if(player != nullptr)
          {
             // Get the new translation
             GetTarget()->GetTransform(transform, dtCore::Transformable::ABS_CS);

@@ -28,9 +28,9 @@
 // INCLUDE DIRECTIVES
 ////////////////////////////////////////////////////////////////////////////////
 #include <SimCore/Export.h>
-#include <osg/Referenced>
+#include <dtUtil/refcountedbase.h>
 #include <dtCore/batchisector.h>
-#include <dtCore/observerptr.h>
+#include <dtUtil/refcountedbase.h>
 #include <dtUtil/refstring.h>
 #include <SimCore/Actors/VolumetricLine.h>
 
@@ -111,7 +111,7 @@ namespace SimCore
             osg::Vec3 mPosition;
             osg::Vec3 mVelocity;
             dtUtil::RefString mTracerLightName;
-            dtCore::ObserverPtr<dtGame::GameManager> mGM; // for accessing the rendering support component (safer using GM)
+            std::weak_ptr<dtGame::GameManager> mGM; // for accessing the rendering support component (safer using GM)
       };
 
 
@@ -146,7 +146,7 @@ namespace SimCore
 
          private:
             float mMaxLength;
-            dtCore::RefPtr<SimCore::Actors::VolumetricLine> mLine;
+            std::shared_ptr<SimCore::Actors::VolumetricLine> mLine;
       };
 
 
@@ -154,7 +154,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       // Tracer Effect Request Code
       //////////////////////////////////////////////////////////////////////////
-      class SIMCORE_EXPORT MunitionEffectRequest : public osg::Referenced
+      class SIMCORE_EXPORT MunitionEffectRequest : public std::enable_shared_from_this
       {
          public:
             MunitionEffectRequest( unsigned totalEffects, float cycleTime,
@@ -198,8 +198,8 @@ namespace SimCore
             osg::Vec3 mFirePoint;
             osg::Vec3 mVelocity;
             dtUtil::RefString mMunitionModelFile;
-            dtCore::RefPtr<const SimCore::Actors::MunitionEffectsInfoActor> mEffectsInfo;
-            dtCore::ObserverPtr<SimCore::Actors::BaseEntity> mOwner;
+            std::shared_ptr<const SimCore::Actors::MunitionEffectsInfoActor> mEffectsInfo;
+            std::weak_ptr<SimCore::Actors::BaseEntity> mOwner;
       };
 
 
@@ -297,7 +297,7 @@ namespace SimCore
             // If a parent node is specified, this object will attempt to attach directly
             // to the parent node rather than the owner.
             // @param parent The node of the owner's scene graph to which this effects
-            //        object should attach. If the parent node is NULL, direct attachment
+            //        object should attach. If the parent node is nullptr, direct attachment
             //        to the owner will be attempted.
             // @return TRUE if the attachment process was successful.
             bool Attach( osg::Group* parent );
@@ -339,11 +339,11 @@ namespace SimCore
             float mFlashProbability;
             float mFlashTime;
             float mTimeSinceFlash;
-            dtCore::RefPtr<dtAudio::Sound> mSound;
-            dtCore::RefPtr<dtCore::ParticleSystem> mFlash;
-            dtCore::ObserverPtr<SimCore::Actors::BaseEntity> mOwner;
+            std::shared_ptr<dtAudio::Sound> mSound;
+            std::shared_ptr<dtCore::ParticleSystem> mFlash;
+            std::weak_ptr<SimCore::Actors::BaseEntity> mOwner;
             osg::observer_ptr<osg::Group> mParentNode;
-            dtCore::ObserverPtr<dtGame::GameManager> mGM; // for accessing the rendering support component (safer using GM)
+            std::weak_ptr<dtGame::GameManager> mGM; // for accessing the rendering support component (safer using GM)
       };
 
 
@@ -351,7 +351,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       // Weapon Effect Manager Code
       //////////////////////////////////////////////////////////////////////////
-      class SIMCORE_EXPORT WeaponEffectsManager : public osg::Referenced
+      class SIMCORE_EXPORT WeaponEffectsManager : public std::enable_shared_from_this
       {
          public:
             WeaponEffectsManager();
@@ -420,7 +420,7 @@ namespace SimCore
                const SimCore::Actors::MunitionEffectsInfoActor& effectsInfo,
                MunitionEffectRequest& effectRequest );
 
-            bool AddMunitionEffectRequest( dtCore::RefPtr<MunitionEffectRequest>& effectRequest );
+            bool AddMunitionEffectRequest( std::shared_ptr<MunitionEffectRequest>& effectRequest );
 
             unsigned ClearMunitionEffectRequests();
             
@@ -469,7 +469,7 @@ namespace SimCore
             void Clear();
 
             float CalcTimeToImpact( const osg::Vec3& weaponFirePoint, const osg::Vec3& initialVelocity,
-               float maxTime = 10.0f, SimCore::Actors::BaseEntity* owner = NULL );
+               float maxTime = 10.0f, SimCore::Actors::BaseEntity* owner = nullptr );
 
          protected:
            virtual ~WeaponEffectsManager();
@@ -480,14 +480,14 @@ namespace SimCore
             float mCurRecycleTime; // increases to mRefreshTime
             int mMaxWeaponEffects;
             int mMaxMunitionEffects;
-            typedef std::map<std::string, dtCore::RefPtr<WeaponEffect> > EntityToWeaponEffectMap;
+            typedef std::map<std::string, std::shared_ptr<WeaponEffect> > EntityToWeaponEffectMap;
             EntityToWeaponEffectMap mEntityToEffectMap;
-            typedef std::vector<dtCore::RefPtr<MunitionEffect> > MunitionEffectArray;
+            typedef std::vector<std::shared_ptr<MunitionEffect> > MunitionEffectArray;
             MunitionEffectArray mMunitionEffects;
-            dtCore::RefPtr<dtCore::BatchIsector> mIsector;
-            dtCore::ObserverPtr<dtGame::GameManager> mGM;
+            std::shared_ptr<dtCore::BatchIsector> mIsector;
+            std::weak_ptr<dtGame::GameManager> mGM;
 
-            typedef std::vector<dtCore::RefPtr<MunitionEffectRequest> > MunitionEffectRequestList;
+            typedef std::vector<std::shared_ptr<MunitionEffectRequest> > MunitionEffectRequestList;
             MunitionEffectRequestList mTracerRequests;
             MunitionEffectRequestList mTracerRequestsDeletable;
       };

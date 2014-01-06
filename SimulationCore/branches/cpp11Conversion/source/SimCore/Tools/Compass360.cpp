@@ -51,7 +51,7 @@ namespace SimCore
       // CODE
       //////////////////////////////////////////////////////////////////////////
       Compass360::Compass360()
-         : BaseClass(NULL)
+         : BaseClass(nullptr)
       {
       }
 
@@ -105,21 +105,21 @@ namespace SimCore
 
          // VERTICES
          float zDepth = 0.0f;
-         dtCore::RefPtr<osg::Vec3Array> verts = new osg::Vec3Array;
+         osg::ref_ptr<osg::Vec3Array> verts = new osg::Vec3Array;
          verts->push_back(osg::Vec3(0.0, 0.0, zDepth)); // LEFT-BOTTOM
          verts->push_back(osg::Vec3(1.0, 0.0, zDepth)); // RIGHT-BOTTOM
          verts->push_back(osg::Vec3(1.0, 1.0, zDepth)); // RIGHT-TOP
          verts->push_back(osg::Vec3(0.0, 1.0, zDepth)); // LEFT-TOP
 
          // COLOR
-         dtCore::RefPtr<osg::Vec4Array> color = new osg::Vec4Array;
+         osg::ref_ptr<osg::Vec4Array> color = new osg::Vec4Array;
          color->push_back(osg::Vec4(1.0f,0.0f,0.0f,1.0f));
          color->push_back(osg::Vec4(1.0f,1.0f,0.0f,1.0f));
          color->push_back(osg::Vec4(0.0f,1.0f,0.0f,1.0f));
          color->push_back(osg::Vec4(0.0f,0.0f,1.0f,1.0f));
 
          // UVS
-         dtCore::RefPtr<osg::Vec2Array> uvs = new osg::Vec2Array(4);
+         osg::ref_ptr<osg::Vec2Array> uvs = new osg::Vec2Array(4);
          osg::Vec4 rect(0.0,0.0,1.0f,1.0f);
          (*uvs)[0].set( rect.x(),          rect.y());          // LEFT-BOTTOM
          (*uvs)[1].set( rect.x()+rect.z(), rect.y());          // RIGHT-BOTTOM
@@ -127,7 +127,7 @@ namespace SimCore
          (*uvs)[3].set( rect.x(),          rect.y()+rect.w()); // LEFT-TOP
 
          // NORMALS
-         dtCore::RefPtr<osg::Vec3Array> norms = new osg::Vec3Array;
+         osg::ref_ptr<osg::Vec3Array> norms = new osg::Vec3Array;
          norms->push_back(osg::Vec3(0.0f,0.0f,1.0f));
 
          // STATES
@@ -142,9 +142,9 @@ namespace SimCore
          if( ! imageFileName.empty())
          {
             // Set the texture
-            dtCore::RefPtr<osg::Texture2D> texture = new osg::Texture2D;
+            osg::ref_ptr<osg::Texture2D> texture = new osg::Texture2D;
             texture->setDataVariance(osg::Object::DYNAMIC);
-            osg::Image* image = NULL;
+            osg::Image* image = nullptr;
             std::string filePath(imageFileName);
             try
             {
@@ -177,7 +177,7 @@ namespace SimCore
          // Bind the shader to the geometry.
          dtCore::ShaderManager& sm = dtCore::ShaderManager::GetInstance();
          dtCore::ShaderProgram* shaderPrototype = sm.FindShaderPrototype("Compass360Shader","ToolsShaderGroup");
-         if(shaderPrototype != NULL)
+         if(shaderPrototype != nullptr)
          {
             sm.AssignShaderFromPrototype(*shaderPrototype, *mRoot);
          }
@@ -190,11 +190,11 @@ namespace SimCore
          {
             int numParents = mRoot->getNumParents();
 
-            osg::Group* curParent = NULL;
+            osg::Group* curParent = nullptr;
             for(int parentIndex = 0; parentIndex != numParents; ++parentIndex)
             {
                curParent = dynamic_cast<osg::Group*>(mRoot->getParent(parentIndex));
-               if(curParent != NULL)
+               if(curParent != nullptr)
                {
                   curParent->removeChild(mRoot.get());
                }

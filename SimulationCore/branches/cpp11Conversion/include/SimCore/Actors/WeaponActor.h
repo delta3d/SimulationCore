@@ -294,22 +294,22 @@ namespace SimCore
             // @param quantity The number of rounds fired.
             // @param initialVelocity The velocity of the round when leaving the weapon.
             // @param target The object that was targeted and that should receive a
-            //               Direct Fire message. Specify NULL if this is Indirect Fire.
+            //               Direct Fire message. Specify nullptr if this is Indirect Fire.
             void SendFireMessage( unsigned short quantity, const osg::Vec3& initialVelocity,
-               const dtCore::Transformable* target = NULL );
+               const dtCore::Transformable* target = nullptr );
 
             // This function is used for sending messages about grenade type rounds
             // @param quantity The number of rounds fired.
             // @param location The world location of the detonation.
             // @param finalVelocity The velocity of the round on impact.
             // @param target The object that was targeted and that should receive a
-            //               Direct Fire message. Specify NULL if this is Indirect Fire.
+            //               Direct Fire message. Specify nullptr if this is Indirect Fire.
             //
             // NOTE: proximity type munitions like missiles and mines who
             //       have actual Entity representations are responsible
             //       for sending their own detonation messages.
             void SendDetonationMessage( unsigned short quantity, const osg::Vec3& finalVelocity,
-               const osg::Vec3& location, const dtCore::Transformable* target = NULL );
+               const osg::Vec3& location, const dtCore::Transformable* target = nullptr );
 
             void LoadSoundFire( const std::string& filePath );
             void LoadSoundDryFire( const std::string& filePath );
@@ -324,7 +324,7 @@ namespace SimCore
                mDetMessageTime = 0.0f;
                mCurRecoilRestTime = 0.0f;
                mCurSleepTime = 0.0f;
-               mLastTargetObject = NULL;
+               mLastTargetObject = nullptr;
             }
 
             void AddDynamicLight();
@@ -333,11 +333,11 @@ namespace SimCore
             // Destructor
             virtual ~WeaponActor();
 
-            void SoundLoad( const std::string& filePath, dtCore::RefPtr<dtAudio::Sound>& sound );
+            void SoundLoad( const std::string& filePath, std::shared_ptr<dtAudio::Sound>& sound );
 
-            void SoundPlay( dtCore::RefPtr<dtAudio::Sound>& sound );
+            void SoundPlay( std::shared_ptr<dtAudio::Sound>& sound );
 
-            void SoundRelease( dtCore::RefPtr<dtAudio::Sound>& sound );
+            void SoundRelease( std::shared_ptr<dtAudio::Sound>& sound );
 
          private:
             // Determines if normal bullets should send detonation messages.
@@ -441,28 +441,28 @@ namespace SimCore
             // MunitionTypeActor during OnEnteredWorld
             std::string mMunitionTypeName;
 
-            dtCore::ObserverPtr<dtCore::Transformable> mLastTargetObject;
+            std::weak_ptr<dtCore::Transformable> mLastTargetObject;
 
             // The MunitionTypeActor that contains all data describing the
             // munition that this weapon fires.
-            dtCore::RefPtr<MunitionTypeActor> mMunitionType;
+            std::shared_ptr<MunitionTypeActor> mMunitionType;
 
             // The actor that owns this weapon and that is published
             // on the network. This object's ID will be sent in
             // the weapon fire messages.
-            dtCore::ObserverPtr<dtDAL::ActorProxy> mOwner;
+            std::weak_ptr<dtDAL::ActorProxy> mOwner;
 
             // The flash actor that is responsible for rendering
             // and the timing of flash effects.
-            dtCore::RefPtr<WeaponFlashActor> mFlash;
+            std::shared_ptr<WeaponFlashActor> mFlash;
 
             // The sound effects that this weapon will use
-            dtCore::RefPtr<dtAudio::Sound> mSoundFire;
-            dtCore::RefPtr<dtAudio::Sound> mSoundDryFire;
-            dtCore::RefPtr<dtAudio::Sound> mSoundJammed;
+            std::shared_ptr<dtAudio::Sound> mSoundFire;
+            std::shared_ptr<dtAudio::Sound> mSoundDryFire;
+            std::shared_ptr<dtAudio::Sound> mSoundJammed;
 
             // Reference to the shooter that shoots the visual representations of the rounds.
-            dtCore::RefPtr<MunitionParticlesActorProxy>  mShooter;
+            std::shared_ptr<MunitionParticlesActorProxy>  mShooter;
 
       };
 

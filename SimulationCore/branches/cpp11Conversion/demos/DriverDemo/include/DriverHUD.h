@@ -30,7 +30,7 @@
 #include <dtABC/application.h>
 #include <dtGame/logstatus.h>
 #include <dtUtil/enumeration.h>
-#include <osg/Referenced>
+#include <dtUtil/refcountedbase.h>
 
 //This is for the CEGUI headers.
 /*#ifdef None
@@ -45,7 +45,7 @@
 #include <SimCore/Components/MunitionsComponent.h>
 #include <SimCore/Components/DamageHelper.h>
 #include <SimCore/Actors/BasePhysicsVehicleActor.h>
-#include <dtCore/observerptr.h>
+#include <dtUtil/refcountedbase.h>
 #include <dtUtil/coordinates.h>
 
 #include <GameAppComponent.h>
@@ -176,7 +176,7 @@ namespace DriverDemo
          /**
           * Get a button that was added to the HUD toolbar.
           * @param buttonName The name of the button as it appears in Toolbar.imageset
-          * @return button that has the name buttonName; NULL if not found.
+          * @return button that has the name buttonName; nullptr if not found.
           */
          const SimCore::Components::StealthButton* GetToolButton( const std::string& buttonName ) const;
    
@@ -224,7 +224,7 @@ namespace DriverDemo
    
          void InitHelpOverlay( SimCore::Components::HUDGroup& hudOverlay );
    
-         dtCore::RefPtr<SimCore::Components::HUDText> CreateText(const std::string &name, const std::string &text, 
+         std::shared_ptr<SimCore::Components::HUDText> CreateText(const std::string &name, const std::string &text, 
             float x, float y, float width, float height );
    
          /**
@@ -245,39 +245,39 @@ namespace DriverDemo
          dtUtil::Coordinates mCoordinateConverter;
    
          // NEW HUD ELEMENTS
-         dtCore::RefPtr<SimCore::Components::StealthToolbar> mToolbar;
-         dtCore::RefPtr<SimCore::Components::StealthHealthMeter> mHealthMeter;
-         dtCore::RefPtr<SimCore::Components::StealthAmmoMeter> mAmmoMeter;
-         dtCore::RefPtr<SimCore::Components::StealthCompassMeter> mCompassMeter;
-         dtCore::RefPtr<SimCore::Components::StealthCartesianMeter> mGPSMeter;
-         dtCore::RefPtr<SimCore::Components::StealthMGRSMeter> mMGRSMeter;
-         dtCore::RefPtr<SimCore::Components::StealthCartesianMeter> mCartesianMeter;
-         //dtCore::RefPtr<SimCore::Components::StealthCallSign> mCallSign;
-         //dtCore::RefPtr<SimCore::Components::StealthSpeedometer> mSpeedometer;
-         dtCore::RefPtr<SimCore::Components::StealthGPSMeter> mSpeedometer;
-         dtCore::RefPtr<SimCore::Components::HUDGroup> mToolsLayer;
-         dtCore::RefPtr<SimCore::Components::StealthGPSMeter> mSimTimeMeter;
+         std::shared_ptr<SimCore::Components::StealthToolbar> mToolbar;
+         std::shared_ptr<SimCore::Components::StealthHealthMeter> mHealthMeter;
+         std::shared_ptr<SimCore::Components::StealthAmmoMeter> mAmmoMeter;
+         std::shared_ptr<SimCore::Components::StealthCompassMeter> mCompassMeter;
+         std::shared_ptr<SimCore::Components::StealthCartesianMeter> mGPSMeter;
+         std::shared_ptr<SimCore::Components::StealthMGRSMeter> mMGRSMeter;
+         std::shared_ptr<SimCore::Components::StealthCartesianMeter> mCartesianMeter;
+         //std::shared_ptr<SimCore::Components::StealthCallSign> mCallSign;
+         //std::shared_ptr<SimCore::Components::StealthSpeedometer> mSpeedometer;
+         std::shared_ptr<SimCore::Components::StealthGPSMeter> mSpeedometer;
+         std::shared_ptr<SimCore::Components::HUDGroup> mToolsLayer;
+         std::shared_ptr<SimCore::Components::StealthGPSMeter> mSimTimeMeter;
    
-         dtCore::RefPtr<SimCore::Components::HUDText> mWeaponName; // temporary to show weapon name
-         dtCore::RefPtr<SimCore::Components::HUDText> mCoordinatesLabel; // temporary to show weapon name
+         std::shared_ptr<SimCore::Components::HUDText> mWeaponName; // temporary to show weapon name
+         std::shared_ptr<SimCore::Components::HUDText> mCoordinatesLabel; // temporary to show weapon name
    
          // Help Screen HUD Elements
-         dtCore::RefPtr<SimCore::Components::HUDGroup> mHelpOverlay;
-         dtCore::RefPtr<SimCore::Components::StealthButton> mHelpButton;
-         dtCore::RefPtr<SimCore::Components::HUDText> mHelpText_Commander;
-         dtCore::RefPtr<SimCore::Components::HUDText> mHelpText_Driver;
-         dtCore::RefPtr<SimCore::Components::HUDText> mHelpText_Gunner;
-         dtCore::RefPtr<SimCore::Components::HUDText> mHelpText_Soldier;
+         std::shared_ptr<SimCore::Components::HUDGroup> mHelpOverlay;
+         std::shared_ptr<SimCore::Components::StealthButton> mHelpButton;
+         std::shared_ptr<SimCore::Components::HUDText> mHelpText_Commander;
+         std::shared_ptr<SimCore::Components::HUDText> mHelpText_Driver;
+         std::shared_ptr<SimCore::Components::HUDText> mHelpText_Gunner;
+         std::shared_ptr<SimCore::Components::HUDText> mHelpText_Soldier;
    
          // References to objects that pass data to the HUD for display
          // --- for speedometer and health
-         dtCore::ObserverPtr<SimCore::Actors::BasePhysicsVehicleActor> mVehicle;
+         std::weak_ptr<SimCore::Actors::BasePhysicsVehicleActor> mVehicle;
    
          // --- for ammo meter
-         dtCore::ObserverPtr<SimCore::Actors::WeaponActor> mWeapon;
+         std::weak_ptr<SimCore::Actors::WeaponActor> mWeapon;
    
          // --- for the health meter, for the current player entity (vehicle or human)
-         dtCore::ObserverPtr<SimCore::Components::DamageHelper> mDamageHelper;
+         std::weak_ptr<SimCore::Components::DamageHelper> mDamageHelper;
       
          float mTimeTillNextHUDUpdate;
    };

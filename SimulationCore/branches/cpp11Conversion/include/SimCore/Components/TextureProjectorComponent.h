@@ -61,7 +61,7 @@ namespace SimCore
 
          private:
             unsigned int mMaxNumberOfProjectedTextures;
-            std::list<dtCore::RefPtr<Actors::TextureProjectorActor> > mActorList;
+            std::list<std::shared_ptr<Actors::TextureProjectorActor> > mActorList;
       };
    }
 }

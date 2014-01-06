@@ -81,7 +81,7 @@ namespace SimCore
             float                      mMaxTime;
             float                      mCurrentAlpha;
             std::string                mImageProjectorFile;
-            dtCore::RefPtr<Projector>     mProjector;
+            std::shared_ptr<Projector>     mProjector;
             osg::observer_ptr<osg::Node>  mEntityToAttachTo;
       };
 

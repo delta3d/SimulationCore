@@ -111,7 +111,7 @@ namespace NetDemo
    //////////////////////////////////////////////////////////////////////
    void PlayerStatusActor::PublishPlayerSettings()
    {
-      dtCore::RefPtr<dtGame::Message> msg = GetGameActorProxy().GetGameManager()->
+      std::shared_ptr<dtGame::Message> msg = GetGameActorProxy().GetGameManager()->
          GetMessageFactory().CreateMessage(dtGame::MessageType::INFO_ACTOR_UPDATED);
 
       std::vector<dtUtil::RefString> propNames;

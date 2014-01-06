@@ -190,7 +190,7 @@ namespace SimCore
       void ViewerMaterialActor::OnEnteredWorld()
       {
          SimCore::Components::ViewerMaterialComponent* materialComponent = dynamic_cast<SimCore::Components::ViewerMaterialComponent*>(GetGameActorProxy().GetGameManager()->GetComponentByName("ViewerMaterialComponent"));
-         if(materialComponent == NULL)
+         if(materialComponent == nullptr)
          {
             LOG_ERROR("materialComponent Is not initialized, make sure a new one was made before loading a map in");
          }

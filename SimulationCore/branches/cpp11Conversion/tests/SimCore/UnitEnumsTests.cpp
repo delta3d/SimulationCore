@@ -31,7 +31,7 @@
 
 #include <UnitTestMain.h>
 
-using dtCore::RefPtr;
+using std::shared_ptr;
 
 namespace SimCore
 {

@@ -79,9 +79,9 @@ namespace SimCore
 
             StateType* st = StateType::GetValueForName(stateType);
 
-            if(st == NULL)
+            if(st == nullptr)
             {
-               mFromState = NULL;
+               mFromState = nullptr;
                LOG_ERROR("The StateType '" + stateType + "' has not been defined.");
             }
             else
@@ -105,9 +105,9 @@ namespace SimCore
 
             StateType* st = StateType::GetValueForName(stateType);
 
-            if(st == NULL)
+            if(st == nullptr)
             {
-               mToState = NULL;
+               mToState = nullptr;
                LOG_ERROR("The StateType '" + stateType + "' has not been defined.");
             }
             else
@@ -125,7 +125,7 @@ namespace SimCore
             }
 
             StateType* st = StateType::GetValueForName(stateType);
-            if(st == NULL)
+            if(st == nullptr)
             {
                LOG_ERROR("Invalid state type '" + stateType + "' for StartState.")
             }
@@ -146,7 +146,7 @@ namespace SimCore
 
          if (elementName == "Transition")
          {
-            if(mFromState != NULL && mToState != NULL && mEventType != NULL)
+            if(mFromState != nullptr && mToState != nullptr && mEventType != nullptr)
             {
                mManager->AddTransition(mEventType, mFromState, mToState);
             }

@@ -32,7 +32,7 @@
 #include <QtGui/QDockWidget>
 
 #include <StealthViewer/GMApp/ViewWindowConfigObject.h>
-#include <dtCore/refptr.h>
+#include <dtUtil/refcountedbase.h>
 
 #include <string>
 
@@ -54,7 +54,7 @@ namespace StealthQt
       virtual ~ViewDockWidget();
       void LoadSettings();
 
-      dtCore::RefPtr<StealthGM::ViewWindowWrapper> CreateNewViewWindow(const std::string& name);
+      std::shared_ptr<StealthGM::ViewWindowWrapper> CreateNewViewWindow(const std::string& name);
 
    public slots:
       void OnNewViewClicked(bool);

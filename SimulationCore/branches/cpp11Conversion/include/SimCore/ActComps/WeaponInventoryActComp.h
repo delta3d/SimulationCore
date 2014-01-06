@@ -57,11 +57,11 @@ namespace SimCore
             DT_DECLARE_ACCESSOR(dtCore::ResourceDescriptor, FiringParticleSystem);
          };
 
-         class SIMCORE_EXPORT WeaponData : public osg::Referenced
+         class SIMCORE_EXPORT WeaponData : public std::enable_shared_from_this
          {
          public:
-            dtCore::RefPtr<SimCore::Actors::WeaponActorProxy> mWeapon;
-            dtCore::RefPtr<WeaponDescription> mDescription;
+            std::shared_ptr<SimCore::Actors::WeaponActorProxy> mWeapon;
+            std::shared_ptr<WeaponDescription> mDescription;
             float mShotVelocity; // Average shot velocity.
             bool operator < (const WeaponData& toCompare) const;
 
@@ -124,15 +124,15 @@ namespace SimCore
 
          bool IsFiring() const;
 
-         DT_DECLARE_ARRAY_ACCESSOR(dtCore::RefPtr<WeaponDescription>, WeaponDescription, WeaponDescriptions);
+         DT_DECLARE_ARRAY_ACCESSOR(std::shared_ptr<WeaponDescription>, WeaponDescription, WeaponDescriptions);
 
       private:
 
          void CreateWeaponsFromDescriptions();
-         void CreateWeapon(dtCore::RefPtr<WeaponDescription>& wd);
+         void CreateWeapon(std::shared_ptr<WeaponDescription>& wd);
 
-         dtCore::RefPtr<WeaponData> mCurrentWeapon;
-         typedef std::vector<dtCore::RefPtr<WeaponData> > WeaponVector;
+         std::shared_ptr<WeaponData> mCurrentWeapon;
+         typedef std::vector<std::shared_ptr<WeaponData> > WeaponVector;
          WeaponVector mWeapons;
       };
 

@@ -38,7 +38,7 @@ namespace SimCore
          , mFadeOutTime(0.0)
          , mInitialAlpha(1.0)
          , mDeleteOnFadeOut(false)
-         , mAssociatedEntity(NULL)
+         , mAssociatedEntity(nullptr)
          , mSourceForce(&BaseEntityActorProxy::ForceEnum::OTHER)
          , mSourceService(&BaseEntityActorProxy::ServiceEnum::OTHER)
          , mFriendlyColor(0.5, 0.5, 1.0, 1.0)
@@ -47,7 +47,7 @@ namespace SimCore
          , mOtherColor(0.5, 0.5, 0.5, 1.0)
          , mStaleColor(0.6, 0.6, 0.6, 1.0)
       {
-         dtCore::RefPtr<osg::Node> original, copied;
+         osg::ref_ptr<osg::Node> original, copied;
          std::string resourceDesc("StaticMeshes:Hemisphere.ive");
          std::string filename = dtDAL::Project::GetInstance().GetResourcePath(resourceDesc);
          if(!filename.empty())
@@ -61,7 +61,7 @@ namespace SimCore
 
          //gotta hold onto the new one.
          copied->setUserData(original.get());
-         dtCore::RefPtr<osg::MatrixTransform> mt = new osg::MatrixTransform();
+         osg::ref_ptr<osg::MatrixTransform> mt = new osg::MatrixTransform();
          mt->addChild(copied.get());
          osg::Matrix m;
          m.setTrans(osg::Vec3(0.0, 0.0, 3.0));
@@ -71,7 +71,7 @@ namespace SimCore
 
          osg::StateSet* ss = g->getOrCreateStateSet();
          ss->setMode(GL_BLEND,osg::StateAttribute::ON);
-         dtCore::RefPtr<osg::BlendFunc> trans = new osg::BlendFunc();
+         osg::ref_ptr<osg::BlendFunc> trans = new osg::BlendFunc();
          trans->setFunction( osg::BlendFunc::SRC_ALPHA ,osg::BlendFunc::ONE_MINUS_SRC_ALPHA );
          ss->setAttributeAndModes(trans.get());
          ss->setRenderingHint( osg::StateSet::TRANSPARENT_BIN );
@@ -397,20 +397,20 @@ namespace SimCore
          if (theFile.empty())
          {
             osg::StateSet* ss = GetOSGNode()->getOrCreateStateSet();
-            ss->setTextureAttributeAndModes(0, NULL, osg::StateAttribute::OFF);
+            ss->setTextureAttributeAndModes(0, nullptr, osg::StateAttribute::OFF);
             return;
          }
 
-         dtCore::RefPtr<osg::Image> icon  = osgDB::readImageFile( theFile );
-         if(icon == NULL)
+         osg::ref_ptr<osg::Image> icon  = osgDB::readImageFile( theFile );
+         if(icon == nullptr)
          {
             LOG_ERROR(std::string("Couldn't find image file \"") + theFile + "\"");
             osg::StateSet* ss = GetOSGNode()->getOrCreateStateSet();
-            ss->setTextureAttributeAndModes(0, NULL, osg::StateAttribute::OFF);
+            ss->setTextureAttributeAndModes(0, nullptr, osg::StateAttribute::OFF);
             return;
          }
 
-         dtCore::RefPtr<osg::Texture2D> tex = new osg::Texture2D;
+         osg::ref_ptr<osg::Texture2D> tex = new osg::Texture2D;
          tex->setWrap( osg::Texture::WRAP_S, osg::Texture::CLAMP );
          tex->setWrap( osg::Texture::WRAP_T, osg::Texture::CLAMP );
          tex->setImage( icon.get() );
@@ -530,7 +530,7 @@ namespace SimCore
 
          static const dtUtil::RefString POSITION_MARKER_GROUP("Position Marker");
 
-         PositionMarker* pm = NULL;
+         PositionMarker* pm = nullptr;
          GetActor(pm);
 
          static const dtUtil::RefString PROPERTY_SOURCE_FORCE_DESC("The force of the entity that reported this.");
@@ -654,7 +654,7 @@ namespace SimCore
       {
          BaseClass::BuildInvokables();
 
-         PositionMarker* pm = NULL;
+         PositionMarker* pm = nullptr;
          GetActor(pm);
 
          AddInvokable(*new dtGame::Invokable(INVOKABLE_TIME_ELAPSED,
@@ -664,17 +664,17 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////
       void PositionMarkerActorProxy::SetAssociatedEntity(dtDAL::ActorProxy* assocEntity)
       {
-         PositionMarker* pm = NULL;
+         PositionMarker* pm = nullptr;
          GetDrawable(pm);
 
-         ///I want it to crash if pm is NULL;
-         if (assocEntity == NULL)
+         ///I want it to crash if pm is nullptr;
+         if (assocEntity == nullptr)
          {
-            pm->SetAssociatedEntity(NULL);
+            pm->SetAssociatedEntity(nullptr);
          }
          else
          {
-            BaseEntity* entity = NULL;;
+            BaseEntity* entity = nullptr;;
             assocEntity->GetDrawable(entity);
             pm->SetAssociatedEntity(entity);
          }

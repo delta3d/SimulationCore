@@ -55,14 +55,14 @@ namespace StealthGM
 
    void ControlsRecordConfigObject::ApplyChanges(dtGame::GameManager& gameManager)
    {
-      StealthInputComponent* inputComponent = NULL;
+      StealthInputComponent* inputComponent = nullptr;
       gameManager.GetComponentByName(StealthGM::StealthInputComponent::DEFAULT_NAME, inputComponent);
 
       SimCore::HLA::HLAConnectionComponent* hlaConnectComp;
       gameManager.GetComponentByName(SimCore::HLA::HLAConnectionComponent::DEFAULT_NAME, hlaConnectComp);
 
       // Shouldn't happen, but better safe than sorry
-      if(inputComponent == NULL || hlaConnectComp == NULL)
+      if(inputComponent == nullptr || hlaConnectComp == nullptr)
          return;
 
       // if nothing is updated, just check to see if we need to update our key frames.

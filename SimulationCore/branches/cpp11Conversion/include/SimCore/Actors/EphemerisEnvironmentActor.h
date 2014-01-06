@@ -90,10 +90,10 @@ namespace SimCore
          };
 
 
-         dtCore::RefPtr<osgEphemeris::EphemerisModel> mEphemerisModel;
+         osg::ref_ptr<osgEphemeris::EphemerisModel> mEphemerisModel;
          //used to create a Fog Line between the Ephemeris Model and the Terrain Horizon
-         dtCore::RefPtr<osgEphemeris::Sphere>      mFogSphere;
-         dtCore::RefPtr<MoveWithEyePointTransform> mFogSphereEyePointTransform;
+         osg::ref_ptr<osgEphemeris::Sphere>      mFogSphere;
+         std::shared_ptr<MoveWithEyePointTransform> mFogSphereEyePointTransform;
       };
 
       class EphemerisEnvironmentActorProxy: public SimCore::Actors::IGEnvironmentActorProxy

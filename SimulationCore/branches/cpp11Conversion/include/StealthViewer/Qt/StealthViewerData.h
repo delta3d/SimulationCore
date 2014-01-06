@@ -28,9 +28,9 @@
 #ifndef STEALTH_VIEWER_DATA
 #define STEALTH_VIEWER_DATA
 
-#include <osg/Referenced>
+#include <dtUtil/refcountedbase.h>
 
-#include <dtCore/refptr.h>
+#include <dtUtil/refcountedbase.h>
 
 #include <QtCore/QString>
 
@@ -53,7 +53,7 @@ namespace StealthQt
    class StealthViewerSettings;
    class MainWindow;
 
-   class StealthViewerData : public osg::Referenced
+   class StealthViewerData : public std::enable_shared_from_this
    {
       public:
 
@@ -160,7 +160,7 @@ namespace StealthQt
          /// Assignment operator
          StealthViewerData& operator = (const StealthViewerData&);
 
-         static dtCore::RefPtr<StealthViewerData> mInstance;
+         static std::shared_ptr<StealthViewerData> mInstance;
 
          StealthViewerSettings* mSettings;
 

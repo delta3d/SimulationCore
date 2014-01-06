@@ -49,7 +49,7 @@
 #include <dtNetGM/clientnetworkcomponent.h>
 #include <dtGame/basemessages.h>
 
-using dtCore::RefPtr;
+using std::shared_ptr;
 using namespace SimCore::CollisionGroup;
 
 namespace DriverDemo
@@ -69,7 +69,7 @@ namespace DriverDemo
    ///////////////////////////////////////////////////////////////////////////
    DriverGameEntryPoint::DriverGameEntryPoint()
    {
-      mArgv = NULL;
+      mArgv = nullptr;
       mArgc = 0;
    }
 
@@ -86,7 +86,7 @@ namespace DriverDemo
 
       // this is set cause argc and argv passed into the function
       // goes out of scope, cause they are sent by pointer.
-      if(parser == NULL)
+      if(parser == nullptr)
          parser = new osg::ArgumentParser(&mArgc, mArgv);
 
       parser->getApplicationUsage()->setCommandLineUsage("Driver Demo Application [options] value ...");
@@ -134,12 +134,12 @@ namespace DriverDemo
       BaseClass::InitializeComponents(gm);
 
       // Get the command line object. Used below.
-      SimCore::CommandLineObject* commandLineObject = NULL;
+      SimCore::CommandLineObject* commandLineObject = nullptr;
       GameAppComponent* gameAppComponent = dynamic_cast<GameAppComponent*>
          (gm.GetComponentByName(GameAppComponent::DEFAULT_NAME));
-      if(gameAppComponent != NULL)
+      if(gameAppComponent != nullptr)
          commandLineObject = gameAppComponent->GetCommandLineObject();
-      if(commandLineObject == NULL)
+      if(commandLineObject == nullptr)
       {
          LOG_ERROR("Command Line Component not initialized, other components will not\
                    be made, exit now while you still can!");
@@ -149,9 +149,9 @@ namespace DriverDemo
 
       ////////////////////////////////////////////////////////////////
       // PHYSICS
-      dtCore::RefPtr<dtPhysics::PhysicsWorld> world = new dtPhysics::PhysicsWorld(gm.GetConfiguration());
+      std::shared_ptr<dtPhysics::PhysicsWorld> world = new dtPhysics::PhysicsWorld(gm.GetConfiguration());
       world->Init();
-      dtCore::RefPtr<dtPhysics::PhysicsComponent> physicsComponent = new dtPhysics::PhysicsComponent(*world, false);
+      std::shared_ptr<dtPhysics::PhysicsComponent> physicsComponent = new dtPhysics::PhysicsComponent(*world, false);
       gm.AddComponent(*physicsComponent, dtGame::GameManager::ComponentPriority::NORMAL);
       SimCore::CollisionGroup::SetupDefaultGroupCollisions(*physicsComponent);
       // OLD - Physics collision group pairings. 
@@ -166,7 +166,7 @@ namespace DriverDemo
       // Rendering Support - Gives us lighting, sets up our viewmatrix, and other stuff.
       // We disable the physics cull visitor (which is for large tiled terrains like Terrex)
       // and also enable the static terrain physics (because it's loaded once). 
-      dtCore::RefPtr<SimCore::Components::RenderingSupportComponent> renderingSupportComponent
+      std::shared_ptr<SimCore::Components::RenderingSupportComponent> renderingSupportComponent
          = new SimCore::Components::RenderingSupportComponent();
       renderingSupportComponent->SetEnableCullVisitor(false);
       renderingSupportComponent->SetMaxSpotLights(1);
@@ -176,13 +176,13 @@ namespace DriverDemo
 
       ////////////////////////////////////////////////////////////////////////
       // The Viewer Message Processor
-      RefPtr<SimCore::Components::ViewerMessageProcessor> messageProcessor =
+      std::shared_ptr<SimCore::Components::ViewerMessageProcessor> messageProcessor =
          new SimCore::Components::ViewerMessageProcessor;
       gm.AddComponent(*messageProcessor, dtGame::GameManager::ComponentPriority::HIGHEST);
 
       ////////////////////////////////////////////////////////////////////////
       // init the input component with what it needs
-      dtCore::RefPtr<DriverInputComponent> mInputComponent = new DriverInputComponent("Input Component");
+      std::shared_ptr<DriverInputComponent> mInputComponent = new DriverInputComponent("Input Component");
       gm.AddComponent(*mInputComponent, dtGame::GameManager::ComponentPriority::NORMAL);
       //mInputComponent->SetListeners();
       dtCore::Camera* camera = gm.GetApplication().GetCamera();
@@ -198,16 +198,16 @@ namespace DriverDemo
       //const dtDAL::NamedStringParameter* callsignName =
       //   dynamic_cast<const dtDAL::NamedStringParameter*>(commandLineObject->GetParameter(GameAppComponent::CMD_LINE_VEHICLE_CALLSIGN));
 
-      dtCore::RefPtr<DriverHUD> mHudGUI = new DriverHUD(gm.GetApplication().GetWindow());
+      std::shared_ptr<DriverHUD> mHudGUI = new DriverHUD(gm.GetApplication().GetWindow());
       gm.AddComponent(*mHudGUI, dtGame::GameManager::ComponentPriority::NORMAL);
       mHudGUI->Initialize();
       mHudGUI->SetCallSign( "NoCallSignSet" );
 
       ////////////////////////////////////////////////////////////////////////
       // Disable the weather component's ability to change the clipping planes.
-      SimCore::Components::WeatherComponent* weatherComp = NULL;
+      SimCore::Components::WeatherComponent* weatherComp = nullptr;
       gm.GetComponentByName(SimCore::Components::WeatherComponent::DEFAULT_NAME, weatherComp);
-      if (weatherComp != NULL)
+      if (weatherComp != nullptr)
       {
          weatherComp->SetAdjustClipPlanes(false);
       }
@@ -225,21 +225,21 @@ namespace DriverDemo
          int serverPort = dtUtil::ToType<int>(configParams.GetConfigPropertyValue("dtNetGM.ServerPort", "7329"));
          if (role == "Server" || role == "server" || role == "SERVER")
          {
-            dtCore::RefPtr<dtNetGM::ServerNetworkComponent> serverComp =
+            std::shared_ptr<dtNetGM::ServerNetworkComponent> serverComp =
                new dtNetGM::ServerNetworkComponent("DriverDemo", 1);
             gm.AddComponent(*serverComp, dtGame::GameManager::ComponentPriority::NORMAL);
             serverComp->SetupServer(serverPort);
          }
          else if (role == "Client" || role == "client" || role == "CLIENT")
          {
-            dtCore::RefPtr<dtNetGM::ClientNetworkComponent> clientComp =
+            std::shared_ptr<dtNetGM::ClientNetworkComponent> clientComp =
                new dtNetGM::ClientNetworkComponent("DriverDemo", 1);
             gm.AddComponent(*clientComp, dtGame::GameManager::ComponentPriority::NORMAL);
             int serverPort = dtUtil::ToType<int>(configParams.GetConfigPropertyValue("dtNetGM.ServerPort", "7329"));
             const std::string host = configParams.GetConfigPropertyValue("dtNetGM.ServerHost", "127.0.0.1");
             if (clientComp->SetupClient(host, serverPort))
             {
-               dtCore::RefPtr<dtGame::MachineInfoMessage> message;
+               std::shared_ptr<dtGame::MachineInfoMessage> message;
                gm.GetMessageFactory().CreateMessage(dtGame::MessageType::NETCLIENT_REQUEST_CONNECTION, message);
                message->SetDestination(clientComp->GetServer());
                message->SetMachineInfo(gm.GetMachineInfo());

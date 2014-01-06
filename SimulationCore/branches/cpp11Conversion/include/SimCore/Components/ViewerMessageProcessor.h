@@ -68,7 +68,7 @@ namespace SimCore
              */
             void ProcessLocalUpdateActor(const dtGame::ActorUpdateMessage &msg);
 
-            virtual dtCore::RefPtr<dtGame::GameActorProxy> ProcessRemoteCreateActor(const dtGame::ActorUpdateMessage &msg);
+            virtual std::shared_ptr<dtGame::GameActorProxy> ProcessRemoteCreateActor(const dtGame::ActorUpdateMessage &msg);
 
             /**
              * Processes a remote update actor message
@@ -98,7 +98,7 @@ namespace SimCore
 
             /**
              * Sets the player actor on the VMP
-             * @param pa The player actor to set, or NULL
+             * @param pa The player actor to set, or nullptr
              */
             void SetPlayerActor(SimCore::Actors::StealthActor* pa) { mPlayer = pa; }
 
@@ -154,10 +154,10 @@ namespace SimCore
 
             dtUtil::Log* mLogger;
 
-            dtCore::ObserverPtr<SimCore::Actors::StealthActor> mPlayer;
+            std::weak_ptr<SimCore::Actors::StealthActor> mPlayer;
             float mMagnification;
 
-            dtCore::RefPtr<SimCore::VisibilityOptions> mVisibilityOptions;
+            std::shared_ptr<SimCore::VisibilityOptions> mVisibilityOptions;
 
             std::string mTimeMasterName;
             dtCore::UniqueId mTimeSyncSenderName;

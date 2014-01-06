@@ -81,7 +81,7 @@ namespace SimCore
              * Gets the billboard used to represent particle systems.
              * @return
              */
-            virtual dtDAL::ActorProxyIcon* GetBillBoardIcon();
+            virtual dtDAL::ActorProxyIconPtr GetBillBoardIcon();
 
             /// Creates the actor
             void CreateDrawable() { SetDrawable(*new FireActor(*this)); }
@@ -106,7 +106,7 @@ namespace SimCore
 
          private:
 
-            dtCore::RefPtr<dtDAL::ActorProxyIcon> mBillBoardIcon;
+            std::shared_ptr<dtDAL::ActorProxyIcon> mBillBoardIcon;
 
       };
    }

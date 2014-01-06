@@ -63,7 +63,7 @@
 #include <UnitTestMain.h>
 #include <dtGame/testcomponent.h>
 
-using dtCore::RefPtr;
+using std::shared_ptr;
 
 namespace SimCore
 {
@@ -116,7 +116,7 @@ namespace SimCore
             {
                mGameManager->DeleteAllActors();
                mGameManager->Shutdown();
-               mGameManager = NULL;
+               mGameManager = nullptr;
             }
          }
          catch (const dtUtil::Exception& e)
@@ -129,16 +129,16 @@ namespace SimCore
       {
          dtDAL::Project::GetInstance().SetEditMode(true);
 
-         dtCore::RefPtr<SimCore::Actors::TerrainActorProxy> terrain;
-         SimCore::Actors::TerrainActor* terrainDrawable = NULL;
+         std::shared_ptr<SimCore::Actors::TerrainActorProxy> terrain;
+         SimCore::Actors::TerrainActor* terrainDrawable = nullptr;
 
          mGameManager->CreateActor(*SimCore::Actors::EntityActorRegistry::TERRAIN_ACTOR_TYPE, terrain);
          CPPUNIT_ASSERT_MESSAGE("Could not create a terrain actor", terrain.valid());
          terrain->GetActor(terrainDrawable);
 
-         dtDAL::ResourceActorProperty* rap = NULL;
+         dtDAL::ResourceActorProperty* rap = nullptr;
          terrain->GetProperty("TerrainMesh", rap);
-         CPPUNIT_ASSERT(rap != NULL);
+         CPPUNIT_ASSERT(rap != nullptr);
 
          rap->SetValue(dtDAL::ResourceDescriptor("StaticMeshes:Gun.ive"));
 
@@ -152,19 +152,19 @@ namespace SimCore
 
       void TestLoad()
       {
-         dtCore::RefPtr<dtGame::TestComponent> tc = new dtGame::TestComponent;
+         std::shared_ptr<dtGame::TestComponent> tc = new dtGame::TestComponent;
          mGameManager->AddComponent(*tc, dtGame::GameManager::ComponentPriority::HIGHEST);
 
-         dtCore::RefPtr<SimCore::Actors::TerrainActorProxy> terrain;
-         SimCore::Actors::TerrainActor* terrainDrawable = NULL;
+         std::shared_ptr<SimCore::Actors::TerrainActorProxy> terrain;
+         SimCore::Actors::TerrainActor* terrainDrawable = nullptr;
 
          mGameManager->CreateActor(*SimCore::Actors::EntityActorRegistry::TERRAIN_ACTOR_TYPE, terrain);
          CPPUNIT_ASSERT_MESSAGE("Could not create a terrain actor", terrain.valid());
          terrain->GetActor(terrainDrawable);
 
-         dtDAL::ResourceActorProperty* rap = NULL;
+         dtDAL::ResourceActorProperty* rap = nullptr;
          terrain->GetProperty("TerrainMesh", rap);
-         CPPUNIT_ASSERT(rap != NULL);
+         CPPUNIT_ASSERT(rap != nullptr);
 
          // Load something really tiny.
          rap->SetValue(dtDAL::ResourceDescriptor("StaticMeshes:Gun.ive"));
@@ -174,22 +174,22 @@ namespace SimCore
 
          // Can't test this because you just never know if it's done yet.
          //CPPUNIT_ASSERT(!terrainDrawable->CheckForTerrainLoaded());
-         CPPUNIT_ASSERT_EQUAL((const dtGame::Message*)(NULL), tc->FindProcessMessageOfType(SimCore::MessageType::INFO_TERRAIN_LOADED).get());
+         CPPUNIT_ASSERT_EQUAL((const dtGame::Message*)(nullptr), tc->FindProcessMessageOfType(SimCore::MessageType::INFO_TERRAIN_LOADED).get());
 
          unsigned i = 0;
-         while (tc->FindProcessMessageOfType(SimCore::MessageType::INFO_TERRAIN_LOADED) == NULL && i < 100)
+         while (tc->FindProcessMessageOfType(SimCore::MessageType::INFO_TERRAIN_LOADED) == nullptr && i < 100)
          {
             // sleep while it loads in the background.
             dtCore::AppSleep(50);
             dtCore::System::GetInstance().Step();
          }
 
-         CPPUNIT_ASSERT(tc->FindProcessMessageOfType(SimCore::MessageType::INFO_TERRAIN_LOADED) != NULL);
+         CPPUNIT_ASSERT(tc->FindProcessMessageOfType(SimCore::MessageType::INFO_TERRAIN_LOADED) != nullptr);
          CPPUNIT_ASSERT(terrainDrawable->CheckForTerrainLoaded());
       }
 
    private:
-      dtCore::RefPtr<dtGame::GameManager> mGameManager;
+      std::shared_ptr<dtGame::GameManager> mGameManager;
    };
 
    CPPUNIT_TEST_SUITE_REGISTRATION(TerrainActorTests);

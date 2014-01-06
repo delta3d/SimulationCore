@@ -53,7 +53,7 @@ class QDESIGNER_WIDGET_EXPORT QDoubleSpinBoxExtended : public QDoubleSpinBox
    Q_OBJECT
 
    public:
-      QDoubleSpinBoxExtended( QWidget* parent = NULL );
+      QDoubleSpinBoxExtended( QWidget* parent = nullptr );
 
       virtual void stepBy( int steps );
 
@@ -76,7 +76,7 @@ class QDESIGNER_WIDGET_EXPORT NonLinearSlider : public QWidget
       Q_PROPERTY( double value READ getValue WRITE setValue )
 
    public:
-      NonLinearSlider( QWidget* parent = NULL );
+      NonLinearSlider( QWidget* parent = nullptr );
 
       void onCreated();
 

@@ -66,7 +66,7 @@ namespace StealthGM
       // However, if receiving network weather, we need to make sure the values
       // are set here from JSAF so they can be displayed in the UI.
       dtGame::GMComponent* component = gameManager.GetComponentByName(SimCore::Components::WeatherComponent::DEFAULT_NAME);
-      if(component == NULL)
+      if(component == nullptr)
          return;
 
       SimCore::Components::WeatherComponent& weatherComp = static_cast<SimCore::Components::WeatherComponent&>(*component);
@@ -81,9 +81,9 @@ namespace StealthGM
       if (GetUseNetworkSettings())
       {
          // Network time
-         if (dayTimeProxy != NULL)
+         if (dayTimeProxy != nullptr)
          {
-            if (igEnv != NULL)
+            if (igEnv != nullptr)
             {
                dtUtil::DateTime dt = igEnv->GetDateTime();
 
@@ -94,9 +94,9 @@ namespace StealthGM
          }
 
          // Visibility and weather (precipitation)
-         if (atmosphereProxy != NULL)
+         if (atmosphereProxy != nullptr)
          {
-            SimCore::Actors::UniformAtmosphereActor* atmosphereActor = NULL;
+            SimCore::Actors::UniformAtmosphereActor* atmosphereActor = nullptr;
             atmosphereProxy->GetActor(atmosphereActor);
 
             mVisibilityDistance = atmosphereActor->GetVisibilityDistance();
@@ -113,7 +113,7 @@ namespace StealthGM
       // Turn updates in the component off or on
       weatherComp.SetUpdatesEnabled(GetUseNetworkSettings());
 
-      if(igEnv != NULL && GetUseCustomSettings())
+      if(igEnv != nullptr && GetUseCustomSettings())
       {
          dtUtil::DateTime dt = igEnv->GetDateTime();
          dt.SetHour(mCustomHour);

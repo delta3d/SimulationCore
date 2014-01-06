@@ -99,7 +99,7 @@ namespace SimCore
 
       SimCore::Actors::MunitionParticlesActorProxy* WeaponInventoryActComp::WeaponData::GetShooter()
       {
-         SimCore::Actors::WeaponActor* weaponDraw = NULL;
+         SimCore::Actors::WeaponActor* weaponDraw = nullptr;
          mWeapon->GetDrawable(weaponDraw);
          return weaponDraw->GetShooter();
       }
@@ -131,8 +131,8 @@ namespace SimCore
          PropRegType propRegHelper(*this, this, GROUPNAME);
 
          static const dtUtil::RefString PROPERTY_WEAPONS("Weapons");
-         typedef dtCore::ArrayActorPropertyComplex<dtCore::RefPtr<WeaponInventoryActComp::WeaponDescription> > WeaponDescPropType;
-         dtCore::RefPtr<WeaponDescPropType> arrayProp =
+         typedef dtCore::ArrayActorPropertyComplex<std::shared_ptr<WeaponInventoryActComp::WeaponDescription> > WeaponDescPropType;
+         std::shared_ptr<WeaponDescPropType> arrayProp =
                   new WeaponDescPropType
                      (PROPERTY_WEAPONS, PROPERTY_WEAPONS,
                       WeaponDescPropType::SetFuncType(this, &WeaponInventoryActComp::SetWeaponDescription),
@@ -144,7 +144,7 @@ namespace SimCore
                       GROUPNAME
                      );
 
-         dtCore::RefPtr<dtCore::BasePropertyContainerActorProperty> propContainerProp =
+         std::shared_ptr<dtCore::BasePropertyContainerActorProperty> propContainerProp =
                   new dtCore::SimplePropertyContainerActorProperty<WeaponInventoryActComp::WeaponDescription>("NestedPropContainer",
                            "Nested Property Container",
                            dtCore::SimplePropertyContainerActorProperty<WeaponInventoryActComp::WeaponDescription>::SetFuncType(arrayProp.get(), &WeaponDescPropType::SetCurrentValue),
@@ -165,7 +165,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void WeaponInventoryActComp::CreateWeapon(dtCore::RefPtr<WeaponDescription>& wd)
+      void WeaponInventoryActComp::CreateWeapon(std::shared_ptr<WeaponDescription>& wd)
       {
          CreateAndAddWeapon(*wd, false);
       }
@@ -189,15 +189,15 @@ namespace SimCore
       {
          SimCore::Actors::IGActor* owner;
          GetOwner(owner);
-         if (owner == NULL)
+         if (owner == nullptr)
          {
-            return NULL;
+            return nullptr;
          }
 
          dtGame::GameManager* gm = owner->GetGameActorProxy().GetGameManager();
 
 
-         dtCore::RefPtr<SimCore::Actors::WeaponActorProxy> weaponActor;
+         std::shared_ptr<SimCore::Actors::WeaponActorProxy> weaponActor;
          gm->CreateActorFromPrototype(wd.GetWeaponPrototypeName(), weaponActor);
 
          if (!weaponActor.valid())
@@ -206,7 +206,7 @@ namespace SimCore
             return false;
          }
 
-         SimCore::Actors::WeaponActor* outWeapon = NULL;
+         SimCore::Actors::WeaponActor* outWeapon = nullptr;
          weaponActor->GetActor(outWeapon);
 
          // Place the weapon into the world
@@ -219,7 +219,7 @@ namespace SimCore
          if (!owner->IsRemote())
          {
 
-            dtCore::RefPtr<SimCore::Actors::MunitionParticlesActorProxy> shooterActor;
+            std::shared_ptr<SimCore::Actors::MunitionParticlesActorProxy> shooterActor;
             gm->CreateActorFromPrototype(wd.GetShooterPrototypeName(), shooterActor);
 
             if (!shooterActor.valid())
@@ -228,7 +228,7 @@ namespace SimCore
                return false;
             }
 
-            SimCore::Actors::MunitionParticlesActor* shooter = NULL;
+            SimCore::Actors::MunitionParticlesActor* shooter = nullptr;
             shooterActor->GetActor(shooter);
 
             // Place the shooter into the world
@@ -260,8 +260,8 @@ namespace SimCore
             {
                std::string particleEffectFile = dtCore::Project::GetInstance().GetResourcePath(wd.GetFiringParticleSystem());
                // Create the flash effect for the weapon
-               SimCore::Actors::WeaponFlashActor* flashDrawable = NULL;
-               dtCore::RefPtr<SimCore::Actors::WeaponFlashActorProxy> flashActor;
+               SimCore::Actors::WeaponFlashActor* flashDrawable = nullptr;
+               std::shared_ptr<SimCore::Actors::WeaponFlashActorProxy> flashActor;
                gm->CreateActor(*SimCore::Actors::EntityActorRegistry::WEAPON_FLASH_ACTOR_TYPE, flashActor);
                flashActor->GetDrawable(flashDrawable);
                flashDrawable->SetParticleEffect(particleEffectFile);
@@ -273,7 +273,7 @@ namespace SimCore
          }
 
          mWeapons.push_back(new WeaponData);
-         dtCore::RefPtr<WeaponData>& weaponData = mWeapons.back();
+         std::shared_ptr<WeaponData>& weaponData = mWeapons.back();
          weaponData->mShotVelocity = shotVelocity;
          weaponData->mDescription = &wd;
          weaponData->mWeapon = weaponActor;
@@ -289,9 +289,9 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void WeaponInventoryActComp::AimWeapon(const osg::Vec3& target, bool aimShooter)
       {
-         if (mCurrentWeapon != NULL)
+         if (mCurrentWeapon != nullptr)
          {
-            dtCore::Transformable* weaponToAim = NULL;
+            dtCore::Transformable* weaponToAim = nullptr;
 
             if (aimShooter)
             {
@@ -302,7 +302,7 @@ namespace SimCore
                mCurrentWeapon->mWeapon->GetDrawable(weaponToAim);
             }
 
-            if (weaponToAim != NULL)
+            if (weaponToAim != nullptr)
             {
                dtCore::Transform xform;
                weaponToAim->GetTransform(xform);
@@ -334,9 +334,9 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void WeaponInventoryActComp::ClearWeaponAiming(const osg::Vec3& target, bool useShooter)
       {
-         if (mCurrentWeapon != NULL)
+         if (mCurrentWeapon != nullptr)
          {
-            dtCore::Transformable* weaponToAim = NULL;
+            dtCore::Transformable* weaponToAim = nullptr;
             
             if (useShooter)
             {
@@ -347,7 +347,7 @@ namespace SimCore
                mCurrentWeapon->mWeapon->GetDrawable(weaponToAim);
             }
 
-            if (weaponToAim != NULL)
+            if (weaponToAim != nullptr)
             {
                // Identity Transform
                dtCore::Transform xform;
@@ -360,7 +360,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void WeaponInventoryActComp::SelectNextWeapon()
       {
-         if (mCurrentWeapon == NULL && !mWeapons.empty())
+         if (mCurrentWeapon == nullptr && !mWeapons.empty())
          {
             SelectWeapon(mWeapons[0]);
          }
@@ -383,7 +383,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void WeaponInventoryActComp::SelectPreviousWeapon()
       {
-         if (mCurrentWeapon == NULL && !mWeapons.empty())
+         if (mCurrentWeapon == nullptr && !mWeapons.empty())
          {
             SelectWeapon(mWeapons[0]);
          }
@@ -415,9 +415,9 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void WeaponInventoryActComp::SelectWeapon(WeaponData* wd)
       {
-         SimCore::Actors::IGActor* owner = NULL;
+         SimCore::Actors::IGActor* owner = nullptr;
          GetOwner(owner);
-         if (owner == NULL)
+         if (owner == nullptr)
          {
             return;
          }
@@ -426,10 +426,10 @@ namespace SimCore
          {
             StopFiring();
             owner->RemoveChild(mCurrentWeapon->mWeapon->GetDrawable());
-            mCurrentWeapon = NULL;
+            mCurrentWeapon = nullptr;
          }
 
-         if (wd != NULL && wd->mWeapon != NULL && wd->mDescription != NULL)
+         if (wd != nullptr && wd->mWeapon != nullptr && wd->mDescription != nullptr)
          {
             owner->AddChild(wd->mWeapon->GetDrawable(), wd->mDescription->GetWeaponSwapRootNode());
             mCurrentWeapon = wd;
@@ -440,7 +440,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       bool WeaponInventoryActComp::HasWeapon( const std::string& weaponName ) const
       {
-         return FindWeapon(weaponName) != NULL;
+         return FindWeapon(weaponName) != nullptr;
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -465,7 +465,7 @@ namespace SimCore
       {
          CompareWeaponByName(const std::string& str): mName(str) {}
 
-         bool operator()(const dtCore::RefPtr<WeaponInventoryActComp::WeaponData>& wp)
+         bool operator()(const std::shared_ptr<WeaponInventoryActComp::WeaponData>& wp)
          {
             return mName == wp->mDescription->GetWeaponPrototypeName();
          }
@@ -479,9 +479,9 @@ namespace SimCore
 
          if (mCurrentWeapon.valid() && mCurrentWeapon->mDescription->GetWeaponPrototypeName() == weaponName)
          {
-            SimCore::Actors::IGActor* owner = NULL;
+            SimCore::Actors::IGActor* owner = nullptr;
             GetOwner(owner);
-            if (owner == NULL)
+            if (owner == nullptr)
             {
                return;
             }
@@ -503,7 +503,7 @@ namespace SimCore
             return i->get();
          }
 
-         return NULL;
+         return nullptr;
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -516,7 +516,7 @@ namespace SimCore
             return i->get();
          }
 
-         return NULL;
+         return nullptr;
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -592,7 +592,7 @@ namespace SimCore
          return result;
       }
 
-      DT_IMPLEMENT_ARRAY_ACCESSOR(WeaponInventoryActComp, dtCore::RefPtr<WeaponInventoryActComp::WeaponDescription>, WeaponDescription, WeaponDescriptions, new WeaponInventoryActComp::WeaponDescription);
+      DT_IMPLEMENT_ARRAY_ACCESSOR(WeaponInventoryActComp, std::shared_ptr<WeaponInventoryActComp::WeaponDescription>, WeaponDescription, WeaponDescriptions, new WeaponInventoryActComp::WeaponDescription);
 
    }
 

@@ -19,16 +19,16 @@ namespace LevelCompiler
          it != path.end();
          it++)
       {
-         if((*it)->getStateSet() != NULL)
+         if((*it)->getStateSet() != nullptr)
          {
             stateSet->merge(*(*it)->getStateSet());
          }
 
          osg::Transform* transform = dynamic_cast<osg::Transform*>(*it);
 
-         if(transform != NULL)
+         if(transform != nullptr)
          {
-            transform->computeLocalToWorldMatrix(matrix, NULL);
+            transform->computeLocalToWorldMatrix(matrix, nullptr);
          }
       }
 

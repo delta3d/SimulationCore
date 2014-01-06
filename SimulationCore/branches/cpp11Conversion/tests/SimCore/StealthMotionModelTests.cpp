@@ -97,11 +97,11 @@ class StealthMotionModelTests : public CPPUNIT_NS::TestFixture
       //////////////////////////////////////////////////////////////////////////
       void tearDown()
       {
-         mApp = NULL;
-         mMotionModel = NULL;
-         mTarget = NULL;
-         mTerrain = NULL;
-         mTerrainAlternate = NULL;
+         mApp = nullptr;
+         mMotionModel = nullptr;
+         mTarget = nullptr;
+         mTerrain = nullptr;
+         mTerrainAlternate = nullptr;
 
          dtCore::System::GetInstance().Stop();
       }
@@ -114,7 +114,7 @@ class StealthMotionModelTests : public CPPUNIT_NS::TestFixture
          CPPUNIT_ASSERT( &motionModelConst->GetScene() == mApp->GetScene() );
 
          mMotionModel->SetTarget( mTarget.get() );
-         CPPUNIT_ASSERT( motionModelConst->GetTarget() != NULL );
+         CPPUNIT_ASSERT( motionModelConst->GetTarget() != nullptr );
 
          mMotionModel->SetCollideWithGround(true);
          CPPUNIT_ASSERT( motionModelConst->GetCollideWithGround() );
@@ -183,7 +183,7 @@ class StealthMotionModelTests : public CPPUNIT_NS::TestFixture
       void TestExclusiveCollision()
       {
 
-         dtCore::RefPtr<dtCore::InfiniteTerrain> curTerrain;
+         std::shared_ptr<dtCore::InfiniteTerrain> curTerrain;
 
          // Add a second and different overlapping terrain
          // to the scene.
@@ -275,11 +275,11 @@ class StealthMotionModelTests : public CPPUNIT_NS::TestFixture
 
    private:
 
-      dtCore::RefPtr<SimCore::StealthMotionModel> mMotionModel;
-      dtCore::RefPtr<dtCore::InfiniteTerrain> mTerrain;
-      dtCore::RefPtr<dtCore::InfiniteTerrain> mTerrainAlternate;
-      dtCore::RefPtr<dtCore::Transformable> mTarget;
-      dtCore::RefPtr<dtABC::Application> mApp;
+      std::shared_ptr<SimCore::StealthMotionModel> mMotionModel;
+      std::shared_ptr<dtCore::InfiniteTerrain> mTerrain;
+      std::shared_ptr<dtCore::InfiniteTerrain> mTerrainAlternate;
+      std::shared_ptr<dtCore::Transformable> mTarget;
+      std::shared_ptr<dtABC::Application> mApp;
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(StealthMotionModelTests);

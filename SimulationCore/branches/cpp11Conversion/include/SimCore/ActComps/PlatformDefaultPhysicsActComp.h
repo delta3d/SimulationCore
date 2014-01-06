@@ -38,9 +38,9 @@ namespace SimCore
       {
       public:
          PlatformDefaultPhysicsActComp()
-         : mLastLoadDamageState(NULL)
+         : mLastLoadDamageState(nullptr)
          {
-            dtCore::RefPtr<dtPhysics::PhysicsObject> physObj = new dtPhysics::PhysicsObject(PLATFORM_BODY_NAME);
+            std::shared_ptr<dtPhysics::PhysicsObject> physObj = new dtPhysics::PhysicsObject(PLATFORM_BODY_NAME);
             physObj->SetPrimitiveType(dtPhysics::PrimitiveType::CONVEX_HULL);
             physObj->SetMechanicsType(dtPhysics::MechanicsType::KINEMATIC);
             physObj->SetMass(500.0f);
@@ -51,12 +51,12 @@ namespace SimCore
          virtual void PrePhysicsUpdate()
          {
             dtPhysics::PhysicsObject* physObj = GetMainPhysicsObject();
-            if (physObj != NULL)
+            if (physObj != nullptr)
             {
                dtCore::Transform xform;
-               dtCore::Transformable* drawable = NULL;
+               dtCore::Transformable* drawable = nullptr;
                GetOwner(drawable);
-               if (drawable != NULL)
+               if (drawable != nullptr)
                {
                   drawable->GetTransform(xform);
                }
@@ -85,19 +85,19 @@ namespace SimCore
          virtual void OnRemovedFromWorld()
          {
             dtPhysics::PhysicsActComp::OnRemovedFromWorld();
-            mLastLoadDamageState = NULL;
+            mLastLoadDamageState = nullptr;
          }
 
          void LoadCollision(bool reloadPhysics)
          {
-            SimCore::Actors::Platform* plat = NULL;
+            SimCore::Actors::Platform* plat = nullptr;
             GetOwner(plat);
-            if (plat == NULL)
+            if (plat == nullptr)
             {
                return;
             }
 
-            if (!reloadPhysics && (mLastLoadDamageState != NULL && *mLastLoadDamageState == plat->GetDamageState()))
+            if (!reloadPhysics && (mLastLoadDamageState != nullptr && *mLastLoadDamageState == plat->GetDamageState()))
             {
                return;
             }
@@ -109,7 +109,7 @@ namespace SimCore
                return;
             }
 
-            dtCore::RefPtr<dtPhysics::PhysicsObject> physObj = GetMainPhysicsObject();
+            std::shared_ptr<dtPhysics::PhysicsObject> physObj = GetMainPhysicsObject();
 
             if (physObj.valid())
             {
@@ -154,9 +154,9 @@ namespace SimCore
 
             physObj->SetTransformAsVisual(xform);
 
-            osg::Node* node = NULL;
+            osg::Node* node = nullptr;
             osg::Group* drawNode = plat->GetOSGNode()->asGroup();
-            if (drawNode != NULL && drawNode->getNumChildren() > 0)
+            if (drawNode != nullptr && drawNode->getNumChildren() > 0)
             {
                node = drawNode->getChild(0);
             }

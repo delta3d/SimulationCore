@@ -58,8 +58,8 @@ namespace SimCore
       , mSpeedLimitMax(DEFAULT_SPEED_LIMIT_MAX) // meters per second
       , mElevation(0.0f)
       , mZOffset(0.0f)
-      , mScene(NULL)
-      , mIsector(NULL)
+      , mScene(nullptr)
+      , mIsector(nullptr)
    {
    }
 
@@ -68,10 +68,10 @@ namespace SimCore
    {
       if( mIsector.valid() )
       {
-         mIsector->SetScene(NULL);
+         mIsector->SetScene(nullptr);
       }
-      mIsector = NULL;
-      mScene = NULL;
+      mIsector = nullptr;
+      mScene = nullptr;
    }
 
    /////////////////////////////////////////////////////////////////////////////
@@ -245,7 +245,7 @@ namespace SimCore
       }
 
       // Collide with ground
-      if(mScene.valid() && GetTarget() != NULL && IsEnabled() &&
+      if(mScene.valid() && GetTarget() != nullptr && IsEnabled() &&
             (data->message == dtCore::System::MESSAGE_POST_EVENT_TRAVERSAL || data->message == dtCore::System::MESSAGE_PAUSE))
       {
          if (mCollideWithGround)

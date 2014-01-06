@@ -64,8 +64,8 @@ class VehicleConfigTests : public CPPUNIT_NS::TestFixture
       void TestFunction();
 
    private:
-     dtCore::RefPtr<dtGame::GameManager> mGM;
-     dtCore::RefPtr<dtUtil::Log> mLogger;
+     std::shared_ptr<dtGame::GameManager> mGM;
+     std::shared_ptr<dtUtil::Log> mLogger;
 
 };
 
@@ -92,15 +92,15 @@ void VehicleConfigTests::tearDown()
    dtCore::System::GetInstance().Stop();
 
    mGM->DeleteAllActors(true);
-   mGM = NULL;
+   mGM = nullptr;
 }
 
 /////////////////////////////////////////////////////////
 void VehicleConfigTests::TestFunction()
 {
-   dtCore::RefPtr<dtGame::GameActorProxy> obj;
+   std::shared_ptr<dtGame::GameActorProxy> obj;
    mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::VEHICLE_CONFIG_ACTOR_TYPE, obj);
-   dtCore::RefPtr<SimCore::Actors::VehicleAttachingConfigActor> objActor = dynamic_cast<SimCore::Actors::VehicleAttachingConfigActor*>(obj->GetDrawable());
+   std::shared_ptr<SimCore::Actors::VehicleAttachingConfigActor> objActor = dynamic_cast<SimCore::Actors::VehicleAttachingConfigActor*>(obj->GetDrawable());
 
    CPPUNIT_ASSERT(objActor.valid());
    

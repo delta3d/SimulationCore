@@ -93,16 +93,16 @@ namespace NetDemo
       if (msgType == dtGame::MessageType::INFO_PLAYER_ENTERED_WORLD
                && message.GetSource() == GetGameManager()->GetMachineInfo())
       {
-         dtGame::GameActorProxy* stealthProxy = NULL;
+         dtGame::GameActorProxy* stealthProxy = nullptr;
          GetGameManager()->FindGameActorById(message.GetAboutActorId(), stealthProxy);
-         if (stealthProxy == NULL)
+         if (stealthProxy == nullptr)
          {
             LOG_ERROR("Got a player entered world message, but no player was found.")
             return;
          }
          else if (!stealthProxy->IsRemote()) // Somebody else's player.
          {
-            SimCore::Actors::StealthActor* stealthActor = NULL;
+            SimCore::Actors::StealthActor* stealthActor = nullptr;
             stealthProxy->GetActor(stealthActor);
             SetStealthActor(stealthActor);
 
@@ -140,9 +140,9 @@ namespace NetDemo
       {
          const dtCore::UniqueId& id = message.GetAboutActorId();
          SimCore::Actors::StealthActor* stealth = GetStealthActor();
-         if (stealth != NULL && stealth->GetUniqueId() == id)
+         if (stealth != nullptr && stealth->GetUniqueId() == id)
          {
-            SetStealthActor(NULL); // this is VERY VERY bad btw. We assume we are shutting down or something
+            SetStealthActor(nullptr); // this is VERY VERY bad btw. We assume we are shutting down or something
          }
          else if (mVehicle.valid() && mVehicle->GetUniqueId() == id)
          {
@@ -199,14 +199,14 @@ namespace NetDemo
 
       DetachFromCurrentVehicle();
 
-      mMotionModel = NULL;
-      mRingMM = NULL;
-      mWeaponMM = NULL;
-      mVehicle = NULL;
-      mDOFRing = NULL;
-      mDOFWeapon = NULL;
-      mRingMM = NULL;
-      mWeaponMM = NULL;
+      mMotionModel = nullptr;
+      mRingMM = nullptr;
+      mWeaponMM = nullptr;
+      mVehicle = nullptr;
+      mDOFRing = nullptr;
+      mDOFWeapon = nullptr;
+      mRingMM = nullptr;
+      mWeaponMM = nullptr;
    }
 
    ////////////////////////////////////////////////////////////////////
@@ -220,7 +220,7 @@ namespace NetDemo
          PlayerStatusActorProxy* playerProxy;
          GetGameManager()->FindGameActorById(updateMessage.GetAboutActorId(), playerProxy);
 
-         if (playerProxy == NULL) // Could be deleted or not fully created from partial
+         if (playerProxy == nullptr) // Could be deleted or not fully created from partial
          {
             return;
          }
@@ -231,11 +231,11 @@ namespace NetDemo
          if (!mVehicle.valid() || mVehicle->GetUniqueId() != playerStatus.GetAttachedVehicleID())
          {
             // Find our vehicle - we assume it exists... if not, we'll crash
-            SimCore::Actors::PlatformActorProxy* vehicleProxy = NULL;
+            SimCore::Actors::PlatformActorProxy* vehicleProxy = nullptr;
             GetGameManager()->FindActorById(playerStatus.GetAttachedVehicleID(), vehicleProxy);
-            if (vehicleProxy != NULL)
+            if (vehicleProxy != nullptr)
             {
-               SimCore::Actors::Platform* vehicle = NULL;
+               SimCore::Actors::Platform* vehicle = nullptr;
                vehicleProxy->GetActor(vehicle);
                AttachToVehicle(vehicle);
 
@@ -295,7 +295,7 @@ namespace NetDemo
             {
                if (mDRGhostActorProxy.valid())
                {
-                  SimCore::Actors::DRGhostActor* ghost = NULL;
+                  SimCore::Actors::DRGhostActor* ghost = nullptr;
                   mDRGhostActorProxy->GetActor(ghost);
                   ghost->ClearLinesAndParticles();
 
@@ -343,7 +343,7 @@ namespace NetDemo
                /////////////////////////////////////////////////////////
                //LOG_ALWAYS("TEST - HACK - CREATING TARGET!!! ");
                // Hack stuff - add a vehicle here. For testing purposes.
-               //dtCore::RefPtr<dtGame::GameActorProxy> testEnemyMine = NULL;
+               //std::shared_ptr<dtGame::GameActorProxy> testEnemyMine = nullptr;
                //SimCore::Utils::CreateActorFromPrototypeWithException(*GetGameManager(),
                //   "Enemy Mine Prototype", testEnemyMine, "Check your additional maps in config.xml (compare to config_example.xml).");
                //GetGameManager()->AddActor(*testEnemyMine, false, true);
@@ -490,7 +490,7 @@ namespace NetDemo
       if( button == dtCore::Mouse::LeftButton )
       {
          SimCore::ActComps::WeaponInventoryActComp* weaponAC = mVehicle->GetComponent<SimCore::ActComps::WeaponInventoryActComp>();
-         if (weaponAC != NULL)
+         if (weaponAC != nullptr)
          {
             weaponAC->StartFiring();
          }
@@ -512,7 +512,7 @@ namespace NetDemo
       if( button == dtCore::Mouse::LeftButton )
       {
          SimCore::ActComps::WeaponInventoryActComp* weaponAC = mVehicle->GetComponent<SimCore::ActComps::WeaponInventoryActComp>();
-         if (weaponAC != NULL)
+         if (weaponAC != nullptr)
          {
             weaponAC->StopFiring();
          }
@@ -529,10 +529,10 @@ namespace NetDemo
    /////////////////////////////////////////////////////////////////////////////
    GameLogicComponent* InputComponent::GetLogicComponent()
    {
-      GameLogicComponent* comp = NULL;
+      GameLogicComponent* comp = nullptr;
       GetGameManager()->GetComponentByName(GameLogicComponent::DEFAULT_NAME, comp);
 
-      if (comp == NULL)
+      if (comp == nullptr)
       {
          LOG_INFO("Input Component cannot access the Game App Component. Usually happens when shutting down." );
       }
@@ -546,7 +546,7 @@ namespace NetDemo
       DetachFromCurrentVehicle();
 
       mVehicle = vehicle;
-      if (vehicle == NULL) return;
+      if (vehicle == nullptr) return;
 
       // NOTE - The camera sits at the bottom of a VERY large hierarchy of DoF's. Looks like this:
       //     Vehicle (center of vehicle)
@@ -611,18 +611,18 @@ namespace NetDemo
       }
 
       // Make sure the node doesn't already exist. 
-      osg::Group* group = NULL;
+      osg::Group* group = nullptr;
       group = mVehicle->GetNodeCollector()->GetMatrixTransform(nodeName);
-      if (group == NULL)
+      if (group == nullptr)
       {
          group = mVehicle->GetNodeCollector()->GetDOFTransform(nodeName);
       }
 
       // We didn't find it, so we continue.
-      if (group == NULL)
+      if (group == nullptr)
       {
          // Create a new node
-         dtCore::RefPtr<osg::MatrixTransform> topdownNode = new osg::MatrixTransform();
+         osg::ref_ptr<osg::MatrixTransform> topdownNode = new osg::MatrixTransform();
          // Set it's pos and name
          osg::Matrix transUp = osg::Matrix::translate(0.0f, 0.0f, height); // move us up X meters.
          osg::Matrix rotDown = osg::Matrix::rotate(-M_PI*0.5, 1, 0, 0); // look down at us
@@ -641,17 +641,17 @@ namespace NetDemo
       if (mVehicle.valid())
       {
          //mDOFWeapon->removeChild(GetStealthActor()->GetOSGNode());
-         mWeaponMM->SetTargetDOF(NULL);
-         mRingMM->SetTarget(NULL);
-         mRingMM->SetTargetDOF(NULL);
+         mWeaponMM->SetTargetDOF(nullptr);
+         mRingMM->SetTarget(nullptr);
+         mRingMM->SetTargetDOF(nullptr);
 
          SendAttachOrDetachMessage(dtCore::UniqueId(""), "");
 
          // Re-enable our base motion model - so we have something
-         mMotionModel->SetEnabled(GetStealthActor() != NULL);
+         mMotionModel->SetEnabled(GetStealthActor() != nullptr);
       }
 
-      mVehicle = NULL;
+      mVehicle = nullptr;
       EnableMotionModels();
 
       UpdateDebugInfo(true);
@@ -661,7 +661,7 @@ namespace NetDemo
    bool InputComponent::IsVehiclePivotable()
    {
       HoverVehicleActor* hoverActor = dynamic_cast<HoverVehicleActor*>(mVehicle.get());
-      return hoverActor != NULL && hoverActor->GetVehicleIsTurret();
+      return hoverActor != nullptr && hoverActor->GetVehicleIsTurret();
    }
 
    ////////////////////////////////////////////////////////////////////////////////
@@ -688,9 +688,9 @@ namespace NetDemo
    void InputComponent::SendAttachOrDetachMessage(
       const dtCore::UniqueId& vehicleId, const std::string& dofName)
    {
-      dtCore::RefPtr<SimCore::AttachToActorMessage> msg;
+      std::shared_ptr<SimCore::AttachToActorMessage> msg;
       GetGameManager()->GetMessageFactory().CreateMessage(SimCore::MessageType::ATTACH_TO_ACTOR, msg);
-      msg->SetAboutActorId((GetStealthActor() == NULL) ? (dtCore::UniqueId("")) : GetStealthActor()->GetUniqueId());
+      msg->SetAboutActorId((GetStealthActor() == nullptr) ? (dtCore::UniqueId("")) : GetStealthActor()->GetUniqueId());
       msg->SetAttachToActor(vehicleId);
       msg->SetAttachPointNodeName(dofName);
       GetGameManager()->SendMessage(*msg.get());
@@ -709,7 +709,7 @@ namespace NetDemo
          dynamic_cast<SimCore::Actors::BasePhysicsVehicleActor*>(mVehicle.get());
 
       // basic error check.
-      if (!mVehicle.valid() || mPhysVehicle == NULL)
+      if (!mVehicle.valid() || mPhysVehicle == nullptr)
       {
          CleanUpDRGhost();
          return;
@@ -724,7 +724,7 @@ namespace NetDemo
          if (mDRGhostActorProxy.valid())
          {
             mOriginalPublishTimesPerSecond = mPhysVehicle->GetComponent<dtGame::DRPublishingActComp>()->GetMaxUpdateSendRate();
-            SimCore::Actors::DRGhostActor* actor = NULL;
+            SimCore::Actors::DRGhostActor* actor = nullptr;
             mDRGhostActorProxy->GetActor(actor);
             actor->SetSlavedEntity(mVehicle);
             GetGameManager()->AddActor(*mDRGhostActorProxy, false, false);
@@ -783,10 +783,10 @@ namespace NetDemo
 
       if (mVehicle.valid())
       {
-         dtGame::DRPublishingActComp* drPubAC = NULL;
+         dtGame::DRPublishingActComp* drPubAC = nullptr;
          mVehicle->GetComponent(drPubAC);
 
-         if (drPubAC != NULL)
+         if (drPubAC != nullptr)
          {
             if (!ctrlIsPressed)
             {
@@ -816,12 +816,12 @@ namespace NetDemo
       if (mDRGhostActorProxy.valid())
       {
          GetGameManager()->DeleteActor(*mDRGhostActorProxy.get());
-         mDRGhostActorProxy = NULL;
+         mDRGhostActorProxy = nullptr;
          if (mVehicle.valid())
          {
-            dtGame::DRPublishingActComp* drPubAC = NULL;
+            dtGame::DRPublishingActComp* drPubAC = nullptr;
             mVehicle->GetComponent(drPubAC);
-            if (drPubAC != NULL)
+            if (drPubAC != nullptr)
             {
                drPubAC->SetMaxUpdateSendRate(mOriginalPublishTimesPerSecond);
             }
@@ -836,13 +836,13 @@ namespace NetDemo
    {
       SimCore::Actors::BasePhysicsVehicleActor* physVehicle =
          dynamic_cast<SimCore::Actors::BasePhysicsVehicleActor*>(mVehicle.get());
-      if (physVehicle != NULL)
+      if (physVehicle != nullptr)
       {
          mMaxPublishRate += incrementValue;
          dtUtil::Clamp(mMaxPublishRate, 0, 60);
-         dtGame::DRPublishingActComp* drPubAC = NULL;
+         dtGame::DRPublishingActComp* drPubAC = nullptr;
          physVehicle->GetComponent(drPubAC);
-         if (drPubAC != NULL)
+         if (drPubAC != nullptr)
          {
             drPubAC->SetMaxUpdateSendRate(float(mMaxPublishRate));
             std::cout << "TEST - Num Publishes Per Second[" << mMaxPublishRate <<  "]." << std::endl;
@@ -871,10 +871,10 @@ namespace NetDemo
          bool ctrlIsPressed = app.GetKeyboard()->GetKeyState(osgGA::GUIEventAdapter::KEY_Control_L) ||
             app.GetKeyboard()->GetKeyState(osgGA::GUIEventAdapter::KEY_Control_R);
 
-         dtGame::DeadReckoningHelper* drHelper = NULL;
+         dtGame::DeadReckoningHelper* drHelper = nullptr;
          mVehicle->GetComponent(drHelper);
 
-         if (drHelper != NULL)
+         if (drHelper != nullptr)
          {
             if (!ctrlIsPressed)
             {
@@ -962,10 +962,10 @@ namespace NetDemo
       // Toggle the publishing of angular velocity
       if (mVehicle.valid())
       {
-         dtGame::DeadReckoningHelper* drHelper = NULL;
+         dtGame::DeadReckoningHelper* drHelper = nullptr;
          mVehicle->GetComponent(drHelper);
 
-         if (drHelper!= NULL)
+         if (drHelper!= nullptr)
          {
             if (drHelper->GetUseFixedSmoothingTime())
             {
@@ -989,10 +989,10 @@ namespace NetDemo
 
       if (mVehicle.valid())
       {
-         dtGame::DRPublishingActComp* drPubAC = NULL;
+         dtGame::DRPublishingActComp* drPubAC = nullptr;
          mVehicle->GetComponent(drPubAC);
 
-         if (drPubAC != NULL)
+         if (drPubAC != nullptr)
          {
             if (drPubAC->GetPublishAngularVelocity())
             {
@@ -1015,10 +1015,10 @@ namespace NetDemo
       // Toggle the Use Cubic Spline
       if (mVehicle.valid())
       {
-         dtGame::DeadReckoningHelper* drHelper = NULL;
+         dtGame::DeadReckoningHelper* drHelper = nullptr;
          mVehicle->GetComponent(drHelper);
 
-         if (drHelper != NULL)
+         if (drHelper != nullptr)
          {
             if (drHelper->GetUseCubicSplineTransBlend())
             {
@@ -1039,10 +1039,10 @@ namespace NetDemo
    {
       if (mVehicle.valid())
       {
-         dtGame::DeadReckoningHelper* drHelper = NULL;
+         dtGame::DeadReckoningHelper* drHelper = nullptr;
          mVehicle->GetComponent(drHelper);
 
-         if (drHelper != NULL)
+         if (drHelper != nullptr)
          {
             if (drHelper->GetDeadReckoningAlgorithm()
                == dtGame::DeadReckoningAlgorithm::STATIC)
@@ -1074,10 +1074,10 @@ namespace NetDemo
    {
       if (mVehicle.valid())
       {
-         dtGame::DeadReckoningHelper* drHelper = NULL;
+         dtGame::DeadReckoningHelper* drHelper = nullptr;
          mVehicle->GetComponent(drHelper);
 
-         if (drHelper != NULL)
+         if (drHelper != nullptr)
          {
             if (drHelper->GetGroundClampType() == dtGame::GroundClampTypeEnum::NONE)
             {
@@ -1103,7 +1103,7 @@ namespace NetDemo
    {
       GameLogicComponent* glComp = GetLogicComponent();
 
-      if (glComp != NULL) 
+      if (glComp != nullptr) 
       {
          glComp->GetDebugInfo().mShowDebugWindow = !glComp->GetDebugInfo().mShowDebugWindow;
          UpdateDebugInfo(true);
@@ -1115,20 +1115,20 @@ namespace NetDemo
    {
       GameLogicComponent* glComp = GetLogicComponent();
 
-      if (glComp == NULL)
+      if (glComp == nullptr)
       {
          return; // nothing to do without a Game logic component
       }
 
-      dtGame::DeadReckoningHelper* drHelper = NULL;
-      dtGame::DRPublishingActComp* drPubAC = NULL;
+      dtGame::DeadReckoningHelper* drHelper = nullptr;
+      dtGame::DRPublishingActComp* drPubAC = nullptr;
       if (mVehicle.valid())
       {
          mVehicle->GetComponent(drHelper);
          mVehicle->GetComponent(drPubAC);
       }
 
-      if (drHelper != NULL)
+      if (drHelper != nullptr)
       {
          glComp->GetDebugInfo().mDRGroundClampStatus =
             drHelper->GetGroundClampType().GetName();
@@ -1147,7 +1147,7 @@ namespace NetDemo
       }
 
 
-      if (drPubAC != NULL)
+      if (drPubAC != nullptr)
       {
          glComp->GetDebugInfo().mDRPublishRate = (int)
             drPubAC->GetMaxUpdateSendRate();
@@ -1227,18 +1227,18 @@ namespace NetDemo
       std::cout << "Resetting DR values such as publish and smoothing." << std::endl;
       if (mVehicle.valid())
       {
-         dtGame::DRPublishingActComp* drPubAC = NULL;
+         dtGame::DRPublishingActComp* drPubAC = nullptr;
          mVehicle->GetComponent(drPubAC);
-         if (drPubAC != NULL)
+         if (drPubAC != nullptr)
          {
             drPubAC->SetMaxUpdateSendRate(3.0f);
             drPubAC->SetUseVelocityInDRUpdateDecision(true);
             drPubAC->SetPublishLinearVelocity(true);
          }
 
-         dtGame::DeadReckoningHelper* drHelper = NULL;
+         dtGame::DeadReckoningHelper* drHelper = nullptr;
          mVehicle->GetComponent(drHelper);
-         if (drHelper != NULL)
+         if (drHelper != nullptr)
          {
             drHelper->SetMaxRotationSmoothingTime(1.0f);
             drHelper->SetMaxTranslationSmoothingTime(1.0f);
@@ -1250,9 +1250,9 @@ namespace NetDemo
    void InputComponent::KillEnemy(bool killAllEnemies)
    {
       // We use the Munitions Component to do the damage to the object
-      SimCore::Components::MunitionsComponent* munitionsComp = NULL;
+      SimCore::Components::MunitionsComponent* munitionsComp = nullptr;
       GetGameManager()->GetComponentByName(SimCore::Components::MunitionsComponent::DEFAULT_NAME, munitionsComp);
-      if (munitionsComp == NULL)
+      if (munitionsComp == nullptr)
       {
          LOG_ERROR("No Munitions Component. ERROR!");
          return;
@@ -1267,7 +1267,7 @@ namespace NetDemo
       {
          // Find an entity that is not already destroyed and is also a mine, helix, etc...
          SimCore::Actors::BaseEntity* entity = dynamic_cast<SimCore::Actors::BaseEntity*>(allGameActors[i]->GetDrawable());
-         if (entity != NULL && entity->GetDamageState() != SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::DESTROYED && 
+         if (entity != nullptr && entity->GetDamageState() != SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::DESTROYED && 
             (allGameActors[i]->GetActorType() == *NetDemoActorRegistry::ENEMY_MINE_ACTOR_TYPE ||
             allGameActors[i]->GetActorType() == *NetDemoActorRegistry::ENEMY_HELIX_ACTOR_TYPE))
          {
@@ -1288,18 +1288,18 @@ namespace NetDemo
       {
          mVehicle->SetHeadLightsEnabled(b);
 
-         SimCore::Components::RenderingSupportComponent* rsComp = NULL;
-         SimCore::Components::RenderingSupportComponent::SpotLight* dl = NULL;
+         SimCore::Components::RenderingSupportComponent* rsComp = nullptr;
+         SimCore::Components::RenderingSupportComponent::SpotLight* dl = nullptr;
 
          GetGameManager()->GetComponentByName( SimCore::Components::RenderingSupportComponent::DEFAULT_NAME, rsComp);
 
-         if (rsComp != NULL)
+         if (rsComp != nullptr)
          {
             // ...so that the head light effect can be accessed...
             dl = dynamic_cast<SimCore::Components::RenderingSupportComponent::SpotLight*>(rsComp->GetDynamicLight(mVehicle->GetHeadlightId()));
 
             // ...and if the light effect does not exist...
-            if(dl != NULL)
+            if(dl != nullptr)
             {
                dl->mTarget = mVehicle.get();
             }

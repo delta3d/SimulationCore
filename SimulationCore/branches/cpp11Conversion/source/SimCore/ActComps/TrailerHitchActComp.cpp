@@ -78,7 +78,7 @@ namespace SimCore
       , mCurrentHitchRotHPR(osg::Vec3(0.0f, 0.0f, 0.0f))
       , mCascadeDeletes(true)
       , mUseCurrentHitchRotToMoveTrailerWhenRemote(false)
-      , mHitchJoint(NULL)
+      , mHitchJoint(nullptr)
       {
       }
 
@@ -132,7 +132,7 @@ namespace SimCore
       void TrailerHitchActComp::OnEnteredWorld()
       {
          // This will do nothing unless everything is set.
-         dtGame::GameActor* ga = NULL;
+         dtGame::GameActor* ga = nullptr;
          GetOwner(ga);
          Attach();
       }
@@ -140,19 +140,19 @@ namespace SimCore
       //////////////////////////////////////////////////
       void TrailerHitchActComp::OnRemovedFromWorld()
       {
-         dtGame::GameActor* ga = NULL;
+         dtGame::GameActor* ga = nullptr;
          GetOwner(ga);
 
          if (mCascadeDeletes && mTrailerActor.valid())
          {
-            if (ga != NULL)
+            if (ga != nullptr)
             {
                ga->GetGameActorProxy().GetGameManager()->DeleteActor(mTrailerActor->GetGameActorProxy());
             }
          }
 
          // remote versions should be dead-reckoned together, or otherwise moved another way.
-         if (ga != NULL && !ga->IsRemote())
+         if (ga != nullptr && !ga->IsRemote())
          {
             Detach();
          }
@@ -161,7 +161,7 @@ namespace SimCore
       //////////////////////////////////////////////////
       void TrailerHitchActComp::Attach()
       {
-         if (mHitchJoint == NULL && GetIsInGM() && !mTrailerActorId.ToString().empty())
+         if (mHitchJoint == nullptr && GetIsInGM() && !mTrailerActorId.ToString().empty())
          {
             mTrailerActor = LookupTrailer();
             if (!mTrailerActor.valid())
@@ -171,13 +171,13 @@ namespace SimCore
 
             std::pair<dtPhysics::PhysicsObject*, dtPhysics::PhysicsObject* > physicsObjects = GetPhysicsObjects();
 
-            if (physicsObjects.first == NULL || physicsObjects.second == NULL)
+            if (physicsObjects.first == nullptr || physicsObjects.second == nullptr)
             {
                LOG_WARNING("In order to attach a trailer, both actors must have both a physics actor component and a main physics object.");
                return;
             }
 
-            if (physicsObjects.first->GetBodyWrapper() == NULL || physicsObjects.second->GetBodyWrapper() == NULL)
+            if (physicsObjects.first->GetBodyWrapper() == nullptr || physicsObjects.second->GetBodyWrapper() == nullptr)
             {
                LOG_WARNING("Physics objects for the tractor and trailer body must be initalized.");
                return;
@@ -186,7 +186,7 @@ namespace SimCore
 
             if (!mTrailerActor->IsRemote())
             {
-               dtGame::GameActor* ga = NULL;
+               dtGame::GameActor* ga = nullptr;
                GetOwner(ga);
                if (ga->IsPublished() && !mTrailerActor->IsPublished())
                {
@@ -237,7 +237,7 @@ namespace SimCore
          }
 
          std::pair<osg::Group*, osg::Group* > nodes = GetHitchNodes();
-         if (nodes.first == NULL || nodes.second == NULL)
+         if (nodes.first == nullptr || nodes.second == nullptr)
          {
             LOG_WARNING("Unable to attach trailer; either the tractor hitch \"" + mHitchNodeNameTractor
                      + "\"  or trailer hitch \"" + mHitchNodeNameTrailer + "\" nodes cannot be found.");
@@ -276,16 +276,16 @@ namespace SimCore
       std::pair<osg::Group*, osg::Group* > TrailerHitchActComp::GetHitchNodes() const
       {
          std::pair<osg::Group*, osg::Group* > result;
-         result.first = NULL;
-         result.second = NULL;
+         result.first = nullptr;
+         result.second = nullptr;
 
-         SimCore::Actors::IGActor* igDraw = NULL;
+         SimCore::Actors::IGActor* igDraw = nullptr;
          GetOwner(igDraw);
 
-         dtUtil::NodeCollector* nc = NULL;
-         dtUtil::NodeCollector* ncTrailer = NULL;
+         dtUtil::NodeCollector* nc = nullptr;
+         dtUtil::NodeCollector* ncTrailer = nullptr;
 
-         if (igDraw != NULL)
+         if (igDraw != nullptr)
          {
             nc = igDraw->GetNodeCollector();
          }
@@ -295,7 +295,7 @@ namespace SimCore
             ncTrailer = mTrailerActor->GetNodeCollector();
          }
 
-         if (nc != NULL && ncTrailer != NULL)
+         if (nc != nullptr && ncTrailer != nullptr)
          {
             osgSim::DOFTransform* dofTractor = nc->GetDOFTransform(mHitchNodeNameTractor);
             osgSim::DOFTransform* dofTrailer = ncTrailer->GetDOFTransform(mHitchNodeNameTrailer);
@@ -308,27 +308,27 @@ namespace SimCore
       std::pair<dtPhysics::PhysicsObject*, dtPhysics::PhysicsObject*> TrailerHitchActComp::GetPhysicsObjects() const
       {
          std::pair<dtPhysics::PhysicsObject*, dtPhysics::PhysicsObject*> result;
-         result.first = NULL;
-         result.second = NULL;
+         result.first = nullptr;
+         result.second = nullptr;
 
-         SimCore::Actors::IGActor* igDraw = NULL;
+         SimCore::Actors::IGActor* igDraw = nullptr;
          GetOwner(igDraw);
 
          dtPhysics::PhysicsActComp* physAC;
          igDraw->GetComponent(physAC);
 
-         if (physAC != NULL)
+         if (physAC != nullptr)
          {
             result.first = physAC->GetMainPhysicsObject();
          }
 
-         physAC = NULL;
+         physAC = nullptr;
          if (mTrailerActor.valid())
          {
             mTrailerActor->GetComponent(physAC);
          }
 
-         if (physAC != NULL)
+         if (physAC != nullptr)
          {
             result.second = physAC->GetMainPhysicsObject();
          }
@@ -341,36 +341,36 @@ namespace SimCore
       {
          if (mTrailerActorId.ToString().empty())
          {
-            return NULL;
+            return nullptr;
          }
 
-         SimCore::Actors::IGActor* igDraw = NULL;
+         SimCore::Actors::IGActor* igDraw = nullptr;
          GetOwner(igDraw);
          dtDAL::BaseActorObject* actor = igDraw->GetGameActorProxy().GetGameManager()->FindActorById(mTrailerActorId);
-         if (actor != NULL)
+         if (actor != nullptr)
          {
             return dynamic_cast<SimCore::Actors::IGActor*>(actor->GetDrawable());
          }
-         return NULL;
+         return nullptr;
       }
 
       //////////////////////////////////////////////////
       void TrailerHitchActComp::Detach()
       {
-         if (mTrailerActor != NULL)
+         if (mTrailerActor != nullptr)
          {
             ResetTrailerActor();
          }
 
          delete mHitchJoint;
-         mHitchJoint = NULL;
-         mTrailerActor = NULL;
+         mHitchJoint = nullptr;
+         mTrailerActor = nullptr;
       }
 
       //////////////////////////////////////////////////
       bool TrailerHitchActComp::GetAttached() const
       {
-         return mTrailerActor.valid() && (mHitchJoint != NULL || mTrailerActor->IsRemote());
+         return mTrailerActor.valid() && (mHitchJoint != nullptr || mTrailerActor->IsRemote());
       }
 
       //////////////////////////////////////////////////
@@ -382,12 +382,12 @@ namespace SimCore
       //////////////////////////////////////////////////
       void TrailerHitchActComp::ResetTrailerActor()
       {
-         if (mTrailerActor == NULL)
+         if (mTrailerActor == nullptr)
          {
             return;
          }
 
-         dtGame::GameActor* ga = NULL;
+         dtGame::GameActor* ga = nullptr;
          GetOwner(ga);
 
          bool needDetach = mTrailerActor->GetParent() == ga;
@@ -397,12 +397,12 @@ namespace SimCore
             mTrailerActor->Emancipate();
          }
 
-         if ( mTrailerActor->GetParent() == NULL)
+         if ( mTrailerActor->GetParent() == nullptr)
          {
             dtGame::GameManager* gm = ga->GetGameActorProxy().GetGameManager();
-            if (gm->GetEnvironmentActor() != NULL)
+            if (gm->GetEnvironmentActor() != nullptr)
             {
-               dtGame::IEnvGameActor* ienv = NULL;
+               dtGame::IEnvGameActor* ienv = nullptr;
                gm->GetEnvironmentActor()->GetDrawable(ienv);
                ienv->AddActor(*mTrailerActor);
             }
@@ -412,12 +412,12 @@ namespace SimCore
             }
          }
 
-         dtGame::DeadReckoningHelper* drHelper = NULL;
+         dtGame::DeadReckoningHelper* drHelper = nullptr;
          mTrailerActor->GetComponent(drHelper);
 
-         dtGame::DeadReckoningHelper* drHelperOwner = NULL;
+         dtGame::DeadReckoningHelper* drHelperOwner = nullptr;
          ga->GetComponent(drHelperOwner);
-         if (drHelper != NULL && drHelperOwner != NULL)
+         if (drHelper != nullptr && drHelperOwner != nullptr)
          {
             // pick up the dr algorithm from the tractor.
             drHelper->SetDeadReckoningAlgorithm(drHelperOwner->GetDeadReckoningAlgorithm());
@@ -428,15 +428,15 @@ namespace SimCore
       osg::Vec3d TrailerHitchActComp::WarpTrailerToTractor(bool addAsChild)
       {
          osg::Vec3d result(0.0, 0.0, 0.0);
-         if (mTrailerActor != NULL)
+         if (mTrailerActor != nullptr)
          {
             dtCore::Transform tractorHitchTransform, trailerWorld;
             CalcTransformsForTractorHitchAndTrailerVisual(tractorHitchTransform, trailerWorld);
 
-            dtGame::DeadReckoningHelper* drHelper = NULL;
+            dtGame::DeadReckoningHelper* drHelper = nullptr;
             mTrailerActor->GetComponent(drHelper);
 
-            dtGame::GameActor* ga = NULL;
+            dtGame::GameActor* ga = nullptr;
             GetOwner(ga);
 
             bool parentIsTractor = mTrailerActor->GetParent() == ga;
@@ -455,7 +455,7 @@ namespace SimCore
                ga->AddChild(mTrailerActor.get());
                drHelper->SetDeadReckoningAlgorithm(dtGame::DeadReckoningAlgorithm::NONE);
             }
-            else if (mTrailerActor->GetParent() == NULL)
+            else if (mTrailerActor->GetParent() == nullptr)
             {
                ResetTrailerActor();
             }
@@ -467,9 +467,9 @@ namespace SimCore
             // OR it has no drHelper.
             if (!mTrailerActor->IsRemote())
             {
-               dtPhysics::PhysicsActComp* physACTrailer = NULL;
+               dtPhysics::PhysicsActComp* physACTrailer = nullptr;
                mTrailerActor->GetComponent(physACTrailer);
-               if (physACTrailer != NULL)
+               if (physACTrailer != nullptr)
                {
                   physACTrailer->SetMultiBodyTransformAsVisual(trailerWorld);
                }
@@ -501,7 +501,7 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////
       void TrailerHitchActComp::SetTrailerActorId(const dtCore::UniqueId& id)
       {
-         bool wasAttached = mTrailerActor != NULL;
+         bool wasAttached = mTrailerActor != nullptr;
          if (wasAttached)
          {
             Detach();
@@ -520,7 +520,7 @@ namespace SimCore
          if (GetAttached())
          {
             std::pair<osg::Group*, osg::Group* > nodes = GetHitchNodes();
-            if (nodes.first == NULL || nodes.second == NULL)
+            if (nodes.first == nullptr || nodes.second == nullptr)
             {
                LOG_WARNING("The trailer seems to think it's attached, but either the tractor hitch \"" + mHitchNodeNameTractor
                         + "\"  or trailer hitch \"" + mHitchNodeNameTrailer + "\" nodes cannot be found.");
@@ -545,7 +545,7 @@ namespace SimCore
       void TrailerHitchActComp::SetCurrentHitchRotHPR(const osg::Vec3& hpr)
       {
          mCurrentHitchRotHPR = hpr;
-         if (mUseCurrentHitchRotToMoveTrailerWhenRemote && mTrailerActor != NULL && mTrailerActor->IsRemote())
+         if (mUseCurrentHitchRotToMoveTrailerWhenRemote && mTrailerActor != nullptr && mTrailerActor->IsRemote())
          {
             WarpTrailerToTractor(true);
          }

@@ -411,11 +411,11 @@ namespace SimCore
 
          private:
             ///a sub-matrix node just for doing scale on the model.
-            dtCore::RefPtr<osg::MatrixTransform> mScaleMatrixNode;
+            osg::ref_ptr<osg::MatrixTransform> mScaleMatrixNode;
 
             //////////////// DeadReckoning related values
             /// The particle systems used for fire and smoke
-            dtCore::RefPtr<dtCore::ParticleSystem> mSmokePlumesSystem, mFlamesSystem;
+            std::shared_ptr<dtCore::ParticleSystem> mSmokePlumesSystem, mFlamesSystem;
 
             /// The file names that are loaded into the above particle systems
             std::string mSmokePlumesSystemFile, mFlamesSystemFile;

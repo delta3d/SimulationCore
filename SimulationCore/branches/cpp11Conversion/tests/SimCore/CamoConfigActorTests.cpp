@@ -70,8 +70,8 @@ namespace SimCore
             void TestCamoSettingOnActor();
 
          private:
-            dtCore::RefPtr<dtGame::GameManager> mGM;
-            dtCore::RefPtr<CamoConfigActorProxy> mProxy;
+            std::shared_ptr<dtGame::GameManager> mGM;
+            std::shared_ptr<CamoConfigActorProxy> mProxy;
             CamoConfigActor* mActor;
       };
 
@@ -103,11 +103,11 @@ namespace SimCore
       {
          try
          {
-            mActor = NULL;
-            mProxy = NULL;
+            mActor = nullptr;
+            mProxy = nullptr;
 
             mGM->DeleteAllActors(true);
-            mGM = NULL;
+            mGM = nullptr;
          }
          catch (const dtUtil::Exception& ex)
          {
@@ -120,7 +120,7 @@ namespace SimCore
       {
          try
          {
-            dtCore::RefPtr<CamoParams> params = new CamoParams;
+            std::shared_ptr<CamoParams> params = new CamoParams;
             const CamoParams& constParams = *params;
 
             CPPUNIT_ASSERT(constParams.GetName().empty());
@@ -220,10 +220,10 @@ namespace SimCore
             std::string camoName2("Test Camo ABC");
             std::string camoName3("Test Camo 456");
             std::string camoName4("Test Camo XYZ");
-            dtCore::RefPtr<CamoParams> camo1 = CreateCamo(camoName1, camoId1);
-            dtCore::RefPtr<CamoParams> camo2 = CreateCamo(camoName2, camoId2);
-            dtCore::RefPtr<CamoParams> camo3 = CreateCamo(camoName3, camoId3);
-            dtCore::RefPtr<CamoParams> camo4 = CreateCamo(camoName4, camoId4);
+            std::shared_ptr<CamoParams> camo1 = CreateCamo(camoName1, camoId1);
+            std::shared_ptr<CamoParams> camo2 = CreateCamo(camoName2, camoId2);
+            std::shared_ptr<CamoParams> camo3 = CreateCamo(camoName3, camoId3);
+            std::shared_ptr<CamoParams> camo4 = CreateCamo(camoName4, camoId4);
 
             CamoParamsList camoList;
             CPPUNIT_ASSERT(mActor->GetCamoParamsCount() == 0);
@@ -270,8 +270,8 @@ namespace SimCore
             CPPUNIT_ASSERT(camoList.size() == 2);
 
             // --- Test removing the same ones that were just removed
-            CPPUNIT_ASSERT(mActor->GetCamoParamsByCamoId(camoId1) == NULL);
-            CPPUNIT_ASSERT(mActor->GetCamoParamsByCamoId(camoId3) == NULL);
+            CPPUNIT_ASSERT(mActor->GetCamoParamsByCamoId(camoId1) == nullptr);
+            CPPUNIT_ASSERT(mActor->GetCamoParamsByCamoId(camoId3) == nullptr);
             CPPUNIT_ASSERT( ! mActor->RemoveCamoParams(*camo1));
             CPPUNIT_ASSERT( ! mActor->RemoveCamoParams(*camo3));
 
@@ -329,11 +329,11 @@ namespace SimCore
             const CamoParams* camo3 = mActor->GetCamoParamsByName(camoName3);
             const CamoParams* camo4 = mActor->GetCamoParamsByName(camoName4);
             const CamoParams* camo5 = mActor->GetCamoParamsByName(camoName5);
-            CPPUNIT_ASSERT(camo1 != NULL);
-            CPPUNIT_ASSERT(camo2 != NULL);
-            CPPUNIT_ASSERT(camo3 != NULL);
-            CPPUNIT_ASSERT(camo4 != NULL);
-            CPPUNIT_ASSERT(camo5 != NULL);
+            CPPUNIT_ASSERT(camo1 != nullptr);
+            CPPUNIT_ASSERT(camo2 != nullptr);
+            CPPUNIT_ASSERT(camo3 != nullptr);
+            CPPUNIT_ASSERT(camo4 != nullptr);
+            CPPUNIT_ASSERT(camo5 != nullptr);
             // --- Test their ids
             CPPUNIT_ASSERT(camo1 == mActor->GetCamoParamsByCamoId(0));
             CPPUNIT_ASSERT(camo2 == mActor->GetCamoParamsByCamoId(1));
@@ -403,24 +403,24 @@ namespace SimCore
             mGM->AddActor(*mProxy);
             const CamoParams* camo1 = mActor->GetCamoParamsByName("Test");
             const CamoParams* camo2 = mActor->GetCamoParamsByName("Test2");
-            CPPUNIT_ASSERT(camo1 != NULL);
-            CPPUNIT_ASSERT(camo2 != NULL);
+            CPPUNIT_ASSERT(camo1 != nullptr);
+            CPPUNIT_ASSERT(camo2 != nullptr);
             CamoParams::CamoId camoId1 = camo1->GetId();
             CamoParams::CamoId camoId2 = camo2->GetId();
 
             // Create a proxy.
-            dtCore::RefPtr<dtGame::GameActorProxy> proxy;
+            std::shared_ptr<dtGame::GameActorProxy> proxy;
             mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::MILITARY_GROUND_PLATFORM_ACTOR_TYPE, proxy);
 
             // Get the actor that was created.
-            SimCore::Actors::Platform* actor = NULL;
+            SimCore::Actors::Platform* actor = nullptr;
             CPPUNIT_ASSERT(proxy.valid());
             proxy->GetActor(actor);
 
             // Get the actor's Camo Paint Actor Component
-            CamoPaintStateActComp* actComp = NULL;
+            CamoPaintStateActComp* actComp = nullptr;
             proxy->GetComponent(actComp);
-            CPPUNIT_ASSERT(actComp != NULL);
+            CPPUNIT_ASSERT(actComp != nullptr);
             actComp->SetCamoId(camoId2);
 
             // Add the actor to the scene so it can access the 

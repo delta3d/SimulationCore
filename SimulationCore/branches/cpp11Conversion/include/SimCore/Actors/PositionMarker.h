@@ -126,7 +126,7 @@ namespace SimCore
             float mInitialAlpha;
             bool mDeleteOnFadeOut;
             dtUtil::RefString mSourceCallsign;
-            dtCore::RefPtr<BaseEntity> mAssociatedEntity;
+            std::shared_ptr<BaseEntity> mAssociatedEntity;
             BaseEntityActorProxy::ForceEnum* mSourceForce;
             BaseEntityActorProxy::ServiceEnum* mSourceService;
             osg::Vec4 mFriendlyColor, mNeutralColor, mOpposingColor, mOtherColor, mStaleColor;

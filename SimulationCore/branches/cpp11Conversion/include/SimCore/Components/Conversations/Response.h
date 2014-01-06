@@ -22,8 +22,8 @@
 #define SIMCORE_RESPONSE_H
 
 #include <SimCore/Export.h>
-#include <osg/Referenced>
-#include <dtCore/observerptr.h>
+#include <dtUtil/refcountedbase.h>
+#include <dtUtil/refcountedbase.h>
 #include <dtCore/uniqueid.h>
 #include <dtUtil/enumeration.h>
 
@@ -60,7 +60,7 @@ namespace SimCore
 
 
 
-      class SIMCORE_EXPORT Response : public osg::Referenced
+      class SIMCORE_EXPORT Response : public std::enable_shared_from_this
       {
          public:
             Response();

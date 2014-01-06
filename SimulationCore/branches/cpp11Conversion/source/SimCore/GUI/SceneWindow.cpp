@@ -57,7 +57,7 @@ namespace SimCore
          , mPerspectiveMode(false)
          , mLastVisibilityMask(1)
          , mWindowUnits(-50.0, 50.0, -50.0, 50.0)
-         , mCamera(NULL)
+         , mCamera(nullptr)
       {
       }
 
@@ -75,7 +75,7 @@ namespace SimCore
          int textureWidth, int textureHeight )
       {
          CEGUI::Window* w = GetCEGUIWindow();
-         dtCore::RefPtr<osg::Texture2D> rttTex;// = mainGUI.CreateRenderTargetTexture(*w, NULL, "RTT", "RTTImage");
+         osg::ref_ptr<osg::Texture2D> rttTex;// = mainGUI.CreateRenderTargetTexture(*w, nullptr, "RTT", "RTTImage");
 #if CEGUI_VERSION_MAJOR == 0 && CEGUI_VERSION_MINOR < 7
          GetOrCreateOSGTexture(rttTex, *w, textureWidth, textureHeight);
 #else
@@ -226,7 +226,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void SceneWindow::GetOrCreateOSGTexture(dtCore::RefPtr<osg::Texture2D>& outTexture,
+      void SceneWindow::GetOrCreateOSGTexture(osg::ref_ptr<osg::Texture2D>& outTexture,
 #if CEGUI_VERSION_MAJOR == 0 && CEGUI_VERSION_MINOR < 7
          CEGUI::Window& widget,
 #else
@@ -235,13 +235,13 @@ namespace SimCore
          int textureWidth, int textureHeight)
       {
          // Determine if an image already exists for the widget.
-         const CEGUI::Image* image = NULL;
+         const CEGUI::Image* image = nullptr;
          if(widget.isPropertyPresent("Image"))
          {
             image = CEGUI::PropertyHelper::stringToImage(widget.getProperty("Image"));
          }
 
-         if( image == NULL )
+         if( image == nullptr )
          {
             // Generate an image set with a unique name.
             std::string imagesetName = "RenderTargetTexture." + std::string(widget.getName().c_str());
@@ -294,7 +294,7 @@ namespace SimCore
          tx->push_back(osg::Vec2(0, 1));
          geo->setTexCoordArray(0, tx);
 
-         if(tex != NULL)
+         if(tex != nullptr)
          {
             geo->getOrCreateStateSet()->setTextureAttributeAndModes(0, tex, osg::StateAttribute::ON);
          }

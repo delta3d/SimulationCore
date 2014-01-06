@@ -21,9 +21,9 @@
 #ifndef SIMCORE_CONVERSATION_H
 #define SIMCORE_CONVERSATION_H
 
-#include <dtCore/observerptr.h>
+#include <dtUtil/refcountedbase.h>
 #include <SimCore/Export.h>
-#include <osg/Referenced>
+#include <dtUtil/refcountedbase.h>
 #include <vector>
 #include <string>
 #include <SimCore/Components/Conversations/Interaction.h>
@@ -53,12 +53,12 @@ namespace SimCore
 {
    namespace Components
    {
-      class SIMCORE_EXPORT Conversation : public osg::Referenced
+      class SIMCORE_EXPORT Conversation : public std::enable_shared_from_this
       {
          public:
-            typedef std::vector< dtCore::RefPtr<Interaction> > InteractionArray;
-            typedef std::multimap<dtCore::ObserverPtr<dtDAL::GameEvent>, dtCore::RefPtr<Command<void> > > EventToCommandMap;
-            typedef std::multimap<const Response*, dtCore::ObserverPtr<dtDAL::GameEvent> > ResponseToEventMap;
+            typedef std::vector< std::shared_ptr<Interaction> > InteractionArray;
+            typedef std::multimap<std::weak_ptr<dtDAL::GameEvent>, std::shared_ptr<Command<void> > > EventToCommandMap;
+            typedef std::multimap<const Response*, std::weak_ptr<dtDAL::GameEvent> > ResponseToEventMap;
 
             typedef dtUtil::Functor<void, TYPELIST_2(dtDAL::GameEvent*, Conversation*)> RegisterConversationFunctor;
 
@@ -106,7 +106,7 @@ namespace SimCore
             std::string mCharacterName;
             RegisterConversationFunctor mRegistrationFunctor;
 
-            dtCore::ObserverPtr<Interaction> mCurrentInteraction;
+            std::weak_ptr<Interaction> mCurrentInteraction;
             InteractionArray::iterator mCurrentInteractionIter;
             InteractionArray mInteractions;
             EventToCommandMap mCommands;
@@ -157,13 +157,13 @@ namespace SimCore
                std::string mDefaultCloseUI;
                std::vector<std::string> mResponseOptions;
 
-               typedef std::vector<std::pair<dtCore::RefPtr<Response>, dtCore::RefPtr<Interaction> > > ResponseInteractionArray;
+               typedef std::vector<std::pair<std::shared_ptr<Response>, std::shared_ptr<Interaction> > > ResponseInteractionArray;
                ResponseInteractionArray mResponses;
                ResponseInteractionArray mCloseUIResponses;
 
-               dtCore::RefPtr<Interaction> mCurrentInteraction;
-               dtCore::RefPtr<Interaction> mBranchInteraction;
-               dtCore::RefPtr<Response> mCurrentResponse;
+               std::shared_ptr<Interaction> mCurrentInteraction;
+               std::shared_ptr<Interaction> mBranchInteraction;
+               std::shared_ptr<Response> mCurrentResponse;
          };
 
          friend class XMLHandler;

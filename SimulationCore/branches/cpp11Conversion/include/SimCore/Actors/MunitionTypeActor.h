@@ -27,7 +27,7 @@
 #include <SimCore/Export.h>
 #include <dtCore/base.h>
 #include <dtCore/deltadrawable.h>
-#include <dtCore/observerptr.h>
+#include <dtUtil/refcountedbase.h>
 #include <dtDAL/actorproxy.h>
 #include <dtUtil/getsetmacros.h>
 #include <string>
@@ -286,7 +286,7 @@ namespace SimCore
             std::string mLightImpactEntity;
             std::string mLightFire;
             std::string mLightTracer;
-            dtCore::ObserverPtr<MunitionEffectsInfoActorProxy> mProxy;
+            std::weak_ptr<MunitionEffectsInfoActorProxy> mProxy;
       };
 
 
@@ -325,8 +325,8 @@ namespace SimCore
          public:
             MunitionTypeActor( MunitionTypeActorProxy& proxy );
 
-            virtual osg::Node* GetOSGNode() { return NULL; }
-            virtual const osg::Node* GetOSGNode() const { return NULL; }
+            virtual osg::Node* GetOSGNode() { return nullptr; }
+            virtual const osg::Node* GetOSGNode() const { return nullptr; }
 
             MunitionTypeActorProxy& GetProxy() { return *mProxy; }
             const MunitionTypeActorProxy& GetProxy() const { return *mProxy; }
@@ -375,9 +375,9 @@ namespace SimCore
             std::string mDamageType;
             MunitionFamily* mFamily;
             DISIdentifier mDIS;
-            dtCore::RefPtr<DetonationActorProxy> mDetonationPrototype;
-            dtCore::RefPtr<MunitionEffectsInfoActor> mEffects;
-            dtCore::ObserverPtr<MunitionTypeActorProxy> mProxy;
+            std::shared_ptr<DetonationActorProxy> mDetonationPrototype;
+            std::shared_ptr<MunitionEffectsInfoActor> mEffects;
+            std::weak_ptr<MunitionTypeActorProxy> mProxy;
       };
 
    }

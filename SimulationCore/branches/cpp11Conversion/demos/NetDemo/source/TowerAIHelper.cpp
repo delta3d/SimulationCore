@@ -137,7 +137,7 @@ namespace NetDemo
    {
       dtAI::NPCState* npcState = BaseClass::GetStateMachine().GetCurrentState();
       AttackState* attackState = dynamic_cast<AttackState*>(npcState);
-      if(attackState != NULL)
+      if(attackState != nullptr)
       {
          if(attackState->mStateData.mTarget.valid())
          {
@@ -175,7 +175,7 @@ namespace NetDemo
    {
       dtAI::NPCState* npcState = BaseClass::GetStateMachine().GetState(&AIStateType::AI_STATE_ATTACK);
       AttackState* attackState = dynamic_cast<AttackState*>(npcState);
-      if(attackState != NULL)
+      if(attackState != nullptr)
       {
          //LOG_ALWAYS("FOUND TARGET: " + target.GetName());
          attackState->mStateData.mTarget = &target;

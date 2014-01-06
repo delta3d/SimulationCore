@@ -34,7 +34,7 @@
 #include <SimCore/PlayerMotionModel.h>
 #include <SimCore/Actors/WeaponActor.h>
 #include <SimCore/Actors/DRGhostActor.h>
-#include <dtCore/refptr.h>
+#include <dtUtil/refcountedbase.h>
 
 #include <osgSim/DOFTransform>
 
@@ -192,13 +192,13 @@ namespace DriverDemo
          // @return TRUE if the weapon was successfully created.
          bool CreateWeapon( const std::string& weaponName, const std::string& shooterName,
             const std::string& flashEffectFile,
-            dtCore::RefPtr<SimCore::Actors::WeaponActor>& outWeapon );
+            std::shared_ptr<SimCore::Actors::WeaponActor>& outWeapon );
 
          // Assign the current weapon that is being used.
          // This function will do all the necessary work of removing the old weapon
          // references and set up references to the new specified weapon.
          // @param weapon The weapon instance that will be swapped into the scene
-         //        and used as the current weapon. Specify NULL to not used any weapons.
+         //        and used as the current weapon. Specify nullptr to not used any weapons.
          void SetWeapon( SimCore::Actors::WeaponActor* weapon );
 
          // Cycle between the currently loaded list weapons.
@@ -259,9 +259,9 @@ namespace DriverDemo
          void HandleHelpPressed();
          DriverHUD* GetHUDComponent();
 
-         dtCore::RefPtr<dtGame::MachineInfo> mMachineInfo;
+         std::shared_ptr<dtGame::MachineInfo> mMachineInfo;
 
-         dtCore::RefPtr<DriverHUD>    mHUDComponent;
+         std::shared_ptr<DriverHUD>    mHUDComponent;
          dtCore::UniqueId              mCurrentActorId;
 
          // logging methods and vars
@@ -275,20 +275,20 @@ namespace DriverDemo
          bool mUsePhysicsDemoMode;
 
          // Tools
-         std::map<SimCore::MessageType*, dtCore::RefPtr<SimCore::Tools::Tool> > mToolList;
+         std::map<SimCore::MessageType*, std::shared_ptr<SimCore::Tools::Tool> > mToolList;
 
          // Simulator specific objects
-         dtCore::RefPtr<SimCore::Actors::HumanWithPhysicsActorProxy> mPlayerAvatarProxy;
-         dtCore::RefPtr<SimCore::Actors::HumanWithPhysicsActor> mPlayerAvatar;
-         dtCore::RefPtr<SimCore::Actors::BasePhysicsVehicleActor> mVehicle;
-         dtCore::RefPtr<SimCore::Actors::BasePhysicsVehicleActorProxy> mVehicleProxy;
-         // ??? dtCore::RefPtr<SimCore::Actors::InteriorActor> mInterior;
-         dtCore::RefPtr<SimCore::Actors::WeaponActor> mWeapon;                    // current weapon
-         std::vector<dtCore::RefPtr<SimCore::Actors::WeaponActor> > mWeaponList;  // all weapons
+         std::shared_ptr<SimCore::Actors::HumanWithPhysicsActorProxy> mPlayerAvatarProxy;
+         std::shared_ptr<SimCore::Actors::HumanWithPhysicsActor> mPlayerAvatar;
+         std::shared_ptr<SimCore::Actors::BasePhysicsVehicleActor> mVehicle;
+         std::shared_ptr<SimCore::Actors::BasePhysicsVehicleActorProxy> mVehicleProxy;
+         // ??? std::shared_ptr<SimCore::Actors::InteriorActor> mInterior;
+         std::shared_ptr<SimCore::Actors::WeaponActor> mWeapon;                    // current weapon
+         std::vector<std::shared_ptr<SimCore::Actors::WeaponActor> > mWeaponList;  // all weapons
          unsigned mWeaponIndex;
 
          // Special DOF's acquired from loaded models
-         dtCore::RefPtr<dtCore::Transformable> mSeat;
+         std::shared_ptr<dtCore::Transformable> mSeat;
 
          // Direct DOF references used by controls states
          osg::observer_ptr<osgSim::DOFTransform> mDOFSeat;
@@ -306,14 +306,14 @@ namespace DriverDemo
          osg::Vec3 mDOFWeaponOriginalHPR;
 
          // Gunner app related motion models
-         dtCore::RefPtr<SimCore::ClampedMotionModel> mRingMM; // moves the seat
-         dtCore::RefPtr<SimCore::ClampedMotionModel> mWeaponMM; // moves the weapon pivot
-         //dtCore::RefPtr<SimCore::PlayerMotionModel> mWalkMM; // moves the seat (the player's root transformable)
+         std::shared_ptr<SimCore::ClampedMotionModel> mRingMM; // moves the seat
+         std::shared_ptr<SimCore::ClampedMotionModel> mWeaponMM; // moves the weapon pivot
+         //std::shared_ptr<SimCore::PlayerMotionModel> mWalkMM; // moves the seat (the player's root transformable)
 
          // View points
-         dtCore::RefPtr<dtCore::Transformable> mWeaponEyePoint; // added to the weapon pivot DOF
-         //dtCore::RefPtr<dtCore::Transformable> mSitEyePoint; // added to seat DOF
-         //dtCore::RefPtr<dtCore::Transformable> mStandEyePoint; // added to seat DOF
+         std::shared_ptr<dtCore::Transformable> mWeaponEyePoint; // added to the weapon pivot DOF
+         //std::shared_ptr<dtCore::Transformable> mSitEyePoint; // added to seat DOF
+         //std::shared_ptr<dtCore::Transformable> mStandEyePoint; // added to seat DOF
          //ViewMode mViewMode;
 
          // Store the camera perspective to be set after coming
@@ -344,10 +344,10 @@ namespace DriverDemo
          int mEnvUpdateAttempts;
 
          // Sounds effects no contained by a vehicle directly
-         dtCore::RefPtr<dtAudio::Sound> mSoundTurretTurnStart;
-         dtCore::RefPtr<dtAudio::Sound> mSoundTurretTurn;
-         dtCore::RefPtr<dtAudio::Sound> mSoundTurretTurnEnd;
-         dtCore::RefPtr<dtAudio::Sound> mSoundAmbient;
+         std::shared_ptr<dtAudio::Sound> mSoundTurretTurnStart;
+         std::shared_ptr<dtAudio::Sound> mSoundTurretTurn;
+         std::shared_ptr<dtAudio::Sound> mSoundTurretTurnEnd;
+         std::shared_ptr<dtAudio::Sound> mSoundAmbient;
 
          // Sound file names
          static const dtUtil::RefString SOUND_TURRET_TURN_START;
@@ -365,7 +365,7 @@ namespace DriverDemo
 
          enum DR_GHOST_MODE { NONE = 1, GHOST_ON };
          DR_GHOST_MODE mDRGhostMode;
-         dtCore::RefPtr<SimCore::Actors::DRGhostActorProxy> mDRGhostActorProxy;
+         std::shared_ptr<SimCore::Actors::DRGhostActorProxy> mDRGhostActorProxy;
 
    };
 }

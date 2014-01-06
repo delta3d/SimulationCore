@@ -60,7 +60,7 @@
 #include <dtGame/testcomponent.h>
 #include <UnitTestMain.h>
 
-using dtCore::RefPtr;
+using std::shared_ptr;
 
 class ViewerNetworkPublishingComponentTests : public CPPUNIT_NS::TestFixture
 {
@@ -79,12 +79,12 @@ class ViewerNetworkPublishingComponentTests : public CPPUNIT_NS::TestFixture
 
          mGM = new dtGame::GameManager(*mApp->GetScene());
          mGM->SetApplication( *mApp );
-         RefPtr<SimCore::Components::ViewerNetworkPublishingComponent> rulesComp = new SimCore::Components::ViewerNetworkPublishingComponent;
+         std::shared_ptr<SimCore::Components::ViewerNetworkPublishingComponent> rulesComp = new SimCore::Components::ViewerNetworkPublishingComponent;
          mGM->AddComponent(*rulesComp, dtGame::GameManager::ComponentPriority::NORMAL);
          mTestComp = new dtGame::TestComponent;
          mGM->AddComponent(*mTestComp, dtGame::GameManager::ComponentPriority::NORMAL);
 
-         RefPtr<dtDAL::ActorProxy> ap = mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::STEALTH_ACTOR_TYPE);
+         std::shared_ptr<dtDAL::ActorProxy> ap = mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::STEALTH_ACTOR_TYPE);
 
          CPPUNIT_ASSERT(ap.valid());
 
@@ -102,14 +102,14 @@ class ViewerNetworkPublishingComponentTests : public CPPUNIT_NS::TestFixture
       {
          dtCore::System::GetInstance().Stop();
 
-         mTestComp = NULL;
-         mApp = NULL;
+         mTestComp = nullptr;
+         mApp = nullptr;
          if (mGM.valid())
          {
             mGM->DeleteAllActors(true);
          }
 
-         mGM = NULL;
+         mGM = nullptr;
       }
 
       void TestStealthActorMessages()
@@ -144,7 +144,7 @@ class ViewerNetworkPublishingComponentTests : public CPPUNIT_NS::TestFixture
       void TestTimeQueryMessagePropagation()
       {
          dtGame::MessageFactory& mf = mGM->GetMessageFactory();
-         RefPtr<SimCore::TimeQueryMessage> timeQuery;
+         std::shared_ptr<SimCore::TimeQueryMessage> timeQuery;
          mf.CreateMessage(SimCore::MessageType::TIME_QUERY, timeQuery);
          mGM->SendMessage(*timeQuery);
          mTestComp->reset();
@@ -153,7 +153,7 @@ class ViewerNetworkPublishingComponentTests : public CPPUNIT_NS::TestFixture
 
          const dtGame::Message* foundMessage = mTestComp->FindDispatchNetworkMessageOfType(SimCore::MessageType::TIME_QUERY).get();
 
-         CPPUNIT_ASSERT_MESSAGE("A time query message should have been dispatched to the network.", foundMessage != NULL);
+         CPPUNIT_ASSERT_MESSAGE("A time query message should have been dispatched to the network.", foundMessage != nullptr);
          CPPUNIT_ASSERT_MESSAGE("The time query message dispatched should be the same as the one sent.",
                *foundMessage == *timeQuery);
       }
@@ -168,7 +168,7 @@ class ViewerNetworkPublishingComponentTests : public CPPUNIT_NS::TestFixture
          //account for the different order of rotation vecs.
          osg::Vec3 testRot(testVec.z(), testVec.x(), testVec.y());
 
-         dtGame::DeadReckoningHelper* drHelper = NULL;
+         dtGame::DeadReckoningHelper* drHelper = nullptr;
          mStealthActor->GetComponent(drHelper);
          //Must set both the last known and the actual values so the message and
          //and actor will match after being stepped
@@ -183,7 +183,7 @@ class ViewerNetworkPublishingComponentTests : public CPPUNIT_NS::TestFixture
 
          if (partial)
          {
-            RefPtr<dtGame::ActorUpdateMessage> updateMessage =
+            std::shared_ptr<dtGame::ActorUpdateMessage> updateMessage =
                static_cast<dtGame::ActorUpdateMessage*>(mGM->GetMessageFactory().CreateMessage(dtGame::MessageType::INFO_ACTOR_UPDATED).get());
 
             mStealthActor->GetGameActorProxy().PopulateActorUpdate(*updateMessage, params);
@@ -205,7 +205,7 @@ class ViewerNetworkPublishingComponentTests : public CPPUNIT_NS::TestFixture
 
          if (!partial || paramSet.find("Last Known Rotation") != paramSet.end())
          {
-            RefPtr<const SimCore::StealthActorUpdatedMessage> msg =
+            std::shared_ptr<const SimCore::StealthActorUpdatedMessage> msg =
                static_cast<const SimCore::StealthActorUpdatedMessage*>(mTestComp->
                FindDispatchNetworkMessageOfType(SimCore::MessageType::STEALTH_ACTOR_ROTATION).get());
 
@@ -228,7 +228,7 @@ class ViewerNetworkPublishingComponentTests : public CPPUNIT_NS::TestFixture
 
          if (!partial || paramSet.find("Last Known Translation") != paramSet.end())
          {
-            RefPtr<const SimCore::StealthActorUpdatedMessage> msg =
+            std::shared_ptr<const SimCore::StealthActorUpdatedMessage> msg =
                static_cast<const SimCore::StealthActorUpdatedMessage*>(mTestComp->
                FindDispatchNetworkMessageOfType(SimCore::MessageType::STEALTH_ACTOR_TRANSLATION).get());
 
@@ -251,10 +251,10 @@ class ViewerNetworkPublishingComponentTests : public CPPUNIT_NS::TestFixture
 
       }
 
-      RefPtr<dtGame::GameManager> mGM;
-      RefPtr<dtGame::TestComponent> mTestComp;
-      RefPtr<SimCore::Actors::StealthActor> mStealthActor;
-      RefPtr<dtABC::Application> mApp;
+      std::shared_ptr<dtGame::GameManager> mGM;
+      std::shared_ptr<dtGame::TestComponent> mTestComp;
+      std::shared_ptr<SimCore::Actors::StealthActor> mStealthActor;
+      std::shared_ptr<dtABC::Application> mApp;
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(ViewerNetworkPublishingComponentTests);

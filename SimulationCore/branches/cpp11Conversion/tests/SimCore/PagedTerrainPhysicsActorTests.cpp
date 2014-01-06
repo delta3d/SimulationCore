@@ -33,7 +33,7 @@
 
 #include <dtCore/system.h>
 #include <dtCore/scene.h>
-#include <dtCore/observerptr.h>
+#include <dtUtil/refcountedbase.h>
 #include <string>
 #include <SimCore/Messages.h>
 #include <SimCore/MessageType.h>
@@ -70,10 +70,10 @@ class PagedTerrainPhysicsActorTests : public CPPUNIT_NS::TestFixture
       void TestFunction();
 
    private:
-     dtCore::RefPtr<dtGame::GameManager> mGM;
-     dtCore::RefPtr<SimCore::Components::RenderingSupportComponent> mRenderingSupportComponent;
-     dtCore::RefPtr<dtABC::Application> mApp;
-     dtCore::RefPtr<dtUtil::Log> mLogger;
+     std::shared_ptr<dtGame::GameManager> mGM;
+     std::shared_ptr<SimCore::Components::RenderingSupportComponent> mRenderingSupportComponent;
+     std::shared_ptr<dtABC::Application> mApp;
+     std::shared_ptr<dtUtil::Log> mLogger;
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(PagedTerrainPhysicsActorTests);
@@ -106,20 +106,20 @@ void PagedTerrainPhysicsActorTests::tearDown()
 
    dtCore::System::GetInstance().Stop();
 
-   dtCore::ObserverPtr<SimCore::Components::RenderingSupportComponent> rscOb = mRenderingSupportComponent.get();
-   mRenderingSupportComponent = NULL;
+   std::weak_ptr<SimCore::Components::RenderingSupportComponent> rscOb = mRenderingSupportComponent.get();
+   mRenderingSupportComponent = nullptr;
 
    if (mGM.valid())
    {
       mGM->DeleteAllActors(true);
    }
 
-   dtCore::ObserverPtr<dtGame::GameManager> gmOb = mGM.get();
-   mGM = NULL;
+   std::weak_ptr<dtGame::GameManager> gmOb = mGM.get();
+   mGM = nullptr;
    CPPUNIT_ASSERT(!gmOb.valid());
    CPPUNIT_ASSERT(!rscOb.valid());
 
-   mApp = NULL;
+   mApp = nullptr;
 }
 
 /////////////////////////////////////////////////////////
@@ -136,19 +136,19 @@ void PagedTerrainPhysicsActorTests::TestFunction()
 
    dtCore::System::GetInstance().Step();
 
-   dtCore::RefPtr<dtGame::GameActorProxy> obj;
+   std::shared_ptr<dtGame::GameActorProxy> obj;
    mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::PAGED_TERRAIN_PHYSICS_ACTOR_TYPE, obj);
    SimCore::Actors::PagedTerrainPhysicsActor* ourActor;
    obj->GetActor(ourActor);
 
    CPPUNIT_ASSERT(obj->GetHideDTCorePhysicsProps());
-   CPPUNIT_ASSERT_MESSAGE("dtCore physics properties should be hidden.", obj->GetProperty("Show Collision Geometry") == NULL);
+   CPPUNIT_ASSERT_MESSAGE("dtCore physics properties should be hidden.", obj->GetProperty("Show Collision Geometry") == nullptr);
 
-   CPPUNIT_ASSERT(ourActor != NULL);
+   CPPUNIT_ASSERT(ourActor != nullptr);
 
    dtCore::System::GetInstance().Step();
 
-   CPPUNIT_ASSERT(ourActor->GetComponent<dtPhysics::PhysicsActComp>() != NULL);
+   CPPUNIT_ASSERT(ourActor->GetComponent<dtPhysics::PhysicsActComp>() != nullptr);
    CPPUNIT_ASSERT(ourActor->PassThisGeometry(957,0,0,0) == false);
    CPPUNIT_ASSERT(ourActor->PassThisGeometry(1,0,0,0) == true);
    CPPUNIT_ASSERT(ourActor->HasSomethingBeenLoaded() == false);
@@ -170,18 +170,18 @@ void PagedTerrainPhysicsActorTests::TestFunction()
 
 
    // cull visitor
-   dtCore::RefPtr<SimCore::SimCoreCullVisitor> mCullVisitor = new SimCore::SimCoreCullVisitor();
+   std::shared_ptr<SimCore::SimCoreCullVisitor> mCullVisitor = new SimCore::SimCoreCullVisitor();
    mCullVisitor->SetLandActor(ourActor);
    CPPUNIT_ASSERT(mCullVisitor->GetLandActor() == ourActor);
 
    mCullVisitor->SetCameraTransform(osg::Vec3(0,0,1));
    CPPUNIT_ASSERT(mCullVisitor->GetCameraTransform() == osg::Vec3(0,0,1));
 
-   dtCore::RefPtr<osg::Transform> transform = new osg::Transform();
+   osg::ref_ptr<osg::Transform> transform = new osg::Transform();
    mCullVisitor->SetTerrainNode(transform.get());
    CPPUNIT_ASSERT(mCullVisitor->GetTerrainNode() == transform.get());
 
-   //TerrainHashTable* hashTable = NULL;
+   //TerrainHashTable* hashTable = nullptr;
    //hashTable = new TerrainHashTable();
    //
    //// make sure hash function returns the same when it should
@@ -194,7 +194,7 @@ void PagedTerrainPhysicsActorTests::TestFunction()
    //CPPUNIT_ASSERT(3 == hashTable->GetHashTableBucketAmount());
 
    //// let's fill out our hash table
-   //TerrainNode* nodeTest = new TerrainNode(NULL, "testNode/subtiles0_12x12_0.txp");
+   //TerrainNode* nodeTest = new TerrainNode(nullptr, "testNode/subtiles0_12x12_0.txp");
 
    //// make sure name got copied over correctly
    //CPPUNIT_ASSERT(nodeTest->GetNameIdentifier() == "testNode/subtiles0_12x12_0.txp");
@@ -228,24 +228,24 @@ void PagedTerrainPhysicsActorTests::TestFunction()
    //// just make sure it got set
    //CPPUNIT_ASSERT(bucket  > -1 && bucket < hashTable->GetHashTableBucketAmount());
 
-   //// should be set to NULL
-   //CPPUNIT_ASSERT(nodeTest->GetNextNode() == NULL);
+   //// should be set to nullptr
+   //CPPUNIT_ASSERT(nodeTest->GetNextNode() == nullptr);
 
    //// make sure we can get back to that node....
-   //TerrainNode * newNode = NULL;
+   //TerrainNode * newNode = nullptr;
 
    //newNode = hashTable->GetBucket(12, 12);
 
-   //CPPUNIT_ASSERT(newNode != NULL);
+   //CPPUNIT_ASSERT(newNode != nullptr);
 
    //// this should return the same exact node..
    //CPPUNIT_ASSERT(hashTable->GetBucket(12,12) == hashTable->GetBucket(bucket));
 
    //// lets try removing it...
-   //// returns previous which in this case should be NULL!
-   //CPPUNIT_ASSERT(hashTable->RemoveNode(nodeTest) == NULL);
+   //// returns previous which in this case should be nullptr!
+   //CPPUNIT_ASSERT(hashTable->RemoveNode(nodeTest) == nullptr);
 
-   //nodeTest = new TerrainNode(NULL, "testNode/subtiles0_125x125_0.txp");
+   //nodeTest = new TerrainNode(nullptr, "testNode/subtiles0_125x125_0.txp");
    //hashTable->InsertNode(nodeTest);
 
    //// do starting memory check here
@@ -253,7 +253,7 @@ void PagedTerrainPhysicsActorTests::TestFunction()
    //{
    //   char buffer[256];
    //   sprintf(buffer, "testNode/subtiles%d_%dx%d_0.txp", rand() % 3, rand() % 100, rand() % 100);
-   //   nodeTest = new TerrainNode(NULL, buffer);
+   //   nodeTest = new TerrainNode(nullptr, buffer);
    //   hashTable->InsertNode(nodeTest);
    //}
 
@@ -265,27 +265,27 @@ void PagedTerrainPhysicsActorTests::TestFunction()
 
    //// do a check to make sure all 3 buckets have something in them... this is not a fail proof test
    //// it should almost always pass....unless the random number generator was hax0red
-   //CPPUNIT_ASSERT(hashTable->GetBucket(0) != NULL &&
-   //               hashTable->GetBucket(1) != NULL &&
-   //               hashTable->GetBucket(2) != NULL);
+   //CPPUNIT_ASSERT(hashTable->GetBucket(0) != nullptr &&
+   //               hashTable->GetBucket(1) != nullptr &&
+   //               hashTable->GetBucket(2) != nullptr);
 
    //// should be able to find it
    //newNode = hashTable->GetFullNameNode("testNode/subtiles0_125x125_0.txp");
 
    //// lets see if its valid
-   //CPPUNIT_ASSERT(newNode != NULL);
+   //CPPUNIT_ASSERT(newNode != nullptr);
 
    //// lets see if its valid
    //CPPUNIT_ASSERT(newNode == hashTable->GetSimpleNameNode("subtiles0_125x125_0.txp"));
 
    //// hopefully valid.
    //newNode = hashTable->GetNode(125,125);
-   //CPPUNIT_ASSERT(newNode != NULL);
+   //CPPUNIT_ASSERT(newNode != nullptr);
 
    //// should not return null since it was put in the list like first.....
-   //CPPUNIT_ASSERT(hashTable->RemoveNode(newNode) != NULL);
+   //CPPUNIT_ASSERT(hashTable->RemoveNode(newNode) != nullptr);
 
-   //newNode = NULL;
+   //newNode = nullptr;
 
    //delete hashTable;
    // end memory check

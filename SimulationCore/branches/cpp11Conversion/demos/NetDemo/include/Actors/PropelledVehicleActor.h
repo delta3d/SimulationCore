@@ -60,7 +60,7 @@ namespace NetDemo
 
    private:
       // The following are values used to test and render Dead Reckoning Behaviors
-      dtCore::RefPtr<dtCore::ParticleSystem> mTrailParticles;
+      std::shared_ptr<dtCore::ParticleSystem> mTrailParticles;
       osg::Vec3 mDRTestingRealLocation;
       float mDRTestingAveragedError;
    };

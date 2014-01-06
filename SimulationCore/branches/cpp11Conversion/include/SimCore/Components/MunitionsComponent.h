@@ -33,7 +33,7 @@
 #include <SimCore/Export.h>
 #include <dtCore/base.h>
 #include <dtCore/batchisector.h>
-#include <dtCore/observerptr.h>
+#include <dtUtil/refcountedbase.h>
 #include <dtUtil/refstring.h>
 #include <SimCore/Actors/StealthActor.h>
 #include <SimCore/Actors/MunitionTypeActor.h>
@@ -116,7 +116,7 @@ namespace SimCore
             // Searches for a table by name of an entity class.
             // @param entityClassName The name of the entity class that should have
             //        a table of munition data that was loaded from the MunitionsConfig.xml
-            // @return a pointer to the munition table; NULL if it does not exist.
+            // @return a pointer to the munition table; nullptr if it does not exist.
             MunitionDamageTable* GetMunitionDamageTable( const std::string& entityClassName );
             const MunitionDamageTable* GetMunitionDamageTable( const std::string& entityClassName ) const;
 
@@ -191,7 +191,7 @@ namespace SimCore
              * @param munitionName Name of the munition to be retrieved from the munition type table.
              * @param defaultMunitionName Name of a default munition to be returned if the first munition could not be found.
              * @return the specified munition OR a default munition if default munition name has been specified
-             *         OR NULL if neither a match or a default could be found.
+             *         OR nullptr if neither a match or a default could be found.
              */
             const SimCore::Actors::MunitionTypeActor* GetMunition(
                const std::string& munitionName, const std::string& defaultMunitionName = "" ) const;
@@ -201,7 +201,7 @@ namespace SimCore
              * @param munition Munition with effects to be verified and returned.
              * @param defaultMunitionName Name of a default munition to be returned if the first munition could not be found.
              * @return effects from the specified munition OR default munition effects if default munition name has been specified
-             *         OR NULL if neither munition has a valid effect nor a default could be found.
+             *         OR nullptr if neither munition has a valid effect nor a default could be found.
              */
             const SimCore::Actors::MunitionEffectsInfoActor* GetMunitionEffectsInfo(
                const SimCore::Actors::MunitionTypeActor& munition, const std::string& defaultMunitionName = "" ) const;
@@ -241,7 +241,7 @@ namespace SimCore
             virtual ~MunitionsComponent();
 
             void InitMunitionTypeTable();
-            void SetMunitionTypeTable( dtCore::RefPtr<MunitionTypeTable>& table ) { mMunitionTypeTable = table.get(); }
+            void SetMunitionTypeTable( std::shared_ptr<MunitionTypeTable>& table ) { mMunitionTypeTable = table.get(); }
 
             virtual DamageHelper* CreateDamageHelper(SimCore::Actors::BaseEntity& entity, 
                bool autoNotifyNetwork, float maxDamageAmount);
@@ -250,7 +250,7 @@ namespace SimCore
             void OnShotFired(const dtGame::Message& msg);
 
             void RunIsectorForFIDCodes(bool hitEntity, const DetonationMessage& message, int fidID);
-            dtCore::RefPtr<SimCore::Actors::DetonationActorProxy> CreateDetonationPrototype(const DetonationMessage& message);
+            std::shared_ptr<SimCore::Actors::DetonationActorProxy> CreateDetonationPrototype(const DetonationMessage& message);
 
             void ConvertSingleMunitionInfo(SimCore::Actors::MunitionEffectsInfoActorProxy& infoProxy, SimCore::Actors::DetonationActorProxy& detonationProxy);
 
@@ -258,13 +258,13 @@ namespace SimCore
 
             // This map holds onto all damages helpers. Each damage helper is mapped
             // to the entity's ID of the entity that is needing the damage help.
-            std::map<dtCore::UniqueId, dtCore::RefPtr<DamageHelper> > mIdToHelperMap;
+            std::map<dtCore::UniqueId, std::shared_ptr<DamageHelper> > mIdToHelperMap;
 
             // This map is responsible for holding onto all munition tables.
             // Damage helpers will reference these tables only by observer pointers
             // so that they are not left holding the table and its memory.
             // This helps munitions tables stay "alive" and not fall out of scope.
-            std::map<std::string, dtCore::RefPtr<MunitionDamageTable> > mNameToMunitionDamageTableMap;
+            std::map<std::string, std::shared_ptr<MunitionDamageTable> > mNameToMunitionDamageTableMap;
 
             // This table is responsible for holding onto all data related to
             // a munition, such as DIS identifier, name and resource file paths
@@ -278,20 +278,20 @@ namespace SimCore
             // A MunitionDamage and a MunitionTypeActor should share the same name
             // of the munition to which they refer. With this, one can obtain
             // all the data pertaining to a certain munition
-            dtCore::RefPtr<MunitionTypeTable> mMunitionTypeTable;
+            std::shared_ptr<MunitionTypeTable> mMunitionTypeTable;
 
             // This isector is used for ground clamping detonation particle effects.
-            dtCore::RefPtr<dtCore::BatchIsector> mIsector;
+            std::shared_ptr<dtCore::BatchIsector> mIsector;
             //float mLastDetonationTime;
 
             // A reference to the player is needed so that the sound from detonations
             // can be offset properly; there is a sound delay for which to account.
-            dtCore::ObserverPtr<SimCore::Actors::StealthActor> mPlayer;
+            std::weak_ptr<SimCore::Actors::StealthActor> mPlayer;
 
             // The effects manager is used for placing weapon effects on remote
             // entities that identify themselves as firing objects.
             // Effects include gun flash, fire sounds and tracers.
-            dtCore::RefPtr<WeaponEffectsManager> mEffectsManager;
+            std::shared_ptr<WeaponEffectsManager> mEffectsManager;
 
             // A queue of all the munitions that the component has created. This is 
             // useful for when we get in trouble with particles and such. If we have too 

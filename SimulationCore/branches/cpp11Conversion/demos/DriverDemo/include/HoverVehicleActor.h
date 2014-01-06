@@ -115,7 +115,7 @@ namespace DriverDemo
 
          ///////////////////////////////////////////////////
          // Sound effects
-         dtCore::RefPtr<dtAudio::Sound> mSndCollisionHit;
+         std::shared_ptr<dtAudio::Sound> mSndCollisionHit;
          ///////////////////////////////////////////////////
 
          ///////////////////////////////////////////////////
@@ -127,7 +127,7 @@ namespace DriverDemo
          float mTimeTillJumpReady;
          bool mVehicleIsTurret;
 
-         dtCore::RefPtr<VehicleShield> mShield;
+         std::shared_ptr<VehicleShield> mShield;
    };
 
    /// This is the proxy for the object.  It needs to build the property map, create the actor, and handle entered world.

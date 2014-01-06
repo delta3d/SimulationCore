@@ -85,7 +85,7 @@ namespace StealthQt
    HLAOptions::~HLAOptions()
    {
       delete mUi;
-      mUi = NULL;
+      mUi = nullptr;
    }
 
    ////////////////////////////////////////////////////////////////////
@@ -184,7 +184,7 @@ namespace StealthQt
       /////////////////////////////////////////////////////////////////////
       // Simulate this being loaded to try and catch any exceptions thrown
       // so we can immediately notify the user
-      //dtCore::RefPtr<dtHLAGM::HLAComponent> dummyComp = new dtHLAGM::HLAComponent;
+      //std::shared_ptr<dtHLAGM::HLAComponent> dummyComp = new dtHLAGM::HLAComponent;
       //dtHLAGM::HLAComponentConfig config;
       //result.replace(":", "/");
       //try

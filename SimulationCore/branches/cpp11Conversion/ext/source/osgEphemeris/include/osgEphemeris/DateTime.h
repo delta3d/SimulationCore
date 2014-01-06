@@ -26,7 +26,7 @@
 #include <iostream>
 #include <time.h>
 #include <string>
-#include <osg/Referenced>
+#include <dtUtil/refcountedbase.h>
 #include <osgEphemeris/Export.h>
 
 namespace osgEphemeris {

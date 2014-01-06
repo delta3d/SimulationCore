@@ -135,7 +135,7 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////////////
    void EnemyHelixActor::InitWeapon()
    {
-      dtCore::RefPtr<SimCore::ActComps::WeaponInventoryActComp> weaponInv;
+      std::shared_ptr<SimCore::ActComps::WeaponInventoryActComp> weaponInv;
       GetComponent(weaponInv);
 
       if (!weaponInv.valid())
@@ -144,7 +144,7 @@ namespace NetDemo
          AddComponent(*weaponInv);
       }
 
-      dtCore::RefPtr<SimCore::ActComps::WeaponInventoryActComp::WeaponDescription> wd = new SimCore::ActComps::WeaponInventoryActComp::WeaponDescription;
+      std::shared_ptr<SimCore::ActComps::WeaponInventoryActComp::WeaponDescription> wd = new SimCore::ActComps::WeaponInventoryActComp::WeaponDescription;
 
       wd->SetWeaponPrototypeName("Weapon_MachineGun");
       wd->SetShooterPrototypeName("Particle_System_Weapon_GunWithTracer");
@@ -152,7 +152,7 @@ namespace NetDemo
       wd->SetWeaponSwapRootNode("dof_hotspot_01");
 
 
-      dtCore::RefPtr<SimCore::Actors::WeaponActor> weapon;
+      std::shared_ptr<SimCore::Actors::WeaponActor> weapon;
 
       weaponInv->CreateAndAddWeapon(*wd, true)->mWeapon->GetActor(weapon);
 
@@ -170,7 +170,7 @@ namespace NetDemo
       if(attackTower > 1)
       {
          dtCore::Transformable* t = GetClosestTower();
-         if(t != NULL)
+         if(t != nullptr)
          {
             mTarget = t;
             mAIHelper->SetCurrentTarget(*t);
@@ -179,7 +179,7 @@ namespace NetDemo
       }
 
       FortActor* fort = GetCurrentFortUnderAttack();
-      if(fort != NULL)
+      if(fort != nullptr)
       {
          mTarget = fort;
          mAIHelper->SetCurrentTarget(*fort);
@@ -207,7 +207,7 @@ namespace NetDemo
       // take the position and throw away the rotation.
 
       // This is ONLY called if we are LOCAL (we put the check here just in case... )
-      if (!IsRemote() && GetPhysicsActComp() != NULL)
+      if (!IsRemote() && GetPhysicsActComp() != nullptr)
       {
          // The base behavior is that we want to pull the translation and rotation off the object
          // in our physics scene and apply it to our 3D object in the visual scene.
@@ -216,7 +216,7 @@ namespace NetDemo
          //TODO: Ask if the object is activated.  If not, the transform should not be pushed.
          if (!GetPushTransformToPhysics())
          {
-            if(physicsObject != NULL)
+            if(physicsObject != nullptr)
             {
                // Take rotation from physics and apply to current xform - IE NO ROTATION!
                dtCore::Transform currentXForm;
@@ -237,24 +237,24 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////////////
    void EnemyHelixActor::Shoot(float timeLeft)
    {
-      if(GetComponent<SimCore::ActComps::WeaponInventoryActComp>() != NULL)
+      if(GetComponent<SimCore::ActComps::WeaponInventoryActComp>() != nullptr)
       {
 
          //TODO- THIS DOESNT WORK, HOW DO WE ORIENT THE LASER
          dtUtil::NodeCollector* nodes = GetNodeCollector();
          osgSim::DOFTransform* dof = nodes->GetDOFTransform("dof_hotspot_01");
-         if (dof != NULL)
+         if (dof != nullptr)
          {
             mTimeSinceLastFire = 0.0f;
 
             //create a fireball actor
-            dtCore::RefPtr<FireBallActorProxy> proxy;
+            std::shared_ptr<FireBallActorProxy> proxy;
             GetGameActorProxy().GetGameManager()->CreateActor(*NetDemoActorRegistry::FIREBALL_ACTOR_TYPE, proxy);
             if(proxy.valid())
             {
-               FireBallActor* fireball = NULL;
+               FireBallActor* fireball = nullptr;
                proxy->GetActor(fireball);
-               if(fireball != NULL)
+               if(fireball != nullptr)
                {
 
                   float fireBallSpeed = 37.0f;
@@ -272,9 +272,9 @@ namespace NetDemo
                   fireball->SetMaxTime(2.5f);
                   fireball->SetPosition(pos + (dir * 10.5f));
 
-                  dtPhysics::PhysicsActComp* physAC = NULL;
+                  dtPhysics::PhysicsActComp* physAC = nullptr;
                   GetComponent(physAC);
-                  if (physAC != NULL && physAC->GetMainPhysicsObject() != NULL)
+                  if (physAC != nullptr && physAC->GetMainPhysicsObject() != nullptr)
                   {
                      fireball->AddForce(physAC->GetMainPhysicsObject()->GetLinearVelocity());
                   }
@@ -307,7 +307,7 @@ namespace NetDemo
 
       EnemyHelixAIHelper* helix = dynamic_cast<EnemyHelixAIHelper*>(mAIHelper.get());
       if(mTimeSinceLastFire > 1.866f &&
-         helix != NULL && helix->GetTriggerState())
+         helix != nullptr && helix->GetTriggerState())
       {
          Shoot(mTimeSinceLastFire);
       }

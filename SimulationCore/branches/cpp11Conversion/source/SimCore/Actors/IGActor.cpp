@@ -66,7 +66,7 @@ namespace SimCore
                 // traverse(node, nv);
              }
       };
-      static dtCore::RefPtr<HideNodeCallback> HIDE_NODE_CALLBACK(new HideNodeCallback);
+      static std::shared_ptr<HideNodeCallback> HIDE_NODE_CALLBACK(new HideNodeCallback);
 
       ///////////////////////////////////////////////////////////////////////////
       IGActor::IGActor(dtGame::GameActorProxy &proxy)
@@ -81,18 +81,18 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////////
-      bool IGActor::LoadFile(const std::string& fileName, dtCore::RefPtr<osg::Node>& originalFile,
-         dtCore::RefPtr<osg::Node>& copiedFile, bool useCache , bool loadTerrainMaterialsOn )
+      bool IGActor::LoadFile(const std::string& fileName, osg::ref_ptr<osg::Node>& originalFile,
+         osg::ref_ptr<osg::Node>& copiedFile, bool useCache , bool loadTerrainMaterialsOn )
       {
          return IGActor::LoadFileStatic(fileName, originalFile,
             copiedFile, useCache, loadTerrainMaterialsOn);
       }
 
       ///////////////////////////////////////////////////////////////////////////
-      bool IGActor::LoadFileStatic(const std::string& fileName, dtCore::RefPtr<osg::Node>& originalFile,
-         dtCore::RefPtr<osg::Node>& copiedFile, bool useCache , bool loadTerrainMaterialsOn )
+      bool IGActor::LoadFileStatic(const std::string& fileName, osg::ref_ptr<osg::Node>& originalFile,
+         osg::ref_ptr<osg::Node>& copiedFile, bool useCache , bool loadTerrainMaterialsOn )
       {
-         //Log::GetInstance().LogMessage(Log::LOG_DEBUG, __FUNCTION__,
+         //Log::GetInstance()->LogMessage(Log::LOG_DEBUG, __FUNCTION__,
          //   "Loading '%s'", filename.c_str());
 
          // Setup appropriate options
@@ -128,7 +128,7 @@ namespace SimCore
          }
          else
          {
-//            Log::GetInstance().LogMessage(Log::LOG_WARNING, __FUNCTION__,
+//            Log::GetInstance()->LogMessage(Log::LOG_WARNING, __FUNCTION__,
 //               "Can't load '%s'", mFilename.c_str() );
             return false;
          }
@@ -140,12 +140,12 @@ namespace SimCore
       {
          // Register the particle systems with the particle manager component
          dtGame::GameManager* gm = GetGameActorProxy().GetGameManager();
-         if( gm == NULL ) { return; }
+         if( gm == nullptr ) { return; }
 
          SimCore::Components::ParticleManagerComponent* comp;
          gm->GetComponentByName(SimCore::Components::ParticleManagerComponent::DEFAULT_NAME, comp);
 
-         if( comp != NULL )
+         if( comp != nullptr )
          {
             comp->Register(particles, attributes);
          }
@@ -156,12 +156,12 @@ namespace SimCore
       {
          // Register the particle systems with the particle manager component
          dtGame::GameManager* gm = GetGameActorProxy().GetGameManager();
-         if( gm == NULL ) { return; }
+         if( gm == nullptr ) { return; }
 
          SimCore::Components::ParticleManagerComponent* comp;
          gm->GetComponentByName(SimCore::Components::ParticleManagerComponent::DEFAULT_NAME, comp);
 
-         if( comp != NULL )
+         if( comp != nullptr )
          {
             comp->Unregister(particles);
          }
@@ -183,9 +183,9 @@ namespace SimCore
          bool result = dtCore::DeltaDrawable::AddChild(child);
          if (result)
          {
-             osg::Group* group = NULL;
+             osg::Group* group = nullptr;
 
-             if (GetNodeCollector() == NULL)
+             if (GetNodeCollector() == nullptr)
              {
                 LoadNodeCollector();
              }
@@ -194,12 +194,12 @@ namespace SimCore
 
              group = nc->GetMatrixTransform(nodeName);
 
-             if (group == NULL)
+             if (group == nullptr)
              {
                 group = nc->GetDOFTransform(nodeName);
              }
 
-             if (group != NULL)
+             if (group != nullptr)
              {
                 group->addChild(child->GetOSGNode());
              }
@@ -252,7 +252,7 @@ namespace SimCore
       {
          if (visible)
          {
-            nodeToUse.setCullCallback(NULL);
+            nodeToUse.setCullCallback(nullptr);
          }
          else
          {
@@ -265,9 +265,9 @@ namespace SimCore
       {
          mNodeCollector = new dtUtil::NodeCollector(GetOSGNode(),
                   dtUtil::NodeCollector::AllNodeTypes);
-         dtGame::DeadReckoningHelper* drAC = NULL;
+         dtGame::DeadReckoningHelper* drAC = nullptr;
          GetComponent(drAC);
-         if (drAC != NULL)
+         if (drAC != nullptr)
          {
             drAC->SetNodeCollector(*mNodeCollector);
          }

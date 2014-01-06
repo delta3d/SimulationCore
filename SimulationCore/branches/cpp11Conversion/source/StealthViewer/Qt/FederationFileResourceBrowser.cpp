@@ -43,7 +43,7 @@ namespace StealthQt
    FederationFileResourceBrowser::~FederationFileResourceBrowser()
    {
       delete mUi;
-      mUi = NULL;
+      mUi = nullptr;
    }
 
    QTreeWidget& FederationFileResourceBrowser::GetTreeWidget()

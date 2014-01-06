@@ -23,9 +23,9 @@
 #ifndef DVTE_TOOL
 #define DVTE_TOOL
 
-#include <osg/Referenced>
+#include <dtUtil/refcountedbase.h>
 #include <dtUtil/coordinates.h>
-#include <dtCore/refptr.h>
+#include <dtUtil/refcountedbase.h>
 #include <SimCore/Export.h>
 
 // Foward declaration
@@ -43,7 +43,7 @@ namespace SimCore
    
    namespace Tools
    {
-      class SIMCORE_EXPORT Tool : public osg::Referenced
+      class SIMCORE_EXPORT Tool : public std::enable_shared_from_this
       {
          public:
 

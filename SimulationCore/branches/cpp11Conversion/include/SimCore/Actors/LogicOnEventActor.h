@@ -125,8 +125,8 @@ namespace SimCore
 
          private:
             LogicOnEventActorProxy::LogicTypeEnum* mLogicType;
-            dtCore::ObserverPtr<dtDAL::GameEvent> mEventToFire;
-            std::vector< dtCore::ObserverPtr< LogicConditionalActorProxy > > mConditionsListAsActors;
+            std::weak_ptr<dtDAL::GameEvent> mEventToFire;
+            std::vector< std::weak_ptr< LogicConditionalActorProxy > > mConditionsListAsActors;
             bool mCurrentStatus; // false
             bool mConditionListIsDirty;
 

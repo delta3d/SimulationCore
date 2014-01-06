@@ -18,7 +18,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 // INCLUDE DIRECTIVES
 ////////////////////////////////////////////////////////////////////////////////
-#include <dtCore/refptr.h>
+#include <dtUtil/refcountedbase.h>
 #include <dtCore/camera.h>
 #include <dtCore/scene.h>
 #include <dtCore/view.h>
@@ -94,7 +94,7 @@ namespace SimCore
             osg::Vec2 GetViewArea() const;
 
             void GetOrCreateOSGTexture(
-                  dtCore::RefPtr<osg::Texture2D>& outTexture,
+                  osg::ref_ptr<osg::Texture2D>& outTexture,
 #if CEGUI_VERSION_MAJOR == 0 && CEGUI_VERSION_MINOR < 7
 #else
                   dtGUI::GUI& mainGUI,
@@ -118,8 +118,8 @@ namespace SimCore
             bool mPerspectiveMode;
             unsigned mLastVisibilityMask;
             osg::Vec4 mWindowUnits;
-            dtCore::RefPtr<dtCore::Camera> mCamera;
-            dtCore::RefPtr<osg::Group> mSceneNode;
+            std::shared_ptr<dtCore::Camera> mCamera;
+            osg::ref_ptr<osg::Group> mSceneNode;
       };
    }
 }

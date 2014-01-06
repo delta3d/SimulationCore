@@ -74,9 +74,9 @@ namespace StealthQt
    ViewDockWidget::~ViewDockWidget()
    {
       delete mUi;
-      mUi = NULL;
+      mUi = nullptr;
       delete mFOVWidget;
-      mFOVWidget = NULL;
+      mFOVWidget = nullptr;
    }
 
    ////////////////////////////////////////////////////////////////////////
@@ -117,7 +117,7 @@ namespace StealthQt
       StealthGM::ViewWindowConfigObject& viewConfig =
         StealthViewerData::GetInstance().GetViewWindowConfigObject();
 
-      dtCore::RefPtr<StealthGM::ViewWindowWrapper> newViewWrap = CreateNewViewWindow("");
+      std::shared_ptr<StealthGM::ViewWindowWrapper> newViewWrap = CreateNewViewWindow("");
 
       AdditionalViewEditDialog dialog(*newViewWrap, this);
       dialog.SetCancelButtonVisible(true);
@@ -129,20 +129,20 @@ namespace StealthQt
       }
       else
       {
-         newViewWrap = NULL;
+         newViewWrap = nullptr;
       }
    }
 
    ////////////////////////////////////////////////////////////////////////
    void ViewDockWidget::OnEditViewClicked(bool)
    {
-      dtCore::RefPtr<dtCore::View> view = new dtCore::View("");
+      std::shared_ptr<dtCore::View> view = new dtCore::View("");
 
       StealthGM::ViewWindowConfigObject& viewConfig =
         StealthViewerData::GetInstance().GetViewWindowConfigObject();
 
       QListWidgetItem* item = mUi->mViewWindowListWidget->currentItem();
-      if (item == NULL)
+      if (item == nullptr)
       {
          // Shouldn't be enabled if there is no selected item.
          mUi->mEditViewButton->setEnabled(false);
@@ -151,7 +151,7 @@ namespace StealthQt
 
       StealthGM::ViewWindowWrapper* viewWindow = viewConfig.GetViewWindow(item->text().toStdString());
 
-      if (viewWindow != NULL)
+      if (viewWindow != nullptr)
       {
          std::string oldName = viewWindow->GetName();
          AdditionalViewEditDialog dialog(*viewWindow, this);
@@ -191,7 +191,7 @@ namespace StealthQt
          mUi->mViewWindowListWidget->removeItemWidget(*i);
          currentItemText = (*i)->text().toStdString();
          StealthGM::ViewWindowWrapper* viewWindow = viewConfig.GetViewWindow(currentItemText);
-         if (viewWindow != NULL)
+         if (viewWindow != nullptr)
          {
             viewConfig.RemoveViewWindow(*viewWindow);
          }
@@ -213,7 +213,7 @@ namespace StealthQt
       StealthGM::ViewWindowConfigObject& viewConfig =
         StealthViewerData::GetInstance().GetViewWindowConfigObject();
 
-      if (widgetClosed.GetViewWindowWrapper() != NULL)
+      if (widgetClosed.GetViewWindowWrapper() != nullptr)
       {
          viewConfig.RemoveViewWindow(*widgetClosed.GetViewWindowWrapper());
       }
@@ -225,14 +225,14 @@ namespace StealthQt
    }
 
    ///////////////////////////////////////////////////////////////////
-   dtCore::RefPtr<StealthGM::ViewWindowWrapper> ViewDockWidget::CreateNewViewWindow(const std::string& newViewName)
+   std::shared_ptr<StealthGM::ViewWindowWrapper> ViewDockWidget::CreateNewViewWindow(const std::string& newViewName)
    {
       MainWindow& mainWindow = *StealthViewerData::GetInstance().GetMainWindow();
       //StealthGM::ViewWindowConfigObject& viewConfig =
       //  StealthViewerData::GetInstance().GetViewWindowConfigObject();
 
       QRect rect = mainWindow.frameGeometry();
-      dtCore::RefPtr<dtCore::View> view = new dtCore::View(newViewName);
+      std::shared_ptr<dtCore::View> view = new dtCore::View(newViewName);
       dtCore::DeltaWin::DeltaWinTraits traits;
       traits.name = newViewName;
       traits.x = rect.top() + 50;
@@ -244,10 +244,10 @@ namespace StealthQt
       traits.realizeUponCreate = false;
       //traits.contextToShare = viewConfig.GetMainViewWindow().GetWindow().GetOsgViewerGraphicsWindow();
 
-      dtCore::RefPtr<dtCore::DeltaWin> deltaWin =
+      std::shared_ptr<dtCore::DeltaWin> deltaWin =
          new dtCore::DeltaWin(traits);
 
-      dtCore::RefPtr<StealthGM::ViewWindowWrapper> newViewWrapper =
+      std::shared_ptr<StealthGM::ViewWindowWrapper> newViewWrapper =
          new StealthGM::ViewWindowWrapper(newViewName, *view, *deltaWin);
 
       newViewWrapper->SetInitCallback(StealthGM::ViewWindowWrapper::OperationCallback(&AdditionalViewDockWidget::CreateAndInitFromViewWrapper));
@@ -255,15 +255,15 @@ namespace StealthQt
 
       osgViewer::GraphicsWindow* gw = newViewWrapper->GetWindow().GetOsgViewerGraphicsWindow();
       dtQt::OSGGraphicsWindowQt* gwQt = dynamic_cast<dtQt::OSGGraphicsWindowQt*>(gw);
-      if (gwQt != NULL)
+      if (gwQt != nullptr)
       {
          QGLWidget* widget = gwQt->GetQGLWidget();
-         if (widget == NULL)
+         if (widget == nullptr)
          {
             QMessageBox::critical(this, "Internal Error",
                      "Error Creating Additional 3D view.  OpenGL Widget was not created properly",
                      QMessageBox::Ok, QMessageBox::Ok);
-            return NULL;
+            return nullptr;
          }
       }
       return newViewWrapper;

@@ -101,7 +101,7 @@ namespace SimCore
          dtGame::GameActorProxy::BuildPropertyMap();
 
          // Get the actor's interface.
-         BaseWaterActor* actor = NULL;
+         BaseWaterActor* actor = nullptr;
          GetActor( actor );
 
          static const std::string GROUP_WATER("Water");

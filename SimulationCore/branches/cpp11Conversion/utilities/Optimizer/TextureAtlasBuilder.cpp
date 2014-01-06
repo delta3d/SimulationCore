@@ -240,7 +240,7 @@ void TextureAtlasBuilder::buildAtlas()
                 osg::notify(osg::INFO)<<">|< Creating new atlas for "<<source->_image->getFileName()<<std::endl;
 
                 osg::ref_ptr<Atlas> atlas = new Atlas(_maximumAtlasWidth,_maximumAtlasHeight,_margin);
-                if ( sourceTexture != NULL )
+                if ( sourceTexture != nullptr )
                 {
                     atlas->_wrap_s = sourceTexture->getWrap(osg::Texture2D::WRAP_S);
                     atlas->_wrap_t = sourceTexture->getWrap(osg::Texture2D::WRAP_T);
@@ -437,7 +437,7 @@ osg::Matrix TextureAtlasBuilder::getTextureMatrix(const osg::Image* image)
 /*
  * \brief Fetches the Image corresponding to the given Texture2D.
  *
- * \return    pointer to Image for the given Texture2D; NULL if texture
+ * \return    pointer to Image for the given Texture2D; nullptr if texture
  *            hasn't been added to this TextureAtlasBuilder.
  */
 osg::Image* TextureAtlasBuilder::getImageAtlas(const osg::Texture2D* texture)
@@ -450,7 +450,7 @@ osg::Image* TextureAtlasBuilder::getImageAtlas(const osg::Texture2D* texture)
 /*
  * \brief Fetches the Texture2D corresponding to the given Texture2D.
  *
- * \return    pointer to Texture2D for the given Texture2D; NULL if texture
+ * \return    pointer to Texture2D for the given Texture2D; nullptr if texture
  *            hasn't been added to this TextureAtlasBuilder.
  */
 osg::Texture2D* TextureAtlasBuilder::getTextureAtlas(const osg::Texture2D* texture)
@@ -473,7 +473,7 @@ osg::Matrix TextureAtlasBuilder::getTextureMatrix(const osg::Texture2D* texture)
 /*
  * \brief Finds the Source corresponding to the given Image.
  *
- * \return      pointer to the Source, or NULL if the given Image hasn't been
+ * \return      pointer to the Source, or nullptr if the given Image hasn't been
  *              added to this TextureAtlasBuilder.
  */
 TextureAtlasBuilder::Source* TextureAtlasBuilder::getSource(const osg::Image* image)
@@ -490,7 +490,7 @@ TextureAtlasBuilder::Source* TextureAtlasBuilder::getSource(const osg::Image* im
 /*
  * \brief Finds the Source corresponding to the given Texture2D.
  *
- * \return      pointer to the Source, or NULL if the given Texture2D hasn't
+ * \return      pointer to the Source, or nullptr if the given Texture2D hasn't
  *              been added to this TextureAtlasBuilder.
  */
 TextureAtlasBuilder::Source* TextureAtlasBuilder::getSource(const osg::Texture2D* texture)
@@ -796,7 +796,7 @@ bool TextureAtlasBuilder::Atlas::doesSourceFit(Source* source)
 
 std::string TextureAtlasBuilder::Atlas::toString() const
 {
-    if ( _image == NULL || _image->getFileName().empty() )
+    if ( _image == nullptr || _image->getFileName().empty() )
     {
         std::stringstream result;
         result << this;
@@ -1151,11 +1151,11 @@ void TextureAtlasBuilder::RectangleList::addRectangle ( unsigned int x0, unsigne
  *
  * \retval              a Rectangle no smaller than (but possibly larger than)
  *                      the specified area
- * \retval              NULL if this RectangleList contains no Rectangle big enough
+ * \retval              nullptr if this RectangleList contains no Rectangle big enough
  */
 osg::ref_ptr<TextureAtlasBuilder::Rectangle> TextureAtlasBuilder::RectangleList::getSpace ( unsigned int width, unsigned int height )
 {
-    osg::ref_ptr<Rectangle> result = NULL;
+    osg::ref_ptr<Rectangle> result = nullptr;
     for ( std::vector< osg::ref_ptr<Rectangle> >::iterator i = begin();
           i < end();
           i++ )
@@ -1205,11 +1205,11 @@ osg::ref_ptr<TextureAtlasBuilder::Rectangle> TextureAtlasBuilder::RectangleList:
  *
  * \retval              a Rectangle at least big enough to hold the given Image with
  *                      the specified margin
- * \retval              NULL if this RectangleList contains no Rectangle big enough
+ * \retval              nullptr if this RectangleList contains no Rectangle big enough
  */
 osg::ref_ptr<TextureAtlasBuilder::Rectangle> TextureAtlasBuilder::RectangleList::getSpace ( const osg::Image* image, unsigned int margin )
 {
-    osg::ref_ptr<Rectangle> result = NULL;
+    osg::ref_ptr<Rectangle> result = nullptr;
     for ( std::vector< osg::ref_ptr<Rectangle> >::iterator i = begin();
           i < end();
           i++ )

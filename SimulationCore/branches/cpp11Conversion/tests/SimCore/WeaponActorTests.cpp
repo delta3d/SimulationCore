@@ -31,7 +31,7 @@
 #include <dtUtil/macros.h>
 
 #include <dtCore/system.h>
-#include <dtCore/refptr.h>
+#include <dtUtil/refcountedbase.h>
 #include <dtCore/scene.h>
 #include <dtCore/uniqueid.h>
 
@@ -100,8 +100,8 @@ namespace SimCore
             // @param trajectory The velocity vector of the impacting munition
             // @param location The location in the world that the target was hit
             void SimulateTargetHit( dtGame::GameActor* target,
-               const osg::Vec3* trajectory = NULL,
-               const osg::Vec3* location = NULL );
+               const osg::Vec3* trajectory = nullptr,
+               const osg::Vec3* location = nullptr );
 
             // Creates and assigns a shooter to the tested weapon.
             // This function hides the PhysX code from the unit test code.
@@ -112,12 +112,12 @@ namespace SimCore
          protected:
          private:
 
-            dtCore::RefPtr<dtGame::GameManager> mGM;
-            dtCore::RefPtr<dtGame::MachineInfo> mMachineInfo;
-            dtCore::RefPtr<SimCore::Actors::WeaponActor> mWeapon;
-            dtCore::RefPtr<SimCore::Actors::WeaponActorProxy> mWeaponProxy;
-            dtCore::RefPtr<ListeningComponent> mTestComp; // used in listening for weapon messages
-            dtCore::RefPtr<MunitionsComponent> mMunitionsComp;
+            std::shared_ptr<dtGame::GameManager> mGM;
+            std::shared_ptr<dtGame::MachineInfo> mMachineInfo;
+            std::shared_ptr<SimCore::Actors::WeaponActor> mWeapon;
+            std::shared_ptr<SimCore::Actors::WeaponActorProxy> mWeaponProxy;
+            std::shared_ptr<ListeningComponent> mTestComp; // used in listening for weapon messages
+            std::shared_ptr<MunitionsComponent> mMunitionsComp;
       };
 
       CPPUNIT_TEST_SUITE_REGISTRATION(WeaponActorTests);
@@ -232,19 +232,19 @@ namespace SimCore
       {
          dtCore::System::GetInstance().Stop();
 
-         mWeapon = NULL;
-         mWeaponProxy = NULL;
+         mWeapon = nullptr;
+         mWeaponProxy = nullptr;
 
          if( mTestComp.valid() )
          {
             mGM->RemoveComponent( *mTestComp );
-            mTestComp = NULL;
+            mTestComp = nullptr;
          }
 
          if( mMunitionsComp.valid() )
          {
             mGM->RemoveComponent( *mMunitionsComp );
-            mMunitionsComp = NULL;
+            mMunitionsComp = nullptr;
          }
 
          mGM->CloseCurrentMap();            
@@ -254,8 +254,8 @@ namespace SimCore
 
          mGM->DeleteAllActors(true);
 
-         mGM = NULL;
-         mMachineInfo = NULL;
+         mGM = nullptr;
+         mMachineInfo = nullptr;
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -270,7 +270,7 @@ namespace SimCore
          // Set both vectors with the same value since both seem to be dealing
          // with the same type of data; normal may just be a normalized version
          // of the force. The weapon may use either of the two for the same data.
-         if( trajectory != NULL )
+         if( trajectory != nullptr )
          {
             report.nxVec3crContactNormal[0] = (*trajectory)[0];
             report.nxVec3crContactNormal[1] = (*trajectory)[1];
@@ -279,7 +279,7 @@ namespace SimCore
          }
 
          // Set the location
-         if( location != NULL )
+         if( location != nullptr )
          {
             report.lsContactPoints.push_back(
                NxVec3( (*location)[0], (*location)[1], (*location)[2] )
@@ -287,30 +287,30 @@ namespace SimCore
          }
 
          // Notify the weapon
-         mWeapon->ReceiveContactReport( report, target != NULL ? &target->GetGameActorProxy() : NULL );
+         mWeapon->ReceiveContactReport( report, target != nullptr ? &target->GetGameActorProxy() : nullptr );
 #else
          dtPhysics::CollisionContact report;
          // Set both vectors with the same value since both seem to be dealing
          // with the same type of data; normal may just be a normalized version
          // of the force. The weapon may use either of the two for the same data.
-         if( trajectory != NULL )
+         if( trajectory != nullptr )
          {
             report.mNormal = *trajectory;
          }
 
          // Set the location
-         if( location != NULL )
+         if( location != nullptr )
          {
             report.mPosition = *location;
          }
-         mWeapon->ReceiveContactReport(report, target != NULL ? &target->GetGameActorProxy() : NULL);
+         mWeapon->ReceiveContactReport(report, target != nullptr ? &target->GetGameActorProxy() : nullptr);
 #endif
       }
 
       //////////////////////////////////////////////////////////////////////////
       void WeaponActorTests::CreateShooter()
       {
-         dtCore::RefPtr<SimCore::Actors::MunitionParticlesActorProxy> proxy;
+         std::shared_ptr<SimCore::Actors::MunitionParticlesActorProxy> proxy;
          mGM->CreateActor( *SimCore::Actors::EntityActorRegistry::PHYSICS_MUNITIONS_PARTICLE_SYSTEM_TYPE, proxy );
          mWeapon->SetShooter( proxy.get() );
       }
@@ -335,7 +335,7 @@ namespace SimCore
          // --- Munition Type Actor
          std::string munitionName("TestMunitionType");
 
-         dtCore::RefPtr<SimCore::Actors::MunitionTypeActorProxy> munitionTypeProxy;
+         std::shared_ptr<SimCore::Actors::MunitionTypeActorProxy> munitionTypeProxy;
          mGM->CreateActor( *SimCore::Actors::EntityActorRegistry::MUNITION_TYPE_ACTOR_TYPE, munitionTypeProxy );
          CPPUNIT_ASSERT_MESSAGE( "GameManager should be able to create a MunitionTypeActor",
             munitionTypeProxy.valid() );
@@ -344,7 +344,7 @@ namespace SimCore
          munitionType->SetName( munitionName );
 
          // --- Entity as an owner
-         dtCore::RefPtr<SimCore::Actors::BaseEntityActorProxy> proxy;
+         std::shared_ptr<SimCore::Actors::BaseEntityActorProxy> proxy;
          mGM->CreateActor( *SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE, proxy );
          CPPUNIT_ASSERT_MESSAGE( "GameManager should be able to create an Entity",
             proxy.valid() );
@@ -358,31 +358,31 @@ namespace SimCore
          mWeapon->SetMunitionTypeName( "Test" );
          CPPUNIT_ASSERT( mWeapon->GetMunitionTypeName() == "Test" );
 
-         CPPUNIT_ASSERT_MESSAGE( "WeaponActor munition type should be NULL by default",
-            mWeapon->GetMunitionType() == NULL );
+         CPPUNIT_ASSERT_MESSAGE( "WeaponActor munition type should be nullptr by default",
+            mWeapon->GetMunitionType() == nullptr );
          mWeapon->SetMunitionType( munitionType );
          CPPUNIT_ASSERT( mWeapon->GetMunitionType() == munitionType );
          CPPUNIT_ASSERT( mWeapon->GetMunitionTypeName() == munitionName );
-         mWeapon->SetMunitionType( NULL );
-         CPPUNIT_ASSERT( mWeapon->GetMunitionType() == NULL );
+         mWeapon->SetMunitionType( nullptr );
+         CPPUNIT_ASSERT( mWeapon->GetMunitionType() == nullptr );
 
          // --- A munition type will be needed later for a successful fired shot
          mWeapon->SetMunitionTypeProxy( munitionTypeProxy.get() );
          CPPUNIT_ASSERT( mWeapon->GetMunitionTypeName() == munitionName );
          CPPUNIT_ASSERT(mWeapon->GetMunitionType() == munitionTypeProxy->GetDrawable());
 
-         CPPUNIT_ASSERT_MESSAGE( "WeaponActor owner should be NULL by default",
-            mWeapon->GetOwner() == NULL );
+         CPPUNIT_ASSERT_MESSAGE( "WeaponActor owner should be nullptr by default",
+            mWeapon->GetOwner() == nullptr );
          mWeapon->SetOwner( proxy.get() );
-         CPPUNIT_ASSERT( mWeapon->GetOwner() != NULL );
+         CPPUNIT_ASSERT( mWeapon->GetOwner() != nullptr );
 
          // --- Ensure that the weapon does not hold onto entity memory if the
          //     entity goes out of scope.
-         mWeapon->SetOwner( NULL );
-         proxy = NULL;
+         mWeapon->SetOwner( nullptr );
+         proxy = nullptr;
          dtCore::BaseActorObject* owner = mWeapon->GetOwner();
          CPPUNIT_ASSERT_MESSAGE( "WeaponActor should NOT continue to hold onto its owner's memory",
-            owner == NULL );
+            owner == nullptr );
 
 
 
@@ -506,7 +506,7 @@ namespace SimCore
          mGM->AddActor( *mWeaponProxy, false, false );
          CreateShooter();
          SimCore::Actors::MunitionParticlesActorProxy* shooterProxy = mWeapon->GetShooter();
-         CPPUNIT_ASSERT(shooterProxy != NULL);
+         CPPUNIT_ASSERT(shooterProxy != nullptr);
          mGM->AddActor(*shooterProxy, false, false);
 
          dtDAL::ActorType& shooterType = *SimCore::Actors::EntityActorRegistry::PHYSICS_MUNITIONS_PARTICLE_SYSTEM_TYPE;
@@ -523,21 +523,21 @@ namespace SimCore
       void WeaponActorTests::TestMessageProcessing()
       {
          // Create a test target entity
-         dtCore::RefPtr<SimCore::Actors::BaseEntityActorProxy> proxy;
+         std::shared_ptr<SimCore::Actors::BaseEntityActorProxy> proxy;
          mGM->CreateActor( *SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE, proxy );
          CPPUNIT_ASSERT_MESSAGE( "GameManager should be able to create a Platform",
             proxy.valid() );
-         SimCore::Actors::BaseEntity* target = NULL;
+         SimCore::Actors::BaseEntity* target = nullptr;
          proxy->GetActor(target);
          CPPUNIT_ASSERT_MESSAGE( "BaseEntityActorProxy should contain a valid Entity",
-            target != NULL );
+            target != nullptr );
 
          // Ensure the MunitionsComponent has munition definitions loaded
          // so that the WeaponActor can find them when entering the world.
          //mMunitionsComp->LoadMunitionTypeTable( "UnitTestMunitionTypesMap" );
 
          // Create a tick message used for testing WeaponActor::OnTickLocal
-         dtCore::RefPtr<dtGame::TickMessage> tickMsg;
+         std::shared_ptr<dtGame::TickMessage> tickMsg;
          mGM->GetMessageFactory().CreateMessage( dtGame::MessageType::TICK_LOCAL, tickMsg );
 
          // Declare test time step
@@ -567,7 +567,7 @@ namespace SimCore
          
          const SimCore::Actors::MunitionTypeActor* munitionType = mWeapon->GetMunitionType();
          CPPUNIT_ASSERT_MESSAGE( "WeaponActor should be able to access the MunitionsComponent for a MunitionTypeActor",
-            munitionType != NULL );
+            munitionType != nullptr );
          CPPUNIT_ASSERT_MESSAGE( "WeaponActor should set the munition type name when a MunitionTypeActor is loaded",
             mWeapon->GetMunitionTypeName() == munitionName );
 
@@ -711,7 +711,7 @@ namespace SimCore
          SimulateTargetHit( target );            // det 1
          mWeapon->OnTickLocal( *tickMsg ); // 0.5  // msg 1  // shot 1
 
-         SimulateTargetHit( NULL );              // det 2
+         SimulateTargetHit( nullptr );              // det 2
          mWeapon->OnTickLocal( *tickMsg ); // 0.75
          mWeapon->OnTickLocal( *tickMsg ); // 1.0  // msg 2  // shot 2
 
@@ -730,7 +730,7 @@ namespace SimCore
          mWeapon->OnTickLocal( *tickMsg ); // 3.0  // msg 4  // shot 6
 
          mWeapon->OnTickLocal( *tickMsg ); // 3.25
-         SimulateTargetHit( NULL );              // det 4 (target change causes a shot fired message on next message or trigger time)
+         SimulateTargetHit( nullptr );              // det 4 (target change causes a shot fired message on next message or trigger time)
          mWeapon->OnTickLocal( *tickMsg ); // 3.5  // msg 5  // shot 7
          mWeapon->OnTickLocal( *tickMsg ); // 3.75 // just for good measure
          mWeapon->OnTickLocal( *tickMsg ); // 4.00 // just for good measure
@@ -747,7 +747,7 @@ namespace SimCore
          // TEST MESSAGE BEHAVIOR (OUT-GOING) ----------------------------------
 
          // --- Reset counters and timers for the next test
-         SimulateTargetHit( NULL ); // Set target back to NULL
+         SimulateTargetHit( nullptr ); // Set target back to nullptr
          mWeapon->Reset();
          mTestComp->ResetShotCount();
          mTestComp->ResetDetonationCount();
@@ -758,7 +758,7 @@ namespace SimCore
          mWeapon->OnTickLocal( *tickMsg ); // 0.25
          SimulateTargetHit( target );
          mWeapon->OnTickLocal( *tickMsg ); // 0.5  // msg 1  // shot 1 & detonation
-         SimulateTargetHit( NULL );
+         SimulateTargetHit( nullptr );
          mWeapon->OnTickLocal( *tickMsg ); // 0.75
          mWeapon->OnTickLocal( *tickMsg ); // 1.0  // msg 2  // shot 2 & detonation
          mWeapon->OnTickLocal( *tickMsg ); // 1.25
@@ -772,7 +772,7 @@ namespace SimCore
          mWeapon->OnTickLocal( *tickMsg ); // 2.75
          mWeapon->OnTickLocal( *tickMsg ); // 3.0  // msg 4  // shot 6 & detonation
          mWeapon->OnTickLocal( *tickMsg ); // 3.25
-         SimulateTargetHit( NULL );
+         SimulateTargetHit( nullptr );
          mWeapon->OnTickLocal( *tickMsg ); // 3.5  // msg 5  // shot 7 & detonation
          // --- Prevent extra ticks when stepping the system forward in following
          //     tests.

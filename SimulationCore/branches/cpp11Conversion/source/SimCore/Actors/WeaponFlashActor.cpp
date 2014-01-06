@@ -80,7 +80,7 @@ namespace SimCore
 
          dtGame::GameManager* gm = GetGameActorProxy().GetGameManager();
 
-         if( gm == NULL ) { return false; }
+         if( gm == nullptr ) { return false; }
 
          mParticles = new dtCore::ParticleSystem("Flash");
          mParticles->SetParentRelative( true );
@@ -139,7 +139,7 @@ namespace SimCore
          mFlash = new WeaponFlash( mLength, mThickness, shaderName, shaderGroup );
          mFlash->SetName( flashName );
 
-         if( oldFlash != NULL ) { RemoveChild( oldFlash ); }
+         if( oldFlash != nullptr ) { RemoveChild( oldFlash ); }
 
          AddChild( mFlash.get() );
       }
@@ -213,7 +213,7 @@ namespace SimCore
       {
          dtGame::GameActorProxy::BuildPropertyMap();
 
-         WeaponFlashActor* actor = NULL;
+         WeaponFlashActor* actor = nullptr;
          GetActor(actor);
 
          AddProperty(new dtDAL::BooleanActorProperty("Visible", "Visible",

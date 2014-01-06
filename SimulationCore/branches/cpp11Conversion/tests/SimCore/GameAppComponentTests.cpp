@@ -64,8 +64,8 @@ public:
    void TestFunction();
 
 private:
-   dtCore::RefPtr<dtGame::GameManager> mGM;
-   dtCore::RefPtr<dtUtil::Log> mLogger;
+   std::shared_ptr<dtGame::GameManager> mGM;
+   std::shared_ptr<dtUtil::Log> mLogger;
 
 };
 
@@ -92,18 +92,18 @@ void BaseGameAppComponentTests::tearDown()
    dtCore::System::GetInstance().Stop();
 
    mGM->DeleteAllActors(true);
-   mGM = NULL;
+   mGM = nullptr;
 }
 
 /////////////////////////////////////////////////////////
 void BaseGameAppComponentTests::TestFunction()
 {
-   dtCore::RefPtr<SimCore::Components::BaseGameAppComponent> baseGameAppComponent = new SimCore::Components::BaseGameAppComponent();
+   std::shared_ptr<SimCore::Components::BaseGameAppComponent> baseGameAppComponent = new SimCore::Components::BaseGameAppComponent();
    mGM->AddComponent(*baseGameAppComponent, dtGame::GameManager::ComponentPriority::NORMAL);
 
    CPPUNIT_ASSERT_MESSAGE("Could not find BaseGameAppComponent after it was made o nos", 
-   mGM->GetComponentByName(SimCore::Components::BaseGameAppComponent::DEFAULT_NAME) != NULL);
+   mGM->GetComponentByName(SimCore::Components::BaseGameAppComponent::DEFAULT_NAME) != nullptr);
 
    // should have been created
-   CPPUNIT_ASSERT(baseGameAppComponent->GetCommandLineObject() != NULL);
+   CPPUNIT_ASSERT(baseGameAppComponent->GetCommandLineObject() != nullptr);
 }

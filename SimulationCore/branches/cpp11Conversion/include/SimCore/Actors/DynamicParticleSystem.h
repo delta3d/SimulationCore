@@ -121,8 +121,8 @@ namespace SimCore
 
          private:
             dtUtil::RefString mFileName;
-            dtCore::RefPtr<dtCore::ParticleSystem> mParticles;
-            typedef std::map<dtUtil::RefString, dtCore::RefPtr<ParticleLayerInterpolator> > ParticleLayerInterpMap;
+            std::shared_ptr<dtCore::ParticleSystem> mParticles;
+            typedef std::map<dtUtil::RefString, std::shared_ptr<ParticleLayerInterpolator> > ParticleLayerInterpMap;
             ParticleLayerInterpMap mLayerInterps;
       };
 
@@ -156,7 +156,7 @@ namespace SimCore
             const DynamicParticleSystemActor& GetDynamicParticleSystemActor() const;
 
             // Used in STAGE
-            virtual dtDAL::ActorProxyIcon* GetBillBoardIcon();
+            virtual dtDAL::ActorProxyIconPtr GetBillBoardIcon();
 
             // STAGE - Draw Billboard or not?
             virtual const dtDAL::ActorProxy::RenderMode& GetRenderMode()

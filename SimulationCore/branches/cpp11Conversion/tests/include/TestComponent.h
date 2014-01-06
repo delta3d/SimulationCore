@@ -21,7 +21,7 @@
 #include <prefix/SimCorePrefix.h>
 #ifndef _TEST_COMPONENT_H_
 #define _TEST_COMPONENT_H_
-#include <dtCore/refptr.h>
+#include <dtUtil/refcountedbase.h>
 #include <dtGame/gmcomponent.h>
 #include <dtGame/messagetype.h>
 #include <dtGame/messagefactory.h>
@@ -42,9 +42,9 @@ class TestComponent: public dtGame::GMComponent
 
       }
 
-      std::vector<dtCore::RefPtr<const dtGame::Message> >& GetReceivedProcessMessages() 
+      std::vector<std::shared_ptr<const dtGame::Message> >& GetReceivedProcessMessages() 
       { return mReceivedProcessMessages; }
-      std::vector<dtCore::RefPtr<const dtGame::Message> >& GetReceivedDispatchNetworkMessages() 
+      std::vector<std::shared_ptr<const dtGame::Message> >& GetReceivedDispatchNetworkMessages() 
       { return mReceivedDispatchNetworkMessages; }
 
       virtual void ProcessMessage(const dtGame::Message& msg)
@@ -62,27 +62,27 @@ class TestComponent: public dtGame::GMComponent
          mReceivedProcessMessages.clear();
       }
 
-      dtCore::RefPtr<const dtGame::Message> FindProcessMessageOfType(const dtGame::MessageType& type)
+      std::shared_ptr<const dtGame::Message> FindProcessMessageOfType(const dtGame::MessageType& type)
       {
          for (unsigned i = 0; i < mReceivedProcessMessages.size(); ++i)
          {
             if (mReceivedProcessMessages[i]->GetMessageType() == type)
                return mReceivedProcessMessages[i];
          }
-         return NULL;
+         return nullptr;
       }
-      dtCore::RefPtr<const dtGame::Message> FindDispatchNetworkMessageOfType(const dtGame::MessageType& type)
+      std::shared_ptr<const dtGame::Message> FindDispatchNetworkMessageOfType(const dtGame::MessageType& type)
       {
          for (unsigned i = 0; i < mReceivedDispatchNetworkMessages.size(); ++i)
          {
             if (mReceivedDispatchNetworkMessages[i]->GetMessageType() == type)
                return mReceivedDispatchNetworkMessages[i];
          }
-         return NULL;
+         return nullptr;
       }
    private:
-      std::vector<dtCore::RefPtr<const dtGame::Message> > mReceivedProcessMessages;
-      std::vector<dtCore::RefPtr<const dtGame::Message> > mReceivedDispatchNetworkMessages;
+      std::vector<std::shared_ptr<const dtGame::Message> > mReceivedProcessMessages;
+      std::vector<std::shared_ptr<const dtGame::Message> > mReceivedDispatchNetworkMessages;
 };
 
 #endif

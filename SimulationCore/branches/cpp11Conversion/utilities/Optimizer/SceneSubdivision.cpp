@@ -303,7 +303,7 @@ namespace LevelCompiler
       //      osg::Group* parent = (*iter)(node).getParent(i);
       //      osg::LOD* lod = dynamic_cast<osg::LOD*>(parent);
 
-      //      if(lod == NULL)
+      //      if(lod == nullptr)
       //      {
       //         osg::ref_ptr<osg::LOD> lodNode = new osg::LOD();
 

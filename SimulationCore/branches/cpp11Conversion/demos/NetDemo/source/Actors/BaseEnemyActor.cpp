@@ -46,7 +46,7 @@
 
 namespace NetDemo
 {
-	dtCore::ObserverPtr<FortActor> BaseEnemyActor::mCurrentFortUnderAttack = NULL;
+	std::weak_ptr<FortActor> BaseEnemyActor::mCurrentFortUnderAttack = nullptr;
 
    ///////////////////////////////////////////////////////////////////////////////////
    BaseEnemyActor::BaseEnemyActor(SimCore::Actors::BasePhysicsVehicleActorProxy &proxy)
@@ -111,7 +111,7 @@ namespace NetDemo
       osg::Vec3 trans = ourTransform.GetTranslation();
 
       // Prepare a detonation message
-      dtCore::RefPtr<SimCore::DetonationMessage> msg;
+      std::shared_ptr<SimCore::DetonationMessage> msg;
       gm->GetMessageFactory().CreateMessage( SimCore::MessageType::DETONATION, msg );
 
       // Required Parameters:
@@ -265,11 +265,11 @@ namespace NetDemo
       mTimeSinceLightsWereUpdated += tickMessage.GetDeltaSimTime();
       if(mTimeSinceLightsWereUpdated > 1.0f)
       {
-         SimCore::Components::RenderingSupportComponent* rsComp = NULL;
+         SimCore::Components::RenderingSupportComponent* rsComp = nullptr;
 
          GetGameActorProxy().GetGameManager()->GetComponentByName( SimCore::Components::RenderingSupportComponent::DEFAULT_NAME, rsComp);
 
-         if(rsComp != NULL)
+         if(rsComp != nullptr)
          {
             rsComp->FindBestLights(*this);
          }
@@ -308,7 +308,7 @@ namespace NetDemo
    //////////////////////////////////////////////////////////////////////
    bool BaseEnemyActor::IsEnemyActor( dtGame::GameActorProxy* gap ) const
    {
-      if(gap != NULL)
+      if(gap != nullptr)
       {
          const dtDAL::ActorType& atype = gap->GetActorType();
          if( atype == *NetDemoActorRegistry::ENEMY_HELIX_ACTOR_TYPE || 
@@ -334,7 +334,7 @@ namespace NetDemo
 
       osg::Vec3 pos = mAIHelper->mCurrentState.GetPos();
 
-      dtCore::Transformable* result = NULL;
+      dtCore::Transformable* result = nullptr;
       float dist = 1000000.0f;
 
       for (unsigned i = 0; i < actors.size(); ++i)
@@ -371,7 +371,7 @@ namespace NetDemo
    {
       BaseClass::BuildPropertyMap();
 
-      BaseEnemyActor* actor = NULL;
+      BaseEnemyActor* actor = nullptr;
       GetActor(actor);
 
       using namespace dtDAL;
@@ -405,10 +405,10 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////////////
    void BaseEnemyActorProxy::BuildActorComponents()
    {
-      dtCore::RefPtr<dtPhysics::PhysicsActComp> physAC = new dtPhysics::PhysicsActComp();
+      std::shared_ptr<dtPhysics::PhysicsActComp> physAC = new dtPhysics::PhysicsActComp();
 
       // Add our initial body.
-      dtCore::RefPtr<dtPhysics::PhysicsObject> physicsObject = new dtPhysics::PhysicsObject("VehicleBody");
+      std::shared_ptr<dtPhysics::PhysicsObject> physicsObject = new dtPhysics::PhysicsObject("VehicleBody");
       physAC->AddPhysicsObject(*physicsObject);
       physAC->SetMass(500.0f);
       physicsObject->SetPrimitiveType(dtPhysics::PrimitiveType::CONVEX_HULL);
@@ -421,9 +421,9 @@ namespace NetDemo
       BaseClass::BuildActorComponents();
 
 
-      dtGame::DRPublishingActComp* drPublishingActComp = NULL;
+      dtGame::DRPublishingActComp* drPublishingActComp = nullptr;
       GetComponent(drPublishingActComp);
-      if (drPublishingActComp == NULL)
+      if (drPublishingActComp == nullptr)
       {
          LOG_ERROR("CRITICAL ERROR - No DR Publishing Actor Component.");
          return;

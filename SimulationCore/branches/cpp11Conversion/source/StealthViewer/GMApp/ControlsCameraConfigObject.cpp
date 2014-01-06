@@ -58,7 +58,7 @@ namespace StealthGM
          if (!mStealthActorId.ToString().empty())
          {
             mWarp = false;
-            dtCore::RefPtr<SimCore::StealthActorUpdatedMessage> wtpMsg;
+            std::shared_ptr<SimCore::StealthActorUpdatedMessage> wtpMsg;
             gameManager.GetMessageFactory().CreateMessage(SimCore::MessageType::REQUEST_WARP_TO_POSITION, wtpMsg);
             wtpMsg->SetTranslation(mWarpToPosition);
             wtpMsg->SetAboutActorId(mStealthActorId);
@@ -74,11 +74,11 @@ namespace StealthGM
    ////////////////////////////////////////////////////////////
    bool FindCoordinatesObject(dtGame::GameManager& gm, dtUtil::Coordinates& coord)
    {
-      dtActors::CoordinateConfigActorProxy* coordConfigActorProxy = NULL;
+      dtActors::CoordinateConfigActorProxy* coordConfigActorProxy = nullptr;
       gm.FindActorByType(*dtActors::EngineActorRegistry::COORDINATE_CONFIG_ACTOR_TYPE, coordConfigActorProxy);
-      if (coordConfigActorProxy != NULL)
+      if (coordConfigActorProxy != nullptr)
       {
-         dtActors::CoordinateConfigActor* coordConfigActor = NULL;
+         dtActors::CoordinateConfigActor* coordConfigActor = nullptr;
          coordConfigActorProxy->GetActor(coordConfigActor);
          coord = coordConfigActor->GetCoordinates();
       }
@@ -91,9 +91,9 @@ namespace StealthGM
    {
       mCoordValid = FindCoordinatesObject(gameManager, mCoord);
 
-      dtGame::GameActorProxy* StealthActor = NULL;
+      dtGame::GameActorProxy* StealthActor = nullptr;
       gameManager.FindActorByType(*SimCore::Actors::EntityActorRegistry::STEALTH_ACTOR_TYPE, StealthActor);
-      if (StealthActor != NULL)
+      if (StealthActor != nullptr)
       {
          mStealthActorId = StealthActor->GetId();
       }

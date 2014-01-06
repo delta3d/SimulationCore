@@ -78,7 +78,7 @@
 
 #include <dtPhysics/physicscomponent.h>
 
-using dtCore::RefPtr;
+using std::shared_ptr;
 using dtCore::ObserverPtr;
 
 namespace StealthGM
@@ -125,7 +125,7 @@ namespace StealthGM
    ///////////////////////////////////////////////////////////////////////////
    void StealthGameEntryPoint::Initialize(dtABC::BaseABC& app, int argc, char **argv)
    {
-      if(parser == NULL)
+      if(parser == nullptr)
          parser = new osg::ArgumentParser(&argc, argv);
 
       parser->getApplicationUsage()->setCommandLineUsage("Stealth Viewer Application [options] value ...");
@@ -207,7 +207,7 @@ namespace StealthGM
       StealthInputComponent* inputComp =
          dynamic_cast<StealthInputComponent*>(gm.GetComponentByName(StealthInputComponent::DEFAULT_NAME));
 
-      if( inputComp == NULL ) { return; }
+      if( inputComp == nullptr ) { return; }
 
       if( mHasNightVis )
       {
@@ -276,7 +276,7 @@ namespace StealthGM
    }
 
    ///////////////////////////////////////////////////////////////////////////
-   /*ObserverPtr<dtGame::GameManager> StealthGameEntryPoint::CreateGameManager(dtCore::Scene& scene)
+   /*std::weak_ptr<dtGame::GameManager> StealthGameEntryPoint::CreateGameManager(dtCore::Scene& scene)
    {
       return BaseGameEntryPoint::CreateGameManager(scene);
    }*/
@@ -291,12 +291,12 @@ namespace StealthGM
    void StealthGameEntryPoint::OnStartup(dtABC::BaseABC& app, dtGame::GameManager& gameManager)
    {
       dtCore::Transform stealthStart;
-      RefPtr<dtGame::GameActorProxy> ap;
+      std::shared_ptr<dtGame::GameActorProxy> ap;
 
       SimCore::HLA::BaseHLAGameEntryPoint::OnStartup(app, gameManager);
 
       // Add Input Component
-      dtCore::RefPtr<StealthInputComponent> mInputComponent
+      std::shared_ptr<StealthInputComponent> mInputComponent
          = new StealthInputComponent(mEnableLogging,
                                              mEnablePlayback,
                                              StealthInputComponent::DEFAULT_NAME,
@@ -346,7 +346,7 @@ namespace StealthGM
       mHudGUI->Initialize();
 
       // Control State Component (for swapping weapons on remote HMMWV vehicles)
-      dtCore::RefPtr<SimCore::Components::ControlStateComponent> controlsStateComp
+      std::shared_ptr<SimCore::Components::ControlStateComponent> controlsStateComp
          = new SimCore::Components::ControlStateComponent;
       gameManager.AddComponent(*controlsStateComp, dtGame::GameManager::ComponentPriority::NORMAL);
 
@@ -359,15 +359,15 @@ namespace StealthGM
       InitializeTools(gameManager);
 
       // Setup Stealth Actor (ie player and camera)
-      //if (mStealth == NULL)
+      //if (mStealth == nullptr)
       //{
       //   LOG_ERROR("Failed to find the stealth actor");
       //   gameManager.GetApplication().Quit();
       //}
-      dtCore::RefPtr<dtPhysics::PhysicsWorld> physicsWorld = new dtPhysics::PhysicsWorld(gameManager.GetConfiguration());
-      //dtCore::RefPtr<dtPhysics::PhysicsWorld> physicsWorld = new dtPhysics::PhysicsWorld(dtPhysics::PhysicsWorld::ODE_ENGINE);
+      std::shared_ptr<dtPhysics::PhysicsWorld> physicsWorld = new dtPhysics::PhysicsWorld(gameManager.GetConfiguration());
+      //std::shared_ptr<dtPhysics::PhysicsWorld> physicsWorld = new dtPhysics::PhysicsWorld(dtPhysics::PhysicsWorld::ODE_ENGINE);
       physicsWorld->Init();
-      dtCore::RefPtr<dtPhysics::PhysicsComponent> physicsComponent = new dtPhysics::PhysicsComponent(*physicsWorld, false);
+      std::shared_ptr<dtPhysics::PhysicsComponent> physicsComponent = new dtPhysics::PhysicsComponent(*physicsWorld, false);
       gameManager.AddComponent(*physicsComponent, dtGame::GameManager::ComponentPriority::NORMAL);
       SimCore::CollisionGroup::SetupDefaultGroupCollisions(*physicsComponent);
 
@@ -378,20 +378,20 @@ namespace StealthGM
       //mStealth->AddChild(gameManager.GetApplication().GetCamera());
 
       // The stealth processor component is now obsolete since the updates to the AAR ignore actor behavior.
-      RefPtr<StealthMessageProcessor> stealthProcessor = new StealthMessageProcessor;
+      std::shared_ptr<StealthMessageProcessor> stealthProcessor = new StealthMessageProcessor;
       gameManager.AddComponent(*stealthProcessor,
                                dtGame::GameManager::ComponentPriority::HIGHEST);
       gameManager.AddComponent(*new StealthGM::ViewerConfigComponent,
                                dtGame::GameManager::ComponentPriority::LOWER);
 
       //this enables night vision
-      dtCore::RefPtr<SimCore::Components::RenderingSupportComponent> renderingSupportComponent
+      std::shared_ptr<SimCore::Components::RenderingSupportComponent> renderingSupportComponent
          = new SimCore::Components::RenderingSupportComponent();
       renderingSupportComponent->SetEnableCullVisitor(false);
 
       gameManager.AddComponent(*renderingSupportComponent, dtGame::GameManager::ComponentPriority::NORMAL);
 
-      dtCore::RefPtr<SimCore::Components::VolumeRenderingComponent> volumeRenderingComponent
+      std::shared_ptr<SimCore::Components::VolumeRenderingComponent> volumeRenderingComponent
          = new SimCore::Components::VolumeRenderingComponent();
 
       gameManager.AddComponent(*volumeRenderingComponent, dtGame::GameManager::ComponentPriority::NORMAL);

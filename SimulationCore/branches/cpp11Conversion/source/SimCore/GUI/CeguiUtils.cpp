@@ -32,7 +32,7 @@ namespace SimCore
          osg::Vec4 bounds(0.0f, 0.0f, 1.0f, 1.0f);
 
          const CEGUI::Window* curWin = &window;
-         while(curWin != NULL)
+         while(curWin != nullptr)
          {
             bounds.z() *= curWin->getWidth().d_scale;
             bounds.w() *= curWin->getHeight().d_scale;
@@ -81,7 +81,7 @@ namespace SimCore
          bool success = false;
 
          const CEGUI::Window* curWin = child.getParent();
-         while(curWin != NULL)
+         while(curWin != nullptr)
          {
             if(curWin == &parent)
             {

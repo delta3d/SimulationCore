@@ -72,8 +72,8 @@ class SoundActorTests : public CPPUNIT_NS::TestFixture
    private:
       static const std::string LIBRARY_TEST_GAME_ACTOR;
 
-      dtCore::RefPtr<dtGame::GameManager> mGameManager;
-      dtCore::RefPtr<SimCore::Actors::SoundActorProxy> mProxy;
+      std::shared_ptr<dtGame::GameManager> mGameManager;
+      std::shared_ptr<SimCore::Actors::SoundActorProxy> mProxy;
 };
 
 //Registers the fixture into the 'registry'
@@ -95,7 +95,7 @@ void SoundActorTests::setUp()
       dtCore::System::GetInstance().SetShutdownOnWindowClose(false);
       dtCore::System::GetInstance().Start();
 
-      dtCore::RefPtr<const dtCore::ActorType> actorType =
+      std::shared_ptr<const dtCore::ActorType> actorType =
          mGameManager->FindActorType("SimCore","SoundActor");
       CPPUNIT_ASSERT_MESSAGE("Could not find actor type.",actorType.valid());
 
@@ -111,7 +111,7 @@ void SoundActorTests::setUp()
 ///////////////////////////////////////////////////////////////////////////////
 void SoundActorTests::tearDown()
 {
-   mProxy = NULL;
+   mProxy = nullptr;
 
    dtCore::System::GetInstance().SetPause(false);
    dtCore::System::GetInstance().Stop();
@@ -120,7 +120,7 @@ void SoundActorTests::tearDown()
    {
       mGameManager->DeleteAllActors();
       mGameManager->UnloadActorRegistry(LIBRARY_TEST_GAME_ACTOR);
-      mGameManager = NULL;
+      mGameManager = nullptr;
    }
 
 }
@@ -153,35 +153,35 @@ void SoundActorTests::TestProperties()
 
       // Make sure the correct properties exist on the proxy.
       CPPUNIT_ASSERT_MESSAGE("Sound actor should have a random flag property.",
-         propRandom != NULL);
+         propRandom != nullptr);
       CPPUNIT_ASSERT_MESSAGE("Sound actor should have a initial-play-time-offset property.",
-         propOffsetTime != NULL);
+         propOffsetTime != nullptr);
       CPPUNIT_ASSERT_MESSAGE("Sound actor should have a random-maximum-time property.",
-         propRandTimeMax != NULL);
+         propRandTimeMax != nullptr);
       CPPUNIT_ASSERT_MESSAGE("Sound actor should have a random-minimum-time property.",
-         propRandTimeMin != NULL);
+         propRandTimeMin != nullptr);
       CPPUNIT_ASSERT_MESSAGE("Sound actor should have a direction property.",
-         proxy->GetProperty( SimCore::Actors::SoundActorProxy::PROPERTY_DIRECTION ) != NULL );
+         proxy->GetProperty( SimCore::Actors::SoundActorProxy::PROPERTY_DIRECTION ) != nullptr );
       CPPUNIT_ASSERT_MESSAGE("Sound actor should have a gain property.",
-         proxy->GetProperty( SimCore::Actors::SoundActorProxy::PROPERTY_GAIN ) != NULL );
+         proxy->GetProperty( SimCore::Actors::SoundActorProxy::PROPERTY_GAIN ) != nullptr );
       CPPUNIT_ASSERT_MESSAGE("Sound actor should have a listener-relative flag property.",
-         proxy->GetProperty( SimCore::Actors::SoundActorProxy::PROPERTY_LISTENER_RELATIVE ) != NULL );
+         proxy->GetProperty( SimCore::Actors::SoundActorProxy::PROPERTY_LISTENER_RELATIVE ) != nullptr );
       CPPUNIT_ASSERT_MESSAGE("Sound actor should have a looping flag property.",
-         proxy->GetProperty( SimCore::Actors::SoundActorProxy::PROPERTY_LOOPING ) != NULL );
+         proxy->GetProperty( SimCore::Actors::SoundActorProxy::PROPERTY_LOOPING ) != nullptr );
       CPPUNIT_ASSERT_MESSAGE("Sound actor should have a max distance property.",
-         proxy->GetProperty( SimCore::Actors::SoundActorProxy::PROPERTY_MAX_DISTANCE ) != NULL );
+         proxy->GetProperty( SimCore::Actors::SoundActorProxy::PROPERTY_MAX_DISTANCE ) != nullptr );
       CPPUNIT_ASSERT_MESSAGE("Sound actor should have a max gain property.",
-         proxy->GetProperty( SimCore::Actors::SoundActorProxy::PROPERTY_MAX_GAIN ) != NULL );
+         proxy->GetProperty( SimCore::Actors::SoundActorProxy::PROPERTY_MAX_GAIN ) != nullptr );
       CPPUNIT_ASSERT_MESSAGE("Sound actor should have a min gain property.",
-         proxy->GetProperty( SimCore::Actors::SoundActorProxy::PROPERTY_MIN_GAIN ) != NULL );
+         proxy->GetProperty( SimCore::Actors::SoundActorProxy::PROPERTY_MIN_GAIN ) != nullptr );
       CPPUNIT_ASSERT_MESSAGE("Sound actor should have a pith property.",
-         proxy->GetProperty( SimCore::Actors::SoundActorProxy::PROPERTY_PITCH ) != NULL );
+         proxy->GetProperty( SimCore::Actors::SoundActorProxy::PROPERTY_PITCH ) != nullptr );
       CPPUNIT_ASSERT_MESSAGE("Sound actor should have a rolloff factor property.",
-         proxy->GetProperty( SimCore::Actors::SoundActorProxy::PROPERTY_ROLLOFF_FACTOR ) != NULL );
+         proxy->GetProperty( SimCore::Actors::SoundActorProxy::PROPERTY_ROLLOFF_FACTOR ) != nullptr );
       CPPUNIT_ASSERT_MESSAGE("Sound actor should have a sound-file property.",
-         proxy->GetProperty( SimCore::Actors::SoundActorProxy::PROPERTY_SOUND_EFFECT ) != NULL );
+         proxy->GetProperty( SimCore::Actors::SoundActorProxy::PROPERTY_SOUND_EFFECT ) != nullptr );
       CPPUNIT_ASSERT_MESSAGE("Sound actor should have a velocity property.",
-         proxy->GetProperty( SimCore::Actors::SoundActorProxy::PROPERTY_VELOCITY ) != NULL );
+         proxy->GetProperty( SimCore::Actors::SoundActorProxy::PROPERTY_VELOCITY ) != nullptr );
 
       // Check the default values.
       CPPUNIT_ASSERT_MESSAGE("Sound should not be random by default",
@@ -264,22 +264,22 @@ void SoundActorTests::TestTimedPlay()
       // Test loading a sound.
       //dtCore::ResourceDescriptor rd("Sounds:silence.wav");
       mProxy->SetSoundResource("Sounds/silence.wav");
-      SimCore::Actors::SoundActor* soundActor = NULL;
+      SimCore::Actors::SoundActor* soundActor = nullptr;
       mProxy->GetActor(soundActor);
       dtAudio::Sound* sound = soundActor->GetSound();
 
       // --- Ensure the proxy returns the same sound object.
       CPPUNIT_ASSERT_MESSAGE("The sound should be null",
-         sound == NULL);
+         sound == nullptr);
 
       soundActor->CreateSound();
       // --- Ensure the proxy returns the same sound object.
       CPPUNIT_ASSERT_MESSAGE("The sound should Not be null after a create call",
-         soundActor->GetSound() != NULL);
+         soundActor->GetSound() != nullptr);
       soundActor->DestroySound();
 
       CPPUNIT_ASSERT_MESSAGE("The sound should be null after a destroy call",
-         soundActor->GetSound() == NULL);
+         soundActor->GetSound() == nullptr);
 
       // --- Ensure he sound does not play when simply loaded.
       dtCore::System::GetInstance().Step(); // Sends sound commands to Audio Manager.
@@ -300,45 +300,45 @@ void SoundActorTests::TestTimedPlay()
       if ((newSimTime - simTime) < offsetTime)
       {
          CPPUNIT_ASSERT_MESSAGE("Sound should not be playing yet.",
-                  soundActor->GetSound() == NULL);
+                  soundActor->GetSound() == nullptr);
       }
       else
       {
          CPPUNIT_ASSERT_MESSAGE("Sound should be playing now.",
-                  soundActor->GetSound() != NULL && soundActor->GetSound()->IsPlaying());
+                  soundActor->GetSound() != nullptr && soundActor->GetSound()->IsPlaying());
       }
  
       // --- Stop the sound
       mProxy->Stop();
       dtCore::System::GetInstance().Step(); // Sends sound commands to Audio Manager.
       CPPUNIT_ASSERT_MESSAGE( "Sound should now deleted",
-         soundActor->GetSound() == NULL);
+         soundActor->GetSound() == nullptr);
 
       // --- Start the sound to test stopping on removal from the system.
       mProxy->Play();
       dtCore::System::GetInstance().Step(); // Sends sound commands to Audio Manager.
       CPPUNIT_ASSERT_MESSAGE( "Sound should be playing again.",
-               soundActor->GetSound() != NULL && soundActor->GetSound()->IsPlaying());
+               soundActor->GetSound() != nullptr && soundActor->GetSound()->IsPlaying());
 
       // Test removing from the game manager.
       mGameManager->DeleteActor( *mProxy );
       dtCore::System::GetInstance().Step(); // Removes actor from world and sends commands to Audio Manager.
       // such as stop.
       CPPUNIT_ASSERT_MESSAGE( "Sound should have been stopped when the actor was removed from the world",
-               soundActor->GetSound() == NULL );
+               soundActor->GetSound() == nullptr );
 
       // Test adding with a time offset of 0.
       mProxy->SetOffsetTime( 0.0f );
       mGameManager->AddActor( *mProxy, false, false );
       dtCore::System::GetInstance().Step();
       CPPUNIT_ASSERT_MESSAGE( "Sound be playing.",
-               soundActor->GetSound() != NULL && soundActor->GetSound()->IsPlaying());
+               soundActor->GetSound() != nullptr && soundActor->GetSound()->IsPlaying());
 
       // --- Remove again
       mGameManager->DeleteActor( *mProxy );
       dtCore::System::GetInstance().Step();
       CPPUNIT_ASSERT_MESSAGE( "Sound should have been stopped when the actor was removed from the world again.",
-               soundActor->GetSound() == NULL);
+               soundActor->GetSound() == nullptr);
 
    }
    catch (const dtUtil::Exception& e)

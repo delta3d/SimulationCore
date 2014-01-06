@@ -115,7 +115,7 @@ namespace SimCore
          std::string extendedParamName( PARAM_NAME_PREFIX_ARTICULATED + paramName );
 
          // Add the value
-         dtCore::RefPtr<dtDAL::NamedGroupParameter> articParam;
+         std::shared_ptr<dtDAL::NamedGroupParameter> articParam;
          // --- Create the parameter if it does not already exist
          articParam = new dtGame::GroupMessageParameter(extendedParamName);
          articParam->AddParameter( *new dtDAL::NamedFloatParameter( articulationType.GetName(), value ) );
@@ -140,7 +140,7 @@ namespace SimCore
 
       ////////////////////////////////////////////////////////////////////////////////////
       // Function moved from Entity and modified to fit the helper
-      class DRDOFDataFromHLA : public osg::Referenced
+      class DRDOFDataFromHLA : public std::enable_shared_from_this
       {
          public:
             bool mRemove;
@@ -167,7 +167,7 @@ namespace SimCore
             return;
          }
 
-         typedef std::map<std::string,dtCore::RefPtr<DRDOFDataFromHLA> > NameToDOFDataMap;
+         typedef std::map<std::string,std::shared_ptr<DRDOFDataFromHLA> > NameToDOFDataMap;
          NameToDOFDataMap toSendList;
          std::vector<const dtGame::MessageParameter*> toFill;
          articArrayParam.GetParameters(toFill);
@@ -189,9 +189,9 @@ namespace SimCore
 
                   if(GetArticulationDOFName(curGroupParam, dofName))
                   {
-                     if((dof = nodeCollector.GetDOFTransform(dofName)) != NULL)
+                     if((dof = nodeCollector.GetDOFTransform(dofName)) != nullptr)
                      {
-                        dtCore::RefPtr<DRDOFDataFromHLA> dofData = NULL;
+                        std::shared_ptr<DRDOFDataFromHLA> dofData = nullptr;
                         NameToDOFDataMap::iterator iterDRDOF = toSendList.find(dofName);
 
                         bool hadToMakeNew = iterDRDOF == toSendList.end();
@@ -205,8 +205,8 @@ namespace SimCore
                            dofData = new DRDOFDataFromHLA;
                         }
 
-                        osg::Vec3::value_type* dataMetricField = NULL;
-                        const std::string* metricName = NULL;
+                        osg::Vec3::value_type* dataMetricField = nullptr;
+                        const std::string* metricName = nullptr;
                         if(GetArticulation(curGroupParam,  dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_AZIMUTH, value))
                         {
                            metricName = &dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_AZIMUTH;
@@ -273,7 +273,7 @@ namespace SimCore
                         if( ! HasDOFMetric( *dof, *metricName ) )
                         {
                            // Apply the value change to the DOF data object.
-                           if( dataMetricField != NULL )
+                           if( dataMetricField != nullptr )
                            {
                               *dataMetricField = value;
 
@@ -336,7 +336,7 @@ namespace SimCore
             = dynamic_cast<const dtGame::FloatMessageParameter*>
             (articParam.GetParameter(metricTypeName));
 
-         if(metricParam != NULL)
+         if(metricParam != nullptr)
          {
             outValue = metricParam->GetValue();
             return true;
@@ -352,7 +352,7 @@ namespace SimCore
             = dynamic_cast<const dtGame::StringMessageParameter*>
             (articParam.GetParameter(SimCore::Components::ArticulationHelper::PARAM_NAME_DOF));
 
-         if(dofNameParam != NULL)
+         if(dofNameParam != nullptr)
          {
             outName = dofNameParam->GetValue();
             return true;

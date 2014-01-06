@@ -74,7 +74,7 @@ namespace NetDemo
 
       // TEMP:
       // Find the fuel line geometry and apply the pulse effect to it.
-      dtCore::RefPtr<SimCore::ApplyShaderVisitor> visitor = new SimCore::ApplyShaderVisitor();
+      std::shared_ptr<SimCore::ApplyShaderVisitor> visitor = new SimCore::ApplyShaderVisitor();
       visitor->AddNodeName("FuelLines-GEODE");
       visitor->SetShaderName("ColorPulseShader");
       visitor->SetShaderGroup("CustomizableVehicleShaderGroup");
@@ -103,7 +103,7 @@ namespace NetDemo
       GetTransform(xform);
       xform.GetTranslation(mDRTestingRealLocation);
 
-      dtGame::DeadReckoningHelper* drHelper = NULL;
+      dtGame::DeadReckoningHelper* drHelper = nullptr;
       GetComponent(drHelper);
 
       // Get the DR position. The DR pos is set in Tick Remote, so we pull it after that.
@@ -119,9 +119,9 @@ namespace NetDemo
       counter ++;
       if (counter >= 60)
       {
-         GameLogicComponent* comp = NULL;
+         GameLogicComponent* comp = nullptr;
          GetGameActorProxy().GetGameManager()->GetComponentByName(GameLogicComponent::DEFAULT_NAME, comp);
-         if (comp != NULL)
+         if (comp != nullptr)
          {
             comp->GetDebugInfo().mDRAvgSpeed = testingDRSpeed;
             comp->GetDebugInfo().mDRAvgError = mDRTestingAveragedError;
@@ -166,7 +166,7 @@ namespace NetDemo
    {
       BaseClass::BuildPropertyMap();
 
-      PropelledVehicleActor* pEntity = NULL;
+      PropelledVehicleActor* pEntity = nullptr;
       GetActor(pEntity);
 
       std::string group("Propelled Vehicle");
@@ -178,7 +178,7 @@ namespace NetDemo
    {
       BaseClass::BuildInvokables();
 
-      PropelledVehicleActor* pEntity = NULL;
+      PropelledVehicleActor* pEntity = nullptr;
       GetActor(pEntity);
 
       AddInvokable(*new dtGame::Invokable("TickRemoteTest",
@@ -195,7 +195,7 @@ namespace NetDemo
 
       BaseClass::OnEnteredWorld();
 
-      PropelledVehicleActor* propelledActor = NULL;
+      PropelledVehicleActor* propelledActor = nullptr;
       GetActor(propelledActor);
 
       // Add a dynamic light to match the propulsion color
@@ -203,7 +203,7 @@ namespace NetDemo
       SimCore::Components::RenderingSupportComponent* renderComp;
       GetGameManager()->GetComponentByName(
          SimCore::Components::RenderingSupportComponent::DEFAULT_NAME, renderComp);
-      if(renderComp != NULL)
+      if(renderComp != nullptr)
       {
       //   //Add a spot light
          SimCore::Components::RenderingSupportComponent::DynamicLight* sl =
@@ -227,9 +227,9 @@ namespace NetDemo
 
 	  BaseClass::BuildActorComponents();
 
-      dtGame::DRPublishingActComp* drPublishingActComp = NULL;
+      dtGame::DRPublishingActComp* drPublishingActComp = nullptr;
       GetComponent(drPublishingActComp);
-      if (drPublishingActComp == NULL)
+      if (drPublishingActComp == nullptr)
       {
          LOG_ERROR("CRITICAL ERROR - No DR Publishing Actor Component.");
          return;

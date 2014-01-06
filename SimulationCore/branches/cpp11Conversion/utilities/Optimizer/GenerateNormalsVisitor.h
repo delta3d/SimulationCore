@@ -29,14 +29,14 @@ public:
       for(unsigned i = 0; i < geode.getNumDrawables(); ++i) 
       {
          osg::Geometry* geo = dynamic_cast<osg::Geometry*>(geode.getDrawable(i));
-         if (geo != NULL) 
+         if (geo != nullptr) 
          {
             osg::ref_ptr<NormalGenerator> normGen = new NormalGenerator();
           
             bool validNormals = normGen->ValidateNormals(geo);
 
             osg::Vec3Array* normalArray = dynamic_cast<osg::Vec3Array*>(geo->getNormalArray());
-            if (!validNormals || (normalArray == NULL && mCalculateNormals) || mRegenerateNormals)
+            if (!validNormals || (normalArray == nullptr && mCalculateNormals) || mRegenerateNormals)
             {
                normGen->Generate(geo);
 

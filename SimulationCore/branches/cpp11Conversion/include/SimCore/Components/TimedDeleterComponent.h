@@ -73,7 +73,7 @@ namespace SimCore
             unsigned int GetIdCount() const;
 
             // @param id The ID of an object that need to find its associated timer.
-            // @return name of the timer associated with the specified ID; NULL if not found
+            // @return name of the timer associated with the specified ID; nullptr if not found
             const std::string GetAssociatedTimerName( const dtCore::UniqueId& id ) const;
 
             // @param id The ID in question

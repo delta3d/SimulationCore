@@ -75,9 +75,9 @@ namespace NetDemo
          float mVelocity;
          osg::Vec3 mForces;
 
-         dtCore::ObserverPtr<dtCore::Transformable> mTarget;
-         dtCore::RefPtr<SimCore::Components::VolumeRenderingComponent::ShapeVolumeRecord> mShapeVolume;
-         dtCore::RefPtr<SimCore::Components::RenderingSupportComponent::DynamicLight> mDynamicLight;
+         std::weak_ptr<dtCore::Transformable> mTarget;
+         std::shared_ptr<SimCore::Components::VolumeRenderingComponent::ShapeVolumeRecord> mShapeVolume;
+         std::shared_ptr<SimCore::Components::RenderingSupportComponent::DynamicLight> mDynamicLight;
 
    };
 

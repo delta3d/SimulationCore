@@ -27,11 +27,11 @@
 // INCLUDE DIRECTIVES
 ////////////////////////////////////////////////////////////////////////////////
 #include <SimCore/Export.h>
-#include <dtCore/refptr.h>
+#include <dtUtil/refcountedbase.h>
 #include <SimCore/Components/ArticulationHelper.h>
 
 //#include <osgSim/DOFTransform>
-#include <dtCore/observerptr.h>
+#include <dtUtil/refcountedbase.h>
 #include <SimCore/Actors/BaseEntity.h>
 
 #include <cmath>
@@ -62,7 +62,7 @@ namespace SimCore
        * will automatically examine the articulated dof's on your Entity. If any of them change, it will mark
        * them as dirty and cause them to be published in the next actor update. Use like this:
        *
-       *    dtCore::RefPtr<DefaultFlexibleArticulationHelper> articHelper = new DefaultFlexibleArticulationHelper;
+       *    std::shared_ptr<DefaultFlexibleArticulationHelper> articHelper = new DefaultFlexibleArticulationHelper;
        *    articHelper->SetEntity(yourEntity);
        *    articHelper->AddArticulation("dof_gun_01", ARTIC_TYPE_BOTH);
        *    articHelper->AddArticulation("dof_door_left_01", ARTIC_TYPE_HEADING);
@@ -75,7 +75,7 @@ namespace SimCore
 
             ///////////////////////////////////////////////////////////
             /// A simple data class used by the DefaultFlexibleArticulationHelper
-            class ArticulationEntry : public osg::Referenced
+            class ArticulationEntry : public std::enable_shared_from_this
             {
             public:
                ArticulationEntry() { };
@@ -90,7 +90,7 @@ namespace SimCore
                float mLastElevation;
                unsigned mChangeCountHeading;
                unsigned mChangeCountElevation;
-               dtCore::ObserverPtr<osgSim::DOFTransform> mDOF;
+               std::weak_ptr<osgSim::DOFTransform> mDOF;
             protected:
                virtual ~ArticulationEntry() { } ;
             };
@@ -107,7 +107,7 @@ namespace SimCore
              */
             void AddArticulation(const std::string &dofName, ARTICULATION_TYPE articType, const std::string &parentDOFName="");
 
-            virtual dtCore::RefPtr<dtDAL::NamedGroupParameter> BuildGroupProperty();
+            virtual std::shared_ptr<dtDAL::NamedGroupParameter> BuildGroupProperty();
             virtual void UpdateDOFReferences( dtUtil::NodeCollector* nodeCollector );
             virtual bool HasDOF( osgSim::DOFTransform& dof ) const;
             virtual bool HasDOFMetric( const osgSim::DOFTransform& dof, const std::string& metricName ) const;
@@ -138,8 +138,8 @@ namespace SimCore
             float mThresholdHeading;   // degrees
             float mThresholdElevation; // degrees
 
-            dtCore::ObserverPtr<SimCore::Actors::BaseEntity> mEntity;
-            std::vector<dtCore::RefPtr<ArticulationEntry> > mArticEntries;
+            std::weak_ptr<SimCore::Actors::BaseEntity> mEntity;
+            std::vector<std::shared_ptr<ArticulationEntry> > mArticEntries;
       };
    }
 } //namespace

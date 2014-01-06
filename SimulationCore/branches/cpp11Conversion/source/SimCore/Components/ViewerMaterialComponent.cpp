@@ -107,7 +107,7 @@ namespace SimCore
       {
          static const std::string DEFAULT_MATERIAL_NAME("DefaultMaterial");
 
-         std::vector<dtCore::RefPtr<SimCore::Actors::ViewerMaterialActor> >::iterator iter =  mOurMaterials.begin();
+         std::vector<std::shared_ptr<SimCore::Actors::ViewerMaterialActor> >::iterator iter =  mOurMaterials.begin();
          for (;iter != mOurMaterials.end(); ++iter)
          {
             if((*iter)->GetName() == materialName)
@@ -142,7 +142,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////////////////
       SimCore::Actors::ViewerMaterialActor& ViewerMaterialComponent::CreateOrChangeMaterialByName(const std::string& materialName)
       {
-         std::vector<dtCore::RefPtr<SimCore::Actors::ViewerMaterialActor> >::iterator iter = mOurMaterials.begin();
+         std::vector<std::shared_ptr<SimCore::Actors::ViewerMaterialActor> >::iterator iter = mOurMaterials.begin();
          for(;iter != mOurMaterials.end(); ++iter)
          {
             if((*iter)->GetName() == materialName)
@@ -152,7 +152,7 @@ namespace SimCore
          }
 
          // Couldnt find material... make a new one.
-         dtCore::RefPtr<SimCore::Actors::ViewerMaterialActorProxy> materialToMakeProxy;
+         std::shared_ptr<SimCore::Actors::ViewerMaterialActorProxy> materialToMakeProxy;
          GetGameManager()->CreateActor(*SimCore::Actors::EntityActorRegistry::MATERIAL_ACTOR_TYPE, materialToMakeProxy);
          SimCore::Actors::ViewerMaterialActor* materialToMake = dynamic_cast<SimCore::Actors::ViewerMaterialActor*>(materialToMakeProxy->GetDrawable());
          materialToMake->SetName(materialName);

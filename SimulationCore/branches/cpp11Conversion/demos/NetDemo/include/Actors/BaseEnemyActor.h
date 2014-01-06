@@ -87,7 +87,7 @@ namespace NetDemo
          EnemyAIHelper* GetAIHelper();
          const EnemyAIHelper* GetAIHelper() const;
 
-         //can take NULL Ptr, returns false if NULL true if ActorType = enemy actor type
+         //can take nullptr Ptr, returns false if nullptr true if ActorType = enemy actor type
          bool IsEnemyActor(dtGame::GameActorProxy* proxy) const;
 
          /// Overrriden to kill our AI when we die.
@@ -121,14 +121,14 @@ namespace NetDemo
 
          dtCore::Transformable* GetClosestTower();
 
-         dtCore::RefPtr<EnemyAIHelper> mAIHelper;
+         std::shared_ptr<EnemyAIHelper> mAIHelper;
 
 		 //only the main mothership sets this
-		 static dtCore::ObserverPtr<FortActor> mCurrentFortUnderAttack;
+		 static std::weak_ptr<FortActor> mCurrentFortUnderAttack;
 
       // Private vars
       private:
-         dtCore::RefPtr<dtAudio::Sound> mSndCollisionHit;
+         std::shared_ptr<dtAudio::Sound> mSndCollisionHit;
 
          bool mSendScoreMessage; // Flag to trigger sending a score message when RespondToHit is called after a damage state change to DIE.
          int mPointValue;

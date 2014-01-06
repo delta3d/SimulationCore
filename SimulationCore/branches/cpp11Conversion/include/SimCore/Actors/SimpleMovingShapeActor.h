@@ -115,8 +115,8 @@ namespace SimCore
          float mDensityMultiplier;
          osg::Vec3 mDimensions;
          osg::Vec3 mShapeColor;
-         dtCore::RefPtr<SimpleShapeDRHelper> mDRHelper;
-         dtCore::RefPtr<SimCore::Components::VolumeRenderingComponent::ShapeVolumeRecord> mShapeVolume;
+         std::shared_ptr<SimpleShapeDRHelper> mDRHelper;
+         std::shared_ptr<SimCore::Components::VolumeRenderingComponent::ShapeVolumeRecord> mShapeVolume;
 
 
       };

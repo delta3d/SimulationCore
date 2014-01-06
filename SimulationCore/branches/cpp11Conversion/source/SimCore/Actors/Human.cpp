@@ -205,7 +205,7 @@ namespace SimCore
                   return mRun.get();
                }
 
-               dtCore::RefPtr<WRController> CloneDerived() const
+               std::shared_ptr<WRController> CloneDerived() const
                {
                   return new WRController(*this);
                }
@@ -245,9 +245,9 @@ namespace SimCore
                float mRunStart, mRunFadeIn, mRunStop, mRunFadeOut;
 
 
-               dtCore::ObserverPtr<Human> mParentHuman;
-               dtCore::RefPtr<dtAnim::Animatable> mWalk;
-               dtCore::RefPtr<dtAnim::Animatable> mRun;
+               std::weak_ptr<Human> mParentHuman;
+               std::shared_ptr<dtAnim::Animatable> mWalk;
+               std::shared_ptr<dtAnim::Animatable> mRun;
          };
 
 
@@ -282,7 +282,7 @@ namespace SimCore
                return *mWRController;
             }
 
-            dtCore::RefPtr<dtAnim::Animatable> Clone(dtAnim::Cal3DModelWrapper* modelWrapper) const
+            std::shared_ptr<dtAnim::Animatable> Clone(dtAnim::Cal3DModelWrapper* modelWrapper) const
             {
                WalkRunBlend* wrb = new WalkRunBlend(*mWRController->CloneDerived());
 
@@ -299,7 +299,7 @@ namespace SimCore
             mWRController = 0;
          }
 
-         dtCore::RefPtr<WRController> mWRController;
+         std::shared_ptr<WRController> mWRController;
       };
 
 
@@ -441,7 +441,7 @@ namespace SimCore
 
          BaseClass::BuildActorComponents();
 
-         dtAnim::AnimationHelper* animAC = NULL;
+         dtAnim::AnimationHelper* animAC = nullptr;
          if (!HasComponent(dtAnim::AnimationHelper::TYPE))
          {
             animAC = new dtAnim::AnimationHelper();
@@ -452,7 +452,7 @@ namespace SimCore
             animAC = GetComponent<dtAnim::AnimationHelper>();
          }
 
-         if (animAC != NULL)
+         if (animAC != nullptr)
          {
             animAC->SetLoadModelAsynchronously(true);
             animAC->SetEnableAttachingNodeToDrawable(false);
@@ -553,10 +553,10 @@ namespace SimCore
       /////////////////////////////////////////////////////////////////
       void Human::SkeletalMeshUnloadCallback(dtAnim::AnimationHelper*)
       {
-         SetNodeCollector(NULL);
+         SetNodeCollector(nullptr);
          osg::MatrixTransform& transform = GetScaleMatrixTransform();
          transform.removeChild(mModelNode);
-         mModelNode = NULL;
+         mModelNode = nullptr;
       }
 
       /////////////////////////////////////////////////////////////////
@@ -615,19 +615,19 @@ namespace SimCore
          UpdateWeapon();
 
          SimCore::ActComps::WeaponInventoryActComp* weaponsAC = GetComponent<SimCore::ActComps::WeaponInventoryActComp>();
-         if (weaponsAC != NULL)
+         if (weaponsAC != nullptr)
          {
             SimCore::ActComps::WeaponInventoryActComp::WeaponData* wd = weaponsAC->GetCurrentWeapon();
-            if (wd != NULL)
+            if (wd != nullptr)
             {
-                weaponsAC->SelectWeapon(NULL);
+                weaponsAC->SelectWeapon(nullptr);
             }
          }
 
-         SetNodeCollector(NULL);
+         SetNodeCollector(nullptr);
          LoadNodeCollector();
                 
-         if (weaponsAC != NULL)
+         if (weaponsAC != nullptr)
          {
              weaponsAC->SelectNextWeapon();
          }
@@ -644,13 +644,13 @@ namespace SimCore
 
          SetupPlannerHelper();
 
-         if (mModelNode != NULL)
+         if (mModelNode != nullptr)
          {
             UpdatePlanAndAnimations();
          }
 
 
-         dtGame::DeadReckoningHelper* drHelper = NULL;
+         dtGame::DeadReckoningHelper* drHelper = nullptr;
          GetComponent(drHelper);
 
          //RegisterWithDeadReckoningComponent(); // Now handled in base class
@@ -744,8 +744,8 @@ namespace SimCore
 
          dtAnim::Cal3DModelWrapper* wrapper = GetComponent<dtAnim::AnimationHelper>()->GetModelWrapper();
 
-         //Can't update if the wrapper is NULL.
-         if (wrapper == NULL)
+         //Can't update if the wrapper is nullptr.
+         if (wrapper == nullptr)
             return;
 
          //todo- is it worth holding onto this vector, to avoid having to reparse it
@@ -854,9 +854,9 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////
       unsigned Human::CheckActionState(const dtAI::WorldState* pWS, const std::string& stateName, unsigned desiredVal) const
       {
-         const dtAI::StateVar<unsigned>* actionState = NULL;
+         const dtAI::StateVar<unsigned>* actionState = nullptr;
          pWS->GetState(stateName, actionState);
-         if (actionState == NULL)
+         if (actionState == nullptr)
          {
             return 0U;
          }
@@ -978,7 +978,7 @@ namespace SimCore
          {
             dtAI::Planner::OperatorList::iterator i, iend;
             dtAnim::SequenceMixer& seqMixer = GetComponent<dtAnim::AnimationHelper>()->GetSequenceMixer();
-            dtCore::RefPtr<dtAnim::AnimationSequence> generatedSequence = new dtAnim::AnimationSequence();
+            std::shared_ptr<dtAnim::AnimationSequence> generatedSequence = new dtAnim::AnimationSequence();
 
             if (mSequenceId.empty())
             {
@@ -1007,14 +1007,14 @@ namespace SimCore
 
                float accumulatedStartTime = 0.0f;
 
-               dtCore::RefPtr<dtAnim::Animatable> newAnim;
+               std::shared_ptr<dtAnim::Animatable> newAnim;
                for (; i != iend; ++i)
                {
                   //if the last anim was NOT the last one, it has to end and be an action
                   if (newAnim.valid())
                   {
                      dtAnim::AnimationChannel* animChannel = dynamic_cast<dtAnim::AnimationChannel*>(newAnim.get());
-                     if (animChannel != NULL)
+                     if (animChannel != nullptr)
                      {
 
                         float duration = animChannel->GetAnimation()->GetDuration();
@@ -1026,7 +1026,7 @@ namespace SimCore
 
                   const dtAnim::Animatable* animatable = ApplyOperatorAndGetAnimatable(**i);
 
-                  if (animatable != NULL)
+                  if (animatable != nullptr)
                   {
                      if (mLogger.IsLevelEnabled(dtUtil::Log::LOG_DEBUG))
                      {
@@ -1042,7 +1042,7 @@ namespace SimCore
                   }
                   else
                   {
-                     newAnim = NULL;
+                     newAnim = nullptr;
                   }
                }
 
@@ -1174,7 +1174,7 @@ namespace SimCore
             {
                const StateVarType* pStateVar;
                pWS->GetState(mName, pStateVar);
-               if(pStateVar != NULL)
+               if(pStateVar != nullptr)
                {
                   return pStateVar->GetValue() == mData;
                }
@@ -1203,7 +1203,7 @@ namespace SimCore
          {
             StateVarType* pStateVar;
             pWSIn->GetState(mName, pStateVar);
-            if (pStateVar != NULL)
+            if (pStateVar != nullptr)
             {
                pStateVar->SetValue(mData);
             }
@@ -1236,7 +1236,7 @@ namespace SimCore
          {
             StateVarType* pStateVar;
             pWSIn->GetState(mName, pStateVar);
-            if(pStateVar != NULL)
+            if(pStateVar != nullptr)
             {
                pStateVar->Set(pStateVar->Get() + 1);
             }
@@ -1254,7 +1254,7 @@ namespace SimCore
       {
          public:
             typedef dtAI::IEffect EffectType;
-            typedef std::vector<dtCore::RefPtr<EffectType> > EffectList;
+            typedef std::vector<std::shared_ptr<EffectType> > EffectList;
 
             typedef EnumerationConditional<BasicStanceState> BasicStanceEnumConditional;
             typedef EnumerationConditional<WeaponState> WeaponStateEnumConditional;
@@ -1322,11 +1322,11 @@ namespace SimCore
          dtAnim::SequenceMixer& seqMixer = animAC->GetSequenceMixer();
          op.Apply(mPlannerHelper.GetCurrentState());
 
-         const dtAnim::Animatable* animatable = NULL;
+         const dtAnim::Animatable* animatable = nullptr;
 
          const HumanOperator* hOp = dynamic_cast<const HumanOperator*>(&op);
          dtUtil::RefString nextReplacementAnim;
-         if (hOp != NULL && hOp->GetNextReplacementAnim(nextReplacementAnim))
+         if (hOp != nullptr && hOp->GetNextReplacementAnim(nextReplacementAnim))
          {
             animatable = seqMixer.GetRegisteredAnimation(nextReplacementAnim);
          }
@@ -1368,9 +1368,9 @@ namespace SimCore
 
          if (animatableName != actionOpName)
          {
-            const HumanOperator* hOp = NULL;
+            const HumanOperator* hOp = nullptr;
             hOp = dynamic_cast<const HumanOperator*>(mPlannerHelper.GetOperator(actionOpName));
-            if (hOp != NULL)
+            if (hOp != nullptr)
             {
                hOp->EnqueueReplacementAnim(animatableName);
             }
@@ -1446,85 +1446,85 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////
       void AnimationOperators::CreateOperators()
       {
-         dtCore::RefPtr<HumanOperator::BasicStanceEnumConditional> standing
+         std::shared_ptr<HumanOperator::BasicStanceEnumConditional> standing
             = new HumanOperator::BasicStanceEnumConditional(Human::STATE_BASIC_STANCE, BasicStanceEnum::STANDING);
 
-         dtCore::RefPtr<HumanOperator::BasicStanceEnumConditional> kneeling
+         std::shared_ptr<HumanOperator::BasicStanceEnumConditional> kneeling
             = new HumanOperator::BasicStanceEnumConditional(Human::STATE_BASIC_STANCE, BasicStanceEnum::KNEELING);
 
-         dtCore::RefPtr<HumanOperator::BasicStanceEnumConditional> prone
+         std::shared_ptr<HumanOperator::BasicStanceEnumConditional> prone
             = new HumanOperator::BasicStanceEnumConditional(Human::STATE_BASIC_STANCE, BasicStanceEnum::PRONE);
 
-         dtCore::RefPtr<HumanOperator::BasicStanceEnumConditional> idle
+         std::shared_ptr<HumanOperator::BasicStanceEnumConditional> idle
             = new HumanOperator::BasicStanceEnumConditional(Human::STATE_BASIC_STANCE, BasicStanceEnum::IDLE);
 
 
-         dtCore::RefPtr<HumanOperator::WeaponStateEnumConditional> deployed
+         std::shared_ptr<HumanOperator::WeaponStateEnumConditional> deployed
             = new HumanOperator::WeaponStateEnumConditional(Human::STATE_WEAPON, HumanActorProxy::WeaponStateEnum::DEPLOYED);
 
-         dtCore::RefPtr<HumanOperator::WeaponStateEnumConditional> ready
+         std::shared_ptr<HumanOperator::WeaponStateEnumConditional> ready
             = new HumanOperator::WeaponStateEnumConditional(Human::STATE_WEAPON, HumanActorProxy::WeaponStateEnum::FIRING_POSITION);
 
 
-         dtCore::RefPtr<dtAI::Precondition> isMoving
+         std::shared_ptr<dtAI::Precondition> isMoving
             = new dtAI::Precondition(Human::STATE_MOVING, true);
 
-         dtCore::RefPtr<dtAI::Precondition> notMoving
+         std::shared_ptr<dtAI::Precondition> notMoving
             = new dtAI::Precondition(Human::STATE_MOVING, false);
 
 
-         dtCore::RefPtr<dtAI::Precondition> isDead
+         std::shared_ptr<dtAI::Precondition> isDead
             = new dtAI::Precondition(Human::STATE_DEAD, true);
 
-         dtCore::RefPtr<dtAI::Precondition> isShot
+         std::shared_ptr<dtAI::Precondition> isShot
             = new dtAI::Precondition(Human::STATE_SHOT, true);
 
 
-         dtCore::RefPtr<dtAI::Precondition> isTransition
+         std::shared_ptr<dtAI::Precondition> isTransition
             = new dtAI::Precondition(Human::STATE_TRANSITION, true);
 
-         dtCore::RefPtr<dtAI::Precondition> notTransition
+         std::shared_ptr<dtAI::Precondition> notTransition
             = new dtAI::Precondition(Human::STATE_TRANSITION, false);
 
-         dtCore::RefPtr<HumanOperator::BasicStanceEnumEffect> standingEff
+         std::shared_ptr<HumanOperator::BasicStanceEnumEffect> standingEff
             = new HumanOperator::BasicStanceEnumEffect(Human::STATE_BASIC_STANCE, BasicStanceEnum::STANDING);
 
-         dtCore::RefPtr<HumanOperator::BasicStanceEnumEffect> kneelingEff
+         std::shared_ptr<HumanOperator::BasicStanceEnumEffect> kneelingEff
             = new HumanOperator::BasicStanceEnumEffect(Human::STATE_BASIC_STANCE, BasicStanceEnum::KNEELING);
 
-         dtCore::RefPtr<HumanOperator::BasicStanceEnumEffect> proneEff
+         std::shared_ptr<HumanOperator::BasicStanceEnumEffect> proneEff
             = new HumanOperator::BasicStanceEnumEffect(Human::STATE_BASIC_STANCE, BasicStanceEnum::PRONE);
 
 
-         dtCore::RefPtr<HumanOperator::WeaponStateEnumEffect> readyEff
+         std::shared_ptr<HumanOperator::WeaponStateEnumEffect> readyEff
             = new HumanOperator::WeaponStateEnumEffect(Human::STATE_WEAPON, HumanActorProxy::WeaponStateEnum::FIRING_POSITION);
 
-         dtCore::RefPtr<HumanOperator::WeaponStateEnumEffect> deployedEff
+         std::shared_ptr<HumanOperator::WeaponStateEnumEffect> deployedEff
             = new HumanOperator::WeaponStateEnumEffect(Human::STATE_WEAPON, HumanActorProxy::WeaponStateEnum::DEPLOYED);
 
-         dtCore::RefPtr<HumanOperator::UnsignedIntIncrementEffect >
+         std::shared_ptr<HumanOperator::UnsignedIntIncrementEffect >
             incrementStandingActionCount = new HumanOperator::UnsignedIntIncrementEffect(Human::STATE_STANDING_ACTION_COUNT);
-         dtCore::RefPtr<HumanOperator::UnsignedIntIncrementEffect >
+         std::shared_ptr<HumanOperator::UnsignedIntIncrementEffect >
             incrementKneelingActionCount = new HumanOperator::UnsignedIntIncrementEffect(Human::STATE_KNEELING_ACTION_COUNT);
-         dtCore::RefPtr<HumanOperator::UnsignedIntIncrementEffect >
+         std::shared_ptr<HumanOperator::UnsignedIntIncrementEffect >
             incrementProneActionCount = new HumanOperator::UnsignedIntIncrementEffect(Human::STATE_PRONE_ACTION_COUNT);
 
-         dtCore::RefPtr<dtAI::Effect>
+         std::shared_ptr<dtAI::Effect>
             movingEff = new dtAI::Effect(Human::STATE_MOVING, true);
 
-         dtCore::RefPtr<dtAI::Effect>
+         std::shared_ptr<dtAI::Effect>
             notMovingEff = new dtAI::Effect(Human::STATE_MOVING, false);
 
-         dtCore::RefPtr<dtAI::Effect>
+         std::shared_ptr<dtAI::Effect>
             deadEff = new dtAI::Effect(Human::STATE_DEAD, true);
 
-         dtCore::RefPtr<dtAI::Effect>
+         std::shared_ptr<dtAI::Effect>
             shotEff = new dtAI::Effect(Human::STATE_SHOT, true);
 
-         dtCore::RefPtr<dtAI::Effect>
+         std::shared_ptr<dtAI::Effect>
             transitionEff = new dtAI::Effect(Human::STATE_TRANSITION, true);
 
-         dtCore::RefPtr<dtAI::Effect>
+         std::shared_ptr<dtAI::Effect>
             notTransitionEff = new dtAI::Effect(Human::STATE_TRANSITION, false);
 
          HumanOperator* newOp;

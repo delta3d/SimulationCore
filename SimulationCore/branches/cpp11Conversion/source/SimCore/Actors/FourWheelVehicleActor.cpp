@@ -104,9 +104,9 @@ namespace SimCore
          if (!IsRemote() && mVehiclesPortal.valid() )
          {
             Portal* portal = dynamic_cast<Portal*>(mVehiclesPortal->GetDrawable());
-            portal->SetActorLink(NULL);
+            portal->SetActorLink(nullptr);
             GetGameActorProxy().GetGameManager()->DeleteActor(*mVehiclesPortal.get());
-            mVehiclesPortal = NULL;
+            mVehiclesPortal = nullptr;
          }
 
       }
@@ -133,7 +133,7 @@ namespace SimCore
       DT_IMPLEMENT_ACCESSOR(FourWheelVehicleActor, dtDAL::ResourceDescriptor, VehicleInteriorModel);
 
       ///////////////////////////////////////////////////////////////////////////////////
-      bool FourWheelVehicleActor::LoadSound(const dtDAL::ResourceDescriptor& rd, dtCore::RefPtr<dtAudio::Sound>& sound)
+      bool FourWheelVehicleActor::LoadSound(const dtDAL::ResourceDescriptor& rd, std::shared_ptr<dtAudio::Sound>& sound)
       {
          try
          {
@@ -199,7 +199,7 @@ namespace SimCore
          // do sound here
          // if the vehicle is moving
 
-         if (mSndVehicleIdleLoop == NULL)
+         if (mSndVehicleIdleLoop == nullptr)
          {
             return;
          }
@@ -220,7 +220,7 @@ namespace SimCore
 
             if (GetMPH() < GetGearChangeLow())
             {
-               if (mLastGearChange != FIRST_GEAR && mSndAcceleration != NULL)
+               if (mLastGearChange != FIRST_GEAR && mSndAcceleration != nullptr)
                {
                   mSndAcceleration->Play();
                }
@@ -230,7 +230,7 @@ namespace SimCore
                tick = (maxpitchBend - minpitchBend) / dif;
                pitchBend = maxpitchBend  - (dis * tick) + mLastGearChange * .1;
             }
-            else if (GetMPH() < GetGearChangeMedium()  && mSndAcceleration != NULL)
+            else if (GetMPH() < GetGearChangeMedium()  && mSndAcceleration != nullptr)
             {
                if (mLastGearChange != SECOND_GEAR)
                {
@@ -242,7 +242,7 @@ namespace SimCore
                tick = (maxpitchBend - minpitchBend) / dif;
                pitchBend = maxpitchBend  - (dis * tick) + mLastGearChange * .1;
             }
-            else if (GetMPH() < GetGearChangeHigh()  && mSndAcceleration != NULL)
+            else if (GetMPH() < GetGearChangeHigh()  && mSndAcceleration != nullptr)
             {
                if (mLastGearChange != THIRD_GEAR)
                {
@@ -256,7 +256,7 @@ namespace SimCore
             }
             else if (GetMPH() < GetFourWheelPhysicsActComp()->GetVehicleTopSpeed())
             {
-               if (mLastGearChange != FOURTH_GEAR  && mSndAcceleration != NULL)
+               if (mLastGearChange != FOURTH_GEAR  && mSndAcceleration != nullptr)
                {
                   mSndAcceleration->Play();
                }
@@ -299,10 +299,10 @@ namespace SimCore
             if (toFillin.size())
             {
                InteriorActor* ourInterior = dynamic_cast<InteriorActor*>(toFillin[0]->GetDrawable());
-               if (ourInterior != NULL)
+               if (ourInterior != nullptr)
                {
                   steeringWheel = ourInterior->GetSteeringWheelDOF("dof_steering_wheel");
-                  if (steeringWheel != NULL)
+                  if (steeringWheel != nullptr)
                   {
                      osg::Vec3 HPR = steeringWheel->getCurrentHPR();
                      HPR[0] =  1.6f * osg::PI * mCurrentSteeringAngleNormalized;
@@ -320,7 +320,7 @@ namespace SimCore
 
          SetCurrentSteeringAngleNormalized(0.0f);
 
-         if (mSndIgnition != NULL)
+         if (mSndIgnition != nullptr)
          {
             if (!mSndIgnition->IsPlaying())
             {
@@ -328,7 +328,7 @@ namespace SimCore
             }
          }
 
-         if (mSndBrake != NULL)
+         if (mSndBrake != nullptr)
          {
             if (mSndBrake->IsPlaying())
             {
@@ -336,7 +336,7 @@ namespace SimCore
             }
          }
 
-         if (mSndVehicleIdleLoop != NULL)
+         if (mSndVehicleIdleLoop != nullptr)
          {
             mSndVehicleIdleLoop->SetPitch(1.0f);
             if (!mSndVehicleIdleLoop->IsPlaying())
@@ -351,13 +351,13 @@ namespace SimCore
       {
          BaseClass::UpdateVehicleTorquesAndAngles(deltaTime);
          dtCore::Keyboard *keyboard = GetGameActorProxy().GetGameManager()->GetApplication().GetKeyboard();
-         if (keyboard == NULL)
+         if (keyboard == nullptr)
          {
             return;
          }
 
          dtPhysics::PhysicsObject* po = GetPhysicsActComp()->GetMainPhysicsObject();
-         if (po == NULL)
+         if (po == nullptr)
          {
             // We have no physics so return.  I assume this is because of an error in init, which
             // should have been reported, so no need to spam.
@@ -367,7 +367,7 @@ namespace SimCore
          GetFourWheelPhysicsActComp()->CalcMPH();
          float curMPH = GetFourWheelPhysicsActComp()->GetMPH();
 
-         dtCore::RefPtr<SimCore::ActComps::AbstractWheeledVehicleInputActComp> inputAC;
+         std::shared_ptr<SimCore::ActComps::AbstractWheeledVehicleInputActComp> inputAC;
          GetComponent(inputAC);
 
          if (!inputAC.valid())
@@ -517,7 +517,7 @@ namespace SimCore
 
          BasePhysicsVehicleActorProxy::BuildPropertyMap();
 
-         FourWheelVehicleActor* actor = NULL;
+         FourWheelVehicleActor* actor = nullptr;
          GetActor(actor);
 
          typedef dtDAL::PropertyRegHelper<FourWheelVehicleActorProxy&, FourWheelVehicleActor> PropRegType;
@@ -595,7 +595,7 @@ namespace SimCore
             AddComponent(*new SimCore::ActComps::WheelActComp());
          }
 
-//         SimCore::ActComps::WheelActComp* wheelAC = NULL;
+//         SimCore::ActComps::WheelActComp* wheelAC = nullptr;
 //         GetComponent(wheelAC);
 
          if (!HasComponent(dtPhysics::PhysicsActComp::TYPE))
@@ -610,9 +610,9 @@ namespace SimCore
 
          BaseClass::BuildActorComponents();
 
-         dtGame::DRPublishingActComp* drPublishingActComp = NULL;
+         dtGame::DRPublishingActComp* drPublishingActComp = nullptr;
          GetComponent(drPublishingActComp);
-         if (drPublishingActComp == NULL)
+         if (drPublishingActComp == nullptr)
          {
             LOG_ERROR("CRITICAL ERROR - No DR Publishing Actor Component.");
             return;

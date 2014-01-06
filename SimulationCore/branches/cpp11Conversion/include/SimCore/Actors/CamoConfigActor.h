@@ -43,7 +43,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       // CAMO PARAETERS CODE
       //////////////////////////////////////////////////////////////////////////
-      class SIMCORE_EXPORT CamoParams : public osg::Referenced
+      class SIMCORE_EXPORT CamoParams : public std::enable_shared_from_this
       {
          public:
             typedef int CamoId;
@@ -64,7 +64,7 @@ namespace SimCore
             virtual ~CamoParams();
       };
 
-      typedef std::list<dtCore::RefPtr<CamoParams> > CamoParamsList;
+      typedef std::list<std::shared_ptr<CamoParams> > CamoParamsList;
 
 
 
@@ -104,8 +104,8 @@ namespace SimCore
             virtual ~CamoConfigActor();
 
          private:
-            typedef std::map<CamoParams::CamoId, dtCore::RefPtr<CamoParams> > CamoParamsMap;
-            typedef std::pair<CamoParams::CamoId, dtCore::RefPtr<CamoParams> > CamoParamsMapPair;
+            typedef std::map<CamoParams::CamoId, std::shared_ptr<CamoParams> > CamoParamsMap;
+            typedef std::pair<CamoParams::CamoId, std::shared_ptr<CamoParams> > CamoParamsMapPair;
             CamoParamsMap mCamoMap;
       };
 

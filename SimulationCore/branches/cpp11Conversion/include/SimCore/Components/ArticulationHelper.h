@@ -30,13 +30,13 @@
 #include <SimCore/Export.h>
 
 #include <dtCore/export.h>
-#include <dtCore/refptr.h>
+#include <dtUtil/refcountedbase.h>
 
 #include <dtUtil/enumeration.h>
 
 #include <dtGame/messageparameter.h>
 
-#include <osg/Referenced>
+#include <dtUtil/refcountedbase.h>
 #include <osg/Vec3>
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -103,7 +103,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       // ARTICULATION HELPER CODE
       //////////////////////////////////////////////////////////////////////////
-      class SIMCORE_EXPORT ArticulationHelper : public osg::Referenced
+      class SIMCORE_EXPORT ArticulationHelper : public std::enable_shared_from_this
       {
          public:
             static const std::string PROPERTY_NAME_ARTICULATED_ARRAY;
@@ -131,7 +131,7 @@ namespace SimCore
             }
 
             virtual void SetControlState( SimCore::Actors::ControlStateActor* controlState ) {}
-            virtual const SimCore::Actors::ControlStateActor* GetControlState() const { return NULL; }
+            virtual const SimCore::Actors::ControlStateActor* GetControlState() const { return nullptr; }
 
             /** 
              * In some networks, we publish heading backwards. This defaults to false, and can 
@@ -166,13 +166,13 @@ namespace SimCore
              * @return group parameter representing the articulation hierarchy.
              *         The returned group property is intended to be used by update messages.
              */
-            virtual dtCore::RefPtr<dtDAL::NamedGroupParameter> BuildGroupProperty() = 0;
+            virtual std::shared_ptr<dtDAL::NamedGroupParameter> BuildGroupProperty() = 0;
 
             /**
              * Capture references to specific DOFs in a model.
              * @param nodeCollector The node visitor used for traversing a model,
              *        looking for DOFs of interest.
-             *        Specify NULL to dereference all DOFs.
+             *        Specify nullptr to dereference all DOFs.
              *
              * NOTE: This function is intended to be called when an entity's model changes.
              *       The model's DOFs are recommended to have the same names across

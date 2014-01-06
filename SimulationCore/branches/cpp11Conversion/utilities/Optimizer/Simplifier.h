@@ -49,7 +49,7 @@ class Simplifier : public osg::NodeVisitor
         void setSmoothing(bool on) { _smoothing = on; }
         bool getSmoothing() const { return _smoothing; }
         
-        class ContinueSimplificationCallback : public osg::Referenced
+        class ContinueSimplificationCallback : public std::enable_shared_from_this
         {
             public:
                 /** return true if mesh should be continued to be simplified, return false to stop simplification.*/

@@ -53,12 +53,12 @@ static char* appArgv[appArgc] =
 int main(int argc, char* argv[])
 {
    // Log to log file, and not to console
-   //dtUtil::Log::GetInstance().SetOutputStreamBit(dtUtil::Log::TO_FILE);
+   //dtUtil::Log::GetInstance()->SetOutputStreamBit(dtUtil::Log::TO_FILE);
    // If you turn off console logging, most users will miss important messages - example, they crash
    // on startup and will have NO understanding of why they have crashed. We get posts all the time about
    // how users crashed Stealth Viewer with no idea what happened! At the very most, you
    // should set the log level to ERROR only like this: 
-   //dtUtil::Log::GetInstance().SetLogLevel(dtUtil::Log::LOG_ERROR);
+   //dtUtil::Log::GetInstance()->SetLogLevel(dtUtil::Log::LOG_ERROR);
 
    dtAudio::AudioManager::Instantiate();
 
@@ -68,7 +68,7 @@ int main(int argc, char* argv[])
 
    try
    {
-      //dtUtil::Log::GetInstance().SetLogLevel(dtUtil::Log::LOG_INFO);
+      //dtUtil::Log::GetInstance()->SetLogLevel(dtUtil::Log::LOG_INFO);
 
       //Now that everything is initialized, show the main window.
       //Construct the application...
@@ -83,7 +83,7 @@ int main(int argc, char* argv[])
    }
    catch(const dtUtil::Exception& ex)
    {
-      QMessageBox::critical(NULL,"Exception", ex.ToString().c_str(),
+      QMessageBox::critical(nullptr,"Exception", ex.ToString().c_str(),
                            QMessageBox::Ok,QMessageBox::NoButton);
 
       dtAudio::AudioManager::Destroy();
@@ -95,7 +95,7 @@ int main(int argc, char* argv[])
       QString message("A standard exception has been thrown. The exception message is: ");
       message += e.what();
 
-      QMessageBox::critical(NULL, "Exception", message, QMessageBox::Ok);
+      QMessageBox::critical(nullptr, "Exception", message, QMessageBox::Ok);
 
       dtAudio::AudioManager::Destroy();
 
@@ -105,7 +105,7 @@ int main(int argc, char* argv[])
    {
       QString message("An unknown exception has been thrown. Please try restarting the application.");
 
-      QMessageBox::critical(NULL, "Exception", message, QMessageBox::Ok);
+      QMessageBox::critical(nullptr, "Exception", message, QMessageBox::Ok);
 
       dtAudio::AudioManager::Destroy();
       throw;

@@ -44,7 +44,7 @@ namespace StealthQt
       public:
 
          /// Constructor
-         MapSelectDialog(QWidget *parent = NULL);
+         MapSelectDialog(QWidget *parent = nullptr);
 
          /// Destructor
          virtual ~MapSelectDialog();

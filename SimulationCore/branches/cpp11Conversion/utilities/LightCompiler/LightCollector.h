@@ -43,11 +43,11 @@ public:
          if((*iter).first.valid())
          {
             osg::Group* grp = (*iter).first.get();
-            if(grp != NULL && grp->getParent(0) != NULL)
+            if(grp != nullptr && grp->getParent(0) != nullptr)
             {
                grp->getParent(0)->removeChild(grp);
             }
-            else if(grp != NULL)
+            else if(grp != nullptr)
             {
                (*iter).first->removeChild((*iter).second.get());
             }
@@ -71,7 +71,7 @@ public:
 
       osg::Light* light = lightSource.getLight();
 
-      if(light != NULL)
+      if(light != nullptr)
       {
          light->setLightNum(mLights.size());
          light->setPosition(osg::Vec4(mat(3,0), mat(3,1), mat(3,2), mat(3,3)));
@@ -93,7 +93,7 @@ public:
 
    virtual void apply(osg::Switch& switchNode)
    {
-      if(strstr(switchNode.getName().c_str(), "light") != NULL)
+      if(strstr(switchNode.getName().c_str(), "light") != nullptr)
       {
          switchNode.setAllChildrenOff();
          std::cout << "Turning off node: " << switchNode.getName() << std::endl;

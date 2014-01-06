@@ -220,7 +220,7 @@ namespace SimCore
             bool mOwnerIsPlatform;
             float mClampTimer;
             osg::Vec3 mClampPoint;
-            dtCore::RefPtr<dtCore::ParticleSystem> mParticles;
+            std::shared_ptr<dtCore::ParticleSystem> mParticles;
       };
 
    }

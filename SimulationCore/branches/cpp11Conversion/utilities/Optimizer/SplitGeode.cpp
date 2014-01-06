@@ -906,9 +906,9 @@ void SplitGeode(const Plane& plane,
    {
       Transform* transform = dynamic_cast<Transform*>(*it);
                   
-      if(transform != NULL)
+      if(transform != nullptr)
       {
-         transform->computeLocalToWorldMatrix(matrix, NULL);
+         transform->computeLocalToWorldMatrix(matrix, nullptr);
       }
    }
    

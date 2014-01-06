@@ -160,7 +160,7 @@ namespace NetDemo
    //////////////////////////////////////////////////////////////////////
    void ServerGameStatusActor::PublishGameStatus()
    {
-      dtCore::RefPtr<dtGame::Message> msg = GetGameActorProxy().GetGameManager()->
+      std::shared_ptr<dtGame::Message> msg = GetGameActorProxy().GetGameManager()->
          GetMessageFactory().CreateMessage(dtGame::MessageType::INFO_ACTOR_UPDATED);
 
       // Set the last published time to now
@@ -303,7 +303,7 @@ namespace NetDemo
 
       BaseClass::BuildPropertyMap();
 
-      ServerGameStatusActor* actor = NULL;
+      ServerGameStatusActor* actor = nullptr;
       GetActor(actor);
 
       static const dtUtil::RefString PROP_GAME_STATUS_DESC("Indicates the game status - server perspective.");

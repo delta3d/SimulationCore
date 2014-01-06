@@ -90,7 +90,7 @@ namespace SimCore
             // called from an actor - ie from stage.
             void RegisterAMaterialWithComponent(SimCore::Actors::ViewerMaterialActor* material)
             {
-               std::vector<dtCore::RefPtr<SimCore::Actors::ViewerMaterialActor> >::iterator iter =  mOurMaterials.begin();
+               std::vector<std::shared_ptr<SimCore::Actors::ViewerMaterialActor> >::iterator iter =  mOurMaterials.begin();
                for(;iter != mOurMaterials.end(); ++iter)
                {
                   if((*iter)->GetName() == material->GetName())
@@ -102,7 +102,7 @@ namespace SimCore
             }
 
          private:
-            std::vector<dtCore::RefPtr<SimCore::Actors::ViewerMaterialActor> >  mOurMaterials;
+            std::vector<std::shared_ptr<SimCore::Actors::ViewerMaterialActor> >  mOurMaterials;
             bool                                               mClearMaterialsOnMapChange;
       };
    }

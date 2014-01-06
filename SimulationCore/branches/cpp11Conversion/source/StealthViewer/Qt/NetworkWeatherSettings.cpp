@@ -36,6 +36,6 @@ namespace StealthQt
    NetworkWeatherSettings::~NetworkWeatherSettings()
    {
       delete mUi;
-      mUi = NULL;
+      mUi = nullptr;
    }
 }

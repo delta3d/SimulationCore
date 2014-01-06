@@ -103,7 +103,7 @@ namespace StealthQt
       }
       else
       {
-         mViewWrapper = NULL;
+         mViewWrapper = nullptr;
       }
    }
 
@@ -112,16 +112,16 @@ namespace StealthQt
    {
       osgViewer::GraphicsWindow* gw = wrapper.GetWindow().GetOsgViewerGraphicsWindow();
       dtQt::OSGGraphicsWindowQt* gwQt = dynamic_cast<dtQt::OSGGraphicsWindowQt*>(gw);
-      if (gwQt != NULL)
+      if (gwQt != nullptr)
       {
          QGLWidget* widget = gwQt->GetQGLWidget();
-         if (widget != NULL)
+         if (widget != nullptr)
          {
             //return dynamic_cast<AdditionalViewDockWidget*>(widget->parentWidget());
             return dynamic_cast<AdditionalViewDockWidget*>(widget);
          }
       }
-      return NULL;
+      return nullptr;
    }
 
    ///////////////////////////////////////////////////////////////////////////////
@@ -129,10 +129,10 @@ namespace StealthQt
    {
       osgViewer::GraphicsWindow* gw = wrapper.GetWindow().GetOsgViewerGraphicsWindow();
       dtQt::OSGGraphicsWindowQt* gwQt = dynamic_cast<dtQt::OSGGraphicsWindowQt*>(gw);
-      if (gwQt != NULL)
+      if (gwQt != nullptr)
       {
          QGLWidget* widget = gwQt->GetQGLWidget();
-         if (widget == NULL)
+         if (widget == nullptr)
          {
             QMessageBox::critical(StealthViewerData::GetInstance().GetMainWindow(), "Internal Error",
                      "Error Creating Additional 3D view.  OpenGL Widget was not created properly",
@@ -154,18 +154,18 @@ namespace StealthQt
    {
       AdditionalViewDockWidget* dockWidget =
          AdditionalViewDockWidget::GetDockWidgetForViewWindow(wrapper);
-      if (dockWidget != NULL)
+      if (dockWidget != nullptr)
       {
 //         QMainWindow* qm = dynamic_cast<QMainWindow*>(dockWidget->parentWidget());
-//         if (qm != NULL)
+//         if (qm != nullptr)
 //         {
 //            qm->removeDockWidget(dockWidget);
 //         }
 
-//         dockWidget->setParent(NULL);
+//         dockWidget->setParent(nullptr);
 //         dockWidget->close();
 //         QGLWidget* glWidget = dockWidget->GetQGLWidget();
-//         glWidget->setParent(NULL);
+//         glWidget->setParent(nullptr);
          delete dockWidget;
       }
    }

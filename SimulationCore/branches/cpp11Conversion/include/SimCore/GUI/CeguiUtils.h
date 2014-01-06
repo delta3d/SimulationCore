@@ -46,17 +46,18 @@ namespace SimCore
             template<typename T_CeguiWin>
             class CeguiWindowFilter
             {
-               public:
-                  /**
-                   * Override method.
-                   * Method that determines if the specified window is acceptable.
-                   * @param window The window to be checked.
-                   * @return TRUE if the window is acceptable.
-                   */
-                  virtual bool Accept(const T_CeguiWin& window)
-                  {
-                     return true;
-                  }
+            public:
+               ~CeguiWindowFilter() {}
+               /**
+                * Override method.
+                * Method that determines if the specified window is acceptable.
+                * @param window The window to be checked.
+                * @return TRUE if the window is acceptable.
+                */
+               virtual bool Accept(const T_CeguiWin& window)
+               {
+                  return true;
+               }
             };
 
             /**
@@ -66,7 +67,7 @@ namespace SimCore
              * call this method only when absolutely necessary.
              * @param outChildWindows List in which to capture the found windows.
              * @param rootWindow Window that the found windows should be children of.
-             *        If left NULL, all windows in the system of the specified type will
+             *        If left nullptr, all windows in the system of the specified type will
              *        be returned.
              * @param filter Pointer to an object that  determines the conditions under
              *        which a window can be added to the outChildWindows list.
@@ -74,7 +75,7 @@ namespace SimCore
              */
             template<typename T_CeguiWin>
             static int GetChildWindowsByType(std::vector<T_CeguiWin*>& outChildWindows,
-               const CEGUI::Window* rootWindow, CeguiWindowFilter<T_CeguiWin>* filter = NULL);
+               const CEGUI::Window* rootWindow, CeguiWindowFilter<T_CeguiWin>* filter = nullptr);
 
             /**
              * Get the absolute normalized OpenGL screen coordinates and size for
@@ -112,7 +113,7 @@ namespace SimCore
          int successes = 0;
 
          // Get ready to loop through all the windows in the CEGUI system.
-         T_CeguiWin* curWin = NULL;
+         T_CeguiWin* curWin = nullptr;
          CEGUI::WindowManager::WindowIterator winIter = CEGUI::WindowManager::getSingleton().getIterator();
          winIter.toStart();
 
@@ -123,10 +124,10 @@ namespace SimCore
             curWin = dynamic_cast<T_CeguiWin*>(*winIter);
 
             // If the window if of the specified type...
-            if(curWin != NULL)
+            if(curWin != nullptr)
             {
                // Filter the current window if a filter was specified.
-               if(filter != NULL)
+               if(filter != nullptr)
                {
                   acceptWindow = filter->Accept(*curWin);
                }
@@ -135,7 +136,7 @@ namespace SimCore
                {
                   // ...add the window to the list only if it is a child
                   // of the specified root window.
-                  if(rootWindow != NULL)
+                  if(rootWindow != nullptr)
                   {
                      if(CeguiUtils::IsParentAndChild(*rootWindow, *curWin))
                      {

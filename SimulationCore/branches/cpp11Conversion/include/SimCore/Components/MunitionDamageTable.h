@@ -31,8 +31,8 @@
 // INCLUDE DIRECTIVES
 ////////////////////////////////////////////////////////////////////////////////
 #include <SimCore/Export.h>
-#include <osg/Referenced>
-#include <dtCore/refptr.h>
+#include <dtUtil/refcountedbase.h>
+#include <dtUtil/refcountedbase.h>
 #include <SimCore/Actors/MunitionTypeActor.h>
 #include <SimCore/Components/MunitionDamage.h>
 
@@ -52,7 +52,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       // Munition Damage Table Code
       //////////////////////////////////////////////////////////////////////////
-      class SIMCORE_EXPORT MunitionDamageTable : public osg::Referenced
+      class SIMCORE_EXPORT MunitionDamageTable : public std::enable_shared_from_this
       {
          public:
 
@@ -75,7 +75,7 @@ namespace SimCore
             // @return true if this is the default muntition table for things that don't declare a table.
             bool IsDefault() const;
 
-            bool AddMunitionDamage( const dtCore::RefPtr<MunitionDamage>& newInfo );
+            bool AddMunitionDamage( const std::shared_ptr<MunitionDamage>& newInfo );
 
             bool RemoveMunitionDamage( const std::string& name );
 
@@ -92,7 +92,7 @@ namespace SimCore
 
          private:
             std::string mName;
-            std::map<std::string, dtCore::RefPtr<MunitionDamage> > mNameToMunitionMap;
+            std::map<std::string, std::shared_ptr<MunitionDamage> > mNameToMunitionMap;
             bool mDefault;
       };
 

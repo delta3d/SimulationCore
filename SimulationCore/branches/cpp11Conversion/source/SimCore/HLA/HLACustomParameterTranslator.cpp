@@ -113,7 +113,7 @@ namespace SimCore
          const unsigned controlSize = encodingControl.GetByteSize();
 
          // Iterate through all controls and write them to the buffer
-         const dtDAL::NamedGroupParameter* curControlParam = NULL;
+         const dtDAL::NamedGroupParameter* curControlParam = nullptr;
          unsigned bufferOffset = 0;
          const unsigned limit = controlParams.size();
          maxSize = controlSize * limit;
@@ -122,8 +122,8 @@ namespace SimCore
             // Obtain the current parameter as a group parameter.
             curControlParam = static_cast<const dtDAL::NamedGroupParameter*>(controlParams[i]);
 
-            // Avoid processing this parameter if NULL. This should not happen.
-            if (curControlParam == NULL)
+            // Avoid processing this parameter if nullptr. This should not happen.
+            if (curControlParam == nullptr)
                continue;
 
             encodingControl.SetByGroupParameter( *curControlParam );
@@ -156,12 +156,12 @@ namespace SimCore
       {
          if (type == HLACustomAttributeType::CONTINUOUS_CONTROL_ARRAY_TYPE )
          {
-            dtCore::RefPtr<SimCore::Actors::ContinuousControl> encodingControl = new SimCore::Actors::ContinuousControl;
+            std::shared_ptr<SimCore::Actors::ContinuousControl> encodingControl = new SimCore::Actors::ContinuousControl;
             MapFromGroupParamToControlArray_Template( *encodingControl, buffer, maxSize, parameter );
          }
          else
          {
-            dtCore::RefPtr<SimCore::Actors::DiscreteControl> encodingControl = new SimCore::Actors::DiscreteControl;
+            std::shared_ptr<SimCore::Actors::DiscreteControl> encodingControl = new SimCore::Actors::DiscreteControl;
             MapFromGroupParamToControlArray_Template( *encodingControl, buffer, maxSize, parameter );
          }
       }
@@ -186,7 +186,7 @@ namespace SimCore
             return;
 
          // Iterate through the buffer, appending new controls
-         dtCore::RefPtr<dtDAL::NamedGroupParameter> controlParam;
+         std::shared_ptr<dtDAL::NamedGroupParameter> controlParam;
          unsigned bufferOffset = 0;
          while( bufferOffset + controlSize <= size )
          {
@@ -201,7 +201,7 @@ namespace SimCore
             // Step forward into the buffer to read the next control
             bufferOffset += controlSize;
             decodingControl.Clear();
-            controlParam = NULL;
+            controlParam = nullptr;
          }
       }
 
@@ -213,12 +213,12 @@ namespace SimCore
       {
          if (type == HLACustomAttributeType::CONTINUOUS_CONTROL_ARRAY_TYPE )
          {
-            dtCore::RefPtr<SimCore::Actors::ContinuousControl> decodingControl = new SimCore::Actors::ContinuousControl;
+            std::shared_ptr<SimCore::Actors::ContinuousControl> decodingControl = new SimCore::Actors::ContinuousControl;
             MapToGroupParamFromControlArray_Template( *decodingControl, buffer, size, parameter );
          }
          else
          {
-            dtCore::RefPtr<SimCore::Actors::DiscreteControl> decodingControl = new SimCore::Actors::DiscreteControl;
+            std::shared_ptr<SimCore::Actors::DiscreteControl> decodingControl = new SimCore::Actors::DiscreteControl;
             MapToGroupParamFromControlArray_Template( *decodingControl, buffer, size, parameter );
          }
       }
@@ -228,7 +228,7 @@ namespace SimCore
       {
          dtUtil::Enumeration* enumVal = HLACustomAttributeType::GetValueForName(name);
 
-         if (enumVal == NULL)
+         if (enumVal == nullptr)
             return dtHLAGM::AttributeType::UNKNOWN;
          else
             return static_cast<const dtHLAGM::AttributeType&>(*enumVal);
@@ -237,13 +237,13 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       bool HLACustomParameterTranslator::TranslatesAttributeType(const dtHLAGM::AttributeType& type) const
       {
-         return dynamic_cast<const HLACustomAttributeType*>(&type) != NULL;
+         return dynamic_cast<const HLACustomAttributeType*>(&type) != nullptr;
       }
 
 
       //////////////////////////////////////////////////////////////////////////
       void HLACustomParameterTranslator::MapFromMessageParameters(char* buffer, size_t& maxSize,
-         std::vector<dtCore::RefPtr<const dtGame::MessageParameter> >& parameters,
+         std::vector<std::shared_ptr<const dtGame::MessageParameter> >& parameters,
          const dtHLAGM::OneToManyMapping& mapping) const
       {
          const dtHLAGM::AttributeType& hlaType = mapping.GetHLAType();
@@ -310,7 +310,7 @@ namespace SimCore
             const SimCore::Actors::MunitionTypeActor* munitionType
                = mMunitionTypeTable->GetMunitionType( munitionName );
 
-            if (munitionType != NULL )
+            if (munitionType != nullptr )
             {
                const SimCore::Actors::DISIdentifier& extendedDis = munitionType->GetDISIdentifier();
 
@@ -358,7 +358,7 @@ namespace SimCore
 
       //////////////////////////////////////////////////////////////////////////
       void HLACustomParameterTranslator::MapToMessageParameters(const char* buffer, size_t size,
-         std::vector<dtCore::RefPtr<dtGame::MessageParameter> >& parameters,
+         std::vector<std::shared_ptr<dtGame::MessageParameter> >& parameters,
          const dtHLAGM::OneToManyMapping& mapping) const
       {
 
@@ -409,10 +409,10 @@ namespace SimCore
                = mMunitionTypeTable->GetMunitionTypeByDIS( disExtended );
 
             static_cast<dtGame::StringMessageParameter&>(parameter).SetValue(
-               munitionType != NULL ? munitionType->GetName() : "" );
+               munitionType != nullptr ? munitionType->GetName() : "" );
 
             // Log an error if the type was not found
-            if (munitionType == NULL )
+            if (munitionType == nullptr )
             {
                std::ostringstream oss;
                oss << "Munition \"" << dis << "\" could NOT be found in munition table." << std::endl;
@@ -467,7 +467,7 @@ namespace SimCore
          {
             return &HLACustomAttributeType::VEC3F_TYPE;
          }
-         return NULL;
+         return nullptr;
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -481,7 +481,7 @@ namespace SimCore
 
          const HLACustomAttributeType* hlaType = DetermineHLAVec3AtributeType(size);
 
-         if (hlaType == NULL)
+         if (hlaType == nullptr)
          {
             mLogger->LogMessage(dtUtil::Log::LOG_ERROR, __FUNCTION__, __LINE__,
                "Unable to decode Vec3 because buffer size is i%",
@@ -531,7 +531,7 @@ namespace SimCore
       {
          osg::Vec3d position;
 
-         const HLACustomAttributeType* hlaType = NULL;
+         const HLACustomAttributeType* hlaType = nullptr;
 
          if (maxSize >= 24 )
          {
@@ -542,7 +542,7 @@ namespace SimCore
             hlaType = &HLACustomAttributeType::VEC3F_TYPE;
          }
 
-         if (hlaType == NULL )
+         if (hlaType == nullptr )
          {
             mLogger->LogMessage(dtUtil::Log::LOG_ERROR, __FUNCTION__, __LINE__,
                "Unable to encode Vec3 because buffer size is i%",

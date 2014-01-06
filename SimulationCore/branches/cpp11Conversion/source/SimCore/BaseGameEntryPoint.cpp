@@ -74,7 +74,7 @@
 //#include <osgUtil/RenderBin>
 #include <osgViewer/View>
 
-using dtCore::RefPtr;
+using std::shared_ptr;
 using dtCore::ObserverPtr;
 
 
@@ -97,7 +97,7 @@ namespace SimCore
 
    //////////////////////////////////////////////////////////////////////////
    BaseGameEntryPoint::BaseGameEntryPoint()
-   : parser(NULL)
+   : parser(nullptr)
    , mMissingRequiredCommandLineOption(false)
    , mIsUIRunning(false)
    , mStartedAudio(false)
@@ -108,7 +108,7 @@ namespace SimCore
    BaseGameEntryPoint::~BaseGameEntryPoint()
    {
       delete parser;
-      parser = NULL;
+      parser = nullptr;
 
       // This has to be in the destructor because
       // OnShutdown happens before the GM shutdown, and sounds can get freed after that.
@@ -124,7 +124,7 @@ namespace SimCore
    {
       mMissingRequiredCommandLineOption = false;
 
-      if(parser == NULL)
+      if(parser == nullptr)
          parser = new osg::ArgumentParser(&argc, argv);
 
       parser->getApplicationUsage()->addCommandLineOption("-h or --help","Display command line options");
@@ -209,7 +209,7 @@ namespace SimCore
    //////////////////////////////////////////////////////////////////////////
    void BaseGameEntryPoint::FinalizeParser()
    {
-      if(parser == NULL)
+      if(parser == nullptr)
       {
          LOG_DEBUG("FinalizeParser was called when the parser was null");
          return;
@@ -378,14 +378,14 @@ namespace SimCore
 
       gameManager.LoadActorRegistry(LIBRARY_NAME);
 
-      RefPtr<dtGame::DeadReckoningComponent>   drComp            = new dtGame::DeadReckoningComponent;
-      RefPtr<Components::ViewerNetworkPublishingComponent> rulesComp         = new Components::ViewerNetworkPublishingComponent;
-      RefPtr<Components::TimedDeleterComponent>            mTimedDeleterComp = new Components::TimedDeleterComponent;
-      RefPtr<Components::ParticleManagerComponent>         mParticleComp     = new Components::ParticleManagerComponent;
-      RefPtr<Components::WeatherComponent>                 weatherComp       = new Components::WeatherComponent;
-      RefPtr<Components::MunitionsComponent>               munitionsComp     = new Components::MunitionsComponent;
-      RefPtr<Components::ViewerMaterialComponent> viewerMaterialComponent    = new Components::ViewerMaterialComponent;
-      RefPtr<dtAnim::AnimationComponent>          animationComponent         = new dtAnim::AnimationComponent;
+      std::shared_ptr<dtGame::DeadReckoningComponent>   drComp            = new dtGame::DeadReckoningComponent;
+      std::shared_ptr<Components::ViewerNetworkPublishingComponent> rulesComp         = new Components::ViewerNetworkPublishingComponent;
+      std::shared_ptr<Components::TimedDeleterComponent>            mTimedDeleterComp = new Components::TimedDeleterComponent;
+      std::shared_ptr<Components::ParticleManagerComponent>         mParticleComp     = new Components::ParticleManagerComponent;
+      std::shared_ptr<Components::WeatherComponent>                 weatherComp       = new Components::WeatherComponent;
+      std::shared_ptr<Components::MunitionsComponent>               munitionsComp     = new Components::MunitionsComponent;
+      std::shared_ptr<Components::ViewerMaterialComponent> viewerMaterialComponent    = new Components::ViewerMaterialComponent;
+      std::shared_ptr<dtAnim::AnimationComponent>          animationComponent         = new dtAnim::AnimationComponent;
 
       gameManager.AddComponent(*weatherComp, dtGame::GameManager::ComponentPriority::NORMAL);
       gameManager.AddComponent(*drComp, dtGame::GameManager::ComponentPriority::NORMAL);
@@ -417,7 +417,7 @@ namespace SimCore
          CONFIG_PROP_HIGH_RES_GROUND_CLAMP_RANGE, "200");
 
       // Setup the DR Component.
-      dtCore::RefPtr<Components::MultiSurfaceClamper> clamper = new Components::MultiSurfaceClamper;
+      std::shared_ptr<Components::MultiSurfaceClamper> clamper = new Components::MultiSurfaceClamper;
       
       clamper->SetHighResGroundClampingRange( dtUtil::ToFloat(highResGroundClampingRange) );
       drComp->SetGroundClamper( *clamper );
@@ -440,7 +440,7 @@ namespace SimCore
    void BaseGameEntryPoint::OnShutdown(dtABC::BaseABC& app, dtGame::GameManager& gameManager)
    {
       delete parser;
-      parser = NULL;
+      parser = nullptr;
    }
 
    DT_IMPLEMENT_ACCESSOR(BaseGameEntryPoint, std::string, MapName);

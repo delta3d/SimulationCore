@@ -117,14 +117,14 @@ namespace SimCore
          // Private vars
          private:
 
-            dtCore::RefPtr<dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper> mPhysicsHelper;
+            std::shared_ptr<dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper> mPhysicsHelper;
 
             ///////////////////////////////////////////////////
             // Sound effects
-            dtCore::RefPtr<dtAudio::Sound> mSndIgnition;
-            dtCore::RefPtr<dtAudio::Sound> mSndVehicleIdleLoop;
-            dtCore::RefPtr<dtAudio::Sound> mSndCollisionHit;
-            dtCore::RefPtr<dtAudio::Sound> mSndHorn;
+            std::shared_ptr<dtAudio::Sound> mSndIgnition;
+            std::shared_ptr<dtAudio::Sound> mSndVehicleIdleLoop;
+            std::shared_ptr<dtAudio::Sound> mSndCollisionHit;
+            std::shared_ptr<dtAudio::Sound> mSndHorn;
             ///////////////////////////////////////////////////
 
             ///////////////////////////////////////////////////
@@ -157,7 +157,7 @@ namespace SimCore
 
             ///////////////////////////////////////////////////
             // vehicles portal for the actor
-            dtCore::RefPtr<dtGame::GameActorProxy> mVehiclesPortal;
+            std::shared_ptr<dtGame::GameActorProxy> mVehiclesPortal;
 
             ///////////////////////////////////////////////////
             // sending out dead reckoning

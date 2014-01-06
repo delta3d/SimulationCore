@@ -240,7 +240,7 @@ namespace StealthQt
                   tr(" because a connection named: ") + name + tr(" already exists. ") +
                   tr("Please select a unique connection name.");
 
-               QMessageBox::critical(NULL, tr("Failed to add the connection"),
+               QMessageBox::critical(nullptr, tr("Failed to add the connection"),
                  message, QMessageBox::Ok);
 
                return false;
@@ -971,7 +971,7 @@ namespace StealthQt
             StealthGM::PreferencesToolsConfigObject::CoordinateSystem* coordSystem =
                StealthGM::PreferencesToolsConfigObject::CoordinateSystem::GetValueForName(savedValue.toStdString());
 
-            if (coordSystem != NULL)
+            if (coordSystem != nullptr)
                toolsConfig.SetCoordinateSystem(*coordSystem);
          }
 
@@ -1285,7 +1285,7 @@ namespace StealthQt
                   value(StealthViewerSettings::ADDITIONAL_VIEW_NAME).toString().toStdString();
             }
 
-            dtCore::RefPtr<StealthGM::ViewWindowWrapper> newViewWrapper =
+            std::shared_ptr<StealthGM::ViewWindowWrapper> newViewWrapper =
                StealthViewerData::GetInstance().GetMainWindow()->GetViewDockWidget().CreateNewViewWindow(newViewName);
 
             if (contains(StealthViewerSettings::ADDITIONAL_VIEW_TITLE))

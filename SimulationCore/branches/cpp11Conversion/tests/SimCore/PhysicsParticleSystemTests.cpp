@@ -36,7 +36,7 @@
 
 #include <dtCore/system.h>
 #include <dtCore/scene.h>
-#include <dtCore/refptr.h>
+#include <dtUtil/refcountedbase.h>
 
 #include <dtUtil/macros.h>
 
@@ -56,7 +56,7 @@
 
 #include <SimCore/Actors/PhysicsParticleSystemActor.h>
 
-using dtCore::RefPtr;
+using std::shared_ptr;
 using dtCore::ObserverPtr;
 
 namespace SimCore
@@ -86,7 +86,7 @@ namespace SimCore
             mDeadReckoningComponent = new dtGame::DeadReckoningComponent();
             mGM->AddComponent(*mDeadReckoningComponent, dtGame::GameManager::ComponentPriority::NORMAL);
 
-            dtCore::RefPtr<dtPhysics::PhysicsWorld> physicsWorld = new dtPhysics::PhysicsWorld(GetGlobalApplication());
+            std::shared_ptr<dtPhysics::PhysicsWorld> physicsWorld = new dtPhysics::PhysicsWorld(GetGlobalApplication());
             physicsWorld->Init();
             mGM->AddComponent(*new dtPhysics::PhysicsComponent(*physicsWorld, false),
                      dtGame::GameManager::ComponentPriority::NORMAL);
@@ -96,17 +96,17 @@ namespace SimCore
 
          void tearDown()
          {
-            mDeadReckoningComponent = NULL;
+            mDeadReckoningComponent = nullptr;
 
-            mPhysicsComp = NULL;
+            mPhysicsComp = nullptr;
 
-            dtCore::ObserverPtr<SimCore::Actors::PhysicsParticleSystemActorProxy> pOb = mPhysicsParticleSystemActor.get();
-            mPhysicsParticleSystemActor = NULL;
+            std::weak_ptr<SimCore::Actors::PhysicsParticleSystemActorProxy> pOb = mPhysicsParticleSystemActor.get();
+            mPhysicsParticleSystemActor = nullptr;
 
             if (mGM.valid())
             {
                mGM->DeleteAllActors(true);
-               mGM = NULL;
+               mGM = nullptr;
             }
             dtCore::System::GetInstance().Stop();
 
@@ -120,11 +120,11 @@ namespace SimCore
 
          void TestInit()
          {
-            SimCore::Actors::PhysicsParticleSystemActor* drawable = NULL;
+            SimCore::Actors::PhysicsParticleSystemActor* drawable = nullptr;
             mPhysicsParticleSystemActor->GetDrawable(drawable);
-            dtPhysics::PhysicsActComp* pac = NULL;
+            dtPhysics::PhysicsActComp* pac = nullptr;
             drawable->GetComponent(pac);
-            CPPUNIT_ASSERT(pac != NULL);
+            CPPUNIT_ASSERT(pac != nullptr);
 
             pac->SetDefaultPrimitiveType(dtPhysics::PrimitiveType::SPHERE);
             pac->SetDimensions(osg::Vec3(3.0f, 3.0f, 3.0f));
@@ -135,11 +135,11 @@ namespace SimCore
 
       private:
 
-         RefPtr<dtGame::GameManager> mGM;
-         RefPtr<dtGame::DeadReckoningComponent> mDeadReckoningComponent;
-         RefPtr<SimCore::Actors::PhysicsParticleSystemActorProxy> mPhysicsParticleSystemActor;
+         std::shared_ptr<dtGame::GameManager> mGM;
+         std::shared_ptr<dtGame::DeadReckoningComponent> mDeadReckoningComponent;
+         std::shared_ptr<SimCore::Actors::PhysicsParticleSystemActorProxy> mPhysicsParticleSystemActor;
 
-         RefPtr<dtPhysics::PhysicsComponent> mPhysicsComp;
+         std::shared_ptr<dtPhysics::PhysicsComponent> mPhysicsComp;
       };
 
       CPPUNIT_TEST_SUITE_REGISTRATION(PhysicsParticleSystemTests);

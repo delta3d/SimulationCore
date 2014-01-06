@@ -45,7 +45,7 @@ namespace SimCore
          : mName()
          , mCharacterName()
          , mRegistrationFunctor(regFunc)
-         , mCurrentInteraction(NULL)
+         , mCurrentInteraction(nullptr)
          , mCurrentInteractionIter()
          , mInteractions()
       {
@@ -62,7 +62,7 @@ namespace SimCore
       void Conversation::ClearData()
       {
          mName.clear();
-         mCurrentInteraction = NULL;
+         mCurrentInteraction = nullptr;
          mInteractions.clear();
          mCurrentInteractionIter = mInteractions.end();
          mCommands.clear();
@@ -72,7 +72,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void Conversation::IncrementInteraction()
       {
-         mCurrentInteraction = NULL;
+         mCurrentInteraction = nullptr;
 
          if(mCurrentInteractionIter != mInteractions.end())
          {
@@ -101,7 +101,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       Interaction* Conversation::HandleResponse( const Response* r )
       {
-         if(r != NULL && mCurrentInteraction.valid())
+         if(r != nullptr && mCurrentInteraction.valid())
          {
             //ensure the response is valid for our current interaction
             if(mCurrentInteraction->HasResponse(*r))
@@ -111,7 +111,7 @@ namespace SimCore
                if(rt == ResponseType::RESPONSE_WRONG)
                {
                   Interaction* i = mCurrentInteraction->GetBranch(*r);
-                  if(i != NULL)
+                  if(i != nullptr)
                   {
                      mCurrentInteraction = i;
                   }
@@ -190,7 +190,7 @@ namespace SimCore
          dtDAL::GameEventManager& eventManager = dtDAL::GameEventManager::GetInstance();
 
          dtDAL::GameEvent* ge = eventManager.FindEvent(str);
-         if(ge == NULL && str != "")
+         if(ge == nullptr && str != "")
          {
             LOG_WARNING("Error loading conversation file, did not find GameEvent of name '" + str + "' in current map.")
          }
@@ -306,7 +306,7 @@ namespace SimCore
             if(typeiter != results.end())
             {
                InteractionType* rt = InteractionType::GetValueForName((*typeiter).second);
-               if(rt != NULL)
+               if(rt != nullptr)
                {
                   mCurrentInteraction->SetInteractionType(*rt);
                }
@@ -327,7 +327,7 @@ namespace SimCore
             {
                std::string str((*enableeventiter).second);
                dtDAL::GameEvent* ge = mManager->LookupGameEvent(str);
-               if(ge != NULL)
+               if(ge != nullptr)
                {
                   mManager->AddCommand(ge, mManager->CreateCommand(mCurrentInteraction.get(), true));
                }
@@ -337,7 +337,7 @@ namespace SimCore
             {
                std::string str((*disableeventiter).second);
                dtDAL::GameEvent* ge = mManager->LookupGameEvent(str);
-               if(ge != NULL)
+               if(ge != nullptr)
                {
                   mManager->AddCommand(ge, mManager->CreateCommand(mCurrentInteraction.get(), false));
                }
@@ -369,7 +369,7 @@ namespace SimCore
             if(typeiter != results.end())
             {
                ResponseType* rt = ResponseType::GetValueForName((*typeiter).second);
-               if(rt != NULL)
+               if(rt != nullptr)
                {
                   mCurrentResponse->SetResponseType(*rt);
                }
@@ -378,7 +378,7 @@ namespace SimCore
             if(eventiter != results.end())
             {
                dtDAL::GameEvent* ge = mManager->LookupGameEvent((*eventiter).second);
-               if(ge != NULL)
+               if(ge != nullptr)
                {
                   mManager->AddResponseEvent(mCurrentResponse.get(), ge);
                }
@@ -394,7 +394,7 @@ namespace SimCore
             {
                std::string str((*enableeventiter).second);
                dtDAL::GameEvent* ge = mManager->LookupGameEvent(str);
-               if(ge != NULL)
+               if(ge != nullptr)
                {
                   mManager->AddCommand(ge, mManager->CreateCommand(mCurrentResponse.get(), true));
                }
@@ -404,7 +404,7 @@ namespace SimCore
             {
                std::string str((*disableeventiter).second);
                dtDAL::GameEvent* ge = mManager->LookupGameEvent(str);
-               if(ge != NULL)
+               if(ge != nullptr)
                {
                   mManager->AddCommand(ge, mManager->CreateCommand(mCurrentResponse.get(), false));
                }
@@ -438,7 +438,7 @@ namespace SimCore
                {
                   std::string str2((*eventiter).second);
                   dtDAL::GameEvent* ge = mManager->LookupGameEvent(str2);
-                  if(ge != NULL)
+                  if(ge != nullptr)
                   {
                      mManager->AddResponseEvent(r, ge);
                   }
@@ -518,7 +518,7 @@ namespace SimCore
 
                //add current interaction
                mManager->mInteractions.push_back(mCurrentInteraction);
-               mCurrentInteraction = NULL;
+               mCurrentInteraction = nullptr;
             }
 
             mInInteraction = false;
@@ -544,14 +544,14 @@ namespace SimCore
                //if(mBranchInteraction.valid())
                //{
                //   mCurrentInteraction->AddResponse(*mCurrentResponse, *mBranchInteraction);
-               //   mBranchInteraction = NULL;
+               //   mBranchInteraction = nullptr;
                //}
                //else
                //{
                //   mCurrentInteraction->AddResponse(*mCurrentResponse);
                //}
 
-               std::pair<dtCore::RefPtr<Response>, dtCore::RefPtr<Interaction> > responseElement;
+               std::pair<std::shared_ptr<Response>, std::shared_ptr<Interaction> > responseElement;
                responseElement.first = mCurrentResponse.get();
                responseElement.second = mBranchInteraction.get();
 
@@ -566,8 +566,8 @@ namespace SimCore
                   mResponses.push_back(responseElement);
                }
 
-               mBranchInteraction = NULL;
-               mCurrentResponse = NULL;
+               mBranchInteraction = nullptr;
+               mCurrentResponse = nullptr;
             }
 
             mInResponse = false;
@@ -631,7 +631,7 @@ namespace SimCore
             if(!gameEventString.empty())
             {
                dtDAL::GameEvent* ge = mManager->LookupGameEvent(gameEventString);
-               if(ge != NULL)
+               if(ge != nullptr)
                {
                   if(mInConversation && !mInResponse)
                   {

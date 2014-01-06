@@ -98,7 +98,7 @@ namespace SimCore
       {
          dtGame::GameActorProxy::BuildPropertyMap();
 
-         DetonationActor* da = NULL;
+         DetonationActor* da = nullptr;
          GetActor(da);
 
          static const dtUtil::RefString groupImpactEffects("Impact Effects");
@@ -185,7 +185,7 @@ namespace SimCore
          }
          else if(timeMsg.GetTimerName() == "ExplosionRendered")
          {
-            DetonationActor* detonation = NULL;
+            DetonationActor* detonation = nullptr;
             GetActor(detonation);
             detonation->RenderSmoke();
             GetGameManager()->SetTimer("SmokeRendered", this, detonation->GetSmokeLifeTime());
@@ -223,7 +223,7 @@ namespace SimCore
       , mLightImpactGround()
       , mLightImpactEntity()
       , mLightImpactHuman()
-      , mCollidedMaterial(NULL)
+      , mCollidedMaterial(nullptr)
       , mExplosionSystem(new dtCore::ParticleSystem())
       , mSmokeSystem(new dtCore::ParticleSystem())
       , mSound()
@@ -255,7 +255,7 @@ namespace SimCore
          {
             dtAudio::AudioManager::GetInstance().FreeSound(mSound.get());
             RemoveChild(mSound.get());
-            mSound = NULL;
+            mSound = nullptr;
          }
       }
 
@@ -285,7 +285,7 @@ namespace SimCore
 
          ///////////////////////////////////////////////////////////////////////
          // Add physics particle systems to the detonation
-         if(mUsesPhysics && mCollidedMaterial != NULL)
+         if(mUsesPhysics && mCollidedMaterial != nullptr)
          {
             std::string particleSystems[5];
             particleSystems[0] = mCollidedMaterial->GetPhysicsParticleLookupStringOne();
@@ -301,8 +301,8 @@ namespace SimCore
                   GetGameActorProxy().GetGameManager()->FindPrototypesByName( particleSystems[i] ,toFill);
                   if(toFill.size())
                   {
-                     dtCore::RefPtr<dtDAL::ActorProxy> ourActualActorProxy = GetGameActorProxy().GetGameManager()->CreateActorFromPrototype(toFill.front()->GetId());
-                     if( ourActualActorProxy != NULL )
+                     std::shared_ptr<dtDAL::ActorProxy> ourActualActorProxy = GetGameActorProxy().GetGameManager()->CreateActorFromPrototype(toFill.front()->GetId());
+                     if( ourActualActorProxy != nullptr )
                      {
                         dtCore::Transform detonationTransform;
                         GetTransform(detonationTransform);
@@ -324,7 +324,7 @@ namespace SimCore
          // Register to delete after X time to make sure the detonation goes away when it should.
          SimCore::Components::TimedDeleterComponent* timeDeleteComp;
          GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::TimedDeleterComponent::DEFAULT_NAME,timeDeleteComp);
-         if(timeDeleteComp != NULL)
+         if(timeDeleteComp != nullptr)
          {
             timeDeleteComp->AddId(GetUniqueId(), mRenderExplosionTimerSecs + mSmokeLifeTime + mDeleteActorTimerSecs);
          }
@@ -388,7 +388,7 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////
-      void DetonationActor::LoadSoundFile( const dtDAL::ResourceDescriptor& resource, dtCore::RefPtr<dtAudio::Sound>& soundIn)
+      void DetonationActor::LoadSoundFile( const dtDAL::ResourceDescriptor& resource, std::shared_ptr<dtAudio::Sound>& soundIn)
       {
          if(!resource.IsEmpty())
          {
@@ -397,12 +397,12 @@ namespace SimCore
                dtDAL::Project& proj = dtDAL::Project::GetInstance();
                std::string filename = proj.GetResourcePath(resource);
 
-               if(soundIn != NULL)
+               if(soundIn != nullptr)
                {
                   dtAudio::AudioManager::GetInstance().FreeSound(soundIn.get());
                }
 
-               soundIn = NULL;
+               soundIn = nullptr;
                soundIn = dtAudio::AudioManager::GetInstance().NewSound();
 
                if(!soundIn.valid())
@@ -426,7 +426,7 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////
-      void DetonationActor::LoadParticleSystem(const dtDAL::ResourceDescriptor& resource, dtCore::RefPtr<dtCore::ParticleSystem>& particleSysIn)
+      void DetonationActor::LoadParticleSystem(const dtDAL::ResourceDescriptor& resource, std::shared_ptr<dtCore::ParticleSystem>& particleSysIn)
       {
          if(!resource.IsEmpty())
          {
@@ -475,7 +475,7 @@ namespace SimCore
          {
             particles.SetEnabled(true);
 
-            if(mUsesPhysics && mCollidedMaterial != NULL)
+            if(mUsesPhysics && mCollidedMaterial != nullptr)
             {
                dtCore::ParticleSystem::LayerList ourList = particles.GetAllLayers();
                dtCore::ParticleSystem::LayerList::iterator iter = ourList.begin();
@@ -521,7 +521,7 @@ namespace SimCore
                   SimCore::Components::RenderingSupportComponent::DEFAULT_NAME,
                   renderComp);
 
-            if(renderComp != NULL)
+            if(renderComp != nullptr)
             {
                SimCore::Components::RenderingSupportComponent::DynamicLight* dl =
                   renderComp->AddDynamicLightByPrototypeName(lightName);

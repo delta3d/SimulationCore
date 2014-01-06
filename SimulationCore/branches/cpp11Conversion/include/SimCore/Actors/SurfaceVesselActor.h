@@ -106,7 +106,7 @@ namespace SimCore
 
          typedef SimCore::Actors::DynamicParticleSystemActor DynamicParticlesActor;
          typedef SimCore::Actors::DynamicParticleSystemActorProxy DynamicParticlesProxy;
-         dtCore::RefPtr<DynamicParticlesProxy> CreatDynamicParticleSystemProxy(const std::string& filename,
+         std::shared_ptr<DynamicParticlesProxy> CreatDynamicParticleSystemProxy(const std::string& filename,
             const std::string& actorName);
          DynamicParticlesActor* GetParticlesActor(DynamicParticlesProxy* proxy);
 
@@ -125,15 +125,15 @@ namespace SimCore
 
          osg::Vec3 mLastPos;
 
-         dtCore::RefPtr<DynamicParticlesProxy> mWaterSprayFrontProxy;
-         dtCore::RefPtr<DynamicParticlesProxy> mWaterSpraySideStarboardProxy;
-         dtCore::RefPtr<DynamicParticlesProxy> mWaterSpraySidePortProxy;
-         dtCore::RefPtr<DynamicParticlesProxy> mWaterSprayBackProxy;
+         std::shared_ptr<DynamicParticlesProxy> mWaterSprayFrontProxy;
+         std::shared_ptr<DynamicParticlesProxy> mWaterSpraySideStarboardProxy;
+         std::shared_ptr<DynamicParticlesProxy> mWaterSpraySidePortProxy;
+         std::shared_ptr<DynamicParticlesProxy> mWaterSprayBackProxy;
 
-         dtCore::ObserverPtr<DynamicParticlesActor> mWaterSprayFront;
-         dtCore::ObserverPtr<DynamicParticlesActor> mWaterSpraySideStarboard;
-         dtCore::ObserverPtr<DynamicParticlesActor> mWaterSpraySidePort;
-         dtCore::ObserverPtr<DynamicParticlesActor> mWaterSprayBack;
+         std::weak_ptr<DynamicParticlesActor> mWaterSprayFront;
+         std::weak_ptr<DynamicParticlesActor> mWaterSpraySideStarboard;
+         std::weak_ptr<DynamicParticlesActor> mWaterSpraySidePort;
+         std::weak_ptr<DynamicParticlesActor> mWaterSprayBack;
       };
 
       class SIMCORE_EXPORT SurfaceVesselActorProxy : public PlatformActorProxy

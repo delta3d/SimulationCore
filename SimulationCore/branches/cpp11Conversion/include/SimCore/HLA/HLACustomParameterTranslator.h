@@ -30,7 +30,7 @@
 // INCLUDE DIRECTIVES
 ////////////////////////////////////////////////////////////////////////////////
 #include <SimCore/HLA/Export.h>
-#include <dtCore/observerptr.h>
+#include <dtUtil/refcountedbase.h>
 #include <dtHLAGM/parametertranslator.h>
 #include <SimCore/Components/MunitionsComponent.h>
 
@@ -96,11 +96,11 @@ namespace SimCore
             HLACustomParameterTranslator();
 
             virtual void MapToMessageParameters(const char* buffer, size_t size,
-               std::vector<dtCore::RefPtr<dtGame::MessageParameter> >& parameters,
+               std::vector<std::shared_ptr<dtGame::MessageParameter> >& parameters,
                const dtHLAGM::OneToManyMapping& mapping) const;
 
             virtual void MapFromMessageParameters(char* buffer, size_t& maxSize,
-               std::vector<dtCore::RefPtr<const dtGame::MessageParameter> >& parameters,
+               std::vector<std::shared_ptr<const dtGame::MessageParameter> >& parameters,
                const dtHLAGM::OneToManyMapping& mapping) const;
 
             virtual const dtHLAGM::AttributeType& GetAttributeTypeForName(const std::string& name) const;
@@ -181,7 +181,7 @@ namespace SimCore
             // that map munition names to their network DIS identifiers.
             // This translator will use this table to convert munition names
             // to and from binary DIS identifiers.
-            dtCore::ObserverPtr<SimCore::Components::MunitionTypeTable> mMunitionTypeTable;
+            std::weak_ptr<SimCore::Components::MunitionTypeTable> mMunitionTypeTable;
 
       };
 

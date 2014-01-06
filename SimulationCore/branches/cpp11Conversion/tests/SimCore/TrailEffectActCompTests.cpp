@@ -35,7 +35,7 @@
 #include <dtDAL/resourcedescriptor.h>
 #include <dtCore/system.h>
 #include <dtCore/scene.h>
-#include <dtCore/refptr.h>
+#include <dtUtil/refcountedbase.h>
 #include <dtUtil/macros.h>
 
 #include <SimCore/Actors/EntityActorRegistry.h>
@@ -48,7 +48,7 @@
 
 
 
-using dtCore::RefPtr;
+using std::shared_ptr;
 using dtCore::ObserverPtr;
 
 namespace SimCore
@@ -81,7 +81,7 @@ namespace SimCore
                if (mGM.valid())
                {
                   mGM->DeleteAllActors(true);
-                  mGM = NULL;
+                  mGM = nullptr;
                }
                dtCore::System::GetInstance().Stop();
             }
@@ -93,7 +93,7 @@ namespace SimCore
 
                dtDAL::ResourceDescriptor particleFile("Particles:fire.osg");
 
-               dtCore::RefPtr<TrailEffectActComp> actComp = new TrailEffectActComp();
+               std::shared_ptr<TrailEffectActComp> actComp = new TrailEffectActComp();
                const TrailEffectActComp* constComp = actComp.get();
 
                CPPUNIT_ASSERT(constComp->GetTrailParticlesFile().GetResourceIdentifier().empty());
@@ -135,11 +135,11 @@ namespace SimCore
                using namespace SimCore::ActComps;
                using namespace SimCore::Actors;
 
-               dtCore::RefPtr<PlatformActorProxy> platform;
+               std::shared_ptr<PlatformActorProxy> platform;
                mGM->CreateActor(*EntityActorRegistry::HELO_PLATFORM_ACTOR_TYPE, platform);
 
                TrailEffectActComp* actComp = platform->GetComponent<TrailEffectActComp>();
-               CPPUNIT_ASSERT(actComp != NULL);
+               CPPUNIT_ASSERT(actComp != nullptr);
 
                dtDAL::ResourceDescriptor particleFile("Particles:fire.osg");
                actComp->SetTrailParticlesFile(particleFile);
@@ -154,7 +154,7 @@ namespace SimCore
 
          private:
 
-            RefPtr<dtGame::GameManager> mGM;
+            std::shared_ptr<dtGame::GameManager> mGM;
       };
 
       CPPUNIT_TEST_SUITE_REGISTRATION(TrailEffectActCompTests);

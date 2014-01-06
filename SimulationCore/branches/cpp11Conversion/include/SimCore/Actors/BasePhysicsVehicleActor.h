@@ -183,7 +183,7 @@ namespace SimCore
             BasePhysicsVehicleActorProxy();
             virtual void BuildPropertyMap();
 
-            virtual dtCore::RefPtr<dtDAL::ActorProperty> GetDeprecatedProperty(const std::string& name);
+            virtual std::shared_ptr<dtDAL::ActorProperty> GetDeprecatedProperty(const std::string& name);
 
             /**
              * Override from base class - sets default DR Algorithm to Velocity Only

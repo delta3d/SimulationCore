@@ -71,5 +71,5 @@ void StealthViewerDataTests::setUp()
 void StealthViewerDataTests::tearDown()
 {
    delete mQApp;
-   mQApp = NULL;
+   mQApp = nullptr;
 }

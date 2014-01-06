@@ -49,7 +49,7 @@ namespace SimCore
       {
          AtmosphereActorProxy::BuildPropertyMap();
 
-         UniformAtmosphereActor* actor = NULL;
+         UniformAtmosphereActor* actor = nullptr;
          GetActor(actor);
 
          AddProperty(new dtDAL::FloatActorProperty("Visibility Distance", "Visibility Distance", 

@@ -29,7 +29,7 @@
 namespace SimCore
 {
 
-   dtCore::ObserverPtr<osg::Transform> CustomCullVisitor::mTerrainNode;
+   osg::observer_ptr<osg::Transform> CustomCullVisitor::mTerrainNode;
    std::vector<int> CustomCullVisitor::mFIDCodes;
 
    ///////////////////////////////////////////////////////////////////////////
@@ -73,11 +73,11 @@ namespace SimCore
          osg::Drawable* d = node.getDrawable(i);
          osg::StateSet* tempStateSet = d->getStateSet();
          
-         if(tempStateSet != NULL)
+         if(tempStateSet != nullptr)
          {
             osg::IntArray* intArray = dynamic_cast<osg::IntArray*>(tempStateSet->getUserData());
             
-            if(intArray != NULL)
+            if(intArray != nullptr)
             {
                std::vector<int>::iterator iter = std::find(mFIDCodes.begin(), mFIDCodes.end(), intArray->at(0));
 

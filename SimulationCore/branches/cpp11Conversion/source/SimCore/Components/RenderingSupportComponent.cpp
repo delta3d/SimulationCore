@@ -156,7 +156,7 @@ namespace SimCore
          , mFadeOutTime(0.0f)
          , mRadius(0.0f)
          , mAutoDeleteLightOnTargetNull(false)
-         , mTarget(NULL)
+         , mTarget(nullptr)
       {
       }
 
@@ -177,7 +177,7 @@ namespace SimCore
          , mFadeOutTime(0.0f)
          , mRadius(0.0f)
          , mAutoDeleteLightOnTargetNull(false)
-         , mTarget(NULL)
+         , mTarget(nullptr)
       {
       }
 
@@ -256,7 +256,7 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////////////////////
       void RenderingSupportComponent::SetGUI(dtCore::DeltaDrawable* gui)
       {
-         if (gui == NULL)
+         if (gui == nullptr)
          {
             mGUIRoot->removeChildren(0, mGUIRoot->getNumChildren());
          }
@@ -273,14 +273,14 @@ namespace SimCore
          mSceneRoot = GetGameManager()->GetApplication().GetScene()->GetSceneNode();
 
          /*dtCore::View *view = GetGameManager()->GetApplication().GetView();
-         if(view != NULL)
+         if(view != nullptr)
          {
             view->GetOsgViewerView()->setSceneData(mSceneRoot.get());
             view->GetOsgViewerView()->assignSceneDataToCameras();
          }
          else
          {
-            LOG_ERROR("The dtCore.View on the application is NULL. Cannot set the scene data.");
+            LOG_ERROR("The dtCore.View on the application is nullptr. Cannot set the scene data.");
          }*/
          ///////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -305,7 +305,7 @@ namespace SimCore
       {
          osg::Camera* camera = pCamera.GetOSGCamera();
          osgViewer::Renderer* renderer = static_cast<osgViewer::Renderer*>(camera->getRenderer());
-         if (renderer == NULL)
+         if (renderer == nullptr)
          {
             return;
          }
@@ -387,14 +387,14 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////////////////////
       RenderingSupportComponent::LightID RenderingSupportComponent::AddDynamicLight(DynamicLight* dl)
       {
-         if (dl != NULL)
+         if (dl != nullptr)
          {
             mLights.push_back(dl);
             return dl->GetId();
          }
          else
          {
-            LOG_ERROR("Attempting to add a light that is NULL to the Rendering Support Component");
+            LOG_ERROR("Attempting to add a light that is nullptr to the Rendering Support Component");
             return 0;
          }
       }
@@ -422,10 +422,10 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////////////////////
       RenderingSupportComponent::DynamicLight* RenderingSupportComponent::AddDynamicLightByPrototypeName(const std::string& prototypeName)
       {
-         DynamicLight* result = NULL;
+         DynamicLight* result = nullptr;
 
-         std::map<const std::string, dtCore::RefPtr<SimCore::Actors::DynamicLightPrototypeProxy> >::const_iterator iter = mDynamicLightPrototypes.find(prototypeName);
-         if(iter == mDynamicLightPrototypes.end() || iter->second.get() == NULL)
+         std::map<const std::string, std::shared_ptr<SimCore::Actors::DynamicLightPrototypeProxy> >::const_iterator iter = mDynamicLightPrototypes.find(prototypeName);
+         if(iter == mDynamicLightPrototypes.end() || iter->second.get() == nullptr)
          {
             LOG_ERROR("Failed to find dynamic light prototype [" + prototypeName + "]. Making bogus default light instead. Make sure the light exists in the map.");
             result = new DynamicLight();
@@ -449,10 +449,10 @@ namespace SimCore
 
       RenderingSupportComponent::SpotLight* RenderingSupportComponent::AddSpotLightByPrototypeName(const std::string& prototypeName )
       {
-         SpotLight* result = NULL;
+         SpotLight* result = nullptr;
 
-         std::map<const std::string, dtCore::RefPtr<SimCore::Actors::SpotLightPrototypeProxy> >::const_iterator iter = mSpotLightPrototypes.find(prototypeName);
-         if(iter == mSpotLightPrototypes.end() || iter->second.get() == NULL)
+         std::map<const std::string, std::shared_ptr<SimCore::Actors::SpotLightPrototypeProxy> >::const_iterator iter = mSpotLightPrototypes.find(prototypeName);
+         if(iter == mSpotLightPrototypes.end() || iter->second.get() == nullptr)
          {
             LOG_ERROR("Failed to find spot light prototype [" + prototypeName + "]. Making bogus default light instead. Make sure the light exists in the map.");
             result = new SpotLight();
@@ -512,20 +512,20 @@ namespace SimCore
             return (*iter).get();
          }
 
-         return NULL;
+         return nullptr;
       }
 
       ///////////////////////////////////////////////////////////////////////////////////////////////////
       void RenderingSupportComponent::SetNVGS(RenderFeature* rf)
       {
-         if(rf != NULL)
+         if(rf != nullptr)
          {
             mNVGS = rf;
             mNVGS->Init(mNVGSRoot.get(), GetGameManager()->GetApplication().GetCamera());
          }
          else
          {
-            mNVGS = NULL;
+            mNVGS = nullptr;
             mEnableNVGS = false;
          }
       }
@@ -549,7 +549,7 @@ namespace SimCore
          mEnableCullVisitor = pEnable;
          if (valueChangingToTrue)
          {
-            if (GetGameManager() != NULL)
+            if (GetGameManager() != nullptr)
             {
                InitializeCullVisitor(*GetGameManager()->GetApplication().GetCamera());
             }
@@ -717,26 +717,26 @@ namespace SimCore
          {
 
             // Get the physics land actor
-            SimCore::Actors::PagedTerrainPhysicsActorProxy* landActorProxy = NULL;
+            SimCore::Actors::PagedTerrainPhysicsActorProxy* landActorProxy = nullptr;
             GetGameManager()->FindActorByName(SimCore::Actors::PagedTerrainPhysicsActor::DEFAULT_NAME, landActorProxy);
 
-            if (landActorProxy == NULL)
+            if (landActorProxy == nullptr)
             {
-               dtCore::RefPtr<SimCore::Actors::PagedTerrainPhysicsActorProxy> terrainPhysicsActorProxy = NULL;
+               std::shared_ptr<SimCore::Actors::PagedTerrainPhysicsActorProxy> terrainPhysicsActorProxy = nullptr;
                GetGameManager()->CreateActor(*SimCore::Actors::EntityActorRegistry::PAGED_TERRAIN_PHYSICS_ACTOR_TYPE, terrainPhysicsActorProxy);
                GetGameManager()->AddActor(*terrainPhysicsActorProxy, false, false);
                landActorProxy = terrainPhysicsActorProxy;
             }
 
-            if (landActorProxy != NULL)
+            if (landActorProxy != nullptr)
             {
-               SimCore::Actors::PagedTerrainPhysicsActor* landActor = NULL;
+               SimCore::Actors::PagedTerrainPhysicsActor* landActor = nullptr;
                landActorProxy->GetActor(landActor);
 
                // Get the terrain - which has our mesh node
                dtDAL::ActorProxy* terrainActorProxy;
                GetGameManager()->FindActorByName(SimCore::Actors::TerrainActor::DEFAULT_NAME, terrainActorProxy);
-               if (terrainActorProxy != NULL)
+               if (terrainActorProxy != nullptr)
                {
                   static int nameCounter = 1;
                   landActor->ClearAllTerrainPhysics();
@@ -754,7 +754,7 @@ namespace SimCore
                {
                   landActor->ClearAllTerrainPhysics();
                   // Clear if we had something before and now we don't
-                  landActor->BuildTerrainAsStaticMesh(NULL, "", false);
+                  landActor->BuildTerrainAsStaticMesh(nullptr, "", false);
                }
 
             }
@@ -788,7 +788,7 @@ namespace SimCore
                   else
                   {
                      dl->mDeleteMe = true;
-                     //std::cout << "Auto delete on NULL Ptr" << std::endl;
+                     //std::cout << "Auto delete on nullptr Ptr" << std::endl;
                      continue;
                   }
                }
@@ -865,7 +865,7 @@ namespace SimCore
             if (dl->GetLightType() == LightType::SPOT_LIGHT)
             {
                SpotLight* sLight = dynamic_cast<SpotLight*>(dl);
-               if(sLight != NULL)
+               if(sLight != nullptr)
                {
                   SetDirection(sLight);
                }
@@ -937,7 +937,7 @@ namespace SimCore
          for(; iter != endIter && numLights < totalLightSlots; ++iter)
          {
             DynamicLight* dl = (*iter).get();
-            SpotLight* sl = NULL;
+            SpotLight* sl = nullptr;
 
             bool useSpotLight = false;
             float spotExp = 0.0f;
@@ -1025,7 +1025,7 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////////////////////
       void RenderingSupportComponent::SetPosition(DynamicLight* dl)
       {
-         if(dl != NULL && dl->mTarget.valid())
+         if(dl != nullptr && dl->mTarget.valid())
          {
             dtCore::Transform xform;
             dl->mTarget->GetTransform(xform);
@@ -1072,29 +1072,29 @@ namespace SimCore
 
          std::vector<dtDAL::ActorProxy*> toFill;
 
-         if (mCullVisitor->GetLandActor() == NULL)
+         if (mCullVisitor->GetLandActor() == nullptr)
          {
-            SimCore::Actors::PagedTerrainPhysicsActorProxy* landActorProxy = NULL;
+            SimCore::Actors::PagedTerrainPhysicsActorProxy* landActorProxy = nullptr;
             GetGameManager()->FindActorByName(SimCore::Actors::PagedTerrainPhysicsActor::DEFAULT_NAME, landActorProxy);
 
-            if (landActorProxy != NULL)
+            if (landActorProxy != nullptr)
             {
-               SimCore::Actors::PagedTerrainPhysicsActor* landActor = NULL;
+               SimCore::Actors::PagedTerrainPhysicsActor* landActor = nullptr;
                landActorProxy->GetActor(landActor);
                mCullVisitor->SetLandActor(landActor);
             }
             else
             {
-               dtCore::RefPtr<SimCore::Actors::PagedTerrainPhysicsActorProxy> terrainPhysicsActorProxy = NULL;
+               std::shared_ptr<SimCore::Actors::PagedTerrainPhysicsActorProxy> terrainPhysicsActorProxy = nullptr;
                GetGameManager()->CreateActor(*SimCore::Actors::EntityActorRegistry::PAGED_TERRAIN_PHYSICS_ACTOR_TYPE, terrainPhysicsActorProxy);
                GetGameManager()->AddActor(*terrainPhysicsActorProxy, false, false);
-               SimCore::Actors::PagedTerrainPhysicsActor* landActor = NULL;
+               SimCore::Actors::PagedTerrainPhysicsActor* landActor = nullptr;
                terrainPhysicsActorProxy->GetActor(landActor);
                mCullVisitor->SetLandActor(landActor);
             }
          }
 
-         if (mCullVisitor->GetTerrainNode() == NULL)
+         if (mCullVisitor->GetTerrainNode() == nullptr)
          {
             GetGameManager()->FindActorsByName("Terrain", toFill);
             if(!toFill.empty())
@@ -1118,7 +1118,7 @@ namespace SimCore
       void RenderingSupportComponent::InitializeCSM()
       {
          char* csmData = getenv("CSM_DATA");
-         if(csmData == NULL)
+         if(csmData == nullptr)
          {
             std::string csmPath = dtDAL::Project::GetInstance().GetContext();
             for(size_t i = 0; i < csmPath.size(); i++)

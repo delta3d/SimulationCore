@@ -41,18 +41,18 @@ namespace SimCore
    {
       HelpWindow::HelpWindow(CEGUI::Window *mainWindow) : 
          mIsEnabled(false),
-         mOverlay(NULL), 
-         mHeaderText(NULL), 
-         mBinocsText(NULL), 
-         mLRFText(NULL), 
-         mCompassText(NULL), 
-         mGPSText(NULL),
-         mToggleFullScreen(NULL),
-         mMagnifyModels(NULL)
-         ,mCurrentParticleCount(NULL)
-         ,mLifeTimeParticleCount(NULL)
+         mOverlay(nullptr), 
+         mHeaderText(nullptr), 
+         mBinocsText(nullptr), 
+         mLRFText(nullptr), 
+         mCompassText(nullptr), 
+         mGPSText(nullptr),
+         mToggleFullScreen(nullptr),
+         mMagnifyModels(nullptr)
+         ,mCurrentParticleCount(nullptr)
+         ,mLifeTimeParticleCount(nullptr)
       {
-         mMainWindow = NULL;
+         mMainWindow = nullptr;
          InitGui(mainWindow);
       }
 
@@ -68,7 +68,7 @@ namespace SimCore
          mOverlay->removeChildWindow(mCurrentParticleCount);
          mOverlay->removeChildWindow(mLifeTimeParticleCount);
 
-         if(mMainWindow != NULL)
+         if(mMainWindow != nullptr)
             mMainWindow->removeChildWindow(mOverlay);
 
          mHeaderText->destroy();
@@ -103,7 +103,7 @@ namespace SimCore
             mMainWindow = mainWindow;
             CEGUI::WindowManager *wm = CEGUI::WindowManager::getSingletonPtr();
             mOverlay = static_cast<CEGUI::FrameWindow*>(wm->createWindow("WindowsLook/FrameWindow", "help_window"));
-            if(mMainWindow != NULL)
+            if(mMainWindow != nullptr)
                mMainWindow->addChildWindow(mOverlay);
 
             mHeaderText       = wm->createWindow(typeText, "header_helptext");
@@ -206,7 +206,7 @@ namespace SimCore
             mCloseButton->setText("Close");
             mCloseButton->setSize(CEGUI::UVector2(cegui_reldim(0.1f), cegui_reldim(0.1f)));
             mCloseButton->setPosition(CEGUI::UVector2(cegui_reldim(0.0f), cegui_reldim(0.8f)));
-            mCloseButton->setMouseCursor(NULL);
+            mCloseButton->setMouseCursor(nullptr);
             mCloseButton->setHorizontalAlignment(CEGUI::HA_CENTRE);
 
             mOverlay->addChildWindow(mCloseButton);

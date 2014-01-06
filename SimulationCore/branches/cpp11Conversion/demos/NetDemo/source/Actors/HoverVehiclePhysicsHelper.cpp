@@ -44,7 +44,7 @@ namespace NetDemo
       , mGroundClearance(0.5)
       , mForceBoostFactor(0.25)
    {
-      dtCore::RefPtr<dtPhysics::PhysicsObject> physicsObject = new dtPhysics::PhysicsObject("VehicleBody");
+      std::shared_ptr<dtPhysics::PhysicsObject> physicsObject = new dtPhysics::PhysicsObject("VehicleBody");
       AddPhysicsObject(*physicsObject);
       physicsObject->SetPrimitiveType(dtPhysics::PrimitiveType::SPHERE);
       physicsObject->SetMass(1000.0f);
@@ -105,7 +105,7 @@ namespace NetDemo
       physicsObject->ApplyImpulse(dir * upForce * deltaTime);
 
       // Get the forward vector and the perpendicular side (right) vector.
-      dtGame::GameActor* actor = NULL;
+      dtGame::GameActor* actor = nullptr;
       GetOwner( actor );
       osg::Matrix matrix;
       dtCore::Transformable::GetAbsoluteMatrix( actor->GetOSGNode(), matrix);

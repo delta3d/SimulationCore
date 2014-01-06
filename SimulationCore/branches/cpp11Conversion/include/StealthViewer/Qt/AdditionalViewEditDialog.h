@@ -55,7 +55,7 @@ namespace StealthQt
       typedef QDialog BaseClass;
 
       AdditionalViewEditDialog(StealthGM::ViewWindowWrapper& viewWindow,
-               QWidget *parent = NULL, Qt::WindowFlags f = 0);
+               QWidget *parent = nullptr, Qt::WindowFlags f = 0);
 
       virtual ~AdditionalViewEditDialog();
 
@@ -78,7 +78,7 @@ namespace StealthQt
 
       Ui::AdditionalViewDialogUi* mUi;
       FOVWidget* mFOVWidget;
-      dtCore::RefPtr<StealthGM::ViewWindowWrapper> mViewWindow;
+      std::shared_ptr<StealthGM::ViewWindowWrapper> mViewWindow;
       QDoubleValidator* mAngleValidator;
 
       // Fields for storing information prior to editing a view.

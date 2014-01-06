@@ -169,10 +169,10 @@ namespace SimCore
          bool mEnableCloudPlane, mEnableLensFlare, mInitSystemClock;
          time_t mCurrTime;
          osg::Vec3 mWind;
-         dtCore::RefPtr<dtCore::CloudPlane> mCloudPlane;
-         dtCore::RefPtr<dtCore::Environment> mEnvironment;
-         dtCore::RefPtr<LensFlareDrawable> mLensFlare;
-         dtCore::RefPtr<osg::Fog> mFog;
+         std::shared_ptr<dtCore::CloudPlane> mCloudPlane;
+         std::shared_ptr<dtCore::Environment> mEnvironment;
+         std::shared_ptr<LensFlareDrawable> mLensFlare;
+         osg::ref_ptr<osg::Fog> mFog;
 
          int mCloudCoverage;
       };

@@ -100,7 +100,7 @@ namespace NetDemo
       float GetSphereRadius()
       {
          dtPhysics::PhysicsObject* physicsObject = GetMainPhysicsObject();
-         if (physicsObject != NULL)
+         if (physicsObject != nullptr)
             return physicsObject->GetExtents().x();
          else
             return 0.0;

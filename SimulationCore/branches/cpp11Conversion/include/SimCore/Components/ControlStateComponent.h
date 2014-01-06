@@ -73,9 +73,9 @@ namespace SimCore
 
             bool mGunnerModelAttached;
             unsigned mWeaponSelected;
-            dtCore::RefPtr<osg::Node> mWeaponModel;
-            dtCore::RefPtr<osg::Node> mGunnerModel;
-            dtCore::RefPtr<SimCore::Actors::ControlStateActor> mControlState;
+            osg::ref_ptr<osg::Node> mWeaponModel;
+            osg::ref_ptr<osg::Node> mGunnerModel;
+            std::shared_ptr<SimCore::Actors::ControlStateActor> mControlState;
 
          protected:
             virtual ~ControlStateInfo() {}
@@ -109,7 +109,7 @@ namespace SimCore
             const SimCore::Actors::ControlStateActor* GetControlState( const dtCore::UniqueId& actorID ) const;
 
             // OVERRIDE!!!
-            virtual SimCore::Actors::ControlStateActor* GetVehicleControlState() { return NULL; }
+            virtual SimCore::Actors::ControlStateActor* GetVehicleControlState() { return nullptr; }
       
             bool IsStationAvailableOnVehicle( unsigned station, const SimCore::Actors::Platform& vehicle );
 
@@ -192,7 +192,7 @@ namespace SimCore
 
          private:
             // Remote Gunner Map
-            typedef std::map<dtCore::UniqueId, dtCore::RefPtr<ControlStateInfo> > RemoteControlStateMap;
+            typedef std::map<dtCore::UniqueId, std::shared_ptr<ControlStateInfo> > RemoteControlStateMap;
             RemoteControlStateMap mRemoteGunnerMap;
             RemoteControlStateMap mRemoteVehicleMap;
             // Weapon Model File List

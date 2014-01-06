@@ -124,11 +124,11 @@ private:
 
    void RemoveCallbackTest(StealthGM::ViewWindowWrapper& vw);
 
-   dtCore::RefPtr<dtGame::GameManager> mGM;
+   std::shared_ptr<dtGame::GameManager> mGM;
 #if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
-      dtCore::RefPtr<dtGUI::CEUIDrawable> mGUI;
+      std::shared_ptr<dtGUI::CEUIDrawable> mGUI;
 #else
-      dtCore::RefPtr<dtGUI::GUI> mGUI;
+      std::shared_ptr<dtGUI::GUI> mGUI;
 #endif
 
    bool mInitCalled;
@@ -153,11 +153,11 @@ void ConfigObjectTests::tearDown()
 {
    if (mGM.valid())
    {
-      dtCore::ObserverPtr<dtGame::GameManager> gmOb = mGM.get();
-      mGM = NULL;
+      std::weak_ptr<dtGame::GameManager> gmOb = mGM.get();
+      mGM = nullptr;
       CPPUNIT_ASSERT(!gmOb.valid());
    }
-   mGUI = NULL;
+   mGUI = nullptr;
    dtCore::System::GetInstance().Stop();
 }
 
@@ -187,7 +187,7 @@ void ConfigObjectTests::CheckFOVDefaults(StealthGM::ViewWindowWrapper& viewWrapp
 
 void ConfigObjectTests::TestViewWindowConfigObject()
 {
-   dtCore::RefPtr<StealthGM::ViewWindowConfigObject> viewConfig =
+   std::shared_ptr<StealthGM::ViewWindowConfigObject> viewConfig =
       new StealthGM::ViewWindowConfigObject;
 
    viewConfig->SetFarClippingPlane(10.0);
@@ -202,7 +202,7 @@ void ConfigObjectTests::TestViewWindowConfigObject()
 
    CPPUNIT_ASSERT_THROW(viewConfig->GetMainViewWindow(), dtUtil::Exception);
 
-   dtCore::RefPtr<dtGame::GameManager> gm = new dtGame::GameManager(*GetGlobalApplication().GetScene());
+   std::shared_ptr<dtGame::GameManager> gm = new dtGame::GameManager(*GetGlobalApplication().GetScene());
    gm->SetApplication(GetGlobalApplication());
    viewConfig->CreateMainViewWindow(*gm);
 
@@ -275,7 +275,7 @@ void ConfigObjectTests::TestAdditionalViewWindows()
    std::string newViewOne("newView1");
    std::string newViewTwo("newView2");
 
-   dtCore::RefPtr<dtCore::View> view = new dtCore::View("");
+   std::shared_ptr<dtCore::View> view = new dtCore::View("");
    dtCore::DeltaWin::DeltaWinTraits traits;
    traits.height = 50;
    traits.width = 50;
@@ -284,10 +284,10 @@ void ConfigObjectTests::TestAdditionalViewWindows()
    traits.showCursor = true;
    traits.fullScreen = false;
 
-   dtCore::RefPtr<dtCore::DeltaWin> deltaWin =
+   std::shared_ptr<dtCore::DeltaWin> deltaWin =
       new dtCore::DeltaWin(traits);
 
-   dtCore::RefPtr<StealthGM::ViewWindowWrapper> newViewWrapper =
+   std::shared_ptr<StealthGM::ViewWindowWrapper> newViewWrapper =
       new StealthGM::ViewWindowWrapper(newViewOne, *view, *deltaWin);
 
    mInitCalled = false;
@@ -301,13 +301,13 @@ void ConfigObjectTests::TestAdditionalViewWindows()
    newViewWrapper->SetRemoveCallback(StealthGM::ViewWindowWrapper::OperationCallback(this, &ConfigObjectTests::RemoveCallbackTest));
    CPPUNIT_ASSERT(newViewWrapper->GetRemoveCallback().valid());
 
-   CPPUNIT_ASSERT(newViewWrapper->GetAttachToCamera() == NULL);
+   CPPUNIT_ASSERT(newViewWrapper->GetAttachToCamera() == nullptr);
    CPPUNIT_ASSERT(dtUtil::Equivalent(newViewWrapper->GetAttachCameraRotation(), osg::Vec3(0.0, 0.0, 0.0), 0.01f));
 
    CPPUNIT_ASSERT(!newViewWrapper->IsAddedToApplication());
 
-   dtCore::RefPtr<StealthGM::ViewerConfigComponent> vcc = new StealthGM::ViewerConfigComponent;
-   dtCore::RefPtr<StealthGM::ViewWindowConfigObject> viewConfig =
+   std::shared_ptr<StealthGM::ViewerConfigComponent> vcc = new StealthGM::ViewerConfigComponent;
+   std::shared_ptr<StealthGM::ViewWindowConfigObject> viewConfig =
       new StealthGM::ViewWindowConfigObject;
 
    vcc->AddConfigObject(*viewConfig);
@@ -318,7 +318,7 @@ void ConfigObjectTests::TestAdditionalViewWindows()
 
    viewConfig->AddViewWindow(*newViewWrapper);
    StealthGM::ViewWindowWrapper* lookedUpViewWrapper = viewConfig->GetViewWindow(newViewOne);
-   CPPUNIT_ASSERT(lookedUpViewWrapper != NULL);
+   CPPUNIT_ASSERT(lookedUpViewWrapper != nullptr);
    CPPUNIT_ASSERT(lookedUpViewWrapper == newViewWrapper.get());
 
    dtCore::System::GetInstance().Step();
@@ -330,12 +330,12 @@ void ConfigObjectTests::TestAdditionalViewWindows()
    newViewWrapper->SetName(newViewTwo);
    viewConfig->UpdateViewName(newViewOne);
 
-   CPPUNIT_ASSERT(viewConfig->GetViewWindow(newViewOne) == NULL);
+   CPPUNIT_ASSERT(viewConfig->GetViewWindow(newViewOne) == nullptr);
    CPPUNIT_ASSERT(viewConfig->GetViewWindow(newViewTwo) == newViewWrapper.get());
 
-   dtCore::ObserverPtr<dtCore::DeltaWin> windowOb = &newViewWrapper->GetWindow();
-   dtCore::ObserverPtr<dtCore::Camera> cameraOb = newViewWrapper->GetView().GetCamera();
-   dtCore::ObserverPtr<dtCore::View> viewOb = &newViewWrapper->GetView();
+   std::weak_ptr<dtCore::DeltaWin> windowOb = &newViewWrapper->GetWindow();
+   std::weak_ptr<dtCore::Camera> cameraOb = newViewWrapper->GetView().GetCamera();
+   std::weak_ptr<dtCore::View> viewOb = &newViewWrapper->GetView();
 
    CPPUNIT_ASSERT(newViewWrapper->GetView().GetScene() == &mGM->GetScene());
 
@@ -348,16 +348,16 @@ void ConfigObjectTests::TestAdditionalViewWindows()
    CPPUNIT_ASSERT_MESSAGE("Remove should be called on the next step, not now.", !mRemoveCalled);
 
    lookedUpViewWrapper = viewConfig->GetViewWindow(newViewTwo);
-   CPPUNIT_ASSERT(lookedUpViewWrapper == NULL);
+   CPPUNIT_ASSERT(lookedUpViewWrapper == nullptr);
 
    dtCore::System::GetInstance().Step();
    CPPUNIT_ASSERT(mRemoveCalled);
 
-   dtCore::ObserverPtr<StealthGM::ViewWindowWrapper> viewWrapperOb = newViewWrapper.get();
-   dtCore::ObserverPtr<osgViewer::GraphicsWindow> graphicsWindowOb = deltaWin->GetOsgViewerGraphicsWindow();
-   newViewWrapper = NULL;
-   deltaWin = NULL;
-   view = NULL;
+   std::weak_ptr<StealthGM::ViewWindowWrapper> viewWrapperOb = newViewWrapper.get();
+   std::weak_ptr<osgViewer::GraphicsWindow> graphicsWindowOb = deltaWin->GetOsgViewerGraphicsWindow();
+   newViewWrapper = nullptr;
+   deltaWin = nullptr;
+   view = nullptr;
 
    //Added a step because application doesn't delete views until frame end.
    dtCore::System::GetInstance().Step();
@@ -371,7 +371,7 @@ void ConfigObjectTests::TestAdditionalViewWindows()
 
 void ConfigObjectTests::TestPreferencesGeneralConfigObject()
 {
-   dtCore::RefPtr<StealthGM::PreferencesGeneralConfigObject> genConfig =
+   std::shared_ptr<StealthGM::PreferencesGeneralConfigObject> genConfig =
       new StealthGM::PreferencesGeneralConfigObject;
 
    CPPUNIT_ASSERT_MESSAGE("The default camera collision flag should be true",
@@ -441,12 +441,12 @@ void ConfigObjectTests::TestPreferencesGeneralConfigObject()
    CPPUNIT_ASSERT(genConfig->IsUpdated());
    genConfig->SetIsUpdated(false);
 
-   genConfig = NULL;
+   genConfig = nullptr;
 }
 
 void ConfigObjectTests::TestPreferencesEnvironmentConfigObject()
 {
-   dtCore::RefPtr<StealthGM::PreferencesEnvironmentConfigObject> envConfig =
+   std::shared_ptr<StealthGM::PreferencesEnvironmentConfigObject> envConfig =
       new StealthGM::PreferencesEnvironmentConfigObject;
 
    // Default values
@@ -501,12 +501,12 @@ void ConfigObjectTests::TestPreferencesEnvironmentConfigObject()
    envConfig->SetCustomSecond(67);
    CPPUNIT_ASSERT_EQUAL_MESSAGE("The value should clamp", 59, envConfig->GetCustomSecond());
 
-   envConfig = NULL;
+   envConfig = nullptr;
 }
 
 void ConfigObjectTests::TestPreferencesToolsConfigObject()
 {
-   dtCore::RefPtr<StealthGM::PreferencesToolsConfigObject> toolsConfig =
+   std::shared_ptr<StealthGM::PreferencesToolsConfigObject> toolsConfig =
       new StealthGM::PreferencesToolsConfigObject;
 
    // Defaults
@@ -530,10 +530,10 @@ void ConfigObjectTests::TestPreferencesToolsConfigObject()
    toolsConfig->SetAutoAttachOnSelection(false);
    CPPUNIT_ASSERT_EQUAL(false, toolsConfig->GetAutoAttachOnSelection());
 
-   dtCore::RefPtr<SimCore::Tools::Binoculars> binocs;
+   std::shared_ptr<SimCore::Tools::Binoculars> binocs;
    try
    {
-      binocs = new SimCore::Tools::Binoculars(*mGM->GetApplication().GetCamera(), NULL);
+      binocs = new SimCore::Tools::Binoculars(*mGM->GetApplication().GetCamera(), nullptr);
    }
    catch(const CEGUI::Exception& e)
    {
@@ -563,12 +563,12 @@ void ConfigObjectTests::TestPreferencesToolsConfigObject()
    CPPUNIT_ASSERT(toolsConfig->GetLengthUnit() == SimCore::UnitOfLength::YARD);
    CPPUNIT_ASSERT(toolsConfig->IsUpdated());
    toolsConfig->SetIsUpdated(false);
-   toolsConfig = NULL;
+   toolsConfig = nullptr;
 }
 
 void ConfigObjectTests::TestPreferencesVisibilityConfigObject()
 {
-   dtCore::RefPtr<StealthGM::PreferencesVisibilityConfigObject> visConfig =
+   std::shared_ptr<StealthGM::PreferencesVisibilityConfigObject> visConfig =
       new StealthGM::PreferencesVisibilityConfigObject;
 
    SimCore::Components::LabelOptions options = visConfig->GetLabelOptions();
@@ -591,15 +591,15 @@ void ConfigObjectTests::TestPreferencesVisibilityConfigObject()
    SimCore::Components::LabelOptions options2 = visConfig->GetLabelOptions();
    CPPUNIT_ASSERT(options == options2);
 
-   dtCore::RefPtr<dtGame::GameManager> gm = new dtGame::GameManager(*GetGlobalApplication().GetScene());
+   std::shared_ptr<dtGame::GameManager> gm = new dtGame::GameManager(*GetGlobalApplication().GetScene());
 
    GetGlobalApplication().GetWindow()->GetOsgViewerGraphicsWindow()->makeCurrent();
 
-   dtCore::RefPtr<StealthGM::StealthHUD> hud = new StealthGM::StealthHUD(GetGlobalApplication().GetWindow());
+   std::shared_ptr<StealthGM::StealthHUD> hud = new StealthGM::StealthHUD(GetGlobalApplication().GetWindow());
    hud->SetupGUI(*new SimCore::Components::HUDGroup("hello"), 50, 50 );
    gm->AddComponent(*hud, dtGame::GameManager::ComponentPriority::NORMAL);
 
-   dtCore::RefPtr<SimCore::Components::ViewerMessageProcessor> vmp = new SimCore::Components::ViewerMessageProcessor;
+   std::shared_ptr<SimCore::Components::ViewerMessageProcessor> vmp = new SimCore::Components::ViewerMessageProcessor;
    gm->AddComponent(*vmp, dtGame::GameManager::ComponentPriority::HIGHEST);
 
    SimCore::Components::LabelOptions optionsApplied = hud->GetLabelManager().GetOptions();
@@ -627,13 +627,13 @@ void ConfigObjectTests::TestPreferencesVisibilityConfigObject()
 
 void ConfigObjectTests::TestControlsCameraConfigObject()
 {
-   dtCore::RefPtr<StealthGM::ControlsCameraConfigObject> cameraConfig =
+   std::shared_ptr<StealthGM::ControlsCameraConfigObject> cameraConfig =
       new StealthGM::ControlsCameraConfigObject;
 }
 
 void ConfigObjectTests::TestControlsRecordConfigObject()
 {
-   dtCore::RefPtr<StealthGM::ControlsRecordConfigObject> recordConfig =
+   std::shared_ptr<StealthGM::ControlsRecordConfigObject> recordConfig =
       new StealthGM::ControlsRecordConfigObject;
 
    // Defaults
@@ -654,12 +654,12 @@ void ConfigObjectTests::TestControlsRecordConfigObject()
    recordConfig->SetAutoKeyFrameInterval(10);
    CPPUNIT_ASSERT_EQUAL(10, recordConfig->GetAutoKeyFrameInterval());
 
-   recordConfig = NULL;
+   recordConfig = nullptr;
 }
 
 void ConfigObjectTests::TestControlsPlaybackConfigObject()
 {
-   dtCore::RefPtr<StealthGM::ControlsPlaybackConfigObject> playbackConfig =
+   std::shared_ptr<StealthGM::ControlsPlaybackConfigObject> playbackConfig =
       new StealthGM::ControlsPlaybackConfigObject;
 
    // Defaults
@@ -672,28 +672,28 @@ void ConfigObjectTests::TestControlsPlaybackConfigObject()
    playbackConfig->SetShowAdvancedOptions(true);
    CPPUNIT_ASSERT(playbackConfig->GetShowAdvancedOptions());
 
-   playbackConfig = NULL;
+   playbackConfig = nullptr;
 }
 
 void ConfigObjectTests::TestPreferencesEnvironmentApplyChanges()
 {
-   dtCore::RefPtr<StealthGM::PreferencesEnvironmentConfigObject> envConfig =
+   std::shared_ptr<StealthGM::PreferencesEnvironmentConfigObject> envConfig =
       new StealthGM::PreferencesEnvironmentConfigObject;
 
-   dtCore::RefPtr<dtGame::GameManager> gm = new dtGame::GameManager(*new dtCore::Scene);
+   std::shared_ptr<dtGame::GameManager> gm = new dtGame::GameManager(*new dtCore::Scene);
    gm->SetApplication(GetGlobalApplication());
-   dtCore::RefPtr<SimCore::Components::WeatherComponent> weatherComponent =
+   std::shared_ptr<SimCore::Components::WeatherComponent> weatherComponent =
       new SimCore::Components::WeatherComponent;
 
    gm->AddComponent(*weatherComponent, dtGame::GameManager::ComponentPriority::NORMAL);
 
-   dtCore::RefPtr<SimCore::Actors::DayTimeActorProxy> dayTimeProxy;
+   std::shared_ptr<SimCore::Actors::DayTimeActorProxy> dayTimeProxy;
    gm->CreateActor(*SimCore::Actors::EntityActorRegistry::DAYTIME_ACTOR_TYPE, dayTimeProxy);
 
-   dtCore::RefPtr<SimCore::Actors::UniformAtmosphereActorProxy> atmosphereProxy;
+   std::shared_ptr<SimCore::Actors::UniformAtmosphereActorProxy> atmosphereProxy;
    gm->CreateActor(*SimCore::Actors::EntityActorRegistry::UNIFORM_ATMOSPHERE_ACTOR_TYPE, atmosphereProxy);
 
-   dtCore::RefPtr<SimCore::Actors::EphemerisEnvironmentActorProxy> envProxy;
+   std::shared_ptr<SimCore::Actors::EphemerisEnvironmentActorProxy> envProxy;
    gm->CreateActor(*SimCore::Actors::EntityActorRegistry::ENVIRONMENT_ACTOR_TYPE, envProxy);
 
    gm->AddActor(*dayTimeProxy, false, false);
@@ -711,11 +711,11 @@ void ConfigObjectTests::TestPreferencesEnvironmentApplyChanges()
    dtCore::AppSleep(10U);
    dtCore::System::GetInstance().Step();
 
-   CPPUNIT_ASSERT(weatherComponent->GetDayTimeActor() != NULL);
-   CPPUNIT_ASSERT(weatherComponent->GetAtmosphereActor() != NULL);
+   CPPUNIT_ASSERT(weatherComponent->GetDayTimeActor() != nullptr);
+   CPPUNIT_ASSERT(weatherComponent->GetAtmosphereActor() != nullptr);
 
-   CPPUNIT_ASSERT(weatherComponent->GetEphemerisEnvironment() != NULL);
+   CPPUNIT_ASSERT(weatherComponent->GetEphemerisEnvironment() != nullptr);
 
-   gm = NULL;
+   gm = nullptr;
 }
 

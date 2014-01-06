@@ -56,7 +56,7 @@ namespace StealthGM
    protected:
       virtual ~PreferencesVisibilityConfigObject();
       SimCore::Components::LabelOptions mLabelOptions;
-      dtCore::RefPtr<SimCore::VisibilityOptions> mEntityOptions;
+      std::shared_ptr<SimCore::VisibilityOptions> mEntityOptions;
    };
 }
 

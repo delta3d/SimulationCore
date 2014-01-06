@@ -38,7 +38,7 @@
 #include <osgViewer/GraphicsWindow>
 #include <osgViewer/CompositeViewer>
 
-#include <dtCore/observerptr.h>
+#include <dtUtil/refcountedbase.h>
 #include <iostream>
 
 namespace StealthGM
@@ -105,9 +105,9 @@ namespace StealthGM
          GetMainViewWindow().ApplyChanges(gameManager);
 
          // Send the Near/Far clipping plane to the weather component
-         SimCore::Components::WeatherComponent* weatherComp = NULL;
+         SimCore::Components::WeatherComponent* weatherComp = nullptr;
          gameManager.GetComponentByName(SimCore::Components::WeatherComponent::DEFAULT_NAME, weatherComp);
-         if(weatherComp != NULL)
+         if(weatherComp != nullptr)
          {
             weatherComp->SetNearClipPlane(GetNearClippingPlane());
             weatherComp->SetFarClipPlane(GetFarClippingPlane());
@@ -142,7 +142,7 @@ namespace StealthGM
    //////////////////////////////////////////////////////////////////////////
    bool ViewWindowConfigObject::AddViewWindow(ViewWindowWrapper& vww)
    {
-      return mViewWindows.insert(std::make_pair(vww.GetName(), dtCore::RefPtr<ViewWindowWrapper>(&vww))).second;
+      return mViewWindows.insert(std::make_pair(vww.GetName(), std::shared_ptr<ViewWindowWrapper>(&vww))).second;
    }
 
    //////////////////////////////////////////////////////////////////////////
@@ -169,7 +169,7 @@ namespace StealthGM
       {
          return i->second.get();
       }
-      return NULL;
+      return nullptr;
    }
 
    //////////////////////////////////////////////////////////////////////////
@@ -178,7 +178,7 @@ namespace StealthGM
       ViewWindowContainer::iterator i = mViewWindows.find(oldName);
       if (i != mViewWindows.end())
       {
-         dtCore::RefPtr<ViewWindowWrapper> vwTemp = i->second;
+         std::shared_ptr<ViewWindowWrapper> vwTemp = i->second;
          if (oldName != vwTemp->GetName())
          {
             mViewWindows.erase(i);
@@ -368,7 +368,7 @@ namespace StealthGM
       if (!mAddedToApplication)
       {
          dtABC::Application& app = gameManager.GetApplication();
-         dtCore::RefPtr<dtCore::Camera> cam = mView->GetCamera();
+         std::shared_ptr<dtCore::Camera> cam = mView->GetCamera();
          if (!cam.valid())
          {
             cam = new dtCore::Camera(mView->GetName());
@@ -388,7 +388,7 @@ namespace StealthGM
          dtCore::View* mainView = app.GetView();
          //mView->SetDatabasePager(mainView->GetDatabasePager());
 
-         if (mView->GetScene() == NULL)
+         if (mView->GetScene() == nullptr)
          {
             mView->SetScene(app.GetScene());
          }
@@ -411,7 +411,7 @@ namespace StealthGM
       }
 
       dtCore::Camera* camera = mView->GetCamera();
-      if (camera != NULL)
+      if (camera != nullptr)
       {
          // since we set the perspective,
          if (mUseAspectRatioForFOV)
@@ -453,14 +453,14 @@ namespace StealthGM
       dtCore::View& view = GetView();
       gameManager.GetApplication().RemoveView(view, true);
 
-      if (view.GetCamera() != NULL)
+      if (view.GetCamera() != nullptr)
       {
          dtCore::Camera& camera = *view.GetCamera();
          camera.Emancipate();
-         camera.SetWindow(NULL);
+         camera.SetWindow(nullptr);
       }
 
-      view.SetCamera(NULL);
+      view.SetCamera(nullptr);
 
       if (GetRemoveCallback().valid())
       {

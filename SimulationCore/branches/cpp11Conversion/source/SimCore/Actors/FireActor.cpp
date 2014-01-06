@@ -42,9 +42,9 @@ namespace SimCore
 
       }
 
-      dtDAL::ActorProxyIcon* FireActorProxy::GetBillBoardIcon()
+      dtDAL::ActorProxyIconPtr FireActorProxy::GetBillBoardIcon()
       {
-         if(!mBillBoardIcon.valid())
+         if(!mBillBoardIcon)
          {
             mBillBoardIcon =
                new dtDAL::ActorProxyIcon(dtDAL::ActorProxyIcon::IMAGE_BILLBOARD_PARTICLESYSTEM);
@@ -55,7 +55,7 @@ namespace SimCore
 
       void FireActorProxy::BuildPropertyMap()
       {
-         FireActor* fa = NULL;
+         FireActor* fa = nullptr;
          GetActor(fa);
 
          LocalEffectActorProxy::BuildPropertyMap();

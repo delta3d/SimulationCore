@@ -25,8 +25,8 @@
 #define _STEALTH_HUD_ELEMENTS_H_
 
 #include <SimCore/Export.h>
-#include <dtCore/refptr.h>
-#include <dtCore/observerptr.h>
+#include <dtUtil/refcountedbase.h>
+#include <dtUtil/refcountedbase.h>
 #include <SimCore/Components/BaseHUDElements.h>
 
 namespace SimCore
@@ -50,7 +50,7 @@ namespace SimCore
             virtual ~StealthButton();
 
          private:
-            dtCore::RefPtr<HUDImage> mKeyLabel;
+            std::shared_ptr<HUDImage> mKeyLabel;
       };
 
 
@@ -74,7 +74,7 @@ namespace SimCore
             bool AddButton( const std::string& buttonName, const std::string& key,
                const std::string& imageSet, bool updateElementSizes = true );
 
-            bool AddButton( dtCore::RefPtr<StealthButton>& newButton, bool updateElementSizes = true );
+            bool AddButton( std::shared_ptr<StealthButton>& newButton, bool updateElementSizes = true );
 
             // @param oldButtonName The name of the button to be replaced
             // @param newButton The button to take the place of the old button.
@@ -84,9 +84,9 @@ namespace SimCore
             //        old button that is to be replaced.
             // @param outOldButton A pointer to a ref pointer to capture the old button
             // @return TRUE if the operation was successful; FALSE if the old button
-            //         is not found or the new button is NULL.
+            //         is not found or the new button is nullptr.
             bool ReplaceButton( const std::string& oldButtonName, 
-               dtCore::RefPtr<StealthButton>& newButton, dtCore::RefPtr<StealthButton>* outOldButton = NULL );
+               std::shared_ptr<StealthButton>& newButton, std::shared_ptr<StealthButton>* outOldButton = nullptr );
 
             bool RemoveButton( const std::string& buttonName );
 
@@ -106,7 +106,7 @@ namespace SimCore
             void UpdateElementSizes();
 
          private:
-            std::map< const std::string, dtCore::RefPtr<StealthButton> > mNamedButtonMap;
+            std::map< const std::string, std::shared_ptr<StealthButton> > mNamedButtonMap;
 
       };
 
@@ -143,15 +143,15 @@ namespace SimCore
             // outMeterOfThis
             // @param outMeterOfThis The reference this object contains that will receive the new meter element
             // @param meterName The default name to be given to the new meter element
-            virtual void CreateMeterElement( dtCore::RefPtr<HUDMeter>& outMeterOfThis,
+            virtual void CreateMeterElement( std::shared_ptr<HUDMeter>& outMeterOfThis,
                const std::string& meterName );
 
          private:
             // Value text will display the numeric
             // value of this meter.
-            dtCore::RefPtr<HUDText> mValueText;
+            std::shared_ptr<HUDText> mValueText;
 
-            dtCore::RefPtr<HUDMeter> mMeter;
+            std::shared_ptr<HUDMeter> mMeter;
       };
 
 
@@ -215,7 +215,7 @@ namespace SimCore
          protected:
             virtual ~StealthCompassMeter();
 
-            virtual void CreateMeterElement( dtCore::RefPtr<HUDMeter>& outMeterOfThis,
+            virtual void CreateMeterElement( std::shared_ptr<HUDMeter>& outMeterOfThis,
                const std::string& meterName );
 
          private:
@@ -250,8 +250,8 @@ namespace SimCore
             virtual ~StealthGPSMeter();
 
          private:
-            dtCore::RefPtr<HUDText> mLat;
-            dtCore::RefPtr<HUDText> mLong;
+            std::shared_ptr<HUDText> mLat;
+            std::shared_ptr<HUDText> mLong;
       };
 
 
@@ -273,7 +273,7 @@ namespace SimCore
             virtual ~StealthMGRSMeter();
 
          private:
-            dtCore::RefPtr<HUDText> mText;
+            std::shared_ptr<HUDText> mText;
       };
 
 
@@ -304,9 +304,9 @@ namespace SimCore
 
             static void SetFloat(float value, const std::string& unit, HUDText& text);
          private:
-            dtCore::RefPtr<HUDText> mX;
-            dtCore::RefPtr<HUDText> mY;
-            dtCore::RefPtr<HUDText> mZ;
+            std::shared_ptr<HUDText> mX;
+            std::shared_ptr<HUDText> mY;
+            std::shared_ptr<HUDText> mZ;
       };
 
 
@@ -327,7 +327,7 @@ namespace SimCore
             virtual ~StealthCallSign();
 
          private:
-            dtCore::RefPtr<HUDText> mCallSign;
+            std::shared_ptr<HUDText> mCallSign;
       };
 
 
@@ -366,9 +366,9 @@ namespace SimCore
          private:
             float mPreviousSpeed;
             float mLastReadout;
-            dtCore::RefPtr<HUDText> mText;
-            dtCore::RefPtr<HUDQuadElement> mNeedle;
-            dtCore::ObserverPtr<GuiDrawable> mGUI;
+            std::shared_ptr<HUDText> mText;
+            std::shared_ptr<HUDQuadElement> mNeedle;
+            std::weak_ptr<GuiDrawable> mGUI;
             osg::Vec2 mPivot; // offset from the bottom left of the meter
       };
 

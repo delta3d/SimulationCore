@@ -41,7 +41,7 @@ namespace NetDemo
       //////////////////////////////////////////////////////////////////////////
       ReadyRoomScreen::ReadyRoomScreen()
          : BaseClass("ReadRoomScreen","CEGUI/layouts/NetDemo/ReadyRoom.layout")
-         , mListPlayers(NULL)
+         , mListPlayers(nullptr)
       {
       }
 
@@ -77,17 +77,17 @@ namespace NetDemo
 
          // Create list items for each of the player status objects.
          CEGUI::String checkboxSuffix("_ReadyBox");
-         PlayerStatusActor* curPlayerStats = NULL;
-         dtDAL::ActorProxy* curProxy = NULL;
+         PlayerStatusActor* curPlayerStats = nullptr;
+         dtDAL::ActorProxy* curProxy = nullptr;
          ProxyArray::iterator proxyIter = proxies.begin();
          ProxyArray::iterator endProxyArray = proxies.end();
          for( ; proxyIter != endProxyArray; ++proxyIter)
          {
             curProxy = *proxyIter;
-            if(curProxy != NULL)
+            if(curProxy != nullptr)
             {
                curProxy->GetActor(curPlayerStats);
-               if(curPlayerStats != NULL)
+               if(curPlayerStats != nullptr)
                {
                   // Create the new list item.
                   CEGUI::String itemName(curPlayerStats->GetUniqueId().ToString().c_str());

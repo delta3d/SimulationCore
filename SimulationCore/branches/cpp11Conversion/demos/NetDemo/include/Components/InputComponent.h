@@ -26,9 +26,9 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include <DemoExport.h>
 #include <dtCore/flymotionmodel.h>
-#include <dtCore/refptr.h>
+#include <dtUtil/refcountedbase.h>
 #include <SimCore/Components/BaseInputComponent.h>
-#include <dtCore/observerptr.h>
+#include <dtUtil/refcountedbase.h>
 #include <osgSim/DOFTransform>
 #include <SimCore/Actors/DRGhostActor.h>
 
@@ -132,7 +132,7 @@ namespace NetDemo
          void HandleStateChangeMessage(
             const SimCore::Components::GameStateChangedMessage& stateChange);
 
-         /// Sending in a vehicle will cause an attach, sending NULL will detach
+         /// Sending in a vehicle will cause an attach, sending nullptr will detach
          void SendAttachOrDetachMessage(const dtCore::UniqueId& vehicleId, const std::string& dofName);
 
          /// Send a simple message to trigger other parts of the game system.
@@ -188,13 +188,13 @@ namespace NetDemo
             DEBUG_TOGGLE_DR_WITH_CUBIC_SPLINE, DEBUG_TOGGLE_GROUND_CLAMPING, DEBUG_FIXED_BLEND_TIME};
          DEBUG_TOGGLE_MODE mDebugToggleMode; 
 
-         dtCore::RefPtr<SimCore::Actors::Platform> mVehicle;
-         dtCore::RefPtr<SimCore::Actors::DRGhostActorProxy> mDRGhostActorProxy;
-         dtCore::RefPtr<dtCore::FlyMotionModel> mMotionModel;
-         dtCore::ObserverPtr<osgSim::DOFTransform> mDOFRing;
-         dtCore::ObserverPtr<osgSim::DOFTransform> mDOFWeapon;
-         dtCore::RefPtr<SimCore::ClampedMotionModel> mRingMM; // moves the seat
-         dtCore::RefPtr<SimCore::ClampedMotionModel> mWeaponMM; // moves the weapon pivot
+         std::shared_ptr<SimCore::Actors::Platform> mVehicle;
+         std::shared_ptr<SimCore::Actors::DRGhostActorProxy> mDRGhostActorProxy;
+         std::shared_ptr<dtCore::FlyMotionModel> mMotionModel;
+         std::weak_ptr<osgSim::DOFTransform> mDOFRing;
+         std::weak_ptr<osgSim::DOFTransform> mDOFWeapon;
+         std::shared_ptr<SimCore::ClampedMotionModel> mRingMM; // moves the seat
+         std::shared_ptr<SimCore::ClampedMotionModel> mWeaponMM; // moves the weapon pivot
          std::vector<std::string> mViewPointList;
          unsigned mCurrentViewPointIndex;
          bool mIsInGameState;

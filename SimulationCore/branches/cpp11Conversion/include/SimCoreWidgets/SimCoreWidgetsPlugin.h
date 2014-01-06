@@ -45,7 +45,7 @@ class SimCoreWidgetsPlugin : public QObject, public QDesignerCustomWidgetInterfa
    Q_INTERFACES(QDesignerCustomWidgetInterface)
 
    public:
-      SimCoreWidgetsPlugin( const QString& widgetName, QObject* parent = NULL );
+      SimCoreWidgetsPlugin( const QString& widgetName, QObject* parent = nullptr );
 
       void setGroup( const QString& groupName );
       void setToolTip( const QString& toolTip );

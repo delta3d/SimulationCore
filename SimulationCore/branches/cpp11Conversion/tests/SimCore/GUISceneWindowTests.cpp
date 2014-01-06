@@ -45,7 +45,7 @@ class SceneWindowTests : public CPPUNIT_NS::TestFixture
       void TestSceneWindowProperties();
 
    private:
-      dtCore::RefPtr<SimCore::gui::SceneWindow> mSceneWin;
+      std::shared_ptr<SimCore::gui::SceneWindow> mSceneWin;
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(SceneWindowTests);
@@ -68,7 +68,7 @@ void SceneWindowTests::TestSceneWindowProperties()
 {
    const SimCore::gui::SceneWindow* constSceneWin = mSceneWin.get();
 
-   dtCore::RefPtr<osg::Group> hudLayer = new osg::Group;
+   osg::ref_ptr<osg::Group> hudLayer = new osg::Group;
    CPPUNIT_ASSERT( hudLayer->getNumChildren() == 0 );
 #if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
    mSceneWin->InitializeCamera();
@@ -79,8 +79,8 @@ void SceneWindowTests::TestSceneWindowProperties()
    hudLayer->addChild(mSceneWin->GetCamera().GetOSGCamera());
    CPPUNIT_ASSERT( hudLayer->getNumChildren() == 1 );
 
-   CPPUNIT_ASSERT_NO_THROW_MESSAGE("SceneWindow might have a NULL camera node.", mSceneWin->GetCamera());
-   CPPUNIT_ASSERT_NO_THROW_MESSAGE("SceneWindow might have a NULL camera node.", constSceneWin->GetCamera());
+   CPPUNIT_ASSERT_NO_THROW_MESSAGE("SceneWindow might have a nullptr camera node.", mSceneWin->GetCamera());
+   CPPUNIT_ASSERT_NO_THROW_MESSAGE("SceneWindow might have a nullptr camera node.", constSceneWin->GetCamera());
 
    CPPUNIT_ASSERT( mSceneWin->IsVisible() );
    mSceneWin->SetVisible( false );

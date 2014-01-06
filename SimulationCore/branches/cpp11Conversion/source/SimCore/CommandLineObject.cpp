@@ -49,20 +49,20 @@ namespace SimCore
    //////////////////////////////////////////////////////////////////////////
    void CommandLineObject::AddParameter(dtCore::NamedParameter* namedParameter)
    {
-      if(namedParameter != NULL)
+      if(namedParameter != nullptr)
          mParametersVec.push_back(namedParameter);
    }
 
    //////////////////////////////////////////////////////////////////////////
    const dtCore::NamedParameter* CommandLineObject::GetParameter(const std::string& checkValue) const
    {
-      for(std::vector<dtCore::RefPtr<dtCore::NamedParameter> >::const_iterator iter = mParametersVec.begin();
+      for(std::vector<std::shared_ptr<dtCore::NamedParameter> >::const_iterator iter = mParametersVec.begin();
           iter != mParametersVec.end();
           ++iter)
       {
          if((*iter)->GetName() == checkValue)
             return (*iter).get();
       }
-      return NULL;
+      return nullptr;
    }
 } // end dvte namespace.
