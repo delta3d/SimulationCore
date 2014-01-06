@@ -1,0 +1,8 @@
+<shaderlist>
+   <shadergroup name="ShieldShaderGroup">
+      <shader name="ShieldShader" default="yes">
+         <source type="Vertex">Shaders/Base/shield_shader.vert</source>
+         <source type="Fragment">Shaders/Base/shield_shader.frag</source>
+      </shader>
+   </shadergroup>
+</shaderlist>

@@ -1,0 +1,17 @@
+<shaderlist>
+   <shadergroup name="CamoPaintGroup">
+      <shader name="NoDamage" default="yes">
+         <source type="Fragment">Shaders/Base/body_paint_color4.frag</source>
+         <source type="Vertex">Shaders/Base/camo_paint.vert</source>
+         <source type="Fragment">Shaders/Base/camo_paint.frag</source>
+         <source type="Vertex">Shaders/Base/camo_vehicle.vert</source>
+         <source type="Fragment">Shaders/Base/camo_vehicle.frag</source>
+         <source type="Vertex">Shaders/Base/vertex_functions.vert</source>
+         <source type="Fragment">Shaders/Base/fragment_functions.frag</source>
+         <source type="Fragment">Shaders/Base/dynamic_light.frag</source>
+         <source type="Fragment">Shaders/Base/spot_light.frag</source>
+         <!-- For Camo Paint State Actor Component - Uniforms specified in class code. -->
+      </shader>
+   </shadergroup>
+
+</shaderlist>
