@@ -146,7 +146,7 @@ namespace SimCore
              * for this proxy (PARTICLE_SYSTEM)
              * @return mBillboardIcon
              */
-            virtual dtDAL::ActorProxyIcon* GetBillboardIcon();
+            virtual dtDAL::ActorProxyIconPtr GetBillboardIcon();
 
             /**
              * This call exists so that the resources can be loaded when the developer needs them to be.
@@ -177,7 +177,7 @@ namespace SimCore
             virtual ~PlatformActorProxy();
 
          private:
-            dtCore::RefPtr<dtDAL::ActorProxyIcon> mBillboardIcon;
+            std::shared_ptr<dtDAL::ActorProxyIcon> mBillboardIcon;
             bool mHasLoadedResources;
 
             static bool mPhysicsCreationEnabled;
@@ -214,7 +214,7 @@ namespace SimCore
              * Returns the switch node of this entity
              * @return mSwitchNode
              */
-            dtCore::RefPtr<osg::Switch> GetSwitchNode();
+            osg::ref_ptr<osg::Switch> GetSwitchNode();
 
             /**
              * Sets the shader group on this entity.  The shader group is
@@ -270,7 +270,7 @@ namespace SimCore
             /// Sets the group parameter of articulations.  This is for supporting the property.
             void SetArticulatedParametersArray(const dtDAL::NamedGroupParameter& newValue);
             /// @return the group parameter for articulations.  This is for supporting the property.
-            dtCore::RefPtr<dtDAL::NamedGroupParameter> GetArticulatedParametersArray();
+            std::shared_ptr<dtDAL::NamedGroupParameter> GetArticulatedParametersArray();
 
             /**
              * Sets the entity type.  Entity Type is a string that is used by the Input component
@@ -389,15 +389,15 @@ namespace SimCore
             float mTimeUntilControlStateUpdate;
 
             /// Nodes representing the damagable model file nodes
-            dtCore::RefPtr<osg::Group> mNonDamagedFileNode;
-            dtCore::RefPtr<osg::Group> mDamagedFileNode;
-            dtCore::RefPtr<osg::Group> mDestroyedFileNode;
+            osg::ref_ptr<osg::Group> mNonDamagedFileNode;
+            osg::ref_ptr<osg::Group> mDamagedFileNode;
+            osg::ref_ptr<osg::Group> mDestroyedFileNode;
 
             /// Node that switched model damagable states
-            dtCore::RefPtr<osg::Switch> mSwitchNode;
+            osg::ref_ptr<osg::Switch> mSwitchNode;
 
             /// The particle systems used for fire and smoke
-            dtCore::RefPtr<dtCore::ParticleSystem> mEngineSmokeSystem;
+            std::shared_ptr<dtCore::ParticleSystem> mEngineSmokeSystem;
             /// The file names that are loaded into the above particle systems
             std::string mEngineSmokeSystemFile;
 
@@ -422,7 +422,7 @@ namespace SimCore
 
             // The articulation helper used in creating out-going articulation
             // data for entity update messages.
-            dtCore::RefPtr<Components::ArticulationHelper> mArticHelper;
+            std::shared_ptr<Components::ArticulationHelper> mArticHelper;
 
             // Flag for determining if the head light effect should be enabled or disabled
             bool mHeadLightsEnabled;
@@ -431,7 +431,7 @@ namespace SimCore
             unsigned mHeadLightID;
 
             // For idle engine sounds, great for hearing things coming!
-            dtCore::RefPtr<dtAudio::Sound>   mSndIdleLoop;
+            std::shared_ptr<dtAudio::Sound>   mSndIdleLoop;
             std::string                      mSFXSoundIdleEffect; /// What is the filepath / string of the sound effect
             float                            mMinIdleSoundDistance;
             float                            mMaxIdleSoundDistance;

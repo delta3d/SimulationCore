@@ -28,7 +28,7 @@
 // INCLUDE DIRECTIVES
 ////////////////////////////////////////////////////////////////////////////////
 #include <osg/NodeVisitor>
-#include <dtCore/refptr.h>
+#include <dtUtil/refcountedbase.h>
 #include <SimCore/Export.h>
 
 
@@ -58,7 +58,7 @@ namespace SimCore
       public:
          typedef osg::NodeVisitor BaseClass;
 
-         typedef std::map<dtUtil::RefString, dtCore::RefPtr<dtCore::ShaderProgram> > ShaderMap;
+         typedef std::map<dtUtil::RefString, std::shared_ptr<dtCore::ShaderProgram> > ShaderMap;
 
          ApplyShaderVisitor();
 

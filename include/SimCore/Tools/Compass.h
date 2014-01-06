@@ -24,8 +24,8 @@
 #define _COMPASS_H_
 
 #include <SimCore/Tools/Tool.h>
-#include <dtCore/refptr.h>
-#include <dtCore/observerptr.h>
+#include <dtUtil/refcountedbase.h>
+#include <dtUtil/refcountedbase.h>
 
 namespace osg
 {
@@ -86,10 +86,10 @@ namespace SimCore
             float mNeedleDragCoef;
 
             // Lens related references
-            dtCore::RefPtr<osg::MatrixTransform> mCompassOverlay;
-            dtCore::RefPtr<osg::MatrixTransform> mDisk;
-            dtCore::RefPtr<osg::Uniform> mLensFocus;
-            dtCore::ObserverPtr<dtCore::Camera> mCamera;
+            osg::ref_ptr<osg::MatrixTransform> mCompassOverlay;
+            osg::ref_ptr<osg::MatrixTransform> mDisk;
+            osg::ref_ptr<osg::Uniform> mLensFocus;
+            std::weak_ptr<dtCore::Camera> mCamera;
       };
    }
 }

@@ -78,11 +78,11 @@
 
 static std::ostringstream mSlowTests;
 
-static dtCore::RefPtr<dtABC::Application> globalApplication;
+static std::shared_ptr<dtABC::Application> globalApplication;
 #if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
-static dtCore::RefPtr<dtGUI::CEUIDrawable> globalGUI;
+static std::shared_ptr<dtGUI::CEUIDrawable> globalGUI;
 #else
-static dtCore::RefPtr<dtGUI::GUI> globalGUI;
+static std::shared_ptr<dtGUI::GUI> globalGUI;
 #endif
 
 dtABC::Application& GetGlobalApplication() { return *globalApplication; }
@@ -247,13 +247,13 @@ int main (int argc, char* argv[])
    catch(const dtUtil::Exception& ex)
    {
       LOG_ERROR(ex.ToString());
-      globalApplication = NULL;
+      globalApplication = nullptr;
       return 1;
    }
    catch(const CEGUI::Exception& e)
    {
       //already printed.
-      globalApplication = NULL;
+      globalApplication = nullptr;
       return 1;
    }
 
@@ -278,7 +278,7 @@ int main (int argc, char* argv[])
       {
          LOG_ALWAYS(std::string("Single suite name detected in arguments. Attempting to load a single test named [") + singleSuiteName + std::string("]."));
          CPPUNIT_NS::Test *suiteTest = fullTestSuite->findTest(singleSuiteName);
-         if (suiteTest == NULL)
+         if (suiteTest == nullptr)
          {
             std::cerr << " *** FAILED to find test suite named [" << singleSuiteName <<
                "]. Please check suite name. The name should match what was used in the registration line, " <<
@@ -289,7 +289,7 @@ int main (int argc, char* argv[])
          {
             LOG_ALWAYS(std::string("Individual test name detected in arguments. Attempting to load test [") + singleTestName + std::string("]."));
             CPPUNIT_NS::Test *individualTest = suiteTest->findTest(singleTestName);
-            if (individualTest == NULL)
+            if (individualTest == nullptr)
             {
                std::cerr << " *** FAILED to individual test [" << singleTestName <<
                   "] inside suite [" << singleSuiteName << "]. Please check suite name. " <<
@@ -356,11 +356,11 @@ int main (int argc, char* argv[])
 
    osgDB::Registry::instance()->clearObjectCache();
 
-   globalApplication = NULL;
+   globalApplication = nullptr;
 #if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
    globalGUI->ShutdownGUI();
 #endif
-   globalGUI = NULL;
+   globalGUI = nullptr;
 
    dtDAL::LibraryManager::GetInstance().UnloadActorRegistry(SimCore::BaseGameEntryPoint::LIBRARY_NAME);
    dtAudio::AudioManager::Destroy();

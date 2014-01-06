@@ -31,7 +31,7 @@
 #include <dtAI/npcstate.h>
 #include <osg/Vec3>
 #include <dtCore/transformable.h>
-#include <dtCore/observerptr.h>
+#include <dtUtil/refcountedbase.h>
 
 namespace NetDemo
 {
@@ -103,7 +103,7 @@ namespace NetDemo
       }
 
       osg::Vec3 mLastPos;
-      dtCore::ObserverPtr<const dtCore::Transformable> mTarget;
+      std::weak_ptr<const dtCore::Transformable> mTarget;
    };
 
    typedef AIState<TargetData> AttackState;

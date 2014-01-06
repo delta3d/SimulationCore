@@ -67,17 +67,17 @@ namespace SimCore
              * Loads in a model file.  Is now a wrapper that calls LoadFileStatic().
              * @param fileName The name of the file
              * @return A pointer to the node the file was stored in
-             * or NULL if error
+             * or nullptr if error
              */
             //osg::Node* LoadFile(const std::string &fileName, bool useCache = true);
-            bool LoadFile(const std::string& fileName, dtCore::RefPtr<osg::Node>& originalFile,
-               dtCore::RefPtr<osg::Node>& copiedFile, bool useCache = true, bool loadTerrainMaterialsOn = false);
+            bool LoadFile(const std::string& fileName, osg::ref_ptr<osg::Node>& originalFile,
+               osg::ref_ptr<osg::Node>& copiedFile, bool useCache = true, bool loadTerrainMaterialsOn = false);
 
             /**
              * A static version of LoadFile.  The real LoadFile is now a wrapper that calls this.
              */
-            static bool LoadFileStatic(const std::string& fileName, dtCore::RefPtr<osg::Node>& originalFile,
-               dtCore::RefPtr<osg::Node>& copiedFile, bool useCache = true, bool loadTerrainMaterialsOn = false);
+            static bool LoadFileStatic(const std::string& fileName, osg::ref_ptr<osg::Node>& originalFile,
+               osg::ref_ptr<osg::Node>& copiedFile, bool useCache = true, bool loadTerrainMaterialsOn = false);
 
             /* Registers the particle system to the ParticleManagerComponent
              * contained in the GameManager. This function exists for convenience
@@ -88,7 +88,7 @@ namespace SimCore
              * @param attrFlags The attribute flags that specify what forces can be applied to particles
              */
             void RegisterParticleSystem( dtCore::ParticleSystem& particles,
-               const SimCore::Components::ParticleInfoAttributeFlags* attrFlags = NULL );
+               const SimCore::Components::ParticleInfoAttributeFlags* attrFlags = nullptr );
 
             /* Removes the particle system from the ParticleManagerComponent
              * contained in the GameManager. This function exists for convenience
@@ -142,7 +142,7 @@ namespace SimCore
             void SetNodeCollector(dtUtil::NodeCollector* newNC);
 
          private:
-            dtCore::RefPtr<dtUtil::NodeCollector> mNodeCollector;
+            std::shared_ptr<dtUtil::NodeCollector> mNodeCollector;
 
             bool mIsVisible;
        };

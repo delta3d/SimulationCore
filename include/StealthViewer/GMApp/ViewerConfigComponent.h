@@ -63,6 +63,6 @@ namespace StealthGM
 
       private:
 
-         std::vector<dtCore::RefPtr<ConfigurationObjectInterface> > mConfigurationObjects;
+         std::vector<std::shared_ptr<ConfigurationObjectInterface> > mConfigurationObjects;
    };
 }

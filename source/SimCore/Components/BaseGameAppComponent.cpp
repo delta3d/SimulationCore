@@ -63,7 +63,7 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////
       BaseGameAppComponent::~BaseGameAppComponent(void)
       {
-         mCommandLineObject = NULL;
+         mCommandLineObject = nullptr;
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -91,9 +91,9 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////
       void BaseGameAppComponent::InitializeCommandLineOptionsAndRead(osg::ArgumentParser* parser)
       {
-         if(parser == NULL)
+         if(parser == nullptr)
          {
-            LOG_ERROR("Parser is NULL in InitializeCommandLineOptionsAndRead\
+            LOG_ERROR("Parser is nullptr in InitializeCommandLineOptionsAndRead\
                       , no initing will occur");
             return;
          }
@@ -107,21 +107,21 @@ namespace SimCore
 
          if (parser->read("--projectPath", tempString))
          {
-            dtCore::RefPtr<dtDAL::NamedStringParameter> parameter
+            std::shared_ptr<dtDAL::NamedStringParameter> parameter
                = new dtDAL::NamedStringParameter(CMD_LINE_PROJECTPATH, tempString);
             mCommandLineObject->AddParameter(parameter.get());
          }
 
          if(parser->read("--statisticsInterval", tempInt))
          {
-            dtCore::RefPtr<dtDAL::NamedIntParameter> parameter
+            std::shared_ptr<dtDAL::NamedIntParameter> parameter
                = new dtDAL::NamedIntParameter(CMD_LINE_STATISTICS_INTERVAL, tempInt);
             mCommandLineObject->AddParameter(parameter.get());
          }
 
          if(parser->read("--mapName", tempString))
          {
-            dtCore::RefPtr<dtDAL::NamedStringParameter> parameter
+            std::shared_ptr<dtDAL::NamedStringParameter> parameter
                = new dtDAL::NamedStringParameter(CMD_LINE_MAP_NAME, tempString);
             mCommandLineObject->AddParameter(parameter.get());
          }
@@ -142,7 +142,7 @@ namespace SimCore
             SimCore::CommandLineObject* commandLineObject = GetCommandLineObject();
             const dtDAL::NamedStringParameter* mapNameParam = dynamic_cast<const dtDAL::NamedStringParameter*>
                (commandLineObject->GetParameter(CMD_LINE_MAP_NAME));
-            if( mapNameParam != NULL )
+            if( mapNameParam != nullptr )
             {
                mapName = mapNameParam->GetValue();
             }

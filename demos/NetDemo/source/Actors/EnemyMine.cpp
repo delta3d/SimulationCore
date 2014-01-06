@@ -115,7 +115,7 @@ namespace NetDemo
    void EnemyMineActor::FindTarget(float)
    {
       FortActor* fort = GetCurrentFortUnderAttack();
-      if(fort != NULL)
+      if(fort != nullptr)
       {
          mAIHelper->SetCurrentTarget(*fort);
       }

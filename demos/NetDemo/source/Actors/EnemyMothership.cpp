@@ -99,10 +99,10 @@ namespace NetDemo
       AddDynamicLight();
 
       ////add a shape volume for the beam
-      SimCore::Components::VolumeRenderingComponent* vrc = NULL;
+      SimCore::Components::VolumeRenderingComponent* vrc = nullptr;
       GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::VolumeRenderingComponent::DEFAULT_NAME, vrc); 
       
-      if(vrc != NULL)
+      if(vrc != nullptr)
       {
          SimCore::Components::VolumeRenderingComponent::ShapeVolumeRecord* svr = new SimCore::Components::VolumeRenderingComponent::ShapeVolumeRecord();
          svr->mPosition.set(0.0f, 0.0f, -16.0f);
@@ -123,7 +123,7 @@ namespace NetDemo
 
       if (!IsRemote()) //only run locally
       {
-         mAIHelper->Init(NULL);
+         mAIHelper->Init(nullptr);
 
          //this will allow the AI to actually move us
          mAIHelper->GetPhysicsModel()->SetPhysicsActComp(GetPhysicsActComp());
@@ -148,7 +148,7 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////////////
    void EnemyMothershipActor::FindTarget(float)
    {
-	  FortActor* fort = NULL;
+	  FortActor* fort = nullptr;
 	  if(mMainMothership)
 	  {
         SelectFortToAttack();
@@ -156,7 +156,7 @@ namespace NetDemo
 	
 	  fort = GetCurrentFortUnderAttack();	
 
-      if(fort != NULL)
+      if(fort != nullptr)
       {
          mAIHelper->SetCurrentTarget(*fort);
       }
@@ -172,7 +172,7 @@ namespace NetDemo
 
       osg::Vec3 pos = mAIHelper->mCurrentState.GetPos();
 
-      FortActor* result = NULL;
+      FortActor* result = nullptr;
       float dist = 1000000.0f;
 
       for (unsigned i = 0; i < actors.size(); ++i)
@@ -212,7 +212,7 @@ namespace NetDemo
       // take the position and throw away the rotation.
 
       // This is ONLY called if we are LOCAL (we put the check here just in case... )
-      if (!IsRemote() && GetPhysicsActComp() != NULL)
+      if (!IsRemote() && GetPhysicsActComp() != nullptr)
       {
          // The base behavior is that we want to pull the translation and rotation off the object
          // in our physics scene and apply it to our 3D object in the visual scene.
@@ -221,7 +221,7 @@ namespace NetDemo
          //TODO: Ask if the object is activated.  If not, the transform should not be pushed.
          if (!GetPushTransformToPhysics())
          {
-            if(physicsObject != NULL)
+            if(physicsObject != nullptr)
             {
                // Take rotation from physics and apply to current xform - IE NO ROTATION!
                dtCore::Transform currentXForm;
@@ -270,10 +270,10 @@ namespace NetDemo
       //a spotlight
       if(1)//mMainMothership)
       {
-         SimCore::Components::RenderingSupportComponent* rsc = NULL;
+         SimCore::Components::RenderingSupportComponent* rsc = nullptr;
          GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME, rsc);
 
-         if(rsc != NULL)
+         if(rsc != nullptr)
          {
             SimCore::Components::RenderingSupportComponent::SpotLight* light = new SimCore::Components::RenderingSupportComponent::SpotLight();
             light->mTarget = this;
@@ -309,7 +309,7 @@ namespace NetDemo
       
       static const dtUtil::RefString GROUP = "Enemy Props";
 
-//      EnemyMotherShip* actor = NULL;
+//      EnemyMotherShip* actor = nullptr;
 //      GetActor(actor);
 
    }
@@ -330,7 +330,7 @@ namespace NetDemo
 
    void EnemyMothershipActorProxy::OnRemovedFromWorld()
    {
-//      EnemyMotherShip* actor = NULL;
+//      EnemyMotherShip* actor = nullptr;
 //      GetActor(actor);
    }
 } // namespace

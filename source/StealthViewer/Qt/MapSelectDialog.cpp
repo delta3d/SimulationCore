@@ -47,7 +47,7 @@ namespace StealthQt
    MapSelectDialog::~MapSelectDialog()
    {
       delete mUi;
-      mUi = NULL;
+      mUi = nullptr;
    }
 
    QListWidgetItem* MapSelectDialog::GetSelectedItem()

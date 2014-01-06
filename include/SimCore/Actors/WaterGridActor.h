@@ -299,16 +299,16 @@ namespace SimCore
          ChoppinessSettings* mChoppinessEnum;
          SeaState* mSeaStateEnum;
 
-         dtCore::RefPtr<osg::Camera> mWaveCamera;
-         dtCore::RefPtr<osg::Camera> mWaveCameraScreen;
-         dtCore::RefPtr<osg::Camera> mReflectionCamera;
-         dtCore::RefPtr<osg::Geometry> mGeometry;
-         dtCore::RefPtr<osg::Geode>	   mGeode;
+         osg::ref_ptr<osg::Camera> mWaveCamera;
+         osg::ref_ptr<osg::Camera> mWaveCameraScreen;
+         osg::ref_ptr<osg::Camera> mReflectionCamera;
+         osg::ref_ptr<osg::Geometry> mGeometry;
+         osg::ref_ptr<osg::Geode>	   mGeode;
 
-         dtCore::RefPtr<osg::Texture2D> mReflectionTexture;
-         dtCore::RefPtr<osg::Texture3D> mNoiseTexture;
-         dtCore::RefPtr<osg::Texture2D> mWaveTexture;
-         dtCore::ObserverPtr<dtGame::GameActorProxy> mOceanDataProxy;
+         osg::ref_ptr<osg::Texture2D> mReflectionTexture;
+         osg::ref_ptr<osg::Texture3D> mNoiseTexture;
+         osg::ref_ptr<osg::Texture2D> mWaveTexture;
+         std::weak_ptr<dtGame::GameActorProxy> mOceanDataProxy;
 
          WaveArray mWaves;
          TextureWaveArray mTextureWaves;
@@ -338,7 +338,7 @@ namespace SimCore
 
          void OnEnteredWorld();
 
-         dtDAL::ActorProxyIcon* GetBillBoardIcon();
+         dtDAL::ActorProxyIconPtr GetBillBoardIcon();
          /*virtual*/ const dtDAL::ActorProxy::RenderMode& GetRenderMode();
 
       protected:

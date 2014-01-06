@@ -52,7 +52,7 @@ namespace NetDemo
 
    ///////////////////////////////////////////////////////////////////////////
    GameEntryPoint::GameEntryPoint()
-      : mArgv(NULL)
+      : mArgv(nullptr)
       , mIsServer(true)
    {
    }
@@ -71,7 +71,7 @@ namespace NetDemo
 
       // this is set cause argc and argv passed into the function
       // goes out of scope, cause they are sent by pointer.
-      if (parser == NULL)
+      if (parser == nullptr)
          parser = new osg::ArgumentParser(&mArgc, mArgv);
 
       SetMapName("NetDemo");
@@ -88,7 +88,7 @@ namespace NetDemo
 
       FinalizeParser();
 
-      GameLogicComponent* gameAppComp = NULL;
+      GameLogicComponent* gameAppComp = nullptr;
       gameManager.GetComponentByName(GameLogicComponent::DEFAULT_NAME, gameAppComp);
       gameAppComp->SetMapName( GetMapName() );
    }
@@ -97,7 +97,7 @@ namespace NetDemo
    void GameEntryPoint::InitializeComponents(dtGame::GameManager& gm)
    {
       // This processes remote actors and such on the network
-      dtCore::RefPtr<SimCore::Components::ViewerMessageProcessor> defaultProcessor =
+      std::shared_ptr<SimCore::Components::ViewerMessageProcessor> defaultProcessor =
          new SimCore::Components::ViewerMessageProcessor();
       gm.AddComponent(*defaultProcessor, dtGame::GameManager::ComponentPriority::HIGHEST);
 
@@ -105,7 +105,7 @@ namespace NetDemo
 
       // Our GameAppComponent does a lot of the game based logic such as state management,
       // creating the vehicle, and changing terrains when the server tells us to.
-      dtCore::RefPtr<GameLogicComponent> gameAppComp = new GameLogicComponent();
+      std::shared_ptr<GameLogicComponent> gameAppComp = new GameLogicComponent();
       gm.AddComponent(*gameAppComp, dtGame::GameManager::ComponentPriority::NORMAL);
       //gameAppComp->InitializeCommandLineOptionsAndRead(parser);
       // Load state transitions.
@@ -117,9 +117,9 @@ namespace NetDemo
 
 
       // Physics - we definitely need some of this!
-      dtCore::RefPtr<dtPhysics::PhysicsWorld> world = new dtPhysics::PhysicsWorld(gm.GetConfiguration());
+      std::shared_ptr<dtPhysics::PhysicsWorld> world = new dtPhysics::PhysicsWorld(gm.GetConfiguration());
       world->Init();
-      dtCore::RefPtr<dtPhysics::PhysicsComponent> physicsComponent = new dtPhysics::PhysicsComponent(*world, false);
+      std::shared_ptr<dtPhysics::PhysicsComponent> physicsComponent = new dtPhysics::PhysicsComponent(*world, false);
       gm.AddComponent(*physicsComponent, dtGame::GameManager::ComponentPriority::NORMAL);
       SimCore::CollisionGroup::SetupDefaultGroupCollisions(*physicsComponent);
 
@@ -127,7 +127,7 @@ namespace NetDemo
       // We disable the physics cull visitor (which is for large tiled terrains like Terrex)
       // and also disable the static terrain physics (because we solve this manually everytime
       // the server app changes terrains - see the GameAppComponent)
-      dtCore::RefPtr<SimCore::Components::RenderingSupportComponent> renderingSupportComponent
+      std::shared_ptr<SimCore::Components::RenderingSupportComponent> renderingSupportComponent
          = new SimCore::Components::RenderingSupportComponent();
       renderingSupportComponent->SetEnableCullVisitor(false);
       renderingSupportComponent->SetEnableStaticTerrainPhysics(false);

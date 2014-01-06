@@ -45,7 +45,7 @@ namespace StealthQt
           * @param force The force to look for
           * @param damageState The damagestate to look for
           */
-         static void FindEntities(std::vector<dtCore::ObserverPtr<dtGame::GameActorProxy> > &toFill, 
+         static void FindEntities(std::vector<std::weak_ptr<dtGame::GameActorProxy> > &toFill, 
             dtGame::GameManager &gm,
             const std::string &callSign, 
             const std::string &force, 

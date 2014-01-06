@@ -148,7 +148,7 @@ namespace SimCore
    void AttachedMotionModel::OnMessage(MessageData *data)
    {
       if(data->message == dtCore::System::MESSAGE_POST_EVENT_TRAVERSAL &&
-         GetTarget() != NULL &&
+         GetTarget() != nullptr &&
          IsEnabled())
       {
          //get the real time. 

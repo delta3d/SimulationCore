@@ -33,7 +33,7 @@
 
 
 
-using dtCore::RefPtr;
+using std::shared_ptr;
 
 namespace SimCore
 {
@@ -59,7 +59,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      bool MunitionTypeTable::AddMunitionType( const dtCore::RefPtr<SimCore::Actors::MunitionTypeActorProxy>& newType )
+      bool MunitionTypeTable::AddMunitionType( const std::shared_ptr<SimCore::Actors::MunitionTypeActorProxy>& newType )
       {
          if( ! newType.valid() ) { return false; }
 
@@ -72,7 +72,7 @@ namespace SimCore
          SimCore::Actors::MunitionTypeActor* actor = 
             dynamic_cast<SimCore::Actors::MunitionTypeActor*>(newType->GetDrawable());
 
-         if( actor == NULL )
+         if( actor == nullptr )
          {
             std::ostringstream ss;
             ss << "MunitionType \""
@@ -110,7 +110,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       bool MunitionTypeTable::RemoveMunitionType( const std::string& name )
       {
-         std::map< std::string, dtCore::RefPtr<SimCore::Actors::MunitionTypeActor> >::iterator iter = 
+         std::map< std::string, std::shared_ptr<SimCore::Actors::MunitionTypeActor> >::iterator iter = 
             mNameToMunitionMap.find( name );
 
          if( iter != mNameToMunitionMap.end() )
@@ -131,19 +131,19 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       SimCore::Actors::MunitionTypeActor* MunitionTypeTable::GetMunitionType( const std::string& name )
       {
-         std::map< std::string, dtCore::RefPtr<SimCore::Actors::MunitionTypeActor> >::const_iterator iter = 
+         std::map< std::string, std::shared_ptr<SimCore::Actors::MunitionTypeActor> >::const_iterator iter = 
             mNameToMunitionMap.find( name );
 
-         return iter != mNameToMunitionMap.end() ? iter->second.get() : NULL;
+         return iter != mNameToMunitionMap.end() ? iter->second.get() : nullptr;
       }
 
       //////////////////////////////////////////////////////////////////////////
       const SimCore::Actors::MunitionTypeActor* MunitionTypeTable::GetMunitionType( const std::string& name ) const
       {
-         std::map< std::string, dtCore::RefPtr<SimCore::Actors::MunitionTypeActor> >::const_iterator iter = 
+         std::map< std::string, std::shared_ptr<SimCore::Actors::MunitionTypeActor> >::const_iterator iter = 
             mNameToMunitionMap.find( name );
 
-         return iter != mNameToMunitionMap.end() ? iter->second.get() : NULL;
+         return iter != mNameToMunitionMap.end() ? iter->second.get() : nullptr;
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -161,10 +161,10 @@ namespace SimCore
          const SimCore::Actors::DISIdentifier& dis, bool exactMatch ) const
       {
          // Define variables to be used in the loop
-         const SimCore::Actors::MunitionTypeActor* closestType = NULL;
+         const SimCore::Actors::MunitionTypeActor* closestType = nullptr;
          unsigned int matchLevel = 0;
          unsigned int curMatchLevel = 0;
-         std::vector<dtCore::RefPtr<SimCore::Actors::MunitionTypeActor> >::const_iterator iter, iterEnd;
+         std::vector<std::shared_ptr<SimCore::Actors::MunitionTypeActor> >::const_iterator iter, iterEnd;
          iter = mOrderedList.begin();
          iterEnd = mOrderedList.end();
 
@@ -199,16 +199,16 @@ namespace SimCore
          }
 
          // If an exact match is requested and the match level is not 7
-         // (there are 7 numbers in a DIS identifier), then NULL should be returned.
-         if( closestType == NULL || ( exactMatch && matchLevel < 7 ) )
+         // (there are 7 numbers in a DIS identifier), then nullptr should be returned.
+         if( closestType == nullptr || ( exactMatch && matchLevel < 7 ) )
          {
             std::ostringstream ss;
             ss << "Could not find a munition that matches DIS " << dis.ToString();
-            if (closestType != NULL)
+            if (closestType != nullptr)
                ss << "closest is " << closestType->GetDISIdentifierString();
                
             LOG_WARNING( ss.str() );
-            return NULL;
+            return nullptr;
          }
 
          return closestType;
@@ -231,7 +231,7 @@ namespace SimCore
          }
 
          bool inserted = false;
-         std::vector<dtCore::RefPtr<SimCore::Actors::MunitionTypeActor> >::iterator iter = mOrderedList.begin();
+         std::vector<std::shared_ptr<SimCore::Actors::MunitionTypeActor> >::iterator iter = mOrderedList.begin();
          const SimCore::Actors::DISIdentifier& dis = newType.GetDISIdentifier();
          for( ; iter != mOrderedList.end(); ++iter )
          {
@@ -252,7 +252,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void MunitionTypeTable::RemoveMunitionTypeFromOrderedList( const SimCore::Actors::MunitionTypeActor& oldType )
       {
-         std::vector<dtCore::RefPtr<SimCore::Actors::MunitionTypeActor> >::iterator iter = mOrderedList.begin();
+         std::vector<std::shared_ptr<SimCore::Actors::MunitionTypeActor> >::iterator iter = mOrderedList.begin();
          const SimCore::Actors::DISIdentifier& dis = oldType.GetDISIdentifier();
          const std::string& name = oldType.GetName();
          for( ; iter != mOrderedList.end(); ++iter )

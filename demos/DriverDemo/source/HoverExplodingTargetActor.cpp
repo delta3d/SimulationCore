@@ -151,7 +151,7 @@ namespace DriverDemo
       {
          // we call this every frame because mPlayerWeAreChasing is an observer. Allows
          // us to stop chasing a player if they were deleted.
-         SetChasingModeActive(mPlayerWeAreChasing != NULL);
+         SetChasingModeActive(mPlayerWeAreChasing != nullptr);
          // we are chasing a player (for a little while), so update our target loc.
          if (GetChasingModeActive())
          {
@@ -198,7 +198,7 @@ namespace DriverDemo
       osg::Vec3 trans = ourTransform.GetTranslation();
 
       // Prepare a detonation message
-      dtCore::RefPtr<SimCore::DetonationMessage> msg;
+      std::shared_ptr<SimCore::DetonationMessage> msg;
       gm->GetMessageFactory().CreateMessage( SimCore::MessageType::DETONATION, msg );
 
       // Required Parameters:
@@ -240,11 +240,11 @@ namespace DriverDemo
       if (SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::DESTROYED != GetDamageState())
       {
          // Get the one that shot us.
-         dtCore::RefPtr<SimCore::Actors::BasePhysicsVehicleActorProxy> shooterProxy
+         std::shared_ptr<SimCore::Actors::BasePhysicsVehicleActorProxy> shooterProxy
             = dynamic_cast<SimCore::Actors::BasePhysicsVehicleActorProxy*>
                (GetGameActorProxy().GetGameManager()->FindActorById(message.GetSendingActorId()));
 
-         if (shooterProxy != NULL &&
+         if (shooterProxy != nullptr &&
             (shooterProxy->GetActorType() == *DriverActorRegistry::HOVER_VEHICLE_ACTOR_TYPE))
          {
             //std::cout << "Exploding Target was hit! Going to start chasing player [" <<
@@ -269,7 +269,7 @@ namespace DriverDemo
          }
 
          // debugging stuff
-         //else if (shooterProxy != NULL)
+         //else if (shooterProxy != nullptr)
          //   std::cout << "Exploding Target was hit by [" << shooterProxy->GetName() << "]! NO PLAYER TO CHASE." << std::endl;
          //else
          //   std::cout << "Exploding Target was hit - NOT BY A BASE PHYSICS OBJECT. " << std::endl;
@@ -305,18 +305,18 @@ namespace DriverDemo
          // Find our template
          dtCore::ShaderProgram* templateShader = dtCore::ShaderManager::GetInstance().
             FindShaderPrototype(newShaderName,GetShaderGroup());
-         if (templateShader != NULL)
+         if (templateShader != nullptr)
          {
             //std::cout << " LOADED SHADER [" << newShaderName << "]." << std::endl;
             mCurrentShader = dtCore::ShaderManager::GetInstance().
                AssignShaderFromPrototype(*templateShader, *GetOSGNode());
             //timerParam = dynamic_cast<dtCore::ShaderParamOscillator*> (mCurrentShader->FindParameter("TimeDilation"));
-            //if (timerParam != NULL)   timerParam->SetValue(prevTime);
+            //if (timerParam != nullptr)   timerParam->SetValue(prevTime);
          }
          else
          {
             LOG_ERROR("Could not load shader [" + newShaderName + "], group[" + GetShaderGroup() + "].");
-            mCurrentShader = NULL;
+            mCurrentShader = nullptr;
          }
 
 
@@ -391,9 +391,9 @@ namespace DriverDemo
 
       BaseClass::BuildActorComponents();
 
-      dtGame::DRPublishingActComp* drPublishingActComp = NULL;
+      dtGame::DRPublishingActComp* drPublishingActComp = nullptr;
       GetComponent(drPublishingActComp);
-      if (drPublishingActComp == NULL)
+      if (drPublishingActComp == nullptr)
       {
          LOG_ERROR("CRITICAL ERROR - No DR Publishing Actor Component.");
          return;

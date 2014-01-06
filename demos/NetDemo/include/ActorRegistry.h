@@ -38,20 +38,20 @@ namespace NetDemo
    {
       public:
 
-         static dtCore::RefPtr<dtDAL::ActorType> HOVER_VEHICLE_ACTOR_TYPE;
-         static dtCore::RefPtr<dtDAL::ActorType> PLAYER_STATUS_ACTOR_TYPE;
-         static dtCore::RefPtr<dtDAL::ActorType> SERVER_GAME_STATUS_ACTOR_TYPE;
-         static dtCore::RefPtr<dtDAL::ActorType> FORT_ACTOR_TYPE;
-         static dtCore::RefPtr<dtDAL::ActorType> TOWER_ACTOR_TYPE;
-         static dtCore::RefPtr<dtDAL::ActorType> ENEMY_DESCRIPTION_TYPE;
-         static dtCore::RefPtr<dtDAL::ActorType> ENEMY_MINE_ACTOR_TYPE;
-         static dtCore::RefPtr<dtDAL::ActorType> ENEMY_MOTHERSHIP_ACTOR_TYPE;
-         static dtCore::RefPtr<dtDAL::ActorType> ENEMY_HELIX_ACTOR_TYPE;
-         static dtCore::RefPtr<dtDAL::ActorType> LIGHT_TOWER_ACTOR_TYPE;
-         static dtCore::RefPtr<dtDAL::ActorType> FIREBALL_TOWER_ACTOR_TYPE;
-         static dtCore::RefPtr<dtDAL::ActorType> FIREBALL_ACTOR_TYPE;
+         static std::shared_ptr<dtDAL::ActorType> HOVER_VEHICLE_ACTOR_TYPE;
+         static std::shared_ptr<dtDAL::ActorType> PLAYER_STATUS_ACTOR_TYPE;
+         static std::shared_ptr<dtDAL::ActorType> SERVER_GAME_STATUS_ACTOR_TYPE;
+         static std::shared_ptr<dtDAL::ActorType> FORT_ACTOR_TYPE;
+         static std::shared_ptr<dtDAL::ActorType> TOWER_ACTOR_TYPE;
+         static std::shared_ptr<dtDAL::ActorType> ENEMY_DESCRIPTION_TYPE;
+         static std::shared_ptr<dtDAL::ActorType> ENEMY_MINE_ACTOR_TYPE;
+         static std::shared_ptr<dtDAL::ActorType> ENEMY_MOTHERSHIP_ACTOR_TYPE;
+         static std::shared_ptr<dtDAL::ActorType> ENEMY_HELIX_ACTOR_TYPE;
+         static std::shared_ptr<dtDAL::ActorType> LIGHT_TOWER_ACTOR_TYPE;
+         static std::shared_ptr<dtDAL::ActorType> FIREBALL_TOWER_ACTOR_TYPE;
+         static std::shared_ptr<dtDAL::ActorType> FIREBALL_ACTOR_TYPE;
 
-         static dtCore::RefPtr<dtDAL::ActorType> PROPELLED_VEHICLE_ACTOR_TYPE;
+         static std::shared_ptr<dtDAL::ActorType> PROPELLED_VEHICLE_ACTOR_TYPE;
          /// Constructor
          NetDemoActorRegistry();
 

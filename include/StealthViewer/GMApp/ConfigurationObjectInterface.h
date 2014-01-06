@@ -23,7 +23,7 @@
 #ifndef _CONFIGURATION_OBJECT_INTERFACE_H_
 #define _CONFIGURATION_OBJECT_INTERFACE_H_
 
-#include <osg/Referenced>
+#include <dtUtil/refcountedbase.h>
 
 // Forward declarations
 namespace dtGame
@@ -33,7 +33,7 @@ namespace dtGame
 
 namespace StealthGM
 {
-   class ConfigurationObjectInterface : public osg::Referenced
+   class ConfigurationObjectInterface : public std::enable_shared_from_this
    {
       public:
 

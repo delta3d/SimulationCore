@@ -23,7 +23,7 @@
 
 #include <SimCore/Export.h>
 #include <dtGame/gmcomponent.h>
-#include <dtCore/observerptr.h>
+#include <dtUtil/refcountedbase.h>
 
 #include <dtCore/camera.h>
 
@@ -52,10 +52,10 @@ namespace SimCore
        *
        * Here is an example of using this component
        *   
-       *   SimCore::Components::VolumeRenderingComponent* vrc = NULL;
+       *   SimCore::Components::VolumeRenderingComponent* vrc = nullptr;
        *   GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::VolumeRenderingComponent::DEFAULT_NAME, vrc); 
        *
-       *  if(vrc != NULL)
+       *  if(vrc != nullptr)
        *  {
        *     SimCore::Components::VolumeRenderingComponent::ShapeVolumeRecord* svr = new SimCore::Components::VolumeRenderingComponent::ShapeVolumeRecord();
        *     svr->mPosition.set(0.0f, 0.0f, -18.0f);
@@ -148,7 +148,7 @@ namespace SimCore
          };
 
 
-         class SIMCORE_EXPORT ShapeVolumeRecord: public osg::Referenced
+         class SIMCORE_EXPORT ShapeVolumeRecord: public std::enable_shared_from_this
          {
            public:
             ShapeVolumeRecord();
@@ -178,7 +178,7 @@ namespace SimCore
             //use this value to set the max amount of time this shape volume will live 
             float mMaxTime;
 
-            //setting this flag will fade out the voltume when the max time is reached or parent is NULL and the 
+            //setting this flag will fade out the voltume when the max time is reached or parent is nullptr and the 
             //delete flag is set, the amount of time to fade out is determined by the parameter below
             bool mFadeOut;
 
@@ -240,20 +240,20 @@ namespace SimCore
             std::string mShaderName;
 
             //the mParentNode is used internally as a parent to the drawable, do not try to set this
-            dtCore::ObserverPtr<osg::MatrixTransform> mParentNode; 
+            osg::observer_ptr<osg::MatrixTransform> mParentNode; 
 
             //the mTarget is used like a parent to the effect, setting this will allow your volume to move with
             //another node, if mAutoDeleteOnTargetNull is true then this volume will be removed when the target is set to null
-            dtCore::ObserverPtr<osg::Node> mTarget;
+            osg::observer_ptr<osg::Node> mTarget;
 
             //this is the osg shape and is not used unless the render mode is SIMPLE_SHAPE_GEOMETRY
             //this is created for you by the component
-            dtCore::RefPtr<osg::Shape> mShape;
+            osg::ref_ptr<osg::Shape> mShape;
 
             //this variables is only for the particle volume types and holds onto the actual osg drawable 
             //used to render the volumes
             //this is created for you by the component
-            dtCore::RefPtr<ParticleVolumeDrawable> mParticleDrawable;
+            std::shared_ptr<ParticleVolumeDrawable> mParticleDrawable;
 
             //use this to get the static counted id
             ShapeRecordId GetId() const;
@@ -268,7 +268,7 @@ namespace SimCore
 
          //////////////////////////////////////////////////////////////////////////
          //ShapeVolumeArray
-         typedef std::vector<dtCore::RefPtr<ShapeVolumeRecord> > ShapeVolumeArray;
+         typedef std::vector<std::shared_ptr<ShapeVolumeRecord> > ShapeVolumeArray;
 
          public:
 
@@ -291,7 +291,7 @@ namespace SimCore
 
          //this function is used to add a shape volume to the component using a pre-created shape volume record class
          //see the shape record volume class above to figure out what params to set
-         ShapeRecordId CreateShapeVolume(dtCore::RefPtr<ShapeVolumeRecord> svr);
+         ShapeRecordId CreateShapeVolume(std::shared_ptr<ShapeVolumeRecord> svr);
 
          //just a helper class that will create a shape volume for you with minimal parameters
          ShapeRecordId CreateStaticShapeVolume(Shape s, const osg::Vec4& color, const osg::Vec3& center, const osg::Vec3& radius);
@@ -348,17 +348,17 @@ namespace SimCore
 
          bool mInitialized;
          unsigned mMaxParticlesPerDrawable;
-         dtCore::RefPtr<osg::Group> mRootNode;
+         osg::ref_ptr<osg::Group> mRootNode;
 
-         dtCore::RefPtr<dtCore::Camera> mDepthCamera;
-         dtCore::RefPtr<osg::Camera> mDebugCamera;
-         dtCore::RefPtr<dtCore::View> mDepthView;
+         std::shared_ptr<dtCore::Camera> mDepthCamera;
+         osg::ref_ptr<osg::Camera> mDebugCamera;
+         std::shared_ptr<dtCore::View> mDepthView;
 
-         dtCore::RefPtr<osg::Texture2D> mDepthTexture;
-         dtCore::RefPtr<osg::Uniform> mDepthTextureUniform;
+         osg::ref_ptr<osg::Texture2D> mDepthTexture;
+         osg::ref_ptr<osg::Uniform> mDepthTextureUniform;
 
-         dtCore::RefPtr<osg::Texture3D> mNoiseTexture;
-         dtCore::RefPtr<osg::Uniform> mNoiseTextureUniform;
+         osg::ref_ptr<osg::Texture3D> mNoiseTexture;
+         osg::ref_ptr<osg::Uniform> mNoiseTextureUniform;
 
          ShapeVolumeArray mVolumes;
 

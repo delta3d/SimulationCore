@@ -23,9 +23,9 @@
 #ifndef _HELP_WINDOW_H_
 #define _HELP_WINDOW_H_
 
-#include <dtCore/refptr.h>
+#include <dtUtil/refcountedbase.h>
 #include <SimCore/Export.h>
-#include <osg/Referenced>
+#include <dtUtil/refcountedbase.h>
 
 namespace dtCore
 {
@@ -43,7 +43,7 @@ namespace SimCore
 {
    namespace Tools
    {
-      class SIMCORE_EXPORT HelpWindow : public osg::Referenced
+      class SIMCORE_EXPORT HelpWindow : public std::enable_shared_from_this
       {
          public:
 

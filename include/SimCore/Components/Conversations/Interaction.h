@@ -21,8 +21,8 @@
 #ifndef SIMCORE_INTERACTION_H
 #define SIMCORE_INTERACTION_H
 
-#include <osg/Referenced>
-#include <dtCore/refptr.h>
+#include <dtUtil/refcountedbase.h>
+#include <dtUtil/refcountedbase.h>
 #include <string>
 #include <vector>
 
@@ -56,10 +56,10 @@ namespace SimCore
       };
       
 
-      class SIMCORE_EXPORT Interaction : public osg::Referenced
+      class SIMCORE_EXPORT Interaction : public std::enable_shared_from_this
       {
          public:
-            typedef std::pair<dtCore::RefPtr<Response>, dtCore::RefPtr<Interaction> > ResponseInteractionPair;
+            typedef std::pair<std::shared_ptr<Response>, std::shared_ptr<Interaction> > ResponseInteractionPair;
             typedef std::vector<ResponseInteractionPair> ResponseArray;
 
          public:

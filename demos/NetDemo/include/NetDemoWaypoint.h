@@ -27,7 +27,7 @@
 #define NETDEMO_WAYPOINT_H
 
 #include <DemoExport.h>
-#include <osg/Referenced>
+#include <dtUtil/refcountedbase.h>
 #include <dtAI/waypointinterface.h>
 #include <dtAI/waypointpropertycontainer.h>
 
@@ -38,11 +38,11 @@ namespace NetDemo
    class NETDEMO_EXPORT NetDemoWaypointTypes
    {
    public:
-      static dtCore::RefPtr<dtDAL::ObjectType> CHECKPOINT;
+      static std::shared_ptr<dtDAL::ObjectType> CHECKPOINT;
    };
 
 
-   class NETDEMO_EXPORT NetDemoWaypoint : public osg::Referenced, public dtAI::WaypointInterface
+   class NETDEMO_EXPORT NetDemoWaypoint : public std::enable_shared_from_this, public dtAI::WaypointInterface
    {
    public:
       typedef WaypointInterface BaseClass;
@@ -71,12 +71,12 @@ namespace NetDemo
 
       virtual void ref() const
       {
-         osg::Referenced::ref();
+         std::enable_shared_from_this::ref();
       }
 
       virtual void unref() const
       {
-         osg::Referenced::unref();
+         std::enable_shared_from_this::unref();
       }
 
    protected:

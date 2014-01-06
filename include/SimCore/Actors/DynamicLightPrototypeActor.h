@@ -112,7 +112,7 @@ namespace SimCore
          float GetRadius() const { return mRadius; }
 
          
-         // Auto Delete If Target Is Null - indicates to delete this light if the target ever becomes NULL.  
+         // Auto Delete If Target Is Null - indicates to delete this light if the target ever becomes nullptr.  
          void SetDeleteOnTargetIsNull(bool autoDeleteLightOnTargetNull) { mAutoDeleteLightOnTargetNull = autoDeleteLightOnTargetNull; }
          bool IsDeleteOnTargetIsNull() const { return mAutoDeleteLightOnTargetNull; }
 
@@ -146,7 +146,7 @@ namespace SimCore
 
          float mRadius;      //this is used to determine how far away we are from the light, it pretty much makes the light into a bounding sphere
 
-         bool mAutoDeleteLightOnTargetNull; //setting this flag will auto delete the light when the target becomes NULL, this
+         bool mAutoDeleteLightOnTargetNull; //setting this flag will auto delete the light when the target becomes nullptr, this
                                             //can be used in conjunction with Fade Out
 
          DynamicLightType* mDynamicLightType;

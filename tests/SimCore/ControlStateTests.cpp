@@ -29,7 +29,7 @@
 #include <cppunit/extensions/HelperMacros.h>
 #include <dtUtil/macros.h>
 #include <dtCore/system.h>
-#include <dtCore/refptr.h>
+#include <dtUtil/refcountedbase.h>
 #include <dtCore/scene.h>
 #include <dtDAL/project.h>
 #include <dtGame/gamemanager.h>
@@ -74,10 +74,10 @@ namespace SimCore
             void setUp();
             void tearDown();
 
-            dtCore::RefPtr<SimCore::Actors::DiscreteControl> CreateDiscreteControl(
+            std::shared_ptr<SimCore::Actors::DiscreteControl> CreateDiscreteControl(
                const std::string& controlName, unsigned long totalStates, long currentState );
 
-            dtCore::RefPtr<SimCore::Actors::ContinuousControl> CreateContinuousControl(
+            std::shared_ptr<SimCore::Actors::ContinuousControl> CreateContinuousControl(
                const std::string& controlName, float minValue, float maxValue, float value );
 
             void TestControlGroupParameter(
@@ -91,7 +91,7 @@ namespace SimCore
             template<class T_ControlType>
             void TestControlArrayGroupParameter(
                const dtDAL::NamedGroupParameter& testGroupParam,
-               const std::map<const std::string, dtCore::RefPtr<T_ControlType> >& controlsMap );
+               const std::map<const std::string, std::shared_ptr<T_ControlType> >& controlsMap );
 
             void TestControlTypeName( SimCore::Actors::BaseControl& controlType );
 
@@ -101,7 +101,7 @@ namespace SimCore
             void TestControlStateActorProperties();
 
          private:
-            dtCore::RefPtr<dtGame::GameManager> mGM;
+            std::shared_ptr<dtGame::GameManager> mGM;
       };
 
       CPPUNIT_TEST_SUITE_REGISTRATION(ControlStateTests);
@@ -129,7 +129,7 @@ namespace SimCore
          try
          {
             mGM->DeleteAllActors(true);
-            mGM = NULL;
+            mGM = nullptr;
          }
          catch (const dtUtil::Exception& ex)
          {
@@ -138,10 +138,10 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      dtCore::RefPtr<SimCore::Actors::DiscreteControl> ControlStateTests::CreateDiscreteControl(
+      std::shared_ptr<SimCore::Actors::DiscreteControl> ControlStateTests::CreateDiscreteControl(
          const std::string& controlName, unsigned long totalStates, long currentState )
       {
-         dtCore::RefPtr<SimCore::Actors::DiscreteControl> control = new SimCore::Actors::DiscreteControl;
+         std::shared_ptr<SimCore::Actors::DiscreteControl> control = new SimCore::Actors::DiscreteControl;
          control->SetName( controlName );
          control->SetTotalStates( totalStates );
          control->SetCurrentState( currentState );
@@ -149,10 +149,10 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      dtCore::RefPtr<SimCore::Actors::ContinuousControl> ControlStateTests::CreateContinuousControl(
+      std::shared_ptr<SimCore::Actors::ContinuousControl> ControlStateTests::CreateContinuousControl(
          const std::string& controlName, float minValue, float maxValue, float value )
       {
-         dtCore::RefPtr<SimCore::Actors::ContinuousControl> control = new SimCore::Actors::ContinuousControl;
+         std::shared_ptr<SimCore::Actors::ContinuousControl> control = new SimCore::Actors::ContinuousControl;
          control->SetName( controlName );
          control->SetMinValue( minValue );
          control->SetMaxValue( maxValue );
@@ -174,7 +174,7 @@ namespace SimCore
             = dynamic_cast<const dtDAL::NamedUnsignedIntParameter*>
             (testGroupParam.GetParameter( SimCore::Actors::DiscreteControl::PARAM_NAME_TOTAL_STATES ));
 
-         CPPUNIT_ASSERT( paramTotalStates != NULL );
+         CPPUNIT_ASSERT( paramTotalStates != nullptr );
          CPPUNIT_ASSERT( control.GetTotalStates() == paramTotalStates->GetValue() );
 
          // Test current state
@@ -182,7 +182,7 @@ namespace SimCore
             = dynamic_cast<const dtDAL::NamedIntParameter*>
             (testGroupParam.GetParameter( SimCore::Actors::DiscreteControl::PARAM_NAME_CURRENT_STATE ));
 
-         CPPUNIT_ASSERT( paramCurrentState != NULL );
+         CPPUNIT_ASSERT( paramCurrentState != nullptr );
          CPPUNIT_ASSERT( control.GetCurrentState() == paramCurrentState->GetValue() );
       }
 
@@ -200,21 +200,21 @@ namespace SimCore
             = dynamic_cast<const dtDAL::NamedFloatParameter*>
             (testGroupParam.GetParameter( SimCore::Actors::ContinuousControl::PARAM_NAME_VALUE_MIN ));
 
-         CPPUNIT_ASSERT( param != NULL );
+         CPPUNIT_ASSERT( param != nullptr );
          CPPUNIT_ASSERT_DOUBLES_EQUAL( control.GetMinValue(), param->GetValue(), errorThreshold );
 
          // Set max value
          param = dynamic_cast<const dtDAL::NamedFloatParameter*>
             (testGroupParam.GetParameter( SimCore::Actors::ContinuousControl::PARAM_NAME_VALUE_MAX ));
 
-         CPPUNIT_ASSERT( param != NULL );
+         CPPUNIT_ASSERT( param != nullptr );
          CPPUNIT_ASSERT_DOUBLES_EQUAL( control.GetMaxValue(), param->GetValue(), errorThreshold );
 
          // Set value
          param = dynamic_cast<const dtDAL::NamedFloatParameter*>
             (testGroupParam.GetParameter( SimCore::Actors::ContinuousControl::PARAM_NAME_VALUE ));
 
-         CPPUNIT_ASSERT( param != NULL );
+         CPPUNIT_ASSERT( param != nullptr );
          CPPUNIT_ASSERT_DOUBLES_EQUAL( control.GetValue(), param->GetValue(), errorThreshold );
       }
 
@@ -222,15 +222,15 @@ namespace SimCore
       template<class T_ControlType>
       void ControlStateTests::TestControlArrayGroupParameter(
          const dtDAL::NamedGroupParameter& testGroupParam,
-         const std::map<const std::string, dtCore::RefPtr<T_ControlType> >& controlsMap )
+         const std::map<const std::string, std::shared_ptr<T_ControlType> >& controlsMap )
       {
          // Ensure that the collections of controls are the same size.
          CPPUNIT_ASSERT( testGroupParam.GetParameterCount() == controlsMap.size() );
 
-         const T_ControlType* currentControl = NULL;
-         const dtDAL::NamedGroupParameter* currentGroupParam = NULL;
+         const T_ControlType* currentControl = nullptr;
+         const dtDAL::NamedGroupParameter* currentGroupParam = nullptr;
 
-         typedef typename std::map<const std::string, dtCore::RefPtr<T_ControlType> >::const_iterator constMapIter;
+         typedef typename std::map<const std::string, std::shared_ptr<T_ControlType> >::const_iterator constMapIter;
          constMapIter iter = controlsMap.begin();
 
          // Test each control in the map for equality with a group parameter of the same name.
@@ -238,14 +238,14 @@ namespace SimCore
          {
             // Access the current control
             currentControl = iter->second.get();
-            CPPUNIT_ASSERT_MESSAGE("Control state actor should NEVER have NULL entries in its control maps.",
-               currentControl != NULL );
+            CPPUNIT_ASSERT_MESSAGE("Control state actor should NEVER have nullptr entries in its control maps.",
+               currentControl != nullptr );
 
             // Access the current group parameter
             currentGroupParam = dynamic_cast<const dtDAL::NamedGroupParameter*>
                (testGroupParam.GetParameter( currentControl->GetName() ));
             CPPUNIT_ASSERT_MESSAGE("Control state actor should add control group parameters by control name to the higher level control array group parameter",
-               currentGroupParam != NULL );
+               currentGroupParam != nullptr );
 
             // Compare the group parameter to the actual control
             TestControlGroupParameter( *currentGroupParam, *currentControl );
@@ -289,7 +289,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void ControlStateTests::TestDiscreteControlTypeProperties()
       {
-         dtCore::RefPtr<SimCore::Actors::DiscreteControl> discreteControl
+         std::shared_ptr<SimCore::Actors::DiscreteControl> discreteControl
             = new SimCore::Actors::DiscreteControl;
 
          CPPUNIT_ASSERT( discreteControl->GetName().empty() );
@@ -306,7 +306,7 @@ namespace SimCore
          CPPUNIT_ASSERT( discreteControl->GetCurrentState() == -12 );
 
          // Test Encode & Decode
-         dtCore::RefPtr<SimCore::Actors::DiscreteControl> decodedControl
+         std::shared_ptr<SimCore::Actors::DiscreteControl> decodedControl
             = new SimCore::Actors::DiscreteControl;
          CPPUNIT_ASSERT( decodedControl->GetName().empty() );
          CPPUNIT_ASSERT( decodedControl->GetTotalStates() == 0 );
@@ -317,7 +317,7 @@ namespace SimCore
          discreteControl->Encode( buffer );
          decodedControl->Decode( buffer );
          delete buffer;
-         buffer = NULL;
+         buffer = nullptr;
 
          // --- Compare decoding results
          CPPUNIT_ASSERT( ! decodedControl->GetName().empty() );
@@ -327,7 +327,7 @@ namespace SimCore
 
 
          // Test creation of a group message parameter that represents the control.
-         dtCore::RefPtr<dtDAL::NamedGroupParameter> groupParam = discreteControl->GetAsGroupParameter();
+         std::shared_ptr<dtDAL::NamedGroupParameter> groupParam = discreteControl->GetAsGroupParameter();
          CPPUNIT_ASSERT( groupParam.valid() );
          TestControlGroupParameter( *groupParam, *discreteControl );
 
@@ -345,7 +345,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void ControlStateTests::TestContinuousControlTypeProperties()
       {
-         dtCore::RefPtr<SimCore::Actors::ContinuousControl> continuousControl
+         std::shared_ptr<SimCore::Actors::ContinuousControl> continuousControl
             = new SimCore::Actors::ContinuousControl;
 
          CPPUNIT_ASSERT( continuousControl->GetName().empty() );
@@ -366,7 +366,7 @@ namespace SimCore
          CPPUNIT_ASSERT( continuousControl->GetValue() == 39.3 );
 
          // Test Encode & Decode
-         dtCore::RefPtr<SimCore::Actors::ContinuousControl> decodedControl
+         std::shared_ptr<SimCore::Actors::ContinuousControl> decodedControl
             = new SimCore::Actors::ContinuousControl;
          CPPUNIT_ASSERT( decodedControl->GetName().empty() );
          CPPUNIT_ASSERT( decodedControl->GetMinValue() == 0.0 );
@@ -378,7 +378,7 @@ namespace SimCore
          continuousControl->Encode( buffer );
          decodedControl->Decode( buffer );
          delete buffer;
-         buffer = NULL;
+         buffer = nullptr;
 
          // --- Compare decoding results
          CPPUNIT_ASSERT( ! decodedControl->GetName().empty() );
@@ -391,7 +391,7 @@ namespace SimCore
 
 
          // Test creation of a group message parameter that represents the control.
-         dtCore::RefPtr<dtDAL::NamedGroupParameter> groupParam = continuousControl->GetAsGroupParameter();
+         std::shared_ptr<dtDAL::NamedGroupParameter> groupParam = continuousControl->GetAsGroupParameter();
          CPPUNIT_ASSERT( groupParam.valid() );
          TestControlGroupParameter( *groupParam, *continuousControl );
 
@@ -410,26 +410,26 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void ControlStateTests::TestControlStateActorProperties()
       {
-         dtCore::RefPtr<SimCore::Actors::ControlStateProxy> proxy;
+         std::shared_ptr<SimCore::Actors::ControlStateProxy> proxy;
          mGM->CreateActor( *SimCore::Actors::EntityActorRegistry::CONTROL_STATE_ACTOR_TYPE, proxy );
          CPPUNIT_ASSERT_MESSAGE("Game manager should be able to create a ControlActorProxy",
             proxy.valid() );
 
-         dtCore::RefPtr<SimCore::Actors::ControlStateActor> controlState
+         std::shared_ptr<SimCore::Actors::ControlStateActor> controlState
             = static_cast<SimCore::Actors::ControlStateActor*>(&proxy->GetGameActor());
 
 
-         dtCore::RefPtr<SimCore::Actors::PlatformActorProxy> testEntityProxy;
+         std::shared_ptr<SimCore::Actors::PlatformActorProxy> testEntityProxy;
          mGM->CreateActor( *SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE, testEntityProxy );
          CPPUNIT_ASSERT_MESSAGE("Game manager should be able to create an Entity",
             proxy.valid() );
 
-         dtCore::RefPtr<SimCore::Actors::Platform> testEntity
+         std::shared_ptr<SimCore::Actors::Platform> testEntity
             = static_cast<SimCore::Actors::Platform*>(&testEntityProxy->GetGameActor());
 
          // Test setting an entity
          CPPUNIT_ASSERT( controlState->GetEntityID().ToString().empty() );
-         CPPUNIT_ASSERT( controlState->GetEntity() == NULL );
+         CPPUNIT_ASSERT( controlState->GetEntity() == nullptr );
          controlState->SetEntity( testEntityProxy.get() );
          CPPUNIT_ASSERT( controlState->GetEntity() == testEntity.get() );
          CPPUNIT_ASSERT( controlState->GetEntityID() == testEntity->GetUniqueId());
@@ -454,10 +454,10 @@ namespace SimCore
          // Test Adding DiscreteControl Controls
          CPPUNIT_ASSERT( controlState->GetDiscreteControlCount() == 0 );
          CPPUNIT_ASSERT( controlState->GetDiscreteControls().size() == 0 );
-         dtCore::RefPtr<SimCore::Actors::DiscreteControl> dc1 = CreateDiscreteControl( "DC1", 4, 1 );
-         dtCore::RefPtr<SimCore::Actors::DiscreteControl> dc2 = CreateDiscreteControl( "DC2", 8, 2 );
-         dtCore::RefPtr<SimCore::Actors::DiscreteControl> dc3 = CreateDiscreteControl( "DC3", 12, 3 );
-         dtCore::RefPtr<SimCore::Actors::DiscreteControl> dc4 = CreateDiscreteControl( "DC4", 16, 4 );
+         std::shared_ptr<SimCore::Actors::DiscreteControl> dc1 = CreateDiscreteControl( "DC1", 4, 1 );
+         std::shared_ptr<SimCore::Actors::DiscreteControl> dc2 = CreateDiscreteControl( "DC2", 8, 2 );
+         std::shared_ptr<SimCore::Actors::DiscreteControl> dc3 = CreateDiscreteControl( "DC3", 12, 3 );
+         std::shared_ptr<SimCore::Actors::DiscreteControl> dc4 = CreateDiscreteControl( "DC4", 16, 4 );
          // --- Add some by pointer
          CPPUNIT_ASSERT( controlState->AddControl( dc1 ) );
          CPPUNIT_ASSERT( controlState->AddControl( dc2 ) );
@@ -477,28 +477,28 @@ namespace SimCore
          // --- Test accessing individual controls
          SimCore::Actors::DiscreteControl* testDiscreteControl
             = controlState->GetDiscreteControl( dc1->GetName() );
-         CPPUNIT_ASSERT( testDiscreteControl != NULL );
+         CPPUNIT_ASSERT( testDiscreteControl != nullptr );
          CPPUNIT_ASSERT( testDiscreteControl == dc1.get() );
          testDiscreteControl = controlState->GetDiscreteControl( dc2->GetName() );
-         CPPUNIT_ASSERT( testDiscreteControl != NULL );
+         CPPUNIT_ASSERT( testDiscreteControl != nullptr );
          CPPUNIT_ASSERT( testDiscreteControl == dc2.get() );
          testDiscreteControl = controlState->GetDiscreteControl( dc3->GetName() );
-         CPPUNIT_ASSERT( testDiscreteControl != NULL );
+         CPPUNIT_ASSERT( testDiscreteControl != nullptr );
          CPPUNIT_ASSERT( testDiscreteControl == dc3.get() );
          testDiscreteControl = controlState->GetDiscreteControl( dc4->GetName() );
-         CPPUNIT_ASSERT( testDiscreteControl != NULL );
+         CPPUNIT_ASSERT( testDiscreteControl != nullptr );
          CPPUNIT_ASSERT( testDiscreteControl == dc4.get() );
 
 
 
          // Test Adding ContinuousControl Controls
-         SimCore::Actors::ContinuousControl* testContinuousControl = NULL;
+         SimCore::Actors::ContinuousControl* testContinuousControl = nullptr;
          CPPUNIT_ASSERT( controlState->GetContinuousControlCount() == 0 );
          CPPUNIT_ASSERT( controlState->GetContinuousControls().size() == 0 );
-         dtCore::RefPtr<SimCore::Actors::ContinuousControl> cc1 = CreateContinuousControl( "CC1", 1.0f, 2.5f, 1.25f );
-         dtCore::RefPtr<SimCore::Actors::ContinuousControl> cc2 = CreateContinuousControl( "CC2", 2.0f, 3.5f, 3.25f );
-         dtCore::RefPtr<SimCore::Actors::ContinuousControl> cc3 = CreateContinuousControl( "CC3", 4.0f, 5.5f, 4.25f );
-         dtCore::RefPtr<SimCore::Actors::ContinuousControl> cc4 = CreateContinuousControl( "CC4", 5.0f, 6.5f, 5.25f );
+         std::shared_ptr<SimCore::Actors::ContinuousControl> cc1 = CreateContinuousControl( "CC1", 1.0f, 2.5f, 1.25f );
+         std::shared_ptr<SimCore::Actors::ContinuousControl> cc2 = CreateContinuousControl( "CC2", 2.0f, 3.5f, 3.25f );
+         std::shared_ptr<SimCore::Actors::ContinuousControl> cc3 = CreateContinuousControl( "CC3", 4.0f, 5.5f, 4.25f );
+         std::shared_ptr<SimCore::Actors::ContinuousControl> cc4 = CreateContinuousControl( "CC4", 5.0f, 6.5f, 5.25f );
          // --- Add some by pointer
          CPPUNIT_ASSERT( controlState->AddControl( cc1 ) );
          CPPUNIT_ASSERT( controlState->AddControl( cc2 ) );
@@ -517,16 +517,16 @@ namespace SimCore
          CPPUNIT_ASSERT( controlState->GetContinuousControls().size() == 4 );
          // --- Test accessing individual controls
          testContinuousControl = controlState->GetContinuousControl( cc1->GetName() );
-         CPPUNIT_ASSERT( testContinuousControl != NULL );
+         CPPUNIT_ASSERT( testContinuousControl != nullptr );
          CPPUNIT_ASSERT( testContinuousControl == cc1.get() );
          testContinuousControl = controlState->GetContinuousControl( cc2->GetName() );
-         CPPUNIT_ASSERT( testContinuousControl != NULL );
+         CPPUNIT_ASSERT( testContinuousControl != nullptr );
          CPPUNIT_ASSERT( testContinuousControl == cc2.get() );
          testContinuousControl = controlState->GetContinuousControl( cc3->GetName() );
-         CPPUNIT_ASSERT( testContinuousControl != NULL );
+         CPPUNIT_ASSERT( testContinuousControl != nullptr );
          CPPUNIT_ASSERT( testContinuousControl == cc3.get() );
          testContinuousControl = controlState->GetContinuousControl( cc4->GetName() );
-         CPPUNIT_ASSERT( testContinuousControl != NULL );
+         CPPUNIT_ASSERT( testContinuousControl != nullptr );
          CPPUNIT_ASSERT( testContinuousControl == cc4.get() );
 
 
@@ -535,7 +535,7 @@ namespace SimCore
          mGM->CreateActor( *SimCore::Actors::EntityActorRegistry::CONTROL_STATE_ACTOR_TYPE, proxy );
          CPPUNIT_ASSERT_MESSAGE("Game manager should be able to create a ControlActorProxy",
             proxy.valid() );
-         dtCore::RefPtr<SimCore::Actors::ControlStateActor> decodedControlState
+         std::shared_ptr<SimCore::Actors::ControlStateActor> decodedControlState
             = static_cast<SimCore::Actors::ControlStateActor*>(&proxy->GetGameActor());
          CPPUNIT_ASSERT( decodedControlState->GetEntityID().ToString().empty() );
          CPPUNIT_ASSERT( decodedControlState->GetStationType() == 0 );
@@ -547,7 +547,7 @@ namespace SimCore
 
 
          // --- Encode & decode discrete controls
-         dtCore::RefPtr<dtDAL::NamedGroupParameter> discreteArray
+         std::shared_ptr<dtDAL::NamedGroupParameter> discreteArray
             = controlState->GetDiscreteControlsAsGroupParameter();
          CPPUNIT_ASSERT( discreteArray.valid() );
 
@@ -562,7 +562,7 @@ namespace SimCore
 
 
          // --- Encode & decode continuous controls
-         dtCore::RefPtr<dtDAL::NamedGroupParameter> continuousArray
+         std::shared_ptr<dtDAL::NamedGroupParameter> continuousArray
             = controlState->GetContinuousControlsAsGroupParameter();
          CPPUNIT_ASSERT( continuousArray.valid() );
 
@@ -578,46 +578,46 @@ namespace SimCore
 
          // Test removing controls (from original control state)
          // --- Remove by reference
-         CPPUNIT_ASSERT( ! controlState->RemoveControl( NULL ) );
+         CPPUNIT_ASSERT( ! controlState->RemoveControl( nullptr ) );
 
          CPPUNIT_ASSERT( controlState->RemoveControl( dc1.get() ) );
-         CPPUNIT_ASSERT( controlState->GetDiscreteControl( dc1->GetName() ) == NULL );
+         CPPUNIT_ASSERT( controlState->GetDiscreteControl( dc1->GetName() ) == nullptr );
          CPPUNIT_ASSERT( ! controlState->RemoveControl( dc1.get() ) );
          CPPUNIT_ASSERT( controlState->GetDiscreteControls().size() == 3 );
 
          CPPUNIT_ASSERT( controlState->RemoveControl( dc3.get() ) );
-         CPPUNIT_ASSERT( controlState->GetDiscreteControl( dc3->GetName() ) == NULL );
+         CPPUNIT_ASSERT( controlState->GetDiscreteControl( dc3->GetName() ) == nullptr );
          CPPUNIT_ASSERT( ! controlState->RemoveControl( dc3.get() ) );
          CPPUNIT_ASSERT( controlState->GetDiscreteControls().size() == 2 );
 
          CPPUNIT_ASSERT( controlState->RemoveControl( cc4.get() ) );
-         CPPUNIT_ASSERT( controlState->GetContinuousControl( cc4->GetName() ) == NULL );
+         CPPUNIT_ASSERT( controlState->GetContinuousControl( cc4->GetName() ) == nullptr );
          CPPUNIT_ASSERT( ! controlState->RemoveControl( cc4.get() ) );
          CPPUNIT_ASSERT( controlState->GetContinuousControls().size() == 3 );
 
          CPPUNIT_ASSERT( controlState->RemoveControl( cc2.get() ) );
-         CPPUNIT_ASSERT( controlState->GetContinuousControl( cc2->GetName() ) == NULL );
+         CPPUNIT_ASSERT( controlState->GetContinuousControl( cc2->GetName() ) == nullptr );
          CPPUNIT_ASSERT( ! controlState->RemoveControl( cc2.get() ) );
          CPPUNIT_ASSERT( controlState->GetContinuousControls().size() == 2 );
 
          // --- Remove by name
          CPPUNIT_ASSERT( controlState->RemoveDiscreteControl( dc4->GetName() ) );
-         CPPUNIT_ASSERT( controlState->GetDiscreteControl( dc4->GetName() ) == NULL );
+         CPPUNIT_ASSERT( controlState->GetDiscreteControl( dc4->GetName() ) == nullptr );
          CPPUNIT_ASSERT( ! controlState->RemoveDiscreteControl( dc4->GetName() ) );
          CPPUNIT_ASSERT( controlState->GetDiscreteControls().size() == 1 );
 
          CPPUNIT_ASSERT( controlState->RemoveDiscreteControl( dc2->GetName() ) );
-         CPPUNIT_ASSERT( controlState->GetDiscreteControl( dc2->GetName() ) == NULL );
+         CPPUNIT_ASSERT( controlState->GetDiscreteControl( dc2->GetName() ) == nullptr );
          CPPUNIT_ASSERT( ! controlState->RemoveDiscreteControl( dc2->GetName() ) );
          CPPUNIT_ASSERT( controlState->GetDiscreteControls().size() == 0 );
 
          CPPUNIT_ASSERT( controlState->RemoveContinuousControl( cc1->GetName() ) );
-         CPPUNIT_ASSERT( controlState->GetContinuousControl( cc1->GetName() ) == NULL );
+         CPPUNIT_ASSERT( controlState->GetContinuousControl( cc1->GetName() ) == nullptr );
          CPPUNIT_ASSERT( ! controlState->RemoveContinuousControl( cc1->GetName() ) );
          CPPUNIT_ASSERT( controlState->GetContinuousControls().size() == 1 );
 
          CPPUNIT_ASSERT( controlState->RemoveContinuousControl( cc3->GetName() ) );
-         CPPUNIT_ASSERT( controlState->GetContinuousControl( cc3->GetName() ) == NULL );
+         CPPUNIT_ASSERT( controlState->GetContinuousControl( cc3->GetName() ) == nullptr );
          CPPUNIT_ASSERT( ! controlState->RemoveContinuousControl( cc3->GetName() ) );
          CPPUNIT_ASSERT( controlState->GetContinuousControls().size() == 0 );
 

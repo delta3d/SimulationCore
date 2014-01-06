@@ -163,7 +163,7 @@ namespace NetDemo
       void ScoreLabelManager::AddScoreLabel(const osg::Vec3& objectWorldPoint,
          int score, float lifeTime)
       {
-         dtCore::RefPtr<ScoreLabel> label;
+         std::shared_ptr<ScoreLabel> label;
 
          // Get or create a label.
          if(mMaxLabelCount <= int(mLabelList.size()))
@@ -213,7 +213,7 @@ namespace NetDemo
          if(mCamera.valid())
          {
             // Declare loop variables.
-            ScoreLabel* curLabel = NULL;
+            ScoreLabel* curLabel = nullptr;
             dtCore::Transform curXform;
             osg::Vec3d curScreenPoint;
 
@@ -252,7 +252,7 @@ namespace NetDemo
          }
 
          // Send dead labels to the recycle bin.
-         RemoveLabelPred<dtCore::RefPtr<ScoreLabel> > removeIfPred;
+         RemoveLabelPred<std::shared_ptr<ScoreLabel> > removeIfPred;
          mLabelList.remove_if(removeIfPred);
       }
 

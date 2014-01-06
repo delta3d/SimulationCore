@@ -36,7 +36,7 @@ class SubHLAOptions : public StealthQt::HLAOptions
 {
    public:
 
-      SubHLAOptions(QWidget *parent = NULL, const QString &connection = "") :
+      SubHLAOptions(QWidget *parent = nullptr, const QString &connection = "") :
          StealthQt::HLAOptions(parent, connection)
       {
 
@@ -101,7 +101,7 @@ void StealthViewerHLAOptionsTests::setUp()
 void StealthViewerHLAOptionsTests::tearDown()
 {
    delete mQApp;
-   mQApp = NULL;
+   mQApp = nullptr;
 }
 
 void StealthViewerHLAOptionsTests::TestHLAOptionsDefaults()

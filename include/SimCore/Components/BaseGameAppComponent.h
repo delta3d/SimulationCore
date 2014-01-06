@@ -86,7 +86,7 @@ namespace SimCore
             virtual void ProcessTick(const dtGame::TickMessage &msg);
 
          private:
-            dtCore::RefPtr<SimCore::CommandLineObject> mCommandLineObject;
+            std::shared_ptr<SimCore::CommandLineObject> mCommandLineObject;
       };
    } // namespace
 } // namespace

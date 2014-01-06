@@ -51,7 +51,7 @@ namespace SimCore
       ////////////////////////////////////////////////////
       // Export symbol not needed, this should not be used
       // by external libraries
-      class TerrainNode : public osg::Referenced
+      class TerrainNode : public std::enable_shared_from_this
       {
          public:
             TerrainNode(osg::Geode* toSet);
@@ -96,7 +96,7 @@ namespace SimCore
 
             dtPhysics::PhysicsObject* GetPhysicsObject() { return mPhysicsObject; }
          private:
-            dtCore::RefPtr<dtPhysics::PhysicsObject> mPhysicsObject;
+            std::shared_ptr<dtPhysics::PhysicsObject> mPhysicsObject;
 
             osg::observer_ptr<osg::Geode>    mGeodePTR;
             bool                             mFilledBL;
@@ -171,9 +171,9 @@ namespace SimCore
             int mNumVertsLoaded;
 
             // our map nodes
-            std::map<osg::Geode*, dtCore::RefPtr<TerrainNode> > mTerrainMap;
+            std::map<osg::Geode*, std::shared_ptr<TerrainNode> > mTerrainMap;
 
-            std::map<osg::Geode*, dtCore::RefPtr<TerrainNode> >::iterator mFinalizeTerrainIter;
+            std::map<osg::Geode*, std::shared_ptr<TerrainNode> >::iterator mFinalizeTerrainIter;
       };
 
 

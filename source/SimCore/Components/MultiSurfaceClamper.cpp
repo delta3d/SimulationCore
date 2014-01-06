@@ -120,7 +120,7 @@ namespace SimCore
          if( ! mDrawable.valid() )
          {
             // COLOR - used for other data: UVs , line thickness and length
-            dtCore::RefPtr<osg::Vec4Array> color = new osg::Vec4Array( 6 );
+            osg::ref_ptr<osg::Vec4Array> color = new osg::Vec4Array( 6 );
             (*color)[0].set( 1.0f,  1.0f,  0.0f, 1.0f );
             (*color)[1].set( 1.0f,  0.0f,  0.0f, 1.0f );
             (*color)[2].set( 1.0f,  1.0f,  1.0f, 1.0f );
@@ -132,7 +132,7 @@ namespace SimCore
             osg::Vec3 end( 0.0f, 0.0f, 1.0f );
 
             // VERTICES
-            dtCore::RefPtr<osg::Vec3Array> verts = new osg::Vec3Array( 6 );
+            osg::ref_ptr<osg::Vec3Array> verts = new osg::Vec3Array( 6 );
             (*verts)[0].set( start );
             (*verts)[1].set( end );
             (*verts)[2].set( start + osg::Vec3( 0.25f, 0.0f,  0.0f) );
@@ -140,18 +140,18 @@ namespace SimCore
             (*verts)[4].set( start + osg::Vec3( 0.0f,  0.25f, 0.0f) );
             (*verts)[5].set( start + osg::Vec3( 0.0f, -0.25f, 0.0f) );
 
-            dtCore::RefPtr<osg::StateSet> states = new osg::StateSet();
+            osg::ref_ptr<osg::StateSet> states = new osg::StateSet();
             states->setMode(GL_BLEND,osg::StateAttribute::ON);
             states->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
             states->setRenderingHint( osg::StateSet::TRANSPARENT_BIN );
 
-            dtCore::RefPtr<osg::Geometry> geom = new osg::Geometry;
+            osg::ref_ptr<osg::Geometry> geom = new osg::Geometry;
             geom->setColorArray( color.get() ); // use colors for uvs and other parameters
             geom->setColorBinding(osg::Geometry::BIND_PER_VERTEX);
             geom->setVertexArray( verts.get() );
             geom->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINES, 0, verts->size()));
 
-            dtCore::RefPtr<osg::Geode> geode = new osg::Geode;
+            osg::ref_ptr<osg::Geode> geode = new osg::Geode;
             geode->addDrawable( geom.get() );
             geode->setStateSet( states.get() );
 
@@ -169,7 +169,7 @@ namespace SimCore
          if( mDrawable.valid() )
          {
             success = scene.removeChild( mDrawable.get() );
-            mDrawable = NULL;
+            mDrawable = nullptr;
          }
          return success;
       }
@@ -205,7 +205,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       MultiSurfaceClamper::MultiSurfaceRuntimeData::~MultiSurfaceRuntimeData()
       {
-         SetSceneNode(NULL);
+         SetSceneNode(nullptr);
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -232,7 +232,7 @@ namespace SimCore
       SimCore::Actors::BaseEntityActorProxy::DomainEnum*
          MultiSurfaceClamper::MultiSurfaceRuntimeData::GetDomain() const
       {
-         return mEntity.valid() ? &mEntity->GetDomain() : NULL;
+         return mEntity.valid() ? &mEntity->GetDomain() : nullptr;
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -298,7 +298,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void MultiSurfaceClamper::MultiSurfaceRuntimeData::SetSceneNode( osg::Group* sceneNode )
       {
-         if( mScene.valid() && sceneNode == NULL )
+         if( mScene.valid() && sceneNode == nullptr )
          {
             mPointData[0].RemoveDrawableFromScene( *mScene );
             mPointData[1].RemoveDrawableFromScene( *mScene );
@@ -421,13 +421,13 @@ namespace SimCore
 
          // Determine if the proxy is an Entity and if so, cast it and maintain
          // a reference to it for optimization reasons.
-         if( runtimeData.GetEntity() == NULL )
+         if( runtimeData.GetEntity() == nullptr )
          {
             SimCore::Actors::BaseEntityActorProxy* entityProxy
                = dynamic_cast<SimCore::Actors::BaseEntityActorProxy*>(&proxy);
-            if( entityProxy != NULL )
+            if( entityProxy != nullptr )
             {
-               SimCore::Actors::BaseEntity* entity = NULL;
+               SimCore::Actors::BaseEntity* entity = nullptr;
                entityProxy->GetActor( entity );
                runtimeData.SetEntity( entity );
 
@@ -543,7 +543,7 @@ namespace SimCore
 
             // Set the X & Y of the detection point.
             /*dtCore::Transform xform;
-            const dtGame::GameActor* actor = NULL;
+            const dtGame::GameActor* actor = nullptr;
             proxy.GetActor( actor );
             actor->GetTransform( xform, dtCore::Transformable::REL_CS );
             xform.GetTranslation( outHit );*/ // This does not seem to have a valid position at this point in the process.
@@ -578,7 +578,7 @@ namespace SimCore
          MultiSurfaceRuntimeData* runtimeData = dynamic_cast<MultiSurfaceRuntimeData*>(data.GetUserData());
 
          // NOTE: Runtime data should exist by this point.
-         if( runtimeData == NULL )
+         if( runtimeData == nullptr )
          {
             if( GetLogger().IsLevelEnabled(dtUtil::Log::LOG_WARNING) )
             {
@@ -644,9 +644,9 @@ namespace SimCore
          dtGame::GroundClampingData& data )
       {
          MultiSurfaceRuntimeData* runtimeData = dynamic_cast<MultiSurfaceRuntimeData*>(data.GetUserData());
-         if( runtimeData == NULL )
+         if( runtimeData == nullptr )
          {
-            if( data.GetUserData() != NULL )
+            if( data.GetUserData() != nullptr )
             {
                std::ostringstream oss;
                oss << "Ground Clamping Data user data is being replaced by a new MultiSurfaceRuntime Data.";
@@ -670,7 +670,7 @@ namespace SimCore
          const MultiSurfaceRuntimeData* runtimeData = static_cast<const MultiSurfaceRuntimeData*>(data.GetUserData());
          SimCore::Actors::BaseEntityActorProxy::DomainEnum* domain = mDefaultDomain;
 
-         if( runtimeData != NULL )
+         if( runtimeData != nullptr )
          {
             domain = runtimeData->GetDomain();
          }
@@ -723,7 +723,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       bool MultiSurfaceClamper::HasValidSurface() const
       {
-         return GetTerrainActor() != NULL || GetWaterSurface() != NULL;
+         return GetTerrainActor() != nullptr || GetWaterSurface() != nullptr;
       }
    }
 

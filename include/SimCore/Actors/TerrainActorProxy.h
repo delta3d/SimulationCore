@@ -66,12 +66,12 @@ namespace SimCore
 
          DT_DECLARE_ACCESSOR(bool, UseFileCaching);
          DT_DECLARE_ACCESSOR(std::string, FileToLoad);
-         DT_DECLARE_ACCESSOR(dtCore::RefPtr<osgDB::ReaderWriter::Options>, LoadOptions);
+         DT_DECLARE_ACCESSOR(osg::ref_ptr<osgDB::ReaderWriter::Options>, LoadOptions);
 
       protected:
          virtual ~LoadNodeTask();
       private:
-         dtCore::RefPtr<osg::Node> mLoadedNode;
+         osg::ref_ptr<osg::Node> mLoadedNode;
          volatile bool mComplete;
       };
 
@@ -140,12 +140,12 @@ namespace SimCore
 
             void LoadMeshFromFile(const std::string& filename, const std::string& materialType);
 
-            dtCore::RefPtr<dtPhysics::PhysicsActComp> mHelper;
+            std::shared_ptr<dtPhysics::PhysicsActComp> mHelper;
 
             TerrainPhysicsMode* mTerrainPhysicsMode;
-            dtCore::RefPtr<osg::Node> mTerrainNode;
+            osg::ref_ptr<osg::Node> mTerrainNode;
 
-            dtCore::RefPtr<LoadNodeTask> mLoadNodeTask;
+            std::shared_ptr<LoadNodeTask> mLoadNodeTask;
 
             std::string mLoadedFile, mCollisionResourceString, mPhysicsDirectory;
             //This doesn't load the file unless it's in a scene, so this flag tells it to load
@@ -185,7 +185,7 @@ namespace SimCore
              * render mode is RenderMode::DRAW_BILLBOARD_ICON.
              * @return a pointer to the icon
              */
-            virtual dtDAL::ActorProxyIcon* GetBillBoardIcon();
+            virtual dtDAL::ActorProxyIconPtr GetBillBoardIcon();
 
             /**
              * Gets the current render mode for positional lights.

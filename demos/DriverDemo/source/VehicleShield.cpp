@@ -28,13 +28,13 @@ namespace DriverDemo
 {
 
    bool VehicleShield::mInitSuccess(false);
-   dtCore::RefPtr<osg::Uniform> VehicleShield::mOffset;
-   dtCore::RefPtr<osg::Uniform> VehicleShield::mShieldColor;
-   dtCore::RefPtr<osg::Uniform> VehicleShield::mNoiseTexture;
-   dtCore::RefPtr<osg::BlendFunc> VehicleShield::mBlendFunc;
-   dtCore::RefPtr<osg::Node> VehicleShield::mForceField;
-   dtCore::RefPtr<osg::Texture3D> VehicleShield::mTexture;
-   dtCore::RefPtr<dtCore::ShaderProgram> VehicleShield::mShaderProgram;
+   osg::ref_ptr<osg::Uniform> VehicleShield::mOffset;
+   osg::ref_ptr<osg::Uniform> VehicleShield::mShieldColor;
+   osg::ref_ptr<osg::Uniform> VehicleShield::mNoiseTexture;
+   osg::ref_ptr<osg::BlendFunc> VehicleShield::mBlendFunc;
+   osg::ref_ptr<osg::Node> VehicleShield::mForceField;
+   osg::ref_ptr<osg::Texture3D> VehicleShield::mTexture;
+   std::shared_ptr<dtCore::ShaderProgram> VehicleShield::mShaderProgram;
 
 
    VehicleShield::VehicleShield()
@@ -74,7 +74,7 @@ namespace DriverDemo
    {
       LOG_INFO("Creating noise texture.");
       dtUtil::NoiseTexture noise3d(6, 2, 0.7, 0.5, 16, 16, 16);
-      dtCore::RefPtr<osg::Image> img = noise3d.MakeNoiseTexture(GL_ALPHA);
+      osg::ref_ptr<osg::Image> img = noise3d.MakeNoiseTexture(GL_ALPHA);
       LOG_INFO("Finished creating noise texture.");
 
       dtCore::ShaderManager& sm = dtCore::ShaderManager::GetInstance();

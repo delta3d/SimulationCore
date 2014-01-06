@@ -138,7 +138,7 @@ namespace SimCore
 
       //////////////////////////////////////////////////////////////////////////
       unsigned int MunitionsConfig::LoadMunitionTables( const std::string& filePath, 
-         std::vector<dtCore::RefPtr<MunitionDamageTable> >& outTables )
+         std::vector<std::shared_ptr<MunitionDamageTable> >& outTables )
       {
          unsigned int successes = 0;
 
@@ -165,7 +165,7 @@ namespace SimCore
 
             // Return all tables
             successes = mOutTables.size();
-            std::vector<dtCore::RefPtr<MunitionDamageTable> >::iterator tableIter = mOutTables.begin();
+            std::vector<std::shared_ptr<MunitionDamageTable> >::iterator tableIter = mOutTables.begin();
             for( ; tableIter != mOutTables.end(); ++tableIter )
             {
                outTables.push_back( tableIter->get() );
@@ -360,10 +360,10 @@ namespace SimCore
                   {
                      mCurMunitionDamage->SetDirectFireProbabilities( *mCurProbs ); 
                   }
-                  mCurProbs = NULL;
+                  mCurProbs = nullptr;
                }
                mCurMunitionTable->AddMunitionDamage( mCurMunitionDamage.get() );
-               mCurMunitionDamage = NULL;
+               mCurMunitionDamage = nullptr;
             }
          }
          // Determine if parsing is entering a munition declaration
@@ -384,7 +384,7 @@ namespace SimCore
             if( mCurMunitionTable.valid() )
             {
                mOutTables.push_back( mCurMunitionTable.get() );
-               mCurMunitionTable = NULL;
+               mCurMunitionTable = nullptr;
                mFoundTable = false;
             }
          }
@@ -470,7 +470,7 @@ namespace SimCore
       void MunitionsConfig::SetRangeData( ParseLevel level, const std::string& element, 
          const std::string& rangeName, const std::string& data )
       {
-         dtCore::RefPtr<DamageRanges> curDamageRanges;
+         std::shared_ptr<DamageRanges> curDamageRanges;
 
          // Get or create a set of damage ranges specified by rangeName.
          if( rangeName == V_RANGE_1_3 )
@@ -515,10 +515,10 @@ namespace SimCore
          }
 
          // Get ready to capture a reference to Forward/Deflect ranges
-         osg::Vec4* ranges = NULL;
+         osg::Vec4* ranges = nullptr;
          if( level == LEVEL_RANGE_FORWARD ) { ranges = &curDamageRanges->GetForwardRanges(); }
          if( level == LEVEL_RANGE_DEFLECT ) { ranges = &curDamageRanges->GetDeflectRanges(); }
-         if( ranges == NULL ) { return; }
+         if( ranges == nullptr ) { return; }
 
          // Set an individual range
          if( element == E_DAMAGE_M )

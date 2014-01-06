@@ -115,7 +115,7 @@ void StealthViewerSettingsTests::setUp()
 void StealthViewerSettingsTests::tearDown()
 {
    delete mQApp;
-   mQApp = NULL;
+   mQApp = nullptr;
 }
 
 void StealthViewerSettingsTests::TestToolSettings()
@@ -126,7 +126,7 @@ void StealthViewerSettingsTests::TestToolSettings()
    StealthGM::ViewWindowConfigObject& viewConfig =
       StealthQt::StealthViewerData::GetInstance().GetViewWindowConfigObject();
 
-   dtCore::RefPtr<dtGame::GameManager> gm = new dtGame::GameManager(*GetGlobalApplication().GetScene());
+   std::shared_ptr<dtGame::GameManager> gm = new dtGame::GameManager(*GetGlobalApplication().GetScene());
    gm->SetApplication(GetGlobalApplication());
    viewConfig.CreateMainViewWindow(*gm);
 
@@ -150,7 +150,7 @@ void StealthViewerSettingsTests::TestGeneralSettings()
    StealthGM::ViewWindowConfigObject& viewConfig =
       StealthQt::StealthViewerData::GetInstance().GetViewWindowConfigObject();
 
-   dtCore::RefPtr<dtGame::GameManager> gm = new dtGame::GameManager(*GetGlobalApplication().GetScene());
+   std::shared_ptr<dtGame::GameManager> gm = new dtGame::GameManager(*GetGlobalApplication().GetScene());
    gm->SetApplication(GetGlobalApplication());
    viewConfig.CreateMainViewWindow(*gm);
 

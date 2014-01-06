@@ -98,16 +98,16 @@ namespace NetDemo
    template<typename T_Actor >
    void GetActorFromGM(dtGame::GameManager& gm, const dtCore::UniqueId& actorId, T_Actor*& outActor)
    {
-      dtGame::GameActorProxy* proxy = NULL;
+      dtGame::GameActorProxy* proxy = nullptr;
       gm.FindActorById(actorId, proxy);
 
-      if(proxy != NULL)
+      if(proxy != nullptr)
       {
          proxy->GetActor(outActor);
       }
       else
       {
-         outActor = NULL;
+         outActor = nullptr;
       }
    }
 

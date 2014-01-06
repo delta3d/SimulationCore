@@ -147,15 +147,15 @@ namespace SimCore
             GearSoundLevel    mLastGearChange;     /// So we know when to play a sound.
             ///////////////////////////////////////////////////
 
-            //dtCore::RefPtr<dtAgeiaPhysX::NxAgeiaFourWheelVehiclePhysicsHelper> mFourWheelPhysicsHelper;
+            //std::shared_ptr<dtAgeiaPhysX::NxAgeiaFourWheelVehiclePhysicsHelper> mFourWheelPhysicsHelper;
 
             ///////////////////////////////////////////////////
             // Sound effects
-            dtCore::RefPtr<dtAudio::Sound> mSndIgnition;
-            dtCore::RefPtr<dtAudio::Sound> mSndVehicleIdleLoop;
-            dtCore::RefPtr<dtAudio::Sound> mSndBrake;
-            dtCore::RefPtr<dtAudio::Sound> mSndAcceleration;
-            dtCore::RefPtr<dtAudio::Sound> mSndCollisionHit;
+            std::shared_ptr<dtAudio::Sound> mSndIgnition;
+            std::shared_ptr<dtAudio::Sound> mSndVehicleIdleLoop;
+            std::shared_ptr<dtAudio::Sound> mSndBrake;
+            std::shared_ptr<dtAudio::Sound> mSndAcceleration;
+            std::shared_ptr<dtAudio::Sound> mSndCollisionHit;
             ///////////////////////////////////////////////////
 
             ///////////////////////////////////////////////////
@@ -174,7 +174,7 @@ namespace SimCore
 
             ///////////////////////////////////////////////////
             // vehicles portal for the actor
-            dtCore::RefPtr<dtGame::GameActorProxy> mVehiclesPortal;
+            std::shared_ptr<dtGame::GameActorProxy> mVehiclesPortal;
 
       };
 

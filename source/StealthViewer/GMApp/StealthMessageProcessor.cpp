@@ -41,17 +41,17 @@ namespace StealthGM
    }
 
 
-   dtCore::RefPtr<dtGame::GameActorProxy> StealthMessageProcessor::ProcessRemoteCreateActor(const dtGame::ActorUpdateMessage &msg)
+   std::shared_ptr<dtGame::GameActorProxy> StealthMessageProcessor::ProcessRemoteCreateActor(const dtGame::ActorUpdateMessage &msg)
    {
       if (msg.GetSource() != GetGameManager()->GetMachineInfo() &&
             msg.GetActorTypeName() == "Environment" && msg.GetActorTypeCategory() == "dtcore.Environment")
       {
          // ignore the remote environment
          LOG_ALWAYS("HACK - Ignoring create of remote environment - this is a playback Hack");
-         return NULL;
+         return nullptr;
       }
 
-      dtCore::RefPtr<dtGame::GameActorProxy> gameActorProxy = SimCore::Components::ViewerMessageProcessor::ProcessRemoteCreateActor(msg);
+      std::shared_ptr<dtGame::GameActorProxy> gameActorProxy = SimCore::Components::ViewerMessageProcessor::ProcessRemoteCreateActor(msg);
       return gameActorProxy;
    }
 

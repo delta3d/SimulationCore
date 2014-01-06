@@ -117,9 +117,9 @@ class LabelManagerTests : public CPPUNIT_NS::TestFixture
          mGM->AddActor(*mPlatform2, false, false);
 
          //Must add some volume to the actors or the label code won't think the actor is visible.
-         dtCore::RefPtr<osg::Geode> geode = new osg::Geode();
+         osg::ref_ptr<osg::Geode> geode = new osg::Geode();
          osg::Box* box = new osg::Box(osg::Vec3(0.0f, 0.0f, 0.0f), 1.1f, 1.3f, 1.1f);
-         osg::ShapeDrawable* sd = new osg::ShapeDrawable(box, NULL);
+         osg::ShapeDrawable* sd = new osg::ShapeDrawable(box, nullptr);
          geode->addDrawable(sd);
 
          mPlatform1->GetDrawable()->GetOSGNode()->asGroup()->addChild(geode.get());
@@ -139,23 +139,23 @@ class LabelManagerTests : public CPPUNIT_NS::TestFixture
       {
          dtCore::System::GetInstance().Stop();
 
-         mPlatform1 = NULL;
-         mPlatform2 = NULL;
+         mPlatform1 = nullptr;
+         mPlatform2 = nullptr;
 
          if(mGM.valid())
             mGM->DeleteAllActors(true);
 
-         mLabelManager = NULL;
-         mMainGUIWindow = NULL;
+         mLabelManager = nullptr;
+         mMainGUIWindow = nullptr;
 
 
-         mGM = NULL;
+         mGM = nullptr;
 #if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
          if (mGUI.valid())
             mGUI->Emancipate();
 #endif
-         mGUI = NULL;
-         mApp = NULL;
+         mGUI = nullptr;
+         mApp = nullptr;
       }
 
       //////////////////////////////////////////////////////////////
@@ -169,7 +169,7 @@ class LabelManagerTests : public CPPUNIT_NS::TestFixture
 
       void TestHUDLabel()
       {
-         dtCore::RefPtr<SimCore::Components::HUDLabel> label = new SimCore::Components::HUDLabel(
+         std::shared_ptr<SimCore::Components::HUDLabel> label = new SimCore::Components::HUDLabel(
                   "TestLabel", "Label/EntityLabel");
 
          std::string value("Lorem Ipsum");
@@ -232,7 +232,7 @@ class LabelManagerTests : public CPPUNIT_NS::TestFixture
       {
          dtCore::Transform xform;
 
-         SimCore::Actors::Platform* platActor = NULL;
+         SimCore::Actors::Platform* platActor = nullptr;
 
          //In front of the camera
          osg::Vec3 plat1Pos(0.0, 5.0, 0.0);
@@ -249,22 +249,22 @@ class LabelManagerTests : public CPPUNIT_NS::TestFixture
          mLabelManager->Update(0.016);
 
          //This tests both GetOrCreateLabel and AddLabel.
-         dtCore::RefPtr<SimCore::Components::HUDLabel> label = mLabelManager->GetOrCreateLabel(*mPlatform1);
-         dtCore::RefPtr<SimCore::Components::HUDLabel> label2 = mLabelManager->GetOrCreateLabel(*mPlatform2);
+         std::shared_ptr<SimCore::Components::HUDLabel> label = mLabelManager->GetOrCreateLabel(*mPlatform1);
+         std::shared_ptr<SimCore::Components::HUDLabel> label2 = mLabelManager->GetOrCreateLabel(*mPlatform2);
          CPPUNIT_ASSERT(label.valid());
          CPPUNIT_ASSERT(label2.valid());
 
          CPPUNIT_ASSERT(label->GetCEGUIWindow()->getParent() == mLabelManager->GetGUILayer()->GetCEGUIWindow());
          CPPUNIT_ASSERT(label2->GetCEGUIWindow()->getParent() == mLabelManager->GetGUILayer()->GetCEGUIWindow());
 
-         dtCore::RefPtr<SimCore::Components::HUDLabel> label1Next = mLabelManager->GetOrCreateLabel(*mPlatform1);
-         dtCore::RefPtr<SimCore::Components::HUDLabel> label2Next = mLabelManager->GetOrCreateLabel(*mPlatform2);
+         std::shared_ptr<SimCore::Components::HUDLabel> label1Next = mLabelManager->GetOrCreateLabel(*mPlatform1);
+         std::shared_ptr<SimCore::Components::HUDLabel> label2Next = mLabelManager->GetOrCreateLabel(*mPlatform2);
          CPPUNIT_ASSERT_MESSAGE("the label manager should return the same label because it should be in the cache", label == label1Next);
          CPPUNIT_ASSERT_MESSAGE("the label manager should not return the same label since the label was not in view, and is not cached",
                   label2 != label2Next);
 
-         dtCore::ObserverPtr<SimCore::Components::HUDLabel> label2DeleteCheck = label2.get();
-         label2 = NULL;
+         std::weak_ptr<SimCore::Components::HUDLabel> label2DeleteCheck = label2.get();
+         label2 = nullptr;
          CPPUNIT_ASSERT_MESSAGE("Labels should get deleted when all of their references go away.", !label2DeleteCheck.valid());
 
 
@@ -335,7 +335,7 @@ class LabelManagerTests : public CPPUNIT_NS::TestFixture
    private:
       void TestSingleLabelColor(SimCore::Actors::BaseEntityActorProxy::ForceEnum& force)
       {
-         dtCore::RefPtr<SimCore::Components::HUDLabel> label = mLabelManager->GetOrCreateLabel(*mPlatform1);
+         std::shared_ptr<SimCore::Components::HUDLabel> label = mLabelManager->GetOrCreateLabel(*mPlatform1);
          SimCore::Actors::Platform* platform;
          mPlatform1->GetActor(platform);
 
@@ -349,18 +349,18 @@ class LabelManagerTests : public CPPUNIT_NS::TestFixture
          CPPUNIT_ASSERT(dtUtil::Equivalent(expectedColor, color, osg::Vec4::value_type(0.01f)));
       }
 
-      dtCore::RefPtr<dtGame::GameManager> mGM;
-      dtCore::RefPtr<dtABC::Application> mApp;
+      std::shared_ptr<dtGame::GameManager> mGM;
+      std::shared_ptr<dtABC::Application> mApp;
 #if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
-      dtCore::RefPtr<dtGUI::CEUIDrawable> mGUI;
+      std::shared_ptr<dtGUI::CEUIDrawable> mGUI;
 #else
-      dtCore::RefPtr<dtGUI::GUI> mGUI;
+      std::shared_ptr<dtGUI::GUI> mGUI;
 #endif
-      dtCore::RefPtr<SimCore::Components::LabelManager> mLabelManager;
-      dtCore::RefPtr<SimCore::Components::HUDElement> mMainGUIWindow;
+      std::shared_ptr<SimCore::Components::LabelManager> mLabelManager;
+      std::shared_ptr<SimCore::Components::HUDElement> mMainGUIWindow;
 
-      dtCore::RefPtr<SimCore::Actors::PlatformActorProxy> mPlatform1;
-      dtCore::RefPtr<SimCore::Actors::PlatformActorProxy> mPlatform2;
+      std::shared_ptr<SimCore::Actors::PlatformActorProxy> mPlatform1;
+      std::shared_ptr<SimCore::Actors::PlatformActorProxy> mPlatform2;
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(LabelManagerTests);

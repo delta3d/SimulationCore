@@ -31,7 +31,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include <SimCore/Export.h>
 #include <SimCore/Components/BaseHUDElements.h>
-#include <dtCore/observerptr.h>
+#include <dtUtil/refcountedbase.h>
 #include <dtGame/gamemanager.h>
 
 #include <OpenThreads/Mutex>
@@ -173,10 +173,10 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       // LABEL MANAGER CODE
       //////////////////////////////////////////////////////////////////////////
-      class SIMCORE_EXPORT LabelManager : public dtCore::Base//osg::Referenced
+      class SIMCORE_EXPORT LabelManager : public dtCore::Base//std::enable_shared_from_this
       {
          public:
-            typedef std::map<dtCore::UniqueId, dtCore::RefPtr<SimCore::Components::HUDLabel> > LabelMap;
+            typedef std::map<dtCore::UniqueId, std::shared_ptr<SimCore::Components::HUDLabel> > LabelMap;
 
             LabelManager();
 
@@ -195,7 +195,7 @@ namespace SimCore
             SimCore::Components::HUDElement* GetGUILayer();
             const SimCore::Components::HUDElement* GetGUILayer() const;
 
-            dtCore::RefPtr<HUDLabel> GetOrCreateLabel(dtDAL::BaseActorObject& actor);
+            std::shared_ptr<HUDLabel> GetOrCreateLabel(dtDAL::BaseActorObject& actor);
 
             void AddLabel(SimCore::Components::HUDLabel& label);
 
@@ -227,9 +227,9 @@ namespace SimCore
 
             typedef std::vector<SimCore::Components::HUDLabel*> CEGUISortList;
 
-            dtCore::ObserverPtr<dtGame::GameManager> mGM;
+            std::weak_ptr<dtGame::GameManager> mGM;
             LabelOptions mOptions;
-            dtCore::RefPtr<SimCore::Components::HUDElement> mGUILayer;
+            std::shared_ptr<SimCore::Components::HUDElement> mGUILayer;
             LabelMap mLastLabels;
             CEGUISortList mCEGUISortList;
 

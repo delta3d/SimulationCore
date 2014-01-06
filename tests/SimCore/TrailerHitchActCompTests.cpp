@@ -40,7 +40,7 @@
 #include <dtPhysics/palphysicsworld.h>
 #include <dtPhysics/physicscomponent.h>
 
-using dtCore::RefPtr;
+using std::shared_ptr;
 
 namespace SimCore
 {
@@ -90,7 +90,7 @@ public:
 
       try
       {
-         dtCore::RefPtr<dtPhysics::PhysicsWorld> physicsWorld = new dtPhysics::PhysicsWorld(GetGlobalApplication());
+         std::shared_ptr<dtPhysics::PhysicsWorld> physicsWorld = new dtPhysics::PhysicsWorld(GetGlobalApplication());
          physicsWorld->Init();
          mGM->AddComponent(*new dtPhysics::PhysicsComponent(*physicsWorld, false),
                   dtGame::GameManager::ComponentPriority::NORMAL);
@@ -111,18 +111,18 @@ public:
    void tearDown()
    {
       dtCore::System::GetInstance().Stop();
-      mVehicle = NULL;
-      mTrailer = NULL;
-      if (mGM != NULL)
+      mVehicle = nullptr;
+      mTrailer = nullptr;
+      if (mGM != nullptr)
       {
          mGM->Shutdown();
       }
-      mGM = NULL;
+      mGM = nullptr;
    }
 
    void TestGetSet()
    {
-      dtCore::RefPtr<SimCore::ActComps::TrailerHitchActComp> trailerAC = new SimCore::ActComps::TrailerHitchActComp();
+      std::shared_ptr<SimCore::ActComps::TrailerHitchActComp> trailerAC = new SimCore::ActComps::TrailerHitchActComp();
 
       CPPUNIT_ASSERT(trailerAC->GetCascadeDeletes());
 
@@ -163,7 +163,7 @@ public:
    void TestAddLocalOrRemote(bool remote, bool enableRemoteMovement = false)
    {
       dtCore::Transform xform, xformTrailer;
-      dtCore::Transformable* tx = NULL;
+      dtCore::Transformable* tx = nullptr;
       mVehicle->GetDrawable(tx);
 
       /// x and z are negative and y not 0 so 0,0,0 won't pass translation checks.
@@ -171,12 +171,12 @@ public:
       xform.SetRotation(90.0f, -0.1f, -0.2f);
       tx->SetTransform(xform);
 
-      dtGame::DeadReckoningHelper* drHelper = NULL;
+      dtGame::DeadReckoningHelper* drHelper = nullptr;
       mVehicle->GetComponent(drHelper);
       drHelper->SetLastKnownTranslation(xform.GetTranslation());
       drHelper->SetLastKnownRotation(xform.GetRotation());
 
-      dtCore::RefPtr<SimCore::ActComps::TrailerHitchActComp> trailerAC = new SimCore::ActComps::TrailerHitchActComp();
+      std::shared_ptr<SimCore::ActComps::TrailerHitchActComp> trailerAC = new SimCore::ActComps::TrailerHitchActComp();
 
       mVehicle->AddComponent(*trailerAC);
 
@@ -214,9 +214,9 @@ public:
 
       CPPUNIT_ASSERT_EQUAL(enableRemoteMovement && remote, parented);
 
-      dtGame::DeadReckoningHelper* drHelperTrailer = NULL;
+      dtGame::DeadReckoningHelper* drHelperTrailer = nullptr;
       mTrailer->GetComponent(drHelperTrailer);
-      CPPUNIT_ASSERT(drHelperTrailer != NULL);
+      CPPUNIT_ASSERT(drHelperTrailer != nullptr);
 
       if (parented)
       {
@@ -231,7 +231,7 @@ public:
 
    void TestRotateTrailer()
    {
-      dtCore::RefPtr<SimCore::ActComps::TrailerHitchActComp> trailerAC = new SimCore::ActComps::TrailerHitchActComp();
+      std::shared_ptr<SimCore::ActComps::TrailerHitchActComp> trailerAC = new SimCore::ActComps::TrailerHitchActComp();
 
       mVehicle->AddComponent(*trailerAC);
 
@@ -254,7 +254,7 @@ public:
       dtCore::System::GetInstance().Step();
 
       dtCore::Transform xform;
-      dtCore::Transformable* tx = NULL;
+      dtCore::Transformable* tx = nullptr;
       mTrailer->GetDrawable(tx);
 
       // Since the vehicle is at identity rotation, the rotation of the trailer should match the hitch rotation.
@@ -285,22 +285,22 @@ public:
 
    void TestInvalidTrailerID()
    {
-      dtCore::RefPtr<SimCore::ActComps::TrailerHitchActComp> trailerAC = new SimCore::ActComps::TrailerHitchActComp();
+      std::shared_ptr<SimCore::ActComps::TrailerHitchActComp> trailerAC = new SimCore::ActComps::TrailerHitchActComp();
 
       mVehicle->AddComponent(*trailerAC);
 
       trailerAC->SetTrailerActorId(dtCore::UniqueId());
 
-      CPPUNIT_ASSERT(trailerAC->LookupTrailer() == NULL);
+      CPPUNIT_ASSERT(trailerAC->LookupTrailer() == nullptr);
 
       mGM->AddActor(*mVehicle, false, false);
 
-      CPPUNIT_ASSERT(trailerAC->LookupTrailer() == NULL);
+      CPPUNIT_ASSERT(trailerAC->LookupTrailer() == nullptr);
    }
 
    void TestCascadingDeletes()
    {
-      dtCore::RefPtr<SimCore::ActComps::TrailerHitchActComp> trailerAC = new SimCore::ActComps::TrailerHitchActComp();
+      std::shared_ptr<SimCore::ActComps::TrailerHitchActComp> trailerAC = new SimCore::ActComps::TrailerHitchActComp();
 
       mVehicle->AddComponent(*trailerAC);
 
@@ -323,7 +323,7 @@ public:
 
    void TestCascadingDeletesOff()
    {
-      dtCore::RefPtr<SimCore::ActComps::TrailerHitchActComp> trailerAC = new SimCore::ActComps::TrailerHitchActComp();
+      std::shared_ptr<SimCore::ActComps::TrailerHitchActComp> trailerAC = new SimCore::ActComps::TrailerHitchActComp();
 
       mVehicle->AddComponent(*trailerAC);
 
@@ -350,11 +350,11 @@ private:
 
    void CheckDetached(SimCore::ActComps::TrailerHitchActComp& trailerAC)
    {
-      dtGame::DeadReckoningHelper* drHelper = NULL;
+      dtGame::DeadReckoningHelper* drHelper = nullptr;
       mVehicle->GetComponent(drHelper);
-      dtGame::DeadReckoningHelper* drHelperTrailer = NULL;
+      dtGame::DeadReckoningHelper* drHelperTrailer = nullptr;
       mTrailer->GetComponent(drHelperTrailer);
-      CPPUNIT_ASSERT(drHelperTrailer != NULL);
+      CPPUNIT_ASSERT(drHelperTrailer != nullptr);
 
       CPPUNIT_ASSERT(!trailerAC.GetAttached());
 
@@ -363,16 +363,16 @@ private:
 
       CPPUNIT_ASSERT(!parented);
       CPPUNIT_ASSERT(inScene);
-      CPPUNIT_ASSERT(trailerAC.GetTrailer() == NULL);
+      CPPUNIT_ASSERT(trailerAC.GetTrailer() == nullptr);
 
       CPPUNIT_ASSERT_EQUAL_MESSAGE("the detached trailer should just pick up the dr algorithm of its former parent so it can dr correctly.",
                drHelper->GetDeadReckoningAlgorithm(), drHelperTrailer->GetDeadReckoningAlgorithm());
 
    }
 
-   RefPtr<dtGame::GameManager> mGM;
-   RefPtr<Actors::FourWheelVehicleActorProxy> mVehicle;
-   RefPtr<Actors::FourWheelVehicleActorProxy> mTrailer;
+   std::shared_ptr<dtGame::GameManager> mGM;
+   std::shared_ptr<Actors::FourWheelVehicleActorProxy> mVehicle;
+   std::shared_ptr<Actors::FourWheelVehicleActorProxy> mTrailer;
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(TrailerHitchActCompTests);

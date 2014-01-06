@@ -73,9 +73,9 @@ namespace SimCore
 
       if( ! HasNodeName(nodeName))
       {
-         // Create an item keyed on nodeName and with a value of NULL.
+         // Create an item keyed on nodeName and with a value of nullptr.
          // The value will be assigned later during a node tree traversal.
-         mShaderMap[nodeName] = NULL;
+         mShaderMap[nodeName] = nullptr;
 
          success = true;
       }
@@ -134,7 +134,7 @@ namespace SimCore
       if(foundIter != mShaderMap.end())
       {
          // ...attach the shader.
-         dtCore::RefPtr<dtCore::ShaderProgram> protoShader
+         std::shared_ptr<dtCore::ShaderProgram> protoShader
             = dtCore::ShaderManager::GetInstance().FindShaderPrototype(mShaderName, mShaderGroup);
          if(protoShader.valid())
          {

@@ -22,7 +22,7 @@
 #ifndef OSGEPHEMERIS_EPHEMERIS_ENGINE_DEF
 #define OSGEPHEMERIS_EPHEMERIS_ENGINE_DEF
 
-#include <osg/Referenced>
+#include <dtUtil/refcountedbase.h>
 #include <osg/ref_ptr>
 
 #include <osgEphemeris/CelestialBodies.h>
@@ -38,7 +38,7 @@ namespace osgEphemeris {
               from latitude, longitude, altitude, date and time.
       */
 
-class OSGEPHEMERIS_EXPORT EphemerisEngine: public osg::Referenced
+class OSGEPHEMERIS_EXPORT EphemerisEngine: public std::enable_shared_from_this
 {
     public:
 

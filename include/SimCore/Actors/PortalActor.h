@@ -67,7 +67,7 @@ namespace SimCore
             virtual ~Portal(){}
 
          private:
-            dtCore::RefPtr<dtCore::BaseActorObject> mLinked;
+            std::shared_ptr<dtCore::BaseActorObject> mLinked;
             bool                                   mIsOpen;
             std::string                            mPortalName;
             float                                  mTimeToSendOut;

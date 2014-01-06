@@ -65,7 +65,7 @@ namespace SimCore
          // writing them to the time struct mExpandedTime.
          // WARNING: gmtime returns a staticly allocated struct.
          tm* staticTime = gmtime( &gmtTime ); 
-         if( staticTime != NULL )
+         if( staticTime != nullptr )
          {
             // Copy the data from the static struct to this
             // object's local time struct.
@@ -97,7 +97,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////
       void DayTimeActorProxy::BuildPropertyMap()
       {
-         DayTimeActor* actor = NULL;
+         DayTimeActor* actor = nullptr;
          GetActor(actor);
 
          AddProperty(new dtDAL::IntActorProperty("Time Of Day", "Time Of Day", 

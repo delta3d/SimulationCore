@@ -28,7 +28,7 @@
 
 #include "DriverExport.h"
 
-#include <dtCore/refptr.h>
+#include <dtUtil/refcountedbase.h>
 #include <dtCore/deltadrawable.h>
 
 namespace osg
@@ -68,20 +68,20 @@ namespace DriverDemo
 
    private:
 
-      dtCore::RefPtr<osg::MatrixTransform> mOSGNode;
+      osg::ref_ptr<osg::MatrixTransform> mOSGNode;
 
       static void Init();
       static void ConfigInstance(osg::StateSet*, osg::Group&);
 
       static bool mInitSuccess;
       
-      static dtCore::RefPtr<osg::Uniform> mOffset;
-      static dtCore::RefPtr<osg::Uniform> mShieldColor;
-      static dtCore::RefPtr<osg::Uniform> mNoiseTexture;
-      static dtCore::RefPtr<osg::Texture3D> mTexture;
-      static dtCore::RefPtr<osg::BlendFunc> mBlendFunc;
-      static dtCore::RefPtr<dtCore::ShaderProgram> mShaderProgram;
-      static dtCore::RefPtr<osg::Node> mForceField;
+      static osg::ref_ptr<osg::Uniform> mOffset;
+      static osg::ref_ptr<osg::Uniform> mShieldColor;
+      static osg::ref_ptr<osg::Uniform> mNoiseTexture;
+      static osg::ref_ptr<osg::Texture3D> mTexture;
+      static osg::ref_ptr<osg::BlendFunc> mBlendFunc;
+      static std::shared_ptr<dtCore::ShaderProgram> mShaderProgram;
+      static osg::ref_ptr<osg::Node> mForceField;
 
    };
 

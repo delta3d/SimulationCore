@@ -132,7 +132,7 @@ namespace SimCore
       {
          // Remove our velocity line node from the scene before we go.
          dtGame::IEnvGameActorProxy *envProxy = GetGameActorProxy().GetGameManager()->GetEnvironmentActor();
-         if (mArrowGlobalParentNode.valid() && envProxy != NULL)
+         if (mArrowGlobalParentNode.valid() && envProxy != nullptr)
          {
             dtGame::IEnvGameActor *envActor;
             envProxy->GetActor(envActor);
@@ -169,11 +169,11 @@ namespace SimCore
             if (mSlavedEntity.valid())
             {
                PlatformActorProxy* platform = dynamic_cast<PlatformActorProxy*>(&mSlavedEntity->GetGameActorProxy());
-               if (platform != NULL)
+               if (platform != nullptr)
                {
-                  dtDAL::ResourceActorProperty* rap = NULL;
+                  dtDAL::ResourceActorProperty* rap = nullptr;
                   GetGameActorProxy().GetProperty("static mesh", rap);
-                  if (rap != NULL)
+                  if (rap != nullptr)
                   {
                      rap->SetValue(platform->GetNonDamagedResource());
                   }
@@ -186,7 +186,7 @@ namespace SimCore
             osg::Group* g = GetOSGNode()->asGroup();
             osg::StateSet* ss = g->getOrCreateStateSet();
             ss->setMode(GL_BLEND,osg::StateAttribute::ON);
-            dtCore::RefPtr<osg::BlendFunc> trans = new osg::BlendFunc();
+            osg::ref_ptr<osg::BlendFunc> trans = new osg::BlendFunc();
             trans->setFunction( osg::BlendFunc::SRC_ALPHA ,osg::BlendFunc::ONE_MINUS_SRC_ALPHA );
             ss->setAttributeAndModes(trans.get());
             ss->setRenderingHint( osg::StateSet::TRANSPARENT_BIN );
@@ -211,7 +211,7 @@ namespace SimCore
             mSlaveUpdatedParticleIsActive = false;
 
             // Replace the ghost shader with a simple shader that uses no lighting (ie fully lit)
-            dtCore::RefPtr<dtCore::ShaderProgram> shader = 
+            std::shared_ptr<dtCore::ShaderProgram> shader = 
                dtCore::ShaderManager::GetInstance().FindShaderPrototype("GhostParticleShader", "GhostVehicleShaderGroup");
             if(!shader.valid()) 
             {
@@ -229,7 +229,7 @@ namespace SimCore
             // of the slave OR the ghost. The parent is world relative and doesn't move.
             mArrowGlobalParentNode = new dtCore::Transformable("Arrow");
             dtGame::IEnvGameActorProxy *envProxy = GetGameActorProxy().GetGameManager()->GetEnvironmentActor();
-            if (envProxy != NULL)
+            if (envProxy != nullptr)
             {
                dtGame::IEnvGameActor *envActor;
                envProxy->GetActor(envActor);
@@ -290,7 +290,7 @@ namespace SimCore
          arrowGeom.setUseDisplayList(false);
          arrowGeom.setVertexArray(&arrowVerts);
          mVelocityArrowGeode->addDrawable(&arrowGeom);
-         osg::StateSet* ss(NULL);
+         osg::StateSet* ss(nullptr);
          ss = arrowGeode.getOrCreateStateSet();
          ss->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
 
@@ -422,7 +422,7 @@ namespace SimCore
             // The DRGhost has to manually force the ground clamper to do it on the ghost
             if (drHelper.GetGroundClampType() != dtGame::GroundClampTypeEnum::NONE)
             {
-               dtGame::DeadReckoningComponent* drComp = NULL;
+               dtGame::DeadReckoningComponent* drComp = nullptr;
                GetGameActorProxy().GetGameManager()->
                   GetComponentByName(dtGame::DeadReckoningComponent::DEFAULT_NAME, drComp);
 
@@ -510,7 +510,7 @@ namespace SimCore
             RegisterForMessages(dtGame::MessageType::TICK_LOCAL, dtGame::GameActorProxy::TICK_LOCAL_INVOKABLE);
 
             // Listen for actor updates on our slave entity.
-            if (GetActorAsDRGhostActor().GetSlavedEntity() != NULL)
+            if (GetActorAsDRGhostActor().GetSlavedEntity() != nullptr)
             {
                RegisterForMessagesAboutOtherActor(dtGame::MessageType::INFO_ACTOR_UPDATED, 
                   GetActorAsDRGhostActor().GetSlavedEntity()->GetUniqueId(), PROCESS_MSG_INVOKABLE);

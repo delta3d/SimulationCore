@@ -60,11 +60,11 @@ namespace SimCore
       ////////////////////////////////////////////////
       void KeyboardWheeledVehicleInputActComp::Update(const dtGame::TickMessage& msg)
       {
-         dtGame::GameActor* actor = NULL;
+         dtGame::GameActor* actor = nullptr;
          GetOwner(actor);
 
          dtCore::Keyboard *keyboard = actor->GetGameActorProxy().GetGameManager()->GetApplication().GetKeyboard();
-         if (keyboard == NULL)
+         if (keyboard == nullptr)
          {
             return;
          }
@@ -140,17 +140,17 @@ namespace SimCore
       ////////////////////////////////////////////////
       void KeyboardWheeledVehicleInputActComp::OnEnteredWorld()
       {
-         dtGame::GameActor* actor = NULL;
+         dtGame::GameActor* actor = nullptr;
          GetOwner(actor);
 
-         if (actor == NULL)
+         if (actor == nullptr)
          {
             LOG_ERROR("The owner actor is not a transformable!  Can't rotate the wheels.");
             return;
          }
 
          std::string tickInvokable = "Tick Remote " + GetType().Get();
-         if (actor->GetGameActorProxy().GetInvokable(tickInvokable) == NULL)
+         if (actor->GetGameActorProxy().GetInvokable(tickInvokable) == nullptr)
          {
             actor->GetGameActorProxy().AddInvokable(*new dtGame::Invokable(tickInvokable,
                dtUtil::MakeFunctor(&KeyboardWheeledVehicleInputActComp::Update, this)));

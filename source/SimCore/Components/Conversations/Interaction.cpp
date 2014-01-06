@@ -133,7 +133,7 @@ namespace SimCore
       {
          ResponseInteractionPair p;
          p.first = &pResponse;
-         p.second = NULL;
+         p.second = nullptr;
          pResponse.SetId(mResponses.size());
          mResponses.push_back(p);
       }
@@ -208,7 +208,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       Interaction* Interaction::GetBranch(const Response& r) 
       {
-         Interaction* i = NULL;
+         Interaction* i = nullptr;
 
          ResponseArray::iterator iter = std::find_if(mResponses.begin(), mResponses.end(), funcMatchResponse(r));
          if(iter != mResponses.end())

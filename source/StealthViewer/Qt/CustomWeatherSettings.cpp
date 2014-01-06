@@ -36,6 +36,6 @@ namespace StealthQt
    CustomWeatherSettings::~CustomWeatherSettings()
    {
       delete mUi;
-      mUi = NULL;
+      mUi = nullptr;
    }
 }

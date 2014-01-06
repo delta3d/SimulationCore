@@ -138,7 +138,7 @@ namespace SimCore
          BaseClass::OnEnteredWorld();
          if (!mNodeCollector.valid())
          {
-            dtGame::GameActor* owner = NULL;
+            dtGame::GameActor* owner = nullptr;
             GetOwner(owner);
             SetNodeCollector(new dtUtil::NodeCollector(owner->GetOSGNode(), dtUtil::NodeCollector::AllNodeTypes));
          }
@@ -150,10 +150,10 @@ namespace SimCore
             if (weaponAdded)
             {
                mWeaponToSwitchTo = FindWeapon(mWeaponName);
-               if (mWeaponToSwitchTo != NULL)
+               if (mWeaponToSwitchTo != nullptr)
                {
                   osgSim::DOFTransform* dof = mNodeCollector->GetDOFTransform(mWeaponSwapRootNode);
-                  if (dof != NULL)
+                  if (dof != nullptr)
                   {
                      dof->removeChildren(0, dof->getNumChildren());
                   }
@@ -170,16 +170,16 @@ namespace SimCore
       void WeaponSwapActComp::OnRemovedFromWorld()
       {
          BaseClass::OnRemovedFromWorld();
-         mNodeCollector = NULL;
+         mNodeCollector = nullptr;
          mWeapons.clear();
       }
 
       //////////////////////////////////////////////////////////////////////////
       void WeaponSwapActComp::SwapWeapon()
       {
-         dtGame::GameActor* owner = NULL;
+         dtGame::GameActor* owner = nullptr;
          GetOwner(owner);
-         if (owner != NULL)
+         if (owner != nullptr)
          {
             if (mHasWeapon)
             {
@@ -189,7 +189,7 @@ namespace SimCore
             AttachWeapon(mWeaponToSwitchTo.get());
             
             mSwitchWeapons = false;
-            mWeaponToSwitchTo = NULL;
+            mWeaponToSwitchTo = nullptr;
          }
       }
 
@@ -208,16 +208,16 @@ namespace SimCore
          if (mNodeCollector.valid())
          {
             osgSim::DOFTransform* dof = mNodeCollector->GetDOFTransform(mWeaponSwapRootNode);
-            if (dof != NULL)
+            if (dof != nullptr)
             {
                dof->addChild(wp->mRootNode.get());
 
                // Get access to the hot spot on the weapon model
-               dtCore::RefPtr<dtUtil::NodeCollector> weaponNodeCollector
+               std::shared_ptr<dtUtil::NodeCollector> weaponNodeCollector
                   = new dtUtil::NodeCollector(wp->mRootNode.get(), dtUtil::NodeCollector::DOFTransformFlag);
                osgSim::DOFTransform* hotspotDof = weaponNodeCollector->GetDOFTransform(wp->mHotSpotName);
 
-               if ( hotspotDof != NULL )
+               if ( hotspotDof != nullptr )
                {
                   //note: this function only works if the dof hot spot has the same name on both weapons
                   mNodeCollector->AddDOFTransform(wp->mHotSpotName, *hotspotDof);
@@ -236,7 +236,7 @@ namespace SimCore
          if (mNodeCollector.valid())
          {
             osgSim::DOFTransform* dof = mNodeCollector->GetDOFTransform(mWeaponSwapRootNode);
-            if (dof != NULL)
+            if (dof != nullptr)
             {
                if (mCurrentWeapon.valid() && mCurrentWeapon->mRootNode.valid())
                {
@@ -254,7 +254,7 @@ namespace SimCore
       bool WeaponSwapActComp::AddWeapon(const std::string weaponName, const std::string& weaponHotspotName, const dtDAL::ResourceDescriptor& meshToLoad)
       {
          bool isModelLoaded = false;
-         dtCore::RefPtr<osg::Node> newModel;
+         osg::ref_ptr<osg::Node> newModel;
 
          if (meshToLoad != dtDAL::ResourceDescriptor::NULL_RESOURCE)
          {
@@ -265,12 +265,12 @@ namespace SimCore
             if (isModelLoaded)
             {
                // Get access to the hot spot on the weapon model
-               dtCore::RefPtr<dtUtil::NodeCollector> weaponNodeCollector = new dtUtil::NodeCollector(newModel.get(), dtUtil::NodeCollector::DOFTransformFlag);
+               std::shared_ptr<dtUtil::NodeCollector> weaponNodeCollector = new dtUtil::NodeCollector(newModel.get(), dtUtil::NodeCollector::DOFTransformFlag);
                osgSim::DOFTransform* hotspotDof = weaponNodeCollector->GetDOFTransform(weaponHotspotName);
 
-               if (hotspotDof != NULL)
+               if (hotspotDof != nullptr)
                {
-                  dtCore::RefPtr<WeaponDescription> weaponDesc = new WeaponDescription();
+                  std::shared_ptr<WeaponDescription> weaponDesc = new WeaponDescription();
                   weaponDesc->mWeaponName = weaponName;  
                   weaponDesc->mHotSpotName = weaponHotspotName;
                   weaponDesc->mRootNode = newModel.get();
@@ -325,7 +325,7 @@ namespace SimCore
       void WeaponSwapActComp::SelectWeapon( const std::string& weaponName )
       {
          WeaponDescription* wp = FindWeapon(weaponName);
-         if(wp != NULL)  
+         if(wp != nullptr)  
          {
             SetNextWeapon(wp);
          }
@@ -333,7 +333,7 @@ namespace SimCore
 
       bool WeaponSwapActComp::HasWeapon( const std::string& weaponName ) const
       {
-         return FindWeapon(weaponName) != NULL;
+         return FindWeapon(weaponName) != nullptr;
       }
 
       const std::string& WeaponSwapActComp::GetCurrentWeapon() const
@@ -351,7 +351,7 @@ namespace SimCore
       {
          CompareWeaponByName(const std::string& str): mName(str) {}
 
-         bool operator()(const dtCore::RefPtr<WeaponSwapActComp::WeaponDescription>& wp)
+         bool operator()(const std::shared_ptr<WeaponSwapActComp::WeaponDescription>& wp)
          {
             return mName == wp->mWeaponName;
          }
@@ -379,7 +379,7 @@ namespace SimCore
                return mWeapons[i];
             }
          }
-         return NULL;
+         return nullptr;
       }
 
       const WeaponSwapActComp::WeaponDescription* WeaponSwapActComp::FindWeapon( const std::string& weaponName ) const
@@ -391,7 +391,7 @@ namespace SimCore
                return mWeapons[i];
             }
          }
-         return NULL;
+         return nullptr;
       }
 
       int WeaponSwapActComp::FindWeaponIndex(const std::string& weaponName) const

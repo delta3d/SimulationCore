@@ -35,7 +35,7 @@
 
 namespace StealthQt
 {
-   void EntitySearch::FindEntities(std::vector<dtCore::ObserverPtr<dtGame::GameActorProxy> > &toFill,
+   void EntitySearch::FindEntities(std::vector<std::weak_ptr<dtGame::GameActorProxy> > &toFill,
             dtGame::GameManager &gm,
             const std::string &callSign,
             const std::string &force,
@@ -52,7 +52,7 @@ namespace StealthQt
             dynamic_cast<SimCore::Actors::BaseEntityActorProxy*>(allProxies[i]);
 
          // Could be the environment actor proxy or something. Skip it
-         if(eap == NULL)
+         if(eap == nullptr)
             continue;
 
          SimCore::Actors::BaseEntity& entity = static_cast<SimCore::Actors::BaseEntity&>(eap->GetGameActor());
@@ -98,10 +98,10 @@ namespace StealthQt
       const SimCore::Actors::BaseEntity *entity =
          dynamic_cast<const SimCore::Actors::BaseEntity*>(&proxy.GetGameActor());
 
-         if(entity == NULL)
+         if(entity == nullptr)
             return 0.0;
 
-         const dtGame::DeadReckoningHelper* drhelp = NULL;
+         const dtGame::DeadReckoningHelper* drhelp = nullptr;
          entity->GetComponent(drhelp);
 
          double lastTransUpdate = drhelp->GetLastTranslationUpdatedTime();

@@ -59,7 +59,7 @@ namespace SimCore
       , mDownLimit(-1.0)
       , mUpLimit(-1.0)
       , mKeyboard(keyboard)
-      , mDOF(NULL)
+      , mDOF(nullptr)
       , mTestMode(false)
       , mTestTimeSincePrint(0.0f)
       , mTestNumberOfZeros(0)
@@ -76,7 +76,7 @@ namespace SimCore
    void ClampedMotionModel::OnMessage(MessageData *data)
    {
       if(data->message == dtCore::System::MESSAGE_POST_EVENT_TRAVERSAL
-         && (GetTarget() != NULL || GetTargetDOF() != NULL) 
+         && (GetTarget() != nullptr || GetTargetDOF() != nullptr) 
          && IsEnabled() 
          && ( GetMouse()->GetHasFocus() || mTestMode ) )
       {
@@ -219,7 +219,7 @@ namespace SimCore
    void ClampedMotionModel::SetTargetsRotation(const osg::Vec3 &newHpr)
    {
       // the motion model is working directly against the drawable
-      if (!mDOF.valid() && GetTarget() != NULL)
+      if (!mDOF.valid() && GetTarget() != nullptr)
       {
          dtCore::Transform transform;
          GetTarget()->GetTransform(transform, dtCore::Transformable::REL_CS);
@@ -237,7 +237,7 @@ namespace SimCore
    osg::Vec3 ClampedMotionModel::GetTargetsRotation() const
    {
       // the motion model is working directly against the drawable
-      if (!mDOF.valid() && GetTarget() != NULL)
+      if (!mDOF.valid() && GetTarget() != nullptr)
       {
          dtCore::Transform transform;
          osg::Vec3 hpr;
@@ -266,7 +266,7 @@ namespace SimCore
    //////////////////////////////////////////////////////////////////////////         
    bool ClampedMotionModel::IsMouseButtonHeld() const
    {
-      return GetMouse() != NULL ? GetMouse()->GetButtonState( mFreeLookMouseButton ) : false;
+      return GetMouse() != nullptr ? GetMouse()->GetButtonState( mFreeLookMouseButton ) : false;
    }
 
    //////////////////////////////////////////////////////////////////////////         

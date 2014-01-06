@@ -142,7 +142,7 @@ namespace NetDemo
 
       BaseClass::BuildPropertyMap();
 
-      EnemyDescriptionActor* actor = NULL;
+      EnemyDescriptionActor* actor = nullptr;
       GetActor(actor);
 
       static const dtUtil::RefString PROP_ENEMY_TYPE_DESC("Indicates the enemy type.");

@@ -73,7 +73,7 @@ namespace StealthQt
    FOVWidget::~FOVWidget()
    {
       delete mUi;
-      mUi = NULL;
+      mUi = nullptr;
    }
 
    ///////////////////////////////////////////////////////////////////////////////

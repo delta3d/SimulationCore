@@ -57,7 +57,7 @@ namespace SimCore
 
       private:
 
-         dtCore::RefPtr<dtAudio::Sound> mSound;
+         std::shared_ptr<dtAudio::Sound> mSound;
       };
 
 
@@ -186,7 +186,7 @@ namespace SimCore
          * Gets the billboard icon associated with sound actor proxies.
          * @return
          */
-         virtual dtDAL::ActorProxyIcon* GetBillBoardIcon();
+         virtual dtDAL::ActorProxyIconPtr GetBillBoardIcon();
 
          /// Builds the invokables of this actor
          void BuildInvokables();

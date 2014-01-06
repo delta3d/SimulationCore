@@ -169,8 +169,8 @@ namespace NetDemo
 
 
       //this can be used to change steering behaviors when transitioning into a new state
-      typedef dtUtil::Command1<void, dtCore::RefPtr<SteeringBehaviorType> > ChangeSteeringBehaviorCommand;
-      typedef dtUtil::Functor<void, TYPELIST_1(dtCore::RefPtr<SteeringBehaviorType>)> ChangeSteeringBehaviorFunctor;    
+      typedef dtUtil::Command1<void, std::shared_ptr<SteeringBehaviorType> > ChangeSteeringBehaviorCommand;
+      typedef dtUtil::Functor<void, TYPELIST_1(std::shared_ptr<SteeringBehaviorType>)> ChangeSteeringBehaviorFunctor;    
   
       SteeringBehaviorType* behavior = new DoNothing();
       ChangeSteeringBehaviorCommand* ctbc = new ChangeSteeringBehaviorCommand(ChangeSteeringBehaviorFunctor(this, &EnemyAIHelper::ChangeSteeringBehavior), behavior);
@@ -192,7 +192,7 @@ namespace NetDemo
    {
    }
 
-   void EnemyAIHelper::ChangeSteeringBehavior(dtCore::RefPtr<SteeringBehaviorType> newBehavior)
+   void EnemyAIHelper::ChangeSteeringBehavior(std::shared_ptr<SteeringBehaviorType> newBehavior)
    {
       unsigned num = GetSteeringModel()->AddSteeringBehavior(newBehavior.get());
       GetSteeringModel()->SetCurrentSteeringBehavior(num);
@@ -209,7 +209,7 @@ namespace NetDemo
       osg::Vec3 pos = dtUtil::MatrixUtil::GetRow3(mat, 3) + (forward * 50.0f);
 
       GoToWaypointState* waypointState = dynamic_cast<GoToWaypointState*>(BaseClass::GetStateMachine().GetState(&AIStateType::AI_STATE_GO_TO_WAYPOINT)); 
-      if(waypointState != NULL)
+      if(waypointState != nullptr)
       {
          waypointState->mStateData = pos;
       }
@@ -219,7 +219,7 @@ namespace NetDemo
    {
       dtAI::NPCState* npcState = BaseClass::GetStateMachine().GetCurrentState();
       GoToWaypointState* waypointState = dynamic_cast<GoToWaypointState*>(npcState);
-      if(waypointState != NULL)
+      if(waypointState != nullptr)
       {
          osg::Vec3 pos = waypointState->mStateData.mCurrentWaypoint;
 
@@ -236,7 +236,7 @@ namespace NetDemo
    {
       dtAI::NPCState* npcState = BaseClass::GetStateMachine().GetState(&AIStateType::AI_STATE_ATTACK);
       AttackState* attackState = dynamic_cast<AttackState*>(npcState);
-      if(attackState != NULL)
+      if(attackState != nullptr)
       {
          attackState->mStateData.mTarget = &target;
          //let the system know we have targeted a new entity

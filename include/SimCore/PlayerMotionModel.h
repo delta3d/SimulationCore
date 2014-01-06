@@ -26,7 +26,7 @@
 
 #include <SimCore/Export.h>
 #include <dtCore/fpsmotionmodel.h>
-#include <dtCore/refptr.h>
+#include <dtUtil/refcountedbase.h>
 
 
 
@@ -45,10 +45,10 @@ namespace SimCore
       public:
 
          // Constructor.
-         // @param keyboard the keyboard instance, or NULL to avoid creating default input mappings
-         // @param mouse the mouse instance, or NULL to avoid creating default input mappings
-         PlayerMotionModel(dtCore::Keyboard* keyboard = NULL,
-                           dtCore::Mouse* mouse = NULL);
+         // @param keyboard the keyboard instance, or nullptr to avoid creating default input mappings
+         // @param mouse the mouse instance, or nullptr to avoid creating default input mappings
+         PlayerMotionModel(dtCore::Keyboard* keyboard = nullptr,
+                           dtCore::Mouse* mouse = nullptr);
 
          // Destructor
          virtual ~PlayerMotionModel();

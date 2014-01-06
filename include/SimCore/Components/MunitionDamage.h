@@ -26,7 +26,7 @@
 
 #include <SimCore/Export.h>
 #include <dtCore/base.h>
-#include <dtCore/refptr.h>
+#include <dtUtil/refcountedbase.h>
 #include <dtUtil/enumeration.h>
 
 #include <osg/Vec3>
@@ -204,10 +204,10 @@ namespace SimCore
 
             // The set functions for DamageRanges will copy the supplied range;
             // the values are merely copied, but NOT the name.
-            // A references are not used so that the ranges can be set to NULL explicitly.
-            void SetDamageRanges1_3( const dtCore::RefPtr<DamageRanges>& ranges );
-            void SetDamageRanges2_3( const dtCore::RefPtr<DamageRanges>& ranges );
-            void SetDamageRangesMax( const dtCore::RefPtr<DamageRanges>& ranges );
+            // A references are not used so that the ranges can be set to nullptr explicitly.
+            void SetDamageRanges1_3( const std::shared_ptr<DamageRanges>& ranges );
+            void SetDamageRanges2_3( const std::shared_ptr<DamageRanges>& ranges );
+            void SetDamageRangesMax( const std::shared_ptr<DamageRanges>& ranges );
 
             DamageRanges* GetDamageRanges1_3() { return mRange1_3.get(); }
             DamageRanges* GetDamageRanges2_3() { return mRange2_3.get(); }
@@ -218,8 +218,8 @@ namespace SimCore
 
             // @param trajectory The trajectory of the munition from which to match an Angle-Of-Fall
             // @return damage ranges for the closest match to angle-of-fall for the trajectory;
-            //    NOTE: this will return NULL if no ranges exist.
-            //    Direct Fire munitions will mostly return NULL for ranges,
+            //    NOTE: this will return nullptr if no ranges exist.
+            //    Direct Fire munitions will mostly return nullptr for ranges,
             //    especially bullet types.
             const DamageRanges* GetDamageRangesByTrajectory( const osg::Vec3& trajectory ) const;
 
@@ -281,11 +281,11 @@ namespace SimCore
             float mCutoffRange;
             float mNewtonForce; // The magnitude of force this munition produces at impact point zero
             float mAccumulationFactor;
-            dtCore::RefPtr<DamageProbability> mDirectFireProbs;
-            dtCore::RefPtr<DamageProbability> mIndirectFireProbs;
-            dtCore::RefPtr<DamageRanges> mRange1_3;
-            dtCore::RefPtr<DamageRanges> mRange2_3;
-            dtCore::RefPtr<DamageRanges> mRangeMax;
+            std::shared_ptr<DamageProbability> mDirectFireProbs;
+            std::shared_ptr<DamageProbability> mIndirectFireProbs;
+            std::shared_ptr<DamageRanges> mRange1_3;
+            std::shared_ptr<DamageRanges> mRange2_3;
+            std::shared_ptr<DamageRanges> mRangeMax;
       };
 
    }

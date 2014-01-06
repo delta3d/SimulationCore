@@ -30,8 +30,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include <DriverExport.h>
 #include <osgSim/DOFTransform>
-#include <dtCore/refptr.h>
-#include <dtCore/observerptr.h>
+#include <dtUtil/refcountedbase.h>
+#include <dtUtil/refcountedbase.h>
 #include <SimCore/Components/ArticulationHelper.h>
 #include <SimCore/Actors/BaseEntity.h>
 
@@ -73,7 +73,7 @@ namespace DriverDemo
          //virtual void SetControlState( SimCore::Actors::ControlStateActor* controlState );
          //virtual const SimCore::Actors::ControlStateActor* GetControlState() const;
 
-         virtual dtCore::RefPtr<dtDAL::NamedGroupParameter> BuildGroupProperty();
+         virtual std::shared_ptr<dtDAL::NamedGroupParameter> BuildGroupProperty();
 
          virtual void UpdateDOFReferences( dtUtil::NodeCollector* nodeCollector );
 
@@ -152,9 +152,9 @@ namespace DriverDemo
          unsigned mChangeCountTurretHeading;
          unsigned mChangeCountWeaponElevation;
 
-         dtCore::ObserverPtr<osgSim::DOFTransform> mDOFTurret;
-         dtCore::ObserverPtr<osgSim::DOFTransform> mDOFWeapon;
-         dtCore::ObserverPtr<SimCore::Actors::BaseEntity> mEntity;
+         std::weak_ptr<osgSim::DOFTransform> mDOFTurret;
+         std::weak_ptr<osgSim::DOFTransform> mDOFWeapon;
+         std::weak_ptr<SimCore::Actors::BaseEntity> mEntity;
    };
 } //namespace
 

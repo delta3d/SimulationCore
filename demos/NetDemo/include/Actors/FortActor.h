@@ -117,12 +117,12 @@ namespace NetDemo
 		 float mTimeSinceLightsWereUpdated;
 
          bool mLightIsOn;
-         dtCore::RefPtr<SimCore::Components::RenderingSupportComponent::DynamicLight> mMainLight;
-         dtCore::RefPtr<SimCore::Components::VolumeRenderingComponent::ShapeVolumeRecord> mShapeVolume;
+         std::shared_ptr<SimCore::Components::RenderingSupportComponent::DynamicLight> mMainLight;
+         std::shared_ptr<SimCore::Components::VolumeRenderingComponent::ShapeVolumeRecord> mShapeVolume;
          
          ///////////////////////////////////////////////////
          // Sound effects
-         dtCore::RefPtr<dtAudio::Sound> mSndCollisionHit;
+         std::shared_ptr<dtAudio::Sound> mSndCollisionHit;
          ///////////////////////////////////////////////////
    };
 

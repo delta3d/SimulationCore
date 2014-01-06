@@ -73,7 +73,7 @@ namespace StealthQt
       void AssignFOVUiValuesFromConfig();
    private:
       Ui::FOVWidgetUi* mUi;
-      dtCore::RefPtr<StealthGM::ViewWindowWrapper> mViewWindow;
+      std::shared_ptr<StealthGM::ViewWindowWrapper> mViewWindow;
 
       QDoubleValidator* mGtZeroValidator;
       QDoubleValidator* mFOVValidator;

@@ -24,7 +24,7 @@
 #include <SimCore/HLA/BaseHLAGameEntryPoint.h>
 
 #include <dtUtil/log.h>
-#include <dtCore/refptr.h>
+#include <dtUtil/refcountedbase.h>
 #include <dtDAL/project.h>
 
 #include <dtGame/gameapplication.h>
@@ -42,7 +42,7 @@
 
 #include <iostream>
 
-using dtCore::RefPtr;
+using std::shared_ptr;
 
 namespace SimCore
 {
@@ -67,7 +67,7 @@ namespace SimCore
             //dtGame::GameManager &gameManager = *GetGameManager();
             SimCore::HLA::HLAConnectionComponent *hlaCC;
             gm.GetComponentByName(SimCore::HLA::HLAConnectionComponent::DEFAULT_NAME, hlaCC);
-            if(hlaCC != NULL)
+            if(hlaCC != nullptr)
             {
                const std::string fedMappingFile = dtDAL::Project::GetInstance().
                   GetResourcePath(dtDAL::ResourceDescriptor(mFedMappingResource, mFedMappingResource));
@@ -89,11 +89,11 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      dtCore::RefPtr<dtHLAGM::HLAComponent> BaseHLAGameEntryPoint::CreateAndSetupHLAComponent(dtGame::GameManager &gm)
+      std::shared_ptr<dtHLAGM::HLAComponent> BaseHLAGameEntryPoint::CreateAndSetupHLAComponent(dtGame::GameManager &gm)
       {
-         dtCore::RefPtr<dtHLAGM::HLAComponent> hft = new dtHLAGM::HLAComponent;
+         std::shared_ptr<dtHLAGM::HLAComponent> hft = new dtHLAGM::HLAComponent;
 
-         RefPtr<dtHLAGM::DDMCameraCalculatorGeographic> camCalc = new dtHLAGM::DDMCameraCalculatorGeographic;
+         std::shared_ptr<dtHLAGM::DDMCameraCalculatorGeographic> camCalc = new dtHLAGM::DDMCameraCalculatorGeographic;
          camCalc->SetCamera(gm.GetApplication().GetCamera());
          camCalc->SetName("Ground");
          hft->GetDDMSubscriptionCalculators().AddCalculator(*camCalc);
@@ -118,7 +118,7 @@ namespace SimCore
          camCalc->SetName("Stealth");
          hft->GetDDMSubscriptionCalculators().AddCalculator(*camCalc);
 
-         RefPtr<dtHLAGM::DDMMultiEnumeratedCalculator> multiCalc;
+         std::shared_ptr<dtHLAGM::DDMMultiEnumeratedCalculator> multiCalc;
 
          multiCalc = new dtHLAGM::DDMMultiEnumeratedCalculator;
          multiCalc->SetName("Blip");
@@ -156,7 +156,7 @@ namespace SimCore
       {
          BaseClass::Initialize(app, argc, argv);
 
-         if(parser == NULL)
+         if(parser == nullptr)
             parser = new osg::ArgumentParser(&argc, argv);
 
          if(!IsUIRunning())
@@ -202,8 +202,8 @@ namespace SimCore
 
       void BaseHLAGameEntryPoint::InitializeComponents(dtGame::GameManager &gm)
       {
-         RefPtr<dtHLAGM::HLAComponent>  hft   = CreateAndSetupHLAComponent(gm);
-         RefPtr<HLAConnectionComponent> hlacc = new HLAConnectionComponent;
+         std::shared_ptr<dtHLAGM::HLAComponent>  hft   = CreateAndSetupHLAComponent(gm);
+         std::shared_ptr<HLAConnectionComponent> hlacc = new HLAConnectionComponent;
 
          gm.AddComponent(*hft, dtGame::GameManager::ComponentPriority::NORMAL);
          gm.AddComponent(*hlacc, dtGame::GameManager::ComponentPriority::NORMAL);
@@ -211,7 +211,7 @@ namespace SimCore
          SimCore::Components::MunitionsComponent* munitionsComp;
          gm.GetComponentByName(SimCore::Components::MunitionsComponent::DEFAULT_NAME, munitionsComp);
 
-         if (munitionsComp == NULL)
+         if (munitionsComp == nullptr)
          {
             LOG_WARNING("No munitions component was added with the default name. "
                      "The custom parameter translater will not be added to the HLA Component.");
@@ -219,7 +219,7 @@ namespace SimCore
          else
          {
             // Create a munition specific parameter translator
-            dtCore::RefPtr<HLACustomParameterTranslator> munitionParamTranslator
+            std::shared_ptr<HLACustomParameterTranslator> munitionParamTranslator
                = new HLACustomParameterTranslator;
             // Allow the translator access to the table that maps
             // munition DIS identifiers to the munition names.
@@ -239,7 +239,7 @@ namespace SimCore
             static_cast<dtHLAGM::HLAComponent*>(gm.GetComponentByName(dtHLAGM::HLAComponent::DEFAULT_NAME));
 
          gm.RemoveComponent(*hft);
-         hft = NULL;
+         hft = nullptr;
       }
    }
 

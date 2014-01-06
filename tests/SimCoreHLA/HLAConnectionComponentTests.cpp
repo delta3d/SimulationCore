@@ -54,7 +54,7 @@
    #define SLEEP(milliseconds) usleep(((milliseconds) * 1000))
 #endif
 
-using dtCore::RefPtr;
+using std::shared_ptr;
 
 class HLAConnectionComponentTests : public CPPUNIT_NS::TestFixture 
 {
@@ -70,10 +70,10 @@ class HLAConnectionComponentTests : public CPPUNIT_NS::TestFixture
       void TestAdditionalMaps();
    private:
       dtUtil::Log* logger;
-      RefPtr<dtHLAGM::HLAComponent> mTranslator;
-      RefPtr<SimCore::HLA::HLAConnectionComponent> mHLACC;
-      RefPtr<dtGame::GameManager> mGameManager;
-      RefPtr<dtABC::Application> mApp;
+      std::shared_ptr<dtHLAGM::HLAComponent> mTranslator;
+      std::shared_ptr<SimCore::HLA::HLAConnectionComponent> mHLACC;
+      std::shared_ptr<dtGame::GameManager> mGameManager;
+      std::shared_ptr<dtABC::Application> mApp;
 };
 
 // Registers the fixture into the 'registry'
@@ -101,10 +101,10 @@ void HLAConnectionComponentTests::setUp()
 // Called implicitly by CPPUNIT when the app terminates
 void HLAConnectionComponentTests::tearDown()
 {
-   mTranslator = NULL;
-   mHLACC = NULL;
-   mGameManager = NULL;
-   mApp = NULL;
+   mTranslator = nullptr;
+   mHLACC = nullptr;
+   mGameManager = nullptr;
+   mApp = nullptr;
 }
 
 void HLAConnectionComponentTests::TestAdditionalMaps()

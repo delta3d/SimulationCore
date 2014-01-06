@@ -104,7 +104,7 @@ namespace NetDemo
          {
             // Find the actor in the GM
             dtGame::GameActorProxy* gap = GetGameManager()->FindGameActorById(updateMessage.GetAboutActorId());
-            if(gap != NULL)
+            if(gap != nullptr)
             {
                ServerGameStatusActor* serverStatus = static_cast<ServerGameStatusActor*>(gap->GetDrawable());
                UpdateGameState(serverStatus->GetGameStatus(), serverStatus->GetWaveNumber(), serverStatus->GetTimeLeftInCurState());
@@ -114,9 +114,9 @@ namespace NetDemo
       else if(message.GetMessageType() == dtGame::MessageType::INFO_MAP_LOADED)
       {
          //first look for a server status actor
-         ServerGameStatusActorProxy* proxy = NULL;
+         ServerGameStatusActorProxy* proxy = nullptr;
          GetGameManager()->FindActorByType(*NetDemoActorRegistry::SERVER_GAME_STATUS_ACTOR_TYPE, proxy);
-         if(proxy != NULL)
+         if(proxy != nullptr)
          {
             ServerGameStatusActor& actor = static_cast<ServerGameStatusActor&>(proxy->GetGameActor());
             InitGameState(actor.GetGameStatus(), actor.GetGameDifficulty(), actor.GetNumPlayers(), actor.GetMaxNumWaves());
@@ -136,7 +136,7 @@ namespace NetDemo
          for(; iter != iterEnd; ++iter)
          {
             EnemyMothershipActorProxy* spawnProxy = dynamic_cast<EnemyMothershipActorProxy*>(*iter);
-            if(spawnProxy != NULL)
+            if(spawnProxy != nullptr)
             {
                mSpawnVolumes.push_back(static_cast<EnemyMothershipActor*>(spawnProxy->GetDrawable()));
             }
@@ -150,7 +150,7 @@ namespace NetDemo
          for(iter = proxies.begin(), iterEnd = proxies.end(); iter != iterEnd; ++iter)
          {
             EnemyDescriptionActorProxy* enemyProxy = dynamic_cast<EnemyDescriptionActorProxy*>(*iter);
-            if(enemyProxy != NULL)
+            if(enemyProxy != nullptr)
             {
                mEnemies.push_back(static_cast<EnemyDescriptionActor*>(enemyProxy->GetDrawable()));
             }
@@ -166,7 +166,7 @@ namespace NetDemo
    {
       std::string errorMessage("Error attempting to spawn enemy, cannot find prototype by the name '" + desc->GetPrototypeName() + ".'");
 
-      dtCore::RefPtr<BaseEnemyActorProxy> enemyProxy = NULL;
+      std::shared_ptr<BaseEnemyActorProxy> enemyProxy = nullptr;
       SimCore::Utils::CreateActorFromPrototypeWithException(*GetGameManager(),
          desc->GetSpawnInfo().GetEnemyPrototypeName(), enemyProxy, errorMessage);
 
@@ -238,7 +238,7 @@ namespace NetDemo
          if(numEnemies <= mNumEnemiesCurrent)
          {
             //LOG_ALWAYS("Wave in progress");
-            EnemyDescriptionActor* desc = NULL;
+            EnemyDescriptionActor* desc = nullptr;
 
             EnemyDescArray::iterator iter = mEnemies.begin();
             EnemyDescArray::iterator iterEnd = mEnemies.end();

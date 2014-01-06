@@ -64,7 +64,7 @@ namespace NetDemo
    {
       BaseClass::OnInit(desc);
       
-      if(desc != NULL)
+      if(desc != nullptr)
       {
          mMaxVelocity = desc->GetSpawnInfo().GetMaxVelocity();
          
@@ -88,11 +88,11 @@ namespace NetDemo
       mStateMachine.Update(dt);
       mSteeringModel->Step(dt, *this);
       
-      if(GetPhysicsModel()->GetPhysicsActComp() != NULL)
+      if(GetPhysicsModel()->GetPhysicsActComp() != nullptr)
       {
          dtPhysics::PhysicsObject* physicsObject = GetPhysicsModel()->GetPhysicsActComp()->GetMainPhysicsObject();
 
-         if(physicsObject != NULL)
+         if(physicsObject != nullptr)
          {
             osg::Vec3 at = mGoalState.GetPos() - mCurrentState.GetPos();
             float length = at.normalize();
@@ -132,14 +132,14 @@ namespace NetDemo
       BaseClass::SetupFunctors();
 
       dtAI::NPCState* state = GetStateMachine().GetState(&AIStateType::AI_STATE_ATTACK);
-      if(state != NULL)
+      if(state != nullptr)
       {
          state->SetUpdate(dtAI::NPCState::UpdateFunctor(this, &EnemyMineAIHelper::Attack));
       }
 
       ////this can be used to change steering behaviors when transitioning into a new state
-      //typedef dtUtil::Command1<void, dtCore::RefPtr<SteeringBehaviorType> > ChangeSteeringBehaviorCommand;
-      //typedef dtUtil::Functor<void, TYPELIST_1(dtCore::RefPtr<SteeringBehaviorType>)> ChangeSteeringBehaviorFunctor;
+      //typedef dtUtil::Command1<void, std::shared_ptr<SteeringBehaviorType> > ChangeSteeringBehaviorCommand;
+      //typedef dtUtil::Functor<void, TYPELIST_1(std::shared_ptr<SteeringBehaviorType>)> ChangeSteeringBehaviorFunctor;
       //    
       //SteeringBehaviorType* behavior = new BombDive(mMaxVelocity);
       //ChangeSteeringBehaviorCommand* ctbc = new ChangeSteeringBehaviorCommand(ChangeSteeringBehaviorFunctor(this, &EnemyAIHelper::ChangeSteeringBehavior), behavior);
@@ -153,7 +153,7 @@ namespace NetDemo
    {
       dtAI::NPCState* npcState = BaseClass::GetStateMachine().GetCurrentState();
       AttackState* attackState = dynamic_cast<AttackState*>(npcState);
-      if(attackState != NULL && attackState->mStateData.mTarget.valid())
+      if(attackState != nullptr && attackState->mStateData.mTarget.valid())
       {
          dtCore::Transform xform;
          attackState->mStateData.mTarget->GetTransform(xform);

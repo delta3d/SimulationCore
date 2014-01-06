@@ -65,11 +65,11 @@ NonLinearSlider::NonLinearSlider( QWidget* parent )
    , mLastSlidePosition(0)
    , mLastValue(0.0)
    , mMiddleValue(50.0)
-   , mSlider(NULL)
-   , mSpinBox(NULL)
-   , mLabelMin(NULL)
-   , mLabelMax(NULL)
-   , mLabelMiddle(NULL)
+   , mSlider(nullptr)
+   , mSpinBox(nullptr)
+   , mLabelMin(nullptr)
+   , mLabelMax(nullptr)
+   , mLabelMiddle(nullptr)
 {
    setMinimumSize( QSize(128,32) );
 

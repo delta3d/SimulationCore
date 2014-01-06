@@ -63,7 +63,7 @@ namespace SimCore
       bool DynamicParticleSystemActor::SetParticleSystem( const std::string& fileName )
       {
          mFileName = fileName;
-         bool success = NULL != mParticles->LoadFile( fileName );
+         bool success = nullptr != mParticles->LoadFile( fileName );
 
          if( success )
          {
@@ -89,7 +89,7 @@ namespace SimCore
          // Detach the new particle system to the root Game Actor node.
          GetMatrixNode()->removeChild( mParticles->GetOSGNode() );
 
-         if( particleSystem != NULL )
+         if( particleSystem != nullptr )
          {
             if( particleSystem != mParticles.get() )
             {
@@ -127,25 +127,25 @@ namespace SimCore
       ParticleLayerInterpolator* DynamicParticleSystemActor::GetInterpolator( const std::string& layerName )
       {
          ParticleLayerInterpMap::iterator foundIter = mLayerInterps.find( layerName );
-         return foundIter == mLayerInterps.end() ? NULL : foundIter->second.get();
+         return foundIter == mLayerInterps.end() ? nullptr : foundIter->second.get();
       }
 
       //////////////////////////////////////////////////////////////////////////
       const ParticleLayerInterpolator* DynamicParticleSystemActor::GetInterpolator( const std::string& layerName ) const
       {
          ParticleLayerInterpMap::const_iterator foundIter = mLayerInterps.find( layerName );
-         return foundIter == mLayerInterps.end() ? NULL : foundIter->second.get();
+         return foundIter == mLayerInterps.end() ? nullptr : foundIter->second.get();
       }
 
       //////////////////////////////////////////////////////////////////////////
       ParticleLayerInterpolator* DynamicParticleSystemActor::GetInterpolator( unsigned index )
       {
-         ParticleLayerInterpolator* interpolator = NULL;
+         ParticleLayerInterpolator* interpolator = nullptr;
 
          PSLayerList& layers = mParticles->GetAllLayers();
          if( ! layers.empty() && unsigned(layers.size()) > index )
          {
-            dtCore::ParticleLayer* layer = NULL;
+            dtCore::ParticleLayer* layer = nullptr;
             PSLayerList::iterator curLayer = layers.begin();
             PSLayerList::iterator endLayerList = layers.end();
             for( unsigned curIndex = 0; curLayer != endLayerList; ++curLayer, ++curIndex )
@@ -166,12 +166,12 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       const ParticleLayerInterpolator* DynamicParticleSystemActor::GetInterpolator( unsigned index ) const
       {
-         const ParticleLayerInterpolator* interpolator = NULL;
+         const ParticleLayerInterpolator* interpolator = nullptr;
 
          const PSLayerList& layers = mParticles->GetAllLayers();
          if( ! layers.empty() && unsigned(layers.size()) > index )
          {
-            const dtCore::ParticleLayer* layer = NULL;
+            const dtCore::ParticleLayer* layer = nullptr;
             PSLayerList::const_iterator curLayer = layers.begin();
             PSLayerList::const_iterator endLayerList = layers.end();
             for( unsigned curIndex = 0; curLayer != endLayerList; ++curLayer, ++curIndex )
@@ -227,14 +227,14 @@ namespace SimCore
       dtCore::ParticleLayer* DynamicParticleSystemActor::GetParticleLayer( const std::string& layerName )
       {
          ParticleLayerInterpolator* interp = GetInterpolator( layerName );
-         return interp == NULL ? NULL : &interp->GetLayer();
+         return interp == nullptr ? nullptr : &interp->GetLayer();
       }
 
       //////////////////////////////////////////////////////////////////////////
       const dtCore::ParticleLayer* DynamicParticleSystemActor::GetParticleLayer( const std::string& layerName ) const
       {
          const ParticleLayerInterpolator* interp = GetInterpolator( layerName );
-         return interp == NULL ? NULL : &interp->GetLayer();
+         return interp == nullptr ? nullptr : &interp->GetLayer();
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -257,7 +257,7 @@ namespace SimCore
 
          // Access the current interpolation registered with the
          // ALL PROPERTIES particle property.
-         return interpolator != NULL
+         return interpolator != nullptr
             ? interpolator->GetParticlePropertyInterpolation( PS_ALL_PROPERTIES ) : 0.0f;
       }
 
@@ -411,7 +411,7 @@ namespace SimCore
 
          const std::string &GROUPNAME = "Particle System";
 
-         DynamicParticleSystemActor* actor = NULL;
+         DynamicParticleSystemActor* actor = nullptr;
          GetActor( actor );
 
          // BOOLEAN PROPERTIES
@@ -455,7 +455,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       DynamicParticleSystemActor& DynamicParticleSystemActorProxy::GetDynamicParticleSystemActor()
       {
-         DynamicParticleSystemActor* actor = NULL;
+         DynamicParticleSystemActor* actor = nullptr;
          GetActor( actor );
          return *actor;
       }
@@ -463,16 +463,16 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       const DynamicParticleSystemActor& DynamicParticleSystemActorProxy::GetDynamicParticleSystemActor() const
       {
-         const DynamicParticleSystemActor* actor = NULL;
+         const DynamicParticleSystemActor* actor = nullptr;
          GetActor( actor );
          return *actor;
       }
 
 
       //////////////////////////////////////////////////////////////////////////
-      dtDAL::ActorProxyIcon* DynamicParticleSystemActorProxy::GetBillBoardIcon()
+      dtDAL::ActorProxyIconPtr DynamicParticleSystemActorProxy::GetBillBoardIcon()
       {
-         if(!mBillBoardIcon.valid())
+         if(!mBillBoardIcon)
          {
             dtDAL::ActorProxyIcon::ActorProxyIconConfig config;
             config.mForwardVector = true;

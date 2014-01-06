@@ -109,7 +109,7 @@ namespace SimCore
              * @param sound  Output, the sound ref pointer to assign.
              * @return true if the sound was loaded successfully.
              */
-            virtual bool LoadSound(const dtDAL::ResourceDescriptor& rd, dtCore::RefPtr<dtAudio::Sound>& soundOut);
+            virtual bool LoadSound(const dtDAL::ResourceDescriptor& rd, std::shared_ptr<dtAudio::Sound>& soundOut);
 
          private:
 
@@ -121,16 +121,16 @@ namespace SimCore
 
             ///////////////////////////////////////////////////
             // Sound effects
-            dtCore::RefPtr<dtAudio::Sound> mSndIgnition;
-            dtCore::RefPtr<dtAudio::Sound> mSndVehicleIdleLoop;
-            dtCore::RefPtr<dtAudio::Sound> mSndBrake;
-            dtCore::RefPtr<dtAudio::Sound> mSndAcceleration;
-            dtCore::RefPtr<dtAudio::Sound> mSndCollisionHit;
+            std::shared_ptr<dtAudio::Sound> mSndIgnition;
+            std::shared_ptr<dtAudio::Sound> mSndVehicleIdleLoop;
+            std::shared_ptr<dtAudio::Sound> mSndBrake;
+            std::shared_ptr<dtAudio::Sound> mSndAcceleration;
+            std::shared_ptr<dtAudio::Sound> mSndCollisionHit;
             ///////////////////////////////////////////////////
 
             ///////////////////////////////////////////////////
             // vehicles portal for the actor
-            dtCore::RefPtr<dtGame::GameActorProxy> mVehiclesPortal;
+            std::shared_ptr<dtGame::GameActorProxy> mVehiclesPortal;
             float mCruiseSpeed;
             bool mStopMode, mCruiseMode;
 

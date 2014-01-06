@@ -126,7 +126,7 @@ namespace SimCore
             PROPERTY_RADIUS_DESC, LIGHT_GROUP));
 
          static const dtUtil::RefString PROPERTY_DELETEONNULL("Delete When Target Is Null");
-         static const dtUtil::RefString PROPERTY_DELETEONNULL_DESC("Indicates to delete the light if the target ever becomes NULL.");
+         static const dtUtil::RefString PROPERTY_DELETEONNULL_DESC("Indicates to delete the light if the target ever becomes nullptr.");
          AddProperty(new dtDAL::BooleanActorProperty(PROPERTY_DELETEONNULL, PROPERTY_DELETEONNULL,
             dtDAL::BooleanActorProperty::SetFuncType(actor, &DynamicLightPrototypeActor::SetDeleteOnTargetIsNull),
             dtDAL::BooleanActorProperty::GetFuncType(actor, &DynamicLightPrototypeActor::IsDeleteOnTargetIsNull),

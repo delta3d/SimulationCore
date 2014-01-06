@@ -42,8 +42,8 @@ RangeRadial::RangeRadial( QWidget* parent )
    : QWidget(parent)
    , mStart(0.0)
    , mEnd(90.0)
-   , mHandleHeld(NULL)
-   , mHandleHovered(NULL)
+   , mHandleHeld(nullptr)
+   , mHandleHovered(nullptr)
    , mHandleStart(QRect(0,0,4,4))
    , mHandleMiddle(QRect(0,0,4,4))
    , mHandleEnd(QRect(0,0,4,4))
@@ -186,7 +186,7 @@ void RangeRadial::paintEvent( QPaintEvent *paintEvent )
    // Initialize pen.
    QPen pen( Qt::black, 1, Qt::SolidLine, Qt::RoundCap, Qt::MiterJoin );
    painter.setPen(pen);
-   painter.setBrush( QBrush(mHandleHeld != NULL ? mColorPieFocus : mColorPie) );
+   painter.setBrush( QBrush(mHandleHeld != nullptr ? mColorPieFocus : mColorPie) );
 
    // Pie Shape
    painter.drawPie( 1, 1, width()-3, height()-3, mStart * 16, mEnd * 16 );
@@ -216,7 +216,7 @@ void RangeRadial::paintEvent( QPaintEvent *paintEvent )
 void RangeRadial::mouseMoveEvent( QMouseEvent* mouseEvent )
 {
    // Determine if a handle is being hovered over by the mouse cursor.
-   bool handleHeld = mHandleHeld != NULL;
+   bool handleHeld = mHandleHeld != nullptr;
    QRect* handle = getHandle( mouseEvent->pos() );
    if( handle != mHandleHovered )
    {
@@ -339,7 +339,7 @@ void RangeRadial::mousePressEvent( QMouseEvent* mouseEvent )
 void RangeRadial::mouseReleaseEvent( QMouseEvent* mouseEvent )
 {
    // Handle has been released.
-   mHandleHeld = NULL;
+   mHandleHeld = nullptr;
 
    update();
 }
@@ -372,7 +372,7 @@ QRect* RangeRadial::getHandle( const QPoint& mousePoint )
    {
       return &mHandleEnd;
    }
-   return NULL;
+   return nullptr;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

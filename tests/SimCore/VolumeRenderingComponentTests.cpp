@@ -30,8 +30,8 @@
 #include <dtCore/system.h>
 #include <dtCore/scene.h>
 
-#include <dtCore/refptr.h>
-#include <dtCore/observerptr.h>
+#include <dtUtil/refcountedbase.h>
+#include <dtUtil/refcountedbase.h>
 #include <dtUtil/mathdefines.h>
 
 #include <UnitTestMain.h>
@@ -71,19 +71,19 @@ namespace SimCore
 
          void tearDown()
          {
-            mVolumeRenderingComponent = NULL;
+            mVolumeRenderingComponent = nullptr;
 
             if (mGM.valid())
             {
                mGM->DeleteAllActors(true);
-               mGM = NULL;
+               mGM = nullptr;
             }
             dtCore::System::GetInstance().Stop();
          }
 
          void TestParticleVolumeDrawableClass()
          {
-            dtCore::RefPtr<VolumeRenderingComponent::ParticleVolumeDrawable> volume1 = new VolumeRenderingComponent::ParticleVolumeDrawable;
+            std::shared_ptr<VolumeRenderingComponent::ParticleVolumeDrawable> volume1 = new VolumeRenderingComponent::ParticleVolumeDrawable;
             
             CPPUNIT_ASSERT_EQUAL_MESSAGE("ParticleVolumeDrawable class should start with zero particles",
                      unsigned(0), volume1->GetNumParticles());
@@ -91,7 +91,7 @@ namespace SimCore
             CPPUNIT_ASSERT_MESSAGE("ParticleVolumeDrawable radius should not be zero",
                      volume1->GetParticleRadius() != 0);
 
-            dtCore::RefPtr<VolumeRenderingComponent::ShapeVolumeRecord> record1 = new VolumeRenderingComponent::ShapeVolumeRecord;
+            std::shared_ptr<VolumeRenderingComponent::ShapeVolumeRecord> record1 = new VolumeRenderingComponent::ShapeVolumeRecord;
             record1->mRadius.set(1.0f, 0.0f, 0.0f);
             volume1->Init(25, record1);
 
@@ -135,24 +135,24 @@ namespace SimCore
 
          void TestShapeVolumeRecordClass()
          {
-            dtCore::RefPtr<VolumeRenderingComponent::ShapeVolumeRecord> volume1 = new VolumeRenderingComponent::ShapeVolumeRecord;
+            std::shared_ptr<VolumeRenderingComponent::ShapeVolumeRecord> volume1 = new VolumeRenderingComponent::ShapeVolumeRecord;
           
             TestSingleVolume(*volume1);
          }
 
          void TestAddRemoveVolume()
          {
-            dtCore::RefPtr<VolumeRenderingComponent::ShapeVolumeRecord> volume1 = new VolumeRenderingComponent::ShapeVolumeRecord();
+            std::shared_ptr<VolumeRenderingComponent::ShapeVolumeRecord> volume1 = new VolumeRenderingComponent::ShapeVolumeRecord();
             VolumeRenderingComponent::ShapeRecordId id = mVolumeRenderingComponent->CreateShapeVolume(volume1.get());
             CPPUNIT_ASSERT_EQUAL(id, volume1->GetId());
-            dtCore::RefPtr<VolumeRenderingComponent::ShapeVolumeRecord> volume1Ret = mVolumeRenderingComponent->FindShapeVolumeById(id);
+            std::shared_ptr<VolumeRenderingComponent::ShapeVolumeRecord> volume1Ret = mVolumeRenderingComponent->FindShapeVolumeById(id);
             CPPUNIT_ASSERT(volume1.get() == volume1Ret.get());
             volume1Ret = mVolumeRenderingComponent->FindShapeVolumeById(id + 1);
-            CPPUNIT_ASSERT_MESSAGE("When passed an invalid Id the VolumeRenderingComponent should return NULL", !volume1Ret.valid());
+            CPPUNIT_ASSERT_MESSAGE("When passed an invalid Id the VolumeRenderingComponent should return nullptr", !volume1Ret.valid());
 
-            dtCore::ObserverPtr<VolumeRenderingComponent::ShapeVolumeRecord> volume1ob = volume1.get();
+            std::weak_ptr<VolumeRenderingComponent::ShapeVolumeRecord> volume1ob = volume1.get();
 
-            volume1 = NULL;
+            volume1 = nullptr;
             CPPUNIT_ASSERT(volume1ob.valid());
 
             mVolumeRenderingComponent->RemoveShapeVolume(volume1ob.get());
@@ -163,15 +163,15 @@ namespace SimCore
 
          void TestAutoDeleteVolumes()
          {
-            dtCore::RefPtr<VolumeRenderingComponent::ShapeVolumeRecord> volume1 = new VolumeRenderingComponent::ShapeVolumeRecord;
-            dtCore::RefPtr<VolumeRenderingComponent::ShapeVolumeRecord> volume2 = new VolumeRenderingComponent::ShapeVolumeRecord;
-            dtCore::RefPtr<VolumeRenderingComponent::ShapeVolumeRecord> volume3 = new VolumeRenderingComponent::ShapeVolumeRecord;
-            dtCore::RefPtr<VolumeRenderingComponent::ShapeVolumeRecord> volume4 = new VolumeRenderingComponent::ShapeVolumeRecord;
+            std::shared_ptr<VolumeRenderingComponent::ShapeVolumeRecord> volume1 = new VolumeRenderingComponent::ShapeVolumeRecord;
+            std::shared_ptr<VolumeRenderingComponent::ShapeVolumeRecord> volume2 = new VolumeRenderingComponent::ShapeVolumeRecord;
+            std::shared_ptr<VolumeRenderingComponent::ShapeVolumeRecord> volume3 = new VolumeRenderingComponent::ShapeVolumeRecord;
+            std::shared_ptr<VolumeRenderingComponent::ShapeVolumeRecord> volume4 = new VolumeRenderingComponent::ShapeVolumeRecord;
 
             volume1->mAutoDeleteAfterMaxTime = true;
             volume1->mMaxTime = 10.0f;
 
-            dtCore::RefPtr<dtCore::Transformable> tformable = new dtCore::Transformable;
+            std::shared_ptr<dtCore::Transformable> tformable = new dtCore::Transformable;
             volume2->mAutoDeleteOnTargetNull = true;
             volume2->mTarget = tformable->GetOSGNode();
 
@@ -194,12 +194,12 @@ namespace SimCore
             CPPUNIT_ASSERT_MESSAGE("the fading volume intensity should have decreased some.", volume3->mIntensity < 1.0f);
             float oldIntensity = volume3->mIntensity;
 
-            tformable = NULL;
+            tformable = nullptr;
 
             mVolumeRenderingComponent->TimeoutAndDeleteVolumes(7.1f);
 
-            CPPUNIT_ASSERT(mVolumeRenderingComponent->FindShapeVolumeById(volume1->GetId()) == NULL);
-            CPPUNIT_ASSERT(mVolumeRenderingComponent->FindShapeVolumeById(volume2->GetId()) == NULL);
+            CPPUNIT_ASSERT(mVolumeRenderingComponent->FindShapeVolumeById(volume1->GetId()) == nullptr);
+            CPPUNIT_ASSERT(mVolumeRenderingComponent->FindShapeVolumeById(volume2->GetId()) == nullptr);
             CPPUNIT_ASSERT(mVolumeRenderingComponent->FindShapeVolumeById(volume3->GetId()) == volume3.get());
             CPPUNIT_ASSERT(mVolumeRenderingComponent->FindShapeVolumeById(volume4->GetId()) == volume4.get());
 
@@ -207,9 +207,9 @@ namespace SimCore
 
             mVolumeRenderingComponent->TimeoutAndDeleteVolumes(2.0f);
 
-            CPPUNIT_ASSERT(mVolumeRenderingComponent->FindShapeVolumeById(volume1->GetId()) == NULL);
-            CPPUNIT_ASSERT(mVolumeRenderingComponent->FindShapeVolumeById(volume2->GetId()) == NULL);
-            CPPUNIT_ASSERT(mVolumeRenderingComponent->FindShapeVolumeById(volume3->GetId()) == NULL);
+            CPPUNIT_ASSERT(mVolumeRenderingComponent->FindShapeVolumeById(volume1->GetId()) == nullptr);
+            CPPUNIT_ASSERT(mVolumeRenderingComponent->FindShapeVolumeById(volume2->GetId()) == nullptr);
+            CPPUNIT_ASSERT(mVolumeRenderingComponent->FindShapeVolumeById(volume3->GetId()) == nullptr);
             CPPUNIT_ASSERT(mVolumeRenderingComponent->FindShapeVolumeById(volume4->GetId()) == volume4.get());
 
             CPPUNIT_ASSERT_MESSAGE("the fading volume intensity should less that or equal to zero.", volume3->mIntensity <= 0.0f);
@@ -217,7 +217,7 @@ namespace SimCore
 
          //void TestTransformVolumes()
          //{
-         //   dtCore::RefPtr<VolumeRenderingComponent::ShapeVolume> volume1 = new VolumeRenderingComponent::ShapeVolume;
+         //   std::shared_ptr<VolumeRenderingComponent::ShapeVolume> volume1 = new VolumeRenderingComponent::ShapeVolume;
          //   TestTransformSinglevolume(*volume1);
          //}
 
@@ -227,7 +227,7 @@ namespace SimCore
          //   mVolumeRenderingComponent->SetMaxShapeVolumeRecords(4);
          //   mVolumeRenderingComponent->SetMaxShapeVolumes(4);
 
-         //   dtCore::RefPtr<VolumeRenderingComponent::ShapeVolume> volumes[8];
+         //   std::shared_ptr<VolumeRenderingComponent::ShapeVolume> volumes[8];
 
          //   for (unsigned i = 0; i < 4; ++i)
          //   {
@@ -255,7 +255,7 @@ namespace SimCore
          //   GetGlobalApplication().GetCamera()->SetTransform(xform);
 
          //   mVolumeRenderingComponent->TransformAndSortvolumes();
-         //   dtCore::RefPtr<osg::StateSet> ss = new osg::StateSet;
+         //   osg::ref_ptr<osg::StateSet> ss = new osg::StateSet;
          //   osg::Uniform* volumeArray = ss->getOrCreateUniform("dynamic volumes", osg::Uniform::FLOAT_VEC4, mVolumeRenderingComponent->GetMaxShapeVolumes() * 3);
          //   osg::Uniform* ShapeVolumeRecordArray = ss->getOrCreateUniform("spot volumes", osg::Uniform::FLOAT_VEC4, mVolumeRenderingComponent->GetMaxShapeVolumeRecords() * 4);
          //   mVolumeRenderingComponent->UpdateShapeVolumeUniforms(volumeArray, ShapeVolumeRecordArray);
@@ -320,7 +320,7 @@ namespace SimCore
 
          //void TestTransformSinglevolume(VolumeRenderingComponent::ShapeVolume& testvolume)
          //{
-         //   dtCore::RefPtr<dtCore::Transformable> xformable = new dtCore::Transformable;
+         //   std::shared_ptr<dtCore::Transformable> xformable = new dtCore::Transformable;
 
          //   mGM->GetScene().AddDrawable(xformable.get());
 
@@ -342,8 +342,8 @@ namespace SimCore
 
          //}
 
-         dtCore::RefPtr<dtGame::GameManager> mGM;
-         dtCore::RefPtr<SimCore::Components::VolumeRenderingComponent> mVolumeRenderingComponent;
+         std::shared_ptr<dtGame::GameManager> mGM;
+         std::shared_ptr<SimCore::Components::VolumeRenderingComponent> mVolumeRenderingComponent;
       };
 
       CPPUNIT_TEST_SUITE_REGISTRATION(VolumeRenderingComponentTests);

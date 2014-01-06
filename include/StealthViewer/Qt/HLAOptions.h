@@ -49,7 +49,7 @@ namespace StealthQt
 
       public:
          /// Constructor
-         HLAOptions(QWidget *parent = NULL, 
+         HLAOptions(QWidget *parent = nullptr, 
                     const QString &connectionName = "",
                     bool isEditMode = false);
 

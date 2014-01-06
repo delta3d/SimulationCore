@@ -27,8 +27,8 @@
 
 #include <DemoExport.h>
 #include <AIUtility.h>
-#include <osg/Referenced>
-#include <dtCore/refptr.h>
+#include <dtUtil/refcountedbase.h>
+#include <dtUtil/refcountedbase.h>
 
 namespace dtPhysics
 {
@@ -38,7 +38,7 @@ namespace dtPhysics
 namespace NetDemo
 {
 
-   class NETDEMO_EXPORT AIPhysicsModel: public osg::Referenced
+   class NETDEMO_EXPORT AIPhysicsModel: public std::enable_shared_from_this
    {
    public:
      AIPhysicsModel();
@@ -80,7 +80,7 @@ namespace NetDemo
 
      BaseAIGameState* mCurrentState;
      BaseAIGoalState* mGoalState;
-     dtCore::RefPtr<dtPhysics::PhysicsActComp> mPhysicsActComp;
+     std::shared_ptr<dtPhysics::PhysicsActComp> mPhysicsActComp;
 
    };
 

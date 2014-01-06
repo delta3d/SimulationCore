@@ -22,7 +22,7 @@
 #ifndef SIMCORE_COMMAND_H
 #define SIMCORE_COMMAND_H
 
-#include <osg/Referenced>    // for base class
+#include <dtUtil/refcountedbase.h>    // for base class
 #include <dtUtil/functor.h>
 #include <dtUtil/generic.h>
 
@@ -98,11 +98,11 @@ namespace SimCore
       * - RetT The return type for the interface class AND function signature.
       */
       template<typename RetT>
-      class Command : public osg::Referenced
+      class Command : public std::enable_shared_from_this
       {
       public:
          typedef RetT ReturnType;
-         Command() : osg::Referenced() {}
+         Command() : std::enable_shared_from_this() {}
 
          virtual ReturnType operator ()() = 0;
 

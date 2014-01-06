@@ -210,7 +210,7 @@ namespace SimCore
          //////////////////////////////////////////////////////////////////
          virtual void RemoveParticle(PhysicsParticle& whichOne);
 
-         typedef std::list<dtCore::RefPtr<PhysicsParticle> > ParticleList;
+         typedef std::list<std::shared_ptr<PhysicsParticle> > ParticleList;
          // Data members should NEVER be protected, but this one can't be changed yet.
          ParticleList mOurParticleList;
          //private:
@@ -246,9 +246,9 @@ namespace SimCore
          osg::Vec3               mForceVectorMax;
 
 #ifdef AGEIA_PHYSICS
-         dtCore::RefPtr<dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper> mPhysicsActComp;
+         std::shared_ptr<dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper> mPhysicsActComp;
 #else
-         dtCore::RefPtr<dtPhysics::PhysicsActComp> mPhysicsActComp;
+         std::shared_ptr<dtPhysics::PhysicsActComp> mPhysicsActComp;
 #endif
       };
 
@@ -263,7 +263,7 @@ namespace SimCore
          PhysicsParticleSystemActorProxy();
          virtual void BuildPropertyMap();
 
-         virtual dtCore::RefPtr<dtDAL::ActorProperty> GetDeprecatedProperty(const std::string& name);
+         virtual std::shared_ptr<dtDAL::ActorProperty> GetDeprecatedProperty(const std::string& name);
 
          virtual void BuildActorComponents();
 
@@ -275,7 +275,7 @@ namespace SimCore
       };
 
       /////////////////////////////////////////////////////////////////////////////////////////////////////////
-      class SIMCORE_EXPORT PhysicsParticle : public osg::Referenced
+      class SIMCORE_EXPORT PhysicsParticle : public std::enable_shared_from_this
       {
       public:
          PhysicsParticle(const std::string& name, float ParticleLengthOfTimeOut = 10.0f,
@@ -298,7 +298,7 @@ namespace SimCore
          // Set the physics actor - just a pointer, so there is some danger here
          void SetPhysicsObject(dtPhysics::PhysicsObject* physObj);
 
-         dtCore::RefPtr<dtCore::Transformable> mObj;
+         std::shared_ptr<dtCore::Transformable> mObj;
 
 
       protected:
@@ -313,7 +313,7 @@ namespace SimCore
          bool  mNeedsToBeDeleted ;
          std::string mName;                     // name of the particle.. for removal.
          std::string mFileToLoad;
-         dtCore::RefPtr<dtPhysics::PhysicsObject> mPhysicsObject;
+         std::shared_ptr<dtPhysics::PhysicsObject> mPhysicsObject;
       };
 
    }

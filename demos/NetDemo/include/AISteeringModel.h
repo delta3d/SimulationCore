@@ -36,15 +36,15 @@
 #include <osg/Vec3>
 
 #include <stack>
-#include <osg/Referenced>
-#include <dtCore/refptr.h>
+#include <dtUtil/refcountedbase.h>
+#include <dtUtil/refcountedbase.h>
 
 
 namespace NetDemo
 {
 
    class NETDEMO_EXPORT AISteeringModel:  public dtAI::SteeringPipeline<BaseAIControllable>,
-                                          public osg::Referenced
+                                          public std::enable_shared_from_this
    {
    public:
       typedef dtAI::SteeringPipeline<BaseAIControllable> BaseClass;

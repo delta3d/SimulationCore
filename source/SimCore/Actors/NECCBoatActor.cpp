@@ -64,7 +64,7 @@ namespace SimCore
             //, mOurActor(actor)
             , mGotAHit(false)
             , mOwnerActor(ownerActor)
-            , mClosestHitsHelper(NULL)
+            , mClosestHitsHelper(nullptr)
          {
          }
 
@@ -77,9 +77,9 @@ namespace SimCore
             dtAgeiaPhysX::NxAgeiaPhysicsHelper* physicsHelper =
                (dtAgeiaPhysX::NxAgeiaPhysicsHelper*)(hit.shape->getActor().userData);
 
-            dtCore::DeltaDrawable *hitTarget = NULL;
+            dtCore::DeltaDrawable *hitTarget = nullptr;
 
-            if(physicsHelper != NULL)
+            if(physicsHelper != nullptr)
             {
                // null checked up above in the return
                hitTarget = physicsHelper->GetPhysicsGameActorProxy().GetActor();
@@ -87,7 +87,7 @@ namespace SimCore
 
             // We don't want to hit ourselves.  So, if we don't have a 'self' owner, then we take
             // whatever hit we get.  Otherwise, we check the owner drawables
-            if (mOwnerActor == NULL || hitTarget != mOwnerActor
+            if (mOwnerActor == nullptr || hitTarget != mOwnerActor
                // So we dont want to return false if collision is off, this onHit is called for
                // every hit along the line, and returning false tells it to stop the raycast
                // report, its amazing how rereading the sdk can help so much :(
@@ -126,9 +126,9 @@ namespace SimCore
       , mNotifyPartialUpdate(true)
       , mMaxBobbingTimeAmount(0.5f)
       {
-         mWheels[0] = NULL;
-         mWheels[1] = NULL;
-         mWheels[2] = NULL;
+         mWheels[0] = nullptr;
+         mWheels[1] = nullptr;
+         mWheels[2] = nullptr;
 
          mTimeForSendingDeadReckoningInfoOut = 0.0f;
          mTimesASecondYouCanSendOutAnUpdate  = 3.0f;
@@ -162,9 +162,9 @@ namespace SimCore
          if(!IsRemote() && mVehiclesPortal.valid() )
          {
             Portal* portal = dynamic_cast<Portal*>(mVehiclesPortal->GetActor());
-            portal->SetActorLink(NULL);
+            portal->SetActorLink(nullptr);
             GetGameActorProxy().GetGameManager()->DeleteActor(*mVehiclesPortal.get());
-            mVehiclesPortal = NULL;
+            mVehiclesPortal = nullptr;
          }
       }
 
@@ -254,7 +254,7 @@ namespace SimCore
 
          SetTransform(ourTransform);
 
-         if(actor == NULL)
+         if(actor == nullptr)
          {
             // should prob throw an exception
             return;
@@ -267,7 +267,7 @@ namespace SimCore
          std::string NameofMaterial = "WheelWithFrictionMaterial";
          dtAgeiaPhysX::NxAgeiaWorldComponent* worldComponent =
             dynamic_cast<dtAgeiaPhysX::NxAgeiaWorldComponent*>(GetGameActorProxy().GetGameManager()->GetComponentByName("NxAgeiaWorldComponent"));
-         if(worldComponent != NULL)
+         if(worldComponent != nullptr)
          {
             worldComponent->RegisterMaterial(NameofMaterial, 0.75f, 0.5f, 0.2f);
             materialIndex = worldComponent->GetMaterialIndex(NameofMaterial, "Default", true);
@@ -321,7 +321,7 @@ namespace SimCore
 
             mWheels[i] = static_cast<NxWheelShape*>(actor->createShape(wheelShapeDesc));
 
-            if(mWheels[i] != NULL)
+            if(mWheels[i] != nullptr)
             {
                //these flags are no longer in the SDK
                //mWheels[i]->setWheelFlags(NX_WF_USE_WHEELSHAPE | NX_WF_BUILD_LOWER_HALF
@@ -356,7 +356,7 @@ namespace SimCore
       void NECCBoatActor::OnTickLocal(const dtGame::TickMessage &tickMessage)
       {
          dtPhysics::PhysicsObject* physicsObject = GetPhysicsHelper()->GetPhysicsObject();
-         if(physicsObject == NULL)
+         if(physicsObject == nullptr)
          {
             // should probably throw an exception
             LOG_ERROR("BAD PHYSXOBJECT ON VEHICLE!");
@@ -408,7 +408,7 @@ namespace SimCore
          ////////////////////////////////////////////////////////////
          // do sound here
          // if the vehicle is moving
-         if(mSndVehicleIdleLoop == NULL)
+         if(mSndVehicleIdleLoop == nullptr)
             return;
 
          if(mSndVehicleIdleLoop->IsPlaying() == false)
@@ -440,7 +440,7 @@ namespace SimCore
             return;
          }
 
-         if(mPhysicsHelper->GetPhysicsObject() == NULL)
+         if(mPhysicsHelper->GetPhysicsObject() == nullptr)
          {
             LOG_WARNING("PhysX object null in update dead reckoning not sending out!");
             return;
@@ -509,7 +509,7 @@ namespace SimCore
             // to send the update via the base class though ShouldForceUpdate.
             mNotifyFullUpdate = true;
          }
-         else if( GetArticulationHelper() != NULL && GetArticulationHelper()->IsDirty() )
+         else if( GetArticulationHelper() != nullptr && GetArticulationHelper()->IsDirty() )
          {
             mNotifyPartialUpdate = true;
          }
@@ -555,7 +555,7 @@ namespace SimCore
 
          dtPhysics::PhysicsObject* toFillIn = GetPhysicsHelper()->GetPhysicsObject();
 
-         if(toFillIn != NULL)
+         if(toFillIn != nullptr)
          {
             toFillIn->setGlobalPosition(NxVec3(rot.operator ()(3,0), rot.operator ()(3,1), rot.operator ()(3,2)));
             toFillIn->setGlobalOrientation(
@@ -574,7 +574,7 @@ namespace SimCore
          GetTransform(ourTransform);
 
          // this will make the vehicle orientate left / right
-         if(mWheels[0] != NULL)
+         if(mWheels[0] != nullptr)
          {
             NxReal value = mWheels[0]->getSteerAngle();
             osg::Matrix ourMatrix;
@@ -644,10 +644,10 @@ namespace SimCore
             if(toFillin.size())
             {
                InteriorActor* ourInterior = dynamic_cast<InteriorActor*>(toFillin[0]->GetActor());
-               if(ourInterior != NULL)
+               if(ourInterior != nullptr)
                {
                   steeringWheel = ourInterior->GetSteeringWheelDOF("dof_steering_wheel");
-                  if(steeringWheel != NULL)
+                  if(steeringWheel != nullptr)
                   {
                      osg::Vec3 HPR = steeringWheel->getCurrentHPR();
                      HPR[0] = GetPhysicsHelper()->GetWheelShape(1)->getSteerAngle() * 4;
@@ -693,20 +693,20 @@ namespace SimCore
 
          for(int i = 0 ; i < 3; ++i)
          {
-            if(mWheels[i] != NULL)
+            if(mWheels[i] != nullptr)
             {
                mWheels[i]->setBrakeTorque(0);
                mWheels[i]->setMotorTorque(0);
             }
          }
 
-         if(mSndIgnition != NULL)
+         if(mSndIgnition != nullptr)
          {
             if(!mSndIgnition->IsPlaying())
                mSndIgnition->Play();
          }
 
-         if(mSndVehicleIdleLoop != NULL)
+         if(mSndVehicleIdleLoop != nullptr)
          {
             mSndVehicleIdleLoop->SetPitch(1.0f);
             if(!mSndVehicleIdleLoop->IsPlaying())
@@ -718,10 +718,10 @@ namespace SimCore
       void NECCBoatActor::UpdateVehicleTorquesAndAngles(float deltaTime)
       {
          dtCore::Keyboard *keyboard = GetGameActorProxy().GetGameManager()->GetApplication().GetKeyboard();
-         if(keyboard == NULL)
+         if(keyboard == nullptr)
             return;
 
-         if(mWheels[0] == NULL || mWheels[1] == NULL || mWheels[2] == NULL )
+         if(mWheels[0] == nullptr || mWheels[1] == nullptr || mWheels[2] == nullptr )
             // log warning / throw exception
             return;
 
@@ -896,7 +896,7 @@ namespace SimCore
          PlatformActorProxy::BuildPropertyMap();
 
          NECCBoatActor  &actor = static_cast<NECCBoatActor &>(GetGameActor());
-         std::vector<dtCore::RefPtr<dtDAL::ActorProperty> >  toFillIn;
+         std::vector<std::shared_ptr<dtDAL::ActorProperty> >  toFillIn;
          actor.GetPhysicsHelper()->BuildPropertyMap(toFillIn);
          for(unsigned int i = 0 ; i < toFillIn.size(); ++i)
             AddProperty(toFillIn[i].get());

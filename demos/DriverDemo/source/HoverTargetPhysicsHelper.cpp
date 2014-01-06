@@ -35,7 +35,7 @@ namespace DriverDemo
    , mGroundClearance(4.0)
    {
       // non properties
-      dtCore::RefPtr<dtPhysics::PhysicsObject> physicsObject = new dtPhysics::PhysicsObject("VehicleBody");
+      std::shared_ptr<dtPhysics::PhysicsObject> physicsObject = new dtPhysics::PhysicsObject("VehicleBody");
       AddPhysicsObject(*physicsObject);
       physicsObject->SetPrimitiveType(dtPhysics::PrimitiveType::SPHERE);
       physicsObject->SetMass(100.0f);
@@ -58,7 +58,7 @@ namespace DriverDemo
    ////////////////////////////////////////////////////////////////////////////////
    void HoverTargetPhysicsActComp::ApplyTargetHoverForces(float deltaTime, osg::Vec3 &goalLocation)
    {
-      dtPhysics::PhysicsObject* physicsObject = GetMainPhysicsObject();  // Tick Local protects us from NULL.
+      dtPhysics::PhysicsObject* physicsObject = GetMainPhysicsObject();  // Tick Local protects us from nullptr.
       deltaTime = (deltaTime > 0.2) ? 0.2 : deltaTime;  // cap at 0.2 second to avoid rare 'freak' outs.
       float weight = physicsObject->GetMass();
 
@@ -108,7 +108,7 @@ namespace DriverDemo
    ////////////////////////////////////////////////////////////////////////////////
    void HoverTargetPhysicsActComp::ApplyForceFromLastFrame(float deltaTime)
    {
-      dtPhysics::PhysicsObject* physicsObject = GetMainPhysicsObject();  // Tick Local protects us from NULL.
+      dtPhysics::PhysicsObject* physicsObject = GetMainPhysicsObject();  // Tick Local protects us from nullptr.
       physicsObject->ApplyImpulse(mTotalForceAppliedLastTime);
    }
 
@@ -197,7 +197,7 @@ namespace DriverDemo
    float HoverTargetPhysicsActComp::GetSphereRadius()
    {
       dtPhysics::PhysicsObject* physicsObject = GetMainPhysicsObject();
-      if (physicsObject != NULL)
+      if (physicsObject != nullptr)
       {
          return physicsObject->GetExtents().x();
       }

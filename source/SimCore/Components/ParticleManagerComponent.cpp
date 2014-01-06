@@ -121,7 +121,7 @@ namespace SimCore
          // Loop through all particle layers and sum up
          // their individual particle counts
          unsigned int deadParticles = 0;
-         dtCore::RefPtr<const osgParticle::ParticleSystem> ps;
+         std::shared_ptr<const osgParticle::ParticleSystem> ps;
          for( ; itor != layers.end(); ++itor )
          {
             ps = &itor->GetParticleSystem();
@@ -137,7 +137,7 @@ namespace SimCore
 
          // Loop through all particle layers and sum up
          // their individual particle counts
-         const osgParticle::ParticleSystem* ps = NULL;
+         const osgParticle::ParticleSystem* ps = nullptr;
          unsigned int layersUpdated = 0;
          unsigned int deadParticles = 0;
          unsigned int limit = mLayerRefs.size(); // this avoids multiple function jumps
@@ -169,7 +169,7 @@ namespace SimCore
          mRef = &particles;
 
          // Set the attribute flags
-         if( attributes != NULL )
+         if( attributes != nullptr )
          {
             mAttrFlags = *attributes;
          }
@@ -345,7 +345,7 @@ namespace SimCore
          {
             // Ignore this message if possible
             dtGame::IEnvGameActorProxy* env = GetGameManager()->GetEnvironmentActor();
-            if( env == NULL || env->GetId() != message.GetAboutActorId() )
+            if( env == nullptr || env->GetId() != message.GetAboutActorId() )
             {
                return;
             }
@@ -369,7 +369,7 @@ namespace SimCore
                std::vector<dtDAL::ActorProxy*>::iterator toFillInIter = toFill.begin();
                for (; toFillInIter != toFill.end(); ++toFillInIter)
                {
-                   SimCore::Actors::PhysicsParticleSystemActor* currentParticleSystem = NULL;
+                   SimCore::Actors::PhysicsParticleSystemActor* currentParticleSystem = nullptr;
                    (*toFillInIter)->GetActor(currentParticleSystem);
                    currentParticleSystem->SetOverTimeForceVecMin(mWind);
                    currentParticleSystem->SetOverTimeForceVecMax(mWind);
@@ -422,7 +422,7 @@ namespace SimCore
          }
 
          // Determine if the particle system is effected by wind force
-         if( attrFlags != NULL && attrFlags->mEnableWind )
+         if( attrFlags != nullptr && attrFlags->mEnableWind )
          {
             // Apply the recent wind reported by the environment's update message.
             ApplyForce( ParticleInfo::FORCE_WIND, mWind, particles, attrFlags->mAddWindToAllLayers );
@@ -434,7 +434,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////
       bool ParticleManagerComponent::Unregister( const dtCore::ParticleSystem& particles )
       {
-         std::map< dtCore::UniqueId, dtCore::RefPtr<ParticleInfo> >::iterator itor =
+         std::map< dtCore::UniqueId, std::shared_ptr<ParticleInfo> >::iterator itor =
             mIdToInfoMap.find(particles.GetUniqueId());
 
          if( itor != mIdToInfoMap.end() )
@@ -458,7 +458,7 @@ namespace SimCore
          // Remove the old timer
          if( mUpdateEnabled )
          {
-            GetGameManager()->ClearTimer( mUpdateTimerName, NULL );
+            GetGameManager()->ClearTimer( mUpdateTimerName, nullptr );
          }
 
          // Set the new update interval (capped at 0 at lower limit)
@@ -468,7 +468,7 @@ namespace SimCore
          if( mUpdateEnabled )
          {
             mUpdateInterval = interval;
-            GetGameManager()->SetTimer( mUpdateTimerName, NULL, (float)interval, true );
+            GetGameManager()->SetTimer( mUpdateTimerName, nullptr, (float)interval, true );
          }
       }
 
@@ -504,7 +504,7 @@ namespace SimCore
          unsigned int totalSystems = 0;
          unsigned int totalSystemsRemoved = 0;
 
-         std::map< dtCore::UniqueId, dtCore::RefPtr<ParticleInfo> >::iterator itor = mIdToInfoMap.begin();
+         std::map< dtCore::UniqueId, std::shared_ptr<ParticleInfo> >::iterator itor = mIdToInfoMap.begin();
          std::vector< dtCore::UniqueId > idsToDelete;
 
          // Update the component's report data by updating each ParticleInfo.
@@ -525,7 +525,7 @@ namespace SimCore
          // Delete the failed info entries
          for( unsigned int i = 0; i < idsToDelete.size(); i ++)
          {
-            std::map< dtCore::UniqueId, dtCore::RefPtr<ParticleInfo> >::iterator itor =
+            std::map< dtCore::UniqueId, std::shared_ptr<ParticleInfo> >::iterator itor =
                mIdToInfoMap.find(idsToDelete[i]);
             if (itor != mIdToInfoMap.end())
             {
@@ -557,14 +557,14 @@ namespace SimCore
          }
 
          //bool forceInfoUpdate = false;
-         dtCore::ParticleSystem* curParticles = NULL;
-         ParticleInfo::ForceOperatorList* curForces = NULL;
-         ParticleInfo* curInfo = NULL;
+         dtCore::ParticleSystem* curParticles = nullptr;
+         ParticleInfo::ForceOperatorList* curForces = nullptr;
+         ParticleInfo* curInfo = nullptr;
          ParticleInfoMap::iterator infoIter = mIdToInfoMap.begin();
          for( ; infoIter != mIdToInfoMap.end(); ++infoIter )
          {
             curInfo = infoIter->second.get();
-            if( curInfo == NULL || curInfo->GetParticleSystem() == NULL )
+            if( curInfo == nullptr || curInfo->GetParticleSystem() == nullptr )
             {
                continue;
             }
@@ -624,9 +624,9 @@ namespace SimCore
       void ParticleManagerComponent::ApplyForce(
          const std::string& forceName, const osg::Vec3& force, dtCore::ParticleSystem& ps, bool addToAllLayers )
       {
-         dtCore::ParticleLayer* curLayer = NULL;
-         osgParticle::ForceOperator* forceOp = NULL;
-         ParticleInfo* info = NULL;
+         dtCore::ParticleLayer* curLayer = nullptr;
+         osgParticle::ForceOperator* forceOp = nullptr;
+         ParticleInfo* info = nullptr;
 
          ParticleInfoMap::iterator foundIter = mIdToInfoMap.find(ps.GetUniqueId());
          if( foundIter != mIdToInfoMap.end() )
@@ -652,14 +652,14 @@ namespace SimCore
                static_cast<osgParticle::ModularProgram&> (curLayer->GetProgram());
 
             // Find the force operator matching forceName or an unused operator
-            osgParticle::ForceOperator* uselessOp = NULL;
+            osgParticle::ForceOperator* uselessOp = nullptr;
             unsigned int numOps = program.numOperators();
             for( unsigned int op = 0; op < numOps; op++ )
             {
                forceOp = dynamic_cast<osgParticle::ForceOperator*>
                   (program.getOperator(op));
 
-               if( forceOp == NULL ) { continue; }
+               if( forceOp == nullptr ) { continue; }
 
                const std::string& opName = forceOp->getName();
                if(opName != forceName)
@@ -675,7 +675,7 @@ namespace SimCore
                      uselessOp = forceOp;
                   }
                   // This might not be the target operator, so make it ready for the next loop
-                  forceOp = NULL;
+                  forceOp = nullptr;
                }
                else
                {
@@ -688,7 +688,7 @@ namespace SimCore
             // If a useless operator was found then use it.
             // NOTE: if this effect is not wanted, do not
             // put a 0-force, nameless operator in the particle system
-            if( uselessOp != NULL && forceOp == NULL )
+            if( uselessOp != nullptr && forceOp == nullptr )
             {
                forceOp = uselessOp;
                forceOp->setName( forceName );
@@ -699,7 +699,7 @@ namespace SimCore
             }
             // If the force operator was not found, then add it to the
             // modular program.
-            else if( forceOp == NULL )
+            else if( forceOp == nullptr )
             {
                if( ! addToAllLayers )
                {
@@ -717,7 +717,7 @@ namespace SimCore
                newForce = true;
             }
 
-            if( newForce && info != NULL )
+            if( newForce && info != nullptr )
             {
                info->GetWindForces().push_back(forceOp);
             }
@@ -726,7 +726,7 @@ namespace SimCore
             forceOp->setEnabled(true);
 
             // Get ready for next loop
-            forceOp = NULL;
+            forceOp = nullptr;
          }
       }
 
@@ -737,7 +737,7 @@ namespace SimCore
          unsigned int totalActors = 0;
          unsigned int totalActorsRemoved = 0;
 
-         std::map< dtCore::UniqueId, dtCore::RefPtr<ActorInfo> >::iterator itor = mIdToActorMap.begin();
+         std::map< dtCore::UniqueId, std::shared_ptr<ActorInfo> >::iterator itor = mIdToActorMap.begin();
          std::vector< dtCore::UniqueId > idsToDelete;
 
          // Update the component's report data by updating each ParticleInfo.
@@ -757,7 +757,7 @@ namespace SimCore
          // Delete the failed info entries
          for( unsigned int i = 0; i < idsToDelete.size(); i ++)
          {
-            std::map< dtCore::UniqueId, dtCore::RefPtr<ActorInfo> >::iterator itor =
+            std::map< dtCore::UniqueId, std::shared_ptr<ActorInfo> >::iterator itor =
                mIdToActorMap.find(idsToDelete[i]);
             if (itor != mIdToActorMap.end())
             {
@@ -795,7 +795,7 @@ namespace SimCore
             {
                dtCore::ShaderProgram* sp = sg->FindShader(shaderName);
 
-               if(sp != NULL)
+               if(sp != nullptr)
                {
                   sm.AssignShaderFromPrototype(*sp, pLayer.GetGeode());
                }

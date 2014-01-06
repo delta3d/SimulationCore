@@ -61,7 +61,7 @@ namespace SimCore
          , mLensFlare(lensFlareReference)
       {
          osg::Camera* cam = const_cast<osg::Camera*>(camera.GetOSGCamera());
-         if(cam != NULL)
+         if(cam != nullptr)
          { 
             if(cam->getRenderTargetImplementation() == osg::Camera::FRAME_BUFFER_OBJECT)
             {
@@ -111,7 +111,7 @@ namespace SimCore
       void LensFlareDrawable::LensFlareUpdateCallback::operator () (const dtCore::Camera& camera, osg::RenderInfo& renderInfo) const
       {
          osg::Camera* cam = const_cast<osg::Camera*>(camera.GetOSGCamera());
-         if(cam != NULL)
+         if(cam != nullptr)
          {                        
             LensFlareOSGDrawable::FadeParams& params = mLensFlare->mFadeMap[cam];
 
@@ -227,7 +227,7 @@ namespace SimCore
          //SetShader
          dtCore::ShaderManager& sm = dtCore::ShaderManager::GetInstance();         
          dtCore::ShaderProgram* sp = sm.FindShaderPrototype("LensFlareShader", "LensFlareGroup");
-         if(sp != NULL)
+         if(sp != nullptr)
          {
             sm.AssignShaderFromPrototype(*sp, *mNode);
          }
@@ -322,7 +322,7 @@ namespace SimCore
       {
          if(!HasCamera(&pCamera))
          {     
-            dtCore::RefPtr<LensFlareUpdateCallback> lensCallback = new LensFlareUpdateCallback(mLensFlareDrawable.get(), pCamera);
+            std::shared_ptr<LensFlareUpdateCallback> lensCallback = new LensFlareUpdateCallback(mLensFlareDrawable.get(), pCamera);
             pCamera.AddPostDrawCallback(*lensCallback);
 
             mCurrentCameras.push_back(std::make_pair(lensCallback, &pCamera));
@@ -331,7 +331,7 @@ namespace SimCore
          /*if(mLensFlareDrawable->mUseRayCast)
          {
             osg::Camera* cam = pCamera.GetOSGCamera();
-            if(cam != NULL)
+            if(cam != nullptr)
             {
                dtCore::Transform t;
                osg::Vec3d pos, dir;
@@ -583,7 +583,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void LensFlareDrawable::LensFlareOSGDrawable::drawImplementation(osg::RenderInfo& renderInfo) const
       {
-         if(renderInfo.getState() != NULL)
+         if(renderInfo.getState() != nullptr)
          {
             //calculate the screen position of the light
             osg::Camera* cam = renderInfo.getCurrentCamera();

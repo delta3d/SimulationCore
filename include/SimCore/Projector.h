@@ -82,7 +82,7 @@ class SIMCORE_EXPORT Projector : public osg::StateSet
         		virtual void operator()(osg::Node* node, osg::NodeVisitor* nv)
 				{
 					osg::MatrixTransform *tx = dynamic_cast<osg::MatrixTransform *>(node);
-					if( tx != NULL )
+					if( tx != nullptr )
 					{
 			    		osg::Matrix L, matrix;
 			    		tx->computeLocalToWorldMatrix( L, nv);

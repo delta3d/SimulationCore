@@ -103,8 +103,8 @@ protected:
 
    virtual ~UpdateReflectionCameraCallback() {}
 
-   dtCore::ObserverPtr<osg::Camera>                mTarget;
-   dtCore::RefPtr<osg::Camera>                     mCamera;
+   osg::observer_ptr<osg::Camera>                mTarget;
+   osg::ref_ptr<osg::Camera>                     mCamera;
 
 };
 
@@ -126,7 +126,7 @@ osg::Node* CreateQuad( osg::Texture2D *tex, int renderBin )
    osg::Vec3Array *nx = new osg::Vec3Array;
    nx->push_back(osg::Vec3(0, 0, 1));
    geo->setNormalArray(nx);
-   if(tex != NULL)
+   if(tex != nullptr)
    {
       osg::Vec2Array *tx = new osg::Vec2Array;
       tx->push_back(osg::Vec2(0, 0));
@@ -481,7 +481,7 @@ namespace SimCore
          static float keyTimeOut = 0.0f;
          keyTimeOut -= dt;
 
-         if (kb != NULL && mDeveloperMode && keyTimeOut <= 0.0f)
+         if (kb != nullptr && mDeveloperMode && keyTimeOut <= 0.0f)
          {
 
             //if (kb->GetKeyState('9'))
@@ -654,7 +654,7 @@ namespace SimCore
          osg::Texture2D* foamTexture2D = new osg::Texture2D();
          std::string foamTextureFile = dtCore::Project::GetInstance().GetResourcePath(dtCore::ResourceDescriptor("Textures:OceanFoam.tga"));
          osg::Image* newImage = osgDB::readImageFile(foamTextureFile);
-         if (newImage == NULL)
+         if (newImage == nullptr)
          {
             LOG_ERROR("WaterGridActor failed to load Foam Texture file [" + foamTextureFile + "].");
          }
@@ -679,7 +679,7 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       osg::Node* WaterGridActor::BuildSubmergedGeometry()
       {
-         osg::Node* quad = CreateQuad(NULL, -2);//SimCore::Components::RenderingSupportComponent::RENDER_BIN_WATER - 1);
+         osg::Node* quad = CreateQuad(nullptr, -2);//SimCore::Components::RenderingSupportComponent::RENDER_BIN_WATER - 1);
          BindShader(quad, "UnderWater");
 
          osg::StateSet* ss = quad->getOrCreateStateSet();
@@ -717,7 +717,7 @@ namespace SimCore
          osg::Camera* sceneCam = pCamera.GetOSGCamera();
          osg::StateSet* ss = sceneCam->getOrCreateStateSet();
 
-         if(pCamera.GetOSGCamera()->getViewport() != NULL)
+         if(pCamera.GetOSGCamera()->getViewport() != nullptr)
          {
             osg::Matrix matView, matProj, matViewProjScreenInverse, matScreen;
 
@@ -965,8 +965,8 @@ namespace SimCore
          int numIndices = (N - 1) * (K - 1) * 6;
 
          //lets make the geometry
-         dtCore::RefPtr<osg::Vec4Array> pVerts = new osg::Vec4Array(numVerts);
-         dtCore::RefPtr<osg::IntArray> pIndices = new osg::IntArray(numIndices);
+         osg::ref_ptr<osg::Vec4Array> pVerts = new osg::Vec4Array(numVerts);
+         osg::ref_ptr<osg::IntArray> pIndices = new osg::IntArray(numIndices);
 
          //float a0 = 0.01f;
          //float a1 = 1.0f; // 5.0f;
@@ -1063,7 +1063,7 @@ namespace SimCore
       {
          LOG_INFO("Creating noise texture.");
          dtUtil::NoiseTexture noise3d(6, 2, 0.7, 0.5, 128, 128, 32);
-         dtCore::RefPtr<osg::Image> img = noise3d.MakeNoiseTexture(GL_ALPHA);
+         osg::ref_ptr<osg::Image> img = noise3d.MakeNoiseTexture(GL_ALPHA);
          LOG_INFO("Finished creating noise texture.");
 
          mNoiseTexture = new osg::Texture3D();
@@ -1085,10 +1085,10 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       void WaterGridActor::CreateWaveTexture()
       {
-         SimCore::Components::RenderingSupportComponent* comp = NULL;
+         SimCore::Components::RenderingSupportComponent* comp = nullptr;
          GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME, comp);
 
-         if(comp != NULL)
+         if(comp != nullptr)
          {
             if(!mWaveTexture.valid())
             {
@@ -1103,7 +1103,7 @@ namespace SimCore
                mWaveTexture = CreateTexture(width, height, false);
                InitAndBindToTarget(mWaveCamera.get(), mWaveTexture.get(), width, height);
                //mWaveCamera->setNodeMask(SimCore::Components::RenderingSupportComponent::MAIN_CAMERA_ONLY_FEATURE_NODE_MASK);
-               AddOrthoQuad(mWaveCamera.get(), NULL, "TextureWave", "");
+               AddOrthoQuad(mWaveCamera.get(), nullptr, "TextureWave", "");
 
                comp->AddCamera(mWaveCamera.get());
 
@@ -1134,7 +1134,7 @@ namespace SimCore
          osg::Node* quad = CreateQuad(tx, 50);
          cn->addChild(quad);
          BindShader(quad, shader);
-         if(tx != NULL)
+         if(tx != nullptr)
          {
             BindTextureUniformToNode(quad, tx, texUniform, 0);
          }
@@ -1164,7 +1164,7 @@ namespace SimCore
       {
          const dtCore::ShaderGroup *shaderGroup = dtCore::ShaderManager::GetInstance().FindShaderGroupPrototype("WaterGroup");
 
-         if (shaderGroup == NULL)
+         if (shaderGroup == nullptr)
          {
             LOG_INFO("Could not find shader group: WaterGroup");
             return;
@@ -1174,7 +1174,7 @@ namespace SimCore
 
          try
          {
-            if (defaultShader != NULL)
+            if (defaultShader != nullptr)
             {
                dtCore::ShaderManager::GetInstance().AssignShaderFromPrototype(*defaultShader, *node);
             }
@@ -1208,10 +1208,10 @@ namespace SimCore
       void WaterGridActor::CreateReflectionCamera()
       {
 
-         SimCore::Components::RenderingSupportComponent* comp = NULL;
+         SimCore::Components::RenderingSupportComponent* comp = nullptr;
          GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME, comp);
 
-         if(comp != NULL)
+         if(comp != nullptr)
          {
 
             mReflectionCamera = new osg::Camera();
@@ -1270,20 +1270,20 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       void WaterGridActor::AddReflectionScene( osg::Camera* cam )
       {
-         SimCore::Components::WeatherComponent* comp = NULL;
+         SimCore::Components::WeatherComponent* comp = nullptr;
          GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::WeatherComponent::DEFAULT_NAME, comp);
 
          osg::MatrixTransform* mat = new osg::MatrixTransform();
          mat->setMatrix(osg::Matrix::scale(osg::Vec3(1.0, 1.0, -1.0)));
 
-         if(comp != NULL)
+         if(comp != nullptr)
          {
             SimCore::Actors::EphemerisEnvironmentActor* env = dynamic_cast<SimCore::Actors::EphemerisEnvironmentActor*>(comp->GetEphemerisEnvironment());
 
-            if(env != NULL)
+            if(env != nullptr)
             {
                osgEphemeris::EphemerisModel* ephem = env->GetEphemerisModel();
-               if(ephem != NULL)
+               if(ephem != nullptr)
                {
                   //we have to reverse the cullface on the ephemeris or we wont see it
                   //this is necessary due to the reflection about the z axis
@@ -1312,15 +1312,15 @@ namespace SimCore
       {
         const dtGame::ActorUpdateMessage &updateMessage = static_cast<const dtGame::ActorUpdateMessage&>(msg);
         dtGame::GameActorProxy* proxy = GetGameActorProxy().GetGameManager()->FindGameActorById(updateMessage.GetAboutActorId());
-        if (proxy == NULL) // Could be deleted or not fully created from partial
+        if (proxy == nullptr) // Could be deleted or not fully created from partial
         {
            return;
         }
 
-        OceanDataActor* oceanDataActor = NULL;
+        OceanDataActor* oceanDataActor = nullptr;
         proxy->GetActor(oceanDataActor);
 
-        if(oceanDataActor != NULL)
+        if(oceanDataActor != nullptr)
         {
            int seaState = oceanDataActor->GetSeaState();
            float waveDirection = oceanDataActor->GetWaveDirectionPrimary();
@@ -1339,10 +1339,10 @@ namespace SimCore
       {
          if(!mOceanDataProxy.valid())
          {
-            dtGame::GameActorProxy* proxy = NULL;
+            dtGame::GameActorProxy* proxy = nullptr;
             proxy = GetGameActorProxy().GetGameManager()->FindGameActorById(msg.GetAboutActorId());
 
-            if(proxy != NULL && proxy->GetActorType() == *EntityActorRegistry::OCEAN_DATA_ACTOR_TYPE)
+            if(proxy != nullptr && proxy->GetActorType() == *EntityActorRegistry::OCEAN_DATA_ACTOR_TYPE)
             {
                mOceanDataProxy = proxy;
                GetGameActorProxy().RegisterForMessagesAboutOtherActor(dtGame::MessageType::INFO_ACTOR_UPDATED, msg.GetAboutActorId(), WaterGridActorProxy::INVOKABLE_ACTOR_UPDATE);
@@ -1849,7 +1849,7 @@ namespace SimCore
       {
          BaseClass::BuildInvokables();
 
-         WaterGridActor* wga = NULL;
+         WaterGridActor* wga = nullptr;
          GetActor(wga);
 
          AddInvokable(*new dtGame::Invokable(INVOKABLE_MAP_LOADED,
@@ -1884,7 +1884,7 @@ namespace SimCore
 
          BaseClass::BuildPropertyMap();
 
-         WaterGridActor* actor = NULL;
+         WaterGridActor* actor = nullptr;
          GetActor(actor);
 
          AddProperty(new dtCore::ColorRgbaActorProperty(PROPERTY_WATER_COLOR, PROPERTY_WATER_COLOR,
@@ -1912,9 +1912,9 @@ namespace SimCore
 
 
       /////////////////////////////////////////////////////////////////////////////
-      dtCore::ActorProxyIcon* WaterGridActorProxy::GetBillBoardIcon()
+      dtCore::ActorProxyIconPtr WaterGridActorProxy::GetBillBoardIcon()
       {
-         if(!mBillBoardIcon.valid())
+         if(!mBillBoardIcon)
          {
             dtCore::ActorProxyIcon::ActorProxyIconConfig config;
             config.mForwardVector = false;

@@ -78,7 +78,7 @@ namespace NetDemo
       GetTransform(ourTransform);
       dtPhysics::PhysicsObject* physObj = GetPhysicsActComp()->GetMainPhysicsObject();
       physObj->SetTransform(ourTransform);     
-      physObj->CreateFromProperties(NULL);
+      physObj->CreateFromProperties(nullptr);
 
       BaseClass::OnEnteredWorld();
 
@@ -87,7 +87,7 @@ namespace NetDemo
       // Add a dynamic light to our fort
       SimCore::Components::RenderingSupportComponent* renderComp;
       GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME, renderComp);
-      if(renderComp != NULL)
+      if(renderComp != nullptr)
       {
          //Add a spot light
          mDynamicLight = new SimCore::Components::RenderingSupportComponent::DynamicLight();
@@ -106,9 +106,9 @@ namespace NetDemo
       } 
 
       //add a shape volume for the beam
-      SimCore::Components::VolumeRenderingComponent* vrc = NULL;
+      SimCore::Components::VolumeRenderingComponent* vrc = nullptr;
       GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::VolumeRenderingComponent::DEFAULT_NAME, vrc); 
-      if(vrc != NULL)
+      if(vrc != nullptr)
       {
          mShapeVolume = new SimCore::Components::VolumeRenderingComponent::ShapeVolumeRecord();
          mShapeVolume->mPosition.set(0.0f, 0.0f, 0.0f);
@@ -145,7 +145,7 @@ namespace NetDemo
       osg::Vec3 trans = ourTransform.GetTranslation();
 
       // Prepare a detonation message
-      dtCore::RefPtr<SimCore::DetonationMessage> msg;
+      std::shared_ptr<SimCore::DetonationMessage> msg;
       gm->GetMessageFactory().CreateMessage( SimCore::MessageType::DETONATION, msg );
 
       // Required Parameters:
@@ -165,9 +165,9 @@ namespace NetDemo
       gm->SendMessage( *msg );
       gm->SendNetworkMessage( *msg );
 
-      SimCore::Components::VolumeRenderingComponent* vrc = NULL;
+      SimCore::Components::VolumeRenderingComponent* vrc = nullptr;
       GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::VolumeRenderingComponent::DEFAULT_NAME, vrc); 
-      if(vrc != NULL)
+      if(vrc != nullptr)
       {
          vrc->RemoveShapeVolume(mShapeVolume.get());
       }
@@ -207,9 +207,9 @@ namespace NetDemo
             ourTransform.GetRow(1, currentDirection);
          }
 
-         dtPhysics::PhysicsActComp* physAC = NULL;
+         dtPhysics::PhysicsActComp* physAC = nullptr;
          GetComponent(physAC);
-         if (physAC != NULL && physAC->GetMainPhysicsObject() != NULL)
+         if (physAC != nullptr && physAC->GetMainPhysicsObject() != nullptr)
          {
             physAC->GetMainPhysicsObject()->ApplyImpulse(currentDirection * mVelocity);
 
@@ -227,9 +227,9 @@ namespace NetDemo
          }
       }
 
-      SimCore::Components::VolumeRenderingComponent* vrc = NULL;
+      SimCore::Components::VolumeRenderingComponent* vrc = nullptr;
       GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::VolumeRenderingComponent::DEFAULT_NAME, vrc); 
-      if(vrc != NULL && mShapeVolume.valid() && mShapeVolume->mParticleDrawable.valid())
+      if(vrc != nullptr && mShapeVolume.valid() && mShapeVolume->mParticleDrawable.valid())
       {
          osg::Vec3 vel(2.475f, 0.0f, 0.0f);
          vel[0] *= tickMessage.GetDeltaSimTime();
@@ -319,7 +319,7 @@ namespace NetDemo
    //////////////////////////////////////////////////////////
    void FireBallActorProxy::BuildPropertyMap()
    {
-      FireBallActor* fa = NULL;
+      FireBallActor* fa = nullptr;
       GetActor(fa);
 
       SimCore::Actors::BasePhysicsVehicleActorProxy::BuildPropertyMap();
@@ -331,10 +331,10 @@ namespace NetDemo
       BaseClass::BuildActorComponents();
 
 
-      dtPhysics::PhysicsActComp* physAC = NULL;
+      dtPhysics::PhysicsActComp* physAC = nullptr;
       GetComponent(physAC);
       // Add our initial body.
-      dtCore::RefPtr<dtPhysics::PhysicsObject> physicsObject = new dtPhysics::PhysicsObject("FireBallBody");
+      std::shared_ptr<dtPhysics::PhysicsObject> physicsObject = new dtPhysics::PhysicsObject("FireBallBody");
       physAC->AddPhysicsObject(*physicsObject);
       physicsObject->SetPrimitiveType(dtPhysics::PrimitiveType::SPHERE);
       physicsObject->SetMass(30.0f);
@@ -342,9 +342,9 @@ namespace NetDemo
       physicsObject->SetMechanicsType(dtPhysics::MechanicsType::DYNAMIC);
       physicsObject->SetNotifyCollisions(true);
 
-      dtGame::DRPublishingActComp* drPublishingActComp = NULL;
+      dtGame::DRPublishingActComp* drPublishingActComp = nullptr;
       GetComponent(drPublishingActComp);
-      if (drPublishingActComp == NULL)
+      if (drPublishingActComp == nullptr)
       {
          LOG_ERROR("CRITICAL ERROR - No DR Publishing Actor Component.");
          return;

@@ -64,11 +64,11 @@ private:
    void TestTransitionFunc(int i, bool b);
 
    int mLastFunc, mCurrFunc;
-   dtCore::RefPtr<dtABC::Application> mApp;
-   dtCore::RefPtr<dtGame::GameManager> mGM;
+   std::shared_ptr<dtABC::Application> mApp;
+   std::shared_ptr<dtGame::GameManager> mGM;
 
    // Components
-   dtCore::RefPtr<GameStateComponent> mGameStateComponent;
+   std::shared_ptr<GameStateComponent> mGameStateComponent;
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(GameStateTests);
@@ -135,12 +135,12 @@ void GameStateTests::tearDown()
    dtCore::System::GetInstance().Step();
 
    // Delete Components
-   mGameStateComponent = NULL;
+   mGameStateComponent = nullptr;
 
    mGM->Shutdown();
    // Delete the Game Manager and Application
-   mGM = NULL;
-   mApp = NULL;
+   mGM = nullptr;
+   mApp = nullptr;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -153,18 +153,18 @@ void GameStateTests::TestLoadTransitionFile()
    CPPUNIT_ASSERT_MESSAGE("We should begin in the intro state", mGameStateComponent->GetCurrentState() == &StateType::STATE_INTRO);
 
    typedef dtUtil::Command2<void, int, bool> CMD2;
-   dtCore::RefPtr<CMD2> cmd1 = new CMD2(CMD2::FunctorType(this, &GameStateTests::TestTransitionFunc), 1, true);
-   dtCore::RefPtr<CMD2> cmd2 = new CMD2(CMD2::FunctorType(this, &GameStateTests::TestTransitionFunc), 2, true);
-   dtCore::RefPtr<CMD2> cmd3 = new CMD2(CMD2::FunctorType(this, &GameStateTests::TestTransitionFunc), 3, true);
-   dtCore::RefPtr<CMD2> cmd4 = new CMD2(CMD2::FunctorType(this, &GameStateTests::TestTransitionFunc), 4, true);
-   dtCore::RefPtr<CMD2> cmd5 = new CMD2(CMD2::FunctorType(this, &GameStateTests::TestTransitionFunc), 5, true);
+   std::shared_ptr<CMD2> cmd1 = new CMD2(CMD2::FunctorType(this, &GameStateTests::TestTransitionFunc), 1, true);
+   std::shared_ptr<CMD2> cmd2 = new CMD2(CMD2::FunctorType(this, &GameStateTests::TestTransitionFunc), 2, true);
+   std::shared_ptr<CMD2> cmd3 = new CMD2(CMD2::FunctorType(this, &GameStateTests::TestTransitionFunc), 3, true);
+   std::shared_ptr<CMD2> cmd4 = new CMD2(CMD2::FunctorType(this, &GameStateTests::TestTransitionFunc), 4, true);
+   std::shared_ptr<CMD2> cmd5 = new CMD2(CMD2::FunctorType(this, &GameStateTests::TestTransitionFunc), 5, true);
 
 
-   dtCore::RefPtr<CMD2> cmd11 = new CMD2(CMD2::FunctorType(this, &GameStateTests::TestTransitionFunc), 1, false);
-   dtCore::RefPtr<CMD2> cmd21 = new CMD2(CMD2::FunctorType(this, &GameStateTests::TestTransitionFunc), 2, false);
-   dtCore::RefPtr<CMD2> cmd31 = new CMD2(CMD2::FunctorType(this, &GameStateTests::TestTransitionFunc), 3, false);
-   dtCore::RefPtr<CMD2> cmd41 = new CMD2(CMD2::FunctorType(this, &GameStateTests::TestTransitionFunc), 4, false);
-   dtCore::RefPtr<CMD2> cmd51 = new CMD2(CMD2::FunctorType(this, &GameStateTests::TestTransitionFunc), 5, false);
+   std::shared_ptr<CMD2> cmd11 = new CMD2(CMD2::FunctorType(this, &GameStateTests::TestTransitionFunc), 1, false);
+   std::shared_ptr<CMD2> cmd21 = new CMD2(CMD2::FunctorType(this, &GameStateTests::TestTransitionFunc), 2, false);
+   std::shared_ptr<CMD2> cmd31 = new CMD2(CMD2::FunctorType(this, &GameStateTests::TestTransitionFunc), 3, false);
+   std::shared_ptr<CMD2> cmd41 = new CMD2(CMD2::FunctorType(this, &GameStateTests::TestTransitionFunc), 4, false);
+   std::shared_ptr<CMD2> cmd51 = new CMD2(CMD2::FunctorType(this, &GameStateTests::TestTransitionFunc), 5, false);
 
 
    mGameStateComponent->GetState(&StateType::STATE_MENU)->AddEntryCommand(cmd1.get());

@@ -204,27 +204,27 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////
-      void MunitionDamage::SetDamageRanges1_3( const dtCore::RefPtr<DamageRanges>&  ranges )
+      void MunitionDamage::SetDamageRanges1_3( const std::shared_ptr<DamageRanges>&  ranges )
       { 
-         if( ! ranges.valid() ) { mRange1_3 = NULL; return; }
+         if( ! ranges.valid() ) { mRange1_3 = nullptr; return; }
          if( ! mRange1_3.valid() ) { mRange1_3 = new DamageRanges("Range1/3"); }
 
          (*mRange1_3) = *ranges; 
       }
 
       //////////////////////////////////////////////////////////
-      void MunitionDamage::SetDamageRanges2_3( const dtCore::RefPtr<DamageRanges>&  ranges )
+      void MunitionDamage::SetDamageRanges2_3( const std::shared_ptr<DamageRanges>&  ranges )
       { 
-         if( ! ranges.valid() ) { mRange2_3 = NULL; return; }
+         if( ! ranges.valid() ) { mRange2_3 = nullptr; return; }
          if( ! mRange2_3.valid() ) { mRange2_3 = new DamageRanges("Range2/3"); }
 
          (*mRange2_3) = *ranges;
       }
 
       //////////////////////////////////////////////////////////
-      void MunitionDamage::SetDamageRangesMax( const dtCore::RefPtr<DamageRanges>&  ranges )
+      void MunitionDamage::SetDamageRangesMax( const std::shared_ptr<DamageRanges>&  ranges )
       { 
-         if( ! ranges.valid() ) { mRangeMax = NULL; return; }
+         if( ! ranges.valid() ) { mRangeMax = nullptr; return; }
          if( ! mRangeMax.valid() ) { mRangeMax = new DamageRanges("RangeMax"); }
 
          (*mRangeMax) = *ranges; 
@@ -349,7 +349,7 @@ namespace SimCore
          float y = (offset+(trajectoryNormal*-x)).length(); // distance perpendicular to trajectory
          const DamageRanges* ranges = GetDamageRangesByTrajectory( trajectoryNormal );
 
-         if( ranges != NULL )
+         if( ranges != nullptr )
          {
             const osg::Vec4& forwardRanges = ranges->GetForwardRanges();
             const osg::Vec4& deflectRanges = ranges->GetDeflectRanges();
@@ -423,7 +423,7 @@ namespace SimCore
             force = trajectoryNormal;
          }
 
-         if( ranges == NULL ) { return force; }
+         if( ranges == nullptr ) { return force; }
 
          // Obtain the max area
          const osg::Vec4& forwardRanges = ranges->GetForwardRanges();

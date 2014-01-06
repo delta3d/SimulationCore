@@ -66,7 +66,7 @@ namespace SimCore
       void BaseTerrainActor::LoadFile(const std::string &fileName)
       {
          //Don't actually load the file unless
-         if (GetSceneParent() != NULL)
+         if (GetSceneParent() != nullptr)
          {
             //We should always clear the geometry.  If LoadFile fails, we should have no geometry.
             if (GetMatrixNode()->getNumChildren() != 0)
@@ -76,7 +76,7 @@ namespace SimCore
 
             if (!fileName.empty())
             {
-               dtCore::RefPtr<osg::Node> unused;
+               osg::ref_ptr<osg::Node> unused;
                if( !IGActor::LoadFile(fileName, mTerrainNode, unused, false, true) )
                   LOG_ERROR("Failed to load the terrain file: " + fileName);
             }

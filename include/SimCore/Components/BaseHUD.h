@@ -101,8 +101,8 @@ namespace SimCore
          const CEGUI::Window* GetMainCEGUIWindow() const;
 
 #if CEGUI_VERSION_MAJOR == 0 && CEGUI_VERSION_MINOR < 7
-         dtCore::RefPtr<dtGUI::CEUIDrawable> GetGUIDrawable() { return mGUI; }
-         const dtCore::RefPtr<dtGUI::CEUIDrawable> GetGUIDrawable() const { return mGUI; }
+         std::shared_ptr<dtGUI::CEUIDrawable> GetGUIDrawable() { return mGUI; }
+         const std::shared_ptr<dtGUI::CEUIDrawable> GetGUIDrawable() const { return mGUI; }
 #else
          osg::Group& GetRootNode();
          const osg::Group& GetRootNode() const;
@@ -144,11 +144,11 @@ namespace SimCore
 
       private:
          dtCore::DeltaWin* mWin;
-         dtCore::RefPtr<HUDGroup> mMainWindow;
+         std::shared_ptr<HUDGroup> mMainWindow;
 #if CEGUI_VERSION_MAJOR == 0 && CEGUI_VERSION_MINOR < 7
-         dtCore::RefPtr<dtGUI::CEUIDrawable> mGUI;
+         std::shared_ptr<dtGUI::CEUIDrawable> mGUI;
 #else
-         dtCore::RefPtr<dtGUI::GUI> mGUI;
+         std::shared_ptr<dtGUI::GUI> mGUI;
 #endif
          dtGUI::ScriptModule* mScriptModule;
 

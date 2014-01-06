@@ -147,7 +147,7 @@ namespace SimCore
          if(mGeode.valid())
          {
             GetGameActor().GetOSGNode()->asGroup()->removeChild(mGeode.get());
-            mGeode = NULL;
+            mGeode = nullptr;
          }
       }
 
@@ -159,14 +159,14 @@ namespace SimCore
          osg::StateSet* ss = mGeode->getOrCreateStateSet();
          ss->setMode(GL_BLEND, osg::StateAttribute::ON);
 
-         dtCore::RefPtr<osg::BlendFunc> blendFunc = new osg::BlendFunc();
+         osg::ref_ptr<osg::BlendFunc> blendFunc = new osg::BlendFunc();
          blendFunc->setFunction(osg::BlendFunc::SRC_ALPHA ,osg::BlendFunc::ONE_MINUS_SRC_ALPHA);
          ss->setAttributeAndModes(blendFunc);
          ss->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
 
          ss->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
 
-         dtCore::RefPtr<osg::CullFace> cull = new osg::CullFace();
+         osg::ref_ptr<osg::CullFace> cull = new osg::CullFace();
          cull->setMode(osg::CullFace::BACK);
          ss->setAttributeAndModes(cull, osg::StateAttribute::OFF);
 
@@ -189,20 +189,20 @@ namespace SimCore
             center[2] = minZ + (0.5f * diff);
 
             //create body
-            dtCore::RefPtr<osg::TessellationHints> hints = new osg::TessellationHints();
+            osg::ref_ptr<osg::TessellationHints> hints = new osg::TessellationHints();
             hints->setCreateBottom(false);
             hints->setCreateTop(false);
 
-            dtCore::RefPtr<osg::Cylinder> shape = new osg::Cylinder(center, mRadius, diff);
-            dtCore::RefPtr<osg::ShapeDrawable> shapeDrawable = new osg::ShapeDrawable(shape, hints);
+            osg::ref_ptr<osg::Cylinder> shape = new osg::Cylinder(center, mRadius, diff);
+            osg::ref_ptr<osg::ShapeDrawable> shapeDrawable = new osg::ShapeDrawable(shape, hints);
             mGeode->addDrawable(shapeDrawable);
 
             //create top
-            dtCore::RefPtr<osg::TessellationHints> hintsTop = new osg::TessellationHints();
+            osg::ref_ptr<osg::TessellationHints> hintsTop = new osg::TessellationHints();
             hintsTop->setCreateBody(false);
 
-            dtCore::RefPtr<osg::Cylinder> shapeTop = new osg::Cylinder(center, mRadius, diff);
-            dtCore::RefPtr<osg::ShapeDrawable> shapeDrawableTop = new osg::ShapeDrawable(shape, hintsTop);
+            osg::ref_ptr<osg::Cylinder> shapeTop = new osg::Cylinder(center, mRadius, diff);
+            osg::ref_ptr<osg::ShapeDrawable> shapeDrawableTop = new osg::ShapeDrawable(shape, hintsTop);
             
             CreateClosedTop(mPoints, false);
             mTopGeode->addDrawable(shapeDrawableTop);
@@ -225,8 +225,8 @@ namespace SimCore
          {
             int numVerts = 0;
 
-            dtCore::RefPtr<osg::Geometry> geom = new osg::Geometry();
-            dtCore::RefPtr<osg::Vec3Array> vectorArray = new osg::Vec3Array();
+            osg::ref_ptr<osg::Geometry> geom = new osg::Geometry();
+            osg::ref_ptr<osg::Vec3Array> vectorArray = new osg::Vec3Array();
             
 
             std::vector<osg::Vec3>::iterator iter = mPoints.begin();
@@ -279,7 +279,7 @@ namespace SimCore
 
          const dtCore::ShaderGroup *shaderGroup = sm.FindShaderGroupPrototype("BattlefieldGraphicsGroup");
 
-         if (shaderGroup == NULL)
+         if (shaderGroup == nullptr)
          {
             LOG_INFO("Could not find shader group BattlefieldGraphicsGroup");
             return;
@@ -289,7 +289,7 @@ namespace SimCore
 
          try
          {
-            if (defaultShader != NULL)
+            if (defaultShader != nullptr)
             {
                dtCore::ShaderManager::GetInstance().AssignShaderFromPrototype(*defaultShader, *node);
             }
@@ -329,8 +329,8 @@ namespace SimCore
             osg::Vec3 center = mPoints[0];
             center[2] = minZ + (0.5f * diff);
 
-            dtCore::RefPtr<osg::Cylinder> shape = new osg::Cylinder(center, mRadius, diff);
-            dtCore::RefPtr<osg::ShapeDrawable> shapeDrawable = new osg::ShapeDrawable(shape);
+            osg::ref_ptr<osg::Cylinder> shape = new osg::Cylinder(center, mRadius, diff);
+            osg::ref_ptr<osg::ShapeDrawable> shapeDrawable = new osg::ShapeDrawable(shape);
             shapeDrawable->setColor(color);
             mGeode->addDrawable(shapeDrawable);
             GetGameActor().GetOSGNode()->asGroup()->addChild(mGeode.get());
@@ -510,14 +510,14 @@ namespace SimCore
          osg::StateSet* ss = mTopGeode->getOrCreateStateSet();
          ss->setMode(GL_BLEND, osg::StateAttribute::ON);
 
-         dtCore::RefPtr<osg::BlendFunc> blendFunc = new osg::BlendFunc();
+         osg::ref_ptr<osg::BlendFunc> blendFunc = new osg::BlendFunc();
          blendFunc->setFunction(osg::BlendFunc::SRC_ALPHA ,osg::BlendFunc::ONE_MINUS_SRC_ALPHA);
          ss->setAttributeAndModes(blendFunc);
          ss->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
 
          ss->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
 
-         dtCore::RefPtr<osg::CullFace> cull = new osg::CullFace();
+         osg::ref_ptr<osg::CullFace> cull = new osg::CullFace();
          cull->setMode(osg::CullFace::BACK);
          ss->setAttributeAndModes(cull, osg::StateAttribute::OFF);
 
@@ -533,8 +533,8 @@ namespace SimCore
          {
 
             int numVerts = points.size();
-            dtCore::RefPtr<osg::Geometry> geom = new osg::Geometry();
-            dtCore::RefPtr<osg::Vec3Array> vectorArray = new osg::Vec3Array();
+            osg::ref_ptr<osg::Geometry> geom = new osg::Geometry();
+            osg::ref_ptr<osg::Vec3Array> vectorArray = new osg::Vec3Array();
             vectorArray->reserve(numVerts);
 
 
@@ -551,7 +551,7 @@ namespace SimCore
                vectorArray->push_back(UL);
             }
 
-            dtCore::RefPtr<osgUtil::DelaunayTriangulator> triangulator = new osgUtil::DelaunayTriangulator(vectorArray);
+            osg::ref_ptr<osgUtil::DelaunayTriangulator> triangulator = new osgUtil::DelaunayTriangulator(vectorArray);
             bool result = triangulator->triangulate();
             if(result)
             {
@@ -585,8 +585,8 @@ namespace SimCore
       {
          osg::Vec4 color(0.5f, 0.5f, 1.0f, 0.5f);
 
-         dtCore::RefPtr<osg::Geometry> geom = new osg::Geometry();
-         dtCore::RefPtr<osg::Vec3Array> vectorArray = new osg::Vec3Array();
+         osg::ref_ptr<osg::Geometry> geom = new osg::Geometry();
+         osg::ref_ptr<osg::Vec3Array> vectorArray = new osg::Vec3Array();
 
          osg::Vec3 LL, UL, UR, LR;
          LL.set(from.x(), from.y(), minHeight);
@@ -637,7 +637,7 @@ namespace SimCore
 
 
          typedef dtDAL::ArrayActorPropertyComplex<osg::Vec3> Vec3ArrayPropType;
-         dtCore::RefPtr<Vec3ArrayPropType> arrayProp =
+         std::shared_ptr<Vec3ArrayPropType> arrayProp =
             new Vec3ArrayPropType
                ("PointArray", "PointArray",
                 Vec3ArrayPropType::SetFuncType(this, &BattlefieldGraphicsActorProxy::SetPoint),
@@ -651,7 +651,7 @@ namespace SimCore
                );
 
          
-         dtCore::RefPtr<dtDAL::Vec3ActorProperty> vec3prop =
+         std::shared_ptr<dtDAL::Vec3ActorProperty> vec3prop =
          new dtDAL::Vec3ActorProperty("NestedVec3",
                   "Nested Vec3",
                   dtDAL::Vec3ActorProperty::SetFuncType(arrayProp.get(), &Vec3ArrayPropType::SetCurrentValue),
@@ -819,7 +819,7 @@ namespace SimCore
          for(;iter != iterEnd; ++iter)
          {
             BattlefieldGraphicsActorProxy* bfg = dynamic_cast<BattlefieldGraphicsActorProxy*>(*iter);
-            if(bfg != NULL)
+            if(bfg != nullptr)
             {
                bfg->SetEnableTopGeometry(mEnableTopGeometryGlobal);
             }

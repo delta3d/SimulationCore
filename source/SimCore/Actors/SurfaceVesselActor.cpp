@@ -232,7 +232,7 @@ namespace SimCore
          GetGameActorProxy().GetGameManager()->
             GetComponentByName(SimCore::Components::ParticleManagerComponent::DEFAULT_NAME, comp);
 
-         if( comp != NULL )
+         if( comp != nullptr )
          {
             comp->RegisterActor(GetGameActorProxy());
          }     
@@ -261,7 +261,7 @@ namespace SimCore
          {
             dtCore::ShaderProgram* sp = sg->FindShader(shaderName);
 
-            if(sp != NULL)
+            if(sp != nullptr)
             {
                sm.AssignShaderFromPrototype(*sp, node);
             }
@@ -325,16 +325,16 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////
-      dtCore::RefPtr<SurfaceVesselActor::DynamicParticlesProxy> SurfaceVesselActor::CreatDynamicParticleSystemProxy(
+      std::shared_ptr<SurfaceVesselActor::DynamicParticlesProxy> SurfaceVesselActor::CreatDynamicParticleSystemProxy(
          const std::string& filename, const std::string& actorName)
       {
-         dtCore::RefPtr<DynamicParticlesProxy> proxy;
+         std::shared_ptr<DynamicParticlesProxy> proxy;
          
          dtGame::GameManager* gm = GetGameActorProxy().GetGameManager();
-         if(gm != NULL)
+         if(gm != nullptr)
          {
             // Create the actor.
-            DynamicParticlesActor* actor = NULL;
+            DynamicParticlesActor* actor = nullptr;
             gm->CreateActor(*SimCore::Actors::EntityActorRegistry::DYNAMIC_PARTICLE_SYSTEM_ACTOR_TYPE, proxy);
             proxy->GetActor(actor);
             actor->SetName(actorName);
@@ -361,8 +361,8 @@ namespace SimCore
       //////////////////////////////////////////////////////////
       SurfaceVesselActor::DynamicParticlesActor* SurfaceVesselActor::GetParticlesActor(DynamicParticlesProxy* proxy)
       {
-         DynamicParticlesActor* actor = NULL;
-         if(proxy != NULL)
+         DynamicParticlesActor* actor = nullptr;
+         if(proxy != nullptr)
          {
             proxy->GetActor(actor);
          }

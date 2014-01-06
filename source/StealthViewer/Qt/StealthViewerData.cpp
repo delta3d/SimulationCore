@@ -36,7 +36,7 @@
 
 namespace StealthQt
 {
-   dtCore::RefPtr<StealthViewerData> StealthViewerData::mInstance(NULL);
+   std::shared_ptr<StealthViewerData> StealthViewerData::mInstance(nullptr);
 
    //////////////////////////////////////////////////////////////////////
    StealthViewerData::StealthViewerData()
@@ -49,7 +49,7 @@ namespace StealthQt
    , mRecordConfigObject(new StealthGM::ControlsRecordConfigObject)
    , mPlaybackConfigObject(new StealthGM::ControlsPlaybackConfigObject)
    , mViewWindowConfigObject(new StealthGM::ViewWindowConfigObject)
-   , mMainWindow(NULL)
+   , mMainWindow(nullptr)
    {
 
    }
@@ -58,7 +58,7 @@ namespace StealthQt
    StealthViewerData::~StealthViewerData()
    {
       delete mSettings;
-      mSettings = NULL;
+      mSettings = nullptr;
    }
 
    //////////////////////////////////////////////////////////////////////

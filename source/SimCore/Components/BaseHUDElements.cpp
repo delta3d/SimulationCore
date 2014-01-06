@@ -165,11 +165,11 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       HUDElement::~HUDElement()
       {
-         if (mWindow != NULL && (!mWindow->isDestroyedByParent() || mWindow->getParent() == NULL))
+         if (mWindow != nullptr && (!mWindow->isDestroyedByParent() || mWindow->getParent() == nullptr))
          {
             mWindow->destroy();
          }
-         mWindow = NULL;
+         mWindow = nullptr;
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -398,7 +398,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void HUDElement::SetDeleteWindowOnDestruct(bool enable)
       {
-         if (mWindow != NULL)
+         if (mWindow != nullptr)
          {
             mWindow->setDestroyedByParent(!enable);
          }
@@ -407,7 +407,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       bool HUDElement::GetDeleteWindowOnDestruct() const
       {
-         if (mWindow != NULL)
+         if (mWindow != nullptr)
          {
             return !mWindow->isDestroyedByParent();
          }
@@ -553,7 +553,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       bool HUDGroup::Add(HUDElement* child)
       {
-         if (child == NULL) { return false; }
+         if (child == nullptr) { return false; }
 
          // On successful insert...
          if (mChildRefs.insert(std::make_pair(child->GetUniqueId(), child)).second)
@@ -568,9 +568,9 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       bool HUDGroup::Remove(HUDElement* child)
       {
-         if (child == NULL) { return false; }
+         if (child == nullptr) { return false; }
 
-         std::map<dtCore::UniqueId, dtCore::RefPtr<HUDElement> >::iterator i =
+         std::map<dtCore::UniqueId, std::shared_ptr<HUDElement> >::iterator i =
             mChildRefs.find(child->GetUniqueId());
 
          if (i != mChildRefs.end())
@@ -612,7 +612,7 @@ namespace SimCore
          {
             // TODO:
          }
-         return NULL;
+         return nullptr;
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -627,7 +627,7 @@ namespace SimCore
          {
             // TODO:
          }
-         return NULL;
+         return nullptr;
       }
 
 
@@ -650,17 +650,17 @@ namespace SimCore
          if (mActiveElement.valid())
          {
             mWindow->removeChildWindow(mActiveElement->GetCEGUIWindow());
-            mActiveElement = NULL;
+            mActiveElement = nullptr;
          }
          if (mInactiveElement.valid())
          {
             mWindow->removeChildWindow(mInactiveElement->GetCEGUIWindow());
-            mInactiveElement = NULL;
+            mInactiveElement = nullptr;
          }
          if (mDisabledElement.valid())
          {
             mWindow->removeChildWindow(mDisabledElement->GetCEGUIWindow());
-            mDisabledElement = NULL;
+            mDisabledElement = nullptr;
          }
       }
 
@@ -672,7 +672,7 @@ namespace SimCore
             mWindow->removeChildWindow(mActiveElement->GetCEGUIWindow());
          }
          mActiveElement = activeElement;
-         if (activeElement != NULL)
+         if (activeElement != nullptr)
          {
             mWindow->addChildWindow(activeElement->GetCEGUIWindow());
          }
@@ -698,7 +698,7 @@ namespace SimCore
             mWindow->removeChildWindow(mInactiveElement->GetCEGUIWindow());
          }
          mInactiveElement = inactiveElement;
-         if (inactiveElement != NULL)
+         if (inactiveElement != nullptr)
          {
             mWindow->addChildWindow(inactiveElement->GetCEGUIWindow());
          }
@@ -823,7 +823,7 @@ namespace SimCore
          if (mImage.valid())
          {
             mWindow->removeChildWindow(mImage->GetCEGUIWindow());
-            mImage = NULL;
+            mImage = nullptr;
          }
       }
 
@@ -894,7 +894,7 @@ namespace SimCore
       {
          HUDMeter::SetImage(image);
 
-         if (GetImage() != NULL)
+         if (GetImage() != nullptr)
          {
             GetImage()->GetSize(mOriginalImageSize);
          }
@@ -932,7 +932,7 @@ namespace SimCore
             // Scale up the contained image so that it will be clipped
             // and look like it was not scaled (only if this container
             // is in relative size mode).
-            if (!IsAbsoluteSize() && image != NULL
+            if (!IsAbsoluteSize() && image != nullptr
                && scale != 0.0f && mOriginalSize[0] != 0.0f)
             {
                GetOriginalImageSize(size);
@@ -951,7 +951,7 @@ namespace SimCore
             // Scale up the contained image so that it will be clipped
             // and look like it was not scaled (only if this container
             // is in relative size mode).
-            if (!IsAbsoluteSize() && image != NULL
+            if (!IsAbsoluteSize() && image != nullptr
                && scale != 0.0f && mOriginalSize[1] != 0.0f)
             {
                GetOriginalImageSize(size);
@@ -1005,7 +1005,7 @@ namespace SimCore
 
          HUDImage* image = GetImage();
 
-         if (image == NULL) { return; }
+         if (image == nullptr) { return; }
 
          osg::Vec2 size;
          image->GetSize(size);
@@ -1119,7 +1119,7 @@ namespace SimCore
 
       //////////////////////////////////////////////////////////////////////////
       bool HUDToolbar::GetItorAtIndex(unsigned int index,
-         std::vector< dtCore::RefPtr<HUDElement> >::iterator& outIter)
+         std::vector< std::shared_ptr<HUDElement> >::iterator& outIter)
       {
          // Step the iterator forward to index
          for (unsigned int curIndex = 0;
@@ -1134,7 +1134,7 @@ namespace SimCore
 
       //////////////////////////////////////////////////////////////////////////
       bool HUDToolbar::GetItorAtIndex(unsigned int index,
-         std::vector< dtCore::RefPtr<HUDElement> >::const_iterator& outIter) const
+         std::vector< std::shared_ptr<HUDElement> >::const_iterator& outIter) const
       {
          // Step the iterator forward to index
          for (unsigned int curIndex = 0;
@@ -1149,10 +1149,10 @@ namespace SimCore
 
       //////////////////////////////////////////////////////////////////////////
       bool HUDToolbar::GetItorAtElement(const HUDElement& element,
-         std::vector< dtCore::RefPtr<HUDElement> >::iterator& outIter,
+         std::vector< std::shared_ptr<HUDElement> >::iterator& outIter,
          int* outIndex)
       {
-         if (outIndex != NULL) { *outIndex = 0; }
+         if (outIndex != nullptr) { *outIndex = 0; }
 
          for (; outIter != mElements.end(); ++outIter)
          {
@@ -1161,19 +1161,19 @@ namespace SimCore
             {
                return true;
             }
-            if (outIndex != NULL) { (*outIndex)++; }
+            if (outIndex != nullptr) { (*outIndex)++; }
          }
 
-         if (outIndex != NULL) { *outIndex = -1; }
+         if (outIndex != nullptr) { *outIndex = -1; }
          return false;
       }
 
       //////////////////////////////////////////////////////////////////////////
       bool HUDToolbar::GetItorAtElement(const HUDElement& element,
-         std::vector< dtCore::RefPtr<HUDElement> >::const_iterator& outIter,
+         std::vector< std::shared_ptr<HUDElement> >::const_iterator& outIter,
          int* outIndex) const
       {
-         if (outIndex != NULL) { *outIndex = 0; }
+         if (outIndex != nullptr) { *outIndex = 0; }
 
          for (; outIter != mElements.end(); ++outIter)
          {
@@ -1182,10 +1182,10 @@ namespace SimCore
             {
                return true;
             }
-            if (outIndex != NULL) { (*outIndex)++; }
+            if (outIndex != nullptr) { (*outIndex)++; }
          }
 
-         if (outIndex != NULL) { *outIndex = -1; }
+         if (outIndex != nullptr) { *outIndex = -1; }
          return false;
       }
 
@@ -1198,21 +1198,21 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       HUDElement* HUDToolbar::GetElement(unsigned int index)
       {
-         std::vector< dtCore::RefPtr<HUDElement> >::iterator iter = mElements.begin();
-         return GetItorAtIndex(index, iter) ? iter->get() : NULL;
+         std::vector< std::shared_ptr<HUDElement> >::iterator iter = mElements.begin();
+         return GetItorAtIndex(index, iter) ? iter->get() : nullptr;
       }
 
       //////////////////////////////////////////////////////////////////////////
       const HUDElement* HUDToolbar::GetElement(unsigned int index) const
       {
-         std::vector< dtCore::RefPtr<HUDElement> >::const_iterator iter = mElements.begin();
-         return GetItorAtIndex(index, iter) ? iter->get() : NULL;
+         std::vector< std::shared_ptr<HUDElement> >::const_iterator iter = mElements.begin();
+         return GetItorAtIndex(index, iter) ? iter->get() : nullptr;
       }
 
       //////////////////////////////////////////////////////////////////////////
       int HUDToolbar::GetElementIndex(const HUDElement& element) const
       {
-         std::vector< dtCore::RefPtr<HUDElement> >::const_iterator iter = mElements.begin();
+         std::vector< std::shared_ptr<HUDElement> >::const_iterator iter = mElements.begin();
          int index = -1;
          GetItorAtElement(element, iter, &index);
          return index;
@@ -1221,12 +1221,12 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       bool HUDToolbar::InsertElement(HUDElement* element, int index)
       {
-         if (element == NULL) { return false; }
+         if (element == nullptr) { return false; }
 
          if (index < 0 || (unsigned int)index > mElements.size()) { index = mElements.size(); }
 
          // Step the iterator forward to index
-         std::vector< dtCore::RefPtr<HUDElement> >::iterator iter = mElements.begin();
+         std::vector< std::shared_ptr<HUDElement> >::iterator iter = mElements.begin();
          GetItorAtIndex(index, iter);
 
          try{
@@ -1250,11 +1250,11 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       bool HUDToolbar::RemoveElement(const HUDElement* element)
       {
-         if (element == NULL) { return false; }
+         if (element == nullptr) { return false; }
 
          if (mElements.empty()) { return false; }
 
-         std::vector< dtCore::RefPtr<HUDElement> >::iterator iter = mElements.begin();
+         std::vector< std::shared_ptr<HUDElement> >::iterator iter = mElements.begin();
          if (GetItorAtElement(*element, iter))
          {
             try{
@@ -1266,7 +1266,7 @@ namespace SimCore
             {
                std::ostringstream oss;
                oss << "FAILURE: "<<GetName().c_str()<<".ClearElements() "
-                  << "removing element \"" << ((*iter).valid()?(*iter)->GetName():"NULL") << "\""
+                  << "removing element \"" << ((*iter).valid()?(*iter)->GetName():"nullptr") << "\""
                   << std::endl
                   << e.getMessage().c_str();
             }
@@ -1279,7 +1279,7 @@ namespace SimCore
       {
          if (mElements.empty()) { return false; }
 
-         std::vector< dtCore::RefPtr<HUDElement> >::iterator iter = mElements.begin();
+         std::vector< std::shared_ptr<HUDElement> >::iterator iter = mElements.begin();
          for (; iter != mElements.end(); ++iter)
          {
             try{
@@ -1289,7 +1289,7 @@ namespace SimCore
             {
                std::ostringstream oss;
                oss << "FAILURE: "<<GetName().c_str()<<".ClearElements() "
-                  << "removing element \"" << ((*iter).valid()?(*iter)->GetName():"NULL") << "\""
+                  << "removing element \"" << ((*iter).valid()?(*iter)->GetName():"nullptr") << "\""
                   << std::endl
                   << e.getMessage().c_str();
             }
@@ -1328,7 +1328,7 @@ namespace SimCore
 
          // Loop through and distribute the elements between
          // the start and end elements.
-         std::vector< dtCore::RefPtr<HUDElement> >::iterator iter, iterEnd;
+         std::vector< std::shared_ptr<HUDElement> >::iterator iter, iterEnd;
          iter = mElements.begin();
          iterEnd = mElements.end();
          for (; iter != iterEnd; ++iter)
@@ -1436,7 +1436,7 @@ namespace SimCore
          if (! imageFileName.empty())
          {
             // Set the texture
-            dtCore::RefPtr<osg::Texture2D> texture = new osg::Texture2D;
+            osg::ref_ptr<osg::Texture2D> texture = new osg::Texture2D;
             texture->setDataVariance(osg::Object::DYNAMIC);
             osg::Image* image;
             std::string filePath("Textures:");
@@ -1476,7 +1476,7 @@ namespace SimCore
          if (mRoot.valid() && mRoot->getNumParents() > 0)
          {
             osg::Group* parent = dynamic_cast<osg::Group*> (mRoot->getParent(0));
-            if (parent != NULL)
+            if (parent != nullptr)
             {
                parent->removeChild(mRoot.get());
             }

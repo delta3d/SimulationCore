@@ -40,7 +40,7 @@ public:
       {
          osg::Drawable* d = geode.getDrawable(i);
          osg::Geometry* geom = dynamic_cast<osg::Geometry*>(d);
-         if(geom != NULL)
+         if(geom != nullptr)
          {
             mGeometry.push_back(geom);
          }

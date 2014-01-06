@@ -47,7 +47,7 @@ namespace SimCore
             virtual void HLAConnectionComponentSetup(dtGame::GameManager &gm);
 
             /// creates and configures the HLA Component.
-            virtual dtCore::RefPtr<dtHLAGM::HLAComponent> CreateAndSetupHLAComponent(dtGame::GameManager &gm);
+            virtual std::shared_ptr<dtHLAGM::HLAComponent> CreateAndSetupHLAComponent(dtGame::GameManager &gm);
 
             virtual void Initialize(dtABC::BaseABC& app, int argc, char **argv);
 

@@ -59,7 +59,7 @@ namespace SimCore
       {
          PlatformActorProxy::BuildInvokables();
 
-         StealthActor* sa = NULL;
+         StealthActor* sa = nullptr;
          GetActor(sa);
 
          AddInvokable(*new dtGame::Invokable("AttachToActor",
@@ -81,7 +81,7 @@ namespace SimCore
       {
 	   	PlatformActorProxy::BuildPropertyMap();
 
-         StealthActor* sa = NULL;
+         StealthActor* sa = nullptr;
          GetActor(sa);
 
          AddProperty(new dtDAL::Vec3ActorProperty("Attach Offset", "Attach Offset",
@@ -108,7 +108,7 @@ namespace SimCore
 
          PlatformActorProxy::OnEnteredWorld();
 
-         dtCore::RefPtr<dtGame::Message> playerMsg = GetGameManager()->GetMessageFactory().CreateMessage(dtGame::MessageType::INFO_PLAYER_ENTERED_WORLD);
+         std::shared_ptr<dtGame::Message> playerMsg = GetGameManager()->GetMessageFactory().CreateMessage(dtGame::MessageType::INFO_PLAYER_ENTERED_WORLD);
          playerMsg->SetAboutActorId(GetId());
          GetGameManager()->SendMessage(*playerMsg);
       }
@@ -135,10 +135,10 @@ namespace SimCore
       void StealthActor::DoDetach()
       {
          // Unattach from the old parent or scene.
-         if (GetParent() != NULL)
+         if (GetParent() != nullptr)
          {
             BaseEntity* entityParent = dynamic_cast<BaseEntity*>(GetParent());
-            if (entityParent != NULL)
+            if (entityParent != nullptr)
             {
                if(!mAttachAsThirdPerson)
                {
@@ -169,7 +169,7 @@ namespace SimCore
          xform.SetRotation(attachRotationHPR);
 
          BaseEntity* entity = dynamic_cast<BaseEntity*>(ga.GetDrawable());
-         if (entity != NULL)
+         if (entity != nullptr)
          {
             if (!mAttachAsThirdPerson)
             {
@@ -181,12 +181,12 @@ namespace SimCore
                entity->SetDrawingModel(true);
                entity->SetPlayerAttached(true);
             }
-            dtGame::DeadReckoningHelper* drHelper = NULL;
+            dtGame::DeadReckoningHelper* drHelper = nullptr;
             GetComponent(drHelper);
 
             mOldDRA = &drHelper->GetDeadReckoningAlgorithm();
 
-            dtGame::DeadReckoningHelper* drHelperEntity = NULL;
+            dtGame::DeadReckoningHelper* drHelperEntity = nullptr;
             ga.GetComponent(drHelperEntity);
 
             drHelper->SetDeadReckoningAlgorithm(
@@ -196,16 +196,16 @@ namespace SimCore
 
          bool foundNode = false;
          GameActor* gameActor = dynamic_cast<GameActor*>(ga.GetDrawable());
-         if (gameActor != NULL)
+         if (gameActor != nullptr)
          {
             //we don't support named parts at his level.
-            if (GetParent() != NULL)
+            if (GetParent() != nullptr)
             {
               Emancipate();
             }
 
             IGActor* igActor = dynamic_cast<IGActor*>(ga.GetDrawable());
-            if (igActor != NULL)
+            if (igActor != nullptr)
             {
                foundNode = igActor->AddChild(this, attachPointNode);
             }
@@ -230,7 +230,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////////
       void StealthActor::AttachOrDetachActor(const AttachToActorMessage* ataMsg)
       {
-         if (ataMsg != NULL)
+         if (ataMsg != nullptr)
          {
             AttachOrDetachActor(GetGameActorProxy().GetGameManager()->FindGameActorById(ataMsg->GetAttachToActor()),
                ataMsg->GetAttachToActor(), ataMsg->GetAttachPointNodeName(), 
@@ -238,7 +238,7 @@ namespace SimCore
          }
          else
          {
-            AttachOrDetachActor(NULL, dtCore::UniqueId(""));
+            AttachOrDetachActor(nullptr, dtCore::UniqueId(""));
          }
 
       }
@@ -253,10 +253,10 @@ namespace SimCore
 
          DoDetach();
 
-         if (ga != NULL)
+         if (ga != nullptr)
          {
             // If we are for some reason attaching to the environment actor.
-            if (GetGameActorProxy().GetGameManager()->GetEnvironmentActor() != NULL &&
+            if (GetGameActorProxy().GetGameManager()->GetEnvironmentActor() != nullptr &&
                 GetGameActorProxy().GetGameManager()->GetEnvironmentActor()->GetId() == id)
             {
                dtGame::IEnvGameActor& ea = static_cast<dtGame::IEnvGameActor&>(GetGameActorProxy().GetGameManager()->GetEnvironmentActor()->GetGameActor());
@@ -272,7 +272,7 @@ namespace SimCore
          else if (id.ToString().empty())
          {
             //Attach back to the parent scene.
-            if (GetGameActorProxy().GetGameManager()->GetEnvironmentActor() != NULL)
+            if (GetGameActorProxy().GetGameManager()->GetEnvironmentActor() != nullptr)
             {
                dtGame::IEnvGameActor &ea = static_cast<dtGame::IEnvGameActor&>(GetGameActorProxy().GetGameManager()->GetEnvironmentActor()->GetGameActor());
                ea.AddActor(*this);
@@ -291,14 +291,14 @@ namespace SimCore
       {
          const dtGame::ActorUpdateMessage& aum = static_cast<const dtGame::ActorUpdateMessage&>(msg);
          dtGame::GameActorProxy* parent = GetGameActorProxy().GetGameManager()->FindGameActorById(aum.GetAboutActorId());
-         if(parent == NULL)
+         if(parent == nullptr)
          {
             return;
          }
 
-         dtGame::DeadReckoningHelper* drHelper = NULL;
+         dtGame::DeadReckoningHelper* drHelper = nullptr;
          GetComponent(drHelper);
-         dtGame::DeadReckoningHelper* drHelperParent = NULL;
+         dtGame::DeadReckoningHelper* drHelperParent = nullptr;
          parent->GetComponent(drHelperParent);
 
          drHelper->SetDeadReckoningAlgorithm(drHelperParent->GetDeadReckoningAlgorithm());
@@ -318,13 +318,13 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////////
       void StealthActor::Detach(const dtGame::Message& msg)
       {
-         AttachOrDetachActor(NULL);
+         AttachOrDetachActor(nullptr);
       }
 
       //////////////////////////////////////////////////////////////////////////////
       void StealthActor::WarpToPosition(const dtGame::Message& warpToPosMessage)
       {
-         AttachOrDetachActor(NULL);
+         AttachOrDetachActor(nullptr);
          const SimCore::StealthActorUpdatedMessage& wtpMsg = static_cast<const SimCore::StealthActorUpdatedMessage&>(warpToPosMessage);
          dtCore::Transform xform;
          GetTransform(xform);
@@ -336,7 +336,7 @@ namespace SimCore
       bool StealthActor::IsAttachedToActor()
       {
          BaseEntity* entityParent = dynamic_cast<BaseEntity*>(GetParent());
-         return (entityParent != NULL);
+         return (entityParent != nullptr);
       }
    }
 }

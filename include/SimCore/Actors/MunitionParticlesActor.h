@@ -67,8 +67,8 @@ namespace SimCore
       private:
          osg::Vec3 mInitialPosition;
          osg::Vec3 mLastPosition;
-         dtCore::RefPtr<SimCore::Actors::VolumetricLine> mTracer;
-         dtCore::RefPtr<dtCore::Transformable> mDynamicLight;
+         std::shared_ptr<SimCore::Actors::VolumetricLine> mTracer;
+         std::shared_ptr<dtCore::Transformable> mDynamicLight;
       };
 
       /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -119,7 +119,7 @@ namespace SimCore
          bool           mUseTracers;               /// Do we use tracers for this particle system?
          int            mCurrentTracerRoundNumber; /// Current count for knowing when to create a tracer
          int            mFrequencyOfTracers;       /// Everytime it hits this number it will reset mCurrentTracerRoundNumber
-         dtCore::ObserverPtr<SimCore::Actors::WeaponActor>  mWeapon;
+         std::weak_ptr<SimCore::Actors::WeaponActor>  mWeapon;
       };
 
       ////////////////////////////////////////////////////////

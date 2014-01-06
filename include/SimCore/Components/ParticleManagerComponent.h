@@ -27,7 +27,7 @@
 #include <SimCore/Export.h>
 #include <dtUtil/enumeration.h>
 #include <dtCore/particlesystem.h>
-#include <dtCore/observerptr.h>
+#include <dtUtil/refcountedbase.h>
 #include <dtGame/gmcomponent.h>
 #include <osgParticle/ForceOperator>
 
@@ -80,22 +80,22 @@ namespace SimCore
          public:
             static const std::string FORCE_WIND;
 
-            typedef std::vector<dtCore::ObserverPtr<osgParticle::ForceOperator> >
+            typedef std::vector<std::weak_ptr<osgParticle::ForceOperator> >
                ForceOperatorList;
 
             ParticleInfo();
 
             ParticleInfo( dtCore::ParticleSystem& particles,
-               const ParticleInfoAttributeFlags* attrFlags = NULL,
+               const ParticleInfoAttributeFlags* attrFlags = nullptr,
                const ParticlePriority& priority = ParticlePriority::NORMAL );
 
             // Updates the info based on the referenced particle system.
             //@return TRUE if update was successful, FALSE if the reference
-            // to the particle system is NULL.
+            // to the particle system is nullptr.
             bool Update();
 
             void Set( dtCore::ParticleSystem& particles,
-               const ParticleInfoAttributeFlags* attrFlags = NULL,
+               const ParticleInfoAttributeFlags* attrFlags = nullptr,
                const ParticlePriority& priority = ParticlePriority::NORMAL );
 
             dtCore::ParticleSystem* GetParticleSystem();
@@ -126,8 +126,8 @@ namespace SimCore
             unsigned int mDeadCount;
             ParticleInfoAttributeFlags mAttrFlags;
 
-            dtCore::ObserverPtr<dtCore::ParticleSystem> mRef;
-            std::vector< dtCore::ObserverPtr<osgParticle::ParticleSystem> > mLayerRefs;
+            std::weak_ptr<dtCore::ParticleSystem> mRef;
+            std::vector< std::weak_ptr<osgParticle::ParticleSystem> > mLayerRefs;
             ForceOperatorList mWindForces;
       };
 
@@ -143,7 +143,7 @@ namespace SimCore
 
             // Updates the info based on the referenced particle system.
             //@return TRUE if update was successful, FALSE if the reference
-            // to the particle system is NULL.
+            // to the particle system is nullptr.
             bool Update();
 
             void Set( dtGame::GameActorProxy& proxy );
@@ -155,7 +155,7 @@ namespace SimCore
             virtual ~ActorInfo();
 
          private:
-            dtCore::ObserverPtr<dtGame::GameActorProxy> mRef;
+            std::weak_ptr<dtGame::GameActorProxy> mRef;
 
       };
 
@@ -194,7 +194,7 @@ namespace SimCore
          // @param priority The priority that determines how the particle system should be handled.
          // @return bool TRUE if the particle system was registered
          bool Register( dtCore::ParticleSystem& particles,
-            const ParticleInfoAttributeFlags* attrFlags = NULL,
+            const ParticleInfoAttributeFlags* attrFlags = nullptr,
             const ParticlePriority& priority = ParticlePriority::NORMAL );
 
          // @param particles The particle system to be unregistered from this component
@@ -221,7 +221,7 @@ namespace SimCore
          unsigned int GetGlobalParticleCount() const;
 
          // Changes and/or removes particle info.
-         // Info is removed if its weak reference to the particle system is NULL.
+         // Info is removed if its weak reference to the particle system is nullptr.
          void UpdateParticleInfo();
 
          void UpdateParticleForces();
@@ -239,7 +239,7 @@ namespace SimCore
          void ApplyForce( const std::string& forceName, const osg::Vec3& force, dtCore::ParticleSystem& ps, bool addToAllLayers = false );
 
          // Changes and/or removes particle info.;
-         // Info is removed if its weak reference to the particle system is NULL.
+         // Info is removed if its weak reference to the particle system is nullptr.
          void UpdateActorInfo();
          bool RegisterActor( dtGame::GameActorProxy& proxy );
 
@@ -261,10 +261,10 @@ namespace SimCore
 
       private:
 
-         typedef std::map< dtCore::UniqueId, dtCore::RefPtr<ParticleInfo> > ParticleInfoMap;
+         typedef std::map< dtCore::UniqueId, std::shared_ptr<ParticleInfo> > ParticleInfoMap;
          ParticleInfoMap mIdToInfoMap;
 
-         std::map< dtCore::UniqueId, dtCore::RefPtr<ActorInfo> >     mIdToActorMap;
+         std::map< dtCore::UniqueId, std::shared_ptr<ActorInfo> >     mIdToActorMap;
 
          unsigned int   mGlobalParticleCount;
          bool           mUpdateEnabled;

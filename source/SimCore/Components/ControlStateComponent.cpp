@@ -116,7 +116,7 @@ namespace SimCore
             if (message.GetSource() != GetGameManager()->GetMachineInfo())
             {
                SimCore::Actors::ControlStateActor* controlState = GetControlState(message.GetAboutActorId());
-               if( controlState != NULL )
+               if( controlState != nullptr )
                {
                   HandleControlStateDelete( controlState );
                }
@@ -136,16 +136,16 @@ namespace SimCore
       SimCore::Actors::Platform* ControlStateComponent::GetVehicleByControlState(
          const SimCore::Actors::ControlStateActor& controlState )
       {
-         if( GetGameManager() != NULL )
+         if( GetGameManager() != nullptr )
          {
             // Get the associated vehicle.
             dtDAL::ActorProxy* proxy = GetGameManager()->FindActorById( controlState.GetEntityID() );
-            if( proxy != NULL )
+            if( proxy != nullptr )
             {
                return dynamic_cast<SimCore::Actors::Platform*>(proxy->GetDrawable());
             }
          }
-         return NULL;
+         return nullptr;
       }
 
       ////////////////////////////////////////////////////////////////////////////////
@@ -154,18 +154,18 @@ namespace SimCore
       {
          dtGame::GameManager* gm = GetGameManager();
 
-         if( gm != NULL )
+         if( gm != nullptr )
          {
             dtDAL::ActorProxy* proxy = gm->FindActorById( actorID );
 
-            if( proxy != NULL
+            if( proxy != nullptr
                && proxy->GetActorType() == *SimCore::Actors::EntityActorRegistry::CONTROL_STATE_ACTOR_TYPE )
             {
                return static_cast<SimCore::Actors::ControlStateActor*>(proxy->GetDrawable());
             }
          }
 
-         return NULL;
+         return nullptr;
       }
 
       ////////////////////////////////////////////////////////////////////////////////
@@ -174,18 +174,18 @@ namespace SimCore
       {
          const dtGame::GameManager* gm = GetGameManager();
 
-         if( gm != NULL )
+         if( gm != nullptr )
          {
             const dtDAL::ActorProxy* proxy = gm->FindActorById( actorID );
 
-            if( proxy != NULL
+            if( proxy != nullptr
                && proxy->GetActorType() == *SimCore::Actors::EntityActorRegistry::CONTROL_STATE_ACTOR_TYPE )
             {
                return static_cast<const SimCore::Actors::ControlStateActor*>(proxy->GetActor());
             }
          }
 
-         return NULL;
+         return nullptr;
       }
 
       ////////////////////////////////////////////////////////////////////////////////
@@ -198,7 +198,7 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////
       void ControlStateComponent::HandleControlStateUpdate( SimCore::Actors::ControlStateActor* controlState )
       {
-         if( controlState != NULL )
+         if( controlState != nullptr )
          {
             HandleControlStateWeaponSwap( *controlState );
          }
@@ -207,25 +207,25 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////
       void ControlStateComponent::HandleControlStateDelete( const SimCore::Actors::ControlStateActor* controlState )
       {
-         if( controlState == NULL )
+         if( controlState == nullptr )
          {
             return;
          }
 
          // Update the gunner control state info
          ControlStateInfo* controlInfo = GetRemoteGunnerControlStateInfo( controlState->GetEntityID() );
-         if( controlInfo != NULL && controlInfo->mControlState.valid() )
+         if( controlInfo != nullptr && controlInfo->mControlState.valid() )
          {
             if( IsGunnerControlState( *controlState ) && controlInfo->mGunnerModel.valid() )
             {
                // DEBUG: std::cout << "Attempt removing gunner model" << std::endl;
-               if( controlInfo != NULL && controlInfo->mGunnerModel.valid() )
+               if( controlInfo != nullptr && controlInfo->mGunnerModel.valid() )
                {
                   SimCore::Actors::Platform* vehicle
                      = dynamic_cast<SimCore::Actors::Platform*>
                      (controlInfo->mControlState->GetEntity());
 
-                  if( vehicle != NULL )
+                  if( vehicle != nullptr )
                   {
                      // DEBUG: std::cout << "\tRemoving gunner model" << std::endl;
                      controlInfo->mGunnerModelAttached = false;
@@ -236,7 +236,7 @@ namespace SimCore
 
             if( controlInfo->mControlState.get() == controlState )
             {
-               controlInfo->mControlState = NULL;
+               controlInfo->mControlState = nullptr;
             }
          }
       }
@@ -254,7 +254,7 @@ namespace SimCore
             SimCore::Actors::DiscreteControl* control = controlState.GetDiscreteControl( CONTROL_NAME_WEAPON );
 
             // Determine if the weapon was swapped.
-            if( control != NULL )
+            if( control != nullptr )
             {
                //DEBUG: std::cout << "\nGunnerControlState:\n\tweapon(" << control->GetCurrentState() << ")" << std::endl;
 
@@ -264,7 +264,7 @@ namespace SimCore
                   : GetRemoteGunnerControlStateInfo( vehicleID );
 
                // Add the control state info if one does not exist for the current vehicle.
-               if( info == NULL )
+               if( info == nullptr )
                {
                   // Use a local struct to pass values to be inserted into this
                   // component's control state info map for gunner control states.
@@ -286,7 +286,7 @@ namespace SimCore
                   }
                }
 
-               if( info != NULL )
+               if( info != nullptr )
                {
                   // Change the weapon on the associated vehicle if the weapon
                   // selection has changed.
@@ -305,10 +305,10 @@ namespace SimCore
                         ControlStateInfo* vehicleControlInfo = GetRemoteVehicleControlStateInfo( vehicleID );
 
                         dtDAL::ActorProxy* proxy = GetGameManager()->FindActorById(vehicleID);
-                        SimCore::Actors::Platform* vehicle = proxy != NULL
-                           ? dynamic_cast<SimCore::Actors::Platform*>(proxy->GetDrawable()) : NULL;
+                        SimCore::Actors::Platform* vehicle = proxy != nullptr
+                           ? dynamic_cast<SimCore::Actors::Platform*>(proxy->GetDrawable()) : nullptr;
 
-                        if( vehicle != NULL && vehicleControlInfo != NULL && vehicleControlInfo->mWeaponModel.valid() )
+                        if( vehicle != nullptr && vehicleControlInfo != nullptr && vehicleControlInfo->mWeaponModel.valid() )
                         {
                            DetachModelOnVehicle( *vehicleControlInfo->mWeaponModel, *vehicle, DOF_NAME_WEAPON );
                         }
@@ -324,16 +324,16 @@ namespace SimCore
                      {
                         // DEBUG: std::cout << "Create gunner model" << std::endl;
                         static const std::string gunnerModelFile("StaticMeshes/marine_ringmount/marine_ringmount.ive");
-                        dtCore::RefPtr<osg::Node> cachedModel;
+                        osg::ref_ptr<osg::Node> cachedModel;
                         SimCore::Actors::IGActor::LoadFileStatic( gunnerModelFile, cachedModel, info->mGunnerModel );
                      }
                      if( info->mGunnerModel.valid() && ! info->mGunnerModelAttached )
                      {
                         dtDAL::ActorProxy* proxy = GetGameManager()->FindActorById(vehicleID);
-                        SimCore::Actors::Platform* vehicle = proxy != NULL
-                           ? dynamic_cast<SimCore::Actors::Platform*>(proxy->GetDrawable()) : NULL;
+                        SimCore::Actors::Platform* vehicle = proxy != nullptr
+                           ? dynamic_cast<SimCore::Actors::Platform*>(proxy->GetDrawable()) : nullptr;
 
-                        if( vehicle != NULL )
+                        if( vehicle != nullptr )
                         {
                            info->mGunnerModelAttached = true;
                            AttachModelOnVehicle( *(info->mGunnerModel), *vehicle, DOF_NAME_TURRET );
@@ -351,7 +351,7 @@ namespace SimCore
       {
          const SimCore::Actors::ControlStateActor* vehicleControl = FindVehicleControlState( vehicle );
 
-         if( vehicleControl == NULL )
+         if( vehicleControl == nullptr )
          {
             return false;
          }
@@ -366,10 +366,10 @@ namespace SimCore
 
          unsigned result = 0;
 
-         if( vehicleControl != NULL )
+         if( vehicleControl != nullptr )
          {
             const SimCore::Actors::DiscreteControl* weaponControl = vehicleControl->GetDiscreteControl(CONTROL_NAME_WEAPON);
-            if( weaponControl != NULL )
+            if( weaponControl != nullptr )
             {
                result = unsigned(weaponControl->GetCurrentState());
             }
@@ -385,7 +385,7 @@ namespace SimCore
          const SimCore::Actors::DiscreteControl* stationControl
             = vehicleControl.GetDiscreteControl( CreateStationName( station ) );
 
-         return stationControl != NULL && stationControl->GetCurrentState() == 0;
+         return stationControl != nullptr && stationControl->GetCurrentState() == 0;
       }
 
       ////////////////////////////////////////////////////////////////////////////////
@@ -411,11 +411,11 @@ namespace SimCore
          GetGameManager()->FindActorsByType( *SimCore::Actors::EntityActorRegistry::CONTROL_STATE_ACTOR_TYPE, controlStates );
 
          // Iterate through all the control states to find the ones referencing the vehicle.
-         SimCore::Actors::ControlStateActor* curControl = NULL;
+         SimCore::Actors::ControlStateActor* curControl = nullptr;
          const unsigned limit = controlStates.size();
          for( unsigned i = 0; i < limit; ++i )
          {
-            if( controlStates[i] != NULL )
+            if( controlStates[i] != nullptr )
             {
                curControl = static_cast<SimCore::Actors::ControlStateActor*>(controlStates[i]->GetDrawable());
 
@@ -433,7 +433,7 @@ namespace SimCore
          }
 
          // DEBUG: std::cout << "\n\tNO vehicle control state found for: " << vehicleID << "\n" << std::endl;
-         return NULL;
+         return nullptr;
       }
 
       ////////////////////////////////////////////////////////////////////////////////
@@ -441,10 +441,10 @@ namespace SimCore
          osg::Node& model, SimCore::Actors::Platform& vehicle, const std::string& dofName )
       {
          dtUtil::NodeCollector* nodeCollector = vehicle.GetNodeCollector();
-         if( nodeCollector != NULL )
+         if( nodeCollector != nullptr )
          {
             osgSim::DOFTransform* dof = nodeCollector->GetDOFTransform( dofName );
-            if( dof != NULL )
+            if( dof != nullptr )
             {
                // If this is the weapon model being attached, add the
                // weapon's hotspot to the vehicle's node collector so
@@ -455,7 +455,7 @@ namespace SimCore
                   //this fixes a bug where the hmmwv may have a weapon loaded from the model
                   //but the hotspot does not get removed because the control state component
                   //thinks there is no weapon because IT didn't add one
-                  if(nodeCollector->GetDOFTransform(DOF_NAME_WEAPON_HOTSPOT) != NULL)
+                  if(nodeCollector->GetDOFTransform(DOF_NAME_WEAPON_HOTSPOT) != nullptr)
                   {
                      nodeCollector->RemoveDOFTransform(DOF_NAME_WEAPON_HOTSPOT);
                   }
@@ -464,11 +464,11 @@ namespace SimCore
                   dof->addChild( &model );
 
                   // Get access to the hot spot on the weapon model
-                  dtCore::RefPtr<dtUtil::NodeCollector> weaponNodeCollector
+                  std::shared_ptr<dtUtil::NodeCollector> weaponNodeCollector
                      = new dtUtil::NodeCollector(&model, dtUtil::NodeCollector::DOFTransformFlag);
                   osgSim::DOFTransform* hotspotDof = weaponNodeCollector->GetDOFTransform(DOF_NAME_WEAPON_HOTSPOT);
 
-                  if( hotspotDof != NULL )
+                  if( hotspotDof != nullptr )
                   {
                      // DEBUG: std::cout << "Hotspot found on weapon model" << std::endl;
                      vehicle.GetNodeCollector()->AddDOFTransform(DOF_NAME_WEAPON_HOTSPOT, *hotspotDof );
@@ -490,10 +490,10 @@ namespace SimCore
       {
          // DEBUG: std::cout << "DetachModelOnVehicle: " << dofName << std::endl;
          dtUtil::NodeCollector* nodeCollector = vehicle.GetNodeCollector();
-         if( nodeCollector != NULL )
+         if( nodeCollector != nullptr )
          {
             osgSim::DOFTransform* dof = nodeCollector->GetDOFTransform( dofName );
-            if( dof != NULL )
+            if( dof != nullptr )
             {
                // DEBUG: std::cout << "\tRemove Child" << std::endl;
                dof->removeChild( &model );
@@ -515,7 +515,7 @@ namespace SimCore
          // Get the weapon model associated with the vehicle.
          osg::Node* weapon = GetWeaponModelOnVehicle( vehicle.GetUniqueId() );
 
-         if( weapon != NULL )
+         if( weapon != nullptr )
          {
             return DetachModelOnVehicle( *weapon, vehicle, dofName );
          }
@@ -527,7 +527,7 @@ namespace SimCore
          SimCore::Actors::Platform& vehicle, const std::string& dofName, bool visible )
       {
          osg::Node* weapon = GetWeaponModelOnVehicle( vehicle.GetUniqueId() );
-         if( weapon != NULL )
+         if( weapon != nullptr )
          {
             weapon->setNodeMask( visible ? 0xFFFFFFFF : 0x0 );
             return true;
@@ -564,17 +564,17 @@ namespace SimCore
       osg::Node* ControlStateComponent::GetWeaponModelOnVehicle( const dtCore::UniqueId& vehicleID )
       {
          ControlStateInfo* info = GetRemoteGunnerControlStateInfo( vehicleID );
-         if( info == NULL )
+         if( info == nullptr )
          {
             info = GetRemoteVehicleControlStateInfo( vehicleID );
          }
 
-         if( info != NULL )
+         if( info != nullptr )
          {
             return info->mWeaponModel.get();
          }
 
-         return NULL;
+         return nullptr;
       }
 
       ////////////////////////////////////////////////////////////////////////////////
@@ -630,7 +630,7 @@ namespace SimCore
          RemoteControlStateMap& infoMap, const dtCore::UniqueId& vehicleID )
       {
          RemoteControlStateMap::iterator foundIter = infoMap.find( vehicleID );
-         return foundIter != infoMap.end() ? foundIter->second.get() : NULL;
+         return foundIter != infoMap.end() ? foundIter->second.get() : nullptr;
       }
 
       ////////////////////////////////////////////////////////////////////////////////
@@ -649,15 +649,15 @@ namespace SimCore
             // of the weapon is not being used. Remove the loaded weapon model from the
             // remote entity that is associated with the control state.
             ControlStateInfo* controlInfo = GetRemoteGunnerControlStateInfo( vehicleID );
-            if( controlInfo != NULL )
+            if( controlInfo != nullptr )
             {
-               SimCore::Actors::Platform* vehicle = NULL;
+               SimCore::Actors::Platform* vehicle = nullptr;
                if( controlInfo->mControlState.valid() )
                {
                   vehicle = GetVehicleByControlState( *(controlInfo->mControlState) );
                }
 
-               if( vehicle != NULL && controlInfo->mWeaponModel.valid() )
+               if( vehicle != nullptr && controlInfo->mWeaponModel.valid() )
                {
                   DetachModelOnVehicle( *controlInfo->mWeaponModel, *vehicle, DOF_NAME_WEAPON );
                }
@@ -674,7 +674,7 @@ namespace SimCore
       bool ControlStateComponent::IsVehicleControlState( const SimCore::Actors::ControlStateActor& controlState ) const
       {
          const static std::string firstStation(CreateStationName(0));
-         return controlState.GetContinuousControl( firstStation ) != NULL;
+         return controlState.GetContinuousControl( firstStation ) != nullptr;
       }
 
       ////////////////////////////////////////////////////////////////////////////////
@@ -689,15 +689,15 @@ namespace SimCore
          // Get the associated vehicle.
          SimCore::Actors::Platform* vehicle = GetVehicleByControlState( *controlStateInfo.mControlState );
 
-         // DEBUG: std::cout << "UpdateWeaponOnVehicle:\n\tvehicle(" << (vehicle!=NULL?"VALID":"NULL") << ")" << std::endl;
+         // DEBUG: std::cout << "UpdateWeaponOnVehicle:\n\tvehicle(" << (vehicle!=nullptr?"VALID":"nullptr") << ")" << std::endl;
 
-         if( vehicle != NULL )
+         if( vehicle != nullptr )
          {
             // Attempt removal of the old weapon model.
             if( controlStateInfo.mWeaponModel.valid() )
             {
                DetachModelOnVehicle( *(controlStateInfo.mWeaponModel.get()), *vehicle, DOF_NAME_WEAPON );
-               controlStateInfo.mWeaponModel = NULL;
+               controlStateInfo.mWeaponModel = nullptr;
             }
 
             // Attempt attachment of a new weapon model.
@@ -706,7 +706,7 @@ namespace SimCore
             if (weaponResource != dtDAL::ResourceDescriptor::NULL_RESOURCE)
             {
                const std::string& weaponFileName = dtDAL::Project::GetInstance().GetResourcePath(weaponResource);
-               dtCore::RefPtr<osg::Node> cachedModel;
+               osg::ref_ptr<osg::Node> cachedModel;
 
                isModelLoaded
                   = SimCore::Actors::IGActor::LoadFileStatic( weaponFileName, cachedModel, controlStateInfo.mWeaponModel );
@@ -729,7 +729,7 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////
       bool ControlStateComponent::IsGunnerControlState( const SimCore::Actors::ControlStateActor& controlState )
       {
-         return NULL != controlState.GetContinuousControl( CONTROL_NAME_TURRET_HEADING );
+         return nullptr != controlState.GetContinuousControl( CONTROL_NAME_TURRET_HEADING );
       }
 
    }

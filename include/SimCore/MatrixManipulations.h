@@ -24,7 +24,7 @@
 #define _MATRIX_MANIPULATIONS_
 
 #include <SimCore/Export.h>
-#include <osg/Referenced>
+#include <dtUtil/refcountedbase.h>
 #include <osg/Matrix>
 #include <dtCore/isector.h>
 #include <dtCore/camera.h>
@@ -34,7 +34,7 @@ namespace SimCore
 {
    namespace Components
    {
-      class SIMCORE_EXPORT Matrix_Manipulations : public osg::Referenced
+      class SIMCORE_EXPORT Matrix_Manipulations : public std::enable_shared_from_this
       {
          public:
             enum MATRIX_MANIPULATIONS_MODES 
@@ -85,7 +85,7 @@ namespace SimCore
                               Matrix_Manipulations_Matrix& inMatrix, 
                               Matrix_Manipulations_Matrix& outMatrix, 
                               osg::Vec3& offsetVector,
-                              dtCore::Mouse* ourMouse = NULL, dtCore::DeltaDrawable* drawableForISectorTests = NULL);
+                              dtCore::Mouse* ourMouse = nullptr, dtCore::DeltaDrawable* drawableForISectorTests = nullptr);
             MATRIX_MANIPULATIONS_MODES GetCurrentManipulationMode() {return mCurrentMode;}
             void HPRClamp( osg::Vec3& clampValues, 
                            osg::Vec3& originalOrientateClamp, 
@@ -95,7 +95,7 @@ namespace SimCore
          private: 
             MATRIX_MANIPULATIONS_MODES       mCurrentMode;        /// Current camera mode for update mode
             std::list<osg::Matrix>           mSoftAttachList;     /// for soft attach matrix transforms for the camera
-            dtCore::RefPtr<dtCore::Isector>  mIsector;            /// so we know how to collide with terrain if needed. 
+            std::shared_ptr<dtCore::Isector>  mIsector;            /// so we know how to collide with terrain if needed. 
             unsigned int                     mAmountOfSoftAttach; /// how many matrix pushes u doing before u pop, todo change for frame time
             osg::Vec2                        mHPROffset;
       };

@@ -169,7 +169,7 @@ namespace SimCore
          virtual ~TrailerHitchActComp();
 
       private:
-         dtCore::ObserverPtr<SimCore::Actors::IGActor> mTrailerActor;
+         std::weak_ptr<SimCore::Actors::IGActor> mTrailerActor;
          palLink* mHitchJoint;
       };
 

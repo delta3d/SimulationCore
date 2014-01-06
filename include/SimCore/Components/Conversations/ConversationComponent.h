@@ -52,7 +52,7 @@ namespace SimCore
       {
          public:
 
-            typedef dtCore::RefPtr<Conversation> ConversationPtr;
+            typedef std::shared_ptr<Conversation> ConversationPtr;
             typedef std::map<const dtDAL::GameEvent*, ConversationPtr> ConversationMap;
 
             static const std::string DEFAULT_NAME;
@@ -88,7 +88,7 @@ namespace SimCore
 
          private:
 
-            dtCore::ObserverPtr<Conversation> mCurrentConversation;
+            std::weak_ptr<Conversation> mCurrentConversation;
 
             ConversationMap mConversations;
 

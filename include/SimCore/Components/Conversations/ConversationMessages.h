@@ -100,15 +100,15 @@ namespace SimCore
          virtual ~InteractionChangedMessage();
 
       private:
-         dtCore::RefPtr<dtGame::StringMessageParameter> mConversationName;
-         dtCore::RefPtr<dtGame::StringMessageParameter> mInteractionText;
-         dtCore::RefPtr<dtGame::StringMessageParameter> mResponseText1;
-         dtCore::RefPtr<dtGame::StringMessageParameter> mResponseText2;
-         dtCore::RefPtr<dtGame::StringMessageParameter> mResponseText3;
-         dtCore::RefPtr<dtGame::StringMessageParameter> mResponseText4;
-         dtCore::RefPtr<dtGame::StringMessageParameter> mResponseText5;
-         dtCore::RefPtr<dtGame::StringMessageParameter> mResponseText6;
-         dtCore::RefPtr<dtGame::StringMessageParameter> mRepeatText; 
+         std::shared_ptr<dtGame::StringMessageParameter> mConversationName;
+         std::shared_ptr<dtGame::StringMessageParameter> mInteractionText;
+         std::shared_ptr<dtGame::StringMessageParameter> mResponseText1;
+         std::shared_ptr<dtGame::StringMessageParameter> mResponseText2;
+         std::shared_ptr<dtGame::StringMessageParameter> mResponseText3;
+         std::shared_ptr<dtGame::StringMessageParameter> mResponseText4;
+         std::shared_ptr<dtGame::StringMessageParameter> mResponseText5;
+         std::shared_ptr<dtGame::StringMessageParameter> mResponseText6;
+         std::shared_ptr<dtGame::StringMessageParameter> mRepeatText; 
 
    };
 
@@ -147,10 +147,10 @@ namespace SimCore
          virtual ~ConversationResponseMessage();
 
       private:
-         dtCore::RefPtr<dtGame::StringMessageParameter> mConversationName;
-         dtCore::RefPtr<dtGame::StringMessageParameter> mInteractionText;
-         dtCore::RefPtr<dtGame::StringMessageParameter> mResponseText;
-         dtCore::RefPtr<dtGame::EnumMessageParameter> mResponseType;
+         std::shared_ptr<dtGame::StringMessageParameter> mConversationName;
+         std::shared_ptr<dtGame::StringMessageParameter> mInteractionText;
+         std::shared_ptr<dtGame::StringMessageParameter> mResponseText;
+         std::shared_ptr<dtGame::EnumMessageParameter> mResponseType;
 
    };
 

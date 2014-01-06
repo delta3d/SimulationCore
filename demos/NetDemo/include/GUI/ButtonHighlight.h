@@ -25,7 +25,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 // INCLUDE DIRECTIVES
 ////////////////////////////////////////////////////////////////////////////////
-#include <osg/Referenced>
+#include <dtUtil/refcountedbase.h>
 #include "DemoExport.h"
 
 
@@ -50,10 +50,10 @@ namespace NetDemo
          ///////////////////////////////////////////////////////////////////////
          // CODE
          ///////////////////////////////////////////////////////////////////////
-         class NETDEMO_EXPORT ButtonHighlight : public osg::Referenced
+         class NETDEMO_EXPORT ButtonHighlight : public std::enable_shared_from_this
          {
             public:
-               typedef osg::Referenced BaseClass;
+               typedef std::enable_shared_from_this BaseClass;
 
                ButtonHighlight();
 
@@ -86,10 +86,10 @@ namespace NetDemo
                void CreateDrawable(const std::string& imageFileName);
 
             private:
-               dtCore::RefPtr<osg::Projection> mRoot;
-               dtCore::RefPtr<osg::MatrixTransform> mDrawable;
-               dtCore::RefPtr<osg::Vec3Array> mVerts;
-               dtCore::RefPtr<osg::Geometry> mGeom;
+               osg::ref_ptr<osg::Projection> mRoot;
+               osg::ref_ptr<osg::MatrixTransform> mDrawable;
+               osg::ref_ptr<osg::Vec3Array> mVerts;
+               osg::ref_ptr<osg::Geometry> mGeom;
          };
 
       } // END - Effects namespace

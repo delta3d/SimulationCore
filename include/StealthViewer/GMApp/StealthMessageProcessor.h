@@ -24,7 +24,7 @@
 #define STEALTH_MESSAGE_PROCESSOR_H_
 
 #include <SimCore/Components/ViewerMessageProcessor.h>
-#include <dtCore/refptr.h>
+#include <dtUtil/refcountedbase.h>
 #include <dtUtil/exception.h>
 
 namespace dtGame
@@ -46,7 +46,7 @@ namespace StealthGM
 
       protected:
          // HACK - To work around environment being created twice in playback.  AAR hack.  Curt.
-         virtual dtCore::RefPtr<dtGame::GameActorProxy> ProcessRemoteCreateActor(const dtGame::ActorUpdateMessage &msg);
+         virtual std::shared_ptr<dtGame::GameActorProxy> ProcessRemoteCreateActor(const dtGame::ActorUpdateMessage &msg);
 
       private:
 

@@ -80,7 +80,7 @@ namespace SimCore
             virtual void ProcessTick(const dtGame::TickMessage &msg);
 
          private:
-            std::vector<dtCore::RefPtr<SimCore::Actors::Portal> >   mOurPortals;
+            std::vector<std::shared_ptr<SimCore::Actors::Portal> >   mOurPortals;
       };
    }
 }

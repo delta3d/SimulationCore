@@ -19,7 +19,7 @@
 // INCLUDE DIRECTIVES
 ////////////////////////////////////////////////////////////////////////////////
 #include <SimCore/Export.h>
-#include <osg/Referenced>
+#include <dtUtil/refcountedbase.h>
 #include <osg/Vec2>
 #include <osg/Vec3>
 #include <osg/Vec4>
@@ -50,7 +50,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       // ANIMATION CONTROLLER BASE CODE
       //////////////////////////////////////////////////////////////////////////
-      class SIMCORE_EXPORT AnimationControllerBase : public osg::Referenced
+      class SIMCORE_EXPORT AnimationControllerBase : public std::enable_shared_from_this
       {
          public:
             AnimationControllerBase();
@@ -381,7 +381,7 @@ namespace SimCore
          const typename AnimationController<T_Target>::AnimCallbackSetTarget* callback )
       {
          AnimCallbackSetTarget defaultCallback;
-         mTargetSetFunc = callback != NULL ? *callback : defaultCallback;;
+         mTargetSetFunc = callback != nullptr ? *callback : defaultCallback;;
       }
 
       //////////////////////////////////////////////////////////////////////////

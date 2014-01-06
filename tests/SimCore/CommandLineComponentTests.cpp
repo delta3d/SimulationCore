@@ -83,14 +83,14 @@ public:
       dtCore::System::GetInstance().Stop();
 
       mGM->DeleteAllActors(true);
-      mGM = NULL;
+      mGM = nullptr;
    }
 
    void TestFunction();
 
 private:
-   dtCore::RefPtr<SimCore::CommandLineObject> mCommandLineObject;
-   dtCore::RefPtr<dtGame::GameManager> mGM;
+   std::shared_ptr<SimCore::CommandLineObject> mCommandLineObject;
+   std::shared_ptr<dtGame::GameManager> mGM;
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(CommandLineComponentTests);
@@ -99,17 +99,17 @@ CPPUNIT_TEST_SUITE_REGISTRATION(CommandLineComponentTests);
 void CommandLineComponentTests::TestFunction()
 {
    dtCore::System::GetInstance().Step();
-   CPPUNIT_ASSERT_MESSAGE("mCommandLineComponent not initialized", (mCommandLineObject != NULL));
+   CPPUNIT_ASSERT_MESSAGE("mCommandLineComponent not initialized", (mCommandLineObject != nullptr));
    
-   dtCore::RefPtr<dtDAL::NamedStringParameter> pArAmEtEr = new dtDAL::NamedStringParameter("SimpleName", "lollerskatez_dont_fall_down");
+   std::shared_ptr<dtDAL::NamedStringParameter> pArAmEtEr = new dtDAL::NamedStringParameter("SimpleName", "lollerskatez_dont_fall_down");
    mCommandLineObject->AddParameter(pArAmEtEr.get());
 
-   CPPUNIT_ASSERT(mCommandLineObject->GetParameter("SimpleName") != NULL);
-   CPPUNIT_ASSERT(mCommandLineObject->GetParameter("") == NULL);
+   CPPUNIT_ASSERT(mCommandLineObject->GetParameter("SimpleName") != nullptr);
+   CPPUNIT_ASSERT(mCommandLineObject->GetParameter("") == nullptr);
 
    mCommandLineObject->ClearParametersList();
 
-   CPPUNIT_ASSERT(mCommandLineObject->GetParameter("SimpleName") == NULL);
+   CPPUNIT_ASSERT(mCommandLineObject->GetParameter("SimpleName") == nullptr);
 
    dtCore::System::GetInstance().Step();
 }

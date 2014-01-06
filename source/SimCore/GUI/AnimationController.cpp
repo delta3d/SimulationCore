@@ -59,7 +59,7 @@ namespace SimCore
       void AnimationControllerBase::SetExecutionCallback( AnimCallback* callback )
       {
          AnimCallback defaultCallback;
-         mExecutionFunc = callback != NULL ? *callback : defaultCallback;
+         mExecutionFunc = callback != nullptr ? *callback : defaultCallback;
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -72,7 +72,7 @@ namespace SimCore
       void AnimationControllerBase::SetStartCallback( AnimCallback* callback )
       {
          AnimCallback defaultCallback;
-         mStartFunc = callback != NULL ? *callback : defaultCallback;
+         mStartFunc = callback != nullptr ? *callback : defaultCallback;
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -85,7 +85,7 @@ namespace SimCore
       void AnimationControllerBase::SetEndCallback( AnimCallback* callback )
       {
          AnimCallback defaultCallback;
-         mEndFunc = callback != NULL ? *callback : defaultCallback;
+         mEndFunc = callback != nullptr ? *callback : defaultCallback;
       }
 
       //////////////////////////////////////////////////////////////////////////

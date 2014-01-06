@@ -59,7 +59,7 @@ namespace NetDemo
    ////////////////////////////////////////////////////////////////////////////////
    void EntityActionMessage::Set(const EntityActionMessageParams& paramStruct)
    {
-      if(paramStruct.mActionType != NULL)
+      if(paramStruct.mActionType != nullptr)
       {
          SetAction(*paramStruct.mActionType);
       }

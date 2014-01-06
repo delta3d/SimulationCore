@@ -57,7 +57,7 @@
 #include <UnitTestMain.h>
 #include <dtABC/application.h>
 
-using dtCore::RefPtr;
+using std::shared_ptr;
 
 namespace SimCore
 {
@@ -91,12 +91,12 @@ namespace SimCore
 
          private:
 
-            RefPtr<dtGame::GameManager> mGM;
-            RefPtr<dtGame::MachineInfo> mMachineInfo;
-            RefPtr<ViewerMessageProcessor> mVMP;
+            std::shared_ptr<dtGame::GameManager> mGM;
+            std::shared_ptr<dtGame::MachineInfo> mMachineInfo;
+            std::shared_ptr<ViewerMessageProcessor> mVMP;
 
             void TestAcceptPlayer(bool remote);
-            RefPtr<SimCore::TimeValueMessage> BuildAndSetupTimeValueMessage();
+            std::shared_ptr<SimCore::TimeValueMessage> BuildAndSetupTimeValueMessage();
       };
 
       CPPUNIT_TEST_SUITE_REGISTRATION(ViewerMessageProcessorTests);
@@ -111,7 +111,7 @@ namespace SimCore
 
             mMachineInfo = new dtGame::MachineInfo;
 
-            dtCore::RefPtr<dtGame::DeadReckoningComponent> drComp = new dtGame::DeadReckoningComponent();
+            std::shared_ptr<dtGame::DeadReckoningComponent> drComp = new dtGame::DeadReckoningComponent();
             mVMP = new ViewerMessageProcessor;
 
             mGM->AddComponent(*mVMP, dtGame::GameManager::ComponentPriority::HIGHEST);
@@ -127,12 +127,12 @@ namespace SimCore
       {
          dtCore::System::GetInstance().SetPause(false);
          dtCore::System::GetInstance().Stop();
-         mVMP = NULL;
+         mVMP = nullptr;
 
          mGM->DeleteAllActors(true);
 
-         mGM = NULL;
-         mMachineInfo = NULL;
+         mGM = nullptr;
+         mMachineInfo = nullptr;
       }
 
       void ViewerMessageProcessorTests::TestAcceptPlayer()
@@ -143,7 +143,7 @@ namespace SimCore
 
       void ViewerMessageProcessorTests::TestAcceptPlayer(bool remote)
       {
-         RefPtr<SimCore::Actors::BaseEntityActorProxy> entityAP;
+         std::shared_ptr<SimCore::Actors::BaseEntityActorProxy> entityAP;
 
          mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE, entityAP);
          CPPUNIT_ASSERT(entityAP.valid());
@@ -158,17 +158,17 @@ namespace SimCore
 
       void ViewerMessageProcessorTests::TestProcessLocalUpdateActor()
       {
-         RefPtr<dtGame::GameActorProxy> proxy;
+         std::shared_ptr<dtGame::GameActorProxy> proxy;
          mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE, proxy);
          CPPUNIT_ASSERT(proxy.valid());
          mGM->AddActor(*proxy, true, false);
-         RefPtr<dtGame::Message> msg = mGM->GetMessageFactory().CreateMessage(dtGame::MessageType::INFO_ACTOR_UPDATED);
+         std::shared_ptr<dtGame::Message> msg = mGM->GetMessageFactory().CreateMessage(dtGame::MessageType::INFO_ACTOR_UPDATED);
          CPPUNIT_ASSERT(msg.valid());
 
          osg::Vec3 newPosition(0, 100, 0);
          dtGame::ActorUpdateMessage &aumsg = static_cast<dtGame::ActorUpdateMessage&>(*msg);
          dtGame::MessageParameter *param = aumsg.AddUpdateParameter("Last Known Translation", dtDAL::DataType::VEC3);
-         CPPUNIT_ASSERT(param != NULL);
+         CPPUNIT_ASSERT(param != nullptr);
          static_cast<dtGame::Vec3MessageParameter*>(param)->SetValue(newPosition);
          aumsg.SetSource(*mMachineInfo);
          aumsg.SetAboutActorId(proxy->GetId());
@@ -186,11 +186,11 @@ namespace SimCore
          dtGame::DeadReckoningComponent* drComp;
          mGM->GetComponentByName(dtGame::DeadReckoningComponent::DEFAULT_NAME, drComp);
 
-         RefPtr<dtGame::GameActorProxy> proxy;
+         std::shared_ptr<dtGame::GameActorProxy> proxy;
          mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::PLAYER_ACTOR_TYPE, proxy);
          CPPUNIT_ASSERT(proxy.valid());
          mGM->AddActor(*proxy, false, false);
-         RefPtr<dtGame::Message> msg;
+         std::shared_ptr<dtGame::Message> msg;
          mGM->GetMessageFactory().CreateMessage(dtGame::MessageType::INFO_PLAYER_ENTERED_WORLD, msg);
          CPPUNIT_ASSERT(msg.valid());
          msg->SetSource(*mMachineInfo);
@@ -207,13 +207,13 @@ namespace SimCore
             drComp->GetEyePointActor() == proxy->GetDrawable());
       }
 
-      RefPtr<SimCore::TimeValueMessage> ViewerMessageProcessorTests::BuildAndSetupTimeValueMessage()
+      std::shared_ptr<SimCore::TimeValueMessage> ViewerMessageProcessorTests::BuildAndSetupTimeValueMessage()
       {
          dtCore::UniqueId timeMasterId;
 
          dtGame::MessageFactory& mf = mGM->GetMessageFactory();
-         RefPtr<dtGame::MachineInfo> testMachInfo = new dtGame::MachineInfo;
-         RefPtr<SimCore::TimeValueMessage> timeValue;
+         std::shared_ptr<dtGame::MachineInfo> testMachInfo = new dtGame::MachineInfo;
+         std::shared_ptr<SimCore::TimeValueMessage> timeValue;
          mf.CreateMessage(SimCore::MessageType::TIME_VALUE, timeValue);
          timeValue->SetSource(*testMachInfo);
 
@@ -236,7 +236,7 @@ namespace SimCore
          // step now so that the time between now and next step is almost
          // 0, otherwise the code would get messed up.
          dtCore::System::GetInstance().Step();
-         RefPtr<SimCore::TimeValueMessage> timeValue = BuildAndSetupTimeValueMessage();
+         std::shared_ptr<SimCore::TimeValueMessage> timeValue = BuildAndSetupTimeValueMessage();
 
          mGM->SendMessage(*timeValue);
          dtCore::System::GetInstance().Step();
@@ -266,7 +266,7 @@ namespace SimCore
 
       void ViewerMessageProcessorTests::TestTimeValueMessageReceiveWithScale()
       {
-         RefPtr<SimCore::TimeValueMessage> timeValue = BuildAndSetupTimeValueMessage();
+         std::shared_ptr<SimCore::TimeValueMessage> timeValue = BuildAndSetupTimeValueMessage();
 
          // set the scale to 3.0 to make sure that is taken into account when adjusting the time.
          timeValue->SetTimeScale(3.0f);
@@ -292,7 +292,7 @@ namespace SimCore
          // step now so that the time between now and next step is almost
          // 0, otherwise the code would get messed up.
          dtCore::System::GetInstance().Step();
-         RefPtr<SimCore::TimeValueMessage> timeValue = BuildAndSetupTimeValueMessage();
+         std::shared_ptr<SimCore::TimeValueMessage> timeValue = BuildAndSetupTimeValueMessage();
 
          // set the scale to 3.0 to make sure that is taken into account when adjusting the time.
          timeValue->SetPaused(true);

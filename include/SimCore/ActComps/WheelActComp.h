@@ -46,7 +46,7 @@ namespace SimCore
 {
    namespace ActComps
    {
-      class SIMCORE_EXPORT Axle : public osg::Referenced
+      class SIMCORE_EXPORT Axle : public std::enable_shared_from_this
       {
       public:
          Axle();
@@ -116,9 +116,9 @@ namespace SimCore
 
          void Update(const dtGame::TickMessage& msg);
 
-         void FindAxles(dtUtil::NodeCollector* nodeCollector = NULL);
+         void FindAxles(dtUtil::NodeCollector* nodeCollector = nullptr);
 
-         DT_DECLARE_ARRAY_ACCESSOR(dtCore::RefPtr<Axle>, Axle, Axles)
+         DT_DECLARE_ARRAY_ACCESSOR(std::shared_ptr<Axle>, Axle, Axles)
 
       protected:
          virtual ~WheelActComp();

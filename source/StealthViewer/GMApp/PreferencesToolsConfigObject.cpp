@@ -68,7 +68,7 @@ namespace StealthGM
       bool mAutoAttachOnSelection;
       bool mHighlightEntities;
       bool mShowCallSigns;
-      dtCore::RefPtr<SimCore::Tools::Binoculars> mBinocs;
+      std::shared_ptr<SimCore::Tools::Binoculars> mBinocs;
       SimCore::UnitOfLength* mLengthUnit;
       SimCore::UnitOfAngle* mAngleUnit;
    };
@@ -206,7 +206,7 @@ namespace StealthGM
    void PreferencesToolsConfigObject::SetLengthUnit(const std::string& unitName)
    {
       SimCore::UnitOfLength* uofL = SimCore::UnitOfLength::GetValueForName(unitName);
-      if (uofL != NULL)
+      if (uofL != nullptr)
       {
          SetLengthUnit(*uofL);
       }
@@ -229,7 +229,7 @@ namespace StealthGM
    void PreferencesToolsConfigObject::SetAngleUnit(const std::string& unitName)
    {
       SimCore::UnitOfAngle* uofA = SimCore::UnitOfAngle::GetValueForName(unitName);
-      if (uofA != NULL)
+      if (uofA != nullptr)
       {
          SetAngleUnit(*uofA);
       }
@@ -252,13 +252,13 @@ namespace StealthGM
       /////////////////////////////////////////////////////////////////////////////
       SimCore::Tools::Binoculars* binos = GetBinocularsTool();
 
-      if (binos == NULL)
+      if (binos == nullptr)
       {
 
          StealthGM::StealthInputComponent* sic =
             static_cast<StealthGM::StealthInputComponent*>(gameManager.GetComponentByName(StealthGM::StealthInputComponent::DEFAULT_NAME));
 
-         if (sic == NULL)
+         if (sic == nullptr)
          {
             throw dtGame::GeneralGameManagerException(
                "Failed to locate the stealth input component on the Game Manager.",
@@ -269,7 +269,7 @@ namespace StealthGM
          binos = GetBinocularsTool();
       }
 
-      if (binos != NULL && binos->IsEnabled())
+      if (binos != nullptr && binos->IsEnabled())
       {
          std::vector<dtDAL::ActorProxy*> proxies;
          gameManager.FindActorsByName("Terrain", proxies);
@@ -288,10 +288,10 @@ namespace StealthGM
          return;
       }
 
-      StealthHUD* hud = NULL;
+      StealthHUD* hud = nullptr;
       gameManager.GetComponentByName(StealthHUD::DEFAULT_NAME, hud);
 
-      if (hud != NULL)
+      if (hud != nullptr)
       {
          hud->SetUnitOfAngle(GetAngleUnit());
          hud->SetUnitOfLength(GetLengthUnit());
@@ -317,7 +317,7 @@ namespace StealthGM
          hud->SetCompass360Enabled(mPImpl->mShowCompass360);
       }
 
-      if (binos != NULL)
+      if (binos != nullptr)
       {
          binos->SetShowReticle(GetShowBinocularImage());
          binos->SetShowDistance(GetShowDistanceToObject());

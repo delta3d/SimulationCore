@@ -46,7 +46,7 @@ namespace SimCore
 
             static const dtUtil::RefString DEFAULT_NAME;
 
-            typedef dtCore::RefPtr<GameState> GameStatePtr;
+            typedef std::shared_ptr<GameState> GameStatePtr;
             typedef std::map<const StateType*, GameStatePtr> GameStateSet;         
             typedef std::pair<const EventType*, GameStatePtr> EventStatePtrPair;
             typedef std::map<EventStatePtrPair, GameStatePtr> TransitionMap;
@@ -95,7 +95,7 @@ namespace SimCore
             void SendGameStateChangedMessage(const GameState::Type& oldState, const GameState::Type& newState);
 
          private:
-            dtCore::RefPtr<GameState> mCurrentState;
+            std::shared_ptr<GameState> mCurrentState;
             GameStateSet mStates;
             TransitionMap mTransitions;
 

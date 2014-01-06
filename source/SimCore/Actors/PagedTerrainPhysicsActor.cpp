@@ -121,7 +121,7 @@ namespace SimCore
                      mFunctor.SetMatrix(osg::computeLocalToWorld(nodePath));
                      osg::StateSet* tempStateSet = d->getStateSet();
                      osg::ref_ptr<osg::IntArray> mOurList;
-                     if (tempStateSet != NULL)
+                     if (tempStateSet != nullptr)
                      {
                         mOurList = dynamic_cast<osg::IntArray*>(tempStateSet->getUserData());
                      }
@@ -171,14 +171,14 @@ namespace SimCore
          , mFlags(TILE_TODO_DISABLE)  // for flag system
          , mLastFlags(TILE_TODO_KEEP)  // for flag system, different from mFlags so it will start as "changed"
          {
-            SetPhysicsObject(NULL);
+            SetPhysicsObject(nullptr);
          }
 
          //////////////////////////////////////////////////////////////////////
          TerrainNode::~TerrainNode()
          {
-            SetPhysicsObject(NULL);
-            mGeodePTR = NULL;
+            SetPhysicsObject(nullptr);
+            mGeodePTR = nullptr;
          }
 
          /////////////////////////////////////////////////////////////////////////
@@ -186,7 +186,7 @@ namespace SimCore
          {
             if(mGeodePTR.valid())
                return mGeodePTR.get();
-            return NULL;
+            return nullptr;
          }
 
          /////////////////////////////////////////////////////////////////////////
@@ -266,8 +266,8 @@ namespace SimCore
          //////////////////////////////////////////////////////////////////////
          void PagedTerrainPhysicsActor::CheckGeode(osg::Geode& node, bool loadNow, const osg::Matrix& matrixForTransform)
          {
-            std::map<osg::Geode*, dtCore::RefPtr<TerrainNode> >::iterator iter;
-            TerrainNode* currentNode = NULL;
+            std::map<osg::Geode*, std::shared_ptr<TerrainNode> >::iterator iter;
+            TerrainNode* currentNode = nullptr;
             iter = mTerrainMap.find(&node);
             if(iter != mTerrainMap.end())
             {
@@ -277,14 +277,14 @@ namespace SimCore
             }
             else
             {
-               dtCore::RefPtr<TerrainNode> terrainNodeToAdd = new TerrainNode(&node);
+               std::shared_ptr<TerrainNode> terrainNodeToAdd = new TerrainNode(&node);
                terrainNodeToAdd->SetFlagsToLoad();
 
                if(loadNow)
                {
                   terrainNodeToAdd->SetPhysicsObject(BuildTerrainAsStaticMesh( terrainNodeToAdd->GetGeodePointer(),
                      terrainNodeToAdd->GetUniqueID().ToString(), false));
-                  terrainNodeToAdd->SetFilled(terrainNodeToAdd->GetPhysicsObject() != NULL);
+                  terrainNodeToAdd->SetFilled(terrainNodeToAdd->GetPhysicsObject() != nullptr);
 
                   if(terrainNodeToAdd->IsFilled())
                   {
@@ -329,7 +329,7 @@ namespace SimCore
          //////////////////////////////////////////////////////////////////////
          bool PagedTerrainPhysicsActor::FinalizeTerrain(int numberOfFrames)
          {
-            std::map<osg::Geode*, dtCore::RefPtr<TerrainNode> >::iterator removeIter;
+            std::map<osg::Geode*, std::shared_ptr<TerrainNode> >::iterator removeIter;
             for(unsigned int i = 0;
                mFinalizeTerrainIter != mTerrainMap.end()
                && i < mTerrainMap.size() ;/// numberOfFrames;
@@ -337,7 +337,7 @@ namespace SimCore
             {
                TerrainNode* currentNode = mFinalizeTerrainIter->second.get();
 
-               if (currentNode->GetGeodePointer() == NULL)
+               if (currentNode->GetGeodePointer() == nullptr)
                {
                   // Remove physics stuff if its loaded.
                   if (currentNode->IsFilled())
@@ -372,7 +372,7 @@ namespace SimCore
                      case TerrainNode::TILE_TODO_LOAD:
                         currentNode->SetPhysicsObject(BuildTerrainAsStaticMesh( currentNode->GetGeodePointer(),
                                  currentNode->GetUniqueID().ToString(), false));
-                        currentNode->SetFilled(currentNode->GetPhysicsObject() != NULL);
+                        currentNode->SetFilled(currentNode->GetPhysicsObject() != nullptr);
                         break;
                   }
 
@@ -395,15 +395,15 @@ namespace SimCore
          //////////////////////////////////////////////////////////////////////
          void PagedTerrainPhysicsActor::ReloadTerrainPhysics()
          {
-            std::map<osg::Geode*, dtCore::RefPtr<TerrainNode> >::iterator mterrainIter;
-            std::map<osg::Geode*, dtCore::RefPtr<TerrainNode> >::iterator removeIter;
+            std::map<osg::Geode*, std::shared_ptr<TerrainNode> >::iterator mterrainIter;
+            std::map<osg::Geode*, std::shared_ptr<TerrainNode> >::iterator removeIter;
             for(mterrainIter = mTerrainMap.begin();
                mterrainIter != mTerrainMap.end() ;
                ++mterrainIter)
             {
                TerrainNode* currentNode = mterrainIter->second.get();
 
-               if(currentNode->GetGeodePointer() != NULL && currentNode->IsFilled())
+               if(currentNode->GetGeodePointer() != nullptr && currentNode->IsFilled())
                {
                   dtPhysics::PhysicsActComp* ac;
                   GetComponent(ac);
@@ -411,7 +411,7 @@ namespace SimCore
 
                   currentNode->SetPhysicsObject(BuildTerrainAsStaticMesh( currentNode->GetGeodePointer(),
                      currentNode->GetUniqueID().ToString(), false));
-                  currentNode->SetFilled(currentNode->GetPhysicsObject() != NULL);
+                  currentNode->SetFilled(currentNode->GetPhysicsObject() != nullptr);
                }
             }
          }
@@ -424,11 +424,11 @@ namespace SimCore
          dtPhysics::PhysicsObject* PagedTerrainPhysicsActor::BuildTerrainAsStaticMesh(osg::Node* nodeToParse,
             const std::string& nameOfNode, bool buildGeodesSeparately)
          {
-            if(nodeToParse == NULL)
+            if(nodeToParse == nullptr)
             {
                LOG_ALWAYS("Null nodeToParse sent into the BuildTerrainAsStaticMesh function! \
                   No action taken.");
-               return NULL;
+               return nullptr;
             }
 
             // Some geometries are really large to load as one big mess, so we load each geode separately
@@ -447,7 +447,7 @@ namespace SimCore
                dtUtil::MakeIndexString(mNumNodesLoaded, numNodesString);
                dtUtil::MakeIndexString(mNumVertsLoaded, numVertsString);
                LOG_INFO("Finished loading physics geometry. Found [" + numNodesString + "] nodes with [" + numVertsString + "] verts.");
-               return NULL;
+               return nullptr;
             }
             else
             {
@@ -457,7 +457,7 @@ namespace SimCore
 
                if (!dtv.mFunctor.mVertices.empty())
                {
-                  dtCore::RefPtr<dtPhysics::PhysicsObject> newTile = new dtPhysics::PhysicsObject(nameOfNode);
+                  std::shared_ptr<dtPhysics::PhysicsObject> newTile = new dtPhysics::PhysicsObject(nameOfNode);
                   dtPhysics::PhysicsActComp* ac;
                   GetComponent(ac);
                   ac->AddPhysicsObject(*newTile);
@@ -474,7 +474,7 @@ namespace SimCore
                   data.mNumIndices = dtv.mFunctor.mIndices.size();
                   data.mNumVertices = dtv.mFunctor.mVertices.size();
                   dtCore::Transform xform;
-                  dtCore::RefPtr<dtPhysics::Geometry> geom = dtPhysics::Geometry::CreateConcaveGeometry(xform, data, 0);
+                  std::shared_ptr<dtPhysics::Geometry> geom = dtPhysics::Geometry::CreateConcaveGeometry(xform, data, 0);
                   geom->SetMargin(0.06);
 
                   newTile->CreateFromGeometry(*geom);
@@ -482,7 +482,7 @@ namespace SimCore
                }
                else
                {
-                  return NULL;
+                  return nullptr;
                }
             }
          }
@@ -496,7 +496,7 @@ namespace SimCore
             dtUtil::MakeIndexString(mNumNodesLoaded, numNodesString);
             numNodesString = nameOfNode + " " + numNodesString;
 
-            dtCore::RefPtr<dtPhysics::PhysicsObject> newTile = new dtPhysics::PhysicsObject(nameOfNode);
+            std::shared_ptr<dtPhysics::PhysicsObject> newTile = new dtPhysics::PhysicsObject(nameOfNode);
             dtPhysics::PhysicsActComp* ac;
             GetComponent(ac);
             ac->AddPhysicsObject(*newTile);
@@ -601,7 +601,7 @@ namespace SimCore
             dtGame::LogController* logController
                = dynamic_cast<dtGame::LogController*> (GetGameManager()->GetComponentByName("LogController"));
 
-            if( logController != NULL )
+            if( logController != nullptr )
             {
                logController->RequestAddIgnoredActor( GetId() );
             }

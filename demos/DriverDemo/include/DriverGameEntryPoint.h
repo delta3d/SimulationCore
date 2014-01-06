@@ -61,7 +61,7 @@ namespace DriverDemo
          /**
           * Override the method to create the game manager.
           */
-         //virtual dtCore::ObserverPtr<dtGame::GameManager> CreateGameManager(dtCore::Scene& scene);
+         //virtual std::weak_ptr<dtGame::GameManager> CreateGameManager(dtCore::Scene& scene);
 
          /**
           * Called after all startup related code is run.
@@ -76,7 +76,7 @@ namespace DriverDemo
          virtual void SetupClientServerNetworking(dtGame::GameManager& gm);
 
          static const std::string ApplicationLibraryName;
-         dtCore::RefPtr<GameAppComponent> gameAppComponent;
+         std::shared_ptr<GameAppComponent> gameAppComponent;
 
          char **mArgv;
          int mArgc;

@@ -65,8 +65,8 @@ class LM_OpenFLTTerainTests : public CPPUNIT_NS::TestFixture
       void TestFunction();
 
    private:
-     dtCore::RefPtr<dtGame::GameManager> mGM;
-     dtCore::RefPtr<dtUtil::Log> mLogger;
+     std::shared_ptr<dtGame::GameManager> mGM;
+     std::shared_ptr<dtUtil::Log> mLogger;
 
 };
 
@@ -93,21 +93,21 @@ void LM_OpenFLTTerainTests::tearDown()
    dtCore::System::GetInstance().Stop();
 
    mGM->DeleteAllActors(true);
-   mGM = NULL;
+   mGM = nullptr;
 }
 
 /////////////////////////////////////////////////////////
 void LM_OpenFLTTerainTests::TestFunction()
 {
    //////////////////////////////////////////////////////////////////////////
-   dtCore::RefPtr<dtGame::GameActorProxy> obj;
+   std::shared_ptr<dtGame::GameActorProxy> obj;
    mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::LM_OPENFLIGHT_TERRAIN_ACTORTYPE, obj);
    //////////////////////////////////////////////////////////////////////////
 
    CPPUNIT_ASSERT(obj->GetHideDTCorePhysicsProps());
-   CPPUNIT_ASSERT_MESSAGE("dtCore physics properties should be hidden.", obj->GetProperty("Show Collision Geometry") == NULL);
+   CPPUNIT_ASSERT_MESSAGE("dtCore physics properties should be hidden.", obj->GetProperty("Show Collision Geometry") == nullptr);
 
-   dtCore::RefPtr<SimCore::Actors::OpenFlightToIVETerrainActor> objActor = dynamic_cast<SimCore::Actors::OpenFlightToIVETerrainActor*>(obj->GetDrawable());
+   std::shared_ptr<SimCore::Actors::OpenFlightToIVETerrainActor> objActor = dynamic_cast<SimCore::Actors::OpenFlightToIVETerrainActor*>(obj->GetDrawable());
 
    objActor->SetPagingMinX(1.5);
    CPPUNIT_ASSERT(objActor->GetPagingMinX() == 1.5);

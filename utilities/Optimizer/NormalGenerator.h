@@ -17,14 +17,14 @@
 #include <osgUtil/Export>
 
 #include <osg/ref_ptr>
-#include <osg/Referenced>
+#include <dtUtil/refcountedbase.h>
 #include <osg/Array>
 #include <osg/Geometry>
 
 namespace LevelCompiler
 {
 
-class NormalGenerator: public osg::Referenced 
+class NormalGenerator: public std::enable_shared_from_this 
 {
 public:
     NormalGenerator();

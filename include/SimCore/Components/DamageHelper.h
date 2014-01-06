@@ -28,7 +28,7 @@
 // INCLUDE DIRECTIVES
 ////////////////////////////////////////////////////////////////////////////////
 #include <SimCore/Export.h>
-#include <dtCore/observerptr.h>
+#include <dtUtil/refcountedbase.h>
 
 namespace dtGame
 {
@@ -91,7 +91,7 @@ namespace SimCore
 
             // @param outPos The argument to capture the observed entity's position in world space
             // @return FALSE if this function failed to retrieve the observed entity's position; 
-            //         fails if the observed entity is NULL
+            //         fails if the observed entity is nullptr
             bool GetEntityPosition( osg::Vec3& outPos );
 
             // @param autoNotify Determines if this helper has permission to
@@ -114,7 +114,7 @@ namespace SimCore
             // @param table The collection of MunitionDamage that pertain to the observed entity.
             //              This is a ref pointer to ensure that the table memory is being
             //              tracked rather than this function receiving a new raw table pointer.
-            void SetMunitionDamageTable( dtCore::RefPtr<MunitionDamageTable>& table ) { mTable = table.get(); }
+            void SetMunitionDamageTable( std::shared_ptr<MunitionDamageTable>& table ) { mTable = table.get(); }
             MunitionDamageTable* GetMunitionDamageTable() { return mTable.get(); }
             const MunitionDamageTable* GetMunitionDamageTable() const { return mTable.get(); }
 
@@ -209,10 +209,10 @@ namespace SimCore
             DamageType* mLastNotifiedDamageState;
             DamageType* mCurrentDamageState;
             dtGame::DeadReckoningAlgorithm* mLastDRAlgorithm;
-            dtCore::ObserverPtr<MunitionDamageTable> mTable;
-            dtCore::ObserverPtr<SimCore::Actors::BaseEntity> mEntity; // the observed entity
-            dtCore::RefPtr<DamageProbability> mScratchProbs;
-            dtCore::RefPtr<DamageProbability> mDamageLevels; // the damage probabilities for individual levels of damage of the entity
+            std::weak_ptr<MunitionDamageTable> mTable;
+            std::weak_ptr<SimCore::Actors::BaseEntity> mEntity; // the observed entity
+            std::shared_ptr<DamageProbability> mScratchProbs;
+            std::shared_ptr<DamageProbability> mDamageLevels; // the damage probabilities for individual levels of damage of the entity
             osg::Vec3 mEntityDimensions;
 
       };

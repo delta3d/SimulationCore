@@ -185,7 +185,7 @@ namespace SimCore
       if(mCurrentlyInTerrain)
       {
          osg::ProxyNode* proxyNode = dynamic_cast<osg::ProxyNode*>(&node);
-         if(proxyNode != NULL)
+         if(proxyNode != nullptr)
          {
             mHitProxyNode = true;
             osgUtil::CullVisitor::apply(node);

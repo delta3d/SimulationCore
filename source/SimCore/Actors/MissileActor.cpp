@@ -70,7 +70,7 @@ namespace SimCore
          static const dtUtil::RefString GROUPNAME("MissileActor");
          static const dtUtil::RefString GROUPNAME_PARTICLES("Particles");
 
-         MissileActor* drawable = NULL;
+         MissileActor* drawable = nullptr;
          GetActor(drawable);
 
          typedef dtDAL::PropertyRegHelper<MissileActorProxy&, MissileActor> PropRegHelperType;
@@ -117,7 +117,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////
       void MissileActorProxy::OnRemovedFromWorld()
       {
-         MissileActor* missile = NULL;
+         MissileActor* missile = nullptr;
          GetActor(missile);
          missile->ScheduleSmokeTrailDelete();
       }
@@ -136,9 +136,9 @@ namespace SimCore
       MissileActor::~MissileActor()
       {
          SetFlameEnabled(false);
-         mFlame = NULL;
+         mFlame = nullptr;
          SetSmokeTrailEnabled(false);
-         mSmokeTrail = NULL;
+         mSmokeTrail = nullptr;
       }
 
       //////////////////////////////////////////////////////////
@@ -186,7 +186,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////
       void MissileActor::LoadSmokeTrailFile(const std::string& fileName)
       {
-         dtCore::ParticleSystem* ps = NULL;
+         dtCore::ParticleSystem* ps = nullptr;
          if (!mSmokeTrail.valid())
          {
             GetGameActorProxy().GetGameManager()->CreateActor(
@@ -197,7 +197,7 @@ namespace SimCore
             ps->LoadFile(fileName);
          }
 
-         if (ps != NULL && ps->GetFilename().empty())
+         if (ps != nullptr && ps->GetFilename().empty())
          {
             LOG_ERROR("Failed to load the missile smoke trail particle system file: " + fileName);
          }
@@ -222,7 +222,7 @@ namespace SimCore
       {
          if(mSmokeTrail.valid())
          {
-            dtDAL::BooleanActorProperty* prop = NULL;
+            dtDAL::BooleanActorProperty* prop = nullptr;
             mSmokeTrail->GetProperty("Enable", prop);
             prop->SetValue(enable);
          }
@@ -233,7 +233,7 @@ namespace SimCore
       {
          if (mSmokeTrail.valid())
          {
-            const dtDAL::BooleanActorProperty* prop = NULL;
+            const dtDAL::BooleanActorProperty* prop = nullptr;
             mSmokeTrail->GetProperty("Enable", prop);
             return prop->GetValue();
          }
@@ -256,7 +256,7 @@ namespace SimCore
             // Attach the particles to the parent missile
             AddChild(mFlame.get());
 
-            if( relTransform != NULL )
+            if( relTransform != nullptr )
             {
                // Offset the particles to a target point
                dtCore::Transform transform;
@@ -272,7 +272,7 @@ namespace SimCore
             // Set the new emitter program
             dtCore::ParticleSystem* smokeps = dynamic_cast<dtCore::ParticleSystem*> (mSmokeTrail->GetDrawable());
 
-            if( smokeps != NULL )
+            if( smokeps != nullptr )
             {
                // Add the smoke trail to the GameManager so that
                // it can exist after this missile is deleted.
@@ -281,7 +281,7 @@ namespace SimCore
                // The GameManager added it to the scene in AddActor, so remove it
                smokeps->Emancipate();
                AddChild(smokeps);
-               if( relTransform != NULL )
+               if( relTransform != nullptr )
                {
                   dtCore::Transform xform;
                   smokeps->GetTransform(xform, dtCore::Transformable::REL_CS);
@@ -298,7 +298,7 @@ namespace SimCore
          GetGameActorProxy().GetGameManager()->
             GetComponentByName(SimCore::Components::ParticleManagerComponent::DEFAULT_NAME, comp);
 
-         if( comp != NULL )
+         if( comp != nullptr )
          {
             comp->RegisterActor(GetGameActorProxy());
          }
@@ -308,20 +308,20 @@ namespace SimCore
       //////////////////////////////////////////////////////////
       void MissileActor::ScheduleSmokeTrailDelete()
       {
-         if( mFlame != NULL ) { mFlame->SetEnabled(false); }
+         if( mFlame != nullptr ) { mFlame->SetEnabled(false); }
 
          if( !mSmokeTrail.valid() ) { return; }
 
-         Components::TimedDeleterComponent* deleterComp = NULL;
+         Components::TimedDeleterComponent* deleterComp = nullptr;
          GetGameActorProxy().GetGameManager()->GetComponentByName(Components::TimedDeleterComponent::DEFAULT_NAME, deleterComp);
 
-         if( deleterComp != NULL )
+         if( deleterComp != nullptr )
          {
-            dtCore::ParticleSystem* ps = NULL;
+            dtCore::ParticleSystem* ps = nullptr;
             mSmokeTrail->GetActor(ps);
             dtCore::ParticleLayer* smokeLayer = ps->GetSingleLayer("Smoke");
             float deleteTime = 0.0f;
-            if( smokeLayer != NULL )
+            if( smokeLayer != nullptr )
             {
                // Set the delete time based on the particle life span.
                deleteTime = smokeLayer->GetParticleSystem()

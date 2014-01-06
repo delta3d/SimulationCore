@@ -83,9 +83,9 @@ namespace SimCore
       //////////////////////////////////////////////////////////
       osgSim::DOFTransform* InteriorActor::GetSteeringWheelDOF(const std::string& dofName)
       {
-         osgSim::DOFTransform* result = NULL;
+         osgSim::DOFTransform* result = nullptr;
          dtUtil::NodeCollector* nc = GetNodeCollector();
-         if (nc != NULL)
+         if (nc != nullptr)
          {
             result = nc->GetDOFTransform(dofName);
          }

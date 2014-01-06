@@ -50,9 +50,9 @@ namespace NetDemo
          , mHelpEnabled(false)
          , mDamageMeterTimer(0.0f)
          , mDamageMeterLevel(0.0f)
-         , mFortPoints(NULL)
-         , mDamageMeter_Fort(NULL)
-         , mScore(NULL)
+         , mFortPoints(nullptr)
+         , mDamageMeter_Fort(nullptr)
+         , mScore(nullptr)
       {
       }
 
@@ -212,7 +212,7 @@ namespace NetDemo
                ss << "Help_" << (index+1);
                CEGUI::Window* textLine = wm.getWindow(ss.str());
 
-               if(textLine != NULL)
+               if(textLine != nullptr)
                {
                   textLine->setText(text.c_str());
 
@@ -347,7 +347,7 @@ namespace NetDemo
                ss << "DebugInfo_" << (index+1);
                CEGUI::Window* textLine = wm.getWindow(ss.str());
 
-               if(textLine != NULL)
+               if(textLine != nullptr)
                {
                   textLine->setText(text.c_str());
 

@@ -97,7 +97,7 @@ namespace SimCore
       void HumanWithPhysicsActor::SetLastKnownTranslation(const osg::Vec3 &vec)
       {
 #ifdef AGEIA_PHYSICS
-         if(mPhysicsActComp != NULL)
+         if(mPhysicsActComp != nullptr)
          {
             float zValue = mPhysicsActComp->GetCharacterExtents()[2];
 
@@ -122,7 +122,7 @@ namespace SimCore
       {
          osg::Vec3 position = pos;
 #ifdef AGEIA_PHYSICS
-         if(mPhysicsActComp != NULL)
+         if(mPhysicsActComp != nullptr)
             position[2] -= (mPhysicsActComp->GetCharacterExtents()[2]);
 #endif
          osg::Vec3 distanceMoved = pos - GetLastKnownTranslation();
@@ -208,7 +208,7 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////
       dtPhysics::PhysicsActComp* HumanWithPhysicsActor::GetPhysicsActComp()
       {
-         dtPhysics::PhysicsActComp* physAC = NULL;
+         dtPhysics::PhysicsActComp* physAC = nullptr;
          GetComponent(physAC);
          return physAC;
       }
@@ -220,7 +220,7 @@ namespace SimCore
           dtCore::Transform xform;
           GetTransform(xform);
           dtPhysics::PhysicsObject* physObj = GetPhysicsActComp()->GetMainPhysicsObject();
-          if (physObj != NULL)
+          if (physObj != nullptr)
           {
              physObj->SetTransformAsVisual(xform);
           }
@@ -260,9 +260,9 @@ namespace SimCore
       {
          if (!HasComponent(dtPhysics::PhysicsActComp::TYPE))
          {
-            dtCore::RefPtr<dtPhysics::PhysicsActComp> physAC = new dtPhysics::PhysicsActComp();
+            std::shared_ptr<dtPhysics::PhysicsActComp> physAC = new dtPhysics::PhysicsActComp();
 
-			   dtCore::RefPtr<dtPhysics::PhysicsObject> physicsObject = new dtPhysics::PhysicsObject("Body");
+			   std::shared_ptr<dtPhysics::PhysicsObject> physicsObject = new dtPhysics::PhysicsObject("Body");
 			   physicsObject->SetPrimitiveType(dtPhysics::PrimitiveType::CYLINDER);
 			   physicsObject->SetMechanicsType(dtPhysics::MechanicsType::KINEMATIC);
 			   physicsObject->SetCollisionGroup(SimCore::CollisionGroup::GROUP_HUMAN_LOCAL);
@@ -275,7 +275,7 @@ namespace SimCore
 
          BaseClass::BuildActorComponents();
 
-         dtCore::RefPtr<dtGame::DeadReckoningHelper> drAC;
+         std::shared_ptr<dtGame::DeadReckoningHelper> drAC;
          GetComponent(drAC);
          if (drAC.valid())
          {

@@ -120,7 +120,7 @@ namespace SimCore
 
          const std::string GROUP("Logic Data"); // only used to group props in STAGE
 
-         LogicConditionalActor* actor = NULL;
+         LogicConditionalActor* actor = nullptr;
          GetActor( actor );
 
          AddProperty(new dtDAL::BooleanActorProperty(PROPERTY_IS_TRUE, PROPERTY_IS_TRUE, 

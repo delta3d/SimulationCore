@@ -103,7 +103,7 @@ namespace SimCore
             };
 
 
-            class SIMCORE_EXPORT DynamicLight: public osg::Referenced
+            class SIMCORE_EXPORT DynamicLight: public std::enable_shared_from_this
             {
                protected:
                   /*virtual*/ ~DynamicLight(){}
@@ -155,10 +155,10 @@ namespace SimCore
                   float mRadius;      //this is used to determine how far away we are from the light, it pretty much makes the light into a
                                       //bounding sphere
 
-                  bool mAutoDeleteLightOnTargetNull; //setting this flag will auto delete the light when the target becomes NULL, this
+                  bool mAutoDeleteLightOnTargetNull; //setting this flag will auto delete the light when the target becomes nullptr, this
                                                      //can be used in conjunction with Fade Out
 
-                  dtCore::ObserverPtr<dtCore::Transformable> mTarget;
+                  std::weak_ptr<dtCore::Transformable> mTarget;
 
             };
 
@@ -195,10 +195,10 @@ namespace SimCore
             };
 
 
-            typedef std::vector<dtCore::RefPtr<DynamicLight> > LightArray;
-            typedef std::vector<dtCore::RefPtr<DynamicLight> > SpotLightArray;
+            typedef std::vector<std::shared_ptr<DynamicLight> > LightArray;
+            typedef std::vector<std::shared_ptr<DynamicLight> > SpotLightArray;
 
-            class RenderFeature: public osg::Referenced
+            class RenderFeature: public std::enable_shared_from_this
             {
             public:
                virtual void SetEnable(bool pEnable) = 0;
@@ -347,18 +347,18 @@ namespace SimCore
             unsigned mMaxDynamicLights;
             unsigned mMaxSpotLights;
 
-            dtCore::RefPtr<osg::Group> mDeltaScene;
-            dtCore::RefPtr<osg::Group> mSceneRoot;
-            dtCore::RefPtr<osg::Camera> mGUIRoot;
-            dtCore::RefPtr<osg::Camera> mNVGSRoot;
-            dtCore::RefPtr<RenderFeature> mNVGS;
-            dtCore::RefPtr<SimCore::SimCoreCullVisitor> mCullVisitor;
+            osg::ref_ptr<osg::Group> mDeltaScene;
+            osg::ref_ptr<osg::Group> mSceneRoot;
+            osg::ref_ptr<osg::Camera> mGUIRoot;
+            osg::ref_ptr<osg::Camera> mNVGSRoot;
+            std::shared_ptr<RenderFeature> mNVGS;
+            std::shared_ptr<SimCore::SimCoreCullVisitor> mCullVisitor;
 
             // list of dynamic light actor prototypes
-            typedef std::map<const std::string, dtCore::RefPtr<SimCore::Actors::DynamicLightPrototypeProxy> > DynamicLightPrototypeMap;
+            typedef std::map<const std::string, std::shared_ptr<SimCore::Actors::DynamicLightPrototypeProxy> > DynamicLightPrototypeMap;
             DynamicLightPrototypeMap mDynamicLightPrototypes;
 
-            typedef std::map<const std::string, dtCore::RefPtr<SimCore::Actors::SpotLightPrototypeProxy> > SpotLightPrototypeMap;
+            typedef std::map<const std::string, std::shared_ptr<SimCore::Actors::SpotLightPrototypeProxy> > SpotLightPrototypeMap;
             SpotLightPrototypeMap mSpotLightPrototypes;
 
             LightArray mLights;

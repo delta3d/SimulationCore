@@ -167,31 +167,31 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       osg::Node* BodyPaintActComp::GetOwnerNode()
       {
-         dtGame::GameActor* actor = NULL;
+         dtGame::GameActor* actor = nullptr;
          GetOwner(actor);
-         return actor != NULL ? actor->GetOSGNode() : NULL;
+         return actor != nullptr ? actor->GetOSGNode() : nullptr;
       }
 
       //////////////////////////////////////////////////////////////////////////
       const osg::Node* BodyPaintActComp::GetOwnerNode() const
       {
-         const dtGame::GameActor* actor = NULL;
+         const dtGame::GameActor* actor = nullptr;
          GetOwner(actor);
-         return actor != NULL ? actor->GetOSGNode() : NULL;
+         return actor != nullptr ? actor->GetOSGNode() : nullptr;
       }
 
       //////////////////////////////////////////////////////////////////////////
       osg::StateSet* BodyPaintActComp::GetStateSet()
       {
          osg::Node* node = GetOwnerNode();
-         return node != NULL ? node->getOrCreateStateSet() : NULL;
+         return node != nullptr ? node->getOrCreateStateSet() : nullptr;
       }
 
       //////////////////////////////////////////////////////////////////////////
       const osg::StateSet* BodyPaintActComp::GetStateSet() const
       {
          const osg::Node* node = GetOwnerNode();
-         return node != NULL ? node->getStateSet() : NULL;
+         return node != nullptr ? node->getStateSet() : nullptr;
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -208,10 +208,10 @@ namespace SimCore
       {
          osg::Vec4 value;
          const osg::StateSet* ss = node.getStateSet();
-         if(ss != NULL)
+         if(ss != nullptr)
          {
             const osg::Uniform* uniform = ss->getUniform(UNIFORM_PROJECTION_DIRECTION);
-            if(uniform != NULL)
+            if(uniform != nullptr)
             {
                uniform->get(value);
             }
@@ -237,7 +237,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void BodyPaintActComp::SetUniform(osg::StateSet* ss, const std::string& uniformName, const osg::Vec4& value)
       {
-         if(ss != NULL)
+         if(ss != nullptr)
          {
             ss->getOrCreateUniform(uniformName, osg::Uniform::FLOAT_VEC4)->set(value);
          }
@@ -246,21 +246,21 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void BodyPaintActComp::SetUniform(osg::StateSet* ss, const std::string& uniformName, const dtDAL::ResourceDescriptor& value, int texUnit)
       {
-         if(ss != NULL && ! value.IsEmpty())
+         if(ss != nullptr && ! value.IsEmpty())
          {
             try
             {
                osg::Uniform* uniform = ss->getOrCreateUniform(uniformName, osg::Uniform::SAMPLER_2D);
                uniform->set(texUnit);
 
-               dtCore::RefPtr<osg::Texture2D> tex = new osg::Texture2D();
+               osg::ref_ptr<osg::Texture2D> tex = new osg::Texture2D();
                std::string textureFile = dtDAL::Project::GetInstance().GetResourcePath(value);
                
-               dtCore::RefPtr<osgDB::ReaderWriter::Options> options = new osgDB::ReaderWriter::Options;
+               osg::ref_ptr<osgDB::ReaderWriter::Options> options = new osgDB::ReaderWriter::Options;
                options->setObjectCacheHint(osgDB::ReaderWriter::Options::CACHE_ALL);
 
-               dtCore::RefPtr<osg::Image> newImage = osgDB::readImageFile(textureFile, options.get());
-               if(newImage == NULL)
+               osg::ref_ptr<osg::Image> newImage = osgDB::readImageFile(textureFile, options.get());
+               if(newImage == nullptr)
                {
                   LOG_ERROR("BodyPaintActComp failed to load texture file [" + textureFile + "].");
                }

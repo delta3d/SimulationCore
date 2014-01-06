@@ -121,9 +121,9 @@ namespace SimCore
          dtGame::GameManager *gm = GetGameActorProxy().GetGameManager();
 
          // Resolve dirty list.
-         if (mConditionListIsDirty && gm != NULL)
+         if (mConditionListIsDirty && gm != nullptr)
          {
-            //std::vector< dtCore::ObserverPtr< LogicConditionalActor > > mConditionsListAsActors;
+            //std::vector< std::weak_ptr< LogicConditionalActor > > mConditionsListAsActors;
             mConditionsListAsActors.clear();
 
             // Look each one up and add it to our normal list.
@@ -133,7 +133,7 @@ namespace SimCore
                dtCore::UniqueId &newId = mConditions[i];
                SimCore::Actors::LogicConditionalActorProxy *newProxy = 
                   dynamic_cast<SimCore::Actors::LogicConditionalActorProxy*>(gm->FindActorById(newId));
-               if (newProxy != NULL)
+               if (newProxy != nullptr)
                {
                   mConditionsListAsActors.push_back(newProxy);
                }
@@ -158,7 +158,7 @@ namespace SimCore
          for (unsigned int i = 0; i < numConditions; ++i)
          {
             SimCore::Actors::LogicConditionalActorProxy* conditionProxy = mConditionsListAsActors[i].get();
-            if (conditionProxy == NULL)
+            if (conditionProxy == nullptr)
             {
                mConditionListIsDirty = true;
                continue;
@@ -202,9 +202,9 @@ namespace SimCore
       void LogicOnEventActor::SendGameEventMessage(dtCore::GameEvent& gameEvent)
       {
          dtGame::GameManager* gm = GetGameActorProxy().GetGameManager();
-         if( gm != NULL )
+         if( gm != nullptr )
          {
-            dtCore::RefPtr<dtGame::GameEventMessage> eventMessage;
+            std::shared_ptr<dtGame::GameEventMessage> eventMessage;
             gm->GetMessageFactory().CreateMessage( dtGame::MessageType::INFO_GAME_EVENT, eventMessage );
 
             eventMessage->SetAboutActorId( GetUniqueId() );
@@ -325,7 +325,7 @@ namespace SimCore
 
          const std::string GROUP("Logic Data");
 
-         LogicOnEventActor* actor = NULL;
+         LogicOnEventActor* actor = nullptr;
          GetActor( actor );
 
          AddProperty(new dtDAL::EnumActorProperty<LogicOnEventActorProxy::LogicTypeEnum>(

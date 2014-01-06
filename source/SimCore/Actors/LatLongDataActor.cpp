@@ -102,7 +102,7 @@ namespace SimCore
 
          const std::string GROUP("Lat Long Data");
 
-         LatLongDataActor* actor = NULL;
+         LatLongDataActor* actor = nullptr;
          GetActor( actor );
 
          // DOUBLE PROPERTIES

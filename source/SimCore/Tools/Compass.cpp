@@ -86,7 +86,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void Compass::Update( float timeDelta )
       {
-         if(IsEnabled() && GetPlayerActor() != NULL)
+         if(IsEnabled() && GetPlayerActor() != nullptr)
          {
             dtCore::Transform xform;
             SimCore::Actors::StealthActor& player = *GetPlayerActor();
@@ -217,7 +217,7 @@ namespace SimCore
          if (!lensaticNode.empty())
             fileNode = osgDB::readNodeFile(lensaticNode);
 
-         if( fileNode != NULL )
+         if( fileNode != nullptr )
          {
             mCompassOverlay = dynamic_cast< osg::MatrixTransform* >(fileNode.get());
             if( ! mCompassOverlay.valid() )
@@ -250,7 +250,7 @@ namespace SimCore
          }
 
          float horizontalFOV = 1.0f;
-         if(mCamera != NULL)
+         if(mCamera != nullptr)
             horizontalFOV = mCamera->GetHorizontalFov();
 
          double dAspect = windowWidth/windowHeight;

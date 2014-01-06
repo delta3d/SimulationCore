@@ -40,7 +40,7 @@ namespace StealthQt
       public:
 
          /// Constructor
-         ThemedWeatherSettings(QWidget *parent = NULL);
+         ThemedWeatherSettings(QWidget *parent = nullptr);
 
          /// Destructor
          virtual ~ThemedWeatherSettings();

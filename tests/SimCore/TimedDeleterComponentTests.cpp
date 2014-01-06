@@ -28,7 +28,7 @@
 #include <prefix/SimCorePrefix.h>
 #include <cppunit/extensions/HelperMacros.h>
 #include <dtCore/system.h>
-#include <dtCore/refptr.h>
+#include <dtUtil/refcountedbase.h>
 #include <dtCore/scene.h>
 #include <dtCore/uniqueid.h>
 #include <dtCore/timer.h>
@@ -111,10 +111,10 @@ namespace SimCore
             void setUp();
             void tearDown();
 
-            void CreateTestActors( std::vector<dtCore::RefPtr<dtGame::GameActorProxy> >& listToFill, int numActors, bool putInGameManager = false );
+            void CreateTestActors( std::vector<std::shared_ptr<dtGame::GameActorProxy> >& listToFill, int numActors, bool putInGameManager = false );
 
             // Returns the total IDs registered to the component
-            int RegisterActorIds( const std::vector<dtCore::RefPtr<dtGame::GameActorProxy> >& actorList );
+            int RegisterActorIds( const std::vector<std::shared_ptr<dtGame::GameActorProxy> >& actorList );
             void SetSimTime( double newSimTime );
             void AdvanceSimTime( double deltaTime );
 
@@ -125,10 +125,10 @@ namespace SimCore
          protected:
          private:
 
-            dtCore::RefPtr<dtGame::GameManager> mGM;
-            dtCore::RefPtr<TestTimedDeleterComponent> mDeleterComp;
-            dtCore::RefPtr<dtGame::MachineInfo> mMachineInfo;
-            std::vector<dtCore::RefPtr<dtGame::GameActorProxy> > mTestActors;
+            std::shared_ptr<dtGame::GameManager> mGM;
+            std::shared_ptr<TestTimedDeleterComponent> mDeleterComp;
+            std::shared_ptr<dtGame::MachineInfo> mMachineInfo;
+            std::vector<std::shared_ptr<dtGame::GameActorProxy> > mTestActors;
       };
 
       CPPUNIT_TEST_SUITE_REGISTRATION(TimedDeleterComponentTests);
@@ -264,14 +264,14 @@ namespace SimCore
 
          mGM->DeleteAllActors(true);
 
-         mGM = NULL;
-         mMachineInfo = NULL;
+         mGM = nullptr;
+         mMachineInfo = nullptr;
       }
 
 
       //////////////////////////////////////////////////////////////
       void TimedDeleterComponentTests::CreateTestActors(
-         std::vector<dtCore::RefPtr<dtGame::GameActorProxy> >& listToFill,
+         std::vector<std::shared_ptr<dtGame::GameActorProxy> >& listToFill,
          int numActors, bool putInGameManager )
       {
          // Prepare lists memory
@@ -280,7 +280,7 @@ namespace SimCore
 
          // Create the actors and add them to the GM
 
-         dtCore::RefPtr<dtGame::GameActorProxy> curProxy;
+         std::shared_ptr<dtGame::GameActorProxy> curProxy;
          for( int index = 0; index < numActors; index++ )
          {
             mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::UNIFORM_ATMOSPHERE_ACTOR_TYPE, curProxy);
@@ -296,7 +296,7 @@ namespace SimCore
 
 
       //////////////////////////////////////////////////////////////
-      int TimedDeleterComponentTests::RegisterActorIds( const std::vector<dtCore::RefPtr<dtGame::GameActorProxy> >& actorList )
+      int TimedDeleterComponentTests::RegisterActorIds( const std::vector<std::shared_ptr<dtGame::GameActorProxy> >& actorList )
       {
          int numActors = actorList.size();
          for( int actor = 0; actor < numActors; actor++ )
@@ -433,7 +433,7 @@ namespace SimCore
          int maxActors = 6;
          CreateTestActors(mTestActors,maxActors);
 
-         dtCore::RefPtr<dtGame::Message> msg =
+         std::shared_ptr<dtGame::Message> msg =
             mGM->GetMessageFactory().CreateMessage(dtGame::MessageType::INFO_ACTOR_DELETED);
 
 

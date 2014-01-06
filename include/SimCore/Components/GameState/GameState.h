@@ -28,7 +28,7 @@
 #include <dtUtil/enumeration.h>
 #include <dtUtil/command.h>
 #include <dtUtil/functor.h>
-#include <osg/Referenced>
+#include <dtUtil/refcountedbase.h>
 #include <osg/ref_ptr>
 #include <list>
 #include <string>
@@ -112,7 +112,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       // GAME STATE CODE
       //////////////////////////////////////////////////////////////////////////
-      class SIMCORE_EXPORT GameState: public osg::Referenced
+      class SIMCORE_EXPORT GameState: public std::enable_shared_from_this
       {
          public:
 

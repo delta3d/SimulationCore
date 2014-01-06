@@ -104,8 +104,8 @@ namespace StealthQt
    {
    public:
       ///Overwrite to generate a custom OSGAdapterWidget
-      virtual dtQt::OSGAdapterWidget* CreateWidget(const QGLFormat& format, bool drawOnSeparateThread, QWidget* parent = NULL,
-         const QGLWidget* shareWidget = NULL, Qt::WindowFlags f = 0)
+      virtual dtQt::OSGAdapterWidget* CreateWidget(const QGLFormat& format, bool drawOnSeparateThread, QWidget* parent = nullptr,
+         const QGLWidget* shareWidget = nullptr, Qt::WindowFlags f = 0)
       {
          static int count = 0;
          bool assignParent = false;
@@ -120,17 +120,17 @@ namespace StealthQt
          }
          ++count;
 
-         dtQt::OSGAdapterWidget* widget = NULL;
+         dtQt::OSGAdapterWidget* widget = nullptr;
          if (assignParent)
          {
             mParent = new StealthQt::AdditionalViewDockWidget(format, parent, shareWidget, f);
             widget = mParent;
 
-// AT last check, in windows, it had windowing problems on Win32 if mParent is NULL.
+// AT last check, in windows, it had windowing problems on Win32 if mParent is nullptr.
 // In X11, the parnent MUST be null or the GLXContext can't be created for the extra views.
-// On Mac OS X, it doesn't seem to make any different whether the parent of the extra windows is NULL or the main window.
+// On Mac OS X, it doesn't seem to make any different whether the parent of the extra windows is nullptr or the main window.
 #ifdef Q_WS_X11
-            mParent = NULL;
+            mParent = nullptr;
 #endif
          }
          else
@@ -192,10 +192,10 @@ namespace StealthQt
       show();
 
       dtQt::OSGGraphicsWindowQt* graphicsWindow = dynamic_cast<dtQt::OSGGraphicsWindowQt*>(mGM->GetApplication().GetWindow()->GetOsgViewerGraphicsWindow());
-      if (graphicsWindow != NULL)
+      if (graphicsWindow != nullptr)
       {
          QGLWidget* oglWidget = graphicsWindow->GetQGLWidget();
-         if (oglWidget != NULL)
+         if (oglWidget != nullptr)
          {
             QRect r = oglWidget->geometry();
             graphicsWindow->resized(r.left(), r.top(), r.width(), r.height());
@@ -398,7 +398,7 @@ namespace StealthQt
       ///Reset the windowing system for osg to use
       osg::GraphicsContext::WindowingSystemInterface* winSys = osg::GraphicsContext::getWindowingSystemInterface();
 
-      if (winSys != NULL)
+      if (winSys != nullptr)
       {
          dtQt::QtGuiWindowSystemWrapper* wsw = new dtQt::QtGuiWindowSystemWrapper(*winSys);
          wsw->SetGLWidgetFactory(new StealthWidgetFactory);
@@ -427,22 +427,22 @@ namespace StealthQt
       mSimTicker.Stop();
       for (size_t i =0; i < mVisibilityCheckBoxes.size(); ++i)
       {
-         mVisibilityCheckBoxes[i]->setUserData(0, NULL);
+         mVisibilityCheckBoxes[i]->setUserData(0, nullptr);
       }
 
       delete mUi;
-      mUi = NULL;
+      mUi = nullptr;
       delete mViewDockWidget;
-      mViewDockWidget = NULL;
+      mViewDockWidget = nullptr;
    }
 
    ///////////////////////////////////////////////////////////////////////////////
    void MainWindow::OnHLAWindowActionTriggered()
    {
-      SimCore::HLA::HLAConnectionComponent* comp = NULL;
+      SimCore::HLA::HLAConnectionComponent* comp = nullptr;
       mGM->GetComponentByName(SimCore::HLA::HLAConnectionComponent::DEFAULT_NAME, comp);
 
-      if (comp == NULL)
+      if (comp == nullptr)
       {
          throw dtGame::InvalidParameterException(
                   "Failed to locate the HLAConnectionComponent on the Game Manager. Aborting application.",
@@ -453,7 +453,7 @@ namespace StealthQt
       mIsConnectedToANetwork = comp->GetConnectionState() !=
          SimCore::HLA::HLAConnectionComponent::ConnectionState::STATE_NOT_CONNECTED;
 
-      HLAWindow window(*mGM, this, NULL, mIsConnectedToANetwork, mCurrentConnectionName);
+      HLAWindow window(*mGM, this, nullptr, mIsConnectedToANetwork, mCurrentConnectionName);
 
       connect(&window, SIGNAL(ConnectedToNetwork(QString)), this, SLOT(OnConnectToNetwork(QString)));
       connect(&window, SIGNAL(DisconnectedFromNetwork()), this, SLOT(OnDisconnectFromNetwork()));
@@ -500,7 +500,7 @@ namespace StealthQt
       {
          StealthGM::ViewWindowWrapper* vww = *i;
          AdditionalViewDockWidget* widget = AdditionalViewDockWidget::GetDockWidgetForViewWindow(*vww);
-         if (widget != NULL)
+         if (widget != nullptr)
          {
             widget->RequestClose();
          }
@@ -1264,7 +1264,7 @@ namespace StealthQt
    void MainWindow::OnPlaybackJumpToTimeMarkerButtonClicked(bool checked)
    {
       QListWidgetItem *currentItem = mUi->mPlaybackTimeMarkersTextBox->currentItem();
-      if (currentItem != NULL)
+      if (currentItem != nullptr)
       {
          OnPlaybackJumpToTimeMarkerButtonClicked(currentItem->text());
       }
@@ -1355,13 +1355,13 @@ namespace StealthQt
       // Get the name item from the current row, which stores the unique ID as
       // its data.
       QTableWidgetItem *item = mUi->mSearchEntityTableWidget->currentItem();
-      if (item != NULL)
+      if (item != nullptr)
       {
          const dtCore::UniqueId id(item->data(Qt::UserRole).toString().toStdString());
 
          // Retrieve proxy from the GM just to make sure it exists.
          dtGame::GameActorProxy* proxy = mGM->FindGameActorById(id);
-         if (proxy != NULL)
+         if (proxy != nullptr)
          {
             StealthViewerData::GetInstance().GetGeneralConfigObject().AttachToActor(id);
          }
@@ -1373,7 +1373,7 @@ namespace StealthQt
             QTableWidgetItem *itemAt = mUi->mSearchEntityTableWidget->item(row, 0);
 
             QString message = tr("Could not attach to the actor named: ") +
-               (itemAt != NULL ? itemAt->text() : item->text()) +
+               (itemAt != nullptr ? itemAt->text() : item->text()) +
                tr(" because this actor has been removed from the scenario. Please select another actor");
 
             QMessageBox::warning(this, tr("Error attaching to actor"), message, QMessageBox::Ok);
@@ -1392,7 +1392,7 @@ namespace StealthQt
 
       StealthGM::PreferencesGeneralConfigObject::AttachMode* mode =
          StealthGM::PreferencesGeneralConfigObject::AttachMode::GetValueForName(text.toStdString());
-      if (mode != NULL)
+      if (mode != nullptr)
       {
          genConfig.SetAttachMode(*mode);
       }
@@ -1685,7 +1685,7 @@ namespace StealthQt
       const std::string coordType = text.toStdString();
       StealthGM::PreferencesToolsConfigObject::CoordinateSystem* coordSystem =
          StealthGM::PreferencesToolsConfigObject::CoordinateSystem::GetValueForName(coordType);
-      if (coordSystem!= NULL)
+      if (coordSystem!= nullptr)
       {
          toolsConfig.SetCoordinateSystem(*coordSystem);
          SelectCorrectWarpToUI(*coordSystem);
@@ -1754,7 +1754,7 @@ namespace StealthQt
       dtGame::GMComponent* gmComp =
          gm->GetComponentByName(StealthGM::ViewerConfigComponent::DEFAULT_NAME);
 
-      if (gmComp == NULL)
+      if (gmComp == nullptr)
       {
          LOG_ERROR("Failed to find the ViewerConfigComponent on the Game Manager.");
       }
@@ -2031,7 +2031,7 @@ namespace StealthQt
 
          //Store the enum object so it be looked up later when a user toggles it.
          check->setUserData(0, (QObjectUserData*)domainEnumVals[i]);
-         visDomainForm->addRow(NULL, check);
+         visDomainForm->addRow(nullptr, check);
          mVisibilityCheckBoxes.push_back(check);
       }
 
@@ -2049,7 +2049,7 @@ namespace StealthQt
 
          //Store the enum object so it be looked up later when a user toggles it.
          check->setUserData(0, (QObjectUserData*)forceEnumVals[i]);
-         visForceForm->addRow(NULL, check);
+         visForceForm->addRow(nullptr, check);
          mVisibilityCheckBoxes.push_back(check);
       }
    }
@@ -2092,7 +2092,7 @@ namespace StealthQt
    {
       dtGame::GMComponent* gmComp =
          mGM->GetComponentByName("LogController");
-      if (gmComp == NULL)
+      if (gmComp == nullptr)
          return;
 
       dtGame::LogController& logController = static_cast<dtGame::LogController&>(*gmComp);
@@ -2175,7 +2175,7 @@ namespace StealthQt
          {
             // Get the log controller
             dtGame::GMComponent* component = gm.GetComponentByName(dtGame::LogController::DEFAULT_NAME);
-            if (component == NULL)
+            if (component == nullptr)
                return ; // Shouldn't happen, but just to be safe.
             dtGame::LogController &logController = static_cast<dtGame::LogController&>(*component);
 
@@ -2221,7 +2221,7 @@ namespace StealthQt
    void MainWindow::PopulateEntityInfoWindowDontAttach(bool notUsed)
    {
       QTableWidgetItem* currentItem = mUi->mSearchEntityTableWidget->currentItem();
-      if (currentItem == NULL)
+      if (currentItem == nullptr)
          return;
 
       DoPopulateEntityInfoWindow(currentItem, false);
@@ -2237,14 +2237,14 @@ namespace StealthQt
    void MainWindow::DoPopulateEntityInfoWindow(QTableWidgetItem* currentItem, bool attach)
    {
       unsigned int index = (unsigned int)(mUi->mSearchEntityTableWidget->currentRow());
-      if (index > mFoundActors.size() || currentItem == NULL)
+      if (index > mFoundActors.size() || currentItem == nullptr)
          return;
 
       QString id = currentItem->data(Qt::UserRole).toString();
 
       // Retrieve proxy from the GM
       dtGame::GameActorProxy *proxy = mGM->FindGameActorById(dtCore::UniqueId(id.toStdString()));
-      if (proxy != NULL)
+      if (proxy != nullptr)
       {
          UpdateEntityInfoData(*proxy);
 
@@ -2321,7 +2321,7 @@ namespace StealthQt
 
       // Make sure we still pick up the signals from these events. This is important
       // for the UI to update itself properly
-      HLAWindow window(*mGM, this, NULL, mIsConnectedToANetwork, mCurrentConnectionName);
+      HLAWindow window(*mGM, this, nullptr, mIsConnectedToANetwork, mCurrentConnectionName);
 
       connect(&window, SIGNAL(ConnectedToNetwork(QString)), this, SLOT(OnConnectToNetwork(QString)));
       connect(&window, SIGNAL(DisconnectedFromNetwork()), this, SLOT(OnDisconnectFromNetwork()));
@@ -2347,7 +2347,7 @@ namespace StealthQt
          //PopulateEntityInfoWindow();
          QTableWidgetItem* currentItem = mUi->mSearchEntityTableWidget->currentItem();
          unsigned int index = (unsigned int)(mUi->mSearchEntityTableWidget->currentRow());
-         if (index > mFoundActors.size() || currentItem == NULL)
+         if (index > mFoundActors.size() || currentItem == nullptr)
             return;
 
          DoPopulateEntityInfoWindow(currentItem, false);
@@ -2364,7 +2364,7 @@ namespace StealthQt
 
          QString message =
             tr("Could not find info for the actor named: ") +
-            ((currentItem == NULL) ? tr("Unknown") : currentItem->text()) +
+            ((currentItem == nullptr) ? tr("Unknown") : currentItem->text()) +
             tr(" because this actor has been removed from the scenario. Please select another actor");
 
          QMessageBox::warning(this, tr("Error finding info for actor"), message, QMessageBox::Ok);
@@ -2378,7 +2378,7 @@ namespace StealthQt
       // Get the StealthHUD so we can get the coordinate Converter. Makes our coordinates be location specific.
       StealthGM::StealthHUD* hudComponent = dynamic_cast<StealthGM::StealthHUD*>
       (mGM->GetComponentByName(StealthGM::StealthHUD::DEFAULT_NAME));
-      if (hudComponent == NULL)
+      if (hudComponent == nullptr)
       {
          throw dtGame::InvalidParameterException(
                   "Failed to locate the StealthHUD Component on the Game Manager. Critical failure.",
@@ -2387,7 +2387,7 @@ namespace StealthQt
       dtUtil::Coordinates& coordinateConverter = hudComponent->GetCoordinateConverter();
 
       // Calculate the directional speed from the entities velocity
-      SimCore::Actors::BaseEntity* entity = NULL;
+      SimCore::Actors::BaseEntity* entity = nullptr;
       proxy.GetActor(entity);
 
       dtCore::Transform trans;
@@ -2491,10 +2491,10 @@ namespace StealthQt
       // Mapping Name will write to Entity Type line edit.
       const dtDAL::ActorProperty* param
       = proxy.GetProperty(SimCore::Actors::BaseEntityActorProxy::PROPERTY_ENTITY_TYPE_ID);
-      mUi->mEntityTypeIDLineEdit->setText(tr( param == NULL ? "" : param->ToString().c_str() ));
+      mUi->mEntityTypeIDLineEdit->setText(tr( param == nullptr ? "" : param->ToString().c_str() ));
 
       param = proxy.GetProperty(SimCore::Actors::BaseEntityActorProxy::PROPERTY_MAPPING_NAME);
-      mUi->mEntityTypeLineEdit->setText(tr( param == NULL ? "" : param->ToString().c_str() ));
+      mUi->mEntityTypeLineEdit->setText(tr( param == nullptr ? "" : param->ToString().c_str() ));
 
       // we hide the last update time now, since in reality, we can't use this field. The last update time
       // is really the last time that the entity trans or rotation was changed. But, if the entity is sitting
@@ -2590,7 +2590,7 @@ namespace StealthQt
    ///////////////////////////////////////////////////////////////////
    void MainWindow::OnTimeMarkerDoubleClicked(QListWidgetItem *item)
    {
-      if (item != NULL)
+      if (item != nullptr)
       {
          OnPlaybackJumpToTimeMarkerButtonClicked(item->text());
       }
@@ -2628,7 +2628,7 @@ namespace StealthQt
       {
          QCheckBox* check = mVisibilityCheckBoxes[i];
          dtUtil::Enumeration* enumVal = (dtUtil::Enumeration*)check->userData(0);
-         if (enumVal != NULL)
+         if (enumVal != nullptr)
          {
             basicOpts.SetEnumVisible(*enumVal, check->isChecked());
          }

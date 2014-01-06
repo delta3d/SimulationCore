@@ -60,8 +60,8 @@ namespace StealthQt
 
          /// Constructor
          HLAWindow(dtGame::GameManager &gm,
-                   QWidget *parent = NULL, 
-                   StealthViewerSettings *settings = NULL, 
+                   QWidget *parent = nullptr, 
+                   StealthViewerSettings *settings = nullptr, 
                    bool isConnected = false, 
                    QString currentConnectionName = tr(""));
 

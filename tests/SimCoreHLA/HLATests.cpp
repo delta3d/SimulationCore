@@ -56,7 +56,7 @@
 #include <UnitTestMain.h>
 #include <dtABC/application.h>
 
-using dtCore::RefPtr;
+using std::shared_ptr;
 
 class TestHLAComponent;
 
@@ -74,7 +74,7 @@ class HLATests : public CPPUNIT_NS::TestFixture
       void TestHLAConnection();
 
    private:
-      RefPtr<dtGame::GameManager> mGameManager;
+      std::shared_ptr<dtGame::GameManager> mGameManager;
 };
 
 // Registers the fixture into the 'registry'
@@ -95,7 +95,7 @@ void HLATests::setUp()
 {
    try
    {
-      RefPtr<dtCore::Scene> scene = GetGlobalApplication().GetScene();
+      std::shared_ptr<dtCore::Scene> scene = GetGlobalApplication().GetScene();
       mGameManager = new dtGame::GameManager(*scene);
 
       dtCore::System::GetInstance().SetShutdownOnWindowClose(false);
@@ -113,13 +113,13 @@ void HLATests::tearDown()
    dtCore::System::GetInstance().Stop();
    if (mGameManager.valid())
    {
-      mGameManager = NULL;
+      mGameManager = nullptr;
    }
 }
 
 void HLATests::TestHLAConnection()
 {
-   RefPtr<dtHLAGM::HLAComponent> thisHLAComponent =  new dtHLAGM::HLAComponent();
+   std::shared_ptr<dtHLAGM::HLAComponent> thisHLAComponent =  new dtHLAGM::HLAComponent();
 
    try
    {

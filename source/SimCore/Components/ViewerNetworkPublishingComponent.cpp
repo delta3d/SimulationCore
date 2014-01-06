@@ -37,7 +37,7 @@
 #include <dtGame/deadreckoninghelper.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
 
-using dtCore::RefPtr;
+using std::shared_ptr;
 
 namespace SimCore
 {
@@ -62,14 +62,14 @@ namespace SimCore
 
          const dtDAL::ActorType& stealthActorType = *SimCore::Actors::EntityActorRegistry::STEALTH_ACTOR_TYPE;
          const dtDAL::ActorType* actualType = &gap->GetActorType();
-         if(actualType != NULL || stealthActorType != *actualType)
+         if(actualType != nullptr || stealthActorType != *actualType)
          {
             // Param added by Eddie. It takes a proxy also now. Is this correct?
             dtGame::DefaultNetworkPublishingComponent::ProcessPublishActor(msg, *gap);
          }
          else
          {
-            RefPtr<dtGame::ActorUpdateMessage> createMsg;
+            std::shared_ptr<dtGame::ActorUpdateMessage> createMsg;
             GetGameManager()->GetMessageFactory().CreateMessage(dtGame::MessageType::INFO_ACTOR_CREATED, createMsg);
 
             std::vector<dtUtil::RefString> propNames;
@@ -87,9 +87,9 @@ namespace SimCore
          const dtGame::MessageParameter* mp = msg.GetUpdateParameter("Last Known Rotation");
 
          //If the message has a rotation parameter, send a rotation changed message.
-         if (mp != NULL)
+         if (mp != nullptr)
          {
-            RefPtr<StealthActorUpdatedMessage> rotMsg;
+            std::shared_ptr<StealthActorUpdatedMessage> rotMsg;
             GetGameManager()->GetMessageFactory().CreateMessage(SimCore::MessageType::STEALTH_ACTOR_ROTATION, rotMsg);
 
             rotMsg->SetName(msg.GetName());
@@ -101,9 +101,9 @@ namespace SimCore
          mp = msg.GetUpdateParameter("Last Known Translation");
 
          //If the message has a location parameter, send a location changed message.
-         if (mp != NULL)
+         if (mp != nullptr)
          {
-            RefPtr<StealthActorUpdatedMessage> transMsg;
+            std::shared_ptr<StealthActorUpdatedMessage> transMsg;
             GetGameManager()->GetMessageFactory().CreateMessage(SimCore::MessageType::STEALTH_ACTOR_TRANSLATION, transMsg);
             transMsg->SetName(msg.GetName());
             transMsg->SetAboutActorId(msg.GetAboutActorId());
@@ -120,7 +120,7 @@ namespace SimCore
 
          //Here, the stealth actor does not publish regular actor updates because the HLA component needs one off messages for them.
          //This is due to the fact that RPR FOM uses specific interactions for the stealth actors rather than using an object.
-         if(actualType != NULL && stealthActorType == *actualType)
+         if(actualType != nullptr && stealthActorType == *actualType)
          {
             SendStealthActorMessages(msg);
          }

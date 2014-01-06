@@ -70,11 +70,11 @@ namespace SimCore
          //////////////////////////////////////////////////////////////////////////
          void tearDown()
          {
-            mDeadReckoningComponent = NULL;
+            mDeadReckoningComponent = nullptr;
             if (mGM.valid())
             {
                mGM->DeleteAllActors(true);
-               mGM = NULL;
+               mGM = nullptr;
             }
             dtCore::System::GetInstance().Stop();
          }
@@ -82,7 +82,7 @@ namespace SimCore
          //////////////////////////////////////////////////////////////////////////
          void TestEnvironmentProcessActor()
          {
-            dtCore::RefPtr<EnvironmentProcessActorProxy> envProcAct;
+            std::shared_ptr<EnvironmentProcessActorProxy> envProcAct;
             mGM->CreateActor(*EntityActorRegistry::ENVIRONMENT_PROCESS_ACTOR_TYPE, envProcAct);
 
             CPPUNIT_ASSERT_EQUAL(USHRT_MAX, envProcAct->GetSequenceNumber());
@@ -90,10 +90,10 @@ namespace SimCore
 
             mGM->AddActor(*envProcAct, false, false);
 
-            dtCore::RefPtr<dtDAL::NamedGroupParameter> groupParam = new dtDAL::NamedGroupParameter("Record");
+            std::shared_ptr<dtDAL::NamedGroupParameter> groupParam = new dtDAL::NamedGroupParameter("Record");
 
-            dtCore::RefPtr<dtDAL::NamedGroupParameter> rec1 = new dtDAL::NamedGroupParameter("1");
-            dtCore::RefPtr<dtDAL::NamedGroupParameter> rec2 = new dtDAL::NamedGroupParameter("2");
+            std::shared_ptr<dtDAL::NamedGroupParameter> rec1 = new dtDAL::NamedGroupParameter("1");
+            std::shared_ptr<dtDAL::NamedGroupParameter> rec2 = new dtDAL::NamedGroupParameter("2");
 
             const osg::Vec3d testPos1(-1000.4, 1.0, 7.3);
             const osg::Vec3d testPos2(11.4, -1.66, -4366.88);
@@ -135,7 +135,7 @@ namespace SimCore
 
          void TestSimpleMovingShapeActor()
          {
-            dtCore::RefPtr<SimpleMovingShapeActorProxy> movingShapeAct;
+            std::shared_ptr<SimpleMovingShapeActorProxy> movingShapeAct;
             mGM->CreateActor(*EntityActorRegistry::ENVIRONMENT_PROCESS_MOVING_SHAPE_ACTOR_TYPE, movingShapeAct);
 
             CPPUNIT_ASSERT(movingShapeAct->GetOwner().ToString().empty());
@@ -149,8 +149,8 @@ namespace SimCore
 
          }
       private:
-         dtCore::RefPtr<dtGame::GameManager> mGM;
-         dtCore::RefPtr<dtGame::DeadReckoningComponent> mDeadReckoningComponent;
+         std::shared_ptr<dtGame::GameManager> mGM;
+         std::shared_ptr<dtGame::DeadReckoningComponent> mDeadReckoningComponent;
 
       };
 

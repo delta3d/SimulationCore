@@ -29,7 +29,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include <SimCore/Export.h>
 #include <dtCore/deltadrawable.h>
-#include <dtCore/observerptr.h>
+#include <dtUtil/refcountedbase.h>
 #include <dtDAL/actorproxy.h>
 #include <osg/Group>
 
@@ -80,9 +80,9 @@ namespace SimCore
             virtual ~LogicConditionalActor();
 
          private:
-            dtCore::RefPtr<osg::Group> mPlaceholderNode; // Required by Delta3D, but we don't need it.
-            dtCore::ObserverPtr<dtDAL::GameEvent> mTrueEvent;
-            dtCore::ObserverPtr<dtDAL::GameEvent> mFalseEvent;
+            osg::ref_ptr<osg::Group> mPlaceholderNode; // Required by Delta3D, but we don't need it.
+            std::weak_ptr<dtDAL::GameEvent> mTrueEvent;
+            std::weak_ptr<dtDAL::GameEvent> mFalseEvent;
             bool mIsTrue;
       };
 

@@ -150,15 +150,15 @@ namespace DriverDemo
       else if ( type == dtGame::MessageType::INFO_MAP_LOADED)
       {
 #if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
-         SimCore::Components::RenderingSupportComponent* renderComp = NULL;
+         SimCore::Components::RenderingSupportComponent* renderComp = nullptr;
          dtGame::GMComponent* comp = GetGameManager()->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME);
 
-         if(comp != NULL)
+         if(comp != nullptr)
          {
             renderComp = dynamic_cast<SimCore::Components::RenderingSupportComponent*>(comp);
          }
 
-         if(comp == NULL || renderComp == NULL)
+         if(comp == nullptr || renderComp == nullptr)
          {
             GetGameManager()->GetScene().AddDrawable( GetGUIDrawable().get() );
             LOG_WARNING("Unable to add GUI to the RenderSupportComponent, adding GUI to the Scene instead.");
@@ -333,7 +333,7 @@ namespace DriverDemo
       SimCore::Components::HUDAlignment* align = &SimCore::Components::HUDAlignment::LEFT_TOP;
 
       // Create the help text background to give contrast with the scene
-      dtCore::RefPtr<SimCore::Components::HUDImage> background = new SimCore::Components::HUDImage("HelpTextClipboard");
+      std::shared_ptr<SimCore::Components::HUDImage> background = new SimCore::Components::HUDImage("HelpTextClipboard");
       background->SetImage("Clipboard","Clipboard");
       background->SetSize( 350.0f/SCREEN_WIDTH, 500.0f/SCREEN_HEIGHT );
       background->SetPosition( 0.0, -256.0f/SCREEN_HEIGHT, SimCore::Components::HUDAlignment::LEFT_BOTTOM );
@@ -367,10 +367,10 @@ namespace DriverDemo
    }
 
    //////////////////////////////////////////////////////////////////////////
-   dtCore::RefPtr<SimCore::Components::HUDText> DriverHUD::CreateText(const std::string &name, const std::string &text,
+   std::shared_ptr<SimCore::Components::HUDText> DriverHUD::CreateText(const std::string &name, const std::string &text,
                                              float x, float y, float width, float height)
    {
-      dtCore::RefPtr<SimCore::Components::HUDText> newText = new SimCore::Components::HUDText(name);
+      std::shared_ptr<SimCore::Components::HUDText> newText = new SimCore::Components::HUDText(name);
       newText->SetFontAndText("Arial-Bold-12",text,x,y);
       newText->SetSize(width,height);
       return newText;
@@ -382,7 +382,7 @@ namespace DriverDemo
       if( ! mToolbar.valid() )
       {
          SimCore::Components::StealthButton* button = mToolbar->GetButton(buttonName);
-         if( button != NULL )
+         if( button != nullptr )
          {
             return button->SetKeyLabel( keyLabel );
          }
@@ -396,7 +396,7 @@ namespace DriverDemo
       if(mToolbar.valid())
       {
          SimCore::Components::StealthButton* button = mToolbar->GetButton(buttonName);
-         if( button != NULL )
+         if( button != nullptr )
          {
             std::stringstream ss;
             ss << "Button \"" << buttonName << "\" has already been added to the HUD toolbar." << std::endl;
@@ -411,7 +411,7 @@ namespace DriverDemo
          }
 
          button = mToolbar->GetButton(buttonName);
-         if( button != NULL ) { button->SetDisabled( ! enabled ); }
+         if( button != nullptr ) { button->SetDisabled( ! enabled ); }
 
          return success;
       }
@@ -436,7 +436,7 @@ namespace DriverDemo
    ////////////////////////////////////////////////////////////////////////////////
    const SimCore::Components::StealthButton* DriverHUD::GetToolButton( const std::string& buttonName ) const
    {
-      return mToolbar.valid() ? mToolbar->GetButton(buttonName) : NULL;
+      return mToolbar.valid() ? mToolbar->GetButton(buttonName) : nullptr;
    }
 
    ////////////////////////////////////////////////////////////////////////////////
@@ -474,7 +474,7 @@ namespace DriverDemo
 
       // Update Driver related HUD elements
       SimCore::Actors::BasePhysicsVehicleActor* vehicle = GetVehicle();
-      if( vehicle != NULL )
+      if( vehicle != nullptr )
       {
          dtCore::Transform trans;
          vehicle->GetTransform(trans);
@@ -535,11 +535,11 @@ namespace DriverDemo
          trans.GetRotation( hpr );
          mCompassMeter->SetValue( hpr[0], 180.0f, -180.0f );
 
-         // Check if speedometer exists. It will be NULL
+         // Check if speedometer exists. It will be nullptr
          // if this is not the driving sim.
          if( mSpeedometer.valid() )
          {
-            if(vehicle != NULL)
+            if(vehicle != nullptr)
             {
                mSpeedometer->SetText2(dtUtil::ToString((int) vehicle->GetMPH()));
                //mSpeedometer->SetValue( vehicle->GetMPH(), 60.0f );

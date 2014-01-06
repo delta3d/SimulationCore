@@ -273,7 +273,7 @@ namespace NetDemo
          if(proxy->GetName() == name)
             return proxy;
       }
-      return NULL;
+      return nullptr;
    }
 
    //////////////////////////////////////////////////////////////////////////////
@@ -289,13 +289,13 @@ namespace NetDemo
             return LookupProxyById((*iter));
          }
       }
-      return NULL;
+      return nullptr;
    }
 
    ////////////////////////////////////////////////////////////////////////////////
    EnemyDescriptionActor* SpawnVolumeActorProxy::LookupProxyById(const EnemyDescriptionId& id)
    {
-      EnemyDescriptionActor* proxy = NULL;
+      EnemyDescriptionActor* proxy = nullptr;
       if (IsInGM())
       {
          GetGameManager()->FindGameActorById(id, proxy);

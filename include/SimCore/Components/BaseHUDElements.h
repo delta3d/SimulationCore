@@ -248,7 +248,7 @@ namespace SimCore
 
          private:
 
-            std::map<dtCore::UniqueId, dtCore::RefPtr<HUDElement> > mChildRefs;
+            std::map<dtCore::UniqueId, std::shared_ptr<HUDElement> > mChildRefs;
       };
 
       //////////////////////////////////////////////////////////////////////////
@@ -283,9 +283,9 @@ namespace SimCore
          private:
             bool mActive;
             bool mDisabled;
-            dtCore::RefPtr<HUDElement> mActiveElement;
-            dtCore::RefPtr<HUDElement> mInactiveElement;
-            dtCore::RefPtr<HUDElement> mDisabledElement;
+            std::shared_ptr<HUDElement> mActiveElement;
+            std::shared_ptr<HUDElement> mInactiveElement;
+            std::shared_ptr<HUDElement> mDisabledElement;
       };
 
       //////////////////////////////////////////////////////////////////////////
@@ -358,19 +358,19 @@ namespace SimCore
          // Utility function for advancing an iterator to a specific index
          // @return TRUE if the outIter is not at the end of mElements.
          bool GetItorAtIndex( unsigned int index, 
-            std::vector< dtCore::RefPtr<HUDElement> >::iterator& outIter );
+            std::vector< std::shared_ptr<HUDElement> >::iterator& outIter );
          bool GetItorAtIndex( unsigned int index, 
-            std::vector< dtCore::RefPtr<HUDElement> >::const_iterator& outIter ) const;
+            std::vector< std::shared_ptr<HUDElement> >::const_iterator& outIter ) const;
 
          // Utility function for advancing an iterator to a specific index
          // @param outIndex Index at which the element was found; -1 if not found
          // @return TRUE if the outIter is not at the end of mElements.
          bool GetItorAtElement( const HUDElement& element, 
-            std::vector< dtCore::RefPtr<HUDElement> >::iterator& outIter,
-            int* outIndex = NULL );
+            std::vector< std::shared_ptr<HUDElement> >::iterator& outIter,
+            int* outIndex = nullptr );
          bool GetItorAtElement( const HUDElement& element, 
-            std::vector< dtCore::RefPtr<HUDElement> >::const_iterator& outIter,
-            int* outIndex = NULL ) const;
+            std::vector< std::shared_ptr<HUDElement> >::const_iterator& outIter,
+            int* outIndex = nullptr ) const;
 
       private:
          // Primitive Types
@@ -380,9 +380,9 @@ namespace SimCore
          float mEndSpace;
 
          // Complex Types
-         std::vector< dtCore::RefPtr<HUDElement> > mElements;
-         dtCore::RefPtr<HUDElement> mStartElement;
-         dtCore::RefPtr<HUDElement> mEndElement;
+         std::vector< std::shared_ptr<HUDElement> > mElements;
+         std::shared_ptr<HUDElement> mStartElement;
+         std::shared_ptr<HUDElement> mEndElement;
 
       };
 
@@ -426,7 +426,7 @@ namespace SimCore
             float mScale;
             float mUnits;
             bool mHorizontal;
-            dtCore::RefPtr<HUDImage> mImage;
+            std::shared_ptr<HUDImage> mImage;
       };
 
       //////////////////////////////////////////////////////////////////////////

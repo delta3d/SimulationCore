@@ -56,7 +56,7 @@ namespace SimCore
          {
             case ATTACH_TO_UNLOCKED:
             {
-               if(ourMouse == NULL)
+               if(ourMouse == nullptr)
                {
                   LOG_WARNING("ourMouse passed into Matrix_Manipulations was null, and i need that for my math.");
                   return;
@@ -241,9 +241,9 @@ namespace SimCore
 
             case VELOCITY_FOLLOW_MODE:
             {
-               if(drawableForISectorTests == NULL)
+               if(drawableForISectorTests == nullptr)
                {
-                  LOG_WARNING("DrawableforISectorTests for Matrix_Manipulations was passed in NULL, and i needed that to do my math");
+                  LOG_WARNING("DrawableforISectorTests for Matrix_Manipulations was passed in nullptr, and i needed that to do my math");
                   return;
                }
                dtCore::Transform camera2;

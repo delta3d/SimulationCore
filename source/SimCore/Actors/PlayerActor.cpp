@@ -51,7 +51,7 @@ namespace SimCore
       {
          StealthActorProxy::BuildPropertyMap();
 
-         PlayerActor* playerActor = NULL;
+         PlayerActor* playerActor = nullptr;
          GetActor(playerActor);
 
          AddProperty(new dtDAL::EnumActorProperty<SimCore::MessageType>("Enabled Tool", "Enabled Tool",
@@ -63,7 +63,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void PlayerActorProxy::BuildInvokables()
       {
-         PlayerActor* pa = NULL;
+         PlayerActor* pa = nullptr;
          GetActor(pa);
 
          StealthActorProxy::BuildInvokables();
@@ -83,9 +83,9 @@ namespace SimCore
       {
          BaseClass::BuildActorComponents();
 
-         dtGame::DeadReckoningHelper* drHelper = NULL;
+         dtGame::DeadReckoningHelper* drHelper = nullptr;
          GetComponent(drHelper);
-         if (drHelper != NULL)
+         if (drHelper != nullptr)
          {
             // Initiaze Dead reckoning offset values after DR Act Component added
             drHelper->SetGroundOffset(3.0f);

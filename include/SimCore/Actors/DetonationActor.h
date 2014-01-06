@@ -198,7 +198,7 @@ namespace SimCore
 
             /**
              * Gets the sound member of this detonation actor
-             * @note If no sound file is loaded, the sound member will be NULL
+             * @note If no sound file is loaded, the sound member will be nullptr
              * @return mSound
              */
             dtAudio::Sound* GetSound() { return mSound.get(); }
@@ -222,8 +222,8 @@ namespace SimCore
 
             /// Enables the smoke particle system of this Detonation Actor
             void StartSmokeEffect(dtCore::ParticleSystem& particles);
-            void LoadSoundFile(const dtDAL::ResourceDescriptor& resource, dtCore::RefPtr<dtAudio::Sound>& soundIn);
-            void LoadParticleSystem(const dtDAL::ResourceDescriptor& resource, dtCore::RefPtr<dtCore::ParticleSystem>& particleSysIn);
+            void LoadSoundFile(const dtDAL::ResourceDescriptor& resource, std::shared_ptr<dtAudio::Sound>& soundIn);
+            void LoadParticleSystem(const dtDAL::ResourceDescriptor& resource, std::shared_ptr<dtCore::ParticleSystem>& particleSysIn);
 
             ///adds a light for the explosion effect
             void AddDynamicLight(const std::string& lightName);
@@ -248,10 +248,10 @@ namespace SimCore
             std::string mLightImpactEntity;
             std::string mLightImpactHuman;
 
-            dtCore::ObserverPtr<ViewerMaterialActor> mCollidedMaterial; 
-            dtCore::RefPtr<dtCore::ParticleSystem> mExplosionSystem;
-            dtCore::RefPtr<dtCore::ParticleSystem> mSmokeSystem;
-            dtCore::RefPtr<dtAudio::Sound> mSound;
+            std::weak_ptr<ViewerMaterialActor> mCollidedMaterial; 
+            std::shared_ptr<dtCore::ParticleSystem> mExplosionSystem;
+            std::shared_ptr<dtCore::ParticleSystem> mSmokeSystem;
+            std::shared_ptr<dtAudio::Sound> mSound;
       };
 
       class SIMCORE_EXPORT DetonationActorProxy : public dtGame::GameActorProxy
@@ -279,9 +279,9 @@ namespace SimCore
 
             virtual void OnRemovedFromWorld()
             {
-               DetonationActor* actor = NULL;
+               DetonationActor* actor = nullptr;
                GetActor(actor);
-               if (actor != NULL)
+               if (actor != nullptr)
                {
                   actor->OnRemovedFromWorld();
                }

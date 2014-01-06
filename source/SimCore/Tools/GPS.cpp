@@ -46,7 +46,7 @@ namespace SimCore
    {
       GPS::GPS(CEGUI::Window *mainWindow) :
          Tool(mainWindow),
-         mPosText(NULL)
+         mPosText(nullptr)
       {
          using namespace Components;
 
@@ -55,7 +55,7 @@ namespace SimCore
             CEGUI::WindowManager *wm = CEGUI::WindowManager::getSingletonPtr();
             mPosText = wm->createWindow("WindowsLook/StaticText", "GPSY_text");
 
-            if(mainWindow != NULL)
+            if(mainWindow != nullptr)
             {
                mainWindow->addChildWindow(mPosText);
             }
@@ -82,7 +82,7 @@ namespace SimCore
 
       GPS::~GPS()
       {
-         if(mMainWindow != NULL)
+         if(mMainWindow != nullptr)
             mMainWindow->removeChildWindow(mPosText);
          mPosText->destroy();
       }
@@ -96,7 +96,7 @@ namespace SimCore
 
       void GPS::Update()
       {
-         if (IsEnabled() && GetPlayerActor() != NULL)
+         if (IsEnabled() && GetPlayerActor() != nullptr)
          {
             dtCore::Transform xform;
             GetPlayerActor()->GetTransform(xform);

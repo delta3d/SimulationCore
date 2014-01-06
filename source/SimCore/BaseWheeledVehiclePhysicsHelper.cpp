@@ -48,7 +48,7 @@ namespace SimCore
    /// Constructor
    BaseWheeledVehiclePhysicsActComp::BaseWheeledVehiclePhysicsActComp()
    : dtPhysics::PhysicsActComp()
-   , mVehicle(NULL)
+   , mVehicle(nullptr)
    , mEngineTorque(1000.0f)
    , mMaxBrakeTorque(100.0f)
    , mVehicleTopSpeed(120.0f)
@@ -58,7 +58,7 @@ namespace SimCore
    , mAeroDynDragArea(8.0)
    , mLastMPH(0.0f)
    {
-      dtCore::RefPtr<dtPhysics::PhysicsObject> physicsObject = new dtPhysics::PhysicsObject("chassis");
+      std::shared_ptr<dtPhysics::PhysicsObject> physicsObject = new dtPhysics::PhysicsObject("chassis");
       physicsObject->SetPrimitiveType(dtPhysics::PrimitiveType::CONVEX_HULL);
       physicsObject->SetCollisionGroup(SimCore::CollisionGroup::GROUP_VEHICLE_GROUND);
       AddPhysicsObject(*physicsObject);
@@ -76,7 +76,7 @@ namespace SimCore
       if(node.getNumParents() > 0)
       {
          const osg::MatrixTransform* parentNode = dynamic_cast<const osg::MatrixTransform*>(node.getParent(0));
-         if (parentNode != NULL)
+         if (parentNode != nullptr)
          {
             wcMatrix = parentNode->getMatrix();
          }
@@ -97,7 +97,7 @@ namespace SimCore
    void BaseWheeledVehiclePhysicsActComp::CleanUp()
    {
       delete mVehicle;
-      mVehicle = NULL;
+      mVehicle = nullptr;
       mWheels.clear();
       BaseClass::CleanUp();
    }
@@ -114,9 +114,9 @@ namespace SimCore
       wheel.mPowered = powered;
       wheel.mSteered = steered;
       wheel.mBraked = braked;
-      wheel.mWheel = NULL;
+      wheel.mWheel = nullptr;
 
-      if (mVehicle != NULL)
+      if (mVehicle != nullptr)
       {
          wheel.mWheel = mVehicle->AddWheel();
 
@@ -159,10 +159,10 @@ namespace SimCore
       GetMainPhysicsObject()->SetTransform(transformForRot);
       GetMainPhysicsObject()->CreateFromProperties(mt);
 
-      dtGame::GameActor* ga = NULL;
+      dtGame::GameActor* ga = nullptr;
       GetOwner(ga);
 
-      if (ga == NULL)
+      if (ga == nullptr)
       {
          return false;
       }
@@ -226,7 +226,7 @@ namespace SimCore
    {
       static const float METERSPS_TO_MILESPH = 2.236936291;
       const dtPhysics::PhysicsObject* po = GetMainPhysicsObject();
-      if (po == NULL)
+      if (po == nullptr)
       {
          SetMPH(0.0f);
          return;
@@ -251,7 +251,7 @@ namespace SimCore
    ////////////////////////////////////////////////////////
    void BaseWheeledVehiclePhysicsActComp::Control(float acceleration, float normalizedWheelAngle, float normalizedBrakes)
    {
-      if (mVehicle == NULL)
+      if (mVehicle == nullptr)
       {
          return;
       }
@@ -283,7 +283,7 @@ namespace SimCore
 
    void BaseWheeledVehiclePhysicsActComp::FinalizeInitialization()
    {
-      if (mVehicle != NULL)
+      if (mVehicle != nullptr)
       {
          mVehicle->Finalize();
       }
@@ -292,9 +292,9 @@ namespace SimCore
    //////////////////////////////////////////////////////////////////////////////////////
    void BaseWheeledVehiclePhysicsActComp::UpdateWheelTransforms()
    {
-      SimCore::ActComps::WheelActComp* wheelAC = NULL;
+      SimCore::ActComps::WheelActComp* wheelAC = nullptr;
       GetOwner()->GetComponent(wheelAC);
-      if (wheelAC != NULL)
+      if (wheelAC != nullptr)
       {
          unsigned wheelIndex = 0;
          for (unsigned i = 0; i < wheelAC->GetNumAxles() && wheelIndex < mWheels.size(); ++i)

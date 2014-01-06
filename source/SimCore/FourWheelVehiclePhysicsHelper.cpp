@@ -188,18 +188,18 @@ namespace SimCore
    bool FourWheelVehiclePhysicsActComp::CreateVehicle(const dtCore::Transform& transformForRot,
             osg::Node& bodyNode, const osg::Vec3& scale)
    {
-      dtGame::GameActor* ga = NULL;
+      dtGame::GameActor* ga = nullptr;
       GetOwner(ga);
 
-      if (ga == NULL)
+      if (ga == nullptr)
       {
          return false;
       }
 
       // Wheel actor component finds the wheels...
-      SimCore::ActComps::WheelActComp* wheelAC = NULL;
+      SimCore::ActComps::WheelActComp* wheelAC = nullptr;
       ga->GetComponent(wheelAC);
-      if (wheelAC == NULL)
+      if (wheelAC == nullptr)
       {
          LOG_ERROR("Unable to create vehicle physics with no wheel actor component. Aborting");
          return false;
@@ -455,7 +455,7 @@ namespace SimCore
       for (unsigned i = 0; i < mWheels.size(); ++i)
       {
          // The wheel should be deleted by baseclass when it deletes the underlying vehicle.
-         mWheels[i].mWheel = NULL;
+         mWheels[i].mWheel = nullptr;
       }
    }
 
@@ -604,9 +604,9 @@ namespace SimCore
    {
       BaseClass::OnEnteredWorld();
 
-      SimCore::Actors::IGActor* igActor = NULL;
+      SimCore::Actors::IGActor* igActor = nullptr;
       GetOwner(igActor);
-      if (igActor == NULL)
+      if (igActor == nullptr)
       {
          LOG_ERROR("The four wheel vehicle physics helper only support IG Actors as owners currently.");
          return;
@@ -617,20 +617,20 @@ namespace SimCore
 
       dtUtil::NodeCollector* nodeCollector = igActor->GetNodeCollector();
 
-      dtCore::Vec3ActorProperty* scaleProp = NULL;
+      dtCore::Vec3ActorProperty* scaleProp = nullptr;
       igActor->GetGameActorProxy().GetProperty(SimCore::Actors::BaseEntityActorProxy::PROPERTY_DEFAULT_SCALE, scaleProp);
 
-      osg::Node* chassis = NULL;
-      if (nodeCollector != NULL)
+      osg::Node* chassis = nullptr;
+      if (nodeCollector != nullptr)
       {
          chassis = nodeCollector->GetDOFTransform("dof_chassis");
-         if (chassis == NULL)
+         if (chassis == nullptr)
          {
             chassis = nodeCollector->GetGroup("Body");
          }
       }
 
-      if (chassis == NULL)
+      if (chassis == nullptr)
       {
          LOGN_ERROR("FourWheelVehicleActor.cpp",
                   "Unable to find either a \"dof_chassis\" node or a \"Body\" node.  Vehicle will not be created.");
@@ -647,7 +647,7 @@ namespace SimCore
          GetMainPhysicsObject()->SetVisualToBodyTransform(offsetXform);
 
          osg::Vec3 scale(0.0f, 0.0f, 0.0f);
-         if (scaleProp != NULL)
+         if (scaleProp != nullptr)
          {
             scale = scaleProp->GetValue();
          }

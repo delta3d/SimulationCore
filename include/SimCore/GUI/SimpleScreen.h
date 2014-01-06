@@ -20,7 +20,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 // INCLUDE DIRECTIVES
 ////////////////////////////////////////////////////////////////////////////////
-#include <dtCore/refptr.h>
+#include <dtUtil/refcountedbase.h>
 #include <SimCore/Export.h>
 #include <SimCore/GUI/Screen.h>
 
@@ -72,7 +72,7 @@ namespace SimCore
              *        for the screen drawables. It is up to the implementation
              *        to cast the root and handle attaching elements to it.
              */
-            virtual void Setup( SimCore::Components::HUDGroup* root = NULL );
+            virtual void Setup( SimCore::Components::HUDGroup* root = nullptr );
 
          protected:
             virtual ~SimpleScreen();
@@ -81,7 +81,7 @@ namespace SimCore
             std::string mLayoutFile;
 
             // GUI Elements
-            dtCore::RefPtr<SimCore::Components::HUDElement> mRoot;
+            std::shared_ptr<SimCore::Components::HUDElement> mRoot;
       };
    }
 }

@@ -32,7 +32,7 @@
 #include <SimCore/PhysicsTypes.h>
 #include <dtGame/gameactor.h>
 
-#include <dtCore/observerptr.h>
+#include <dtUtil/refcountedbase.h>
 
 #include <osg/Transform>
 

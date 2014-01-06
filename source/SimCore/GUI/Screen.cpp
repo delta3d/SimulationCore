@@ -203,7 +203,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       bool Screen::CreateAnimationControl( const std::string& animType,
          SimCore::Components::HUDElement& widget,
-         dtCore::RefPtr<AnimControl>& outControl )
+         std::shared_ptr<AnimControl>& outControl )
       {
          using namespace SimCore::Components;
 
@@ -211,7 +211,7 @@ namespace SimCore
          if( animType == ANIM_TYPE_MOTION )
          {
             AnimCallbackSetVec2 functor(&widget, &HUDElement::SetPositionByVec);
-            dtCore::RefPtr<PositionController> control = new PositionController(&functor);
+            std::shared_ptr<PositionController> control = new PositionController(&functor);
 
             osg::Vec2 position;
             widget.GetPosition( position );
@@ -223,7 +223,7 @@ namespace SimCore
          else if( animType == ANIM_TYPE_BOUNDS )
          {
             AnimCallbackSetVec4 functor(&widget, &HUDElement::SetBoundsByVec);
-            dtCore::RefPtr<BoundsController> control = new BoundsController(&functor);
+            std::shared_ptr<BoundsController> control = new BoundsController(&functor);
 
             osg::Vec4 bounds;
             widget.GetBounds( bounds );
@@ -235,7 +235,7 @@ namespace SimCore
          else if( animType == ANIM_TYPE_SIZE )
          {
             AnimCallbackSetVec2 functor(&widget, &HUDElement::SetSizeByVec);
-            dtCore::RefPtr<SizeController> control = new SizeController(&functor);
+            std::shared_ptr<SizeController> control = new SizeController(&functor);
 
             osg::Vec2 dimensions;
             widget.GetSize( dimensions );
@@ -252,7 +252,7 @@ namespace SimCore
       AnimControl* Screen::AddAnimationControl( const std::string& animType,
          SimCore::Components::HUDElement& widget )
       {
-         dtCore::RefPtr<AnimControl> newControl;
+         std::shared_ptr<AnimControl> newControl;
          if( CreateAnimationControl( animType, widget, newControl ) )
          {
             const std::string& name = widget.GetName();
@@ -280,7 +280,7 @@ namespace SimCore
          const std::string& animType, const std::string name )
       {
          AnimControlMap::iterator foundIter = mAnimControls.find( animType+name );
-         return foundIter != mAnimControls.end() ? foundIter->second.get() : NULL;
+         return foundIter != mAnimControls.end() ? foundIter->second.get() : nullptr;
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -288,7 +288,7 @@ namespace SimCore
          const std::string& animType, const std::string name ) const
       {
          AnimControlMap::const_iterator foundIter = mAnimControls.find( animType+name );
-         return foundIter != mAnimControls.end() ? foundIter->second.get() : NULL;
+         return foundIter != mAnimControls.end() ? foundIter->second.get() : nullptr;
       }
 
    }

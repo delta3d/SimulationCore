@@ -31,7 +31,7 @@
 #include <dtGame/logcontroller.h>
 #include <dtUtil/coordinates.h>
 #include <dtUtil/enumeration.h>
-#include <osg/Referenced>
+#include <dtUtil/refcountedbase.h>
 #include <SimCore/Components/BaseHUD.h>
 #include <SimCore/Components/BaseHUDElements.h>
 #include <SimCore/Components/StealthHUDElements.h>
@@ -94,7 +94,7 @@ namespace StealthGM
        * Constructs the class.
        */
       StealthHUD(dtCore::DeltaWin* win,
-                 dtGame::LogController* logController = NULL,
+                 dtGame::LogController* logController = nullptr,
                  const std::string &name = DEFAULT_NAME,
                  bool hasUI = false);
 
@@ -221,38 +221,38 @@ namespace StealthGM
 
       SimCore::Components::HUDState *mLastHUDStateBeforeHelp;
 
-      dtCore::RefPtr<dtGame::LogController> mLogController;
+      std::shared_ptr<dtGame::LogController> mLogController;
 
       // Overlays
-      dtCore::RefPtr<SimCore::Components::HUDGroup> mHUDOverlay;
-      dtCore::RefPtr<SimCore::Components::HUDGroup> mToolbarOverlay;
-      dtCore::RefPtr<SimCore::Components::StealthCompassMeter> mCompass;
-      dtCore::RefPtr<SimCore::Components::StealthCartesianMeter> mGPS;
-      dtCore::RefPtr<SimCore::Components::StealthMGRSMeter> mMGRSMeter;
-      dtCore::RefPtr<SimCore::Components::StealthCartesianMeter> mCartesianMeter;
-      dtCore::RefPtr<SimCore::Components::StealthToolbar> mToolbar;
-      dtCore::RefPtr<SimCore::Components::HUDGroup> mToolsLayer;
+      std::shared_ptr<SimCore::Components::HUDGroup> mHUDOverlay;
+      std::shared_ptr<SimCore::Components::HUDGroup> mToolbarOverlay;
+      std::shared_ptr<SimCore::Components::StealthCompassMeter> mCompass;
+      std::shared_ptr<SimCore::Components::StealthCartesianMeter> mGPS;
+      std::shared_ptr<SimCore::Components::StealthMGRSMeter> mMGRSMeter;
+      std::shared_ptr<SimCore::Components::StealthCartesianMeter> mCartesianMeter;
+      std::shared_ptr<SimCore::Components::StealthToolbar> mToolbar;
+      std::shared_ptr<SimCore::Components::HUDGroup> mToolsLayer;
 
       // Main info
-      dtCore::RefPtr<SimCore::Components::HUDText> mStateText;
-      dtCore::RefPtr<SimCore::Components::HUDText> mSimTimeText;
-      dtCore::RefPtr<SimCore::Components::StealthGPSMeter> mSimTimeAndState;
+      std::shared_ptr<SimCore::Components::HUDText> mStateText;
+      std::shared_ptr<SimCore::Components::HUDText> mSimTimeText;
+      std::shared_ptr<SimCore::Components::StealthGPSMeter> mSimTimeAndState;
 
       // Help Screen HUD Elements
-      dtCore::RefPtr<SimCore::Components::HUDGroup> mHelpOverlay;
-      dtCore::RefPtr<SimCore::Components::StealthButton> mHelpButton;
-      dtCore::RefPtr<SimCore::Components::HUDText> mHelpText;
+      std::shared_ptr<SimCore::Components::HUDGroup> mHelpOverlay;
+      std::shared_ptr<SimCore::Components::StealthButton> mHelpButton;
+      std::shared_ptr<SimCore::Components::HUDText> mHelpText;
 
       // Label Manager
-      dtCore::RefPtr<SimCore::Components::LabelManager> mLabelManager;
-      dtCore::RefPtr<SimCore::Components::HUDElement> mLabelLayer;
+      std::shared_ptr<SimCore::Components::LabelManager> mLabelManager;
+      std::shared_ptr<SimCore::Components::HUDElement> mLabelLayer;
 
       // Tools
-      dtCore::RefPtr<SimCore::Tools::Compass360> mCompass360;
+      std::shared_ptr<SimCore::Tools::Compass360> mCompass360;
 
       // The HUD will need a reference to the motion model
       // in order to get all data that needs to be displayed.
-      dtCore::ObserverPtr<dtCore::MotionModel> mMotionModel;
+      std::weak_ptr<dtCore::MotionModel> mMotionModel;
       dtUtil::Coordinates mCoordinateConverter;
 
       SimCore::UnitOfLength* mUnitOfLength;

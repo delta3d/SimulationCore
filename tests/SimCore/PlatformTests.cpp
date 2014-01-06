@@ -37,7 +37,7 @@
 
 #include <dtCore/system.h>
 #include <dtCore/scene.h>
-#include <dtCore/refptr.h>
+#include <dtUtil/refcountedbase.h>
 
 #include <dtUtil/macros.h>
 
@@ -60,7 +60,7 @@
 #include <dtPhysics/physicsobject.h>
 #include <dtPhysics/bodywrapper.h>
 
-using dtCore::RefPtr;
+using std::shared_ptr;
 using dtCore::ObserverPtr;
 
 namespace SimCore
@@ -90,7 +90,7 @@ namespace SimCore
                mDeadReckoningComponent = new dtGame::DeadReckoningComponent();
                mGM->AddComponent(*mDeadReckoningComponent, dtGame::GameManager::ComponentPriority::NORMAL);
 
-               dtCore::RefPtr<dtPhysics::PhysicsWorld> physicsWorld = new dtPhysics::PhysicsWorld(GetGlobalApplication());
+               std::shared_ptr<dtPhysics::PhysicsWorld> physicsWorld = new dtPhysics::PhysicsWorld(GetGlobalApplication());
                physicsWorld->Init();
                mGM->AddComponent(*new dtPhysics::PhysicsComponent(*physicsWorld, false),
                         dtGame::GameManager::ComponentPriority::NORMAL);
@@ -99,7 +99,7 @@ namespace SimCore
                PlatformWithPhysics* temp;
                mPlatformWithPhysicsActorProxy->GetActor(temp);
                mPlatformWithPhysics = temp;
-               dtDAL::ResourceActorProperty* res = NULL;
+               dtDAL::ResourceActorProperty* res = nullptr;
                mPlatformWithPhysicsActorProxy->GetProperty(PlatformActorProxy::PROPERTY_MESH_NON_DAMAGED_ACTOR, res);
                dtDAL::ResourceDescriptor truck("StaticMeshes:NetDemo:Vehicles:Truck.ive");
                dtDAL::ResourceDescriptor brokenresource("StaticMeshes:BrokenandNonexistent.ive");
@@ -112,18 +112,18 @@ namespace SimCore
 
             void tearDown()
             {
-               mDeadReckoningComponent = NULL;
+               mDeadReckoningComponent = nullptr;
 
-               mPhysicsComp = NULL;
+               mPhysicsComp = nullptr;
 
-               mPlatformWithPhysics = NULL;
-               dtCore::ObserverPtr<SimCore::Actors::PlatformWithPhysicsActorProxy> pOb = mPlatformWithPhysicsActorProxy.get();
-               mPlatformWithPhysicsActorProxy = NULL;
+               mPlatformWithPhysics = nullptr;
+               std::weak_ptr<SimCore::Actors::PlatformWithPhysicsActorProxy> pOb = mPlatformWithPhysicsActorProxy.get();
+               mPlatformWithPhysicsActorProxy = nullptr;
 
                if (mGM.valid())
                {
                   mGM->DeleteAllActors(true);
-                  mGM = NULL;
+                  mGM = nullptr;
                }
                dtCore::System::GetInstance().Stop();
 
@@ -132,7 +132,7 @@ namespace SimCore
 
             void TestPhysicsDefaults()
             {
-               CPPUNIT_ASSERT(mPlatformWithPhysics->GetComponent<dtPhysics::PhysicsActComp>() != NULL);
+               CPPUNIT_ASSERT(mPlatformWithPhysics->GetComponent<dtPhysics::PhysicsActComp>() != nullptr);
                dtPhysics::PhysicsObject* po = mPlatformWithPhysics->GetComponent<dtPhysics::PhysicsActComp>()->GetMainPhysicsObject();
                // Changed the physics for local to be kinematic because they works better
                // for an object with no behavior.
@@ -148,17 +148,17 @@ namespace SimCore
 
             void TestInit()
             {
-               CPPUNIT_ASSERT(mPlatformWithPhysics->GetComponent<dtPhysics::PhysicsActComp>() != NULL);
+               CPPUNIT_ASSERT(mPlatformWithPhysics->GetComponent<dtPhysics::PhysicsActComp>() != nullptr);
                dtPhysics::PhysicsObject* po = mPlatformWithPhysics->GetComponent<dtPhysics::PhysicsActComp>()->GetMainPhysicsObject();
-               CPPUNIT_ASSERT(po->GetBodyWrapper() == NULL);
+               CPPUNIT_ASSERT(po->GetBodyWrapper() == nullptr);
                mGM->AddActor(*mPlatformWithPhysicsActorProxy, false, false);
 
                dtPhysics::BodyWrapper* bw = po->GetBodyWrapper();
-               dtCore::ObserverPtr<dtPhysics::BodyWrapper> bwOb = bw;
-               CPPUNIT_ASSERT(bw != NULL);
+               std::weak_ptr<dtPhysics::BodyWrapper> bwOb = bw;
+               CPPUNIT_ASSERT(bw != nullptr);
                mPlatformWithPhysics->SetDamageState(SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::MODERATE_DAMAGE);
 
-               CPPUNIT_ASSERT_MESSAGE("the physics object should be initialized", po->GetBodyWrapper() != NULL);
+               CPPUNIT_ASSERT_MESSAGE("the physics object should be initialized", po->GetBodyWrapper() != nullptr);
                CPPUNIT_ASSERT_MESSAGE("the physics object body should not be same as before because it should have be reloaded",
                         po->GetBodyWrapper() != bw);
                CPPUNIT_ASSERT_MESSAGE("The original body should be deleted", !bwOb.valid());
@@ -168,7 +168,7 @@ namespace SimCore
             {
                CheckAvailableActorComponents(*mPlatformWithPhysicsActorProxy, true, false, false, false, false, false);
 
-               dtCore::RefPtr<SimCore::Actors::PlatformActorProxy> platform;
+               std::shared_ptr<SimCore::Actors::PlatformActorProxy> platform;
                mGM->CreateActor(*EntityActorRegistry::PLATFORM_ACTOR_TYPE, platform);
 
                CheckAvailableActorComponents(*platform, false, false, false, false, false, false);
@@ -245,19 +245,19 @@ namespace SimCore
             void CheckAvailableActorComponents(SimCore::Actors::PlatformActorProxy& platform, bool physics, bool camo, bool weaponInventory,
                      bool munitions, bool wheels, bool trailEffects)
             {
-               CPPUNIT_ASSERT(platform.GetComponent<dtGame::DeadReckoningHelper>() != NULL);
-               CPPUNIT_ASSERT(platform.GetComponent<dtGame::DRPublishingActComp>() != NULL);
+               CPPUNIT_ASSERT(platform.GetComponent<dtGame::DeadReckoningHelper>() != nullptr);
+               CPPUNIT_ASSERT(platform.GetComponent<dtGame::DRPublishingActComp>() != nullptr);
 
-               CPPUNIT_ASSERT_EQUAL(physics, platform.GetComponent<dtPhysics::PhysicsActComp>() != NULL);
+               CPPUNIT_ASSERT_EQUAL(physics, platform.GetComponent<dtPhysics::PhysicsActComp>() != nullptr);
 
-               CPPUNIT_ASSERT_EQUAL(camo, platform.GetComponent<SimCore::ActComps::CamoPaintStateActComp>() != NULL);
-               CPPUNIT_ASSERT_EQUAL(weaponInventory, platform.GetComponent<SimCore::ActComps::WeaponInventoryActComp>() != NULL);
-               CPPUNIT_ASSERT_EQUAL(wheels, platform.GetComponent<SimCore::ActComps::WheelActComp>() != NULL);
-               CPPUNIT_ASSERT_EQUAL(trailEffects, platform.GetComponent<SimCore::ActComps::TrailEffectActComp>() != NULL);
+               CPPUNIT_ASSERT_EQUAL(camo, platform.GetComponent<SimCore::ActComps::CamoPaintStateActComp>() != nullptr);
+               CPPUNIT_ASSERT_EQUAL(weaponInventory, platform.GetComponent<SimCore::ActComps::WeaponInventoryActComp>() != nullptr);
+               CPPUNIT_ASSERT_EQUAL(wheels, platform.GetComponent<SimCore::ActComps::WheelActComp>() != nullptr);
+               CPPUNIT_ASSERT_EQUAL(trailEffects, platform.GetComponent<SimCore::ActComps::TrailEffectActComp>() != nullptr);
 
-               BaseEntity* be = NULL;
+               BaseEntity* be = nullptr;
                platform.GetActor(be);
-               CPPUNIT_ASSERT(be != NULL);
+               CPPUNIT_ASSERT(be != nullptr);
                CPPUNIT_ASSERT_EQUAL(munitions, be->GetAutoRegisterWithMunitionsComponent());
 
                if (platform.GetActorType().InstanceOf(*EntityActorRegistry::AIR_PLATFORM_ACTOR_TYPE))
@@ -271,12 +271,12 @@ namespace SimCore
                }
             }
 
-            RefPtr<dtGame::GameManager> mGM;
-            RefPtr<dtGame::DeadReckoningComponent> mDeadReckoningComponent;
-            RefPtr<SimCore::Actors::PlatformWithPhysics> mPlatformWithPhysics;
-            RefPtr<SimCore::Actors::PlatformWithPhysicsActorProxy> mPlatformWithPhysicsActorProxy;
+            std::shared_ptr<dtGame::GameManager> mGM;
+            std::shared_ptr<dtGame::DeadReckoningComponent> mDeadReckoningComponent;
+            std::shared_ptr<SimCore::Actors::PlatformWithPhysics> mPlatformWithPhysics;
+            std::shared_ptr<SimCore::Actors::PlatformWithPhysicsActorProxy> mPlatformWithPhysicsActorProxy;
 
-            RefPtr<dtPhysics::PhysicsComponent> mPhysicsComp;
+            std::shared_ptr<dtPhysics::PhysicsComponent> mPhysicsComp;
       };
 
       CPPUNIT_TEST_SUITE_REGISTRATION(PlatformTests);

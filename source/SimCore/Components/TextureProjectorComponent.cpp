@@ -75,7 +75,7 @@ namespace SimCore
       /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       void TextureProjectorComponent::ProcessTick(const dtGame::TickMessage &msg)
       {
-         std::list<dtCore::RefPtr<Actors::TextureProjectorActor> >::iterator listIter = mActorList.begin();
+         std::list<std::shared_ptr<Actors::TextureProjectorActor> >::iterator listIter = mActorList.begin();
          for(; listIter != mActorList.end(); ++listIter)
          {
             if( (*listIter)->GetCurrTime() > (*listIter)->GetMaxTime() )
@@ -103,7 +103,7 @@ namespace SimCore
       /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       void TextureProjectorComponent::RemoveTextureProjectorActorFromComponent(Actors::TextureProjectorActor &toRemove)
       {
-         std::list<dtCore::RefPtr<Actors::TextureProjectorActor> >::iterator listIter, listIterEnd; 
+         std::list<std::shared_ptr<Actors::TextureProjectorActor> >::iterator listIter, listIterEnd; 
          listIter = mActorList.begin();
          listIterEnd = mActorList.end();
          

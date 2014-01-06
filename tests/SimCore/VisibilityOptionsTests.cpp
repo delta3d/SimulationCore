@@ -42,7 +42,7 @@
 #include <UnitTestMain.h>
 
 
-using dtCore::RefPtr;
+using std::shared_ptr;
 
 namespace SimCore
 {
@@ -71,7 +71,7 @@ namespace SimCore
       {
          const std::string ALL_OPTS_TRUE_MSG("All visibility options should be true by default but blips and tracks.");
          const std::string ALL_OPTS_FALSE_MSG("All visibility options should now be false.");
-         RefPtr<VisibilityOptions> visOpts = new VisibilityOptions;
+         std::shared_ptr<VisibilityOptions> visOpts = new VisibilityOptions;
          BasicVisibilityOptions basicOpts = visOpts->GetBasicOptions();
          //All basic options should be true by default.
          CPPUNIT_ASSERT_MESSAGE(ALL_OPTS_TRUE_MSG, basicOpts.mDismountedInfantry);

@@ -98,7 +98,7 @@ static osg::Node* CreateQuad( osg::Texture2D* tex, int renderBin )
    osg::Vec3Array *nx = new osg::Vec3Array;
    nx->push_back(osg::Vec3(0, 0, 1));
    geo->setNormalArray(nx);
-   if (tex != NULL)
+   if (tex != nullptr)
    {
       osg::Vec2Array *tx = new osg::Vec2Array;
       tx->push_back(osg::Vec2(0, 0));
@@ -203,9 +203,9 @@ namespace SimCore
 
    private:
 
-      dtCore::ObserverPtr<osg::Camera> mSceneCamera;
-      dtCore::ObserverPtr<osg::Camera> mDepthCamera;
-      dtCore::ObserverPtr<osg::Node> mNode;
+      osg::observer_ptr<osg::Camera> mSceneCamera;
+      osg::observer_ptr<osg::Camera> mDepthCamera;
+      osg::observer_ptr<osg::Node> mNode;
       Phase mPhase;
 
    };
@@ -264,10 +264,10 @@ namespace SimCore
       , mTransform()
       , mShaderGroup("VolumeRenderingGroup")
       , mShaderName("ParticleVolumeShader")
-      , mParentNode(NULL)
-      , mTarget(NULL)
-      , mShape(NULL)
-      , mParticleDrawable(NULL)
+      , mParentNode(nullptr)
+      , mTarget(nullptr)
+      , mShape(nullptr)
+      , mParticleDrawable(nullptr)
       , mId(mCounter)
    {
       ++mCounter;
@@ -345,7 +345,7 @@ namespace SimCore
    ////////////////////////////////////////////////////////////////////////// 
    void VolumeRenderingComponent::RemoveShapeVolume(ShapeVolumeRecord* svr)
    {
-      if(svr != NULL)
+      if(svr != nullptr)
       {
          RemoveDrawable(*svr);
          mVolumes.erase(std::remove_if(mVolumes.begin(), mVolumes.end(), findVolumeById(svr->GetId())), mVolumes.end());
@@ -353,9 +353,9 @@ namespace SimCore
    }
 
    ////////////////////////////////////////////////////////////////////////// 
-   VolumeRenderingComponent::ShapeRecordId VolumeRenderingComponent::CreateShapeVolume(dtCore::RefPtr<ShapeVolumeRecord> svr)
+   VolumeRenderingComponent::ShapeRecordId VolumeRenderingComponent::CreateShapeVolume(std::shared_ptr<ShapeVolumeRecord> svr)
    {
-      if (svr != NULL)
+      if (svr != nullptr)
       {
          //do lazy initialization   
          if(!mInitialized)
@@ -369,7 +369,7 @@ namespace SimCore
       }
       else
       {
-         LOG_ERROR("Attempting to add a ShapeVolumeRecord that is NULL to the Volume Rendering Component");
+         LOG_ERROR("Attempting to add a ShapeVolumeRecord that is nullptr to the Volume Rendering Component");
          return 0;
       }
    }
@@ -383,7 +383,7 @@ namespace SimCore
          Init();
       }
 
-      dtCore::RefPtr<ShapeVolumeRecord> svr = new ShapeVolumeRecord();
+      std::shared_ptr<ShapeVolumeRecord> svr = new ShapeVolumeRecord();
       svr->mShapeType = s;
       svr->mColor = color;
       svr->mPosition = center;
@@ -453,7 +453,7 @@ namespace SimCore
                {
                   RemoveDrawable(*svr);
                   svr->mDeleteMe = true;
-                  //std::cout << "Auto delete on NULL Ptr" << std::endl;
+                  //std::cout << "Auto delete on nullptr Ptr" << std::endl;
                   continue;
                }
             }
@@ -527,7 +527,7 @@ namespace SimCore
    ///////////////////////////////////////////////////////////////////////////////////////////////////
    void VolumeRenderingComponent::SetPosition(ShapeVolumeRecord* svr)
    {
-      if(svr != NULL && svr->mTarget.valid())
+      if(svr != nullptr && svr->mTarget.valid())
       {
          /*dtCore::Transform xform;
          svr->mTarget->GetTransform(xform);
@@ -689,8 +689,8 @@ namespace SimCore
    void VolumeRenderingComponent::RemoveDrawable(ShapeVolumeRecord& svr)
    {
       mRootNode->removeChild(svr.mParentNode.get());
-      svr.mParticleDrawable = NULL;
-      svr.mShape = NULL;
+      svr.mParticleDrawable = nullptr;
+      svr.mShape = nullptr;
    }
 
    ////////////////////////////////////////////////////////////////////////// 
@@ -702,7 +702,7 @@ namespace SimCore
          return (*iter).get();
       }
 
-      return NULL;
+      return nullptr;
    }
 
    ////////////////////////////////////////////////////////////////////////// 
@@ -735,8 +735,8 @@ namespace SimCore
    ////////////////////////////////////////////////////////////////////////// 
    void VolumeRenderingComponent::CreateSimpleShape(ShapeVolumeRecord& newShape)
    {
-      dtCore::RefPtr<osg::Geode> g = new osg::Geode();
-      dtCore::RefPtr<osg::MatrixTransform> matTrans = new osg::MatrixTransform();
+      osg::ref_ptr<osg::Geode> g = new osg::Geode();
+      osg::ref_ptr<osg::MatrixTransform> matTrans = new osg::MatrixTransform();
       newShape.mParentNode = matTrans.get();
       newShape.mParentNode->addChild(g.get());
 
@@ -751,7 +751,7 @@ namespace SimCore
 
       CreateShape(newShape);
 
-      dtCore::RefPtr<osg::ShapeDrawable> shapeDrawable = new osg::ShapeDrawable(newShape.mShape.get());
+      osg::ref_ptr<osg::ShapeDrawable> shapeDrawable = new osg::ShapeDrawable(newShape.mShape.get());
       shapeDrawable->setColor(newShape.mColor);
       g->addDrawable(shapeDrawable);
 
@@ -761,9 +761,9 @@ namespace SimCore
    ////////////////////////////////////////////////////////////////////////// 
    void VolumeRenderingComponent::CreateParticleVolume(ShapeVolumeRecord& newShape)
    {
-       dtCore::RefPtr<osg::Geode> g = new osg::Geode();
+       osg::ref_ptr<osg::Geode> g = new osg::Geode();
 
-      dtCore::RefPtr<osg::MatrixTransform> matTrans = new osg::MatrixTransform();
+      osg::ref_ptr<osg::MatrixTransform> matTrans = new osg::MatrixTransform();
       newShape.mParentNode = matTrans.get();
       newShape.mParentNode->addChild(g.get());
 
@@ -829,7 +829,7 @@ namespace SimCore
    {
       dtCore::ShaderManager& sm = dtCore::ShaderManager::GetInstance();
       dtCore::ShaderProgram* sp = sm.FindShaderPrototype(svr.mShaderName, svr.mShaderGroup);
-      if(sp != NULL)
+      if(sp != nullptr)
       {
          sm.AssignShaderFromPrototype(*sp, g);
       }
@@ -873,7 +873,7 @@ namespace SimCore
 
       for(;iter != endIter; ++iter)
       {
-         dtCore::RefPtr<ShapeVolumeRecord> svr = (*iter).get();
+         std::shared_ptr<ShapeVolumeRecord> svr = (*iter).get();
          if(svr.valid() && svr->mRenderMode == PARTICLE_VOLUME && svr->mDirtyParams)
          {
             SetUniformData(*svr);
@@ -916,7 +916,7 @@ namespace SimCore
    {
       LOG_INFO("Creating noise texture for VolumeRenderingComponent.");
       dtUtil::NoiseTexture noise3d(6, 2, 0.7, 0.5, 64, 64, 128);
-      dtCore::RefPtr<osg::Image> img = noise3d.MakeNoiseTexture(GL_ALPHA);
+      osg::ref_ptr<osg::Image> img = noise3d.MakeNoiseTexture(GL_ALPHA);
       LOG_INFO("Finished creating noise texture for VolumeRenderingComponent.");
 
       //dtCore::ShaderManager& sm = dtCore::ShaderManager::GetInstance();

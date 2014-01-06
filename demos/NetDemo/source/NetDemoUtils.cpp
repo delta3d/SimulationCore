@@ -35,7 +35,7 @@ namespace NetDemo
    void MessageUtils::SendSimpleMessage(const NetDemo::MessageType& messageType, 
       dtGame::GameManager& gm)
    {
-      dtCore::RefPtr<dtGame::Message> message;
+      std::shared_ptr<dtGame::Message> message;
       gm.GetMessageFactory().CreateMessage(messageType, message);
       gm.SendMessage(*message);
    }
@@ -46,10 +46,10 @@ namespace NetDemo
       const EntityActionMessageParams& params)
    {
       dtGame::GameManager* gm = sendingActor.GetGameActorProxy().GetGameManager();
-      if(gm != NULL)
+      if(gm != nullptr)
       {
          // Create the message.
-         dtCore::RefPtr<dtGame::Message> message;
+         std::shared_ptr<dtGame::Message> message;
          gm->GetMessageFactory().CreateMessage(NetDemo::MessageType::ENTITY_ACTION, message);
          
          // Set the message parameters.
@@ -79,10 +79,10 @@ namespace NetDemo
       xform.GetTranslation(params.mLocation);
 
       // Find the Player ID.
-      dtGame::GameActor* scoringActor = NULL;
+      dtGame::GameActor* scoringActor = nullptr;
       GetActorFromGM(*sendingActor.GetGameActorProxy().GetGameManager(),
          aboutActorId, scoringActor);
-      if(scoringActor != NULL)
+      if(scoringActor != nullptr)
       {
          scoringActor = FindOwnerForActor(*scoringActor);
          params.mOwnerId = scoringActor->GetUniqueId();
@@ -107,7 +107,7 @@ namespace NetDemo
          LOG_ERROR("Could not locate file \"" + projectRelativePath + "\"");
       }
       
-      osg::Node* node = NULL;
+      osg::Node* node = nullptr;
       if(dtUtil::FileUtils::GetInstance().FileExists(resPath))
       {
          node = osgDB::readNodeFile(resPath);
@@ -124,14 +124,14 @@ namespace NetDemo
       SimCore::Actors::WeaponActor* weapon = dynamic_cast<SimCore::Actors::WeaponActor*>(&actor);
       NetDemo::TowerActor* tower = dynamic_cast<NetDemo::TowerActor*>(&actor);
       
-      if(weapon != NULL)
+      if(weapon != nullptr)
       {
          owner = dynamic_cast<dtGame::GameActor*>(weapon->GetOwner());
 
          tower = dynamic_cast<NetDemo::TowerActor*>(owner);
       }
 
-      if(tower != NULL)
+      if(tower != nullptr)
       {
          // TODO:
          // Get owner from the tower

@@ -50,9 +50,9 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////
-      dtCore::RefPtr<dtDAL::NamedGroupParameter> DefaultArticulationHelper::BuildGroupProperty()
+      std::shared_ptr<dtDAL::NamedGroupParameter> DefaultArticulationHelper::BuildGroupProperty()
       {
-         dtCore::RefPtr<dtDAL::NamedGroupParameter> articArrayProp 
+         std::shared_ptr<dtDAL::NamedGroupParameter> articArrayProp 
             = new dtDAL::NamedGroupParameter( GetArticulationArrayPropertyName() );
          return articArrayProp;
       }

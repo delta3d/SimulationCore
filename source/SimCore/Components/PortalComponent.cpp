@@ -62,9 +62,9 @@ namespace SimCore
          }
          else if(msg.GetMessageType() == dtGame::MessageType::INFO_ACTOR_CREATED)
 		   {
-            SimCore::Actors::PortalProxy* portal  = NULL;
+            SimCore::Actors::PortalProxy* portal  = nullptr;
 			   GetGameManager()->FindGameActorById(msg.GetAboutActorId(), portal);
-            if(portal != NULL)
+            if(portal != nullptr)
             {
                RegisterPortal(dynamic_cast<SimCore::Actors::Portal*>(portal->GetDrawable()));
             }
@@ -75,7 +75,7 @@ namespace SimCore
             if(ga && ga->IsPublished())
             {
                PortalProxy* portal = dynamic_cast<PortalProxy*>(ga);
-               if(portal != NULL)
+               if(portal != nullptr)
                {
                   RegisterPortal(dynamic_cast<Portal*>(portal->GetActor()));
                }
@@ -87,7 +87,7 @@ namespace SimCore
             if(ga)
             {
                SimCore::Actors::PortalProxy* portal = dynamic_cast<SimCore::Actors::PortalProxy*>(ga);
-               if(portal != NULL)
+               if(portal != nullptr)
                {
                   UnRegisterPortal(dynamic_cast<SimCore::Actors::Portal*>(portal->GetDrawable()));
                }
@@ -114,7 +114,7 @@ namespace SimCore
       //////////////////////////////////////////
       void PortalComponent::UnRegisterPortal(SimCore::Actors::Portal* portal)
       {
-         std::vector<dtCore::RefPtr<SimCore::Actors::Portal> >::iterator iter = mOurPortals.begin();
+         std::vector<std::shared_ptr<SimCore::Actors::Portal> >::iterator iter = mOurPortals.begin();
          for(; iter != mOurPortals.end(); ++iter)
          {
             if((*iter) == portal)
@@ -139,7 +139,7 @@ namespace SimCore
          for(unsigned int i = 0; i < mOurPortals.size(); ++i)
          {
             dtGame::GameActor* actor = dynamic_cast<dtGame::GameActor*>(mOurPortals[i]->GetActorLink());
-            if(actor != NULL)
+            if(actor != nullptr)
             {
                /*static_cast<dtGame::GameActor*>(proxy->GetActor())->*/actor->GetTransform(transformForTempDrawable);
                osg::Vec3 relPos;

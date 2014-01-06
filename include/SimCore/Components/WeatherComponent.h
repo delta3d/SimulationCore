@@ -28,7 +28,7 @@
 #include <string>
 #include <SimCore/Export.h>
 #include <osg/Vec3>
-#include <dtCore/refptr.h>
+#include <dtUtil/refcountedbase.h>
 #include <dtGame/gmcomponent.h>
 #include <dtABC/weather.h>
 #include <SimCore/Actors/IGEnvironmentActor.h>
@@ -218,13 +218,13 @@ namespace SimCore
             dtABC::Weather::TimePeriod mLastTimePeriod;
             dtABC::Weather::Season mLastSeason;
 
-            dtCore::RefPtr<Actors::UniformAtmosphereActorProxy> mAtmosphere;
-            dtCore::ObserverPtr<Actors::DayTimeActorProxy> mDayTime;
+            std::shared_ptr<Actors::UniformAtmosphereActorProxy> mAtmosphere;
+            std::weak_ptr<Actors::DayTimeActorProxy> mDayTime;
 
             // The Weather object is being referenced to gain access
             // to clouds. If it were not for this reason, the Environment
             // object would instead be referenced directly.
-            dtCore::RefPtr<SimCore::Actors::IGEnvironmentActor> mEnvironmentActor;
+            std::shared_ptr<SimCore::Actors::IGEnvironmentActor> mEnvironmentActor;
       };
    }
 }

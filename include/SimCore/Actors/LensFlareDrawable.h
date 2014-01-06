@@ -24,7 +24,7 @@
 #include <SimCore/Export.h>
 
 #include <dtUtil/refstring.h>
-#include <dtCore/observerptr.h>
+#include <dtUtil/refcountedbase.h>
 #include <dtCore/deltadrawable.h>
 #include <dtCore/cameradrawcallback.h>
 #include <dtGame/gmcomponent.h>
@@ -70,7 +70,7 @@ namespace SimCore
                void operator () (const dtCore::Camera& camera, osg::RenderInfo& renderInfo) const;
             
                bool mAttach;
-               dtCore::ObserverPtr<LensFlareOSGDrawable> mLensFlare;
+               std::weak_ptr<LensFlareOSGDrawable> mLensFlare;
             };
 
 
@@ -97,12 +97,12 @@ namespace SimCore
                    bool mUsePhysicsRaycast;
                    osg::Vec3d mLightPos;
 
-                   dtCore::RefPtr<osg::Uniform> mLightPosUniform;
-                   dtCore::RefPtr<osg::Uniform> mEffectRadiusUniform;
+                   osg::ref_ptr<osg::Uniform> mLightPosUniform;
+                   osg::ref_ptr<osg::Uniform> mEffectRadiusUniform;
 
-                   dtCore::RefPtr<osg::Texture2D> mSoftGlow;
-                   dtCore::RefPtr<osg::Texture2D> mHardGlow;
-                   dtCore::RefPtr<osg::Texture2D> mStreaks;
+                   osg::ref_ptr<osg::Texture2D> mSoftGlow;
+                   osg::ref_ptr<osg::Texture2D> mHardGlow;
+                   osg::ref_ptr<osg::Texture2D> mStreaks;
 
                    struct FadeParams
                    {
@@ -128,9 +128,9 @@ namespace SimCore
                       bool mLastDepthTest;
                       osg::Vec4d mDepthTestPos;
                       osg::Vec2 mDepthTexCoords;
-                      dtCore::RefPtr<osg::Uniform> mDepthTexCoordUniform;
-                      dtCore::RefPtr<osg::Texture2D> mDepthTexture;
-                      dtCore::RefPtr<osg::Texture2D> mColorTexture;
+                      osg::ref_ptr<osg::Uniform> mDepthTexCoordUniform;
+                      osg::ref_ptr<osg::Texture2D> mDepthTexture;
+                      osg::ref_ptr<osg::Texture2D> mColorTexture;
                    };
 
                    //this requires a map so the fading can work with each camera
@@ -188,16 +188,16 @@ namespace SimCore
             bool HasCamera(dtCore::Camera* cam) const;
             
             int mTraversalMask;
-            dtCore::RefPtr<dtCore::BatchIsector> mIsector; 
-            dtCore::RefPtr<osg::Group> mNode;
-            dtCore::RefPtr<LensFlareOSGDrawable> mLensFlareDrawable;
-            dtCore::ObserverPtr<dtCore::DeltaDrawable> mTerrainNode;
+            std::shared_ptr<dtCore::BatchIsector> mIsector; 
+            osg::ref_ptr<osg::Group> mNode;
+            std::shared_ptr<LensFlareOSGDrawable> mLensFlareDrawable;
+            std::weak_ptr<dtCore::DeltaDrawable> mTerrainNode;
 
-            typedef std::pair<dtPhysics::RayCast, dtCore::ObserverPtr<osg::Camera> > RayCastCameraPair;
+            typedef std::pair<dtPhysics::RayCast, osg::observer_ptr<osg::Camera> > RayCastCameraPair;
             typedef std::vector<RayCastCameraPair> RayCastArray;
             RayCastArray mRayCastArray;
 
-            typedef std::pair<dtCore::RefPtr<LensFlareUpdateCallback>, dtCore::ObserverPtr<dtCore::Camera> > UpdateCallbackCameraPair;
+            typedef std::pair<std::shared_ptr<LensFlareUpdateCallback>, std::weak_ptr<dtCore::Camera> > UpdateCallbackCameraPair;
             typedef std::vector<UpdateCallbackCameraPair> CameraArray;
             CameraArray mCurrentCameras;
       };

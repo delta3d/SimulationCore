@@ -66,10 +66,10 @@ namespace Utils
    /// Calls the GM CreateActorFromPrototype() method, but throws an exception if there's an error. 
    template <typename T>
    void CreateActorFromPrototypeWithException(dtGame::GameManager& gm, const std::string& prototypeName, 
-      dtCore::RefPtr<T>& proxy, const std::string& errorMsg = "")
+      std::shared_ptr<T>& proxy, const std::string& errorMsg = "")
    {
       gm.CreateActorFromPrototype(prototypeName, proxy);
-      if (proxy == NULL)
+      if (proxy == nullptr)
       {
          std::string errorText = "Failed to create actor from prototype named [" + prototypeName + "]. " + errorMsg;
          throw dtGame::InvalidParameterException(errorText, __FILE__, __LINE__);

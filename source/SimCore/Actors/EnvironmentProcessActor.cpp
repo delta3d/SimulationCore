@@ -202,7 +202,7 @@ namespace SimCore
       };
 
       ////////////////////////////////////////////
-      void EnvironmentProcessActorProxy::OnStateTypeChange(const dtCore::RefPtr<dtDAL::NamedGroupParameter>& record)
+      void EnvironmentProcessActorProxy::OnStateTypeChange(const std::shared_ptr<dtDAL::NamedGroupParameter>& record)
       {
          //unsigned index = record->GetValue(PARAM_INDEX, 0U);
          unsigned typeCode = record->GetValue(PARAM_TYPE_CODE, 0U);
@@ -256,7 +256,7 @@ namespace SimCore
             multiplier = dtUtil::ToType<float>(GetGameManager()->GetConfiguration().GetConfigPropertyValue(multiplierConfig, "1.0"));
 
 
-            dtCore::RefPtr<dtDAL::NamedVec3Parameter> colorParam = new dtDAL::NamedVec3Parameter("color");
+            std::shared_ptr<dtDAL::NamedVec3Parameter> colorParam = new dtDAL::NamedVec3Parameter("color");
             colorParam->FromString(GetGameManager()->GetConfiguration().GetConfigPropertyValue(colorConfig, defaultColor));
 
             actor.SetDensityMultiplier(multiplier);
@@ -265,12 +265,12 @@ namespace SimCore
          }
          else
          {
-            dtUtil::Log::GetInstance().LogMessage(dtUtil::Log::LOG_ERROR, __FUNCTION__, __LINE__, "Couldn't find matching Simple Moving Shape. %u", recordIndex);
+            dtUtil::Log::GetInstance()->LogMessage(dtUtil::Log::LOG_ERROR, __FUNCTION__, __LINE__, "Couldn't find matching Simple Moving Shape. %u", recordIndex);
          }
       }
 
       ////////////////////////////////////////////
-      void EnvironmentProcessActorProxy::OnRecordChange(const dtCore::RefPtr<dtDAL::NamedGroupParameter>& record)
+      void EnvironmentProcessActorProxy::OnRecordChange(const std::shared_ptr<dtDAL::NamedGroupParameter>& record)
       {
          unsigned recordIndex = record->GetValue(PARAM_INDEX, 0U);
          unsigned typeCode = record->GetValue(PARAM_TYPE_CODE, 0U);
@@ -283,7 +283,7 @@ namespace SimCore
             const osg::Vec3d defaultLoc;
             const osg::Vec3 defaultVec3;
 
-            dtCore::RefPtr<SimpleMovingShapeActorProxy> puff;
+            std::shared_ptr<SimpleMovingShapeActorProxy> puff;
 
             if (!mCreatedActors.empty())
             {
@@ -310,7 +310,7 @@ namespace SimCore
                mCreatedActorsBuffer2.push_back(puff);
             }
 
-            dtGame::DeadReckoningHelper* drAC = NULL;
+            dtGame::DeadReckoningHelper* drAC = nullptr;
             puff->GetComponent(drAC);
 
             osg::Vec3d tempVec3d;
@@ -358,7 +358,7 @@ namespace SimCore
          : mRecords(records)
          {}
 
-         void operator() (const dtCore::RefPtr<dtDAL::NamedParameter>& param)
+         void operator() (const std::shared_ptr<dtDAL::NamedParameter>& param)
          {
             if (param->GetDataType() == dtDAL::DataType::GROUP)
             {
@@ -384,7 +384,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////
-      dtCore::RefPtr<dtDAL::NamedGroupParameter> EnvironmentProcessActorProxy::GetRecords() const
+      std::shared_ptr<dtDAL::NamedGroupParameter> EnvironmentProcessActorProxy::GetRecords() const
       {
          return new dtDAL::NamedGroupParameter("Records", mRecords);
       }

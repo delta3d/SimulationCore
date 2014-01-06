@@ -85,7 +85,7 @@ namespace SimCore
          mLastSeason(dtABC::Weather::SEASON_SUMMER)
       {
          mPrecipRate = 0;
-         mPrecipEffect = NULL;
+         mPrecipEffect = nullptr;
       }
 
       //////////////////////////////////////////////////////////
@@ -114,13 +114,13 @@ namespace SimCore
       //////////////////////////////////////////////////////////
       void WeatherComponent::Clear()
       {
-         mAtmosphere = NULL;
-         mEnvironmentActor = NULL;
-         // Do not set the day time actor to NULL because one
+         mAtmosphere = nullptr;
+         mEnvironmentActor = nullptr;
+         // Do not set the day time actor to nullptr because one
          // is needed if the simulation is not connected to a
          // "Time Master". If a "Time Master" is connected, the
          // day time actor will be replaced automatically.
-         //mDayTime = NULL;
+         //mDayTime = nullptr;
       }
 
       //////////////////////////////////////////////////////////
@@ -233,7 +233,7 @@ namespace SimCore
             Actors::UniformAtmosphereActor* atmosActor =
                static_cast<Actors::UniformAtmosphereActor*>(mAtmosphere->GetDrawable());
 
-            if(atmosActor != NULL)
+            if(atmosActor != nullptr)
             {
                vis = atmosActor->GetVisibilityDistance()*1000.0f;
             }
@@ -316,15 +316,15 @@ namespace SimCore
          {
             if( mAtmosphere.valid() && msg.GetAboutActorId() == mAtmosphere->GetId() )
             {
-               mAtmosphere = NULL;
+               mAtmosphere = nullptr;
             }
             else if( mDayTime.valid() && msg.GetAboutActorId() == mDayTime->GetId() )
             {
-               mDayTime = NULL;
+               mDayTime = nullptr;
             }
             else if(mEnvironmentActor.valid() && msg.GetAboutActorId() == mEnvironmentActor->GetUniqueId())
             {
-               mEnvironmentActor = NULL;
+               mEnvironmentActor = nullptr;
             }
          }
 
@@ -332,7 +332,7 @@ namespace SimCore
          {
             SetCoordinates();
 
-            if (mEnvironmentActor == NULL)
+            if (mEnvironmentActor == nullptr)
             {
                LOG_ERROR("No environment actor exists after MAP_LOADED. It is possible you did not include any AdditionalMaps in your config.xml.");
                return;
@@ -373,11 +373,11 @@ namespace SimCore
             dtDAL::ActorProxy *proxy = GetGameManager()->FindActorById(msg.GetAboutActorId());
             SimCore::Actors::IGEnvironmentActorProxy* igproxy =
                dynamic_cast<SimCore::Actors::IGEnvironmentActorProxy*>(proxy);
-            if(igproxy == NULL)
+            if(igproxy == nullptr)
             {
                LOGN_WARNING("WeatherComponent.cpp", "An actor was found, but is not an IGEnvironmentActorProxy");
                LOGN_DEBUG("WeatherComponent.cpp","The type of the actor is: " + proxy->GetActorType().GetFullName());
-               SetEphemerisEnvironment(NULL);
+               SetEphemerisEnvironment(nullptr);
             }
             else
             {
@@ -434,18 +434,18 @@ namespace SimCore
          if(!mEnvironmentActor.valid())
             return;
 
-         dtActors::CoordinateConfigActorProxy* coordConfigActorProxy = NULL;
+         dtActors::CoordinateConfigActorProxy* coordConfigActorProxy = nullptr;
          GetGameManager()->FindActorByType(*dtActors::EngineActorRegistry::COORDINATE_CONFIG_ACTOR_TYPE,
                   coordConfigActorProxy);
          // Get the offset of time zones
-         if(coordConfigActorProxy != NULL)
+         if(coordConfigActorProxy != nullptr)
          {
-            dtActors::CoordinateConfigActor* coordConfigActor = NULL;
+            dtActors::CoordinateConfigActor* coordConfigActor = nullptr;
             coordConfigActorProxy->GetActor(coordConfigActor);
 
             // Compensate for the time zone
             osg::Vec3d geoOffset;
-            if(coordConfigActor != NULL)
+            if(coordConfigActor != nullptr)
             {
                dtUtil::Coordinates coords = coordConfigActor->GetCoordinates();
                coords.SetIncomingCoordinateType(dtUtil::IncomingCoordinateType::GEODETIC);
@@ -528,7 +528,7 @@ namespace SimCore
                   if(mPrecipEffect.valid())
                   {
                      mEnvironmentActor->GetOSGNode()->asGroup()->removeChild(mPrecipEffect.get());
-                     mPrecipEffect = NULL;
+                     mPrecipEffect = nullptr;
                   }
                   toContinue = false;
                }
@@ -663,7 +663,7 @@ namespace SimCore
       void WeatherComponent::AssignNewProxy(const dtCore::UniqueId& id)
       {
          dtDAL::ActorProxy* actor = GetGameManager()->FindActorById(id);
-         if (actor == NULL)
+         if (actor == nullptr)
          {
             return;
          }
@@ -679,7 +679,7 @@ namespace SimCore
             {
                LOG_WARNING("WARNING! WeatherComponent.mAtmosphere points to another AtmosphereActor"
                            "The old AtmosphereActor may not have been removed.");
-               mAtmosphere = NULL;
+               mAtmosphere = nullptr;
             }
 
             if (!mAtmosphere.valid())
@@ -696,7 +696,7 @@ namespace SimCore
             {
                LOG_WARNING("WARNING! WeatherComponent.mDayTime points to another DayTimeActor\
                            The old DayTimeActor may not have been removed.");
-               mDayTime = NULL;
+               mDayTime = nullptr;
             }
 
             if (!mDayTime.valid())

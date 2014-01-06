@@ -51,7 +51,7 @@ namespace SimCore
       PSLayerList& layers = ps.GetAllLayers();
       if( layers.size() <= size_t(index) )
       {
-         return NULL;
+         return nullptr;
       }
 
       PSLayerList::iterator curLayer = layers.begin();
@@ -70,7 +70,7 @@ namespace SimCore
       const PSLayerList& layers = ps.GetAllLayers();
       if( layers.size() <= size_t(index) )
       {
-         return NULL;
+         return nullptr;
       }
 
       PSLayerList::const_iterator curLayer = layers.begin();
@@ -88,7 +88,7 @@ namespace SimCore
    {
       dtCore::ParticleLayer* layer = ps.GetSingleLayer( layerName );
 
-      return layer != NULL ? &layer->GetModularEmitter() : NULL;
+      return layer != nullptr ? &layer->GetModularEmitter() : nullptr;
    }
 
    /////////////////////////////////////////////////////////////////////////////
@@ -96,7 +96,7 @@ namespace SimCore
    {
       const dtCore::ParticleLayer* layer = ps.GetSingleLayer( layerName );
 
-      return layer != NULL ? &layer->GetModularEmitter() : NULL;
+      return layer != nullptr ? &layer->GetModularEmitter() : nullptr;
    }
 
    /////////////////////////////////////////////////////////////////////////////
@@ -150,7 +150,7 @@ namespace SimCore
       osgParticle::MultiSegmentPlacer* segPlacer
          = dynamic_cast<osgParticle::MultiSegmentPlacer*>(layer.GetModularEmitter().getPlacer());
 
-      if( segPlacer != NULL && segPlacer->numVertices() == 5 )
+      if( segPlacer != nullptr && segPlacer->numVertices() == 5 )
       {
          osg::Vec2 halfArea( area * 0.5f );
          segPlacer->setVertex( 0, -halfArea.x(),  halfArea.y(), 0.0f );
@@ -164,7 +164,7 @@ namespace SimCore
          osgParticle::BoxPlacer* boxPlacer
             = dynamic_cast<osgParticle::BoxPlacer*>(layer.GetModularEmitter().getPlacer());
 
-         if( boxPlacer != NULL )
+         if( boxPlacer != nullptr )
          {
             boxPlacer->setXRange( area.x() * -0.5f, area.x() * 0.5f );
             boxPlacer->setYRange( area.y() * -0.5f, area.y() * 0.5f );
@@ -482,7 +482,7 @@ namespace SimCore
    // PARTICLE LAYER INTERPOLATOR CODE
    /////////////////////////////////////////////////////////////////////////////
    ParticleLayerInterpolator::ParticleLayerInterpolator( dtCore::ParticleLayer& layer )
-      : mLayer(NULL)
+      : mLayer(nullptr)
       , mDefaultSettings(new ParticleSystemSettings)
    {
       SetLayer( layer );
@@ -677,7 +677,7 @@ namespace SimCore
       PropertyInterpolateMap::iterator foundIter = mInterpMap.find( prop );
 
       bool wasCreated = false;
-      dtCore::RefPtr<InterpParams> params;
+      std::shared_ptr<InterpParams> params;
       if( foundIter != mInterpMap.end() )
       {
          params = foundIter->second.get();

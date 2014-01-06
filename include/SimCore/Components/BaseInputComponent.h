@@ -133,15 +133,15 @@ namespace SimCore
             /// Destructor
             virtual ~BaseInputComponent();
 
-            dtCore::RefPtr<SimCore::AttachedMotionModel> mAttachedMM;
-            dtCore::RefPtr<dtDAL::BaseActorObject> mTerrainActor;
+            std::shared_ptr<SimCore::AttachedMotionModel> mAttachedMM;
+            std::shared_ptr<dtDAL::BaseActorObject> mTerrainActor;
             dtUtil::Coordinates mCoordinateConverter;
          private:
             std::string mFoName;
-            dtCore::ObserverPtr<SimCore::Actors::StealthActor> mStealthActor;
+            std::weak_ptr<SimCore::Actors::StealthActor> mStealthActor;
             float mEntityMagnification;
             std::string mTerrainActorName;
-            dtUtil::Log* mLogger;
+            dtUtil::LogPtr mLogger;
             TestWeatherMode mTestWeatherMode;
       };
    }

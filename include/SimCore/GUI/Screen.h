@@ -20,7 +20,7 @@
 // INCLUDE DIRECTIVES
 ////////////////////////////////////////////////////////////////////////////////
 #include <dtCore/base.h>
-#include <dtCore/refptr.h>
+#include <dtUtil/refcountedbase.h>
 #include <SimCore/Export.h>
 #include <SimCore/GUI/AnimationController.h>
 
@@ -46,7 +46,7 @@ namespace SimCore
       // TYPE DEFINITIONS
       //////////////////////////////////////////////////////////////////////////
       typedef AnimationControllerBase AnimControl;
-      typedef std::map<std::string, dtCore::RefPtr<AnimControl> > AnimControlMap;
+      typedef std::map<std::string, std::shared_ptr<AnimControl> > AnimControlMap;
 
 
 
@@ -93,7 +93,7 @@ namespace SimCore
              *        for the screen drawables. It is up to the implementation
              *        to cast the root and handle attaching elements to it.
              */
-            virtual void Setup(SimCore::Components::HUDGroup* root = NULL) = 0;
+            virtual void Setup(SimCore::Components::HUDGroup* root = nullptr) = 0;
 
             /**
              * Reset all animations and members to the original default values.
@@ -200,7 +200,7 @@ namespace SimCore
 
             bool CreateAnimationControl( const std::string& animType,
                SimCore::Components::HUDElement& widget,
-               dtCore::RefPtr<AnimControl>& outControl );
+               std::shared_ptr<AnimControl>& outControl );
 
             AnimControl* AddAnimationControl( const std::string& animType, SimCore::Components::HUDElement& widget );
 

@@ -85,7 +85,7 @@ namespace SimCore
             float mVelocity;
             osg::Vec3 mClampLastKnown;
 
-            dtCore::RefPtr<osg::MatrixTransform> mDrawable;
+            osg::ref_ptr<osg::MatrixTransform> mDrawable;
       };
       typedef std::vector<SurfacePointData> SurfacePointDataArray;
 
@@ -132,7 +132,7 @@ namespace SimCore
 
                   /**
                    * Get the associated object's clamping domain.
-                   * @return NULL if no entity was assigned.
+                   * @return nullptr if no entity was assigned.
                    */
                   SimCore::Actors::BaseEntityActorProxy::DomainEnum* GetDomain() const;
 
@@ -193,8 +193,8 @@ namespace SimCore
                   const dtGame::GroundClampingData& mClampingData;
 
                   // Entity associated with this data.
-                  dtCore::ObserverPtr<SimCore::Actors::BaseEntity> mEntity;
-                  dtCore::ObserverPtr<osg::Group> mScene;
+                  std::weak_ptr<SimCore::Actors::BaseEntity> mEntity;
+                  osg::observer_ptr<osg::Group> mScene;
             };
 
             MultiSurfaceClamper();
@@ -375,7 +375,7 @@ namespace SimCore
 
             double mCurrentSimTime;
             SimCore::Actors::BaseEntityActorProxy::DomainEnum* mDefaultDomain;
-            dtCore::ObserverPtr<SimCore::Actors::BaseWaterActor> mSurfaceWater;
+            std::weak_ptr<SimCore::Actors::BaseWaterActor> mSurfaceWater;
       };
    }
 

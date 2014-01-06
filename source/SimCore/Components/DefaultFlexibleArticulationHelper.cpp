@@ -68,7 +68,7 @@ namespace Components
    {
       if (!dofName.empty())
       {
-         dtCore::RefPtr<ArticulationEntry> newArtic = new ArticulationEntry();
+         std::shared_ptr<ArticulationEntry> newArtic = new ArticulationEntry();
          newArtic->mDOFName = dofName;
          newArtic->mParentDOFName = parentDOFName;
          newArtic->mIsHeading = (articType == ARTIC_TYPE_HEADING || articType == ARTIC_TYPE_BOTH);
@@ -85,11 +85,11 @@ namespace Components
    }
 
    ////////////////////////////////////////////////////////////////////////////////
-   dtCore::RefPtr<dtDAL::NamedGroupParameter> DefaultFlexibleArticulationHelper::BuildGroupProperty()
+   std::shared_ptr<dtDAL::NamedGroupParameter> DefaultFlexibleArticulationHelper::BuildGroupProperty()
    {
       // NOTE - The group params are built on the fly. 
       // This method is called when the entity needs to do an actor update message. 
-      dtCore::RefPtr<dtDAL::NamedGroupParameter> articArrayProp 
+      std::shared_ptr<dtDAL::NamedGroupParameter> articArrayProp 
          = new dtDAL::NamedGroupParameter(GetArticulationArrayPropertyName());
 
       if(!mArticEntries.empty())
@@ -137,9 +137,9 @@ namespace Components
          for (unsigned int i = 0; i < mArticEntries.size(); i ++)
          {
             ArticulationEntry *articEntry = mArticEntries[i].get();
-            if(nodeCollector == NULL)
+            if(nodeCollector == nullptr)
             {
-               articEntry->mDOF = NULL;
+               articEntry->mDOF = nullptr;
             }
             else 
             {
@@ -243,7 +243,7 @@ namespace Components
    {
       if(mEntity.valid())
       {
-         dtGame::DeadReckoningHelper* drHelper = NULL;
+         dtGame::DeadReckoningHelper* drHelper = nullptr;
          mEntity->GetComponent(drHelper);
          drHelper->AddToDeadReckonDOF(dofName, position, velocity);
       }

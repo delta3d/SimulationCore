@@ -116,13 +116,13 @@ class HUDElementsTests : public CPPUNIT_NS::TestFixture
 
 
    private:
-      dtCore::RefPtr<dtGame::GameManager> mGM;
-      dtCore::RefPtr<dtABC::Application> mApp;
+      std::shared_ptr<dtGame::GameManager> mGM;
+      std::shared_ptr<dtABC::Application> mApp;
 #if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
-      dtCore::RefPtr<dtGUI::CEUIDrawable> mGUI;
-      dtCore::RefPtr<SimCore::Components::HUDGroup> mMainGUIWindow;
+      std::shared_ptr<dtGUI::CEUIDrawable> mGUI;
+      std::shared_ptr<SimCore::Components::HUDGroup> mMainGUIWindow;
 #else
-      dtCore::RefPtr<dtGUI::GUI> mGUI;
+      std::shared_ptr<dtGUI::GUI> mGUI;
 #endif
 };
 
@@ -190,7 +190,7 @@ void HUDElementsTests::tearDown()
 #if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
       mGUI->Emancipate();
 
-      mMainGUIWindow = NULL;
+      mMainGUIWindow = nullptr;
 #endif
    }
    catch(dtUtil::Exception& e)
@@ -208,9 +208,9 @@ void HUDElementsTests::tearDown()
       LOG_ERROR("Unknown exception");
    }
 
-   mGM = NULL;
-   mGUI = NULL;
-   mApp = NULL;
+   mGM = nullptr;
+   mGUI = nullptr;
+   mApp = nullptr;
 }
 
 
@@ -248,11 +248,11 @@ void HUDElementsTests::TestAllHUDElements()
 //////////////////////////////////////////////////////////////
 void HUDElementsTests::TestHUDElement()
 {
-   dtCore::RefPtr<SimCore::Components::HUDElement> element =
+   std::shared_ptr<SimCore::Components::HUDElement> element =
       new SimCore::Components::HUDElement("TestElement",SimCore::Components::HUDElement::DEFAULT_IMAGE_TYPE);
 
    CPPUNIT_ASSERT_MESSAGE( "HUD Element should contain a valid CEGUI window",
-      element->GetCEGUIWindow() != NULL );
+      element->GetCEGUIWindow() != nullptr );
 
    // Test default alignment
    CPPUNIT_ASSERT_MESSAGE( "Default HUDAlignment should be LEFT_TOP",
@@ -395,7 +395,7 @@ void HUDElementsTests::TestHUDElement()
 void HUDElementsTests::TestHUDText()
 {
    LOG_ERROR("TESTING HUD TEXT");
-   dtCore::RefPtr<SimCore::Components::HUDText> text = new SimCore::Components::HUDText("TestText");
+   std::shared_ptr<SimCore::Components::HUDText> text = new SimCore::Components::HUDText("TestText");
 
    // Test text setting
    std::string value("Lorem Ipsum");
@@ -423,11 +423,11 @@ void HUDElementsTests::TestHUDGroup()
    const std::string childName2("Child2");
    const std::string childName3("Child3");
    const std::string childName4("Child4");
-   dtCore::RefPtr<SimCore::Components::HUDGroup> group = new SimCore::Components::HUDGroup("TestGroup");
-   dtCore::RefPtr<SimCore::Components::HUDImage> child1 = new SimCore::Components::HUDImage(childName1);
-   dtCore::RefPtr<SimCore::Components::HUDImage> child2 = new SimCore::Components::HUDImage(childName2);
-   dtCore::RefPtr<SimCore::Components::HUDImage> child3 = new SimCore::Components::HUDImage(childName3);
-   dtCore::RefPtr<SimCore::Components::HUDImage> child4 = new SimCore::Components::HUDImage(childName4);
+   std::shared_ptr<SimCore::Components::HUDGroup> group = new SimCore::Components::HUDGroup("TestGroup");
+   std::shared_ptr<SimCore::Components::HUDImage> child1 = new SimCore::Components::HUDImage(childName1);
+   std::shared_ptr<SimCore::Components::HUDImage> child2 = new SimCore::Components::HUDImage(childName2);
+   std::shared_ptr<SimCore::Components::HUDImage> child3 = new SimCore::Components::HUDImage(childName3);
+   std::shared_ptr<SimCore::Components::HUDImage> child4 = new SimCore::Components::HUDImage(childName4);
 
    // NOTE: Add and Remove may be changed to take references in the future.
    // A good bit of code uses the current interface so far.
@@ -437,9 +437,9 @@ void HUDElementsTests::TestHUDGroup()
       group->GetTotalElements() == 0 );
 
    // Attempt adding an invalid pointer
-   CPPUNIT_ASSERT_MESSAGE( "HUD Group should not add a NULL pointer",
-      !group->Add( NULL ) );
-   CPPUNIT_ASSERT_MESSAGE( "HUD Group should not increase child count when attempting to add a NULL pointer",
+   CPPUNIT_ASSERT_MESSAGE( "HUD Group should not add a nullptr pointer",
+      !group->Add( nullptr ) );
+   CPPUNIT_ASSERT_MESSAGE( "HUD Group should not increase child count when attempting to add a nullptr pointer",
       group->GetTotalElements() == 0 );
 
    // Test searching for CEGUI child windows that do not exist.
@@ -447,10 +447,10 @@ void HUDElementsTests::TestHUDGroup()
    CPPUNIT_ASSERT( ! group->Has( childName2 ) );
    CPPUNIT_ASSERT( ! group->Has( childName3 ) );
    CPPUNIT_ASSERT( ! group->Has( childName4 ) );
-   CPPUNIT_ASSERT( group->GetCEGUIChild( childName1 ) == NULL );
-   CPPUNIT_ASSERT( group->GetCEGUIChild( childName2 ) == NULL );
-   CPPUNIT_ASSERT( group->GetCEGUIChild( childName3 ) == NULL );
-   CPPUNIT_ASSERT( group->GetCEGUIChild( childName4 ) == NULL );
+   CPPUNIT_ASSERT( group->GetCEGUIChild( childName1 ) == nullptr );
+   CPPUNIT_ASSERT( group->GetCEGUIChild( childName2 ) == nullptr );
+   CPPUNIT_ASSERT( group->GetCEGUIChild( childName3 ) == nullptr );
+   CPPUNIT_ASSERT( group->GetCEGUIChild( childName4 ) == nullptr );
 
    // Add all children
    group->Add( child1.get() );
@@ -494,11 +494,11 @@ void HUDElementsTests::TestHUDGroup()
       group->Has( *child1 )
       && group->Has( *child3 ) );
 
-   // --- Test removing NULL
-   CPPUNIT_ASSERT_MESSAGE( "HUD Group should return false when attempting to remove NULL",
-      ! group->Remove( NULL ) );
+   // --- Test removing nullptr
+   CPPUNIT_ASSERT_MESSAGE( "HUD Group should return false when attempting to remove nullptr",
+      ! group->Remove( nullptr ) );
    total = group->GetTotalElements();
-   CPPUNIT_ASSERT_MESSAGE( "HUD Group should have 2 children after attempting to remove NULL",
+   CPPUNIT_ASSERT_MESSAGE( "HUD Group should have 2 children after attempting to remove nullptr",
       total == 2 );
 
    // Remove the front child
@@ -522,18 +522,18 @@ void HUDElementsTests::TestHUDGroup()
    CPPUNIT_ASSERT( ! group->Has( childName2 ) );
    CPPUNIT_ASSERT( ! group->Has( childName3 ) );
    CPPUNIT_ASSERT( ! group->Has( childName4 ) );
-   CPPUNIT_ASSERT( group->GetCEGUIChild( childName1 ) == NULL );
-   CPPUNIT_ASSERT( group->GetCEGUIChild( childName2 ) == NULL );
-   CPPUNIT_ASSERT( group->GetCEGUIChild( childName3 ) == NULL );
-   CPPUNIT_ASSERT( group->GetCEGUIChild( childName4 ) == NULL );
+   CPPUNIT_ASSERT( group->GetCEGUIChild( childName1 ) == nullptr );
+   CPPUNIT_ASSERT( group->GetCEGUIChild( childName2 ) == nullptr );
+   CPPUNIT_ASSERT( group->GetCEGUIChild( childName3 ) == nullptr );
+   CPPUNIT_ASSERT( group->GetCEGUIChild( childName4 ) == nullptr );
 }
 
 //////////////////////////////////////////////////////////////
 void HUDElementsTests::TestHUDButton()
 {
-   dtCore::RefPtr<SimCore::Components::HUDButton> button = new SimCore::Components::HUDButton("TestButton");
-   dtCore::RefPtr<SimCore::Components::HUDImage> imageOn = new SimCore::Components::HUDImage("On");
-   dtCore::RefPtr<SimCore::Components::HUDImage> imageOff = new SimCore::Components::HUDImage("Off");
+   std::shared_ptr<SimCore::Components::HUDButton> button = new SimCore::Components::HUDButton("TestButton");
+   std::shared_ptr<SimCore::Components::HUDImage> imageOn = new SimCore::Components::HUDImage("On");
+   std::shared_ptr<SimCore::Components::HUDImage> imageOff = new SimCore::Components::HUDImage("Off");
 
    button->SetActiveElement(imageOn.get());
    button->SetInactiveElement(imageOff.get());
@@ -556,16 +556,16 @@ void HUDElementsTests::TestHUDButton()
    CPPUNIT_ASSERT_MESSAGE( "HUD Button's active should be visible, only",
       ! imageOn->IsVisible() && imageOff->IsVisible() );
 
-   // Test that the elements can be removed by setting them to NULL
-   button->SetActiveElement( NULL );
+   // Test that the elements can be removed by setting them to nullptr
+   button->SetActiveElement( nullptr );
    CPPUNIT_ASSERT_MESSAGE( "HUD Button should not have an active element",
-      button->GetActiveElement() == NULL );
+      button->GetActiveElement() == nullptr );
    CPPUNIT_ASSERT_MESSAGE( "HUD Button should not have removed the inactive element",
-      button->GetInactiveElement() != NULL );
+      button->GetInactiveElement() != nullptr );
 
-   button->SetInactiveElement( NULL );
+   button->SetInactiveElement( nullptr );
    CPPUNIT_ASSERT_MESSAGE( "HUD Button should not have an inactive element",
-      button->GetInactiveElement() == NULL );
+      button->GetInactiveElement() == nullptr );
 }
 
 //////////////////////////////////////////////////////////////
@@ -582,13 +582,13 @@ void HUDElementsTests::TestHUDToolbar()
    //
    // The base toolbar class assumes its own size and its elements sizes are static.
 
-   dtCore::RefPtr<SimCore::Components::HUDToolbar> toolbar = new SimCore::Components::HUDToolbar("TestToolbar");
-   dtCore::RefPtr<SimCore::Components::HUDButton> button1 = new SimCore::Components::HUDButton("Button1");
-   dtCore::RefPtr<SimCore::Components::HUDButton> button2 = new SimCore::Components::HUDButton("Button2");
-   dtCore::RefPtr<SimCore::Components::HUDButton> button3 = new SimCore::Components::HUDButton("Button3");
-   dtCore::RefPtr<SimCore::Components::HUDButton> button4 = new SimCore::Components::HUDButton("Button4");
-   dtCore::RefPtr<SimCore::Components::HUDImage> imageStart = new SimCore::Components::HUDImage("ImageStart");
-   dtCore::RefPtr<SimCore::Components::HUDImage> imageEnd = new SimCore::Components::HUDImage("ImageEnd");
+   std::shared_ptr<SimCore::Components::HUDToolbar> toolbar = new SimCore::Components::HUDToolbar("TestToolbar");
+   std::shared_ptr<SimCore::Components::HUDButton> button1 = new SimCore::Components::HUDButton("Button1");
+   std::shared_ptr<SimCore::Components::HUDButton> button2 = new SimCore::Components::HUDButton("Button2");
+   std::shared_ptr<SimCore::Components::HUDButton> button3 = new SimCore::Components::HUDButton("Button3");
+   std::shared_ptr<SimCore::Components::HUDButton> button4 = new SimCore::Components::HUDButton("Button4");
+   std::shared_ptr<SimCore::Components::HUDImage> imageStart = new SimCore::Components::HUDImage("ImageStart");
+   std::shared_ptr<SimCore::Components::HUDImage> imageEnd = new SimCore::Components::HUDImage("ImageEnd");
 
    // Dimension variables (all values are arbitrary)
    osg::Vec2 toolbarSize, testPos;
@@ -608,9 +608,9 @@ void HUDElementsTests::TestHUDToolbar()
 
    // Add elements
    CPPUNIT_ASSERT_MESSAGE( "HUD Toolbar should NOT have a start element",
-      toolbar->GetStartElement() == NULL );
+      toolbar->GetStartElement() == nullptr );
    CPPUNIT_ASSERT_MESSAGE( "HUD Toolbar should NOT have a end element",
-      toolbar->GetEndElement() == NULL );
+      toolbar->GetEndElement() == nullptr );
    toolbar->SetStartElement( imageStart.get() );
    toolbar->SetEndElement( imageEnd.get() );
    CPPUNIT_ASSERT_MESSAGE( "HUD Toolbar should have a start element",
@@ -622,8 +622,8 @@ void HUDElementsTests::TestHUDToolbar()
    CPPUNIT_ASSERT( toolbar->InsertElement( button1.get() ) );
    // Add second button - to the front
    CPPUNIT_ASSERT( toolbar->InsertElement( button2.get(), 0 ) );
-   // --- Try adding NULL
-   CPPUNIT_ASSERT( ! toolbar->InsertElement( NULL ) );
+   // --- Try adding nullptr
+   CPPUNIT_ASSERT( ! toolbar->InsertElement( nullptr ) );
    // Add third button - to the middle
    CPPUNIT_ASSERT( toolbar->InsertElement( button3.get(), 1 ) );
    // Add fourth button - to the front
@@ -733,8 +733,8 @@ void HUDElementsTests::TestHUDToolbar()
       toolbar->HasElement(*button1)
       && toolbar->HasElement(*button2)
       && !toolbar->HasElement(*button3) );
-   // --- Try removing NULL
-   CPPUNIT_ASSERT( ! toolbar->RemoveElement( NULL ) );
+   // --- Try removing nullptr
+   CPPUNIT_ASSERT( ! toolbar->RemoveElement( nullptr ) );
    // Remove end button - by pointer
    CPPUNIT_ASSERT( toolbar->RemoveElement( button1.get() )
       && toolbar->GetTotalElements() == 1 );
@@ -761,34 +761,34 @@ void HUDElementsTests::TestHUDToolbar()
 
    // Start and end elements should still remain
    CPPUNIT_ASSERT_MESSAGE( "HUD Toolbar should still have start and end elements",
-      toolbar->GetStartElement() != NULL
-      && toolbar->GetEndElement() != NULL );
+      toolbar->GetStartElement() != nullptr
+      && toolbar->GetEndElement() != nullptr );
 
-   // Test removal of start and end elements by setting them to NULL
-   toolbar->SetStartElement( NULL );
-   toolbar->SetEndElement( NULL );
+   // Test removal of start and end elements by setting them to nullptr
+   toolbar->SetStartElement( nullptr );
+   toolbar->SetEndElement( nullptr );
    CPPUNIT_ASSERT_MESSAGE( "HUD Toolbar should NOT have start and end elements",
-      toolbar->GetStartElement() == NULL
-      && toolbar->GetEndElement() == NULL );
+      toolbar->GetStartElement() == nullptr
+      && toolbar->GetEndElement() == nullptr );
 
-   imageStart = NULL;
-   imageEnd = NULL;
-   button1 = NULL;
-   button2 = NULL;
-   button3 = NULL;
-   button4 = NULL;
-   toolbar = NULL;
+   imageStart = nullptr;
+   imageEnd = nullptr;
+   button1 = nullptr;
+   button2 = nullptr;
+   button3 = nullptr;
+   button4 = nullptr;
+   toolbar = nullptr;
 }
 
 //////////////////////////////////////////////////////////////
 void HUDElementsTests::TestHUDMeter()
 {
-   dtCore::RefPtr<SimCore::Components::HUDMeter> meter = new SimCore::Components::HUDMeter("TestMeter");
-   dtCore::RefPtr<SimCore::Components::HUDImage> meterImage = new SimCore::Components::HUDImage("TestImage");
+   std::shared_ptr<SimCore::Components::HUDMeter> meter = new SimCore::Components::HUDMeter("TestMeter");
+   std::shared_ptr<SimCore::Components::HUDImage> meterImage = new SimCore::Components::HUDImage("TestImage");
 
    // Test setting an image
    CPPUNIT_ASSERT_MESSAGE( "HUD Meter should not have an image by default",
-      meter->GetImage() == NULL );
+      meter->GetImage() == nullptr );
    meter->SetImage( meterImage.get() );
    CPPUNIT_ASSERT_MESSAGE( "HUD Meter should have a new image",
       meter->GetImage() == meterImage.get() );
@@ -842,15 +842,15 @@ void HUDElementsTests::TestHUDMeter()
    CPPUNIT_ASSERT_DOUBLES_EQUAL( 50.0f, meter->GetValue(), 0.001f );
    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0f, meter->GetScale(), 0.001f );
 
-   meterImage = NULL;
-   meter = NULL;
+   meterImage = nullptr;
+   meter = nullptr;
 }
 
 //////////////////////////////////////////////////////////////
 void HUDElementsTests::TestHUDBarMeter()
 {
-   dtCore::RefPtr<SimCore::Components::HUDBarMeter> barMeter = new SimCore::Components::HUDBarMeter("TestBarMeter");
-   dtCore::RefPtr<SimCore::Components::HUDImage> meterImage = new SimCore::Components::HUDImage("BarImage");
+   std::shared_ptr<SimCore::Components::HUDBarMeter> barMeter = new SimCore::Components::HUDBarMeter("TestBarMeter");
+   std::shared_ptr<SimCore::Components::HUDImage> meterImage = new SimCore::Components::HUDImage("BarImage");
 
    // Test setting the scale
    // --- scale is the ratio of the set value to its max
@@ -881,16 +881,16 @@ void HUDElementsTests::TestHUDBarMeter()
    CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.5f, outOriginalSize[0], 0.001f );
    CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.25f, outOriginalSize[1], 0.001f );
 
-   meterImage = NULL;
-   barMeter = NULL;
+   meterImage = nullptr;
+   barMeter = nullptr;
 }
 
 //////////////////////////////////////////////////////////////
 void HUDElementsTests::TestHUDSlideBarMeter()
 {
-   dtCore::RefPtr<SimCore::Components::HUDSlideBarMeter> slideMeter =
+   std::shared_ptr<SimCore::Components::HUDSlideBarMeter> slideMeter =
       new SimCore::Components::HUDSlideBarMeter("TestSlideBarMeter");
-   dtCore::RefPtr<SimCore::Components::HUDImage> meterImage = new SimCore::Components::HUDImage("SlideImage");
+   std::shared_ptr<SimCore::Components::HUDImage> meterImage = new SimCore::Components::HUDImage("SlideImage");
 
    // Test setting an image
    osg::Vec2 imageSize( 1.0, 1.0 );
@@ -971,10 +971,10 @@ void HUDElementsTests::TestHUDQuadElement()
    // NOTE: Current, the HUD Quad element only operates
    // relative mode for both size and position.
 
-   dtCore::RefPtr<SimCore::Components::HUDQuadElement> quad = new SimCore::Components::HUDQuadElement("TestQuad");
+   std::shared_ptr<SimCore::Components::HUDQuadElement> quad = new SimCore::Components::HUDQuadElement("TestQuad");
 
    CPPUNIT_ASSERT_MESSAGE( "HUD Quad should have a valid OSG node",
-      quad->GetOSGNode() != NULL );
+      quad->GetOSGNode() != nullptr );
 
    // Declare variables used in testing
    osg::Vec2 testVec2, outVec2;
@@ -983,7 +983,7 @@ void HUDElementsTests::TestHUDQuadElement()
    float testRotate = 0.0f;
 
    // Test geode access
-   CPPUNIT_ASSERT_MESSAGE( "HUD Quad should have created geometry", quad->GetGeode() != NULL );
+   CPPUNIT_ASSERT_MESSAGE( "HUD Quad should have created geometry", quad->GetGeode() != nullptr );
 
    // Test size
    testVec2.set( 0.5f, 0.2f );
@@ -1050,9 +1050,9 @@ void HUDElementsTests::TestHUDQuadElement()
 
 
    // Test Addition of child quads
-   dtCore::RefPtr<SimCore::Components::HUDQuadElement> child1 = new SimCore::Components::HUDQuadElement("Child1");
-   dtCore::RefPtr<SimCore::Components::HUDQuadElement> child2 = new SimCore::Components::HUDQuadElement("Child2");
-   dtCore::RefPtr<SimCore::Components::HUDQuadElement> child3 = new SimCore::Components::HUDQuadElement("Child3");
+   std::shared_ptr<SimCore::Components::HUDQuadElement> child1 = new SimCore::Components::HUDQuadElement("Child1");
+   std::shared_ptr<SimCore::Components::HUDQuadElement> child2 = new SimCore::Components::HUDQuadElement("Child2");
+   std::shared_ptr<SimCore::Components::HUDQuadElement> child3 = new SimCore::Components::HUDQuadElement("Child3");
    // --- Ensure there are no children by default
    CPPUNIT_ASSERT( quad->GetTotalChildren() == 0 );
    CPPUNIT_ASSERT( ! quad->Has( *child1 ) );
@@ -1096,11 +1096,11 @@ void HUDElementsTests::TestHUDQuadElement()
 //////////////////////////////////////////////////////////////
 void HUDElementsTests::TestStealthButton()
 {
-   dtCore::RefPtr<SimCore::Components::StealthButton> button =
+   std::shared_ptr<SimCore::Components::StealthButton> button =
       new SimCore::Components::StealthButton("TestStealthButton","Help","F1");
 
    CPPUNIT_ASSERT_MESSAGE( "Button should have a valid key label image",
-      button->GetKeyLabel() != NULL );
+      button->GetKeyLabel() != nullptr );
 
    CPPUNIT_ASSERT_MESSAGE( "Button should be inactive by default",
       ! button->IsActive() );
@@ -1109,12 +1109,12 @@ void HUDElementsTests::TestStealthButton()
 //////////////////////////////////////////////////////////////
 void HUDElementsTests::TestStealthToolbar()
 {
-   dtCore::RefPtr<SimCore::Components::StealthToolbar> toolbar =
+   std::shared_ptr<SimCore::Components::StealthToolbar> toolbar =
       new SimCore::Components::StealthToolbar("TestStealthToolbar");
-   dtCore::RefPtr<SimCore::Components::StealthButton> button1;
-   dtCore::RefPtr<SimCore::Components::StealthButton> button2;
-   dtCore::RefPtr<SimCore::Components::StealthButton> button3;
-   dtCore::RefPtr<SimCore::Components::StealthButton> button4;
+   std::shared_ptr<SimCore::Components::StealthButton> button1;
+   std::shared_ptr<SimCore::Components::StealthButton> button2;
+   std::shared_ptr<SimCore::Components::StealthButton> button3;
+   std::shared_ptr<SimCore::Components::StealthButton> button4;
 
    CPPUNIT_ASSERT_MESSAGE( "Toolbar should have 0 buttons by default",
       toolbar->GetButtonCount() == 0 );
@@ -1213,7 +1213,7 @@ void HUDElementsTests::TestStealthToolbar()
 
    // --- Test button retrieval
    CPPUNIT_ASSERT( toolbar->GetButton( name1 ) == button1.get() );
-   CPPUNIT_ASSERT( toolbar->GetButton( name2 ) == NULL );
+   CPPUNIT_ASSERT( toolbar->GetButton( name2 ) == nullptr );
    CPPUNIT_ASSERT( toolbar->GetButton( name3 ) == button3.get() );
    CPPUNIT_ASSERT( toolbar->GetButton( name4 ) == button4.get());
 
@@ -1226,15 +1226,15 @@ void HUDElementsTests::TestStealthToolbar()
 
    // --- Test button retrieval
    CPPUNIT_ASSERT( toolbar->GetButton( name1 ) == button1.get() );
-   CPPUNIT_ASSERT( toolbar->GetButton( name2 ) == NULL );
+   CPPUNIT_ASSERT( toolbar->GetButton( name2 ) == nullptr );
    CPPUNIT_ASSERT( toolbar->GetButton( name3 ) == button3.get() );
-   CPPUNIT_ASSERT( toolbar->GetButton( name4 ) == NULL );
+   CPPUNIT_ASSERT( toolbar->GetButton( name4 ) == nullptr );
 
 
 
    // Test re-adding buttons directly without the toolbar automatically creating a new button.
-   dtCore::RefPtr<SimCore::Components::StealthButton> tmpButton;
-   CPPUNIT_ASSERT( ! toolbar->AddButton( tmpButton ) ); // should not add a NULL button.
+   std::shared_ptr<SimCore::Components::StealthButton> tmpButton;
+   CPPUNIT_ASSERT( ! toolbar->AddButton( tmpButton ) ); // should not add a nullptr button.
    CPPUNIT_ASSERT( toolbar->GetButtonCount() == 2 );
    CPPUNIT_ASSERT( ! toolbar->AddButton( button1 ) );
    CPPUNIT_ASSERT( toolbar->GetButtonCount() == 2 );
@@ -1258,7 +1258,7 @@ void HUDElementsTests::TestStealthToolbar()
    // --- Swap middle button
    toolbar->ReplaceButton( name2, button4, &tmpButton );
    CPPUNIT_ASSERT( toolbar->GetButton( name1 ) == button1.get() );
-   CPPUNIT_ASSERT( toolbar->GetButton( name2 ) == NULL );
+   CPPUNIT_ASSERT( toolbar->GetButton( name2 ) == nullptr );
    CPPUNIT_ASSERT( toolbar->GetButton( name3 ) == button3.get() );
    CPPUNIT_ASSERT( toolbar->GetButton( name4 ) == button4.get() );
    CPPUNIT_ASSERT_MESSAGE("New button should now have the same index as the old button",
@@ -1268,9 +1268,9 @@ void HUDElementsTests::TestStealthToolbar()
 
    // --- Swap first button
    //     Not testing capture of old button here; this will determine if the function
-   //     can handle a NULL value for the third parameter.
-   toolbar->ReplaceButton( name1, button2, NULL );
-   CPPUNIT_ASSERT( toolbar->GetButton( name1 ) == NULL );
+   //     can handle a nullptr value for the third parameter.
+   toolbar->ReplaceButton( name1, button2, nullptr );
+   CPPUNIT_ASSERT( toolbar->GetButton( name1 ) == nullptr );
    CPPUNIT_ASSERT( toolbar->GetButton( name2 ) == button2.get() );
    CPPUNIT_ASSERT( toolbar->GetButton( name3 ) == button3.get() );
    CPPUNIT_ASSERT( toolbar->GetButton( name4 ) == button4.get() );
@@ -1283,7 +1283,7 @@ void HUDElementsTests::TestStealthToolbar()
    toolbar->ReplaceButton( name3, button1, &tmpButton );
    CPPUNIT_ASSERT( toolbar->GetButton( name1 ) == button1.get() );
    CPPUNIT_ASSERT( toolbar->GetButton( name2 ) == button2.get() );
-   CPPUNIT_ASSERT( toolbar->GetButton( name3 ) == NULL );
+   CPPUNIT_ASSERT( toolbar->GetButton( name3 ) == nullptr );
    CPPUNIT_ASSERT( toolbar->GetButton( name4 ) == button4.get() );
    CPPUNIT_ASSERT_MESSAGE("New button should now have the same index as the old button",
       indices[2] == toolbar->GetElementIndex( *button1 ) );
@@ -1298,15 +1298,15 @@ void HUDElementsTests::TestStealthToolbar()
 
    // Start and end elements should still remain
    CPPUNIT_ASSERT_MESSAGE( "HUD Toolbar should still have start and end elements",
-      toolbar->GetStartElement() != NULL
-      && toolbar->GetEndElement() != NULL );
+      toolbar->GetStartElement() != nullptr
+      && toolbar->GetEndElement() != nullptr );
 
 }
 
 //////////////////////////////////////////////////////////////
 void HUDElementsTests::TestStealthMeter()
 {
-   dtCore::RefPtr<SimCore::Components::StealthMeter> meter =
+   std::shared_ptr<SimCore::Components::StealthMeter> meter =
       new SimCore::Components::StealthMeter("TestStealthMeter");
 
    meter->Initialize();
@@ -1324,7 +1324,7 @@ void HUDElementsTests::TestStealthHealthMeter()
    // NOTE: This meter is a simple subclass of a bar meter.
    // This function merely tests that this object can
    // initialize properly.
-   dtCore::RefPtr<SimCore::Components::StealthHealthMeter> healthMeter =
+   std::shared_ptr<SimCore::Components::StealthHealthMeter> healthMeter =
       new SimCore::Components::StealthHealthMeter("TestHealthMeter");
 
    healthMeter->Initialize();
@@ -1336,7 +1336,7 @@ void HUDElementsTests::TestStealthAmmoMeter()
    // NOTE: This meter is a simple subclass of a unit bar meter.
    // This function merely tests that this object can
    // initialize properly.
-   dtCore::RefPtr<SimCore::Components::StealthAmmoMeter> ammoMeter =
+   std::shared_ptr<SimCore::Components::StealthAmmoMeter> ammoMeter =
       new SimCore::Components::StealthAmmoMeter("TestAmmoMeter");
 
    ammoMeter->Initialize();
@@ -1348,7 +1348,7 @@ void HUDElementsTests::TestStealthCompassMeter()
    // NOTE: This meter is a simple subclass of slide bar meter.
    // This function merely tests that this object can
    // initialize properly.
-   dtCore::RefPtr<SimCore::Components::StealthCompassMeter> compassMeter =
+   std::shared_ptr<SimCore::Components::StealthCompassMeter> compassMeter =
       new SimCore::Components::StealthCompassMeter("TestCompassMeter");
 
    compassMeter->Initialize();
@@ -1370,7 +1370,7 @@ void HUDElementsTests::TestStealthCompassMeter()
 //////////////////////////////////////////////////////////////
 void HUDElementsTests::TestStealthGPSMeter()
 {
-   dtCore::RefPtr<SimCore::Components::StealthGPSMeter> gpsMeter =
+   std::shared_ptr<SimCore::Components::StealthGPSMeter> gpsMeter =
       new SimCore::Components::StealthGPSMeter("TestGPSMeter");
 
    // Test variables
@@ -1404,7 +1404,7 @@ void HUDElementsTests::TestStealthGPSMeter()
 //////////////////////////////////////////////////////////////
 void HUDElementsTests::TestStealthMGRSMeter()
 {
-   dtCore::RefPtr<SimCore::Components::StealthMGRSMeter> gmrsMeter =
+   std::shared_ptr<SimCore::Components::StealthMGRSMeter> gmrsMeter =
       new SimCore::Components::StealthMGRSMeter("TestMGRSMeter");
 
    // Test variables
@@ -1422,7 +1422,7 @@ void HUDElementsTests::TestStealthMGRSMeter()
 //////////////////////////////////////////////////////////////
 void HUDElementsTests::TestStealthCartesianMeter()
 {
-   dtCore::RefPtr<SimCore::Components::StealthCartesianMeter> cartMeter =
+   std::shared_ptr<SimCore::Components::StealthCartesianMeter> cartMeter =
       new SimCore::Components::StealthCartesianMeter("TestCartesianMeter");
 
    // Test variables
@@ -1450,7 +1450,7 @@ void HUDElementsTests::TestStealthCartesianMeter()
 //////////////////////////////////////////////////////////////
 void HUDElementsTests::TestStealthSpeedometer()
 {
-   dtCore::RefPtr<SimCore::Components::StealthSpeedometer> speedometer =
+   std::shared_ptr<SimCore::Components::StealthSpeedometer> speedometer =
       new SimCore::Components::StealthSpeedometer("TestSpeedometer");
    // NOTE: The needle is NOT a CEGUI object.
    // It will need to be tested to make sure it is updated properly
@@ -1501,7 +1501,7 @@ void HUDElementsTests::TestStealthSpeedometer()
 //////////////////////////////////////////////////////////////
 void HUDElementsTests::TestStealthCallSign()
 {
-   dtCore::RefPtr<SimCore::Components::StealthCallSign> callsign =
+   std::shared_ptr<SimCore::Components::StealthCallSign> callsign =
       new SimCore::Components::StealthCallSign("TestCallSign");
 
    callsign->SetCallSign("Lorem Ipsum");

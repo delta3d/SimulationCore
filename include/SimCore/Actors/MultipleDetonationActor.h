@@ -67,7 +67,7 @@ namespace SimCore
             typedef std::vector<osg::Vec3> PositionArray;
             PositionArray mDetonationOffsets;
 
-            typedef std::vector<dtCore::RefPtr<dtCore::ParticleSystem> > ParticleSystemArray;
+            typedef std::vector<std::shared_ptr<dtCore::ParticleSystem> > ParticleSystemArray;
             ParticleSystemArray mExplosionArray;
             ParticleSystemArray mSmokeArray;
             

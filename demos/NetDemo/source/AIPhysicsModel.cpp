@@ -38,8 +38,8 @@ namespace NetDemo
 
    AIPhysicsModel::AIPhysicsModel()
       : mTimeStep(0.0f)
-      , mCurrentState(NULL)
-      , mGoalState(NULL)
+      , mCurrentState(nullptr)
+      , mGoalState(nullptr)
    {
 
    }
@@ -93,7 +93,7 @@ namespace NetDemo
       {
          dtPhysics::PhysicsObject* physicsObject = GetPhysicsActComp()->GetMainPhysicsObject();
 
-         if(physicsObject != NULL)
+         if(physicsObject != nullptr)
          {
             osg::Vec3 up = mCurrentState->GetUp();
             osg::Vec3 at = mCurrentState->GetForward();

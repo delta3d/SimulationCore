@@ -69,7 +69,7 @@ namespace DriverDemo
       dtCore::Transform ourTransform;
       GetTransform(ourTransform);
 
-      //dtCore::RefPtr<dtUtil::NodePrintOut> nodePrinter = new dtUtil::NodePrintOut();
+      //std::shared_ptr<dtUtil::NodePrintOut> nodePrinter = new dtUtil::NodePrintOut();
       //std::string nodes = nodePrinter->CollectNodeData(*GetNonDamagedFileNode());
       //std::cout << " --------- NODE PRINT OUT FOR HOVER VEHICLE --------- " << std::endl;
       //std::cout << nodes.c_str() << std::endl;
@@ -82,7 +82,7 @@ namespace DriverDemo
 
 
       /*
-      if(IsRemote() && physActor != NULL)
+      if(IsRemote() && physActor != nullptr)
       {
          GetHoverPhysicsActComp()->SetAgeiaFlags(dtAgeiaPhysX::AGEIA_FLAGS_GET_COLLISION_REPORT |
             dtAgeiaPhysX::AGEIA_FLAGS_POST_UPDATE | dtAgeiaPhysX::AGEIA_FLAGS_PRE_UPDATE);
@@ -97,9 +97,9 @@ namespace DriverDemo
       mShield->SetTranslation(osg::Vec3(0.0f, 0.0f, 0.5f));
       AddChild(mShield.get());
 
-      SimCore::Components::RenderingSupportComponent* rsComp = NULL;
+      SimCore::Components::RenderingSupportComponent* rsComp = nullptr;
       GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME, rsComp);
-      if( rsComp != NULL)
+      if( rsComp != nullptr)
       {
          rsComp->SetMaxSpotLights(1);
          //Add a spot light
@@ -121,7 +121,7 @@ namespace DriverDemo
       if(!IsRemote())
       {
          // Setup our articulation helper for the vehicle
-         dtCore::RefPtr<SimCore::Components::DefaultFlexibleArticulationHelper> articHelper =
+         std::shared_ptr<SimCore::Components::DefaultFlexibleArticulationHelper> articHelper =
             new SimCore::Components::DefaultFlexibleArticulationHelper();
          articHelper->SetEntity(this);
          SetArticulationHelper(articHelper.get());
@@ -157,7 +157,7 @@ namespace DriverDemo
    void HoverVehicleActor::UpdateVehicleTorquesAndAngles(float deltaTime)
    {
       dtCore::Keyboard *keyboard = GetGameActorProxy().GetGameManager()->GetApplication().GetKeyboard();
-      if(keyboard == NULL)
+      if(keyboard == nullptr)
          return;
 
       bool accelForward = false, accelReverse = false, accelLeft = false, accelRight = false;
@@ -205,7 +205,7 @@ namespace DriverDemo
       // take the position and throw away the rotation.
 
       // This is ONLY called if we are LOCAL (we put the check here just in case... )
-      if (!IsRemote() && GetPhysicsActComp() != NULL)
+      if (!IsRemote() && GetPhysicsActComp() != nullptr)
       {
          // The base behavior is that we want to pull the translation and rotation off the object
          // in our physics scene and apply it to our 3D object in the visual scene.
@@ -214,7 +214,7 @@ namespace DriverDemo
          //TODO: Ask if the object is activated.  If not, the transform should not be pushed.
          if (!GetPushTransformToPhysics())
          {
-            if(physicsObject != NULL)
+            if(physicsObject != nullptr)
             {
                // Take rotation from physics and apply to current xform - IE NO ROTATION!
                dtCore::Transform currentXForm;
@@ -240,7 +240,7 @@ namespace DriverDemo
       // engine and moves the vehicle to where we think it is now (based on Dead Reckoning)
       // We do this because we don't own remote vehicles and naturally can't just go
       // physically simulating them however we like. But, the physics scene needs them to interact with.
-      if (IsRemote() && physObject != NULL)
+      if (IsRemote() && physObject != nullptr)
       {
          osg::Matrix rot = GetMatrixNode()->getMatrix();
 
@@ -298,7 +298,7 @@ namespace DriverDemo
 
       SimCore::Actors::BasePhysicsVehicleActorProxy::BuildPropertyMap();
 
-      HoverVehicleActor* actor = NULL;
+      HoverVehicleActor* actor = nullptr;
       GetActor(actor);
 
       AddProperty(new dtDAL::BooleanActorProperty("VehicleIsTheTurret", "Vehicle Is The Turret",
@@ -324,7 +324,7 @@ namespace DriverDemo
    ///////////////////////////////////////////////////////////////////////////////////
    void HoverVehicleActorProxy::BuildActorComponents()
    {
-      dtGame::GameActor* owner = NULL;
+      dtGame::GameActor* owner = nullptr;
       GetActor(owner);
 
       if (!HasComponent(dtPhysics::PhysicsActComp::TYPE))
@@ -334,9 +334,9 @@ namespace DriverDemo
 
       BaseClass::BuildActorComponents();
 
-      dtGame::DRPublishingActComp* drPublishingActComp = NULL;
+      dtGame::DRPublishingActComp* drPublishingActComp = nullptr;
       GetComponent(drPublishingActComp);
-      if (drPublishingActComp == NULL)
+      if (drPublishingActComp == nullptr)
       {
          LOG_ERROR("CRITICAL ERROR - No DR Publishing Actor Component.");
          return;

@@ -25,7 +25,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 // INCLUDE DIRECTIVES
 ////////////////////////////////////////////////////////////////////////////////
-#include <osg/Referenced>
+#include <dtUtil/refcountedbase.h>
 #include <dtABC/labelactor.h>
 #include "DemoExport.h"
 
@@ -93,10 +93,10 @@ namespace NetDemo
       //////////////////////////////////////////////////////////////////////////
       // SCORE LABEL MANAGER CODE
       //////////////////////////////////////////////////////////////////////////
-      class NETDEMO_EXPORT ScoreLabelManager : public osg::Referenced
+      class NETDEMO_EXPORT ScoreLabelManager : public std::enable_shared_from_this
       {
          public:
-            typedef osg::Referenced BaseClass;
+            typedef std::enable_shared_from_this BaseClass;
 
             static const int DEFAULT_MAX_LABEL_COUNT = 20;
 
@@ -125,10 +125,10 @@ namespace NetDemo
 
          private:
             int mMaxLabelCount;
-            dtCore::RefPtr<osg::Group> mLabelLayer;
-            dtCore::RefPtr<dtCore::Camera> mCamera;
+            osg::ref_ptr<osg::Group> mLabelLayer;
+            std::shared_ptr<dtCore::Camera> mCamera;
             
-            typedef std::list<dtCore::RefPtr<ScoreLabel> > LabelList;
+            typedef std::list<std::shared_ptr<ScoreLabel> > LabelList;
             LabelList mLabelList;
             LabelList mLabelRecycleBin;
       };

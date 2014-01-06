@@ -42,7 +42,7 @@ namespace SimCore
                                  : HUDButton( name, type )
       {
          std::string buttonStateName = imageName+"_ON";
-         dtCore::RefPtr<HUDImage> image = new HUDImage( buttonStateName );
+         std::shared_ptr<HUDImage> image = new HUDImage( buttonStateName );
          image->SetImage(imageset,buttonStateName);
          SetActiveElement(image.get());
 
@@ -106,7 +106,7 @@ namespace SimCore
       StealthToolbar::StealthToolbar( const std::string& name, const std::string& type )
       : HUDToolbar( name, type )
       {
-         dtCore::RefPtr<HUDImage> image = new HUDImage( "LeftBracket" );
+         std::shared_ptr<HUDImage> image = new HUDImage( "LeftBracket" );
          image->SetImage(DEFAULT_TOOLBAR_IMAGE_SET,"Bracket_Left");
          SetStartElement( image.get() );
 
@@ -126,16 +126,16 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       StealthButton* StealthToolbar::GetButton( const std::string& buttonName )
       {
-         std::map< const std::string, dtCore::RefPtr<StealthButton> >::iterator iter = 
+         std::map< const std::string, std::shared_ptr<StealthButton> >::iterator iter = 
             mNamedButtonMap.find( buttonName );
 
-         return iter != mNamedButtonMap.end() ? iter->second.get() : NULL;
+         return iter != mNamedButtonMap.end() ? iter->second.get() : nullptr;
       }
 
       //////////////////////////////////////////////////////////////////////////
       void StealthToolbar::GetButtonNames( std::vector<std::string>& outButtonNames ) const
       {
-         std::map< const std::string, dtCore::RefPtr<StealthButton> >::const_iterator iter = 
+         std::map< const std::string, std::shared_ptr<StealthButton> >::const_iterator iter = 
             mNamedButtonMap.begin();
 
          for( ; iter != mNamedButtonMap.end(); ++iter )
@@ -155,9 +155,9 @@ namespace SimCore
       bool StealthToolbar::AddButton( const std::string& buttonName, const std::string& key, 
          const std::string& imageset, bool updateElementSizes )
       {
-         if( GetButton( buttonName ) != NULL ) { return false; }
+         if( GetButton( buttonName ) != nullptr ) { return false; }
 
-         dtCore::RefPtr<StealthButton> button = new StealthButton( buttonName, buttonName, key, imageset );
+         std::shared_ptr<StealthButton> button = new StealthButton( buttonName, buttonName, key, imageset );
          bool success = mNamedButtonMap.insert(std::make_pair(buttonName, button.get() )).second;
 
          if( success )
@@ -172,9 +172,9 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      bool StealthToolbar::AddButton( dtCore::RefPtr<StealthButton>& newButton, bool updateElementSizes )
+      bool StealthToolbar::AddButton( std::shared_ptr<StealthButton>& newButton, bool updateElementSizes )
       {
-         if( ! newButton.valid() || GetButton( newButton->GetName() ) != NULL ) { return false; }
+         if( ! newButton.valid() || GetButton( newButton->GetName() ) != nullptr ) { return false; }
 
          bool success = mNamedButtonMap.insert(std::make_pair(newButton->GetName(), newButton.get() )).second;
 
@@ -191,9 +191,9 @@ namespace SimCore
 
       //////////////////////////////////////////////////////////////////////////
       bool StealthToolbar::ReplaceButton( const std::string& oldButtonName, 
-         dtCore::RefPtr<StealthButton>& newButton, dtCore::RefPtr<StealthButton>* outOldButton )
+         std::shared_ptr<StealthButton>& newButton, std::shared_ptr<StealthButton>* outOldButton )
       {
-         std::map< const std::string, dtCore::RefPtr<StealthButton> >::iterator iter = 
+         std::map< const std::string, std::shared_ptr<StealthButton> >::iterator iter = 
             mNamedButtonMap.find( oldButtonName );
 
          if( iter == mNamedButtonMap.end() || ! newButton.valid() ) { return false; }
@@ -202,7 +202,7 @@ namespace SimCore
          int index = GetElementIndex( *old );
          RemoveButton( oldButtonName );
 
-         if( outOldButton != NULL ) { *outOldButton = old; }
+         if( outOldButton != nullptr ) { *outOldButton = old; }
 
          bool success = mNamedButtonMap.insert(std::make_pair(newButton->GetName(), newButton.get() )).second;
          InsertElement(newButton.get(),index);
@@ -214,7 +214,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       bool StealthToolbar::RemoveButton( const std::string& buttonName )
       {
-         std::map< const std::string, dtCore::RefPtr<StealthButton> >::iterator iter = 
+         std::map< const std::string, std::shared_ptr<StealthButton> >::iterator iter = 
             mNamedButtonMap.find( buttonName );
 
          if( iter == mNamedButtonMap.end() ) { return false; }
@@ -239,7 +239,7 @@ namespace SimCore
          GetStartElement()->SetSize( endRatio, 1.0f );
          GetEndElement()->SetSize( endRatio, 1.0f );
 
-         std::map< const std::string, dtCore::RefPtr<StealthButton> >::iterator iter = 
+         std::map< const std::string, std::shared_ptr<StealthButton> >::iterator iter = 
             mNamedButtonMap.begin();
          for( ; iter != mNamedButtonMap.end(); ++iter )
          {
@@ -255,7 +255,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void StealthToolbar::SetButtonsActive( bool active )
       {
-         std::map< const std::string, dtCore::RefPtr<StealthButton> >::iterator iter = 
+         std::map< const std::string, std::shared_ptr<StealthButton> >::iterator iter = 
             mNamedButtonMap.begin();
          for( ; iter != mNamedButtonMap.end(); ++iter )
          {
@@ -271,7 +271,7 @@ namespace SimCore
       {
          StealthButton* button = GetButton( buttonName );
 
-         if( button == NULL ) { return false; }
+         if( button == nullptr ) { return false; }
 
          button->SetActive( active );
          return true;
@@ -329,13 +329,13 @@ namespace SimCore
          CreateMeterElement( mMeter, GetName()+".MeterBar" );
          mMeter->SetPosition( 85.0f/256.0f, 11.0/64.0f);
          mMeter->SetSize( 150.0f/256.0f, 41.0f/64.0f );
-         dtCore::RefPtr<HUDImage> meterImage = new HUDImage(GetName()+".MeterBarImage");
+         std::shared_ptr<HUDImage> meterImage = new HUDImage(GetName()+".MeterBarImage");
          mMeter->SetImage( meterImage.get() );
          mWindow->addChildWindow(mMeter->GetCEGUIWindow());
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void StealthMeter::CreateMeterElement( dtCore::RefPtr<HUDMeter>& outMeterOfThis, const std::string& meterName )
+      void StealthMeter::CreateMeterElement( std::shared_ptr<HUDMeter>& outMeterOfThis, const std::string& meterName )
       {
          outMeterOfThis = new HUDBarMeter( meterName );
       }
@@ -545,7 +545,7 @@ namespace SimCore
 
 
       //////////////////////////////////////////////////////////////////////////
-      void StealthCompassMeter::CreateMeterElement( dtCore::RefPtr<HUDMeter>& outMeterOfThis,
+      void StealthCompassMeter::CreateMeterElement( std::shared_ptr<HUDMeter>& outMeterOfThis,
                                                    const std::string& meterName )
       {
          outMeterOfThis = new HUDSlideBarMeter( meterName );
@@ -843,7 +843,7 @@ namespace SimCore
       bool StealthSpeedometer::RegisterNeedleWithGUI( GuiDrawable* gui )
       {
          bool success = false;
-         if( gui != NULL && mNeedle.valid() )
+         if( gui != nullptr && mNeedle.valid() )
          {
             mGUI = gui;
 #if CEGUI_VERSION_MAJOR == 0 && CEGUI_VERSION_MINOR < 7

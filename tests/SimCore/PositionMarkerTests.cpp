@@ -36,7 +36,7 @@
 
 #include <dtUtil/mathdefines.h>
 #include <dtCore/system.h>
-#include <dtCore/observerptr.h>
+#include <dtUtil/refcountedbase.h>
 #include <dtDAL/enginepropertytypes.h>
 #include <dtGame/gamemanager.h>
 #include <dtGame/deadreckoningcomponent.h>
@@ -49,7 +49,7 @@
 #include <UnitTestMain.h>
 #include <dtABC/application.h>
 
-using dtCore::RefPtr;
+using std::shared_ptr;
 using dtCore::ObserverPtr;
 
 namespace SimCore
@@ -89,23 +89,23 @@ namespace SimCore
 
             void tearDown()
             {
-               mDeadReckoningComponent = NULL;
+               mDeadReckoningComponent = nullptr;
 
                if (mGM.valid())
                {
                   mGM->DeleteAllActors(true);
-                  mGM = NULL;
+                  mGM = nullptr;
                }
                dtCore::System::GetInstance().Stop();
             }
 
             void TestPositionMarkerSourceCallsign()
             {
-               RefPtr<PositionMarkerActorProxy> pmap;
-               PositionMarker* pm = NULL;
+               std::shared_ptr<PositionMarkerActorProxy> pmap;
+               PositionMarker* pm = nullptr;
                CreatePositionMarker(pmap, pm);
 
-               dtDAL::StringActorProperty* prop = NULL;
+               dtDAL::StringActorProperty* prop = nullptr;
                pmap->GetProperty(PositionMarkerActorProxy::PROPERTY_SOURCE_CALLSIGN, prop);
                static const std::string TEST_STRING("Silly");
                prop->FromString(TEST_STRING);
@@ -115,11 +115,11 @@ namespace SimCore
 
             void TestPositionMarkerSourceForce()
             {
-               RefPtr<PositionMarkerActorProxy> pmap;
-               PositionMarker* pm = NULL;
+               std::shared_ptr<PositionMarkerActorProxy> pmap;
+               PositionMarker* pm = nullptr;
                CreatePositionMarker(pmap, pm);
 
-               dtDAL::AbstractEnumActorProperty* prop = NULL;
+               dtDAL::AbstractEnumActorProperty* prop = nullptr;
                pmap->GetProperty(PositionMarkerActorProxy::PROPERTY_SOURCE_FORCE, prop);
                prop->SetEnumValue(BaseEntityActorProxy::ForceEnum::INSURGENT);
                CPPUNIT_ASSERT(BaseEntityActorProxy::ForceEnum::INSURGENT == prop->GetEnumValue());
@@ -128,13 +128,13 @@ namespace SimCore
 
             void TestPositionMarkerInitialAlpha()
             {
-               RefPtr<PositionMarkerActorProxy> pmap;
-               PositionMarker* pm = NULL;
+               std::shared_ptr<PositionMarkerActorProxy> pmap;
+               PositionMarker* pm = nullptr;
                CreatePositionMarker(pmap, pm);
 
                CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("The alpha should default to 1.0", 1.0f, pm->GetInitialAlpha(), 0.001f);
 
-               dtDAL::FloatActorProperty* prop = NULL;
+               dtDAL::FloatActorProperty* prop = nullptr;
                pmap->GetProperty(PositionMarkerActorProxy::PROPERTY_INITIAL_ALPHA, prop);
                prop->SetValue(0.3f);
                CPPUNIT_ASSERT_DOUBLES_EQUAL(0.3f, prop->GetValue(), 0.001f);
@@ -149,12 +149,12 @@ namespace SimCore
 
             void TestPositionMarkerDeleteOnFadeOut()
             {
-               RefPtr<PositionMarkerActorProxy> pmap;
-               PositionMarker* pm = NULL;
+               std::shared_ptr<PositionMarkerActorProxy> pmap;
+               PositionMarker* pm = nullptr;
                CreatePositionMarker(pmap, pm);
 
                CPPUNIT_ASSERT(!pm->GetDeleteOnFadeOut());
-               dtDAL::BooleanActorProperty* prop = NULL;
+               dtDAL::BooleanActorProperty* prop = nullptr;
                pmap->GetProperty(PositionMarkerActorProxy::PROPERTY_DELETE_ON_FADE_OUT, prop);
                prop->SetValue(true);
                CPPUNIT_ASSERT(prop->GetValue());
@@ -163,11 +163,11 @@ namespace SimCore
 
             void TestPositionMarkerSourceService()
             {
-               RefPtr<PositionMarkerActorProxy> pmap;
-               PositionMarker* pm = NULL;
+               std::shared_ptr<PositionMarkerActorProxy> pmap;
+               PositionMarker* pm = nullptr;
                CreatePositionMarker(pmap, pm);
 
-               dtDAL::AbstractEnumActorProperty* prop = NULL;
+               dtDAL::AbstractEnumActorProperty* prop = nullptr;
                pmap->GetProperty(PositionMarkerActorProxy::PROPERTY_SOURCE_SERVICE, prop);
                prop->SetEnumValue(BaseEntityActorProxy::ServiceEnum::NAVY);
                CPPUNIT_ASSERT(BaseEntityActorProxy::ServiceEnum::NAVY == prop->GetEnumValue());
@@ -176,22 +176,22 @@ namespace SimCore
 
             void TestPositionMarkerDelete()
             {
-               RefPtr<PositionMarkerActorProxy> pmap;
-               PositionMarker* pm = NULL;
+               std::shared_ptr<PositionMarkerActorProxy> pmap;
+               PositionMarker* pm = nullptr;
                CreatePositionMarker(pmap, pm);
-               dtCore::ObserverPtr<PositionMarker> edraw = pm;
+               std::weak_ptr<PositionMarker> edraw = pm;
 
                CPPUNIT_ASSERT_EQUAL(1, pmap->referenceCount());
                CPPUNIT_ASSERT(edraw.valid());
-               pmap = NULL;
+               pmap = nullptr;
                CPPUNIT_ASSERT(!edraw.valid());
-               edraw = NULL;
+               edraw = nullptr;
             }
 
             void TestCalcAlpha()
             {
-               RefPtr<PositionMarkerActorProxy> pmap;
-               PositionMarker* pm = NULL;
+               std::shared_ptr<PositionMarkerActorProxy> pmap;
+               PositionMarker* pm = nullptr;
                CreatePositionMarker(pmap, pm);
 
                pm->SetInitialAlpha(1.0);
@@ -205,8 +205,8 @@ namespace SimCore
 
             void TestCalcColor()
             {
-               RefPtr<PositionMarkerActorProxy> pmap;
-               PositionMarker* pm = NULL;
+               std::shared_ptr<PositionMarkerActorProxy> pmap;
+               PositionMarker* pm = nullptr;
                CreatePositionMarker(pmap, pm);
 
                // The force here first so that the friendly color set will have to
@@ -230,12 +230,12 @@ namespace SimCore
 
             void TestAddTimer()
             {
-               RefPtr<PositionMarkerActorProxy> pmap;
-               PositionMarker* pm = NULL;
+               std::shared_ptr<PositionMarkerActorProxy> pmap;
+               PositionMarker* pm = nullptr;
                CreatePositionMarker(pmap, pm);
 
-               RefPtr<PositionMarkerActorProxy> pmap2;
-               PositionMarker* pm2 = NULL;
+               std::shared_ptr<PositionMarkerActorProxy> pmap2;
+               PositionMarker* pm2 = nullptr;
                CreatePositionMarker(pmap2, pm2);
 
                pm->SetDeleteOnFadeOut(false);
@@ -246,11 +246,11 @@ namespace SimCore
 
             void TestColors()
             {
-               RefPtr<PositionMarkerActorProxy> pmap;
-               PositionMarker* pm = NULL;
+               std::shared_ptr<PositionMarkerActorProxy> pmap;
+               PositionMarker* pm = nullptr;
                CreatePositionMarker(pmap, pm);
 
-               dtDAL::ColorRgbaActorProperty* prop = NULL;
+               dtDAL::ColorRgbaActorProperty* prop = nullptr;
                pmap->GetProperty(PositionMarkerActorProxy::PROPERTY_FRIENDLY_COLOR, prop);
                osg::Vec4 theColorF(1.2, 0.03, 0.33, 1.0);
                prop->SetValue(theColorF);
@@ -284,13 +284,13 @@ namespace SimCore
 
             void TestColorForForce()
             {
-               RefPtr<PositionMarkerActorProxy> pmap;
-               PositionMarker* pm = NULL;
+               std::shared_ptr<PositionMarkerActorProxy> pmap;
+               PositionMarker* pm = nullptr;
                CreatePositionMarker(pmap, pm);
 
-               dtDAL::ColorRgbaActorProperty* prop = NULL;
+               dtDAL::ColorRgbaActorProperty* prop = nullptr;
                pmap->GetProperty(PositionMarkerActorProxy::PROPERTY_MARKER_COLOR, prop);
-               CPPUNIT_ASSERT(prop != NULL);
+               CPPUNIT_ASSERT(prop != nullptr);
                CPPUNIT_ASSERT(prop->IsReadOnly());
 
                osg::Vec4 theColor;
@@ -338,16 +338,16 @@ namespace SimCore
 
          private:
 
-            void CreatePositionMarker(RefPtr<PositionMarkerActorProxy>& pmap, PositionMarker*& pm)
+            void CreatePositionMarker(std::shared_ptr<PositionMarkerActorProxy>& pmap, PositionMarker*& pm)
             {
                mGM->CreateActor(*EntityActorRegistry::POSITION_MARKER_ACTOR_TYPE, pmap);
                CPPUNIT_ASSERT(pmap.valid());
                pmap->GetActor(pm);
-               CPPUNIT_ASSERT(pm != NULL);
+               CPPUNIT_ASSERT(pm != nullptr);
             }
 
-            RefPtr<dtGame::GameManager> mGM;
-            RefPtr<dtGame::DeadReckoningComponent> mDeadReckoningComponent;
+            std::shared_ptr<dtGame::GameManager> mGM;
+            std::shared_ptr<dtGame::DeadReckoningComponent> mDeadReckoningComponent;
 
       };
 

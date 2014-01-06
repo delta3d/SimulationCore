@@ -83,7 +83,7 @@ namespace NetDemo
 
 
          float mTimeSinceLastFire;
-         dtCore::ObserverPtr<dtCore::Transformable> mTarget;
+         std::weak_ptr<dtCore::Transformable> mTarget;
 
    };
 

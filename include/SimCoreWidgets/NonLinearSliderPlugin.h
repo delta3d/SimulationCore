@@ -43,7 +43,7 @@ class NonLinearSliderPlugin : public SimCoreWidgetsPlugin
    Q_OBJECT
 
    public:
-      NonLinearSliderPlugin( QObject* parent = NULL );
+      NonLinearSliderPlugin( QObject* parent = nullptr );
 
       // INTERFACE METHODS -----------------------------------------------------
       QWidget* createWidget( QWidget* parent );

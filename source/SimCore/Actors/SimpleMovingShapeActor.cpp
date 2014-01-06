@@ -184,7 +184,7 @@ namespace SimCore
          mShapeVolume = new SimCore::Components::VolumeRenderingComponent::ShapeVolumeRecord();
 
          //notify the logger component to ignore this actor
-         dtCore::RefPtr<dtGame::Message> message = GetGameManager()->GetMessageFactory().CreateMessage(dtGame::MessageType::LOG_REQ_ADD_IGNORED_ACTOR);
+         std::shared_ptr<dtGame::Message> message = GetGameManager()->GetMessageFactory().CreateMessage(dtGame::MessageType::LOG_REQ_ADD_IGNORED_ACTOR);
          message->SetAboutActorId(GetId());
 
          GetGameManager()->SendMessage(*message);
@@ -262,11 +262,11 @@ namespace SimCore
 
          if(mShapeVolume.valid())
          {
-            SimCore::Components::VolumeRenderingComponent* vrc = NULL;
+            SimCore::Components::VolumeRenderingComponent* vrc = nullptr;
             GetGameManager()->GetComponentByName(SimCore::Components::VolumeRenderingComponent::DEFAULT_NAME, vrc); 
 
             //std::cout << "Setting Current Dimensions: " << dim << std::endl;
-            if(vrc != NULL)
+            if(vrc != nullptr)
             {
 
                if(!mIsCreated)

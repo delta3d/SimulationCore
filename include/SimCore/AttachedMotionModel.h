@@ -58,11 +58,11 @@ namespace SimCore
          /**
           * Constructor.
           *
-          * @param keyboard the keyboard instance, or NULL to avoid creating default input mappings
-          * @param mouse the mouse instance, or NULL to avoid creating default input mappings
+          * @param keyboard the keyboard instance, or nullptr to avoid creating default input mappings
+          * @param mouse the mouse instance, or nullptr to avoid creating default input mappings
           */
-         AttachedMotionModel(dtCore::Keyboard* keyboard = NULL,
-                           dtCore::Mouse* mouse = NULL);
+         AttachedMotionModel(dtCore::Keyboard* keyboard = nullptr,
+                           dtCore::Mouse* mouse = nullptr);
 
          /**
           * Destructor.
@@ -145,33 +145,33 @@ namespace SimCore
 
       private:
          ///A reference to the Scene, used for ground following.
-         dtCore::RefPtr<dtCore::Scene> mScene;
+         std::shared_ptr<dtCore::Scene> mScene;
          
          /// The default input device.
-         dtCore::RefPtr<dtCore::LogicalInputDevice> mDefaultInputDevice;
+         std::shared_ptr<dtCore::LogicalInputDevice> mDefaultInputDevice;
                   
          /// The left/right mouse movement
-         dtCore::RefPtr<dtCore::AxisToAxis> mLeftRightMouseMovement;
+         std::shared_ptr<dtCore::AxisToAxis> mLeftRightMouseMovement;
          
          /// The up/down mouse movement.
-         dtCore::RefPtr<dtCore::AxisToAxis> mUpDownMouseMovement;
+         std::shared_ptr<dtCore::AxisToAxis> mUpDownMouseMovement;
          
          /// The arrow key up/down mapping.
-         dtCore::RefPtr<dtCore::ButtonsToAxis> mArrowKeysUpDownMapping;
+         std::shared_ptr<dtCore::ButtonsToAxis> mArrowKeysUpDownMapping;
          
          /// The arrow key left/right mapping.
-         dtCore::RefPtr<dtCore::ButtonsToAxis> mArrowKeysLeftRightMapping;
+         std::shared_ptr<dtCore::ButtonsToAxis> mArrowKeysLeftRightMapping;
                      
          /// The turn left/right axis for the keyboard.
-         dtCore::RefPtr<dtCore::LogicalAxis> mTurnLeftRightKeyAxis;
+         std::shared_ptr<dtCore::LogicalAxis> mTurnLeftRightKeyAxis;
 
          /// The turn left/right axis for the mouse.
-         dtCore::RefPtr<dtCore::LogicalAxis> mTurnLeftRightMouseAxis;
+         std::shared_ptr<dtCore::LogicalAxis> mTurnLeftRightMouseAxis;
          
          /// The look up/down axis for the keyboard.
-         dtCore::RefPtr<dtCore::LogicalAxis> mLookUpDownKeyAxis;
+         std::shared_ptr<dtCore::LogicalAxis> mLookUpDownKeyAxis;
          /// The look up/down axis for the mouse.
-         dtCore::RefPtr<dtCore::LogicalAxis> mLookUpDownMouseAxis;
+         std::shared_ptr<dtCore::LogicalAxis> mLookUpDownMouseAxis;
                                  
          /// The maximum turn speed for the mouse (degrees per second).
          float mMaximumMouseTurnSpeed;

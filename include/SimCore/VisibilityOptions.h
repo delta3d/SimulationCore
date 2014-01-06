@@ -26,7 +26,7 @@
 #define SIMCORE_VISIBILITY_OPTIONS
 
 #include <SimCore/Export.h>
-#include <osg/Referenced>
+#include <dtUtil/refcountedbase.h>
 #include <dtUtil/enumeration.h>
 #include <map>
 
@@ -59,7 +59,7 @@ namespace SimCore
     * Class that holds onto a set of visibility options.  It is meant to be extensible, hence
     * the virtual destructor.
     */
-   class SIMCORE_EXPORT VisibilityOptions: public osg::Referenced
+   class SIMCORE_EXPORT VisibilityOptions: public std::enable_shared_from_this
    {
    public:
       VisibilityOptions();

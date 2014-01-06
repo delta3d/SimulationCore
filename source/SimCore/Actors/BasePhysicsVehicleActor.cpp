@@ -140,7 +140,7 @@ namespace SimCore
          // DEBUG: std::cout << "Terrain loaded." << std::endl;
 
          dtPhysics::PhysicsObject* physicsObject = GetPhysicsActComp()->GetMainPhysicsObject();
-         if( physicsObject == NULL )
+         if( physicsObject == nullptr )
          {
             // DEBUG: std::cout << "\tVehicle physics object not loaded :(\n" << std::endl;
             return false;
@@ -208,7 +208,7 @@ namespace SimCore
       {
          dtPhysics::PhysicsObject* physicsObject = GetPhysicsActComp()->GetMainPhysicsObject();
 
-         if(physicsObject == NULL)
+         if(physicsObject == nullptr)
          {
             LOG_WARNING("BAD Physics OBJECT ON VEHICLE! May occur naturally if the application is shutting down.");
             return;
@@ -271,7 +271,7 @@ namespace SimCore
 
          // ANGULAR VELOCITY - uses physics engine
          dtPhysics::PhysicsObject* physObj = GetPhysicsActComp()->GetMainPhysicsObject();
-         if (physObj != NULL)
+         if (physObj != nullptr)
          {
             osg::Vec3 physAngularVelocity;
             physAngularVelocity = physObj->GetAngularVelocity();
@@ -327,7 +327,7 @@ namespace SimCore
          // We do this because we don't own remote vehicles and naturally can't just go
          // physically simulating them however we like. But, the physics scene needs them to interact with.
          // Only called if we are remote, but check for safety. Local objects are moved by the physics engine...
-         if (physicsObject != NULL  && (IsRemote() || GetPushTransformToPhysics()))
+         if (physicsObject != nullptr  && (IsRemote() || GetPushTransformToPhysics()))
          {
             SetPushTransformToPhysics(false);
 
@@ -351,7 +351,7 @@ namespace SimCore
       void BasePhysicsVehicleActor::PostPhysicsUpdate()
       {
          // This is ONLY called if we are LOCAL (we put the check here just in case... )
-         if (!IsRemote() && GetPhysicsActComp() != NULL)
+         if (!IsRemote() && GetPhysicsActComp() != nullptr)
          {
             // The base behavior is that we want to pull the translation and rotation off the object
             // in our physics scene and apply it to our 3D object in the visual scene.
@@ -361,7 +361,7 @@ namespace SimCore
 
             if (!GetPushTransformToPhysics())
             {
-               if(physicsObject != NULL)
+               if(physicsObject != nullptr)
                {
                   dtCore::Transform xform;
                   physicsObject->GetTransformAsVisual(xform);
@@ -476,7 +476,7 @@ namespace SimCore
       {
          dtPhysics::PhysicsObject* physObject = GetPhysicsActComp()->GetMainPhysicsObject();
 
-         if( physObject == NULL )
+         if( physObject == nullptr )
          {
             return false;
          }
@@ -492,7 +492,7 @@ namespace SimCore
          GetPhysicsActComp()->TraceRay(ray, hits);
          if (!hits.empty())
          {
-            const dtPhysics::RayCast::Report* closestReport = NULL;
+            const dtPhysics::RayCast::Report* closestReport = nullptr;
             std::vector<dtPhysics::RayCast::Report>::const_iterator i, iend;
             i = hits.begin();
             iend = hits.end();
@@ -500,7 +500,7 @@ namespace SimCore
             {
                const dtPhysics::RayCast::Report& report = *i;
                // Get the report closest to the location of the vehicle.
-               if (closestReport == NULL
+               if (closestReport == nullptr
                         || (location - report.mHitPos).length2() < (location - closestReport->mHitPos).length2())
                {
                   closestReport = &report;
@@ -518,7 +518,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////
       dtPhysics::PhysicsActComp* BasePhysicsVehicleActor::GetPhysicsActComp() const
       {
-         dtPhysics::PhysicsActComp* ac = NULL;
+         dtPhysics::PhysicsActComp* ac = nullptr;
          GetComponent(ac);
          return ac;
       }
@@ -589,9 +589,9 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      dtCore::RefPtr<dtDAL::ActorProperty> BasePhysicsVehicleActorProxy::GetDeprecatedProperty(const std::string& name)
+      std::shared_ptr<dtDAL::ActorProperty> BasePhysicsVehicleActorProxy::GetDeprecatedProperty(const std::string& name)
       {
-         dtCore::RefPtr<dtDAL::ActorProperty> depProp = BaseClass::GetDeprecatedProperty(name);
+         std::shared_ptr<dtDAL::ActorProperty> depProp = BaseClass::GetDeprecatedProperty(name);
          return depProp;
       }
 
@@ -610,7 +610,7 @@ namespace SimCore
          // DEFAULT the Dead Reckoning Algorithm to Velocity And Acceleration. It's a prop so will
          // be overwriten from the map, unless this is a new vehicle object.
          // For a default, static would be dumb. Velocity might be OK.
-         dtCore::RefPtr<dtGame::DeadReckoningHelper> drAC;
+         std::shared_ptr<dtGame::DeadReckoningHelper> drAC;
          GetComponent(drAC);
          if (drAC.valid())
          {

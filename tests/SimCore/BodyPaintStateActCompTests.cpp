@@ -70,8 +70,8 @@ namespace SimCore
             void SubTestUniforms(osg::StateSet& stateSet);
 
          private:
-            dtCore::RefPtr<dtGame::GameManager> mGM;
-            dtCore::RefPtr<CamoPaintStateActComp> mActComp;
+            std::shared_ptr<dtGame::GameManager> mGM;
+            std::shared_ptr<CamoPaintStateActComp> mActComp;
       };
 
       CPPUNIT_TEST_SUITE_REGISTRATION(BodyPaintStateActCompTests);
@@ -99,9 +99,9 @@ namespace SimCore
          try
          {
             mGM->DeleteAllActors(true);
-            mGM = NULL;
+            mGM = nullptr;
 
-            mActComp = NULL;
+            mActComp = nullptr;
          }
          catch (const dtUtil::Exception& ex)
          {
@@ -192,17 +192,17 @@ namespace SimCore
          try
          {
             // Create a proxy.
-            dtCore::RefPtr<dtGame::GameActorProxy> proxy;
+            std::shared_ptr<dtGame::GameActorProxy> proxy;
             mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::MILITARY_AIR_PLATFORM_ACTOR_TYPE, proxy);
 
             // Get the actor that was created.
-            SimCore::Actors::Platform* actor = NULL;
+            SimCore::Actors::Platform* actor = nullptr;
             proxy->GetActor(actor);
 
             // Ensure the component exists
-            mActComp = NULL;
+            mActComp = nullptr;
             CamoPaintStateActComp* actComp = actor->GetComponent<CamoPaintStateActComp>();
-            CPPUNIT_ASSERT(actComp != NULL);
+            CPPUNIT_ASSERT(actComp != nullptr);
             CPPUNIT_ASSERT(actComp->GetOwnerNode() == actor->GetOSGNode());
 
             // Add the actor to the scene.
@@ -227,8 +227,8 @@ namespace SimCore
 
             // Ensure that the actor component has added uniforms to the actor's state set.
             osg::StateSet* ss = actor->GetOSGNode()->getStateSet();
-            CPPUNIT_ASSERT(actComp->GetStateSet() != NULL);
-            CPPUNIT_ASSERT(ss != NULL);
+            CPPUNIT_ASSERT(actComp->GetStateSet() != nullptr);
+            CPPUNIT_ASSERT(ss != nullptr);
             CPPUNIT_ASSERT(ss == actComp->GetStateSet());
             SubTestUniforms(*ss);
          }
@@ -242,16 +242,16 @@ namespace SimCore
       void BodyPaintStateActCompTests::SubTestUniforms(osg::StateSet& stateSet)
       {
          typedef BodyPaintStateActComp ClassName;
-         CPPUNIT_ASSERT(stateSet.getUniform(ClassName::UNIFORM_FRAME_OFFSET_AND_SCALES) != NULL);
-         CPPUNIT_ASSERT(stateSet.getUniform(ClassName::UNIFORM_PAINT_COLOR_1) != NULL);
-         CPPUNIT_ASSERT(stateSet.getUniform(ClassName::UNIFORM_PAINT_COLOR_2) != NULL);
-         CPPUNIT_ASSERT(stateSet.getUniform(ClassName::UNIFORM_PAINT_COLOR_3) != NULL);
-         CPPUNIT_ASSERT(stateSet.getUniform(ClassName::UNIFORM_PAINT_COLOR_4) != NULL);
-         CPPUNIT_ASSERT(stateSet.getUniform(ClassName::UNIFORM_PATTERN_SCALE) != NULL);
-         CPPUNIT_ASSERT(stateSet.getUniform(ClassName::UNIFORM_PROJECTION_DIRECTION) != NULL);
-         CPPUNIT_ASSERT(stateSet.getUniform(ClassName::UNIFORM_REPLACEMENT_DIFFUSE_MASK_TEXTURE) != NULL);
-         CPPUNIT_ASSERT(stateSet.getUniform(ClassName::UNIFORM_PATTERN_TEXTURE) != NULL);
-         CPPUNIT_ASSERT(stateSet.getUniform(ClassName::UNIFORM_OVERLAY_TEXTURE) != NULL);
+         CPPUNIT_ASSERT(stateSet.getUniform(ClassName::UNIFORM_FRAME_OFFSET_AND_SCALES) != nullptr);
+         CPPUNIT_ASSERT(stateSet.getUniform(ClassName::UNIFORM_PAINT_COLOR_1) != nullptr);
+         CPPUNIT_ASSERT(stateSet.getUniform(ClassName::UNIFORM_PAINT_COLOR_2) != nullptr);
+         CPPUNIT_ASSERT(stateSet.getUniform(ClassName::UNIFORM_PAINT_COLOR_3) != nullptr);
+         CPPUNIT_ASSERT(stateSet.getUniform(ClassName::UNIFORM_PAINT_COLOR_4) != nullptr);
+         CPPUNIT_ASSERT(stateSet.getUniform(ClassName::UNIFORM_PATTERN_SCALE) != nullptr);
+         CPPUNIT_ASSERT(stateSet.getUniform(ClassName::UNIFORM_PROJECTION_DIRECTION) != nullptr);
+         CPPUNIT_ASSERT(stateSet.getUniform(ClassName::UNIFORM_REPLACEMENT_DIFFUSE_MASK_TEXTURE) != nullptr);
+         CPPUNIT_ASSERT(stateSet.getUniform(ClassName::UNIFORM_PATTERN_TEXTURE) != nullptr);
+         CPPUNIT_ASSERT(stateSet.getUniform(ClassName::UNIFORM_OVERLAY_TEXTURE) != nullptr);
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -285,12 +285,12 @@ namespace SimCore
             mActComp->SetConcealMesh(testFile);
             CPPUNIT_ASSERT(constComp.GetConcealMesh() == testFile);
 
-            dtCore::RefPtr<osg::Group> testNode = new osg::Group;
-            CPPUNIT_ASSERT(constComp.GetParentNode() == NULL);
+            osg::ref_ptr<osg::Group> testNode = new osg::Group;
+            CPPUNIT_ASSERT(constComp.GetParentNode() == nullptr);
             mActComp->SetParentNode(testNode.get());
             CPPUNIT_ASSERT(constComp.GetParentNode() == testNode.get());
 
-            CPPUNIT_ASSERT(constComp.GetHiderNode() == NULL);
+            CPPUNIT_ASSERT(constComp.GetHiderNode() == nullptr);
             mActComp->SetHiderNode(testNode.get());
             CPPUNIT_ASSERT(constComp.GetHiderNode() == testNode.get());
          }

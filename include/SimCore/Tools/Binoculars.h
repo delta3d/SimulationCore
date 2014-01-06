@@ -177,7 +177,7 @@ namespace SimCore
             SimCore::UnitOfAngle* mUnitOfAngle;
 
             // Pointer to the camera so the perspective can be changed
-            dtCore::RefPtr<dtCore::Camera> mCamera;
+            std::shared_ptr<dtCore::Camera> mCamera;
 
             // Pointer to the binocular overlay
             CEGUI::Window *mOverlay;
@@ -194,7 +194,7 @@ namespace SimCore
             // Static zooming?
             bool mIsDynamicZooming;
             float mZoomFactor;
-            dtCore::RefPtr<dtCore::Isector> mIsector;
+            std::shared_ptr<dtCore::Isector> mIsector;
       };
    }
 }

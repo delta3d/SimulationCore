@@ -90,7 +90,7 @@ namespace NetDemo
       {
 
          // Setup our articulation helper for the vehicle
-         dtCore::RefPtr<SimCore::Components::DefaultFlexibleArticulationHelper> articHelper =
+         std::shared_ptr<SimCore::Components::DefaultFlexibleArticulationHelper> articHelper =
             new SimCore::Components::DefaultFlexibleArticulationHelper();
          articHelper->SetEntity(this);
          articHelper->AddArticulation("dof_turret_01",
@@ -99,7 +99,7 @@ namespace NetDemo
             SimCore::Components::DefaultFlexibleArticulationHelper::ARTIC_TYPE_ELEVATION, "dof_turret_01");
          SetArticulationHelper(articHelper.get());
 
-         mAIHelper->Init(NULL);
+         mAIHelper->Init(nullptr);
 
          //this will allow the AI to actually move us
          mAIHelper->GetPhysicsModel()->SetPhysicsActComp(GetPhysicsActComp());
@@ -122,7 +122,7 @@ namespace NetDemo
       }
 
       // Attach a special shader.
-      dtCore::RefPtr<SimCore::ApplyShaderVisitor> visitor = new SimCore::ApplyShaderVisitor();
+      std::shared_ptr<SimCore::ApplyShaderVisitor> visitor = new SimCore::ApplyShaderVisitor();
       visitor->AddNodeName("Eye360");
       visitor->SetShaderName("ColorPulseShader");
       visitor->SetShaderGroup("CustomizableVehicleShaderGroup");
@@ -168,7 +168,7 @@ namespace NetDemo
    void FireBallTowerActor::FindTarget(float)
    {
       float minDist = 200.0;
-      dtCore::Transformable* enemy = NULL;
+      dtCore::Transformable* enemy = nullptr;
 
       std::vector<dtDAL::ActorProxy*> actorArray;
       GetGameActorProxy().GetGameManager()->FindActorsByType(*NetDemoActorRegistry::ENEMY_MINE_ACTOR_TYPE, actorArray);
@@ -203,7 +203,7 @@ namespace NetDemo
          actorArray.pop_back();
       }   
 
-      if(enemy != NULL)
+      if(enemy != nullptr)
       {
          mTarget = enemy;
          mAIHelper->SetCurrentTarget(*enemy);
@@ -258,13 +258,13 @@ namespace NetDemo
          mTimeSinceLastFire = 0.0f;
 
          //create a fireball actor
-         dtCore::RefPtr<FireBallActorProxy> proxy;
+         std::shared_ptr<FireBallActorProxy> proxy;
          GetGameActorProxy().GetGameManager()->CreateActor(*NetDemoActorRegistry::FIREBALL_ACTOR_TYPE, proxy);
          if(proxy.valid())
          {
-            FireBallActor* fireball = NULL;
+            FireBallActor* fireball = nullptr;
             proxy->GetActor(fireball);
-            if(fireball != NULL)
+            if(fireball != nullptr)
             {
 
                float fireBallSpeed = 2.5f;
@@ -276,7 +276,7 @@ namespace NetDemo
 
                dtUtil::NodeCollector* nodes = GetNodeCollector();
                osgSim::DOFTransform* dof = nodes->GetDOFTransform("dof_gun_01");
-               if (dof != NULL)
+               if (dof != nullptr)
                {
                   osg::NodePathList nodePathList = dof->getParentalNodePaths();
                   if(!nodePathList.empty())
@@ -320,7 +320,7 @@ namespace NetDemo
 
       dtUtil::NodeCollector* nodes = GetNodeCollector();
       osgSim::DOFTransform* dof = nodes->GetDOFTransform("dof_turret_01");
-      if (dof != NULL)
+      if (dof != nullptr)
       {
          osg::Vec3 hpr, hprLast;
          dtCore::Transform trans;
@@ -345,7 +345,7 @@ namespace NetDemo
          {
             dof->setCurrentHPR(hpr);
 
-            if(GetArticulationHelper() != NULL)
+            if(GetArticulationHelper() != nullptr)
             {
                GetArticulationHelper()->HandleUpdatedDOFOrientation(*dof, hpr - hprLast, hpr);
             }
@@ -400,7 +400,7 @@ namespace NetDemo
    {
       BaseClass::OnRemovedFromWorld();
 
-      FireBallTowerActor* actor = NULL;
+      FireBallTowerActor* actor = nullptr;
       GetActor(actor);      
       actor->OnRemovedFromWorld();
    }
@@ -411,10 +411,10 @@ namespace NetDemo
       BaseClass::BuildActorComponents();
 
 
-      dtPhysics::PhysicsActComp* physAC = NULL;
+      dtPhysics::PhysicsActComp* physAC = nullptr;
       GetComponent(physAC);
       // Add our initial body.
-      dtCore::RefPtr<dtPhysics::PhysicsObject> physicsObject = new dtPhysics::PhysicsObject("VehicleBody");
+      std::shared_ptr<dtPhysics::PhysicsObject> physicsObject = new dtPhysics::PhysicsObject("VehicleBody");
       physAC->AddPhysicsObject(*physicsObject);
       physicsObject->SetPrimitiveType(dtPhysics::PrimitiveType::CONVEX_HULL);
       physicsObject->SetMass(30000.0f);
@@ -422,9 +422,9 @@ namespace NetDemo
       physicsObject->SetMechanicsType(dtPhysics::MechanicsType::STATIC);
 
 
-      dtGame::DRPublishingActComp* drPublishingActComp = NULL;
+      dtGame::DRPublishingActComp* drPublishingActComp = nullptr;
       GetComponent(drPublishingActComp);
-      if (drPublishingActComp == NULL)
+      if (drPublishingActComp == nullptr)
       {
          LOG_ERROR("CRITICAL ERROR - No DR Publishing Actor Component.");
          return;

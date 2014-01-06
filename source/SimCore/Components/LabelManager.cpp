@@ -364,7 +364,7 @@ namespace SimCore
          {
             SimCore::Actors::BaseEntity* entity = dynamic_cast<SimCore::Actors::BaseEntity*>(proxy.GetDrawable());
             // We don't want a label for something that isn't visible.
-            if (entity == NULL || !entity->IsVisible())
+            if (entity == nullptr || !entity->IsVisible())
             {
                result = false;
             }
@@ -420,7 +420,7 @@ namespace SimCore
       void LabelManager::SetGUILayer( SimCore::Components::HUDElement* guiLayer )
       {
          // If the reference to the GUI layer is going to be lost...
-         if( mGUILayer.valid() && guiLayer == NULL )
+         if( mGUILayer.valid() && guiLayer == nullptr )
          {
             // ...remove all allocated labels from it.
             ClearLabelsFromGUILayer();
@@ -444,10 +444,10 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      dtCore::RefPtr<SimCore::Components::HUDLabel> LabelManager::GetOrCreateLabel(dtDAL::BaseActorObject& actor)
+      std::shared_ptr<SimCore::Components::HUDLabel> LabelManager::GetOrCreateLabel(dtDAL::BaseActorObject& actor)
       {
          // safely push all the received messages onto the GameManager message queue
-         dtCore::RefPtr<SimCore::Components::HUDLabel> label;
+         std::shared_ptr<SimCore::Components::HUDLabel> label;
 
          LabelMap::iterator i = mLastLabels.find(actor.GetId());
 
@@ -460,7 +460,7 @@ namespace SimCore
             OpenThreads::ScopedLock<OpenThreads::Mutex> lock(mTaskMutex);
 
             SimCore::Actors::BaseEntity* entity = dynamic_cast<SimCore::Actors::BaseEntity*>(actor.GetDrawable());
-            if (entity != NULL)
+            if (entity != nullptr)
             {
                label = new SimCore::Components::HUDLabel(
                         actor.GetName() + dtCore::UniqueId().ToString(), "Label/EntityLabel");
@@ -520,7 +520,7 @@ namespace SimCore
 
          LabelManager& mLabelManager;
          std::vector<dtDAL::BaseActorObject*>& mActors;
-         dtCore::RefPtr<dtCore::Camera> mCamera;
+         std::shared_ptr<dtCore::Camera> mCamera;
          LabelManager::LabelMap& mNewLabels;
          std::string nameBuffer;
          unsigned mLow, mHigh;
@@ -602,8 +602,8 @@ namespace SimCore
                LabelMap& newLabels, std::string& nameBuffer)
       {
          // Declare variables to be used for each loop iteration.
-         dtCore::Transformable* actor = NULL;
-         dtCore::RefPtr<SimCore::Components::HUDLabel> label;
+         dtCore::Transformable* actor = nullptr;
+         std::shared_ptr<SimCore::Components::HUDLabel> label;
          dtCore::Transform xform;
          osg::Vec3d worldPos;
          osg::Vec3d screenPos;
@@ -648,9 +648,9 @@ namespace SimCore
          // Find a label that is not being used.
          label = GetOrCreateLabel(proxy);
 
-         dtDAL::StringActorProperty* mappingTypeProp = NULL;
+         dtDAL::StringActorProperty* mappingTypeProp = nullptr;
          proxy.GetProperty(SimCore::Actors::BaseEntityActorProxy::PROPERTY_MAPPING_NAME, mappingTypeProp);
-         if (mappingTypeProp != NULL)
+         if (mappingTypeProp != nullptr)
          {
             nameBuffer = proxy.GetName() + "  /  " + mappingTypeProp->GetValue();
          }
@@ -667,16 +667,16 @@ namespace SimCore
          osg::Vec2 labelSize;
          label->GetSize(labelSize);
 
-//            dtDAL::Vec3ActorProperty* velProp = NULL;
+//            dtDAL::Vec3ActorProperty* velProp = nullptr;
 //            proxy.GetProperty(SimCore::Actors::BaseEntityActorProxy::PROPERTY_VELOCITY_VECTOR, velProp);
-//            if (velProp != NULL)
+//            if (velProp != nullptr)
 //            {
 //               label->SetVelocity(velProp->GetValue());
 //            }
 
-         dtDAL::ActorProperty* damProp = NULL;
+         dtDAL::ActorProperty* damProp = nullptr;
          proxy.GetProperty(SimCore::Actors::BaseEntityActorProxy::PROPERTY_DAMAGE_STATE, damProp);
-         if (damProp != NULL)
+         if (damProp != nullptr)
          {
             label->SetLine2(damProp->ToString());
          }
@@ -707,7 +707,7 @@ namespace SimCore
 
          const SimCore::Actors::BaseEntity* entity = dynamic_cast<const SimCore::Actors::BaseEntity*>(actor.GetActor());
 
-         if (entity != NULL)
+         if (entity != nullptr)
          {
             force = &entity->GetForceAffiliation();
          }

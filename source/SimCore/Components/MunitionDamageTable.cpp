@@ -31,7 +31,7 @@
 #include <sstream>
 
 
-using dtCore::RefPtr;
+using std::shared_ptr;
 
 namespace SimCore
 {
@@ -71,7 +71,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      bool MunitionDamageTable::AddMunitionDamage( const dtCore::RefPtr<MunitionDamage>& newInfo )
+      bool MunitionDamageTable::AddMunitionDamage( const std::shared_ptr<MunitionDamage>& newInfo )
       {
          if( ! newInfo.valid() ) { return false; }
          if( HasMunitionDamage( newInfo->GetName() ) ) { return false; }
@@ -96,7 +96,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       bool MunitionDamageTable::RemoveMunitionDamage( const std::string& name )
       {
-         std::map< std::string, dtCore::RefPtr<MunitionDamage> >::iterator iter = 
+         std::map< std::string, std::shared_ptr<MunitionDamage> >::iterator iter = 
             mNameToMunitionMap.find( name );
 
          if( iter != mNameToMunitionMap.end() )
@@ -116,10 +116,10 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       const MunitionDamage* MunitionDamageTable::GetMunitionDamage( const std::string& name ) const
       {
-         std::map< std::string, dtCore::RefPtr<MunitionDamage> >::const_iterator iter = 
+         std::map< std::string, std::shared_ptr<MunitionDamage> >::const_iterator iter = 
             mNameToMunitionMap.find( name );
 
-         return iter != mNameToMunitionMap.end() ? iter->second.get() : NULL;
+         return iter != mNameToMunitionMap.end() ? iter->second.get() : nullptr;
       }
 
       //////////////////////////////////////////////////////////////////////////

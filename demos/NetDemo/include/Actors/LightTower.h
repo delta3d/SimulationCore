@@ -94,11 +94,11 @@ namespace NetDemo
       private:
 
          float mSleepTime, mMaxSleepTime;
-         dtCore::RefPtr<SimCore::Components::RenderingSupportComponent::SpotLight> mTargetLight;
-         dtCore::RefPtr<SimCore::Components::RenderingSupportComponent::DynamicLight> mMainLight;
+         std::shared_ptr<SimCore::Components::RenderingSupportComponent::SpotLight> mTargetLight;
+         std::shared_ptr<SimCore::Components::RenderingSupportComponent::DynamicLight> mMainLight;
 
-         dtCore::RefPtr<TowerAIHelper> mAIHelper;
-         dtCore::RefPtr<dtAudio::Sound> mSndCollisionHit;
+         std::shared_ptr<TowerAIHelper> mAIHelper;
+         std::shared_ptr<dtAudio::Sound> mSndCollisionHit;
    };
 
    /// This is the proxy for the object.  It needs to build the property map, create the actor, and handle entered world.

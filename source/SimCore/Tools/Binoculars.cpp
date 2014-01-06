@@ -55,12 +55,12 @@ namespace SimCore
 
       Binoculars::Binoculars(dtCore::Camera& camera, CEGUI::Window* mainWindow, bool isLRF)
       : Tool(mainWindow)
-      , mIntersectionText(NULL)
-      , mElevationText(NULL)
+      , mIntersectionText(nullptr)
+      , mElevationText(nullptr)
       , mUnitOfLength(&SimCore::UnitOfLength::METER)
       , mUnitOfAngle(&SimCore::UnitOfAngle::MIL)
       , mCamera(&camera)
-      , mOverlay(NULL)
+      , mOverlay(nullptr)
       , mOriginalVFOV(camera.GetVerticalFov())
       , mOriginalAspect(camera.GetAspectRatio())
       , mOriginalNear(NEAR_CLIPPING_PLANE)
@@ -78,7 +78,7 @@ namespace SimCore
             CEGUI::WindowManager*wm = CEGUI::WindowManager::getSingletonPtr();
             mOverlay = wm->createWindow("WindowsLook/StaticImage", !isLRF ? "binoculars_overlay" : "lrf_binocs_overlay");
 
-            if(mainWindow != NULL)
+            if(mainWindow != nullptr)
                mainWindow->addChildWindow(mOverlay);
             mOverlay->setPosition(CEGUI::UVector2(cegui_reldim(0.0f), cegui_reldim(0.0f)));
             mOverlay->setSize(CEGUI::UVector2(cegui_reldim(1.0f), cegui_reldim(1.0f)));
@@ -141,7 +141,7 @@ namespace SimCore
       ////////////////////////////////////////////////
       Binoculars::~Binoculars()
       {
-         if(mMainWindow != NULL)
+         if(mMainWindow != nullptr)
             mMainWindow->removeChildWindow(mOverlay);
 
          CEGUI::WindowManager *wm = CEGUI::WindowManager::getSingletonPtr();
@@ -306,7 +306,7 @@ namespace SimCore
       ////////////////////////////////////////////////
       void Binoculars::Update(dtCore::DeltaDrawable& terrain)
       {
-         if(!IsEnabled() || GetPlayerActor() == NULL)
+         if(!IsEnabled() || GetPlayerActor() == nullptr)
             return;
 
          if(!mIsector.valid())
@@ -387,7 +387,7 @@ namespace SimCore
       ////////////////////////////////////////////////
       void Binoculars::SetShowDistance(bool enable)
       {
-         if (mIntersectionText != NULL)
+         if (mIntersectionText != nullptr)
          {
             if (enable)
             {
@@ -404,7 +404,7 @@ namespace SimCore
       ////////////////////////////////////////////////
       void Binoculars::SetShowElevation(bool enable)
       {
-         if (mElevationText != NULL)
+         if (mElevationText != nullptr)
          {
             if (enable)
             {

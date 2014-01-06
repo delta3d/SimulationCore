@@ -269,11 +269,11 @@ namespace SimCore
          GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME,
                   renderComp);
 
-         if(renderComp != NULL)
+         if(renderComp != nullptr)
          {
             SimCore::Components::RenderingSupportComponent::DynamicLight* dl =
                   renderComp->GetDynamicLight(mDynamicLightID);
-            if(dl == NULL)
+            if(dl == nullptr)
             {
                dl = renderComp->AddDynamicLightByPrototypeName("Light-WeaponFlash");
                //dl = new SimCore::Components::RenderingSupportComponent::DynamicLight();
@@ -352,14 +352,14 @@ namespace SimCore
 
             if( mShooter.valid() )
             {
-               MunitionParticlesActor* particleSystem = NULL;
+               MunitionParticlesActor* particleSystem = nullptr;
                mShooter->GetActor(particleSystem);
 
                // Add the vehicles current velocity to the weapon.
                osg::Vec3 vehicleVelocity;
                BaseEntityActorProxy* entityProxy = dynamic_cast<BaseEntityActorProxy*>(mOwner.get());
                //std::cout << "Weapon Actor shooting. Attempting to set parent velocity." << std::endl;
-               if (entityProxy != NULL)
+               if (entityProxy != nullptr)
                {
                   vehicleVelocity = entityProxy->GetComponent<dtGame::DeadReckoningHelper>()->GetLastKnownVelocity();
                   //std::cout << "      NOW SETTING PARENT VELOCITY TO [" << vehicleVelocity << "]." << std::endl;
@@ -466,14 +466,14 @@ namespace SimCore
       {
          dtGame::GameManager* gm = GetGameActorProxy().GetGameManager();
 
-         if ( gm != NULL )
+         if ( gm != nullptr )
          {
             // Try to access the munitions component in order
             // to obtain the munition types of shooters
             SimCore::Components::MunitionsComponent* comp;
             gm->GetComponentByName(SimCore::Components::MunitionsComponent::DEFAULT_NAME, comp);
 
-            if( NULL == comp )
+            if( nullptr == comp )
             {
                LOG_ERROR( "WeaponActor could not access the MunitionsComponent." );
                return false;
@@ -481,7 +481,7 @@ namespace SimCore
 
             SimCore::Components::MunitionTypeTable* table = comp->GetMunitionTypeTable();
 
-            if( NULL == table )
+            if( nullptr == table )
             {
                //this is no longer an error because the map is no longer loaded before the other maps
                //we now log an error if this returns false when we try to lazily get our munitition type
@@ -490,16 +490,16 @@ namespace SimCore
             }
 
             // Get a reference to the weapon's munition type
-            MunitionTypeActor* munitionType = NULL;
+            MunitionTypeActor* munitionType = nullptr;
 
             // Get the munition type from the component by the munition type name
             munitionType = table->GetMunitionType( munitionTypeName );
-            if( NULL != munitionType )
+            if( nullptr != munitionType )
             {
                // Assign the accessed munition type
                SetMunitionType( munitionType );
             }
-            return NULL != munitionType && mMunitionType.valid();
+            return nullptr != munitionType && mMunitionType.valid();
          }
          return false;
       }
@@ -518,8 +518,8 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void WeaponActor::SetMunitionTypeProxy( dtDAL::ActorProxy* proxy )
       {
-         mMunitionType = proxy != NULL ?
-            dynamic_cast<MunitionTypeActor*> (proxy->GetDrawable()) : NULL;
+         mMunitionType = proxy != nullptr ?
+            dynamic_cast<MunitionTypeActor*> (proxy->GetDrawable()) : nullptr;
 
          if( mMunitionType.valid() )
          {
@@ -560,8 +560,8 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void WeaponActor::SetFlashActorProxy( dtDAL::ActorProxy* flashProxy )
       {
-         mFlash = flashProxy != NULL ?
-            dynamic_cast<WeaponFlashActor*> (flashProxy->GetDrawable()) : NULL;
+         mFlash = flashProxy != nullptr ?
+            dynamic_cast<WeaponFlashActor*> (flashProxy->GetDrawable()) : nullptr;
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -575,7 +575,7 @@ namespace SimCore
          mLastHitLocation = report.mPosition;
 
          // Get the target ID
-         mLastTargetObject = target != NULL ? &target->GetGameActor() : NULL;
+         mLastTargetObject = target != nullptr ? &target->GetGameActor() : nullptr;
          std::string targetID( mLastTargetObject.valid() ?
             mLastTargetObject->GetUniqueId().ToString() : "" );
 
@@ -627,7 +627,7 @@ namespace SimCore
          dtGame::GameManager* gm = GetGameActorProxy().GetGameManager();
 
          // Prepare a shot fired message
-         dtCore::RefPtr<SimCore::ShotFiredMessage> msg;
+         std::shared_ptr<SimCore::ShotFiredMessage> msg;
          gm->GetMessageFactory().CreateMessage( SimCore::MessageType::SHOT_FIRED, msg );
 
          // Get the location of this weapon
@@ -667,7 +667,7 @@ namespace SimCore
          unsigned rate = mFireRate <= 0.0f ? 0 : (unsigned)(60.0f / mFireRate + 0.5f);
          msg->SetRateOfFire( rate < 1 ? 1 : rate );
          // --- TargetObjectIdentifier - for Direct Fire
-         if( target != NULL ) { msg->SetAboutActorId( target->GetUniqueId() ); }
+         if( target != nullptr ) { msg->SetAboutActorId( target->GetUniqueId() ); }
 
          gm->SendMessage(*msg);
          gm->SendNetworkMessage(*msg);
@@ -693,7 +693,7 @@ namespace SimCore
          dtGame::GameManager* gm = GetGameActorProxy().GetGameManager();
 
          // Prepare a detonation message
-         dtCore::RefPtr<SimCore::DetonationMessage> msg;
+         std::shared_ptr<SimCore::DetonationMessage> msg;
          gm->GetMessageFactory().CreateMessage(SimCore::MessageType::DETONATION, msg);
 
          // Required Parameters:
@@ -705,7 +705,7 @@ namespace SimCore
             // 1 == Entity Impact
             // 3 == Ground Impact
             // 5 == Detonation
-            msg->SetDetonationResultCode( target != NULL ? 1 : 3 ); // TO BE DYNAMIC
+            msg->SetDetonationResultCode( target != nullptr ? 1 : 3 ); // TO BE DYNAMIC
          // --- MunitionType
          msg->SetMunitionType( mMunitionType->GetName() );
          // --- FuseType
@@ -718,7 +718,7 @@ namespace SimCore
          msg->SetSendingActorId( mOwner.valid() ? mOwner->GetId() : GetUniqueId() );
 
          // Direct Fire Parameters:
-         if( target != NULL )
+         if( target != nullptr )
          {
             // TargetObjectIdentifier
             msg->SetAboutActorId( target->GetUniqueId() );
@@ -783,15 +783,15 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void WeaponActor::SoundLoad( const std::string& filePath, dtCore::RefPtr<dtAudio::Sound>& sound )
+      void WeaponActor::SoundLoad( const std::string& filePath, std::shared_ptr<dtAudio::Sound>& sound )
       {
-         if(sound != NULL && sound->GetFilename() != NULL)
+         if(sound != nullptr && sound->GetFilename() != nullptr)
          {
             dtAudio::AudioManager::GetInstance().FreeSound(sound.get());
             sound->UnloadFile();
          }
 
-         sound = NULL;
+         sound = nullptr;
 
          if (!filePath.empty())
          {
@@ -808,13 +808,13 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void WeaponActor::SoundPlay( dtCore::RefPtr<dtAudio::Sound>& sound )
+      void WeaponActor::SoundPlay( std::shared_ptr<dtAudio::Sound>& sound )
       {
          if( sound.valid() && ! sound->IsPlaying() ) { sound->Play(); }
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void WeaponActor::SoundRelease( dtCore::RefPtr<dtAudio::Sound>& sound )
+      void WeaponActor::SoundRelease( std::shared_ptr<dtAudio::Sound>& sound )
       {
          if( sound.valid() )
          {
@@ -853,7 +853,7 @@ namespace SimCore
       {
          PlatformActorProxy::BuildPropertyMap();
 
-         WeaponActor* actor = NULL;
+         WeaponActor* actor = nullptr;
          GetActor(actor);
 
          static const dtUtil::RefString groupResources("Resources");

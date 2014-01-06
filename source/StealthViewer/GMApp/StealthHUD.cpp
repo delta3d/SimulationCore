@@ -95,7 +95,7 @@ namespace StealthGM
       , mTextHeight(40.0f)
       , mZoomToolEnabled(false)
       , mCompass360WasEnabled(false)
-      , mLastLogState(NULL)
+      , mLastLogState(nullptr)
       , mCoordSystem(&CoordSystem::MGRS)
       , mHasUI(hasUI)
    {
@@ -133,15 +133,15 @@ namespace StealthGM
       {
 #if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
          //Is this a problem now?
-         SimCore::Components::RenderingSupportComponent* renderComp = NULL;
+         SimCore::Components::RenderingSupportComponent* renderComp = nullptr;
          dtGame::GMComponent* comp = GetGameManager()->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME);
 
-         if(comp != NULL)
+         if(comp != nullptr)
          {
             renderComp = dynamic_cast<SimCore::Components::RenderingSupportComponent*>(comp);
          }
 
-         if(comp == NULL || renderComp == NULL)
+         if(comp == nullptr || renderComp == nullptr)
          {
             GetGameManager()->GetScene().AddDrawable( GetGUIDrawable().get() );
             LOG_WARNING("Unable to add GUI to the RenderSupportComponent, adding GUI to the Scene instead.");
@@ -169,7 +169,7 @@ namespace StealthGM
       else // Is this a tool message?
       {
          const SimCore::ToolMessage* toolMessage = dynamic_cast<const SimCore::ToolMessage*>(&message);
-         if(toolMessage != NULL)
+         if(toolMessage != nullptr)
          {
             ProcessToolMessage(*toolMessage);
          }
@@ -344,7 +344,7 @@ namespace StealthGM
       SimCore::Components::HUDAlignment* align = &SimCore::Components::HUDAlignment::LEFT_TOP;
 
       // Create the help text background to give contrast with the scene
-      dtCore::RefPtr<SimCore::Components::HUDImage> background = new SimCore::Components::HUDImage("HelpTextClipboard");
+      std::shared_ptr<SimCore::Components::HUDImage> background = new SimCore::Components::HUDImage("HelpTextClipboard");
       background->SetImage("Clipboard","Clipboard");
       background->SetSize( 350.0f/1920.0f, 532.0f/1200.0f );
       background->SetPosition( 0.0, -256.0f/1200.0f, SimCore::Components::HUDAlignment::LEFT_BOTTOM );
@@ -419,7 +419,7 @@ namespace StealthGM
    //   float curYPos;
 
       // update the compass
-      if(mMotionModel.valid() && mMotionModel->GetTarget() != NULL)
+      if(mMotionModel.valid() && mMotionModel->GetTarget() != nullptr)
       {
          dtCore::Transform xform;
          mMotionModel->GetTarget()->GetTransform(xform);
@@ -548,10 +548,10 @@ namespace StealthGM
    void StealthHUD::UpdateStaticText(SimCore::Components::HUDText* textControl, char *newText,
                                      float red, float blue, float green, float x, float y)
    {
-      if (textControl != NULL)
+      if (textControl != nullptr)
       {
          // text and color
-         if (newText != NULL && textControl->GetText() != std::string(newText))
+         if (newText != nullptr && textControl->GetText() != std::string(newText))
          {
             textControl->SetText(newText);
             if (red >= 0.0f && blue >= 0.0f && green >= 0.0f)
@@ -650,7 +650,7 @@ namespace StealthGM
          }
 
          SimCore::Components::StealthButton* button = mToolbar->GetButton( buttonName );
-         if( button != NULL ) { button->SetDisabled( !enable ); }
+         if( button != nullptr ) { button->SetDisabled( !enable ); }
 
          return success;
       }

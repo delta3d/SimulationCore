@@ -28,7 +28,7 @@
 
 #include <stack>
 
-#include <osg/Referenced>
+#include <dtUtil/refcountedbase.h>
 #include <osg/Vec3>
 #include <osg/Matrix>
 

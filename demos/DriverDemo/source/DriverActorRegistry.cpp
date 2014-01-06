@@ -25,18 +25,18 @@
 #include <dtCore/shadermanager.h>
 #include <dtCore/scene.h>
 
-using dtCore::RefPtr;
+using std::shared_ptr;
 
 namespace DriverDemo
 {
 
-   RefPtr<dtDAL::ActorType> DriverActorRegistry::HOVER_VEHICLE_ACTOR_TYPE(
+   std::shared_ptr<dtDAL::ActorType> DriverActorRegistry::HOVER_VEHICLE_ACTOR_TYPE(
       new dtDAL::ActorType("HoverActor", "DriverDemo", "A floaty drivable vehicle for Driver Demo", 
       SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE.get()));
-   RefPtr<dtDAL::ActorType> DriverActorRegistry::HOVER_TARGET_ACTOR_TYPE(
+   std::shared_ptr<dtDAL::ActorType> DriverActorRegistry::HOVER_TARGET_ACTOR_TYPE(
       new dtDAL::ActorType("HoverTargetActor", "DriverDemo", "A floaty shootable target object for Driver Demo",
       SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE.get()));
-   RefPtr<dtDAL::ActorType> DriverActorRegistry::HOVER_EXPLODING_TARGET_ACTOR_TYPE(
+   std::shared_ptr<dtDAL::ActorType> DriverActorRegistry::HOVER_EXPLODING_TARGET_ACTOR_TYPE(
       new dtDAL::ActorType("HoverExplodingTargetActor", "DriverDemo", "A floaty shootable target that explodes for Driver Demo",
       SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE.get()));
 

@@ -27,7 +27,7 @@
 #include <SimCore/Export.h>
 
 #include <dtActors/gamemeshactor.h>
-#include <dtCore/observerptr.h>
+#include <dtUtil/refcountedbase.h>
 #include <dtCore/particlesystem.h>
 #include <dtCore/transformable.h>
 
@@ -101,30 +101,30 @@ namespace SimCore
             void SetCurrentLine(osg::Geometry& arrowGeom, osg::Vec3& startPos, osg::Vec3& endPosDelta);
 
          private:
-            dtCore::ObserverPtr<SimCore::Actors::BaseEntity> mSlavedEntity;
+            std::weak_ptr<SimCore::Actors::BaseEntity> mSlavedEntity;
             bool mSlaveUpdatedParticleIsActive;
             int mPosUpdatedParticleCountdown;
 
             // Velocity Arrow
-            dtCore::RefPtr<osg::Geode> mVelocityArrowGeode;
-            dtCore::RefPtr<osg::Geometry> mVelocityArrowGeom;
-            dtCore::RefPtr<osg::Vec3Array> mVelocityArrowVerts;
+            osg::ref_ptr<osg::Geode> mVelocityArrowGeode;
+            osg::ref_ptr<osg::Geometry> mVelocityArrowGeom;
+            osg::ref_ptr<osg::Vec3Array> mVelocityArrowVerts;
             osg::Vec3 mVelocityArrowColor;
             // Acceleration Arrow
-            dtCore::RefPtr<osg::Geode> mAccelerationArrowGeode;
-            dtCore::RefPtr<osg::Geometry> mAccelerationArrowGeom;
-            dtCore::RefPtr<osg::Vec3Array> mAccelerationArrowVerts;
+            osg::ref_ptr<osg::Geode> mAccelerationArrowGeode;
+            osg::ref_ptr<osg::Geometry> mAccelerationArrowGeom;
+            osg::ref_ptr<osg::Vec3Array> mAccelerationArrowVerts;
             osg::Vec3 mAccelerationArrowColor;
             // Vars for Vel and Acceleration Arrow trails.
-            dtCore::RefPtr<dtCore::Transformable> mArrowGlobalParentNode;
+            std::shared_ptr<dtCore::Transformable> mArrowGlobalParentNode;
             float mArrowDrawScalar; // Scalar to resize both vel and acceleration arrows
             unsigned int mArrowMaxNumTrails; // number of accel and vel trails
             int mArrowCurrentIndex; // current index into our pool of trails
             bool mArrowDrawOnNextFrame; // do we add a new trail arrow next frame (caused by update)?
 
 
-            dtCore::RefPtr<dtCore::ParticleSystem> mTrailParticles;
-            dtCore::RefPtr<dtCore::ParticleSystem> mUpdateTrailParticles;
+            std::shared_ptr<dtCore::ParticleSystem> mTrailParticles;
+            std::shared_ptr<dtCore::ParticleSystem> mUpdateTrailParticles;
 
       };
 

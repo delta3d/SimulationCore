@@ -62,7 +62,7 @@
 
 #include <UnitTestMain.h>
 
-using dtCore::RefPtr;
+using std::shared_ptr;
 
 class MessageTests : public CPPUNIT_NS::TestFixture
 {
@@ -91,7 +91,7 @@ class MessageTests : public CPPUNIT_NS::TestFixture
 
          mGM = new dtGame::GameManager(*mApp->GetScene());
          mGM->SetApplication(*mApp);
-         RefPtr<dtGame::DeadReckoningComponent> drComp = new dtGame::DeadReckoningComponent;
+         std::shared_ptr<dtGame::DeadReckoningComponent> drComp = new dtGame::DeadReckoningComponent;
          mGM->AddComponent(*drComp, dtGame::GameManager::ComponentPriority::NORMAL);
       }
 
@@ -100,9 +100,9 @@ class MessageTests : public CPPUNIT_NS::TestFixture
          if (mGM.valid())
          {
             mGM->DeleteAllActors(true);
-            mGM = NULL;
+            mGM = nullptr;
          }
-         mApp = NULL;
+         mApp = nullptr;
          dtCore::System::GetInstance().SetPause(false);
          dtCore::System::GetInstance().Stop();
       }
@@ -126,7 +126,7 @@ class MessageTests : public CPPUNIT_NS::TestFixture
          try
          {
 
-            RefPtr<dtGame::Message> msg = mGM->GetMessageFactory().CreateMessage(SimCore::MessageType::STEALTH_ACTOR_FOV);
+            std::shared_ptr<dtGame::Message> msg = mGM->GetMessageFactory().CreateMessage(SimCore::MessageType::STEALTH_ACTOR_FOV);
             CPPUNIT_ASSERT_MESSAGE("The message factory failed to create the stealth actor FOV message", msg.valid());
 
             SimCore::StealthActorUpdatedMessage *saum = static_cast<SimCore::StealthActorUpdatedMessage*>(msg.get());
@@ -135,21 +135,21 @@ class MessageTests : public CPPUNIT_NS::TestFixture
 
             saum->SetTranslation(vec);
             CPPUNIT_ASSERT_EQUAL_MESSAGE("GetTranslation should return what was set", vec, saum->GetTranslation());
-            CPPUNIT_ASSERT(saum->GetParameter(SimCore::StealthActorUpdatedMessage::TRANSLATION) != NULL);
+            CPPUNIT_ASSERT(saum->GetParameter(SimCore::StealthActorUpdatedMessage::TRANSLATION) != nullptr);
 
             saum->SetRotation(vec);
             CPPUNIT_ASSERT_EQUAL_MESSAGE("GetRotation should return what was set",  vec, saum->GetRotation());
-            CPPUNIT_ASSERT(saum->GetParameter(SimCore::StealthActorUpdatedMessage::ROTATION) != NULL);
+            CPPUNIT_ASSERT(saum->GetParameter(SimCore::StealthActorUpdatedMessage::ROTATION) != nullptr);
 
             float testFloat = 14.55f;
 
             saum->SetHorizontalFOV(testFloat);
             CPPUNIT_ASSERT_EQUAL_MESSAGE("GetHorizontalFOV should return what was set", testFloat, saum->GetHorizontalFOV());
-            CPPUNIT_ASSERT(saum->GetParameter(SimCore::StealthActorUpdatedMessage::HORIZONTAL_FOV) != NULL);
+            CPPUNIT_ASSERT(saum->GetParameter(SimCore::StealthActorUpdatedMessage::HORIZONTAL_FOV) != nullptr);
 
             saum->SetVerticalFOV(testFloat);
             CPPUNIT_ASSERT_EQUAL_MESSAGE("GetVerticalFOV should return what was set", testFloat, saum->GetVerticalFOV());
-            CPPUNIT_ASSERT(saum->GetParameter(SimCore::StealthActorUpdatedMessage::HORIZONTAL_FOV) != NULL);
+            CPPUNIT_ASSERT(saum->GetParameter(SimCore::StealthActorUpdatedMessage::HORIZONTAL_FOV) != nullptr);
 
          }
          catch(const dtUtil::Exception &ex)
@@ -161,10 +161,10 @@ class MessageTests : public CPPUNIT_NS::TestFixture
       template <class T, class V>
       void TestParameter(dtGame::Message& msg, const std::string& name, V value)
       {
-         RefPtr<dtGame::MessageParameter> param = msg.GetParameter(name);
+         std::shared_ptr<dtGame::MessageParameter> param = msg.GetParameter(name);
          CPPUNIT_ASSERT(param.valid());
 
-         CPPUNIT_ASSERT(dynamic_cast<T*>(param.get()) != NULL);
+         CPPUNIT_ASSERT(dynamic_cast<T*>(param.get()) != nullptr);
          CPPUNIT_ASSERT_EQUAL(value,
             static_cast<T*>(param.get())->GetValue());
       }
@@ -173,7 +173,7 @@ class MessageTests : public CPPUNIT_NS::TestFixture
       {
          try
          {
-            RefPtr<SimCore::TimeQueryMessage> msg;
+            std::shared_ptr<SimCore::TimeQueryMessage> msg;
             mGM->GetMessageFactory().CreateMessage(SimCore::MessageType::TIME_QUERY, msg);
             CPPUNIT_ASSERT_MESSAGE("The message factory failed to create a TIME_QUERY message", msg.valid());
 
@@ -199,7 +199,7 @@ class MessageTests : public CPPUNIT_NS::TestFixture
       {
          try
          {
-            RefPtr<SimCore::TimeValueMessage> msg;
+            std::shared_ptr<SimCore::TimeValueMessage> msg;
             mGM->GetMessageFactory().CreateMessage(SimCore::MessageType::TIME_VALUE, msg);
             CPPUNIT_ASSERT_MESSAGE("The message factory failed to create a TIME_VALUE message", msg.valid());
 
@@ -255,7 +255,7 @@ class MessageTests : public CPPUNIT_NS::TestFixture
       {
          try
          {
-            RefPtr<dtGame::Message> msg = mGM->GetMessageFactory().CreateMessage(SimCore::MessageType::DETONATION);
+            std::shared_ptr<dtGame::Message> msg = mGM->GetMessageFactory().CreateMessage(SimCore::MessageType::DETONATION);
 
             CPPUNIT_ASSERT_MESSAGE("The message factory failed to create the detonation message", msg.valid());
 
@@ -301,7 +301,7 @@ class MessageTests : public CPPUNIT_NS::TestFixture
       {
          try
          {
-            RefPtr<dtGame::Message> msg = mGM->GetMessageFactory().CreateMessage(SimCore::MessageType::ATTACH_TO_ACTOR);
+            std::shared_ptr<dtGame::Message> msg = mGM->GetMessageFactory().CreateMessage(SimCore::MessageType::ATTACH_TO_ACTOR);
             CPPUNIT_ASSERT(msg.valid());
 
             SimCore::AttachToActorMessage *aam = static_cast<SimCore::AttachToActorMessage*>(msg.get());
@@ -314,10 +314,10 @@ class MessageTests : public CPPUNIT_NS::TestFixture
             aam->SetAttachToActor(dtCore::UniqueId(""));
             CPPUNIT_ASSERT(aam->GetAttachToActor().ToString().empty());
 
-            RefPtr<SimCore::Actors::PlatformActorProxy> t80Proxy;
+            std::shared_ptr<SimCore::Actors::PlatformActorProxy> t80Proxy;
             mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE, t80Proxy);
             CPPUNIT_ASSERT(t80Proxy.valid());
-            RefPtr<SimCore::Actors::BaseEntity> t80Actor = dynamic_cast<SimCore::Actors::BaseEntity*>(t80Proxy->GetDrawable());
+            std::shared_ptr<SimCore::Actors::BaseEntity> t80Actor = dynamic_cast<SimCore::Actors::BaseEntity*>(t80Proxy->GetDrawable());
             CPPUNIT_ASSERT(t80Actor.valid());
 
             if (useSubNode)
@@ -329,10 +329,10 @@ class MessageTests : public CPPUNIT_NS::TestFixture
                t80Proxy->SetNonDamagedResource(modelFile);
             }
 
-            RefPtr<SimCore::Actors::StealthActorProxy> playerProxy;
+            std::shared_ptr<SimCore::Actors::StealthActorProxy> playerProxy;
             mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::STEALTH_ACTOR_TYPE, playerProxy);
             CPPUNIT_ASSERT(playerProxy.valid());
-            RefPtr<SimCore::Actors::StealthActor> playerActor = dynamic_cast<SimCore::Actors::StealthActor*>(playerProxy->GetDrawable());
+            std::shared_ptr<SimCore::Actors::StealthActor> playerActor = dynamic_cast<SimCore::Actors::StealthActor*>(playerProxy->GetDrawable());
             CPPUNIT_ASSERT(playerActor.valid());
 
             mGM->AddActor(*t80Proxy, true, false);
@@ -344,7 +344,7 @@ class MessageTests : public CPPUNIT_NS::TestFixture
             dtCore::Transform originalTransform;
             playerActor->GetTransform(originalTransform);
 
-            dtCore::RefPtr<SimCore::AttachToActorMessage> atamsg;
+            std::shared_ptr<SimCore::AttachToActorMessage> atamsg;
             mGM->GetMessageFactory().CreateMessage(SimCore::MessageType::ATTACH_TO_ACTOR, atamsg);
             CPPUNIT_ASSERT(atamsg.valid());
             atamsg->SetAboutActorId(playerActor->GetUniqueId());
@@ -378,10 +378,10 @@ class MessageTests : public CPPUNIT_NS::TestFixture
 
             if (useSubNode)
             {
-               dtCore::RefPtr<dtUtil::NodeCollector> nc = new dtUtil::NodeCollector(t80Actor->GetOSGNode(), dtUtil::NodeCollector::DOFTransformFlag);
+               std::shared_ptr<dtUtil::NodeCollector> nc = new dtUtil::NodeCollector(t80Actor->GetOSGNode(), dtUtil::NodeCollector::DOFTransformFlag);
                osg::Group* group = nc->GetDOFTransform(parentSubNodeName);
                CPPUNIT_ASSERT_MESSAGE("The dof node \"" + parentSubNodeName +
-                        "\" should exist on the model, or the test won't work..", group != NULL);
+                        "\" should exist on the model, or the test won't work..", group != nullptr);
                CPPUNIT_ASSERT_EQUAL(size_t(1), playerActor->GetOSGNode()->getParents().size());
                CPPUNIT_ASSERT_MESSAGE("The stealth actor node should by a child of the dof node",
                         playerActor->GetOSGNode()->getParent(0) == group);
@@ -410,15 +410,15 @@ class MessageTests : public CPPUNIT_NS::TestFixture
       {
          try
          {
-            RefPtr<SimCore::Actors::PlatformActorProxy> t80Proxy;
+            std::shared_ptr<SimCore::Actors::PlatformActorProxy> t80Proxy;
             mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE, t80Proxy);
             CPPUNIT_ASSERT(t80Proxy.valid());
-            RefPtr<SimCore::Actors::BaseEntity> t80Actor = dynamic_cast<SimCore::Actors::BaseEntity*>(t80Proxy->GetDrawable());
+            std::shared_ptr<SimCore::Actors::BaseEntity> t80Actor = dynamic_cast<SimCore::Actors::BaseEntity*>(t80Proxy->GetDrawable());
             CPPUNIT_ASSERT(t80Actor.valid());
-            RefPtr<SimCore::Actors::StealthActorProxy> playerProxy;
+            std::shared_ptr<SimCore::Actors::StealthActorProxy> playerProxy;
             mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::STEALTH_ACTOR_TYPE, playerProxy);
             CPPUNIT_ASSERT(playerProxy.valid());
-            RefPtr<SimCore::Actors::StealthActor> playerActor = dynamic_cast<SimCore::Actors::StealthActor*>(playerProxy->GetDrawable());
+            std::shared_ptr<SimCore::Actors::StealthActor> playerActor = dynamic_cast<SimCore::Actors::StealthActor*>(playerProxy->GetDrawable());
             CPPUNIT_ASSERT(playerActor.valid());
 
             osg::Vec3 tankPos(0, 100, 0);
@@ -429,7 +429,7 @@ class MessageTests : public CPPUNIT_NS::TestFixture
 
             static_cast<SimCore::Actors::StealthActor&>(playerProxy->GetGameActor()).SetAttachOffset(osg::Vec3(0, 0, 0));
 
-            RefPtr<dtGame::Message> msg = mGM->GetMessageFactory().CreateMessage(SimCore::MessageType::ATTACH_TO_ACTOR);
+            std::shared_ptr<dtGame::Message> msg = mGM->GetMessageFactory().CreateMessage(SimCore::MessageType::ATTACH_TO_ACTOR);
             CPPUNIT_ASSERT(msg.valid());
 
             SimCore::AttachToActorMessage& aam = static_cast<SimCore::AttachToActorMessage&>(*msg);
@@ -441,7 +441,7 @@ class MessageTests : public CPPUNIT_NS::TestFixture
             dtCore::System::GetInstance().Step();
 
             dtGame::Invokable* invoke = playerActor->GetGameActorProxy().GetInvokable("AttachToActor");
-            CPPUNIT_ASSERT_MESSAGE("The AttachToActor invokable should not be NULL", invoke != NULL);
+            CPPUNIT_ASSERT_MESSAGE("The AttachToActor invokable should not be nullptr", invoke != nullptr);
             invoke->Invoke(aam);
 
             CPPUNIT_ASSERT_MESSAGE("The player should now be attached to the T80", playerActor->GetParent() == t80Proxy->GetDrawable());
@@ -473,24 +473,24 @@ class MessageTests : public CPPUNIT_NS::TestFixture
       {
          try
          {
-            RefPtr<SimCore::Actors::PlatformActorProxy> t80Proxy;
+            std::shared_ptr<SimCore::Actors::PlatformActorProxy> t80Proxy;
             mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE, t80Proxy);
             CPPUNIT_ASSERT(t80Proxy.valid());
             SimCore::Actors::BaseEntity* t80Actor;
             t80Proxy->GetActor(t80Actor);
-            CPPUNIT_ASSERT(t80Actor != NULL);
+            CPPUNIT_ASSERT(t80Actor != nullptr);
 
-            RefPtr<SimCore::Actors::StealthActorProxy> stealthProxy;
+            std::shared_ptr<SimCore::Actors::StealthActorProxy> stealthProxy;
             mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::STEALTH_ACTOR_TYPE, stealthProxy);
             CPPUNIT_ASSERT(stealthProxy.valid());
             SimCore::Actors::StealthActor* stealthActor;
             stealthProxy->GetActor(stealthActor);
-            CPPUNIT_ASSERT(stealthActor != NULL);
+            CPPUNIT_ASSERT(stealthActor != nullptr);
 
             mGM->AddActor(*t80Proxy, true, false);
             mGM->AddActor(*stealthProxy, false, false);
 
-            dtCore::RefPtr<SimCore::AttachToActorMessage> atamsg;
+            std::shared_ptr<SimCore::AttachToActorMessage> atamsg;
             mGM->GetMessageFactory().CreateMessage(SimCore::MessageType::ATTACH_TO_ACTOR, atamsg);
             CPPUNIT_ASSERT(atamsg.valid());
             atamsg->SetAboutActorId(stealthActor->GetUniqueId());
@@ -506,7 +506,7 @@ class MessageTests : public CPPUNIT_NS::TestFixture
             dtCore::Transform originalTransform;
             stealthActor->GetTransform(originalTransform);
 
-            RefPtr<SimCore::StealthActorUpdatedMessage> msg;
+            std::shared_ptr<SimCore::StealthActorUpdatedMessage> msg;
             mGM->GetMessageFactory().CreateMessage(SimCore::MessageType::REQUEST_WARP_TO_POSITION, msg);
             CPPUNIT_ASSERT(msg.valid());
 
@@ -546,7 +546,7 @@ class MessageTests : public CPPUNIT_NS::TestFixture
          {
             mGM->AddComponent(*new SimCore::Components::ViewerMessageProcessor, dtGame::GameManager::ComponentPriority::HIGHEST);
 
-            RefPtr<dtGame::Message> msg = mGM->GetMessageFactory().CreateMessage(SimCore::MessageType::MAGNIFICATION);
+            std::shared_ptr<dtGame::Message> msg = mGM->GetMessageFactory().CreateMessage(SimCore::MessageType::MAGNIFICATION);
             CPPUNIT_ASSERT(msg.valid());
             SimCore::MagnificationMessage &magMsg = static_cast<SimCore::MagnificationMessage&>(*msg);
             magMsg.SetSource(*new dtGame::MachineInfo);
@@ -555,8 +555,8 @@ class MessageTests : public CPPUNIT_NS::TestFixture
             float value = magMsg.GetMagnification();
             CPPUNIT_ASSERT_MESSAGE("GetMagnification should return what was set", value == mag);
 
-            RefPtr<SimCore::Actors::PlatformActorProxy> proxy;
-            RefPtr<SimCore::Actors::StealthActorProxy> stealthProxy;
+            std::shared_ptr<SimCore::Actors::PlatformActorProxy> proxy;
+            std::shared_ptr<SimCore::Actors::StealthActorProxy> stealthProxy;
 
             mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE, proxy);
             CPPUNIT_ASSERT(proxy.valid());
@@ -589,7 +589,7 @@ class MessageTests : public CPPUNIT_NS::TestFixture
             CPPUNIT_ASSERT(dtUtil::Equivalent(scale, defaultScale, 0.001f));
 
             // All changes backed out now, can test with input component
-            RefPtr<SimCore::Components::BaseInputComponent> bic = new SimCore::Components::BaseInputComponent("TestInputComponent");
+            std::shared_ptr<SimCore::Components::BaseInputComponent> bic = new SimCore::Components::BaseInputComponent("TestInputComponent");
             CPPUNIT_ASSERT(bic.valid());
 
             mGM->AddComponent(*bic, dtGame::GameManager::ComponentPriority::NORMAL);
@@ -597,7 +597,7 @@ class MessageTests : public CPPUNIT_NS::TestFixture
 
             CPPUNIT_ASSERT(BICscale == 1.0f);
 
-            bic->HandleKeyPressed(NULL, osgGA::GUIEventAdapter::KEY_Page_Up);
+            bic->HandleKeyPressed(nullptr, osgGA::GUIEventAdapter::KEY_Page_Up);
 
             BICscale = bic->GetEntityMagnification();
 
@@ -615,7 +615,7 @@ class MessageTests : public CPPUNIT_NS::TestFixture
                dtUtil::Equivalent(scale, osg::Vec3(BICscale, BICscale, BICscale), 0.001f));
 
             const unsigned int size = 10;
-            RefPtr<SimCore::Actors::BaseEntityActorProxy> proxies[size];
+            std::shared_ptr<SimCore::Actors::BaseEntityActorProxy> proxies[size];
 
             for(unsigned int i = 0; i < size; i++)
             {
@@ -636,11 +636,11 @@ class MessageTests : public CPPUNIT_NS::TestFixture
                CPPUNIT_ASSERT_MESSAGE("Each entity should have been scaled",
                   dtUtil::Equivalent(scale, magScale, 0.001f));
                mGM->DeleteActor(*proxies[i]);
-               proxies[i] = NULL;
+               proxies[i] = nullptr;
             }
 
             dtCore::UniqueId id;
-            RefPtr<dtGame::Message> rmtMsg = mGM->GetMessageFactory().CreateMessage(dtGame::MessageType::INFO_ACTOR_CREATED);
+            std::shared_ptr<dtGame::Message> rmtMsg = mGM->GetMessageFactory().CreateMessage(dtGame::MessageType::INFO_ACTOR_CREATED);
             rmtMsg->SetAboutActorId(id);
             rmtMsg->SetSource(*new dtGame::MachineInfo);
             static_cast<dtGame::ActorUpdateMessage&>(*rmtMsg).SetActorType(*SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE);
@@ -664,7 +664,7 @@ class MessageTests : public CPPUNIT_NS::TestFixture
          try
          {
 
-            RefPtr<dtGame::Message> msg = mGM->GetMessageFactory().CreateMessage(SimCore::MessageType::INFO_EMBEDDED_DATA);
+            std::shared_ptr<dtGame::Message> msg = mGM->GetMessageFactory().CreateMessage(SimCore::MessageType::INFO_EMBEDDED_DATA);
             CPPUNIT_ASSERT_MESSAGE("The message factory failed to create the message", msg.valid());
 
             SimCore::EmbeddedDataMessage* edm = static_cast<SimCore::EmbeddedDataMessage*>(msg.get());
@@ -691,8 +691,8 @@ class MessageTests : public CPPUNIT_NS::TestFixture
 
    private:
 
-      RefPtr<dtGame::GameManager> mGM;
-      RefPtr<dtABC::Application> mApp;
+      std::shared_ptr<dtGame::GameManager> mGM;
+      std::shared_ptr<dtABC::Application> mApp;
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(MessageTests);

@@ -120,8 +120,8 @@ namespace SimCore
             std::string mShaderName;
             std::string mShaderGroup;
             std::string mParticleFile;
-            dtCore::RefPtr<WeaponFlash> mFlash;
-            dtCore::RefPtr<dtCore::ParticleSystem> mParticles;
+            std::shared_ptr<WeaponFlash> mFlash;
+            std::shared_ptr<dtCore::ParticleSystem> mParticles;
 
       };
 

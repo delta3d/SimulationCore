@@ -41,8 +41,8 @@
 
 #include <dtCore/system.h>
 #include <dtCore/scene.h>
-#include <dtCore/refptr.h>
-#include <dtCore/observerptr.h>
+#include <dtUtil/refcountedbase.h>
+#include <dtUtil/refcountedbase.h>
 
 #include <dtUtil/macros.h>
 #include <dtUtil/mathdefines.h>
@@ -69,7 +69,7 @@
    #define SLEEP(milliseconds) usleep(((milliseconds) * 1000))
 #endif
 
-//using dtCore::RefPtr;
+//using std::shared_ptr;
 //using dtCore::ObserverPtr;
 
 
@@ -93,8 +93,8 @@ class LogicActorTests: public CPPUNIT_NS::TestFixture
    private:
       void CheckGameEventReceived(dtCore::GameEvent *gameEvent, bool shouldExist, const std::string& message);
 
-      dtCore::RefPtr<dtGame::GameManager> mGM;
-      dtCore::RefPtr<dtGame::TestComponent> mTestComponent;
+      std::shared_ptr<dtGame::GameManager> mGM;
+      std::shared_ptr<dtGame::TestComponent> mTestComponent;
 
 };
 
@@ -117,12 +117,12 @@ void LogicActorTests::setUp()
 void LogicActorTests::tearDown()
 {
    mTestComponent->reset();
-   mTestComponent = NULL;
+   mTestComponent = nullptr;
 
    if (mGM.valid())
    {
       mGM->DeleteAllActors(true);
-      mGM = NULL;
+      mGM = nullptr;
    }
    dtCore::System::GetInstance().Stop();
 }
@@ -130,22 +130,22 @@ void LogicActorTests::tearDown()
 ///////////////////////////////////////////////////////////////////////
 void LogicActorTests::TestConditionalActor()
 {
-   dtCore::RefPtr<SimCore::Actors::LogicConditionalActorProxy> lcap;
+   std::shared_ptr<SimCore::Actors::LogicConditionalActorProxy> lcap;
    mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::LOGIC_CONDITIONAL_ACTOR_TYPE, lcap);
    CPPUNIT_ASSERT(lcap.valid());
 
    SimCore::Actors::LogicConditionalActor& lcapActor = 
       static_cast<SimCore::Actors::LogicConditionalActor&>(*lcap->GetDrawable());
    CPPUNIT_ASSERT_MESSAGE("Default condition should be false", !lcapActor.GetIsTrue());
-   CPPUNIT_ASSERT_MESSAGE("Default true event should be NULL", lcapActor.GetTrueEvent() == NULL);
-   CPPUNIT_ASSERT_MESSAGE("Default false event should be NULL", lcapActor.GetFalseEvent() == NULL);
+   CPPUNIT_ASSERT_MESSAGE("Default true event should be nullptr", lcapActor.GetTrueEvent() == nullptr);
+   CPPUNIT_ASSERT_MESSAGE("Default false event should be nullptr", lcapActor.GetFalseEvent() == nullptr);
 
-   dtCore::RefPtr<dtCore::GameEvent> testTrueEvent = new dtCore::GameEvent("LogicTestTRUEEvent");
+   std::shared_ptr<dtCore::GameEvent> testTrueEvent = new dtCore::GameEvent("LogicTestTRUEEvent");
    //dtCore::GameEventManager::GetInstance().AddEvent(*testTrueEvent);
    lcapActor.SetTrueEvent(testTrueEvent);
    CPPUNIT_ASSERT_MESSAGE("True event should have been set", lcapActor.GetTrueEvent() == testTrueEvent);
 
-   dtCore::RefPtr<dtCore::GameEvent> testFalseEvent = new dtCore::GameEvent("LogicTestFALSEEvent");
+   std::shared_ptr<dtCore::GameEvent> testFalseEvent = new dtCore::GameEvent("LogicTestFALSEEvent");
    //dtCore::GameEventManager::GetInstance().AddEvent(*testFalseEvent);
    lcapActor.SetFalseEvent(testFalseEvent);
    CPPUNIT_ASSERT_MESSAGE("False event should have been set", lcapActor.GetFalseEvent() == testFalseEvent);
@@ -157,7 +157,7 @@ void LogicActorTests::TestConditionalActor()
 ///////////////////////////////////////////////////////////////////////
 void LogicActorTests::CheckGameEventReceived(dtCore::GameEvent *gameEvent, bool shouldBeFound, const std::string& errorMessage)
 {
-   std::vector<dtCore::RefPtr<const dtGame::Message> > msgs = mTestComponent->GetReceivedProcessMessages();
+   std::vector<std::shared_ptr<const dtGame::Message> > msgs = mTestComponent->GetReceivedProcessMessages();
    bool wasFound = false;
 
    for (unsigned int i = 0; i < msgs.size() && !wasFound; ++i)
@@ -189,46 +189,46 @@ void LogicActorTests::TestLogicOnEventActor()
    //     - Conditional 2
 
    // Conditional 1
-   dtCore::RefPtr<SimCore::Actors::LogicConditionalActorProxy> lcap1;
+   std::shared_ptr<SimCore::Actors::LogicConditionalActorProxy> lcap1;
    mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::LOGIC_CONDITIONAL_ACTOR_TYPE, lcap1);
    CPPUNIT_ASSERT(lcap1.valid());
    SimCore::Actors::LogicConditionalActor& lcap1Actor = static_cast<SimCore::Actors::LogicConditionalActor&>(*lcap1->GetDrawable());
    mGM->AddActor(*lcap1);
 
    // Conditional 2
-   dtCore::RefPtr<SimCore::Actors::LogicConditionalActorProxy> lcap2;
+   std::shared_ptr<SimCore::Actors::LogicConditionalActorProxy> lcap2;
    mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::LOGIC_CONDITIONAL_ACTOR_TYPE, lcap2);
    CPPUNIT_ASSERT(lcap2.valid());
    SimCore::Actors::LogicConditionalActor& lcap2Actor = static_cast<SimCore::Actors::LogicConditionalActor&>(*lcap2->GetDrawable());
    mGM->AddActor(*lcap2);
 
    // On Event Actor
-   dtCore::RefPtr<SimCore::Actors::LogicOnEventActorProxy> onEventProxy;
+   std::shared_ptr<SimCore::Actors::LogicOnEventActorProxy> onEventProxy;
    mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::LOGIC_ON_EVENT_ACTOR_TYPE, onEventProxy);
    CPPUNIT_ASSERT(onEventProxy.valid());
    SimCore::Actors::LogicOnEventActor& onEventActor = static_cast<SimCore::Actors::LogicOnEventActor&>(onEventProxy->GetGameActor());
    mGM->AddActor(*onEventProxy, false, true);
 
    // Event 1 True
-   dtCore::RefPtr<dtCore::GameEvent> true1Event = new dtCore::GameEvent("Test 1 True Event");
+   std::shared_ptr<dtCore::GameEvent> true1Event = new dtCore::GameEvent("Test 1 True Event");
    dtCore::GameEventManager::GetInstance().AddEvent(*true1Event);
    lcap1Actor.SetTrueEvent(true1Event.get());
    // Event 1 False
-   dtCore::RefPtr<dtCore::GameEvent> false1Event = new dtCore::GameEvent("Test 1 False Event");
+   std::shared_ptr<dtCore::GameEvent> false1Event = new dtCore::GameEvent("Test 1 False Event");
    dtCore::GameEventManager::GetInstance().AddEvent(*false1Event);
    lcap1Actor.SetFalseEvent(false1Event.get());
 
    // Event 2 True
-   dtCore::RefPtr<dtCore::GameEvent> true2Event = new dtCore::GameEvent("Test 2 True Event");
+   std::shared_ptr<dtCore::GameEvent> true2Event = new dtCore::GameEvent("Test 2 True Event");
    dtCore::GameEventManager::GetInstance().AddEvent(*true2Event);
    lcap2Actor.SetTrueEvent(true2Event.get());
    // Event 2 False
-   dtCore::RefPtr<dtCore::GameEvent> false2Event = new dtCore::GameEvent("Test 2 False Event");
+   std::shared_ptr<dtCore::GameEvent> false2Event = new dtCore::GameEvent("Test 2 False Event");
    dtCore::GameEventManager::GetInstance().AddEvent(*false2Event);
    lcap2Actor.SetFalseEvent(false2Event.get());
 
    // ConditionalsMetEvent
-   dtCore::RefPtr<dtCore::GameEvent> conditionsMetEvent = new dtCore::GameEvent("Test Conditions Met Event");
+   std::shared_ptr<dtCore::GameEvent> conditionsMetEvent = new dtCore::GameEvent("Test Conditions Met Event");
    dtCore::GameEventManager::GetInstance().AddEvent(*conditionsMetEvent);
    onEventActor.SetEventToFire(conditionsMetEvent.get());
 

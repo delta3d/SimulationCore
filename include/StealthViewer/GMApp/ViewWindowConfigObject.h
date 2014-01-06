@@ -31,7 +31,7 @@
 #include <dtCore/deltawin.h>
 #include <dtUtil/functor.h>
 
-#include <osg/Referenced>
+#include <dtUtil/refcountedbase.h>
 
 #include <string>
 #include <set>
@@ -136,7 +136,7 @@ namespace StealthGM
       virtual ~ViewWindowWrapper();
    private:
       std::string mTitle;
-      dtCore::RefPtr<dtCore::Camera> mParentCamera;
+      std::shared_ptr<dtCore::Camera> mParentCamera;
 
       OperationCallback mInitCallback;
       OperationCallback mRemoveCallback;
@@ -145,8 +145,8 @@ namespace StealthGM
       bool mUseAspectRatioForFOV;
       osg::Vec2f mFOVAspectVertical;
       osg::Vec2f mFOVHorizontalVertical;
-      dtCore::RefPtr<dtCore::View> mView;
-      dtCore::RefPtr<dtCore::DeltaWin> mWindow;
+      std::shared_ptr<dtCore::View> mView;
+      std::shared_ptr<dtCore::DeltaWin> mWindow;
       double mNearClippingPlane;
       double mFarClippingPlane;
 
@@ -156,8 +156,8 @@ namespace StealthGM
    class STEALTH_GAME_EXPORT ViewWindowConfigObject: public ConfigurationObjectInterface
    {
    public:
-      typedef std::map<std::string, dtCore::RefPtr<ViewWindowWrapper> > ViewWindowContainer;
-      typedef std::vector<dtCore::RefPtr<ViewWindowWrapper> > ViewWindowVector;
+      typedef std::map<std::string, std::shared_ptr<ViewWindowWrapper> > ViewWindowContainer;
+      typedef std::vector<std::shared_ptr<ViewWindowWrapper> > ViewWindowVector;
 
       ViewWindowConfigObject();
 
@@ -211,7 +211,7 @@ namespace StealthGM
 
    protected:
       virtual ~ViewWindowConfigObject();
-      dtCore::RefPtr<ViewWindowWrapper> mMainViewWindow;
+      std::shared_ptr<ViewWindowWrapper> mMainViewWindow;
       ViewWindowContainer mViewWindows;
       ViewWindowVector mViewsToRemove;
       double mNearClippingPlane;

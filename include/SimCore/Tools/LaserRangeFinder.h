@@ -72,7 +72,7 @@ namespace SimCore
 
             CEGUI::Window *mOverlay;
             //, *mIntersectionText;
-            dtCore::RefPtr<dtCore::Isector> mIsector;
+            std::shared_ptr<dtCore::Isector> mIsector;
             //bool mShowReticle;
             //bool mShowDistance;
        };

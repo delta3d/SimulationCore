@@ -102,8 +102,8 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       BaseHUD::~BaseHUD()
       {
-         mMainWindow = NULL;
-         mGUI = NULL;
+         mMainWindow = nullptr;
+         mGUI = nullptr;
          delete mScriptModule; // a script module does not extend dtCore::Base
       }
 
@@ -114,7 +114,7 @@ namespace SimCore
          bool realized = GetGameManager()->GetApplication().GetWindow()->GetOsgViewerGraphicsWindow()->isRealized();
          //this code will create an opengl context to initialize CEGUI with
          //we only need to do this if OSG does not realize on creation
-         dtCore::RefPtr<osg::GraphicsContext> gc;
+         osg::ref_ptr<osg::GraphicsContext> gc;
          if(!realized)
          {
             osg::ref_ptr<osg::GraphicsContext::Traits> traits = new osg::GraphicsContext::Traits;
@@ -143,7 +143,7 @@ namespace SimCore
 
          InitializeCEGUI();
 
-         dtCore::RefPtr<HUDGroup> hudOverlay = new HUDGroup( "HUDOverlay" );
+         std::shared_ptr<HUDGroup> hudOverlay = new HUDGroup( "HUDOverlay" );
          mMainWindow->Add( hudOverlay.get() );
          hudOverlay->SetPosition( 0.0f, 0.0f );
          hudOverlay->SetSize( 1.0f, 1.0f );

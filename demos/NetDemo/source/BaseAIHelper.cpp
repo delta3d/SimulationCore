@@ -75,7 +75,7 @@ namespace NetDemo
       osg::Matrix mat;
       mat.makeIdentity();
 
-      if(desc != NULL)
+      if(desc != nullptr)
       {
          dtCore::Transform xform;
          desc->GetTransform(xform);
@@ -138,7 +138,7 @@ namespace NetDemo
             
             //LOG_ALWAYS("Clamping entity range");
             //we changed the actual position, we had better notify physics
-            if(mPhysicsModel->GetPhysicsActComp() != NULL && mPhysicsModel->GetPhysicsActComp()->GetMainPhysicsObject() != NULL)
+            if(mPhysicsModel->GetPhysicsActComp() != nullptr && mPhysicsModel->GetPhysicsActComp()->GetMainPhysicsObject() != nullptr)
             {
                dtPhysics::PhysicsObject* physicsObject = mPhysicsModel->GetPhysicsActComp()->GetMainPhysicsObject();
                physicsObject->SetTransform(trans);
@@ -232,8 +232,8 @@ namespace NetDemo
       trans.Get(mat);
 
       mPhysicsModel->SetState(mCurrentState, mat);
-      //if(mPhysicsModel->GetPhysicsActComp() != NULL
-      //   && mPhysicsModel->GetPhysicsActComp()->GetMainPhysicsObject() != NULL)
+      //if(mPhysicsModel->GetPhysicsActComp() != nullptr
+      //   && mPhysicsModel->GetPhysicsActComp()->GetMainPhysicsObject() != nullptr)
       //{
       //   mPhysicsModel->GetPhysicsActComp()->GetMainPhysicsObject()->SetTransform(trans);
       //}

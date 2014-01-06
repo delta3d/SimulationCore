@@ -70,8 +70,8 @@ namespace SimCore
             void DetachFromScene();
 
          private:
-            dtCore::RefPtr<osg::Projection> mRoot;
-            dtCore::RefPtr<osg::MatrixTransform> mDrawable;
+            osg::ref_ptr<osg::Projection> mRoot;
+            osg::ref_ptr<osg::MatrixTransform> mDrawable;
        };
 
    }

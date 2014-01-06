@@ -66,7 +66,7 @@ namespace NetDemo
       {
          // Workaround for a bug where an not-connected server network component assumes it still should handle
          // the messages.  Needs to be Put into Delta3D
-         if (GetConnection(msg.GetSource()) != NULL)
+         if (GetConnection(msg.GetSource()) != nullptr)
          {
             ServerNetworkComponent::ProcessNetClientRequestConnection(msg);
          }

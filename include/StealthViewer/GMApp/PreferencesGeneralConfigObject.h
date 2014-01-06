@@ -25,7 +25,7 @@
 #define _PREFERENCES_GENERAL_CONFIG_OBJECT_H_
 
 #include <dtUtil/enumeration.h>
-#include <dtCore/refptr.h>
+#include <dtUtil/refcountedbase.h>
 #include <dtCore/uniqueid.h>
 
 #include <StealthViewer/GMApp/ConfigurationObjectInterface.h>
@@ -163,7 +163,7 @@ namespace StealthGM
          void AttachToActor(const dtCore::UniqueId& id) { mAttachActorId = id; SetIsUpdated(true); }
 
          /**
-          * Tells the Stealth Actor to detach - sends an attach with a NULL actor.
+          * Tells the Stealth Actor to detach - sends an attach with a nullptr actor.
           */
          void DetachFromActor() { mDetachFromActor = true; SetIsUpdated(true); }
 
@@ -253,7 +253,7 @@ namespace StealthGM
          std::string mStartupConnectionName;
          bool mAutoRefreshEntityInfo;
          bool mDetachFromActor;
-         dtCore::RefPtr<StealthInputComponent> mInputComponent;
+         std::shared_ptr<StealthInputComponent> mInputComponent;
 
          std::string mAttachPointNodeName;
          osg::Vec3 mInitialAttachRotationHPR;

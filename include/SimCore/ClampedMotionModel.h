@@ -28,7 +28,7 @@
 #include <SimCore/AttachedMotionModel.h>
 #include <SimCore/Components/ArticulationHelper.h>
 
-#include <dtCore/observerptr.h>
+#include <dtUtil/refcountedbase.h>
 #include <dtCore/mouse.h>
 
 #include <osgSim/DOFTransform>
@@ -62,11 +62,11 @@ namespace SimCore
          /**
           * Constructor.
           *
-          * @param keyboard the keyboard instance, or NULL to avoid creating default input mappings
-          * @param mouse the mouse instance, or NULL to avoid creating default input mappings
+          * @param keyboard the keyboard instance, or nullptr to avoid creating default input mappings
+          * @param mouse the mouse instance, or nullptr to avoid creating default input mappings
           */
-         ClampedMotionModel(dtCore::Keyboard* keyboard = NULL,
-                           dtCore::Mouse* mouse = NULL);
+         ClampedMotionModel(dtCore::Keyboard* keyboard = nullptr,
+                           dtCore::Mouse* mouse = nullptr);
 
          /**
           * Destructor.
@@ -305,9 +305,9 @@ namespace SimCore
          dtCore::Keyboard* mKeyboard;
 
          // The articulation helper 
-         dtCore::RefPtr<SimCore::Components::ArticulationHelper> mArticHelper;
+         std::shared_ptr<SimCore::Components::ArticulationHelper> mArticHelper;
 
-         dtCore::ObserverPtr<osgSim::DOFTransform> mDOF;
+         std::weak_ptr<osgSim::DOFTransform> mDOF;
 
          bool mTestMode;
          float mTestTimeSincePrint;

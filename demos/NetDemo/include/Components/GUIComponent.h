@@ -179,41 +179,41 @@ namespace NetDemo
 
       private:
          // High Order Objects
-         dtCore::ObserverPtr<PlayerStatusActor> mPlayer;
-         dtCore::ObserverPtr<GameLogicComponent> mAppComp;
+         std::weak_ptr<PlayerStatusActor> mPlayer;
+         std::weak_ptr<GameLogicComponent> mAppComp;
 #if CEGUI_VERSION_MAJOR == 0 && CEGUI_VERSION_MINOR < 7
-         dtCore::RefPtr<dtGUI::CEUIDrawable> mGUI;
+         std::shared_ptr<dtGUI::CEUIDrawable> mGUI;
 #else
-         dtCore::RefPtr<dtGUI::GUI> mGUI;
+         std::shared_ptr<dtGUI::GUI> mGUI;
 #endif
-         dtCore::RefPtr<SimCore::Components::HUDGroup> mMainWindow;
+         std::shared_ptr<SimCore::Components::HUDGroup> mMainWindow;
          dtGUI::ScriptModule* mScriptModule;
-         dtCore::RefPtr<NetDemo::GUI::ScoreLabelManager> mScoreLabelManager;
+         std::shared_ptr<NetDemo::GUI::ScoreLabelManager> mScoreLabelManager;
 
          //
          typedef std::map<const GameStateType*, Screen*> StateScreenMap;
          StateScreenMap mStateScreenMap;
 
          // Screens
-         dtCore::RefPtr<osg::MatrixTransform> mBackground;
-         dtCore::RefPtr<NetDemo::GUI::MainMenuScreen> mScreenMainMenu;
-         dtCore::RefPtr<SimpleScreen> mScreenLobby;
-         dtCore::RefPtr<SimpleScreen> mScreenConnectFailPrompt;
-         dtCore::RefPtr<SimpleScreen> mScreenLoading;
-         dtCore::RefPtr<NetDemo::GUI::ReadyRoomScreen> mScreenReadyRoom;
-         dtCore::RefPtr<SimpleScreen> mScreenGarage;
-         dtCore::RefPtr<SimpleScreen> mScreenOptions;
-         dtCore::RefPtr<SimpleScreen> mScreenQuitPrompt;
-         dtCore::RefPtr<NetDemo::GUI::HUDScreen> mScreenHUD;
+         osg::ref_ptr<osg::MatrixTransform> mBackground;
+         std::shared_ptr<NetDemo::GUI::MainMenuScreen> mScreenMainMenu;
+         std::shared_ptr<SimpleScreen> mScreenLobby;
+         std::shared_ptr<SimpleScreen> mScreenConnectFailPrompt;
+         std::shared_ptr<SimpleScreen> mScreenLoading;
+         std::shared_ptr<NetDemo::GUI::ReadyRoomScreen> mScreenReadyRoom;
+         std::shared_ptr<SimpleScreen> mScreenGarage;
+         std::shared_ptr<SimpleScreen> mScreenOptions;
+         std::shared_ptr<SimpleScreen> mScreenQuitPrompt;
+         std::shared_ptr<NetDemo::GUI::HUDScreen> mScreenHUD;
 
-         dtCore::RefPtr<Screen> mCurrentScreen;
-         dtCore::RefPtr<Screen> mPreviousScreen;
+         std::shared_ptr<Screen> mCurrentScreen;
+         std::shared_ptr<Screen> mPreviousScreen;
 
          // Special Effects Overlays
-         dtCore::RefPtr<osg::MatrixTransform> mEffectsOverlay;
+         osg::ref_ptr<osg::MatrixTransform> mEffectsOverlay;
 
          // Special Effects Elements
-         dtCore::RefPtr<ButtonHighlight> mButtonHighlight;
+         std::shared_ptr<ButtonHighlight> mButtonHighlight;
 
          // Special Widgets
          const CEGUI::Window* mCurrentHoveredWidget;

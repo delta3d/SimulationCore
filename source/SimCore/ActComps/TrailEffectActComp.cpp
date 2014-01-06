@@ -73,20 +73,20 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       SimCore::Actors::TerrainActor* GetTerrainActor(TrailEffectActComp& comp)
       {
-         SimCore::Actors::TerrainActor* terrain = NULL;
+         SimCore::Actors::TerrainActor* terrain = nullptr;
 
          dtCore::Transform xform;
-         dtGame::GameActor* actor = NULL;
+         dtGame::GameActor* actor = nullptr;
          comp.GetOwner(actor);
-         if(actor != NULL)
+         if(actor != nullptr)
          {
             dtGame::GameManager* gm = actor->GetGameActorProxy().GetGameManager();
-            if(gm != NULL)
+            if(gm != nullptr)
             {
-               dtGame::GameActorProxy* proxy = NULL;
+               dtGame::GameActorProxy* proxy = nullptr;
                gm->FindActorByType(*SimCore::Actors::EntityActorRegistry::TERRAIN_ACTOR_TYPE, proxy);
 
-               if(proxy != NULL)
+               if(proxy != nullptr)
                {
                   proxy->GetActor(terrain);
                }
@@ -99,12 +99,12 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       SimCore::Components::ParticleManagerComponent* GetParticleComponent(dtGame::GameActor* actor)
       {
-         SimCore::Components::ParticleManagerComponent* comp = NULL;
+         SimCore::Components::ParticleManagerComponent* comp = nullptr;
 
-         if(actor != NULL)
+         if(actor != nullptr)
          {
             dtGame::GameManager* gm = actor->GetGameActorProxy().GetGameManager();
-            if(gm != NULL)
+            if(gm != nullptr)
             {
                gm->GetComponentByName(SimCore::Components::ParticleManagerComponent::DEFAULT_NAME, comp);
             }
@@ -117,9 +117,9 @@ namespace SimCore
       void GetOwnerPosition(TrailEffectActComp& comp, osg::Vec3& outPos)
       {
          dtCore::Transform xform;
-         dtGame::GameActor* actor = NULL;
+         dtGame::GameActor* actor = nullptr;
          comp.GetOwner(actor);
-         if(actor != NULL)
+         if(actor != nullptr)
          {
             actor->GetTransform(xform);
             xform.GetTranslation(outPos);
@@ -136,7 +136,7 @@ namespace SimCore
 //         SimCore::Utils::KeepBodyOnGround(xform, 0.0f, 0.0f, 0.0f, 0.0f);
 
          SimCore::Actors::TerrainActor* terrain =  GetTerrainActor(comp);
-         if(terrain != NULL)
+         if(terrain != nullptr)
          {
             success = SimCore::Utils::KeepTransformOnGround(xform, *terrain, 0.0f, 0.0, 0.0f);
          }
@@ -232,9 +232,9 @@ namespace SimCore
             {
                mParticles = new dtCore::ParticleSystem("TrailEffect");
 
-               if(mParticles->LoadFile(res) == NULL)
+               if(mParticles->LoadFile(res) == nullptr)
                {
-                  mParticles = NULL;
+                  mParticles = nullptr;
 
                   std::ostringstream oss;
                   oss << "Could not successfully load particle file \"" << res << "\"\n";
@@ -254,7 +254,7 @@ namespace SimCore
       class FindNodeVisitor : public osg::NodeVisitor
       {
       public:
-         dtCore::RefPtr<osg::Group> mFoundNode;
+         osg::ref_ptr<osg::Group> mFoundNode;
 
          FindNodeVisitor(const std::string& nodeName)
             : osg::NodeVisitor(TRAVERSE_ALL_CHILDREN)
@@ -284,10 +284,10 @@ namespace SimCore
 
          if(mParticles.valid())
          {
-            dtGame::GameActor* actor = NULL;
+            dtGame::GameActor* actor = nullptr;
             GetOwner(actor);
 
-            if(actor != NULL)
+            if(actor != nullptr)
             {
                osg::Group* rootNode = actor->GetOSGNode()->asGroup();
                osg::Node* particleRoot = mParticles->GetLoadedParticleSystemRoot();
@@ -297,7 +297,7 @@ namespace SimCore
                   if( ! mTrailAttachNodeName.empty())
                   {
                      // Find the specified node by name.
-                     dtCore::RefPtr<FindNodeVisitor> visitor = new FindNodeVisitor(mTrailAttachNodeName);
+                     std::shared_ptr<FindNodeVisitor> visitor = new FindNodeVisitor(mTrailAttachNodeName);
                      actor->GetOSGNode()->accept(*visitor);
 
                      // Attach to the found node.
@@ -317,7 +317,7 @@ namespace SimCore
                   }
 
                   // Attached to the root node of the parent if the specified node was not found.
-                  if( ! success && rootNode != NULL)
+                  if( ! success && rootNode != nullptr)
                   {
                      if(actor->AddChild(mParticles.get()))
                      {
@@ -329,7 +329,7 @@ namespace SimCore
                else // not attached
                {
                   dtGame::GameManager* gm = actor->GetGameActorProxy().GetGameManager();
-                  if(gm != NULL)
+                  if(gm != nullptr)
                   {
                      gm->GetScene().AddChild(mParticles.get());
                      success = true;
@@ -349,7 +349,7 @@ namespace SimCore
             if(mParticles.valid())
             {
                SimCore::Components::ParticleManagerComponent* comp = GetParticleComponent(actor);
-               if(comp != NULL)
+               if(comp != nullptr)
                {
                   // Set the flags to ensure the particles are affected by wind.
                   SimCore::Components::ParticleInfoAttributeFlags flags;
@@ -379,27 +379,27 @@ namespace SimCore
 
          if(mParticles.valid())
          {
-            osg::Group* parent = NULL;
+            osg::Group* parent = nullptr;
             osg::Node* particleNode = mParticles->GetLoadedParticleSystemRoot();
 
             // Ensure the particles are not attached to the actor directly.
-            dtGame::GameActor* actor = NULL;
+            dtGame::GameActor* actor = nullptr;
             GetOwner(actor);
-            if(actor != NULL)
+            if(actor != nullptr)
             {
                actor->RemoveChild(mParticles.get());
             }
 
             // Ensure the particles are unregistered from the Particle Manager
             SimCore::Components::ParticleManagerComponent* comp = GetParticleComponent(actor);
-            if(comp != NULL)
+            if(comp != nullptr)
             {
                comp->Unregister(*mParticles);
             }
 
             // Ensure the particles are not attached directly to the scene.
             dtGame::GameManager* gm = actor->GetGameActorProxy().GetGameManager();
-            if(gm != NULL)
+            if(gm != nullptr)
             {
                gm->GetScene().RemoveChild(mParticles.get());
             }
@@ -407,13 +407,13 @@ namespace SimCore
             // Ensure the particle effect is not attached to the owner's sub-nodes.
             do 
             {
-               parent = particleNode->getNumParents() > 0 ? particleNode->getParent(0) : NULL;
-               if(parent != NULL)
+               parent = particleNode->getNumParents() > 0 ? particleNode->getParent(0) : nullptr;
+               if(parent != nullptr)
                {
                   parent->removeChild(particleNode);
                   ++count;
                }
-            } while(parent != NULL);
+            } while(parent != nullptr);
          }
 
          return count;
@@ -471,7 +471,7 @@ namespace SimCore
                      if(mOwnerIsPlatform)
                      {
                         // Get the damage state of the entity.
-                        dtGame::GameActor* actor = NULL;
+                        dtGame::GameActor* actor = nullptr;
                         GetOwner(actor);
                         BaseEntityActorProxy::DamageStateEnum* damage
                            = &static_cast<Platform*>(actor)->GetDamageState();
@@ -528,10 +528,10 @@ namespace SimCore
          // Disable the effect if the owner actor is a platform type
          // with a damage state of destroyed.
          using namespace SimCore::Actors;
-         dtGame::GameActor* actor = NULL;
+         dtGame::GameActor* actor = nullptr;
          GetOwner(actor);
          Platform* platform = dynamic_cast<Platform*>(actor);
-         if(platform != NULL)
+         if(platform != nullptr)
          {
             mOwnerIsPlatform = true;
             SetEnabled(platform->GetDamageState() != BaseEntityActorProxy::DamageStateEnum::DESTROYED);
@@ -606,7 +606,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void TrailEffectActComp::RegisterForRemoteTicks()
       {
-         dtGame::GameActor* owner = NULL;
+         dtGame::GameActor* owner = nullptr;
          GetOwner(owner);
          std::string tickInvokable = "Tick Remote " + GetType().Get();
          if(!owner->GetGameActorProxy().GetInvokable(tickInvokable))
@@ -619,7 +619,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void TrailEffectActComp::UnregisterForRemoteTicks()
       {
-         dtGame::GameActor* owner = NULL;
+         dtGame::GameActor* owner = nullptr;
          GetOwner(owner);
          std::string tickInvokable = "Tick Remote " + GetType().Get();
          owner->GetGameActorProxy().UnregisterForMessages(dtGame::MessageType::TICK_REMOTE, tickInvokable);
@@ -629,10 +629,10 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void TrailEffectActComp::RegisterTickHandlers()
       {
-         dtGame::GameActor* actor = NULL;
+         dtGame::GameActor* actor = nullptr;
          GetOwner(actor);
 
-         if(actor != NULL)
+         if(actor != nullptr)
          {
             if(actor->IsRemote())
             {
@@ -648,10 +648,10 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void TrailEffectActComp::UnregisterTickHandlers()
       {
-         dtGame::GameActor* actor = NULL;
+         dtGame::GameActor* actor = nullptr;
          GetOwner(actor);
 
-         if(actor != NULL)
+         if(actor != nullptr)
          {
             if(actor->IsRemote())
             {

@@ -43,7 +43,7 @@ class RangeRadialPlugin : public SimCoreWidgetsPlugin
    Q_OBJECT
 
    public:
-      RangeRadialPlugin( QObject* parent = NULL );
+      RangeRadialPlugin( QObject* parent = nullptr );
 
       // INTERFACE METHODS -----------------------------------------------------
       QWidget* createWidget( QWidget* parent );

@@ -107,7 +107,7 @@ namespace SimCore
             /// Destructor
             virtual ~LocalEffectActor();
 
-            dtCore::RefPtr<dtCore::ParticleSystem> mParticleSystem;
+            std::shared_ptr<dtCore::ParticleSystem> mParticleSystem;
 
          private:
 
@@ -131,7 +131,7 @@ namespace SimCore
             /**
              * @return the billboard used to represent particle systems.
              */
-            virtual dtDAL::ActorProxyIcon* GetBillBoardIcon();
+            virtual dtDAL::ActorProxyIconPtr GetBillBoardIcon();
 
             /// Loads a particle system file
             virtual void LoadFile(const std::string &fileName);

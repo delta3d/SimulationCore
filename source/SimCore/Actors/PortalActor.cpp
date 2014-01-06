@@ -49,7 +49,7 @@ namespace SimCore
          static const std::string GROUP = "Portal";
          dtGame::GameActorProxy::BuildPropertyMap();
 
-         Portal* actor = NULL;
+         Portal* actor = nullptr;
          GetActor(actor);
 
          AddProperty(new dtDAL::StringActorProperty("Portal Name", "Portal Name",
@@ -93,7 +93,7 @@ namespace SimCore
       ///////////////////////////////////////////////////////
       // HACK: This is a temporary work around to avoid RILOMData errors on other machines.
       //       The error states that the expected string should be 64 bytes long.
-      // NOTE: The length includes a NULL terminator.
+      // NOTE: The length includes a nullptr terminator.
       //       The HLA parameter translator adds this to the string automatically,
       //       thus expect to use 63 bytes for actual name characters.
       void Portal::SetPortalName(const std::string& name)

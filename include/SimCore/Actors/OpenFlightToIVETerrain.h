@@ -83,7 +83,7 @@ namespace SimCore
          /// Destructor
          virtual ~OpenFlightToIVETerrainActor();
 
-         dtCore::RefPtr<osg::Group> mGroupNodeForTerrain;
+         osg::ref_ptr<osg::Group> mGroupNodeForTerrain;
 
          //////////////////////////////////////
          /// Properties

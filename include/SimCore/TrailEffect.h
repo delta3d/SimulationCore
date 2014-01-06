@@ -89,11 +89,11 @@ namespace SimCore
          int mCurrentIndex;
          int mSegmentCount;
          float mWidth;
-         dtCore::RefPtr<osg::Geometry>  mGeom;
-         dtCore::RefPtr<osg::Vec3Array> mVerts;
-         dtCore::RefPtr<osg::Vec4Array> mData;
-         dtCore::RefPtr<osg::DrawElementsUInt> mIndices;
-         dtCore::RefPtr<dtCore::ShaderProgram> mShader;
+         osg::ref_ptr<osg::Geometry>  mGeom;
+         osg::ref_ptr<osg::Vec3Array> mVerts;
+         osg::ref_ptr<osg::Vec4Array> mData;
+         osg::ref_ptr<osg::DrawElementsUInt> mIndices;
+         std::shared_ptr<dtCore::ShaderProgram> mShader;
    };
 }
 

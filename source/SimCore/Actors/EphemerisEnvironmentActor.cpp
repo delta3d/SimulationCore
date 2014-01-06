@@ -129,7 +129,7 @@ namespace SimCore
          dtCore::Environment& coreEnv = GetCoreEnvironment();
          //osg::Matrix projectMat;
          //projectMat.makePerspective(60, 1.5, 10, 996);
-         //dtCore::RefPtr<osg::Projection> projection = new osg::Projection(projectMat);
+         //osg::ref_ptr<osg::Projection> projection = new osg::Projection(projectMat);
          //coreEnv.GetOSGNode()->asGroup()->addChild(projection.get());
          osg::Group* envGroup = coreEnv.GetOSGNode()->asGroup();
          envGroup->addChild(mEphemerisModel.get());
@@ -166,7 +166,7 @@ namespace SimCore
          const dtCore::ShaderGroup *shaderGroup =
          dtCore::ShaderManager::GetInstance().FindShaderGroupPrototype("EphemerisFogGroup");
 
-         if (shaderGroup == NULL)
+         if (shaderGroup == nullptr)
          {
             LOG_INFO("Could not find shader group EphemerisFogGroup");
             return;
@@ -176,7 +176,7 @@ namespace SimCore
 
          try
          {
-            if (defaultShader != NULL)
+            if (defaultShader != nullptr)
             {
                dtCore::ShaderManager::GetInstance().AssignShaderFromPrototype(*defaultShader, *mFogSphere.get());
             }
@@ -241,7 +241,7 @@ namespace SimCore
          dtUtil::DateTime dt(GetDateTime().GetGMTTime());
 
          LOGN_DEBUG("IGEnvironmentActor.cpp", dt.ToString());
-         if (ephem != NULL)
+         if (ephem != nullptr)
          {
 
             ephem->dateTime.setYear(dt.GetYear()); // DateTime uses _actual_ year (not since 1900)
@@ -253,7 +253,7 @@ namespace SimCore
          }
          else
          {
-            LOG_ERROR("Ephemeris Data is NULL");
+            LOG_ERROR("Ephemeris Data is nullptr");
          }
       }
 
