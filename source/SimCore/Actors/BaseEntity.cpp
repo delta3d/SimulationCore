@@ -785,7 +785,7 @@ namespace SimCore
          }
          else
          {
-            if (mFlamesSystem.get())
+            if (mFlamesSystem)
             {
                UnregisterParticleSystem(*mFlamesSystem);
                RemoveChild(mFlamesSystem.get());
