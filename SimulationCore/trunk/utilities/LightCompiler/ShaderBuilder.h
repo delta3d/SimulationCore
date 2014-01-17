@@ -38,7 +38,7 @@ public:
       for(unsigned lightIndex = 0; lightsBegin != lightsEnd; ++lightsBegin, ++lightIndex)
       {
          const osg::Light* currentLight = lightsBegin->get();
-         osg::Vec4 lightValue = currentLight->getDiffuse();
+         osg::Vec4f lightValue = currentLight->getDiffuse();
          lightValue[3] = currentLight->getSpotExponent();
          lightUniform->setElement(lightIndex, lightValue);
 
