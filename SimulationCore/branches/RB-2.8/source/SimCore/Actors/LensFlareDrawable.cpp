@@ -478,8 +478,12 @@ namespace SimCore
 
          LoadTextures();         
 
-         osg::StateSet* ss = getOrCreateStateSet();         
+         osg::StateSet* ss = getOrCreateStateSet();
+#if OSG_VERSION_LESS_THAN(3,1,5)
+         mLightPosUniform = ss->getOrCreateUniform("sunPosition", osg::Uniform::FLOAT_VEC3);
+#else
          mLightPosUniform = ss->getOrCreateUniform("sunPosition", osg::Uniform::DOUBLE_VEC3);
+#endif
          //mEffectRadiusUniform = ss->getOrCreateUniform("effectRadius", osg::Uniform::FLOAT);
 
       }
