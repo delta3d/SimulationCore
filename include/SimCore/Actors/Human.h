@@ -273,6 +273,9 @@ namespace SimCore
             virtual void SkeletalMeshLoadCallback(dtAnim::AnimationHelper*);
             virtual void SkeletalMeshUnloadCallback(dtAnim::AnimationHelper*);
 
+            /// This is called by the walk/run animation to get the value for the walk speed.  Override to change the way it works.
+            virtual float CalculateAnimationWalkingSpeed() const;
+
          protected:
             virtual ~Human();
 
