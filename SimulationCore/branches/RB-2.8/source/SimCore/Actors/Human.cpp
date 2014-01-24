@@ -168,12 +168,17 @@ namespace SimCore
                   //update our velocity vector
                   if(mParentHuman.valid())
                   {
-                     mSpeed = mParentHuman->GetComponent<dtGame::DeadReckoningHelper>()->GetLastKnownVelocity().length();
+                     mSpeed = mParentHuman->CalculateAnimationWalkingSpeed();
                      //std::cout << "Human Speed: " << mSpeed << std::endl;
                   }
                   else
                   {
                      LOG_ERROR("Controller has no valid parent pointer");
+                  }
+
+                  if (mSpeed > 0.0f)
+                  {
+                     LOG_ALWAYS("Speed is not 0:" + dtUtil::ToString(mSpeed));
                   }
 
                   float walkWeight = ComputeWeight(mWalk.get(), mWalkStart, mWalkFadeIn, mWalkStop, mWalkFadeOut);
@@ -270,12 +275,6 @@ namespace SimCore
                AddAnimation(run);
                mWRController->SetAnimations(walk, run);
             }
-
-            void SetCurrentSpeed(float speed)
-            {
-               mWRController->SetCurrentSpeed(speed);
-            }
-
 
             WRController& GetWalkRunController()
             {
@@ -695,7 +694,7 @@ namespace SimCore
                << "Stance:  \"" << GetStance().GetName()
                << "\"\n Primary Weapon: \"" << GetPrimaryWeaponState().GetName()
                << "\"\n Damage: \"" << GetDamageState().GetName()
-               << "\"\n Velocity: \"" << GetComponent<dtGame::DeadReckoningHelper>()->GetLastKnownVelocity() << "\"\n";
+               << "\"\n Velocity: \"" << CalculateAnimationWalkingSpeed() << "\"\n";
             ExecuteActionCountMap::const_iterator i, iend;
             i = mExecutedActionCounts.begin();
             iend = mExecutedActionCounts.end();
@@ -799,7 +798,13 @@ namespace SimCore
          }
          return false;
       }
-      
+
+      ////////////////////////////////////////////////////////////////////////////
+      float Human::CalculateAnimationWalkingSpeed() const
+      {
+         return GetComponent<dtGame::DeadReckoningHelper>()->GetLastKnownVelocity().length();
+      }
+
       ////////////////////////////////////////////////////////////////////////////
       HumanActorProxy::WeaponStateEnum& Human::GetPrimaryWeaponState() const
       {
@@ -910,7 +915,7 @@ namespace SimCore
 
          //This requires that plans be made in one frame.
          //Moving is the same as the velocity > 0.
-         if (movingState->Get() != !dtUtil::Equivalent(GetComponent<dtGame::DeadReckoningHelper>()->GetLastKnownVelocity().length2(), 0.0f))
+         if (movingState->Get() != !dtUtil::Equivalent(CalculateAnimationWalkingSpeed(), 0.0f))
             return false;
 
          bool actionStateResult =
@@ -1011,7 +1016,7 @@ namespace SimCore
                for (; i != iend; ++i)
                {
                   //if the last anim was NOT the last one, it has to end and be an action
-                  if (newAnim.valid())
+                  if (newAnim)
                   {
                      dtAnim::AnimationChannel* animChannel = dynamic_cast<dtAnim::AnimationChannel*>(newAnim.get());
                      if (animChannel != NULL)
@@ -1038,7 +1043,7 @@ namespace SimCore
                      newAnim->SetFadeIn(blendTime);
                      newAnim->SetFadeOut(blendTime);
 
-                     generatedSequence->AddAnimation(newAnim.get());
+                     generatedSequence->AddAnimation(newAnim);
                   }
                   else
                   {
