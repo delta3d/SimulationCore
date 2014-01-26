@@ -19,6 +19,10 @@
  -------------------------------------------------------------------------------
  */
 
+#ifndef WIN32
+#include <strings.h>
+#endif
+
 #include <iostream>
 #include <string>
 #include <osgDB/Registry>
@@ -132,6 +136,32 @@ bool EphemerisModel_readLocalData(osg::Object& obj, osgDB::Input& fr)
         itAdvanced = true;
     }
 
+    if( fr[0].matchWord( "MirrorSouthernHemisphere" ))
+    {
+        ++fr;
+#ifdef _MSC_VER
+		bool flag = (!_stricmp( fr[0].getStr(), "True" )) || atoi(fr[0].getStr());
+#else
+        bool flag = (!strcasecmp( fr[0].getStr(), "True" )) || atoi(fr[0].getStr());
+#endif
+        em.setSkyDomeMirrorSouthernHemisphere( flag );
+        ++fr;
+        itAdvanced = true;
+    }
+
+    if( fr[0].matchWord( "UseSouthernHemisphere" ))
+    {
+        ++fr;
+#ifdef _MSC_VER
+		bool flag = (!_stricmp( fr[0].getStr(), "True" )) || atoi(fr[0].getStr());
+#else
+        bool flag = (!strcasecmp( fr[0].getStr(), "True" )) || atoi(fr[0].getStr());
+#endif
+        em.setSkyDomeUseSouthernHemisphere( flag );
+        ++fr;
+        itAdvanced = true;
+    }
+
     if( fr[0].matchWord( "MoveWithEyePoint" ))
     {
         ++fr;
@@ -167,7 +197,26 @@ bool EphemerisModel_readLocalData(osg::Object& obj, osgDB::Input& fr)
              em.setEphemerisUpdateCallback( cb );
 
         ++fr;
+        itAdvanced = true;
     }
+    if( fr[0].matchWord( "SunFudgeScale" ))
+    {
+        ++fr;
+        double sunFudgeScale = atof( fr[0].getStr() );
+        em.setSunFudgeScale( sunFudgeScale );
+        ++fr;
+        itAdvanced = true;
+    }
+
+    if( fr[0].matchWord( "MoonFudgeScale" ))
+    {
+        ++fr;
+        double moonFudgeScale = atof( fr[0].getStr() );
+        em.setMoonFudgeScale( moonFudgeScale );
+        ++fr;
+        itAdvanced = true;
+    }
+
 
     return itAdvanced;
 }

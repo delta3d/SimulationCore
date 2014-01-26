@@ -23,7 +23,7 @@
 #define __SHMEM_DEF
 
 #include <string>
-#ifdef _DARWIN
+#if defined( _DARWIN ) || defined( __APPLE__ )
 #include <malloc/malloc.h>
 #else
 #include <malloc.h>
@@ -64,13 +64,15 @@ class OSGEPHEMERIS_EXPORT Shmem
           */
 
 	    void *operator new( size_t size, const std::string & filename );
+#ifdef WIN32
 	    void operator delete( void*, const std::string & filename );
+#endif
         /**
           Detaches from shared memory segment, but does not destroy the memory mapped file.
           */
 	    void operator delete( void * );
 
-    private :
+    protected :
         void *start;
     	size_t length;
 };
