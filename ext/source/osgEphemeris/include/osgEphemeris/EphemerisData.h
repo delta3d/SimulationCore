@@ -100,7 +100,7 @@ struct OSGEPHEMERIS_EXPORT CelestialBodyData
   */
 
 
-struct EphemerisData// : public Shmem
+struct OSGEPHEMERIS_EXPORT EphemerisData //: public Shmem
 {
     /*! 
       Latitude of view point in degrees 
@@ -150,7 +150,7 @@ struct EphemerisData// : public Shmem
       */
     static std::string getDefaultShmemFileName() { return _defaultShmemFileName; }
 
-    private:
+    protected:
         static const std::string _defaultShmemFileName; 
 };
 

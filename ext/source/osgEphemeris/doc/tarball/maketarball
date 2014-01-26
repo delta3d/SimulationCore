@@ -1,0 +1,14 @@
+#!/bin/sh
+
+NAME=$1
+TARBALL=$NAME.tgz
+
+rm -rf $NAME $TARBALL
+
+/usr/bin/svn -q  export file:///svn/osgEphemeris/trunk/osgEphemeris $NAME
+
+tar cvf - $NAME | gzip > $TARBALL
+rm -rf $NAME
+
+exit 0
+

@@ -60,7 +60,6 @@ class OSGEPHEMERIS_EXPORT EphemerisUpdateCallback : public virtual osg::Referenc
     protected:
         virtual ~EphemerisUpdateCallback(){}
 
-    private:
         std::string _name;
 
 };
@@ -70,7 +69,7 @@ class OSGEPHEMERIS_EXPORT EphemerisUpdateCallback : public virtual osg::Referenc
 
    */
 
-class EphemerisUpdateCallbackRegistry
+class OSGEPHEMERIS_EXPORT EphemerisUpdateCallbackRegistry
 {
     public:
         /** 
@@ -94,7 +93,7 @@ class EphemerisUpdateCallbackRegistry
           */
         EphemerisUpdateCallback *getUpdateCallback( const std::string &name );
 
-    private:
+    protected:
 
         std::map<std::string, osg::ref_ptr<EphemerisUpdateCallback> > _callbacks;
 };

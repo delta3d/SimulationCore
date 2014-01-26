@@ -65,18 +65,18 @@ class OSGEphemerisTests : public CPPUNIT_NS::TestFixture
 
       void TestDateTime()
       {
-         osgEphemeris::DateTime osgEphDT;
+         osgEphemeris::DateTime osgEphDT(true);
 
          dtUtil::DateTime dtUtilDT;
          dtUtilDT.SetToLocalTime();
 
          static const std::string INIT_MESSAGE("The osg ephemeris time should be initialized to localtime to prevent memory corruption");
          CPPUNIT_ASSERT_EQUAL_MESSAGE(INIT_MESSAGE,
-                  int(dtUtilDT.GetMonth()), osgEphDT.getMonth());
+                  uint32_t(dtUtilDT.GetMonth()), osgEphDT.getMonth());
          CPPUNIT_ASSERT_EQUAL_MESSAGE(INIT_MESSAGE,
-                  int(dtUtilDT.GetDay()), osgEphDT.getDayOfMonth());
+                  uint32_t(dtUtilDT.GetDay()), osgEphDT.getDayOfMonth());
          CPPUNIT_ASSERT_EQUAL_MESSAGE(INIT_MESSAGE,
-                  int(dtUtilDT.GetYear()), osgEphDT.getYear());
+                  uint32_t(dtUtilDT.GetYear()), osgEphDT.getYear());
 
          osgEphemeris::DateTime gmtTime = osgEphDT.getGMT();
 

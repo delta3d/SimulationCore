@@ -74,9 +74,9 @@ class OSGEPHEMERIS_EXPORT StarField: public osg::MatrixTransform
           stars according to daylight scatter in the atmosphere.  When the sun is 
           below the horizon, stars are visible, when above they are not.
           */
-        void setSunAltitude(  double altitude );
+        virtual void setSunAltitude(  double altitude );
 
-    private:
+    protected:
         struct StarData {
             std::string name;
             double right_ascension;

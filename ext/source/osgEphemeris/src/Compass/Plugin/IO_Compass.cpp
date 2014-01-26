@@ -27,13 +27,6 @@
 
 #include "../Lib/Compass.h"
 
-class ItIs {
-    public:
-        ItIs() { puts("It is what it is" ); }
-};
-
-static ItIs itIs;
-
 bool Compass_readLocalData(osg::Object& obj, osgDB::Input& fr);
 bool Compass_writeLocalData(const osg::Object& obj, osgDB::Output& fw);
 
