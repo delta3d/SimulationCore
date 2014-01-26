@@ -80,6 +80,9 @@ namespace SimCore
          mEphemerisModel->setSunLightNum(0);
          mEphemerisModel->setMoveWithEyePoint(true);
 
+         osgEphemeris::DateTime osgDT(true);
+         mEphemerisModel->setDateTime(osgDT);
+
          //FogSphere SetUp
          mFogSphere = new osgEphemeris::Sphere( 497.0f,
             osgEphemeris::Sphere::TessLow,
