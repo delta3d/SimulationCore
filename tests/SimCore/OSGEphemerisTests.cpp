@@ -66,9 +66,9 @@ class OSGEphemerisTests : public CPPUNIT_NS::TestFixture
       void TestDateTime()
       {
          osgEphemeris::DateTime osgEphDT(true);
-
          dtUtil::DateTime dtUtilDT;
-         dtUtilDT.SetToLocalTime();
+         dtUtilDT.SetToGMTTime();
+         osgEphDT.now();
 
          static const std::string INIT_MESSAGE("The osg ephemeris time should be initialized to localtime to prevent memory corruption");
          CPPUNIT_ASSERT_EQUAL_MESSAGE(INIT_MESSAGE,
@@ -80,7 +80,7 @@ class OSGEphemerisTests : public CPPUNIT_NS::TestFixture
 
          osgEphemeris::DateTime gmtTime = osgEphDT.getGMT();
 
-         static const std::string MOD_MESSAGE("The osg ephemeris time should return the same time as GMT, which is a Simcore mod");
+         static const std::string MOD_MESSAGE("The osg ephemeris time should return the same time as GMT");
          CPPUNIT_ASSERT_EQUAL_MESSAGE(MOD_MESSAGE,
                   gmtTime.getHour(), osgEphDT.getHour());
          CPPUNIT_ASSERT_EQUAL_MESSAGE(MOD_MESSAGE,

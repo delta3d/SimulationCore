@@ -76,11 +76,12 @@ DateTime::DateTime( const DateTime &dt ):
 }
 
 DateTime::DateTime(bool initialize)
+: _tzoff(0)
 { 
-    if( initialize )
-    {
-    now();
-}
+   if( initialize )
+   {
+      now();
+   }
 }
 
 DateTime::DateTime( const struct tm &tm )
