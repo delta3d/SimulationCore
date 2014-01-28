@@ -118,7 +118,7 @@ namespace StealthQt
           * Starts a new wait cursor.  You MUST call endWaitCursor() for each
           * startWaitCursor().
           *
-          * @Note - This behavior is extremely trivial, but is pulled to mainWindow for
+          * @note - This behavior is extremely trivial, but is pulled to mainWindow for
           * future expansion
           */
          void StartWaitCursor();
@@ -126,7 +126,7 @@ namespace StealthQt
          /**
           * Ends a previously started wait cursor.  You must call this for each startWaitCursor().
           *
-          * @Note - This behavior is extremely trivial, but is pulled to mainWindow for
+          * @note - This behavior is extremely trivial, but is pulled to mainWindow for
           * future expansion
           */
          void EndWaitCursor();
