@@ -176,10 +176,11 @@ namespace SimCore
                      LOG_ERROR("Controller has no valid parent pointer");
                   }
 
-                  if (mSpeed > 0.0f)
+                  //why do we have this?
+                  /*if (mSpeed > 0.0f)
                   {
                      LOG_ALWAYS("Speed is not 0:" + dtUtil::ToString(mSpeed));
-                  }
+                  }*/
 
                   float walkWeight = ComputeWeight(mWalk.get(), mWalkStart, mWalkFadeIn, mWalkStop, mWalkFadeOut);
                   float runWeight = ComputeWeight(mRun.get(), mRunStart, mRunFadeIn, mRunStop, mRunFadeOut);
