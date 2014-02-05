@@ -252,7 +252,7 @@ namespace SimCore
             ephem->dateTime.setDayOfMonth(dt.GetDay()); // DateTime numbers days from 1 to 31, not 0 to 30
             ephem->dateTime.setHour(dt.GetHour());
             ephem->dateTime.setMinute(dt.GetMinute());
-            ephem->dateTime.setSecond(int(dt.GetSecond()));
+            ephem->dateTime.setSecond(unsigned(dt.GetSecond()));
          }
          else
          {
