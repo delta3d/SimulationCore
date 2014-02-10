@@ -203,7 +203,7 @@ namespace SimCore
          if (!weaponActor.valid())
          {
             LOG_ERROR("No weapon actor prototype named \"" + wd.GetWeaponPrototypeName() + "\" could be found.");
-            return false;
+            return NULL;
          }
 
          SimCore::Actors::WeaponActor* outWeapon = NULL;
@@ -225,7 +225,7 @@ namespace SimCore
             if (!shooterActor.valid())
             {
                LOG_ERROR("No shooter actor prototype named \"" + wd.GetShooterPrototypeName() + "\" could be found.");
-               return false;
+               return NULL;
             }
 
             SimCore::Actors::MunitionParticlesActor* shooter = NULL;
