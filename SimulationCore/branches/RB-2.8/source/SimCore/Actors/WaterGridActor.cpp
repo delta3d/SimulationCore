@@ -966,18 +966,8 @@ namespace SimCore
 
          //lets make the geometry
          dtCore::RefPtr<osg::Vec4Array> pVerts = new osg::Vec4Array(numVerts);
-         dtCore::RefPtr<osg::IntArray> pIndices = new osg::IntArray(numIndices);
-
-         //float a0 = 0.01f;
-         //float a1 = 1.0f; // 5.0f;
-         //float outerMostRingDistance = 5000.0; // the furthest rings get an extra reach.
-         //float middleRingDistance = 20.0; // Middle rings get a minor boost too.
-         //int numOuterRings = 15;
-         //int numMiddleRings = 20;
-         //float innerExpBase = 1.02f;
-         //float middleExpBase = 1.2;
-         //float outerExpBase = 1.19f;
-         ////float exponent = 3;
+         dtCore::RefPtr<osg::DrawElementsUInt> pIndices = new osg::DrawElementsUInt(osg::PrimitiveSet::TRIANGLES);
+         pIndices->reserve(numIndices);
 
          float a0 = 0.05f;
          float a1 = 1.205f; // 5.0f;
@@ -1028,31 +1018,26 @@ namespace SimCore
             }
          }
          mComputedRadialDistance = r;
-
-         int counter = 0;
-
+         
          for(int i = 0; i < N - 1; ++i)
          {
             for(int j = 0; j < K - 1; ++j)
             {
                int JPlusOne = (j + 1);// % K;
 
-               (*pIndices)[counter] = (i * K) + j;
-               (*pIndices)[counter + 1] = ((i + 1) * K) + j;
-               (*pIndices)[counter + 2] = ((i + 1) * K) + (JPlusOne);
+               pIndices->addElement( (i * K) + j );
+               pIndices->addElement( ((i + 1) * K) + j );
+               pIndices->addElement( ((i + 1) * K) + (JPlusOne) );
 
-               (*pIndices)[counter + 3] = ((i + 1) * K) + (JPlusOne);
-               (*pIndices)[counter + 4] = (i * K) + (JPlusOne);
-               (*pIndices)[counter + 5] = (i * K) + j;
-
-               counter += 6;
+               pIndices->addElement( ((i + 1) * K) + (JPlusOne) );
+               pIndices->addElement( (i * K) + (JPlusOne) );
+               pIndices->addElement( (i * K) + j );
             }
          }
 
 
          geometry->setVertexArray(pVerts.get());
-         geometry->setVertexIndices(pIndices.get());
-         geometry->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::TRIANGLES, 0, numIndices));
+         geometry->addPrimitiveSet(pIndices.get());
 
          return geometry;
       }
