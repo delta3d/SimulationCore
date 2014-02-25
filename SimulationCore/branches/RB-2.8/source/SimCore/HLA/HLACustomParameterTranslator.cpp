@@ -628,7 +628,7 @@ namespace SimCore
          if (parameterDataType == dtDAL::DataType::DOUBLE)
          {
             dtGame::DoubleMessageParameter& dmp = static_cast<dtGame::DoubleMessageParameter&>(parameter);
-            unsigned long value;
+            unsigned int value;
             ds >> value;
             dmp.SetValue(double(value) / 1000.0);
          }

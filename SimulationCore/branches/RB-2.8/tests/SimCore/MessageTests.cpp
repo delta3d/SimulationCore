@@ -183,11 +183,11 @@ class MessageTests : public CPPUNIT_NS::TestFixture
 
             TestParameter<dtGame::StringMessageParameter, std::string>(*msg, SimCore::TimeQueryMessage::SENDER_NAME, "jojo");
 
-            CPPUNIT_ASSERT_EQUAL((unsigned long)(0), msg->GetQueryTransmitRealTime());
-            msg->SetQueryTransmitRealTime(34L);
-            CPPUNIT_ASSERT_EQUAL((unsigned long)(34), msg->GetQueryTransmitRealTime());
+            CPPUNIT_ASSERT_EQUAL((unsigned int)(0), msg->GetQueryTransmitRealTime());
+            msg->SetQueryTransmitRealTime(34U);
+            CPPUNIT_ASSERT_EQUAL((unsigned int)(34), msg->GetQueryTransmitRealTime());
 
-            TestParameter<dtGame::UnsignedLongIntMessageParameter, unsigned long>(*msg, SimCore::TimeQueryMessage::QUERY_TRANSMIT_REAL_TIME, 34L);
+            TestParameter<dtGame::UnsignedIntMessageParameter, unsigned>(*msg, SimCore::TimeQueryMessage::QUERY_TRANSMIT_REAL_TIME, 34L);
          }
          catch (const dtUtil::Exception& ex)
          {
@@ -203,29 +203,29 @@ class MessageTests : public CPPUNIT_NS::TestFixture
             mGM->GetMessageFactory().CreateMessage(SimCore::MessageType::TIME_VALUE, msg);
             CPPUNIT_ASSERT_MESSAGE("The message factory failed to create a TIME_VALUE message", msg.valid());
 
-            CPPUNIT_ASSERT_EQUAL((unsigned long)(0), msg->GetQueryTransmitRealTime());
+            CPPUNIT_ASSERT_EQUAL((unsigned int)(0), msg->GetQueryTransmitRealTime());
             msg->SetQueryTransmitRealTime(34L);
-            CPPUNIT_ASSERT_EQUAL((unsigned long)(34), msg->GetQueryTransmitRealTime());
+            CPPUNIT_ASSERT_EQUAL((unsigned int)(34), msg->GetQueryTransmitRealTime());
 
-            TestParameter<dtGame::UnsignedLongIntMessageParameter, unsigned long>(*msg, SimCore::TimeQueryMessage::QUERY_TRANSMIT_REAL_TIME, 34L);
+            TestParameter<dtGame::UnsignedIntMessageParameter, unsigned int>(*msg, SimCore::TimeQueryMessage::QUERY_TRANSMIT_REAL_TIME, 34L);
 
-            CPPUNIT_ASSERT_EQUAL((unsigned long)(0), msg->GetQueryReceivedRealTime());
-            msg->SetQueryReceivedRealTime(32L);
-            CPPUNIT_ASSERT_EQUAL((unsigned long)(32), msg->GetQueryReceivedRealTime());
+            CPPUNIT_ASSERT_EQUAL((unsigned int)(0), msg->GetQueryReceivedRealTime());
+            msg->SetQueryReceivedRealTime(32U);
+            CPPUNIT_ASSERT_EQUAL((unsigned int)(32), msg->GetQueryReceivedRealTime());
 
-            TestParameter<dtGame::UnsignedLongIntMessageParameter, unsigned long>(*msg, SimCore::TimeValueMessage::QUERY_RECEIVED_REAL_TIME, 32L);
+            TestParameter<dtGame::UnsignedIntMessageParameter, unsigned int>(*msg, SimCore::TimeValueMessage::QUERY_RECEIVED_REAL_TIME, 32L);
 
-            CPPUNIT_ASSERT_EQUAL((unsigned long)(0), msg->GetValueTransmitRealTime());
-            msg->SetValueTransmitRealTime(36L);
-            CPPUNIT_ASSERT_EQUAL((unsigned long)(36), msg->GetValueTransmitRealTime());
+            CPPUNIT_ASSERT_EQUAL((unsigned int)(0), msg->GetValueTransmitRealTime());
+            msg->SetValueTransmitRealTime(36U);
+            CPPUNIT_ASSERT_EQUAL((unsigned int)(36), msg->GetValueTransmitRealTime());
 
-            TestParameter<dtGame::UnsignedLongIntMessageParameter, unsigned long>(*msg, SimCore::TimeValueMessage::VALUE_TRANSMIT_REAL_TIME, 36L);
+            TestParameter<dtGame::UnsignedIntMessageParameter, unsigned int>(*msg, SimCore::TimeValueMessage::VALUE_TRANSMIT_REAL_TIME, 36L);
 
-            CPPUNIT_ASSERT_EQUAL((unsigned long)(0), msg->GetSynchronizedTime());
-            msg->SetSynchronizedTime(40L);
-            CPPUNIT_ASSERT_EQUAL((unsigned long)(40), msg->GetSynchronizedTime());
+            CPPUNIT_ASSERT_EQUAL((unsigned int)(0), msg->GetSynchronizedTime());
+            msg->SetSynchronizedTime(40U);
+            CPPUNIT_ASSERT_EQUAL((unsigned int)(40), msg->GetSynchronizedTime());
 
-            TestParameter<dtGame::UnsignedLongIntMessageParameter, unsigned long>(*msg, SimCore::TimeValueMessage::SYNCHRONIZED_TIME, 40L);
+            TestParameter<dtGame::UnsignedIntMessageParameter, unsigned int>(*msg, SimCore::TimeValueMessage::SYNCHRONIZED_TIME, 40L);
 
             CPPUNIT_ASSERT_EQUAL(SimCore::TimeValueMessage::DEFAULT_TIME_SCALE, msg->GetTimeScale());
             msg->SetTimeScale(43.033f);

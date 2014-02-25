@@ -194,9 +194,9 @@ namespace SimCore
          void SetSenderName(const std::string& newName);
 
          /// @return the real time the query was sent.
-         unsigned long GetQueryTransmitRealTime() const;
+         unsigned int GetQueryTransmitRealTime() const;
          /// Sets the real time the query was sent.
-         void SetQueryTransmitRealTime(unsigned long newTime);
+         void SetQueryTransmitRealTime(unsigned int newTime);
 
       protected:
 
@@ -233,19 +233,19 @@ namespace SimCore
          TimeValueMessage();
 
          /// @return the real time the server received the time query.
-         unsigned long GetQueryReceivedRealTime() const;
+         unsigned int GetQueryReceivedRealTime() const;
          /// Set the real time the query was received by the server.
-         void SetQueryReceivedRealTime(unsigned long newTime);
+         void SetQueryReceivedRealTime(unsigned int newTime);
 
          /// @return the real time the server sent this message.
-         unsigned long GetValueTransmitRealTime() const;
+         unsigned int GetValueTransmitRealTime() const;
          /// Sets the time the server sent this message.
-         void SetValueTransmitRealTime(unsigned long newTime);
+         void SetValueTransmitRealTime(unsigned int newTime);
 
          /// @return the synchronized time value when the server sent the message.
-         unsigned long GetSynchronizedTime() const;
+         unsigned int GetSynchronizedTime() const;
          /// Sets the synchronized time value when the server sent the message.
-         void SetSynchronizedTime(unsigned long newTime);
+         void SetSynchronizedTime(unsigned int newTime);
 
          /// @return the time scale factor (Multiple of real time)
          float GetTimeScale() const;
