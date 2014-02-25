@@ -21,13 +21,8 @@
 #include <dtUtil/mathdefines.h>
 #include <SimCore/GUI/SceneWindow.h>
 #include <dtCore/transform.h>
-#if CEGUI_VERSION_MAJOR == 0 && CEGUI_VERSION_MINOR < 7
-#include <dtGUI/ceguitexture.h>
-#else
 #include <osg/Texture2D>
-#include <CEGUI/CEGUIImagesetManager.h>
 #include <dtGUI/gui.h>
-#endif
 
 // TEMP:
 #include <osg/Array>
@@ -38,7 +33,7 @@
 #ifdef None
 #undef None
 #endif
-#include <CEGUI.h>
+#include <CEGUI/CEGUI.h>
 
 #include <dtCore/scene.h>
 #include <dtCore/view.h>

@@ -38,7 +38,7 @@
 
 #include <dtCore/refptr.h>
 #include <dtAnim/animationhelper.h>
-#include <dtDAL/resourcedescriptor.h>
+#include <dtCore/resourcedescriptor.h>
 
 namespace dtUtil
 {

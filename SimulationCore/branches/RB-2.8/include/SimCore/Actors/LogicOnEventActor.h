@@ -29,7 +29,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include <SimCore/Export.h>
 #include <dtGame/gameactor.h>
-#include <dtDAL/gameevent.h>
+#include <dtCore/gameevent.h>
 
 
 
@@ -91,8 +91,8 @@ namespace SimCore
             LogicOnEventActor(LogicOnEventActorProxy &proxy);
 
             /// The event to fire when our condition is satisfied.
-            void SetEventToFire( dtDAL::GameEvent* gameEvent );
-            dtDAL::GameEvent* GetEventToFire();
+            void SetEventToFire( dtCore::GameEvent* gameEvent );
+            dtCore::GameEvent* GetEventToFire();
 
             /// Decides whether we consider ALL (AND) or ANY (OR) when looking at the conditional events
             void SetLogicType(LogicOnEventActorProxy::LogicTypeEnum& logicType);
@@ -102,9 +102,9 @@ namespace SimCore
             bool GetCurrentStatus() const {return mCurrentStatus; }
 
             virtual void ProcessMessage(const dtGame::Message& message);
-            virtual void ProcessGameEvent(const dtDAL::GameEvent& gameEvent);
+            virtual void ProcessGameEvent(const dtCore::GameEvent& gameEvent);
 
-            void SendGameEventMessage(dtDAL::GameEvent& gameEvent);
+            void SendGameEventMessage(dtCore::GameEvent& gameEvent);
 
             /**
             * Conditional Array actor property functors.
@@ -125,7 +125,7 @@ namespace SimCore
 
          private:
             LogicOnEventActorProxy::LogicTypeEnum* mLogicType;
-            dtCore::ObserverPtr<dtDAL::GameEvent> mEventToFire;
+            dtCore::ObserverPtr<dtCore::GameEvent> mEventToFire;
             std::vector< dtCore::ObserverPtr< LogicConditionalActorProxy > > mConditionsListAsActors;
             bool mCurrentStatus; // false
             bool mConditionListIsDirty;

@@ -27,8 +27,8 @@
 #include <Actors/SpawnVolumeActor.h>
 
 #include <dtUtil/functor.h>
-#include <dtDAL/arrayactorproperty.h>
-#include <dtDAL/enginepropertytypes.h>
+#include <dtCore/arrayactorproperty.h>
+#include <dtCore/enginepropertytypes.h>
 #include <dtGame/basemessages.h>
 #include <dtGame/messagetype.h>
 #include <dtGame/gamemanager.h>
@@ -165,19 +165,19 @@ namespace NetDemo
 
       BaseClass::BuildPropertyMap();
 
-      dtDAL::ActorIDActorProperty* actorProp = new dtDAL::ActorIDActorProperty(
+      dtCore::ActorIDActorProperty* actorProp = new dtCore::ActorIDActorProperty(
          *this, "Enemy", "Enemy",
-         dtDAL::ActorIDActorProperty::SetFuncType(this, &SpawnVolumeActorProxy::SetEnemyGroupProperty),
-         dtDAL::ActorIDActorProperty::GetFuncType(this, &SpawnVolumeActorProxy::GetEnemyGroupProperty),
+         dtCore::ActorIDActorProperty::SetFuncType(this, &SpawnVolumeActorProxy::SetEnemyGroupProperty),
+         dtCore::ActorIDActorProperty::GetFuncType(this, &SpawnVolumeActorProxy::GetEnemyGroupProperty),
          PROP_ENEMY_ID, "A UniqueId to a EnemyDescriptionActor", GROUP);
 
 
-      AddProperty(new dtDAL::ArrayActorProperty<EnemyDescriptionId>(
+      AddProperty(new dtCore::ArrayActorProperty<EnemyDescriptionId>(
          PROP_ENEMY_ARRAY, "List of enemies to spawn.", "List of enemies to spawn.",
-         dtDAL::ArrayActorProperty<EnemyDescriptionId>::SetIndexFuncType(this, &SpawnVolumeActorProxy::EnemyArraySetIndex),
-         dtDAL::ArrayActorProperty<EnemyDescriptionId>::GetDefaultFuncType(this, &SpawnVolumeActorProxy::EnemyArrayGetDefault),
-         dtDAL::ArrayActorProperty<EnemyDescriptionId>::GetArrayFuncType(this, &SpawnVolumeActorProxy::EnemyArrayGetValue),
-         dtDAL::ArrayActorProperty<EnemyDescriptionId>::SetArrayFuncType(this, &SpawnVolumeActorProxy::EnemyArraySetValue),
+         dtCore::ArrayActorProperty<EnemyDescriptionId>::SetIndexFuncType(this, &SpawnVolumeActorProxy::EnemyArraySetIndex),
+         dtCore::ArrayActorProperty<EnemyDescriptionId>::GetDefaultFuncType(this, &SpawnVolumeActorProxy::EnemyArrayGetDefault),
+         dtCore::ArrayActorProperty<EnemyDescriptionId>::GetArrayFuncType(this, &SpawnVolumeActorProxy::EnemyArrayGetValue),
+         dtCore::ArrayActorProperty<EnemyDescriptionId>::SetArrayFuncType(this, &SpawnVolumeActorProxy::EnemyArraySetValue),
          actorProp, GROUP));
 
    }
@@ -194,9 +194,9 @@ namespace NetDemo
 
 
    ////////////////////////////////////////////////////////////////////////////////
-   const dtDAL::ActorProxy::RenderMode& SpawnVolumeActorProxy::GetRenderMode()
+   const dtCore::ActorProxy::RenderMode& SpawnVolumeActorProxy::GetRenderMode()
    {
-      return dtDAL::ActorProxy::RenderMode::DRAW_ACTOR_AND_BILLBOARD_ICON;
+      return dtCore::ActorProxy::RenderMode::DRAW_ACTOR_AND_BILLBOARD_ICON;
    }
 
    ///////////////////////////////////////////////////////////////////////////////////

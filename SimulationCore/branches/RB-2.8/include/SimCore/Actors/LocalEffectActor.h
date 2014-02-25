@@ -131,18 +131,18 @@ namespace SimCore
             /**
              * @return the billboard used to represent particle systems.
              */
-            virtual dtDAL::ActorProxyIcon* GetBillBoardIcon();
+            virtual dtCore::ActorProxyIcon* GetBillBoardIcon();
 
             /// Loads a particle system file
             virtual void LoadFile(const std::string &fileName);
 
             /**
              * Gets the method by which a particle system is rendered.
-             * @return dtDAL::BaseActorObject::RenderMode::DRAW_BILLBOARD_ICON.
+             * @return dtCore::BaseActorObject::RenderMode::DRAW_BILLBOARD_ICON.
              */
-            virtual const dtDAL::BaseActorObject::RenderMode& GetRenderMode()
+            virtual const dtCore::BaseActorObject::RenderMode& GetRenderMode()
             {
-                return dtDAL::BaseActorObject::RenderMode::DRAW_BILLBOARD_ICON;
+                return dtCore::BaseActorObject::RenderMode::DRAW_BILLBOARD_ICON;
             }
          protected:
 

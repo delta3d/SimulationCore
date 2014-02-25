@@ -4,19 +4,19 @@ SET(LIB_NAME     ${OSGEPHEMERIS_LIBRARY})
 SET(HEADER_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../include/osgEphemeris)
 
 SET(LIB_PUBLIC_HEADERS 
-  ${HEADER_PATH}/CelestialBodies
-  ${HEADER_PATH}/DateTime
-  ${HEADER_PATH}/EphemerisData
-  ${HEADER_PATH}/EphemerisEngine
-  ${HEADER_PATH}/EphemerisModel
-  ${HEADER_PATH}/EphemerisUpdateCallback
-  ${HEADER_PATH}/GroundPlane
-  ${HEADER_PATH}/MoonModel
-  ${HEADER_PATH}/Planets
-  ${HEADER_PATH}/Shmem
-  ${HEADER_PATH}/SkyDome
-  ${HEADER_PATH}/Sphere
-  ${HEADER_PATH}/StarField)
+  ${HEADER_PATH}/CelestialBodies.h
+  ${HEADER_PATH}/DateTime.h
+  ${HEADER_PATH}/EphemerisData.h
+  ${HEADER_PATH}/EphemerisEngine.h
+  ${HEADER_PATH}/EphemerisModel.h
+  ${HEADER_PATH}/EphemerisUpdateCallback.h
+  ${HEADER_PATH}/GroundPlane.h
+  ${HEADER_PATH}/MoonModel.h
+  ${HEADER_PATH}/Planets.h
+  ${HEADER_PATH}/Shmem.h
+  ${HEADER_PATH}/SkyDome.h
+  ${HEADER_PATH}/Sphere.h
+  ${HEADER_PATH}/StarField.h)
 
 file(GLOB LIB_SOURCES "*.cpp")
 

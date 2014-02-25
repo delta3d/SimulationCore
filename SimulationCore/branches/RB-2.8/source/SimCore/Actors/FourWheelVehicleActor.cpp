@@ -24,14 +24,14 @@
  */
 #include <prefix/SimCorePrefix.h>
 #include <SimCore/Actors/FourWheelVehicleActor.h>
-#include <dtDAL/propertymacros.h>
+#include <dtCore/propertymacros.h>
 #include <dtABC/application.h>
 #include <dtAudio/audiomanager.h>
 #include <dtAudio/sound.h>
 #include <dtUtil/matrixutil.h>
 #include <dtUtil/mathdefines.h>
-#include <dtDAL/exceptionenum.h>
-#include <dtDAL/project.h>
+#include <dtCore/exceptionenum.h>
+#include <dtCore/project.h>
 #include <dtCore/batchisector.h>
 #include <dtCore/keyboard.h>
 #include <dtGame/deadreckoningcomponent.h>
@@ -125,29 +125,29 @@ namespace SimCore
       DT_IMPLEMENT_ACCESSOR(FourWheelVehicleActor, float, GearChangeLow);
       DT_IMPLEMENT_ACCESSOR(FourWheelVehicleActor, float, GearChangeMedium);
       DT_IMPLEMENT_ACCESSOR(FourWheelVehicleActor, float, GearChangeHigh);
-      DT_IMPLEMENT_ACCESSOR(FourWheelVehicleActor, dtDAL::ResourceDescriptor, SoundEffectIgnition);
-      DT_IMPLEMENT_ACCESSOR(FourWheelVehicleActor, dtDAL::ResourceDescriptor, SoundEffectIdleLoop);
-      DT_IMPLEMENT_ACCESSOR(FourWheelVehicleActor, dtDAL::ResourceDescriptor, SoundEffectBrake);
-      DT_IMPLEMENT_ACCESSOR(FourWheelVehicleActor, dtDAL::ResourceDescriptor, SoundEffectAcceleration);
-      DT_IMPLEMENT_ACCESSOR(FourWheelVehicleActor, dtDAL::ResourceDescriptor, SoundEffectCollisionHit);
-      DT_IMPLEMENT_ACCESSOR(FourWheelVehicleActor, dtDAL::ResourceDescriptor, VehicleInteriorModel);
+      DT_IMPLEMENT_ACCESSOR(FourWheelVehicleActor, dtCore::ResourceDescriptor, SoundEffectIgnition);
+      DT_IMPLEMENT_ACCESSOR(FourWheelVehicleActor, dtCore::ResourceDescriptor, SoundEffectIdleLoop);
+      DT_IMPLEMENT_ACCESSOR(FourWheelVehicleActor, dtCore::ResourceDescriptor, SoundEffectBrake);
+      DT_IMPLEMENT_ACCESSOR(FourWheelVehicleActor, dtCore::ResourceDescriptor, SoundEffectAcceleration);
+      DT_IMPLEMENT_ACCESSOR(FourWheelVehicleActor, dtCore::ResourceDescriptor, SoundEffectCollisionHit);
+      DT_IMPLEMENT_ACCESSOR(FourWheelVehicleActor, dtCore::ResourceDescriptor, VehicleInteriorModel);
 
       ///////////////////////////////////////////////////////////////////////////////////
-      bool FourWheelVehicleActor::LoadSound(const dtDAL::ResourceDescriptor& rd, dtCore::RefPtr<dtAudio::Sound>& sound)
+      bool FourWheelVehicleActor::LoadSound(const dtCore::ResourceDescriptor& rd, dtCore::RefPtr<dtAudio::Sound>& sound)
       {
          try
          {
-            if (rd != dtDAL::ResourceDescriptor::NULL_RESOURCE)
+            if (rd != dtCore::ResourceDescriptor::NULL_RESOURCE)
             {
                sound = dtAudio::AudioManager::GetInstance().NewSound();
-               sound->LoadFile(dtDAL::Project::GetInstance().GetResourcePath(rd).c_str());
+               sound->LoadFile(dtCore::Project::GetInstance().GetResourcePath(rd).c_str());
                AddChild(sound);
                dtCore::Transform xform;
                sound->SetTransform(xform, dtCore::Transformable::REL_CS);
                return true;
             }
          }
-         catch (const dtDAL::ProjectException& ex)
+         catch (const dtCore::ProjectException& ex)
          {
             ex.LogException(dtUtil::Log::LOG_ERROR);
          }
@@ -294,7 +294,7 @@ namespace SimCore
          osg::ref_ptr<osgSim::DOFTransform> steeringWheel;
          if (insideVehicle)
          {
-            std::vector<dtDAL::ActorProxy*> toFillin;
+            std::vector<dtCore::ActorProxy*> toFillin;
             GetGameActorProxy().GetGameManager()->FindActorsByType(*EntityActorRegistry::INTERIOR_ACTOR_TYPE.get() , toFillin);
             if (toFillin.size())
             {
@@ -520,11 +520,11 @@ namespace SimCore
          FourWheelVehicleActor* actor = NULL;
          GetActor(actor);
 
-         typedef dtDAL::PropertyRegHelper<FourWheelVehicleActorProxy&, FourWheelVehicleActor> PropRegType;
+         typedef dtCore::PropertyRegHelper<FourWheelVehicleActorProxy&, FourWheelVehicleActor> PropRegType;
          PropRegType propRegHelper(*this, actor, VEH_GROUP);
          PropRegType propRegHelperSound(*this, actor, SOUND_GROUP);
 
-         DT_REGISTER_RESOURCE_PROPERTY_WITH_NAME(dtDAL::DataType::STATIC_MESH, VehicleInteriorModel,
+         DT_REGISTER_RESOURCE_PROPERTY_WITH_NAME(dtCore::DataType::STATIC_MESH, VehicleInteriorModel,
                   "VEHICLE_INSIDE_MODEL", "Vehicle Interior Model",
                   "What is the resource of the interior model.", PropRegType, propRegHelper);
 
@@ -549,23 +549,23 @@ namespace SimCore
                   PropRegType, propRegHelper);
 
 
-         DT_REGISTER_RESOURCE_PROPERTY_WITH_NAME(dtDAL::DataType::SOUND, SoundEffectIgnition,
+         DT_REGISTER_RESOURCE_PROPERTY_WITH_NAME(dtCore::DataType::SOUND, SoundEffectIgnition,
                   "SOUND_EFFECT_IGNITION", "Sound FX Ignition",
                   "Sound resource for the engine ignition sound.", PropRegType, propRegHelperSound);
 
-         DT_REGISTER_RESOURCE_PROPERTY_WITH_NAME(dtDAL::DataType::SOUND, SoundEffectIdleLoop,
+         DT_REGISTER_RESOURCE_PROPERTY_WITH_NAME(dtCore::DataType::SOUND, SoundEffectIdleLoop,
                   "SOUND_EFFECT_VEHICLE_LOOP", "Sound FX Idle",
                   "Sound resource for the engine idle sound.", PropRegType, propRegHelperSound);
 
-         DT_REGISTER_RESOURCE_PROPERTY_WITH_NAME(dtDAL::DataType::SOUND, SoundEffectBrake,
+         DT_REGISTER_RESOURCE_PROPERTY_WITH_NAME(dtCore::DataType::SOUND, SoundEffectBrake,
                   "SOUND_EFFECT_BRAKE", "Sound FX Brake Squeal",
                   "Sound resource for the brake squeal sound.", PropRegType, propRegHelperSound);
 
-         DT_REGISTER_RESOURCE_PROPERTY_WITH_NAME(dtDAL::DataType::SOUND, SoundEffectAcceleration,
+         DT_REGISTER_RESOURCE_PROPERTY_WITH_NAME(dtCore::DataType::SOUND, SoundEffectAcceleration,
                   "SOUND_EFFECT_ACCELERATION", "Sound FX Acceleration",
                   "Sound resource for the acceleration sound.", PropRegType, propRegHelperSound);
 
-         DT_REGISTER_RESOURCE_PROPERTY_WITH_NAME(dtDAL::DataType::SOUND, SoundEffectCollisionHit,
+         DT_REGISTER_RESOURCE_PROPERTY_WITH_NAME(dtCore::DataType::SOUND, SoundEffectCollisionHit,
                   "SOUND_EFFECT_COLLISION_HIT", "Sound FX Collision Hit",
                   "Sound resource for the collision hit sound.", PropRegType, propRegHelperSound);
 

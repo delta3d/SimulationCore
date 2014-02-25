@@ -26,7 +26,7 @@
 #include <dtUtil/exception.h>
 #include <dtUtil/mathdefines.h>
 #include <dtUtil/matrixutil.h>
-#include <dtDAL/project.h>
+#include <dtCore/project.h>
 #include <dtCore/scene.h>
 #include <dtCore/system.h>
 #include <dtCore/camera.h>
@@ -491,19 +491,19 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void LensFlareDrawable::LensFlareOSGDrawable::LoadTextures()
       {
-         dtDAL::Project& project = dtDAL::Project::GetInstance();
+         dtCore::Project& project = dtCore::Project::GetInstance();
 
          try
          {
-            std::string softGlowFile = project.GetResourcePath(dtDAL::ResourceDescriptor(TEXTURE_LENSFLARE_SOFT_GLOW));
+            std::string softGlowFile = project.GetResourcePath(dtCore::ResourceDescriptor(TEXTURE_LENSFLARE_SOFT_GLOW));
             mSoftGlow = new osg::Texture2D();
             InitTexture(softGlowFile, mSoftGlow.get(), "softGlow", 0);
 
-            std::string hardGlowFile = project.GetResourcePath(dtDAL::ResourceDescriptor(TEXTURE_LENSFLARE_HARD_GLOW));
+            std::string hardGlowFile = project.GetResourcePath(dtCore::ResourceDescriptor(TEXTURE_LENSFLARE_HARD_GLOW));
             mHardGlow = new osg::Texture2D();
             InitTexture(hardGlowFile, mHardGlow.get(), "hardGlow", 1);
 
-            std::string streaksFile = project.GetResourcePath(dtDAL::ResourceDescriptor(TEXTURE_LENSFLARE_STREAKS));
+            std::string streaksFile = project.GetResourcePath(dtCore::ResourceDescriptor(TEXTURE_LENSFLARE_STREAKS));
             mStreaks = new osg::Texture2D();
             InitTexture(streaksFile, mStreaks.get(), "streaks", 2);
 

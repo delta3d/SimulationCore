@@ -296,7 +296,7 @@ namespace SimCore
          GetOwner(actor);
 
          if (GetAutoUpdateMode() == AutoUpdateModeEnum::LOCAL_AND_REMOTE
-                  || actor->IsRemote() && GetAutoUpdateMode() == AutoUpdateModeEnum::REMOTE_ONLY)
+                  || (actor->IsRemote() && GetAutoUpdateMode() == AutoUpdateModeEnum::REMOTE_ONLY))
          {
             std::string tickInvokable = "Tick Remote " + GetType().Get();
             if (actor->GetGameActorProxy().GetInvokable(tickInvokable) == NULL)

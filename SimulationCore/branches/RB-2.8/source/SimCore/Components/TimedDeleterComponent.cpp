@@ -51,7 +51,7 @@ namespace SimCore
          //std::cout << "Resetting and deleting all actors:\n";
 
          // Delete the objects sharing the found index
-         dtCore::RefPtr<dtDAL::ActorProxy> curProxy;
+         dtCore::RefPtr<dtCore::ActorProxy> curProxy;
 
          std::map<std::string, dtCore::UniqueId>::iterator i = mTimerToIDMap.begin();
          for( ; i != mTimerToIDMap.end(); ++i )
@@ -197,7 +197,7 @@ namespace SimCore
                const std::string &timerName = timeElapseMessage.GetTimerName();
 
                // Delete the objects sharing the found index
-               dtCore::RefPtr<dtDAL::ActorProxy> proxy = NULL;
+               dtCore::RefPtr<dtCore::ActorProxy> proxy = NULL;
                std::map<std::string, dtCore::UniqueId>::iterator i = mTimerToIDMap.find(timerName);
                if( i != mTimerToIDMap.end() )
                {

@@ -36,8 +36,8 @@
 
 #include <dtAudio/audiomanager.h>
 
-#include <dtDAL/project.h>
-#include <dtDAL/actorproperty.h>
+#include <dtCore/project.h>
+#include <dtCore/actorproperty.h>
 
 #include <dtABC/application.h>
 
@@ -350,7 +350,7 @@ namespace StealthGM
          = new SimCore::Components::ControlStateComponent;
       gameManager.AddComponent(*controlsStateComp, dtGame::GameManager::ComponentPriority::NORMAL);
 
-      std::vector<dtDAL::ResourceDescriptor> weaponModelResourceList;
+      std::vector<dtCore::ResourceDescriptor> weaponModelResourceList;
       SimCore::WeaponTypeEnum::GetModelResourceList( weaponModelResourceList );
       controlsStateComp->SetWeaponModelResourceList(weaponModelResourceList);
 
@@ -398,8 +398,8 @@ namespace StealthGM
 
       if(!IsUIRunning())
       {
-         const std::string fedFile = dtDAL::Project::GetInstance().
-            GetResourcePath(dtDAL::ResourceDescriptor(mFedFileResource, mFedFileResource));
+         const std::string fedFile = dtCore::Project::GetInstance().
+            GetResourcePath(dtCore::ResourceDescriptor(mFedFileResource, mFedFileResource));
          // Capture HLA connection parameters for the input component to use later in record/playback
          // state swapping. Transitions to IDLE should join the network; PLAYBACK should leave
          // the connection to the network.

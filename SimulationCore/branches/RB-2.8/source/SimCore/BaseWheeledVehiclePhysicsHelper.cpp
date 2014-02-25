@@ -27,7 +27,7 @@
 #include <SimCore/ActComps/WheelActComp.h>
 #include <osg/Matrix>
 #include <osg/MatrixTransform>
-#include <dtDAL/enginepropertytypes.h>
+#include <dtCore/enginepropertytypes.h>
 #include <dtCore/transform.h>
 
 #include <dtUtil/mathdefines.h>
@@ -336,7 +336,7 @@ namespace SimCore
 
    /// Builds the property map for this vehicle.
    ///
-   /// @param toFillIn    dtDAL::ActorProperty for this vehicle
+   /// @param toFillIn    dtCore::ActorProperty for this vehicle
 
    void BaseWheeledVehiclePhysicsActComp::BuildPropertyMap()
    {
@@ -344,40 +344,40 @@ namespace SimCore
 
       static const dtUtil::RefString VEHICLEGROUP("Vehicle Physics");
 
-      AddProperty(new dtDAL::FloatActorProperty("Engine Torque", "Engine Torque",
-               dtDAL::FloatActorProperty::SetFuncType(this, &BaseWheeledVehiclePhysicsActComp::SetEngineTorque),
-               dtDAL::FloatActorProperty::GetFuncType(this, &BaseWheeledVehiclePhysicsActComp::GetEngineTorque),
+      AddProperty(new dtCore::FloatActorProperty("Engine Torque", "Engine Torque",
+               dtCore::FloatActorProperty::SetFuncType(this, &BaseWheeledVehiclePhysicsActComp::SetEngineTorque),
+               dtCore::FloatActorProperty::GetFuncType(this, &BaseWheeledVehiclePhysicsActComp::GetEngineTorque),
                "Maximum torque developed by engine", VEHICLEGROUP));
 
-      AddProperty(new dtDAL::FloatActorProperty("Max Break Torque", "Max Break Torque",
-               dtDAL::FloatActorProperty::SetFuncType(this, &BaseWheeledVehiclePhysicsActComp::SetMaxBrakeTorque),
-               dtDAL::FloatActorProperty::GetFuncType(this, &BaseWheeledVehiclePhysicsActComp::GetMaxBrakeTorque),
+      AddProperty(new dtCore::FloatActorProperty("Max Break Torque", "Max Break Torque",
+               dtCore::FloatActorProperty::SetFuncType(this, &BaseWheeledVehiclePhysicsActComp::SetMaxBrakeTorque),
+               dtCore::FloatActorProperty::GetFuncType(this, &BaseWheeledVehiclePhysicsActComp::GetMaxBrakeTorque),
                "Maximum torque developed by engine", VEHICLEGROUP));
 
-      AddProperty(new dtDAL::FloatActorProperty("Max Steer Angle", "Max Steer Angle",
-               dtDAL::FloatActorProperty::SetFuncType(this, &BaseWheeledVehiclePhysicsActComp::SetMaxSteerAngle),
-               dtDAL::FloatActorProperty::GetFuncType(this, &BaseWheeledVehiclePhysicsActComp::GetMaxSteerAngle),
+      AddProperty(new dtCore::FloatActorProperty("Max Steer Angle", "Max Steer Angle",
+               dtCore::FloatActorProperty::SetFuncType(this, &BaseWheeledVehiclePhysicsActComp::SetMaxSteerAngle),
+               dtCore::FloatActorProperty::GetFuncType(this, &BaseWheeledVehiclePhysicsActComp::GetMaxSteerAngle),
                "The maximum angle the wheel can steer (rotate about its vertical axis) in degrees.", VEHICLEGROUP));
 
-      AddProperty(new dtDAL::FloatActorProperty("Top Speed (MPH)", "Top Speed (MPH)",
-               dtDAL::FloatActorProperty::SetFuncType(this, &BaseWheeledVehiclePhysicsActComp::SetVehicleTopSpeed),
-               dtDAL::FloatActorProperty::GetFuncType(this, &BaseWheeledVehiclePhysicsActComp::GetVehicleTopSpeed),
+      AddProperty(new dtCore::FloatActorProperty("Top Speed (MPH)", "Top Speed (MPH)",
+               dtCore::FloatActorProperty::SetFuncType(this, &BaseWheeledVehiclePhysicsActComp::SetVehicleTopSpeed),
+               dtCore::FloatActorProperty::GetFuncType(this, &BaseWheeledVehiclePhysicsActComp::GetVehicleTopSpeed),
                "Top speed of vehicle", VEHICLEGROUP));
 
-      AddProperty(new dtDAL::FloatActorProperty("mVehicleTopSpeedReverse", "mVehicleTopSpeedReverse",
-               dtDAL::FloatActorProperty::SetFuncType(this, &BaseWheeledVehiclePhysicsActComp::SetVehicleTopSpeedReverse),
-               dtDAL::FloatActorProperty::GetFuncType(this, &BaseWheeledVehiclePhysicsActComp::GetVehicleTopSpeedReverse),
+      AddProperty(new dtCore::FloatActorProperty("mVehicleTopSpeedReverse", "mVehicleTopSpeedReverse",
+               dtCore::FloatActorProperty::SetFuncType(this, &BaseWheeledVehiclePhysicsActComp::SetVehicleTopSpeedReverse),
+               dtCore::FloatActorProperty::GetFuncType(this, &BaseWheeledVehiclePhysicsActComp::GetVehicleTopSpeedReverse),
                "Top speed in reverse", VEHICLEGROUP));
 
-      AddProperty(new dtDAL::FloatActorProperty("AeroDynDragCoefficient", "Aero Dynamic Drag Coefficient",
-               dtDAL::FloatActorProperty::SetFuncType(this, &BaseWheeledVehiclePhysicsActComp::SetAeroDynDragCoefficient),
-               dtDAL::FloatActorProperty::GetFuncType(this, &BaseWheeledVehiclePhysicsActComp::GetAeroDynDragCoefficient),
+      AddProperty(new dtCore::FloatActorProperty("AeroDynDragCoefficient", "Aero Dynamic Drag Coefficient",
+               dtCore::FloatActorProperty::SetFuncType(this, &BaseWheeledVehiclePhysicsActComp::SetAeroDynDragCoefficient),
+               dtCore::FloatActorProperty::GetFuncType(this, &BaseWheeledVehiclePhysicsActComp::GetAeroDynDragCoefficient),
                "The Coefficient of friction to use for aerodynamic friction.  Anything from just over 0.0 to a  bit over 1.0 will work.",
                VEHICLEGROUP));
 
-      AddProperty(new dtDAL::FloatActorProperty("AeroDynDragArea", "Aerodynamic Drag Area",
-               dtDAL::FloatActorProperty::SetFuncType(this, &BaseWheeledVehiclePhysicsActComp::SetAeroDynDragArea),
-               dtDAL::FloatActorProperty::GetFuncType(this, &BaseWheeledVehiclePhysicsActComp::GetAeroDynDragArea),
+      AddProperty(new dtCore::FloatActorProperty("AeroDynDragArea", "Aerodynamic Drag Area",
+               dtCore::FloatActorProperty::SetFuncType(this, &BaseWheeledVehiclePhysicsActComp::SetAeroDynDragArea),
+               dtCore::FloatActorProperty::GetFuncType(this, &BaseWheeledVehiclePhysicsActComp::GetAeroDynDragArea),
                "The area in square meters to use when computing aerodynamic drag, i.e. the surface area on the front/back of the vehicle.",
                VEHICLEGROUP));
    }

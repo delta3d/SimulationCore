@@ -28,7 +28,7 @@
 #include <dtGame/actorcomponent.h>
 #include <dtUtil/getsetmacros.h>
 #include <dtUtil/nodecollector.h>
-#include <dtDAL/resourcedescriptor.h>
+#include <dtCore/resourcedescriptor.h>
 
 #include <dtCore/observerptr.h>
 
@@ -70,7 +70,7 @@ namespace SimCore
          DT_DECLARE_ACCESSOR(std::string, WeaponName);
          DT_DECLARE_ACCESSOR(std::string, WeaponSwapRootNode);
          DT_DECLARE_ACCESSOR(std::string, WeaponHotSpotDOF);
-         DT_DECLARE_ACCESSOR(dtDAL::ResourceDescriptor, WeaponSwapMesh);
+         DT_DECLARE_ACCESSOR(dtCore::ResourceDescriptor, WeaponSwapMesh);
 
          dtUtil::NodeCollector* GetNodeCollector();
          void SetNodeCollector(dtUtil::NodeCollector* nodeCollector);
@@ -88,7 +88,7 @@ namespace SimCore
          bool HasWeapon(const std::string& weaponName) const;
          const std::string& GetCurrentWeapon() const;
 
-         bool AddWeapon(const std::string weaponName, const std::string& weaponHotspotName, const dtDAL::ResourceDescriptor& meshToLoad);
+         bool AddWeapon(const std::string weaponName, const std::string& weaponHotspotName, const dtCore::ResourceDescriptor& meshToLoad);
          void RemoveWeapon(const std::string& weaponName);
 
          void Update();

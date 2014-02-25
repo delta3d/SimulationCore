@@ -35,10 +35,10 @@
 #include <dtGame/basemessages.h>
 #include <dtGame/messagetype.h>
 
-#include <dtDAL/actorproperty.h>
-#include <dtDAL/enginepropertytypes.h>
-#include <dtDAL/functor.h>
-#include <dtDAL/propertymacros.h>
+#include <dtCore/actorproperty.h>
+#include <dtCore/enginepropertytypes.h>
+#include <dtCore/functor.h>
+#include <dtCore/propertymacros.h>
 #include <dtUtil/templateutility.h>
 
 #include <osg/MatrixTransform>
@@ -174,7 +174,7 @@ namespace SimCore
          static const dtUtil::RefString BASE_ENTITY_GROUP("Base Entity");
          static const dtUtil::RefString DEAD_RECKONING_GROUP("Dead Reckoning");
 
-         typedef dtDAL::PropertyRegHelper<BaseEntityActorProxy&, BaseEntity> PropRegType;
+         typedef dtCore::PropertyRegHelper<BaseEntityActorProxy&, BaseEntity> PropRegType;
          PropRegType propRegHelper(*this, &e, "Base Entity");
 
 
@@ -186,69 +186,69 @@ namespace SimCore
          DT_REGISTER_PROPERTY_WITH_NAME_AND_LABEL(SmokePlumePresent, PROPERTY_SMOKE_PLUME_PRESENT, "Smoke Plume Present",
                   "Enables full entity smoking", PropRegType, propRegHelper);
 
-         dtCore::RefPtr<dtDAL::ResourceActorProperty>  rp = new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::PARTICLE_SYSTEM,
+         dtCore::RefPtr<dtCore::ResourceActorProperty>  rp = new dtCore::ResourceActorProperty(*this, dtCore::DataType::PARTICLE_SYSTEM,
             "Smoke plume particles", "Smoke plume particles",
-            dtDAL::ResourceActorProperty::SetFuncType(&e, &BaseEntity::SetSmokePlumesFile),
+            dtCore::ResourceActorProperty::SetFuncType(&e, &BaseEntity::SetSmokePlumesFile),
             "This is the file for the smoke particles", BASE_ENTITY_GROUP);
 
-         dtDAL::ResourceDescriptor rdSmoke("Particles:smoke.osg");
+         dtCore::ResourceDescriptor rdSmoke("Particles:smoke.osg");
          rp->SetValue(rdSmoke);
          AddProperty(rp.get());
 
-         rp = new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::PARTICLE_SYSTEM,
+         rp = new dtCore::ResourceActorProperty(*this, dtCore::DataType::PARTICLE_SYSTEM,
             "Fire particles", "Fire particles",
-            dtDAL::ResourceActorProperty::SetFuncType(&e, &BaseEntity::SetFlamesPresentFile),
+            dtCore::ResourceActorProperty::SetFuncType(&e, &BaseEntity::SetFlamesPresentFile),
             "This is the file for vehicle fire particles", BASE_ENTITY_GROUP);
 
-         dtDAL::ResourceDescriptor rdFire("Particles:fire.osg");
+         dtCore::ResourceDescriptor rdFire("Particles:fire.osg");
          rp->SetValue(rdFire);
          AddProperty(rp.get());
 
          static const dtUtil::RefString PROPERTY_DRAWING_MODEL_DESC
             ("Flags if this entity should draw it's model.  This is typically turned off if the entity has the player attached to it.");
-         AddProperty(new dtDAL::BooleanActorProperty("DrawingModel", "Draw Model",
-            dtDAL::BooleanActorProperty::SetFuncType(&e, &BaseEntity::SetDrawingModel),
-            dtDAL::BooleanActorProperty::GetFuncType(&e, &BaseEntity::GetDrawingModel),
+         AddProperty(new dtCore::BooleanActorProperty("DrawingModel", "Draw Model",
+            dtCore::BooleanActorProperty::SetFuncType(&e, &BaseEntity::SetDrawingModel),
+            dtCore::BooleanActorProperty::GetFuncType(&e, &BaseEntity::GetDrawingModel),
             PROPERTY_DRAWING_MODEL_DESC, DEAD_RECKONING_GROUP));
 
          static const dtUtil::RefString PROPERTY_DAMAGE_STATE_DESC
             ("Changes which model to show based on the level of damage.");
-         AddProperty(new dtDAL::EnumActorProperty<BaseEntityActorProxy::DamageStateEnum>(PROPERTY_DAMAGE_STATE, PROPERTY_DAMAGE_STATE,
-            dtDAL::EnumActorProperty<BaseEntityActorProxy::DamageStateEnum>::SetFuncType(&e, &BaseEntity::SetDamageState),
-            dtDAL::EnumActorProperty<BaseEntityActorProxy::DamageStateEnum>::GetFuncType(&e, &BaseEntity::GetDamageState),
+         AddProperty(new dtCore::EnumActorProperty<BaseEntityActorProxy::DamageStateEnum>(PROPERTY_DAMAGE_STATE, PROPERTY_DAMAGE_STATE,
+            dtCore::EnumActorProperty<BaseEntityActorProxy::DamageStateEnum>::SetFuncType(&e, &BaseEntity::SetDamageState),
+            dtCore::EnumActorProperty<BaseEntityActorProxy::DamageStateEnum>::GetFuncType(&e, &BaseEntity::GetDamageState),
             PROPERTY_DAMAGE_STATE_DESC, BASE_ENTITY_GROUP));
 
 
          static const dtUtil::RefString PROPERTY_MAX_DAMAGE_AMOUNT_DESC
             ("The max damage a local entity can take before dying. Default is 1.0, but is based on damage in the munition config tables. ");
-         AddProperty(new dtDAL::FloatActorProperty(PROPERTY_MAX_DAMAGE_AMOUNT, PROPERTY_MAX_DAMAGE_AMOUNT,
-            dtDAL::FloatActorProperty::SetFuncType(&e, &BaseEntity::SetMaxDamageAmount),
-            dtDAL::FloatActorProperty::GetFuncType(&e, &BaseEntity::GetMaxDamageAmount),
+         AddProperty(new dtCore::FloatActorProperty(PROPERTY_MAX_DAMAGE_AMOUNT, PROPERTY_MAX_DAMAGE_AMOUNT,
+            dtCore::FloatActorProperty::SetFuncType(&e, &BaseEntity::SetMaxDamageAmount),
+            dtCore::FloatActorProperty::GetFuncType(&e, &BaseEntity::GetMaxDamageAmount),
             PROPERTY_MAX_DAMAGE_AMOUNT_DESC, BASE_ENTITY_GROUP));
 
          static const dtUtil::RefString PROPERTY_CUR_DAMAGE_RATIO_DESC
             ("The current damage ratio - used for display purposes. Setting this manually has no effect - it is controlled by the MunitionsComponent.");
-         AddProperty(new dtDAL::FloatActorProperty(PROPERTY_CUR_DAMAGE_RATIO, PROPERTY_CUR_DAMAGE_RATIO,
-            dtDAL::FloatActorProperty::SetFuncType(&e, &BaseEntity::SetCurDamageRatio),
-            dtDAL::FloatActorProperty::GetFuncType(&e, &BaseEntity::GetCurDamageRatio),
+         AddProperty(new dtCore::FloatActorProperty(PROPERTY_CUR_DAMAGE_RATIO, PROPERTY_CUR_DAMAGE_RATIO,
+            dtCore::FloatActorProperty::SetFuncType(&e, &BaseEntity::SetCurDamageRatio),
+            dtCore::FloatActorProperty::GetFuncType(&e, &BaseEntity::GetCurDamageRatio),
             PROPERTY_CUR_DAMAGE_RATIO_DESC, BASE_ENTITY_GROUP));
 
-         AddProperty(new dtDAL::EnumActorProperty<BaseEntityActorProxy::DomainEnum>(
+         AddProperty(new dtCore::EnumActorProperty<BaseEntityActorProxy::DomainEnum>(
             PROPERTY_DOMAIN, PROPERTY_DOMAIN,
-            dtDAL::EnumActorProperty<BaseEntityActorProxy::DomainEnum>::SetFuncType(&e, &BaseEntity::SetDomain),
-            dtDAL::EnumActorProperty<BaseEntityActorProxy::DomainEnum>::GetFuncType(&e, &BaseEntity::GetDomain),
+            dtCore::EnumActorProperty<BaseEntityActorProxy::DomainEnum>::SetFuncType(&e, &BaseEntity::SetDomain),
+            dtCore::EnumActorProperty<BaseEntityActorProxy::DomainEnum>::GetFuncType(&e, &BaseEntity::GetDomain),
             "Specifies the type of environment an entity is specialized in navigating.",
             BASE_ENTITY_GROUP));
 
          static const dtUtil::RefString PROPERTY_FORCE_DESC("The force for which the entity is fighting.");
-         AddProperty(new dtDAL::EnumActorProperty<BaseEntityActorProxy::ForceEnum>(PROPERTY_FORCE, PROPERTY_FORCE,
-            dtDAL::EnumActorProperty<BaseEntityActorProxy::ForceEnum>::SetFuncType(&e, &BaseEntity::SetForceAffiliation),
-            dtDAL::EnumActorProperty<BaseEntityActorProxy::ForceEnum>::GetFuncType(&e, &BaseEntity::GetForceAffiliation),
+         AddProperty(new dtCore::EnumActorProperty<BaseEntityActorProxy::ForceEnum>(PROPERTY_FORCE, PROPERTY_FORCE,
+            dtCore::EnumActorProperty<BaseEntityActorProxy::ForceEnum>::SetFuncType(&e, &BaseEntity::SetForceAffiliation),
+            dtCore::EnumActorProperty<BaseEntityActorProxy::ForceEnum>::GetFuncType(&e, &BaseEntity::GetForceAffiliation),
             PROPERTY_FORCE_DESC, BASE_ENTITY_GROUP));
 
-         AddProperty(new dtDAL::EnumActorProperty<BaseEntityActorProxy::ServiceEnum>("Service", "Service",
-            dtDAL::EnumActorProperty<BaseEntityActorProxy::ServiceEnum>::SetFuncType(&e, &BaseEntity::SetService),
-            dtDAL::EnumActorProperty<BaseEntityActorProxy::ServiceEnum>::GetFuncType(&e, &BaseEntity::GetService),
+         AddProperty(new dtCore::EnumActorProperty<BaseEntityActorProxy::ServiceEnum>("Service", "Service",
+            dtCore::EnumActorProperty<BaseEntityActorProxy::ServiceEnum>::SetFuncType(&e, &BaseEntity::SetService),
+            dtCore::EnumActorProperty<BaseEntityActorProxy::ServiceEnum>::GetFuncType(&e, &BaseEntity::GetService),
             "Sets the service of this entity", BASE_ENTITY_GROUP));
 
 
@@ -260,26 +260,26 @@ namespace SimCore
          static const dtUtil::RefString PROPERTY_DEFAULT_SCALE_DESC
             ("Changes the desired base scale to make the model/geometry "
                   "of this model correct for the rendering.  Model Scale = Default * Magnification");
-         AddProperty(new dtDAL::Vec3ActorProperty(PROPERTY_DEFAULT_SCALE, PROPERTY_DEFAULT_SCALE,
-                  dtDAL::Vec3ActorProperty::SetFuncType(&e, &BaseEntity::SetDefaultScale),
-                  dtDAL::Vec3ActorProperty::GetFuncType(&e, &BaseEntity::GetDefaultScale),
+         AddProperty(new dtCore::Vec3ActorProperty(PROPERTY_DEFAULT_SCALE, PROPERTY_DEFAULT_SCALE,
+                  dtCore::Vec3ActorProperty::SetFuncType(&e, &BaseEntity::SetDefaultScale),
+                  dtCore::Vec3ActorProperty::GetFuncType(&e, &BaseEntity::GetDefaultScale),
                   PROPERTY_DEFAULT_SCALE_DESC,
                   BASE_ENTITY_GROUP));
 
          static const dtUtil::RefString PROPERTY_SCALE_MAGNIFICATION_FACTOR_DESC
             ("Changes the amount the geometry of the entity is magnified.  Model Scale = Default * Magnification");
-         AddProperty(new dtDAL::Vec3ActorProperty(PROPERTY_SCALE_MAGNIFICATION_FACTOR, PROPERTY_SCALE_MAGNIFICATION_FACTOR,
-                  dtDAL::Vec3ActorProperty::SetFuncType(&e, &BaseEntity::SetScaleMagnification),
-                  dtDAL::Vec3ActorProperty::GetFuncType(&e, &BaseEntity::GetScaleMagnification),
+         AddProperty(new dtCore::Vec3ActorProperty(PROPERTY_SCALE_MAGNIFICATION_FACTOR, PROPERTY_SCALE_MAGNIFICATION_FACTOR,
+                  dtCore::Vec3ActorProperty::SetFuncType(&e, &BaseEntity::SetScaleMagnification),
+                  dtCore::Vec3ActorProperty::GetFuncType(&e, &BaseEntity::GetScaleMagnification),
                   PROPERTY_SCALE_MAGNIFICATION_FACTOR_DESC,
                   BASE_ENTITY_GROUP));
 
          static const dtUtil::RefString PROPERTY_MODEL_SCALE_DESC
             ("Returns the current scale of the model.  Model Scale = Default * Magnification");
-         dtDAL::Vec3ActorProperty* modelScaleProp = new dtDAL::Vec3ActorProperty(
+         dtCore::Vec3ActorProperty* modelScaleProp = new dtCore::Vec3ActorProperty(
             PROPERTY_MODEL_SCALE, PROPERTY_MODEL_SCALE,
-            dtDAL::Vec3ActorProperty::SetFuncType(),
-            dtDAL::Vec3ActorProperty::GetFuncType(&e, &BaseEntity::GetModelScale),
+            dtCore::Vec3ActorProperty::SetFuncType(),
+            dtCore::Vec3ActorProperty::GetFuncType(&e, &BaseEntity::GetModelScale),
             PROPERTY_MODEL_SCALE_DESC,
             BASE_ENTITY_GROUP);
 
@@ -289,39 +289,39 @@ namespace SimCore
 
          static const dtUtil::RefString PROPERTY_MODEL_ROTATION_DESC
             ("Model offset rotation HPR");
-         AddProperty(new dtDAL::Vec3ActorProperty(
+         AddProperty(new dtCore::Vec3ActorProperty(
             PROPERTY_MODEL_ROTATION, PROPERTY_MODEL_ROTATION,
-            dtDAL::Vec3ActorProperty::SetFuncType(&e, &BaseEntity::SetModelRotation),
-            dtDAL::Vec3ActorProperty::GetFuncType(&e, &BaseEntity::GetModelRotation),
+            dtCore::Vec3ActorProperty::SetFuncType(&e, &BaseEntity::SetModelRotation),
+            dtCore::Vec3ActorProperty::GetFuncType(&e, &BaseEntity::GetModelRotation),
             PROPERTY_MODEL_ROTATION_DESC,
             BASE_ENTITY_GROUP));
 
          static const dtUtil::RefString PROPERTY_FIREPOWER_DISABLED("Firepower Disabled");
-         AddProperty(new dtDAL::BooleanActorProperty(PROPERTY_FIREPOWER_DISABLED,
+         AddProperty(new dtCore::BooleanActorProperty(PROPERTY_FIREPOWER_DISABLED,
             PROPERTY_FIREPOWER_DISABLED,
-            dtDAL::BooleanActorProperty::SetFuncType(&e, &BaseEntity::SetFirepowerDisabled),
-            dtDAL::BooleanActorProperty::GetFuncType(&e, &BaseEntity::GetFirepowerDisabled),
+            dtCore::BooleanActorProperty::SetFuncType(&e, &BaseEntity::SetFirepowerDisabled),
+            dtCore::BooleanActorProperty::GetFuncType(&e, &BaseEntity::GetFirepowerDisabled),
             "Determines if this entity has had its fire power disabled.", BASE_ENTITY_GROUP));
 
          static const dtUtil::RefString PROPERTY_MOBILITY_DISABLED("Mobility Disabled");
-         AddProperty(new dtDAL::BooleanActorProperty(PROPERTY_MOBILITY_DISABLED,
+         AddProperty(new dtCore::BooleanActorProperty(PROPERTY_MOBILITY_DISABLED,
             PROPERTY_MOBILITY_DISABLED,
-            dtDAL::BooleanActorProperty::SetFuncType(&e, &BaseEntity::SetMobilityDisabled),
-            dtDAL::BooleanActorProperty::GetFuncType(&e, &BaseEntity::GetMobilityDisabled),
+            dtCore::BooleanActorProperty::SetFuncType(&e, &BaseEntity::SetMobilityDisabled),
+            dtCore::BooleanActorProperty::GetFuncType(&e, &BaseEntity::GetMobilityDisabled),
             "Determines if this entity has had its mobility disabled.", BASE_ENTITY_GROUP));
 
-         AddProperty(new dtDAL::StringActorProperty(
+         AddProperty(new dtCore::StringActorProperty(
             PROPERTY_ENTITY_TYPE_ID,
             PROPERTY_ENTITY_TYPE_ID,
-            dtDAL::StringActorProperty::SetFuncType(&e, &BaseEntity::SetEntityTypeId),
-            dtDAL::StringActorProperty::GetFuncType(&e, &BaseEntity::GetEntityTypeId),
+            dtCore::StringActorProperty::SetFuncType(&e, &BaseEntity::SetEntityTypeId),
+            dtCore::StringActorProperty::GetFuncType(&e, &BaseEntity::GetEntityTypeId),
             "String property into which the Entity Type is captured", BASE_ENTITY_GROUP));
 
-         AddProperty(new dtDAL::StringActorProperty(
+         AddProperty(new dtCore::StringActorProperty(
             PROPERTY_MAPPING_NAME,
             PROPERTY_MAPPING_NAME,
-            dtDAL::StringActorProperty::SetFuncType(&e, &BaseEntity::SetMappingName),
-            dtDAL::StringActorProperty::GetFuncType(&e, &BaseEntity::GetMappingName),
+            dtCore::StringActorProperty::SetFuncType(&e, &BaseEntity::SetMappingName),
+            dtCore::StringActorProperty::GetFuncType(&e, &BaseEntity::GetMappingName),
             "String property into which the Object Mapping Name is captured", BASE_ENTITY_GROUP));
       }
 
@@ -380,7 +380,7 @@ namespace SimCore
          // on remote items. Network components usually pick up their data on tick local, which
          // sends a message to the DefaultmessageProcessorComponent. However, before that message
          // gets processed, the tick-remote gets picked up by the DeadReckoningComponent. Causes jumpiness.
-         std::vector<dtDAL::ActorProperty* > allProperties;
+         std::vector<dtCore::ActorProperty* > allProperties;
          GetPropertyList(allProperties);
 
          std::vector<dtUtil::RefString> finalPropNameList;
@@ -388,8 +388,8 @@ namespace SimCore
 
          for (size_t i = 0; i < allProperties.size(); ++i)
          {
-            if (allProperties[i]->GetName() != dtDAL::TransformableActorProxy::PROPERTY_ROTATION &&
-               allProperties[i]->GetName() != dtDAL::TransformableActorProxy::PROPERTY_TRANSLATION)
+            if (allProperties[i]->GetName() != dtCore::TransformableActorProxy::PROPERTY_ROTATION &&
+               allProperties[i]->GetName() != dtCore::TransformableActorProxy::PROPERTY_TRANSLATION)
             {
                finalPropNameList.push_back(allProperties[i]->GetName());
             }

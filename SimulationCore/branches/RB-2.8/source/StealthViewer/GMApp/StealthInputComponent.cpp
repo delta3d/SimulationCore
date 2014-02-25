@@ -29,10 +29,10 @@
 #include <StealthViewer/GMApp/StealthHUD.h>
 
 #include <dtABC/application.h>
-#include <dtDAL/actorproxy.h>
-#include <dtDAL/actorproperty.h>
-#include <dtDAL/enginepropertytypes.h>
-#include <dtDAL/transformableactorproxy.h>
+#include <dtCore/actorproxy.h>
+#include <dtCore/actorproperty.h>
+#include <dtCore/enginepropertytypes.h>
+#include <dtCore/transformableactorproxy.h>
 #include <dtCore/shadermanager.h>
 #include <dtCore/shaderprogram.h>
 #include <dtCore/shaderparamfloat.h>
@@ -78,7 +78,7 @@
 
 #include <osgDB/FileNameUtils>
 
-#include <dtDAL/project.h>
+#include <dtCore/project.h>
 
 #include <dtCore/view.h>
 
@@ -226,9 +226,9 @@ namespace StealthGM
             if (compass != NULL)
                compass->SetPlayerActor( GetStealthActor() );
 
-            std::vector<dtDAL::ActorProxy*> actors;
+            std::vector<dtCore::ActorProxy*> actors;
 
-            const dtDAL::ActorType *type = GetGameManager()->FindActorType("dtcore", "Player Start");
+            const dtCore::ActorType *type = GetGameManager()->FindActorType("dtcore", "Player Start");
             GetGameManager()->FindActorsByType(*type, actors);
             if (actors.empty())
             {
@@ -254,7 +254,7 @@ namespace StealthGM
             }
             else
             {
-               RefPtr<dtDAL::TransformableActorProxy> proxy = dynamic_cast<dtDAL::TransformableActorProxy*>(actors[0]);
+               RefPtr<dtCore::TransformableActorProxy> proxy = dynamic_cast<dtCore::TransformableActorProxy*>(actors[0]);
                osg::Vec3 startPos = proxy->GetTranslation();
                dtCore::Transform stealthStart;
                stealthStart.SetTranslation(startPos);
@@ -285,7 +285,7 @@ namespace StealthGM
             mStealthMM->SetTarget(GetStealthActor());
             mStealthMM->SetScene(GetGameManager()->GetScene());
 
-            std::vector<dtDAL::ActorProxy*> toFill;
+            std::vector<dtCore::ActorProxy*> toFill;
             GetGameManager()->FindActorsByName(SimCore::Actors::TerrainActor::DEFAULT_NAME, toFill);
             if (!toFill.empty())
             {
@@ -374,7 +374,7 @@ namespace StealthGM
          dtGame::GameManager::NameVector mapNames;
          mlm.GetMapNames(mapNames);
 
-         std::vector<dtDAL::ActorProxy*> actors;
+         std::vector<dtCore::ActorProxy*> actors;
          // TODO make a constant for this.
          gameManager.FindActorsByName("Terrain", actors);
          if (actors.empty())
@@ -415,18 +415,18 @@ namespace StealthGM
 
          // Avoid deleting the Coordinate Config Actor
          actors.clear();
-         const dtDAL::ActorType *type = gameManager.FindActorType("dtutil", "Coordinate Config");
+         const dtCore::ActorType *type = gameManager.FindActorType("dtutil", "Coordinate Config");
          gameManager.FindActorsByType(*type, actors);
          if (!actors.empty() && mLogController.valid())
          {
-            RefPtr<dtDAL::ActorProxy> proxy = actors[0];
+            RefPtr<dtCore::ActorProxy> proxy = actors[0];
             mLogController->RequestAddIgnoredActor(proxy->GetId());
          }
 
          if (GetStealthActor() == NULL || !mStealthActorProxy.valid())
          {
-            dtCore::RefPtr<dtDAL::BaseActorObject> proxy;
-            std::vector<dtDAL::ActorProxy*> proxies;
+            dtCore::RefPtr<dtCore::BaseActorObject> proxy;
+            std::vector<dtCore::ActorProxy*> proxies;
 
             gameManager.FindPrototypesByActorType(*SimCore::Actors::EntityActorRegistry::STEALTH_ACTOR_TYPE, proxies);
             if (proxies.empty())
@@ -1130,7 +1130,7 @@ namespace StealthGM
 
    void StealthInputComponent::Cycle(bool forward, bool attach)
    {
-      std::vector<dtDAL::ActorProxy*> actors;
+      std::vector<dtCore::ActorProxy*> actors;
       //GetGameManager()->GetAllActors(actors);
       GetGameManager()->GetAllActors(actors);
       //unsigned int size = actors.size();
@@ -1141,7 +1141,7 @@ namespace StealthGM
       if (mCycleIndex >= actors.size())
          mCycleIndex = mCycleIndex % actors.size();
 
-      RefPtr<dtDAL::ActorProxy> ap = actors[mCycleIndex];
+      RefPtr<dtCore::ActorProxy> ap = actors[mCycleIndex];
       if (ap->GetDrawable() != GetStealthActor() && ap != mTerrainActor &&
          ap.get() != GetGameManager()->GetEnvironmentActor())
       {
@@ -1179,7 +1179,7 @@ namespace StealthGM
          //select the right motion model.
          //mFlyMM->SetEnabled(!attach);
          //mAttachedMM->SetEnabled(attach);
-         //GetGameManager()->GetApplication().GetWindow()->ShowCursor(!attach);
+         //GetGameManager()->GetApplication().GetWindow()->SetShowCursor(!attach);
 
          //send the attachment message.
          GetGameManager()->SendMessage(*atamsg);

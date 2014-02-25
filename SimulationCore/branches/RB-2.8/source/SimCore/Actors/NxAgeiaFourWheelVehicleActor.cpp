@@ -25,7 +25,7 @@
 #include <SimCore/Actors/NxAgeiaFourWheelVehicleActor.h>
 #include <NxAgeiaWorldComponent.h>
 #include <NxAgeiaRaycastReport.h>
-#include <dtDAL/enginepropertytypes.h>
+#include <dtCore/enginepropertytypes.h>
 #include <dtABC/application.h>
 #include <dtAudio/audiomanager.h>
 #include <dtAudio/sound.h>
@@ -276,7 +276,7 @@ namespace SimCore
          }
          else
          {
-            std::vector<dtDAL::ActorProxy*> toFillin;
+            std::vector<dtCore::ActorProxy*> toFillin;
             GetGameActorProxy().GetGameManager()->FindActorsByType(*EntityActorRegistry::INTERIOR_ACTOR_TYPE.get() , toFillin);
             if(toFillin.size())
             {
@@ -427,53 +427,53 @@ namespace SimCore
 
          NxAgeiaFourWheelVehicleActor  &actor = static_cast<NxAgeiaFourWheelVehicleActor &>(GetGameActor());
 
-         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::STATIC_MESH,
-            "VEHICLE_INSIDE_MODEL", "VEHICLE_INSIDE_MODEL_PATH", dtDAL::MakeFunctor(actor,
+         AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::STATIC_MESH,
+            "VEHICLE_INSIDE_MODEL", "VEHICLE_INSIDE_MODEL_PATH", dtCore::MakeFunctor(actor,
             &NxAgeiaFourWheelVehicleActor::SetVehicleInsideModel),
             "What is the filepath / string of the inside model", VEH_GROUP));
 
-         AddProperty(new dtDAL::FloatActorProperty("SOUND_BRAKE_SQUEAL_AMOUNT", "How much MPH for Squeal Brake",
-            dtDAL::MakeFunctor(actor, &NxAgeiaFourWheelVehicleActor ::SetSound_brake_squeal_amount),
-            dtDAL::MakeFunctorRet(actor, &NxAgeiaFourWheelVehicleActor ::GetSound_brake_squeal_amount),
+         AddProperty(new dtCore::FloatActorProperty("SOUND_BRAKE_SQUEAL_AMOUNT", "How much MPH for Squeal Brake",
+            dtCore::MakeFunctor(actor, &NxAgeiaFourWheelVehicleActor ::SetSound_brake_squeal_amount),
+            dtCore::MakeFunctorRet(actor, &NxAgeiaFourWheelVehicleActor ::GetSound_brake_squeal_amount),
             "How many mph does the car have to go to squeal used with BRAKE_STOP_NOW_BRAKE_TIME", SOUND_GROUP));
 
-         AddProperty(new dtDAL::FloatActorProperty("SOUND_GEAR_CHANGE_LOW", "MPH When Gear Change Low",
-            dtDAL::MakeFunctor(actor, &NxAgeiaFourWheelVehicleActor ::SetSound_gear_change_low),
-            dtDAL::MakeFunctorRet(actor, &NxAgeiaFourWheelVehicleActor ::GetSound_gear_change_low),
+         AddProperty(new dtCore::FloatActorProperty("SOUND_GEAR_CHANGE_LOW", "MPH When Gear Change Low",
+            dtCore::MakeFunctor(actor, &NxAgeiaFourWheelVehicleActor ::SetSound_gear_change_low),
+            dtCore::MakeFunctorRet(actor, &NxAgeiaFourWheelVehicleActor ::GetSound_gear_change_low),
             "At what speed play the acceleration sound effect / reset idle pitch", SOUND_GROUP));
 
-         AddProperty(new dtDAL::FloatActorProperty("SOUND_GEAR_CHANGE_MEDIUM", "MPH When Gear Change Medium",
-            dtDAL::MakeFunctor(actor, &NxAgeiaFourWheelVehicleActor ::SetSound_gear_change_medium),
-            dtDAL::MakeFunctorRet(actor, &NxAgeiaFourWheelVehicleActor ::GetSound_gear_change_medium),
+         AddProperty(new dtCore::FloatActorProperty("SOUND_GEAR_CHANGE_MEDIUM", "MPH When Gear Change Medium",
+            dtCore::MakeFunctor(actor, &NxAgeiaFourWheelVehicleActor ::SetSound_gear_change_medium),
+            dtCore::MakeFunctorRet(actor, &NxAgeiaFourWheelVehicleActor ::GetSound_gear_change_medium),
             "At what speed play the acceleration sound effect / reset idle pitch", SOUND_GROUP));
 
-         AddProperty(new dtDAL::FloatActorProperty("SOUND_GEAR_CHANGE_HIGH", "MPH When Gear Change High",
-            dtDAL::MakeFunctor(actor, &NxAgeiaFourWheelVehicleActor ::SetSound_gear_change_high),
-            dtDAL::MakeFunctorRet(actor, &NxAgeiaFourWheelVehicleActor ::GetSound_gear_change_high),
+         AddProperty(new dtCore::FloatActorProperty("SOUND_GEAR_CHANGE_HIGH", "MPH When Gear Change High",
+            dtCore::MakeFunctor(actor, &NxAgeiaFourWheelVehicleActor ::SetSound_gear_change_high),
+            dtCore::MakeFunctorRet(actor, &NxAgeiaFourWheelVehicleActor ::GetSound_gear_change_high),
             "At what speed play the acceleration sound effect / reset idle pitch", SOUND_GROUP));
 
-         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::SOUND,
-            "SOUND_EFFECT_IGNITION", "SFX Ignition Path", dtDAL::MakeFunctor(actor,
+         AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::SOUND,
+            "SOUND_EFFECT_IGNITION", "SFX Ignition Path", dtCore::MakeFunctor(actor,
             &NxAgeiaFourWheelVehicleActor::SetSound_effect_ignition),
             "What is the filepath / string of the sound effect", SOUND_GROUP));
 
-         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::SOUND,
-            "SOUND_EFFECT_VEHICLE_LOOP", "SFX Vehicle Idle Path", dtDAL::MakeFunctor(actor,
+         AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::SOUND,
+            "SOUND_EFFECT_VEHICLE_LOOP", "SFX Vehicle Idle Path", dtCore::MakeFunctor(actor,
             &NxAgeiaFourWheelVehicleActor::SetSound_effect_vehicle_loop),
             "What is the filepath / string of the sound effect", SOUND_GROUP));
 
-         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::SOUND,
-            "SOUND_EFFECT_BRAKE", "SFX Brake Squeal Path", dtDAL::MakeFunctor(actor,
+         AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::SOUND,
+            "SOUND_EFFECT_BRAKE", "SFX Brake Squeal Path", dtCore::MakeFunctor(actor,
             &NxAgeiaFourWheelVehicleActor::SetSound_effect_brake),
             "What is the filepath / string of the sound effect", SOUND_GROUP));
 
-         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::SOUND,
-            "SOUND_EFFECT_ACCELERATION", "SFX Acceleration Path", dtDAL::MakeFunctor(actor,
+         AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::SOUND,
+            "SOUND_EFFECT_ACCELERATION", "SFX Acceleration Path", dtCore::MakeFunctor(actor,
             &NxAgeiaFourWheelVehicleActor::SetSound_effect_acceleration),
             "What is the filepath / string of the sound effect", SOUND_GROUP));
 
-         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::SOUND,
-            "SOUND_EFFECT_COLLISION_HIT", "SFX Collision Hit Path", dtDAL::MakeFunctor(actor,
+         AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::SOUND,
+            "SOUND_EFFECT_COLLISION_HIT", "SFX Collision Hit Path", dtCore::MakeFunctor(actor,
             &NxAgeiaFourWheelVehicleActor::SetSound_effect_collision_hit),
             "What is the filepath / string of the sound effect", SOUND_GROUP));
 

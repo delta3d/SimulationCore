@@ -27,7 +27,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include <prefix/SimCorePrefix.h>
 #include <SimCore/Actors/LogicConditionalActor.h>
-#include <dtDAL/enginepropertytypes.h>
+#include <dtCore/enginepropertytypes.h>
 
 
 
@@ -64,25 +64,25 @@ namespace SimCore
 
 
       /////////////////////////////////////////////////////////////////////////////
-      void LogicConditionalActor::SetTrueEvent(dtDAL::GameEvent* pEvent)
+      void LogicConditionalActor::SetTrueEvent(dtCore::GameEvent* pEvent)
       {
          mTrueEvent = pEvent;
       }
 
       /////////////////////////////////////////////////////////////////////////////
-      dtDAL::GameEvent* LogicConditionalActor::GetTrueEvent() 
+      dtCore::GameEvent* LogicConditionalActor::GetTrueEvent() 
       {
          return mTrueEvent.get();
       }
 
       /////////////////////////////////////////////////////////////////////////////
-      void LogicConditionalActor::SetFalseEvent(dtDAL::GameEvent* pEvent)
+      void LogicConditionalActor::SetFalseEvent(dtCore::GameEvent* pEvent)
       {
          mFalseEvent = pEvent;
       }
 
       /////////////////////////////////////////////////////////////////////////////
-      dtDAL::GameEvent* LogicConditionalActor::GetFalseEvent() 
+      dtCore::GameEvent* LogicConditionalActor::GetFalseEvent() 
       {
          return mFalseEvent.get();
       }
@@ -123,21 +123,21 @@ namespace SimCore
          LogicConditionalActor* actor = NULL;
          GetActor( actor );
 
-         AddProperty(new dtDAL::BooleanActorProperty(PROPERTY_IS_TRUE, PROPERTY_IS_TRUE, 
-            dtDAL::BooleanActorProperty::SetFuncType(actor, &LogicConditionalActor::SetIsTrue),
-            dtDAL::BooleanActorProperty::GetFuncType(actor, &LogicConditionalActor::GetIsTrue),
+         AddProperty(new dtCore::BooleanActorProperty(PROPERTY_IS_TRUE, PROPERTY_IS_TRUE, 
+            dtCore::BooleanActorProperty::SetFuncType(actor, &LogicConditionalActor::SetIsTrue),
+            dtCore::BooleanActorProperty::GetFuncType(actor, &LogicConditionalActor::GetIsTrue),
             "The initial or current true state. Generally set by a parent logic controller based on the true and false events.",
             GROUP));
 
-         AddProperty(new dtDAL::GameEventActorProperty(*this, PROPERTY_TRUE_EVENT, PROPERTY_TRUE_EVENT, 
-            dtDAL::GameEventActorProperty::SetFuncType(actor, &LogicConditionalActor::SetTrueEvent),
-            dtDAL::GameEventActorProperty::GetFuncType(actor, &LogicConditionalActor::GetTrueEvent),
+         AddProperty(new dtCore::GameEventActorProperty(*this, PROPERTY_TRUE_EVENT, PROPERTY_TRUE_EVENT, 
+            dtCore::GameEventActorProperty::SetFuncType(actor, &LogicConditionalActor::SetTrueEvent),
+            dtCore::GameEventActorProperty::GetFuncType(actor, &LogicConditionalActor::GetTrueEvent),
             "The event to look for to set this actor to TRUE. Used by a parent logic controller.",
             GROUP));
 
-         AddProperty(new dtDAL::GameEventActorProperty(*this, PROPERTY_FALSE_EVENT, PROPERTY_FALSE_EVENT, 
-            dtDAL::GameEventActorProperty::SetFuncType(actor, &LogicConditionalActor::SetFalseEvent),
-            dtDAL::GameEventActorProperty::GetFuncType(actor, &LogicConditionalActor::GetFalseEvent),
+         AddProperty(new dtCore::GameEventActorProperty(*this, PROPERTY_FALSE_EVENT, PROPERTY_FALSE_EVENT, 
+            dtCore::GameEventActorProperty::SetFuncType(actor, &LogicConditionalActor::SetFalseEvent),
+            dtCore::GameEventActorProperty::GetFuncType(actor, &LogicConditionalActor::GetFalseEvent),
             "The event to look for to set this actor to FALSE. Used by a parent logic controller.",
             GROUP));
 

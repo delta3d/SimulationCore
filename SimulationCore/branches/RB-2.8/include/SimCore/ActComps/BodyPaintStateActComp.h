@@ -66,7 +66,7 @@ namespace SimCore
             DT_DECLARE_ACCESSOR(float, PaintState);
             DT_DECLARE_ACCESSOR(float, DiffuseFrameScale);
             DT_DECLARE_ACCESSOR(float, OverlayFrameScale);
-            DT_DECLARE_ACCESSOR(dtDAL::ResourceDescriptor, OverlayTexture);
+            DT_DECLARE_ACCESSOR(dtCore::ResourceDescriptor, OverlayTexture);
 
             ////////////////////////////////////////////////////////////////////
             // OVERRIDE METHODS - ActorComponent

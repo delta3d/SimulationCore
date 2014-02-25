@@ -29,7 +29,7 @@
 #include <SimCore/IGExceptionEnum.h>
 #include <SimCore/BaseGameEntryPoint.h>
 #include <dtABC/application.h>
-#include <dtDAL/project.h>
+#include <dtCore/project.h>
 #include <dtUtil/stringutils.h>
 #include <dtUtil/mathdefines.h>
 #include <dtCore/batchisector.h>
@@ -73,7 +73,7 @@ namespace Utils
       {
          // Determine if the specified map is valid.
          typedef std::set<std::string> MapNameList;
-         const MapNameList& names = dtDAL::Project::GetInstance().GetMapNames();
+         const MapNameList& names = dtCore::Project::GetInstance().GetMapNames();
          if( names.find( baseMapName ) == names.end() )
          {
             std::ostringstream oss;

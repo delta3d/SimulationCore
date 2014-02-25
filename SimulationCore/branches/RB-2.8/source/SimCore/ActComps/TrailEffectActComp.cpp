@@ -30,9 +30,9 @@
 #include <dtCore/particlesystem.h>
 #include <dtCore/scene.h>
 #include <dtCore/transform.h>
-#include <dtDAL/enginepropertytypes.h>
-#include <dtDAL/project.h>
-#include <dtDAL/propertymacros.h>
+#include <dtCore/enginepropertytypes.h>
+#include <dtCore/project.h>
+#include <dtCore/propertymacros.h>
 #include <dtGame/basemessages.h>
 #include <dtGame/gameactor.h>
 #include <dtGame/invokable.h>
@@ -191,10 +191,10 @@ namespace SimCore
       DT_IMPLEMENT_ACCESSOR(TrailEffectActComp, float, TrailEnableDistance);
       DT_IMPLEMENT_ACCESSOR(TrailEffectActComp, bool, TrailAttached);
       DT_IMPLEMENT_ACCESSOR(TrailEffectActComp, std::string, TrailAttachNodeName);
-      DT_IMPLEMENT_ACCESSOR_GETTER(TrailEffectActComp, dtDAL::ResourceDescriptor, TrailParticlesFile); // Setter is implemented below
+      DT_IMPLEMENT_ACCESSOR_GETTER(TrailEffectActComp, dtCore::ResourceDescriptor, TrailParticlesFile); // Setter is implemented below
 
       //////////////////////////////////////////////////////////////////////////
-      void TrailEffectActComp::SetTrailParticlesFile(const dtDAL::ResourceDescriptor& file)
+      void TrailEffectActComp::SetTrailParticlesFile(const dtCore::ResourceDescriptor& file)
       {
          mTrailParticlesFile = file;
       }
@@ -213,7 +213,7 @@ namespace SimCore
             std::string res;
             try
             {
-               res = dtDAL::Project::GetInstance().GetResourcePath(mTrailParticlesFile.GetResourceIdentifier());
+               res = dtCore::Project::GetInstance().GetResourcePath(mTrailParticlesFile.GetResourceIdentifier());
             }
             catch(std::exception& ex)
             {
@@ -557,7 +557,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void TrailEffectActComp::BuildPropertyMap()
       {
-         typedef dtDAL::PropertyRegHelper<TrailEffectActComp&, TrailEffectActComp> PropRegType;
+         typedef dtCore::PropertyRegHelper<TrailEffectActComp&, TrailEffectActComp> PropRegType;
          PropRegType propRegHelper(*this, this, "Trail Effect");
 
          // FLOAT PROPERTIES
@@ -593,7 +593,7 @@ namespace SimCore
 
          // FILE PROPERTIES
          DT_REGISTER_RESOURCE_PROPERTY_WITH_NAME(
-            dtDAL::DataType::PARTICLE_SYSTEM,
+            dtCore::DataType::PARTICLE_SYSTEM,
             TrailParticlesFile,
             PROPERTY_TRAIL_PARTICLES,
             PROPERTY_TRAIL_PARTICLES,

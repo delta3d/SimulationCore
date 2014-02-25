@@ -45,8 +45,8 @@
 #include <dtCore/system.h>
 #include <dtCore/transform.h>
 
-#include <dtDAL/enginepropertytypes.h>
-#include <dtDAL/project.h>
+#include <dtCore/enginepropertytypes.h>
+#include <dtCore/project.h>
 
 #include <dtUtil/noiseutility.h>
 #include <dtUtil/log.h>
@@ -358,7 +358,7 @@ namespace SimCore
       void RenderingSupportComponent::LoadPrototypes()
       {
          // Find all the dynamic light prototypes
-         std::vector<dtDAL::ActorProxy*> prototypes;
+         std::vector<dtCore::ActorProxy*> prototypes;
          GetGameManager()->FindPrototypesByActorType(*SimCore::Actors::EntityActorRegistry::DYNAMIC_LIGHT_PROTOTYPE_ACTOR_TYPE, prototypes);
 
          // Add all the prototypes to our map of light proxies. This allows others to quickly add a light by name
@@ -734,7 +734,7 @@ namespace SimCore
                landActorProxy->GetActor(landActor);
 
                // Get the terrain - which has our mesh node
-               dtDAL::ActorProxy* terrainActorProxy;
+               dtCore::ActorProxy* terrainActorProxy;
                GetGameManager()->FindActorByName(SimCore::Actors::TerrainActor::DEFAULT_NAME, terrainActorProxy);
                if (terrainActorProxy != NULL)
                {
@@ -1070,7 +1070,7 @@ namespace SimCore
             return false;
          }
 
-         std::vector<dtDAL::ActorProxy*> toFill;
+         std::vector<dtCore::ActorProxy*> toFill;
 
          if (mCullVisitor->GetLandActor() == NULL)
          {
@@ -1120,7 +1120,7 @@ namespace SimCore
          char* csmData = getenv("CSM_DATA");
          if(csmData == NULL)
          {
-            std::string csmPath = dtDAL::Project::GetInstance().GetContext();
+            std::string csmPath = dtCore::Project::GetInstance().GetContext();
             for(size_t i = 0; i < csmPath.size(); i++)
             {
                if(csmPath[i] == '\\')

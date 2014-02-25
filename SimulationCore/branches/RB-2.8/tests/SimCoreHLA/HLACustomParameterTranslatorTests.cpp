@@ -27,7 +27,7 @@
 #include <dtUtil/macros.h>
 #include <dtUtil/coordinates.h>
 #include <dtUtil/datastream.h>
-#include <dtDAL/datatype.h>
+#include <dtCore/datatype.h>
 
 #include <dtHLAGM/objecttoactor.h>
 #include <dtHLAGM/interactiontomessage.h>
@@ -73,7 +73,7 @@ namespace SimCore
          void TestTimeConversion()
          {
             dtHLAGM::OneToManyMapping otm("teaTime", HLACustomAttributeType::MILLISECOND_TIME_TYPE, false ,false);
-            dtHLAGM::OneToManyMapping::ParameterDefinition pd("doubleTime", dtDAL::DataType::DOUBLE, "", false);
+            dtHLAGM::OneToManyMapping::ParameterDefinition pd("doubleTime", dtCore::DataType::DOUBLE, "", false);
             otm.GetParameterDefinitions().push_back(pd);
 
             dtCore::RefPtr<dtGame::DoubleMessageParameter> timeParam = new dtGame::DoubleMessageParameter("doubleTime");
@@ -127,8 +127,8 @@ namespace SimCore
          {
             dtHLAGM::OneToManyMapping otmD("3Doubles", HLACustomAttributeType::VEC3D_TYPE, false ,false);
             dtHLAGM::OneToManyMapping otmF("3Floats", HLACustomAttributeType::VEC3F_TYPE, false ,false);
-            dtHLAGM::OneToManyMapping::ParameterDefinition pdV3D("testVec3Double", dtDAL::DataType::VEC3D, "", false);
-            dtHLAGM::OneToManyMapping::ParameterDefinition pdV3F("testVec3Float", dtDAL::DataType::VEC3F, "", false);
+            dtHLAGM::OneToManyMapping::ParameterDefinition pdV3D("testVec3Double", dtCore::DataType::VEC3D, "", false);
+            dtHLAGM::OneToManyMapping::ParameterDefinition pdV3F("testVec3Float", dtCore::DataType::VEC3F, "", false);
             otmD.GetParameterDefinitions().push_back(pdV3D);
             otmF.GetParameterDefinitions().push_back(pdV3F);
 

@@ -23,6 +23,7 @@ endif ()
 OPTION(BUILD_DIS "Enables the linking of dtDIS for StealthViewer" OFF)
 OPTION(BUILD_HLA "Enables the building of HLA related projects (e.g., # SimCoreHLA)" ON)
 OPTION(BUILD_DEMOS "Enables building SimCore Demos in the demos directory" ON)
+OPTION(BUILD_UTILITIES "Enables building SimCore utility programs in the in the utilities directory" ON)
 OPTION(AUTO_RUN_TESTS "Automatically runs the unit tests upon successful compile and link" ON)
 OPTION(BUILD_WITH_PCH      "Enables use of precomplied headers, experimental" OFF)
 MARK_AS_ADVANCED(BUILD_WITH_PCH)
@@ -237,11 +238,13 @@ SET(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} CACHE STRING "(EXPERIMENTAL) You may 
 ADD_SUBDIRECTORY(ext/source)
 ADD_SUBDIRECTORY(source)
 ADD_SUBDIRECTORY(tests)
+if (BUILD_UTILITIES)	
 ADD_SUBDIRECTORY(utilities)
+endif()
 
 if (BUILD_DEMOS)
    ADD_SUBDIRECTORY(demos)
-endif (BUILD_DEMOS)
+endif ()
 
 CONFIGURE_FILE(
   "${CMAKE_CURRENT_SOURCE_DIR}/SimCoreConfig.cmake.in"

@@ -28,7 +28,7 @@
 #include <dtCore/base.h>
 #include <dtCore/deltadrawable.h>
 #include <dtCore/observerptr.h>
-#include <dtDAL/actorproxy.h>
+#include <dtCore/actorproxy.h>
 #include <dtUtil/getsetmacros.h>
 #include <string>
 
@@ -134,7 +134,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////
       // Munition Effect Actor Proxy Code
       //////////////////////////////////////////////////////////
-      class SIMCORE_EXPORT MunitionEffectsInfoActorProxy : public dtDAL::ActorProxy
+      class SIMCORE_EXPORT MunitionEffectsInfoActorProxy : public dtCore::ActorProxy
       {
          public:
             static const std::string CLASS_NAME;
@@ -294,7 +294,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////
       // Munition Type Actor Proxy Code
       //////////////////////////////////////////////////////////
-      class SIMCORE_EXPORT MunitionTypeActorProxy : public dtDAL::ActorProxy
+      class SIMCORE_EXPORT MunitionTypeActorProxy : public dtCore::ActorProxy
       {
          public:
             static const std::string CLASS_NAME;
@@ -307,7 +307,7 @@ namespace SimCore
 
             virtual bool IsPlaceable() const { return false; }
 
-            void SetEffectsInfoActor( dtDAL::ActorProxy* proxy );
+            void SetEffectsInfoActor( dtCore::ActorProxy* proxy );
 
          protected:
             virtual ~MunitionTypeActorProxy();
@@ -356,10 +356,10 @@ namespace SimCore
             const DISIdentifier& GetDISIdentifier() const { return mDIS; }
             std::string GetDISIdentifierString() const;
 
-            void SetEffectsInfoActor(dtDAL::ActorProxy* proxy);
+            void SetEffectsInfoActor(dtCore::ActorProxy* proxy);
             const MunitionEffectsInfoActor* GetEffectsInfoActor() const;
 
-            void SetDetonationActorPrototype(dtDAL::ActorProxy* proxy);
+            void SetDetonationActorPrototype(dtCore::ActorProxy* proxy);
             DetonationActorProxy* GetDetonationActorPrototype();
 
             DT_DECLARE_ACCESSOR_INLINE(dtCore::UniqueId, DetonationActor);

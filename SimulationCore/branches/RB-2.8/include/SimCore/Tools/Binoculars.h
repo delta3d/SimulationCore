@@ -161,16 +161,16 @@ namespace SimCore
              * Accessor to the original hfov
              * @return mOriginalVFOV
              */
-            const float GetOriginalVFOV() const { return mOriginalVFOV; }
+            float GetOriginalVFOV() const { return mOriginalVFOV; }
 
             /**
              * Accessor to the original lod scale
              * @return mOriginalLODScale
              */
-            const float GetOriginalLODScale() const { return mOriginalLODScale; }
+            float GetOriginalLODScale() const { return mOriginalLODScale; }
 
-            CEGUI::Window *mIntersectionText;
-            CEGUI::Window *mElevationText;
+            CEGUI::Window* mIntersectionText;
+            CEGUI::Window* mElevationText;
          private:
 
             SimCore::UnitOfLength* mUnitOfLength;
@@ -180,8 +180,8 @@ namespace SimCore
             dtCore::RefPtr<dtCore::Camera> mCamera;
 
             // Pointer to the binocular overlay
-            CEGUI::Window *mOverlay;
-            CEGUI::Window *mReticle;
+            CEGUI::Window* mOverlay;
+            CEGUI::Window* mReticle;
             // Farthest distance you can zoom
             static const unsigned int MAX_ZOOM_DISTANCE = 1000;
             // The original settings of the perspectives and LOD

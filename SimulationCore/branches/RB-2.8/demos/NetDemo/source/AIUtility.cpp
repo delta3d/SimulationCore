@@ -56,9 +56,9 @@ namespace NetDemo
    {
    }
 
-   void BaseAIGameState::RegisterProperties(dtDAL::PropertyContainer& pc, const std::string& group)
+   void BaseAIGameState::RegisterProperties(dtCore::PropertyContainer& pc, const std::string& group)
    {
-      typedef dtDAL::PropertyRegHelper<dtDAL::PropertyContainer&, BaseAIGameState> RegHelperType;
+      typedef dtCore::PropertyRegHelper<dtCore::PropertyContainer&, BaseAIGameState> RegHelperType;
       RegHelperType propReg(pc, this, group);
 
       DT_REGISTER_PROPERTY(Pos, "The world space position.", RegHelperType, propReg);
@@ -109,9 +109,9 @@ namespace NetDemo
    {
    }
 
-   void BaseAIGoalState::RegisterProperties(dtDAL::PropertyContainer& pc, const std::string& group)
+   void BaseAIGoalState::RegisterProperties(dtCore::PropertyContainer& pc, const std::string& group)
    {
-      typedef dtDAL::PropertyRegHelper<dtDAL::PropertyContainer&, BaseAIGoalState> RegHelperType;
+      typedef dtCore::PropertyRegHelper<dtCore::PropertyContainer&, BaseAIGoalState> RegHelperType;
       RegHelperType propReg(pc, this, group);
 
       DT_REGISTER_PROPERTY(DragCoef, "The linear air resistance.", RegHelperType, propReg);
@@ -152,9 +152,9 @@ namespace NetDemo
    {
    }
 
-   void BaseAIControls::RegisterProperties(dtDAL::PropertyContainer& pc, const std::string& group)
+   void BaseAIControls::RegisterProperties(dtCore::PropertyContainer& pc, const std::string& group)
    {
-      typedef dtDAL::PropertyRegHelper<dtDAL::PropertyContainer&, BaseAIControls> RegHelperType;
+      typedef dtCore::PropertyRegHelper<dtCore::PropertyContainer&, BaseAIControls> RegHelperType;
       RegHelperType propReg(pc, this, group);
 
       DT_REGISTER_PROPERTY(Thrust, "Our current scalar thrust.", RegHelperType, propReg);

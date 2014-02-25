@@ -45,7 +45,7 @@ namespace dtCore
    class Transform;
 }
 
-namespace dtDAL
+namespace dtCore
 {
    class TransformableActorProxy;
 }
@@ -218,7 +218,7 @@ namespace SimCore
              */
             virtual dtGame::BaseGroundClamper::GroundClampRangeType& GetBestClampType(
                dtGame::BaseGroundClamper::GroundClampRangeType& suggestedClampType,
-               const dtDAL::TransformableActorProxy& proxy,
+               const dtCore::TransformableActorProxy& proxy,
                const dtGame::GroundClampingData& data,
                bool transformChanged, const osg::Vec3& velocity) const;
 
@@ -234,7 +234,7 @@ namespace SimCore
              * @param velocity The transformable's instantaneous velocity for the current frame.
              */
             virtual void ClampToGround( GroundClampRangeType& type, double currentTime, dtCore::Transform& xform,
-               dtDAL::TransformableActorProxy& proxy, dtGame::GroundClampingData& data,
+               dtCore::TransformableActorProxy& proxy, dtGame::GroundClampingData& data,
                bool transformChanged = false, const osg::Vec3& velocity = osg::Vec3());
 
             /**
@@ -255,7 +255,7 @@ namespace SimCore
              * @param inOutPoints IN: detection points relative to the transform.
              *                    OUT: resulting surface points.
              */
-            virtual void GetSurfacePoints( const dtDAL::TransformableActorProxy& proxy,
+            virtual void GetSurfacePoints( const dtCore::TransformableActorProxy& proxy,
                dtGame::GroundClampingData& data, const dtCore::Transform& xform,
                osg::Vec3 inOutPoints[3] );
 
@@ -276,7 +276,7 @@ namespace SimCore
              * @return TRUE if a hit point was detected, otherwise FALSE if there are no points
              *         contained in the specified Isector.
              */
-            virtual bool GetClosestHit( const dtDAL::TransformableActorProxy& proxy,
+            virtual bool GetClosestHit( const dtCore::TransformableActorProxy& proxy,
                dtGame::GroundClampingData& data, 
                dtCore::BatchIsector::SingleISector& single, float pointZ,
                osg::Vec3& inOutHit, osg::Vec3& outNormal );
@@ -308,7 +308,7 @@ namespace SimCore
              * @param inOutPoints IN: Surface points that MAY be modified.
              *                    OUT: Points modified to their final positions.
              */
-            virtual void FinalizeSurfacePoints( dtDAL::TransformableActorProxy& proxy,
+            virtual void FinalizeSurfacePoints( dtCore::TransformableActorProxy& proxy,
                dtGame::GroundClampingData& data, osg::Vec3 inOutPoints[3] );
 
             /**

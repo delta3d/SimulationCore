@@ -30,8 +30,8 @@
 #include <QtGui/QMessageBox>
 #include <dtHLAGM/hlacomponent.h>
 #include <dtHLAGM/hlacomponentconfig.h>
-#include <dtDAL/project.h>
-#include <dtDAL/resourcedescriptor.h>
+#include <dtCore/project.h>
+#include <dtCore/resourcedescriptor.h>
 #include <dtUtil/fileutils.h>
 #include <dtUtil/macros.h>
 #include <SimCore/HLA/HLAConnectionComponent.h>
@@ -310,7 +310,7 @@ namespace StealthQt
    {
       try
       {
-         dtDAL::Project& project = dtDAL::Project::GetInstance();
+         dtCore::Project& project = dtCore::Project::GetInstance();
 
          std::string fedex        = properties[4].toStdString();
          std::string map          = properties[1].toStdString();
@@ -342,12 +342,12 @@ namespace StealthQt
             {
                mHLAComp->SetConnectionType(SimCore::HLA::HLAConnectionComponent::ConnectionType::TYPE_HLA);
 
-               config = project.GetResourcePath(dtDAL::ResourceDescriptor(properties[2].toStdString()));
-               fedFile = project.GetResourcePath(dtDAL::ResourceDescriptor(properties[3].toStdString()));
+               config = project.GetResourcePath(dtCore::ResourceDescriptor(properties[2].toStdString()));
+               fedFile = project.GetResourcePath(dtCore::ResourceDescriptor(properties[3].toStdString()));
                // The rid file is not required, and many newer rtis don't even have such a concept.
                if (!properties[6].isEmpty())
                {
-                  ridFile = project.GetResourcePath(dtDAL::ResourceDescriptor(properties[6].toStdString()));
+                  ridFile = project.GetResourcePath(dtCore::ResourceDescriptor(properties[6].toStdString()));
                }
                else
                {

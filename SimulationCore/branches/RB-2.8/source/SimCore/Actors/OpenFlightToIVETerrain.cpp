@@ -25,12 +25,12 @@
 
 #include <dtUtil/fileutils.h>
 
-#include <dtDAL/floatactorproperty.h>
-#include <dtDAL/stringactorproperty.h>
-#include <dtDAL/intactorproperty.h>
-#include <dtDAL/booleanactorproperty.h>
-#include <dtDAL/actorproxyicon.h>
-#include <dtDAL/datatype.h>
+#include <dtCore/floatactorproperty.h>
+#include <dtCore/stringactorproperty.h>
+#include <dtCore/intactorproperty.h>
+#include <dtCore/booleanactorproperty.h>
+#include <dtCore/actorproxyicon.h>
+#include <dtCore/datatype.h>
 
 #include <dtCore/shadergroup.h>
 #include <dtCore/shaderprogram.h>
@@ -220,73 +220,73 @@ namespace SimCore
          OpenFlightToIVETerrainActor* ta = NULL;
          GetActor(ta);
 
-         AddProperty(new dtDAL::FloatActorProperty("mPaging_Min_X", "mPaging_Min_X",
-            dtDAL::FloatActorProperty::SetFuncType(ta, &OpenFlightToIVETerrainActor::SetPagingMinX),
-            dtDAL::FloatActorProperty::GetFuncType(ta, &OpenFlightToIVETerrainActor::GetPagingMinX),
+         AddProperty(new dtCore::FloatActorProperty("mPaging_Min_X", "mPaging_Min_X",
+            dtCore::FloatActorProperty::SetFuncType(ta, &OpenFlightToIVETerrainActor::SetPagingMinX),
+            dtCore::FloatActorProperty::GetFuncType(ta, &OpenFlightToIVETerrainActor::GetPagingMinX),
             "", TERRAIN_GROUP_NAME));
 
-         AddProperty(new dtDAL::FloatActorProperty("mPaging_Min_Y", "mPaging_Min_Y",
-            dtDAL::FloatActorProperty::SetFuncType(ta, &OpenFlightToIVETerrainActor::SetPagingMinY),
-            dtDAL::FloatActorProperty::GetFuncType(ta, &OpenFlightToIVETerrainActor::GetPagingMinY),
+         AddProperty(new dtCore::FloatActorProperty("mPaging_Min_Y", "mPaging_Min_Y",
+            dtCore::FloatActorProperty::SetFuncType(ta, &OpenFlightToIVETerrainActor::SetPagingMinY),
+            dtCore::FloatActorProperty::GetFuncType(ta, &OpenFlightToIVETerrainActor::GetPagingMinY),
             "", TERRAIN_GROUP_NAME));
-         AddProperty(new dtDAL::FloatActorProperty("mPaging_Max_X", "mPaging_Max_X",
-            dtDAL::FloatActorProperty::SetFuncType(ta, &OpenFlightToIVETerrainActor::SetPagingMaxX),
-            dtDAL::FloatActorProperty::GetFuncType(ta, &OpenFlightToIVETerrainActor::GetPagingMaxX),
+         AddProperty(new dtCore::FloatActorProperty("mPaging_Max_X", "mPaging_Max_X",
+            dtCore::FloatActorProperty::SetFuncType(ta, &OpenFlightToIVETerrainActor::SetPagingMaxX),
+            dtCore::FloatActorProperty::GetFuncType(ta, &OpenFlightToIVETerrainActor::GetPagingMaxX),
             "", TERRAIN_GROUP_NAME));
          
-         AddProperty(new dtDAL::FloatActorProperty("mPaging_Max_Y", "mPaging_Max_Y",
-            dtDAL::FloatActorProperty::SetFuncType(ta, &OpenFlightToIVETerrainActor::SetPagingMaxY),
-            dtDAL::FloatActorProperty::GetFuncType(ta, &OpenFlightToIVETerrainActor::GetPagingMaxY),
+         AddProperty(new dtCore::FloatActorProperty("mPaging_Max_Y", "mPaging_Max_Y",
+            dtCore::FloatActorProperty::SetFuncType(ta, &OpenFlightToIVETerrainActor::SetPagingMaxY),
+            dtCore::FloatActorProperty::GetFuncType(ta, &OpenFlightToIVETerrainActor::GetPagingMaxY),
             "", TERRAIN_GROUP_NAME));
         
-         AddProperty(new dtDAL::FloatActorProperty("mPaging_Delta", "mPaging_Delta",
-            dtDAL::FloatActorProperty::SetFuncType(ta, &OpenFlightToIVETerrainActor::SetPagingDelta),
-            dtDAL::FloatActorProperty::GetFuncType(ta, &OpenFlightToIVETerrainActor::GetPagingDelta),
+         AddProperty(new dtCore::FloatActorProperty("mPaging_Delta", "mPaging_Delta",
+            dtCore::FloatActorProperty::SetFuncType(ta, &OpenFlightToIVETerrainActor::SetPagingDelta),
+            dtCore::FloatActorProperty::GetFuncType(ta, &OpenFlightToIVETerrainActor::GetPagingDelta),
             "", TERRAIN_GROUP_NAME));
          
-         AddProperty(new dtDAL::FloatActorProperty("mPaging_Radius", "mPaging_Radius",
-            dtDAL::FloatActorProperty::SetFuncType(ta, &OpenFlightToIVETerrainActor::SetPagingRadius),
-            dtDAL::FloatActorProperty::GetFuncType(ta, &OpenFlightToIVETerrainActor::GetPagingRadius),
+         AddProperty(new dtCore::FloatActorProperty("mPaging_Radius", "mPaging_Radius",
+            dtCore::FloatActorProperty::SetFuncType(ta, &OpenFlightToIVETerrainActor::SetPagingRadius),
+            dtCore::FloatActorProperty::GetFuncType(ta, &OpenFlightToIVETerrainActor::GetPagingRadius),
             "", TERRAIN_GROUP_NAME));
          
-         AddProperty(new dtDAL::FloatActorProperty("mPaging_Range", "mPaging_Range",
-            dtDAL::FloatActorProperty::SetFuncType(ta, &OpenFlightToIVETerrainActor::SetPagingRange),
-            dtDAL::FloatActorProperty::GetFuncType(ta, &OpenFlightToIVETerrainActor::GetPagingRange),
+         AddProperty(new dtCore::FloatActorProperty("mPaging_Range", "mPaging_Range",
+            dtCore::FloatActorProperty::SetFuncType(ta, &OpenFlightToIVETerrainActor::SetPagingRange),
+            dtCore::FloatActorProperty::GetFuncType(ta, &OpenFlightToIVETerrainActor::GetPagingRange),
             "", TERRAIN_GROUP_NAME));
 
-         AddProperty(new dtDAL::StringActorProperty("mPaging_BaseName", "mPaging_BaseName",
-            dtDAL::StringActorProperty::SetFuncType(ta, &OpenFlightToIVETerrainActor::SetPagingBaseName),
-            dtDAL::StringActorProperty::GetFuncType(ta, &OpenFlightToIVETerrainActor::GetPagingBaseName),
+         AddProperty(new dtCore::StringActorProperty("mPaging_BaseName", "mPaging_BaseName",
+            dtCore::StringActorProperty::SetFuncType(ta, &OpenFlightToIVETerrainActor::SetPagingBaseName),
+            dtCore::StringActorProperty::GetFuncType(ta, &OpenFlightToIVETerrainActor::GetPagingBaseName),
             "", TERRAIN_GROUP_NAME));
 
-         AddProperty(new dtDAL::FloatActorProperty("mPaging_ExpiringDelay", "mPaging_ExpiringDelay",
-            dtDAL::FloatActorProperty::SetFuncType(ta, &OpenFlightToIVETerrainActor::SetPagingExpiringDelay),
-            dtDAL::FloatActorProperty::GetFuncType(ta, &OpenFlightToIVETerrainActor::GetPagingExpiringDelay),
+         AddProperty(new dtCore::FloatActorProperty("mPaging_ExpiringDelay", "mPaging_ExpiringDelay",
+            dtCore::FloatActorProperty::SetFuncType(ta, &OpenFlightToIVETerrainActor::SetPagingExpiringDelay),
+            dtCore::FloatActorProperty::GetFuncType(ta, &OpenFlightToIVETerrainActor::GetPagingExpiringDelay),
             "", TERRAIN_GROUP_NAME));
 
-         AddProperty(new dtDAL::FloatActorProperty("mPaging_Frame_Rate_Targeted", "mPaging_Frame_Rate_Targeted",
-            dtDAL::FloatActorProperty::SetFuncType(ta, &OpenFlightToIVETerrainActor::SetPagingFPSTarget),
-            dtDAL::FloatActorProperty::GetFuncType(ta, &OpenFlightToIVETerrainActor::GetPagingFPSTarget),
+         AddProperty(new dtCore::FloatActorProperty("mPaging_Frame_Rate_Targeted", "mPaging_Frame_Rate_Targeted",
+            dtCore::FloatActorProperty::SetFuncType(ta, &OpenFlightToIVETerrainActor::SetPagingFPSTarget),
+            dtCore::FloatActorProperty::GetFuncType(ta, &OpenFlightToIVETerrainActor::GetPagingFPSTarget),
             "", TERRAIN_GROUP_NAME));
 
-         AddProperty(new dtDAL::BooleanActorProperty("mPaging_Precompile", "mPaging_Precompile",
-            dtDAL::BooleanActorProperty::SetFuncType(ta, &OpenFlightToIVETerrainActor::SetPagingPrecompile),
-            dtDAL::BooleanActorProperty::GetFuncType(ta, &OpenFlightToIVETerrainActor::GetPagingPrecompile),
+         AddProperty(new dtCore::BooleanActorProperty("mPaging_Precompile", "mPaging_Precompile",
+            dtCore::BooleanActorProperty::SetFuncType(ta, &OpenFlightToIVETerrainActor::SetPagingPrecompile),
+            dtCore::BooleanActorProperty::GetFuncType(ta, &OpenFlightToIVETerrainActor::GetPagingPrecompile),
             "", TERRAIN_GROUP_NAME));
 
-         AddProperty(new dtDAL::IntActorProperty("mMaximumObjectsToCompile", "mMaximumObjectsToCompile",
-            dtDAL::IntActorProperty::SetFuncType(ta, &OpenFlightToIVETerrainActor::SetMaxObjectsToCompile),
-            dtDAL::IntActorProperty::GetFuncType(ta, &OpenFlightToIVETerrainActor::GetMaxObjectsToCompile),
+         AddProperty(new dtCore::IntActorProperty("mMaximumObjectsToCompile", "mMaximumObjectsToCompile",
+            dtCore::IntActorProperty::SetFuncType(ta, &OpenFlightToIVETerrainActor::SetMaxObjectsToCompile),
+            dtCore::IntActorProperty::GetFuncType(ta, &OpenFlightToIVETerrainActor::GetMaxObjectsToCompile),
             "", TERRAIN_GROUP_NAME));
 
-         AddProperty(new dtDAL::FloatActorProperty("mZOffsetForTerrain", "mZOffsetForTerrain",
-            dtDAL::FloatActorProperty::SetFuncType(ta, &OpenFlightToIVETerrainActor::SetZOffsetforTerrain),
-            dtDAL::FloatActorProperty::GetFuncType(ta, &OpenFlightToIVETerrainActor::GetZOffsetforTerrain),
+         AddProperty(new dtCore::FloatActorProperty("mZOffsetForTerrain", "mZOffsetForTerrain",
+            dtCore::FloatActorProperty::SetFuncType(ta, &OpenFlightToIVETerrainActor::SetZOffsetforTerrain),
+            dtCore::FloatActorProperty::GetFuncType(ta, &OpenFlightToIVETerrainActor::GetZOffsetforTerrain),
             "", TERRAIN_GROUP_NAME));
 
-         AddProperty(new dtDAL::StringActorProperty("mTerrainPath", "mTerrainPath",
-            dtDAL::StringActorProperty::SetFuncType(ta, &OpenFlightToIVETerrainActor::SetTerrainPath),
-            dtDAL::StringActorProperty::GetFuncType(ta, &OpenFlightToIVETerrainActor::GetTerrainPath),
+         AddProperty(new dtCore::StringActorProperty("mTerrainPath", "mTerrainPath",
+            dtCore::StringActorProperty::SetFuncType(ta, &OpenFlightToIVETerrainActor::SetTerrainPath),
+            dtCore::StringActorProperty::GetFuncType(ta, &OpenFlightToIVETerrainActor::GetTerrainPath),
             "", TERRAIN_GROUP_NAME));
       }
 

@@ -142,10 +142,10 @@ namespace SimCore
             void UpdateSyncTime(const SimCore::TimeValueMessage& tvMsg);
 
             /// Called when map loaded or actor update/create for a terrain. Passes to DR comp
-            bool HandleTerrainActor(dtDAL::ActorProxy* terrainProxy);
+            bool HandleTerrainActor(dtCore::ActorProxy* terrainProxy);
 
             /// Called when map laoded or actor update/create for the water actor. Passes to DR comp water clamper
-            void HandleWaterActor(dtDAL::ActorProxy* waterProxy);
+            void HandleWaterActor(dtCore::ActorProxy* waterProxy);
 
          private:
 

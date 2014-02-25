@@ -29,7 +29,7 @@
 
 #include <osg/Vec3>
 
-#include <dtDAL/actortype.h>
+#include <dtCore/actortype.h>
 #include <dtGame/actorupdatemessage.h>
 #include <dtGame/basemessages.h>
 #include <dtGame/messageparameter.h>
@@ -60,8 +60,8 @@ namespace SimCore
       {
          dtGame::GameActorProxy* gap = GetGameManager()->FindGameActorById(msg.GetSendingActorId());
 
-         const dtDAL::ActorType& stealthActorType = *SimCore::Actors::EntityActorRegistry::STEALTH_ACTOR_TYPE;
-         const dtDAL::ActorType* actualType = &gap->GetActorType();
+         const dtCore::ActorType& stealthActorType = *SimCore::Actors::EntityActorRegistry::STEALTH_ACTOR_TYPE;
+         const dtCore::ActorType* actualType = &gap->GetActorType();
          if(actualType != NULL || stealthActorType != *actualType)
          {
             // Param added by Eddie. It takes a proxy also now. Is this correct?
@@ -115,8 +115,8 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////
       void ViewerNetworkPublishingComponent::ProcessUpdateActor(const dtGame::ActorUpdateMessage& msg)
       {
-         const dtDAL::ActorType &stealthActorType = *SimCore::Actors::EntityActorRegistry::STEALTH_ACTOR_TYPE;
-         const dtDAL::ActorType *actualType = GetGameManager()->FindActorType(msg.GetActorTypeCategory(), msg.GetActorTypeName());
+         const dtCore::ActorType &stealthActorType = *SimCore::Actors::EntityActorRegistry::STEALTH_ACTOR_TYPE;
+         const dtCore::ActorType *actualType = GetGameManager()->FindActorType(msg.GetActorTypeCategory(), msg.GetActorTypeName());
 
          //Here, the stealth actor does not publish regular actor updates because the HLA component needs one off messages for them.
          //This is due to the fact that RPR FOM uses specific interactions for the stealth actors rather than using an object.

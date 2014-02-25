@@ -263,7 +263,7 @@ namespace SimCore
          PhysicsParticleSystemActorProxy();
          virtual void BuildPropertyMap();
 
-         virtual dtCore::RefPtr<dtDAL::ActorProperty> GetDeprecatedProperty(const std::string& name);
+         virtual dtCore::RefPtr<dtCore::ActorProperty> GetDeprecatedProperty(const std::string& name);
 
          virtual void BuildActorComponents();
 

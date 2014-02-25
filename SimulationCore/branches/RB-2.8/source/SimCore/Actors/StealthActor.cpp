@@ -35,7 +35,7 @@
 #include <dtCore/scene.h>
 #include <dtCore/transform.h>
 #include <dtUtil/log.h>
-#include <dtDAL/enginepropertytypes.h>
+#include <dtCore/enginepropertytypes.h>
 
 namespace SimCore
 {
@@ -84,9 +84,9 @@ namespace SimCore
          StealthActor* sa = NULL;
          GetActor(sa);
 
-         AddProperty(new dtDAL::Vec3ActorProperty("Attach Offset", "Attach Offset",
-             dtDAL::Vec3ActorProperty::SetFuncType(sa, &StealthActor::SetAttachOffset),
-             dtDAL::Vec3ActorProperty::GetFuncType(sa, &StealthActor::GetAttachOffset),
+         AddProperty(new dtCore::Vec3ActorProperty("Attach Offset", "Attach Offset",
+             dtCore::Vec3ActorProperty::SetFuncType(sa, &StealthActor::SetAttachOffset),
+             dtCore::Vec3ActorProperty::GetFuncType(sa, &StealthActor::GetAttachOffset),
              "Property for the attach offset."));
       }
 

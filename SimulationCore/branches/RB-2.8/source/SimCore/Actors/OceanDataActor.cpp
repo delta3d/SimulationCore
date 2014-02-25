@@ -26,7 +26,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include <prefix/SimCorePrefix.h>
 #include <SimCore/Actors/OceanDataActor.h>
-#include <dtDAL/enginepropertytypes.h>
+#include <dtCore/enginepropertytypes.h>
 
 
 
@@ -136,36 +136,36 @@ namespace SimCore
          GetActor( actor );
 
          // INTEGER PEORPERTIES
-         AddProperty(new dtDAL::IntActorProperty(
+         AddProperty(new dtCore::IntActorProperty(
             OceanDataActorProxy::PROPERTY_SEA_STATE,
             OceanDataActorProxy::PROPERTY_SEA_STATE, 
-            dtDAL::IntActorProperty::SetFuncType(actor, &OceanDataActor::SetSeaState ),
-            dtDAL::IntActorProperty::GetFuncType(actor, &OceanDataActor::GetSeaState ),
+            dtCore::IntActorProperty::SetFuncType(actor, &OceanDataActor::SetSeaState ),
+            dtCore::IntActorProperty::GetFuncType(actor, &OceanDataActor::GetSeaState ),
             "Sea state for cell[0] at the specified latitude and longitude; this was originally a 2D enum array property with any number of cells.",
             GROUP));
 
          // FLOAT PROPERTIES
-         AddProperty(new dtDAL::FloatActorProperty(
+         AddProperty(new dtCore::FloatActorProperty(
             OceanDataActorProxy::PROPERTY_WAVE_HEIGHT_SIGNIFICANT,
             OceanDataActorProxy::PROPERTY_WAVE_HEIGHT_SIGNIFICANT, 
-            dtDAL::FloatActorProperty::SetFuncType(actor, &OceanDataActor::SetWaveHeightSignificant ),
-            dtDAL::FloatActorProperty::GetFuncType(actor, &OceanDataActor::GetWaveHeightSignificant ),
+            dtCore::FloatActorProperty::SetFuncType(actor, &OceanDataActor::SetWaveHeightSignificant ),
+            dtCore::FloatActorProperty::GetFuncType(actor, &OceanDataActor::GetWaveHeightSignificant ),
             "Wave height significant for cell[0] at the specified latitude and longitude; this was originally a 2D array property with any number of cells.",
             GROUP));
 
-         AddProperty(new dtDAL::FloatActorProperty(
+         AddProperty(new dtCore::FloatActorProperty(
             OceanDataActorProxy::PROPERTY_WAVE_DIRECTION_PRIMARY,
             OceanDataActorProxy::PROPERTY_WAVE_DIRECTION_PRIMARY, 
-            dtDAL::FloatActorProperty::SetFuncType(actor, &OceanDataActor::SetWaveDirectionPrimary ),
-            dtDAL::FloatActorProperty::GetFuncType(actor, &OceanDataActor::GetWaveDirectionPrimary ),
+            dtCore::FloatActorProperty::SetFuncType(actor, &OceanDataActor::SetWaveDirectionPrimary ),
+            dtCore::FloatActorProperty::GetFuncType(actor, &OceanDataActor::GetWaveDirectionPrimary ),
             "Wave direction (in degrees) for cell[0] at the specified latitude and longitude; this was originally a 2D array property with any number of cells.",
             GROUP));
 
-         AddProperty(new dtDAL::FloatActorProperty(
+         AddProperty(new dtCore::FloatActorProperty(
             OceanDataActorProxy::PROPERTY_WAVE_PERIOD_PRIMARY_MEAN,
             OceanDataActorProxy::PROPERTY_WAVE_PERIOD_PRIMARY_MEAN, 
-            dtDAL::FloatActorProperty::SetFuncType(actor, &OceanDataActor::SetWavePeriodPrimaryMean ),
-            dtDAL::FloatActorProperty::GetFuncType(actor, &OceanDataActor::GetWavePeriodPrimaryMean ),
+            dtCore::FloatActorProperty::SetFuncType(actor, &OceanDataActor::SetWavePeriodPrimaryMean ),
+            dtCore::FloatActorProperty::GetFuncType(actor, &OceanDataActor::GetWavePeriodPrimaryMean ),
             "Wave frequency (in seconds) for the specified latitude and longitude.",
             GROUP));
       }

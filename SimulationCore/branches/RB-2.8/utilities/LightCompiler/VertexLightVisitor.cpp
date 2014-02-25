@@ -11,7 +11,7 @@ void VertexLightVisitor::ProcessGeometry(const osg::Matrix& mat, osg::Geometry* 
 
    if(!vx || !nx)
    {
-      std::cout << "Error: vertex attributes must support vertex arrays and contain per vertex normals" << std::cout;
+      std::cout << "Error: vertex attributes must support vertex arrays and contain per vertex normals" << std::endl;
       return;
    }
 

@@ -24,7 +24,7 @@
 #include <dtUtil/mswin.h>
 #include <Actors/EnemyHelix.h>
 #include <iostream>
-#include <dtDAL/enginepropertytypes.h>
+#include <dtCore/enginepropertytypes.h>
 #include <dtUtil/matrixutil.h>
 #include <dtUtil/mathdefines.h>
 #include <dtGame/basemessages.h>
@@ -148,7 +148,7 @@ namespace NetDemo
 
       wd->SetWeaponPrototypeName("Weapon_MachineGun");
       wd->SetShooterPrototypeName("Particle_System_Weapon_GunWithTracer");
-      wd->SetFiringParticleSystem(dtDAL::ResourceDescriptor("Particles:weapon_gun_flash.osg"));
+      wd->SetFiringParticleSystem(dtCore::ResourceDescriptor("Particles:weapon_gun_flash.osg"));
       wd->SetWeaponSwapRootNode("dof_hotspot_01");
 
 

@@ -41,8 +41,8 @@
 #include <dtGame/actorupdatemessage.h>
 #include <dtGame/deadreckoningcomponent.h>
 
-#include <dtDAL/project.h>
-#include <dtDAL/enginepropertytypes.h>
+#include <dtCore/project.h>
+#include <dtCore/enginepropertytypes.h>
 
 #include <dtAudio/audiomanager.h>
 
@@ -167,7 +167,7 @@ namespace SimCore
 
          osg::Vec3 newPosition(0, 100, 0);
          dtGame::ActorUpdateMessage &aumsg = static_cast<dtGame::ActorUpdateMessage&>(*msg);
-         dtGame::MessageParameter *param = aumsg.AddUpdateParameter("Last Known Translation", dtDAL::DataType::VEC3);
+         dtGame::MessageParameter *param = aumsg.AddUpdateParameter("Last Known Translation", dtCore::DataType::VEC3);
          CPPUNIT_ASSERT(param != NULL);
          static_cast<dtGame::Vec3MessageParameter*>(param)->SetValue(newPosition);
          aumsg.SetSource(*mMachineInfo);
@@ -177,7 +177,7 @@ namespace SimCore
          dtCore::AppSleep(10);
          dtCore::System::GetInstance().Step();
 
-         osg::Vec3 position = static_cast<dtDAL::Vec3ActorProperty*>(proxy->GetProperty("Last Known Translation"))->GetValue();
+         osg::Vec3 position = static_cast<dtCore::Vec3ActorProperty*>(proxy->GetProperty("Last Known Translation"))->GetValue();
          CPPUNIT_ASSERT_MESSAGE("The property should have been set correctly on the proxy.", position == newPosition);
       }
 

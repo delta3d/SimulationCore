@@ -40,8 +40,8 @@
 #include <dtCore/environment.h>
 #include <dtCore/deltawin.h>
 
-#include <dtDAL/project.h>
-#include <dtDAL/map.h>
+#include <dtCore/project.h>
+#include <dtCore/map.h>
 
 #include <dtGame/actorupdatemessage.h>
 #include <dtGame/basemessages.h>

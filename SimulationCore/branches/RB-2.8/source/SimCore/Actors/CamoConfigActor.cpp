@@ -29,8 +29,8 @@
 
 // XML Loading
 #include <stack>
-#include <dtDAL/project.h>
-#include <dtDAL/propertymacros.h>
+#include <dtCore/project.h>
+#include <dtCore/propertymacros.h>
 #include <dtUtil/xercesparser.h>
 #include <dtUtil/xercesutils.h>
 #include <xercesc/sax2/ContentHandler.hpp>  // for a base class
@@ -104,7 +104,7 @@ namespace SimCore
 
             dtCore::RefPtr<CamoConfigActor> mConfigActor;
             dtCore::RefPtr<CamoParams> mCurCamoParams;
-            dtDAL::ResourceDescriptor mDefaultPatternTexture;
+            dtCore::ResourceDescriptor mDefaultPatternTexture;
       };
 
 
@@ -131,17 +131,17 @@ namespace SimCore
       DT_IMPLEMENT_ACCESSOR(CamoParams, osg::Vec4, Color2);
       DT_IMPLEMENT_ACCESSOR(CamoParams, osg::Vec4, Color3);
       DT_IMPLEMENT_ACCESSOR(CamoParams, osg::Vec4, Color4);
-      DT_IMPLEMENT_ACCESSOR_GETTER(CamoParams, dtDAL::ResourceDescriptor, PatternTexture); // setter implemented below
-      DT_IMPLEMENT_ACCESSOR_GETTER(CamoParams, dtDAL::ResourceDescriptor, ConcealMesh); // setter implemented below
+      DT_IMPLEMENT_ACCESSOR_GETTER(CamoParams, dtCore::ResourceDescriptor, PatternTexture); // setter implemented below
+      DT_IMPLEMENT_ACCESSOR_GETTER(CamoParams, dtCore::ResourceDescriptor, ConcealMesh); // setter implemented below
 
       //////////////////////////////////////////////////////////////////////////
-      void CamoParams::SetPatternTexture(const dtDAL::ResourceDescriptor& file)
+      void CamoParams::SetPatternTexture(const dtCore::ResourceDescriptor& file)
       {
          mPatternTexture = file;
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void CamoParams::SetConcealMesh(const dtDAL::ResourceDescriptor& file)
+      void CamoParams::SetConcealMesh(const dtCore::ResourceDescriptor& file)
       {
          mConcealMesh = file;
       }
@@ -281,7 +281,7 @@ namespace SimCore
 
          try
          {
-            std::string filePath = dtDAL::Project::GetInstance().GetResourcePath(file);
+            std::string filePath = dtCore::Project::GetInstance().GetResourcePath(file);
             
             if(dtUtil::FileUtils::GetInstance().FileExists(filePath))
             {
@@ -356,7 +356,7 @@ namespace SimCore
          CamoConfigActor* actor = NULL;
          GetActor(actor);
 
-         typedef dtDAL::PropertyRegHelper<CamoConfigActorProxy&, CamoConfigActor> PropRegType;
+         typedef dtCore::PropertyRegHelper<CamoConfigActorProxy&, CamoConfigActor> PropRegType;
          PropRegType propRegHelper(*this, actor, "Camo Config");
 
          // FILE PROPERTIES (as string since resource types do not allow generic xml files)
@@ -455,7 +455,7 @@ namespace SimCore
             {
                // Getting ready to set a mesh.
                // Nullify the default in case the mesh was not specified on purpose.
-               dtDAL::ResourceDescriptor empty;
+               dtCore::ResourceDescriptor empty;
                mCurCamoParams->SetConcealMesh(empty);
             }
          }

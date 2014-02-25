@@ -338,8 +338,8 @@ namespace SimCore
 
          void OnEnteredWorld();
 
-         dtDAL::ActorProxyIcon* GetBillBoardIcon();
-         /*virtual*/ const dtDAL::ActorProxy::RenderMode& GetRenderMode();
+         dtCore::ActorProxyIcon* GetBillBoardIcon();
+         /*virtual*/ const dtCore::ActorProxy::RenderMode& GetRenderMode();
 
       protected:
          ~WaterGridActorProxy();

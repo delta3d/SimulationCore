@@ -98,9 +98,9 @@ public:
                   dtGame::GameManager::ComponentPriority::NORMAL);
 
          mGM->CreateActor(*Actors::EntityActorRegistry::FOUR_WHEEL_VEHICLE_ACTOR_TYPE, mVehicle);
-         mVehicle->SetNonDamagedResource(dtDAL::ResourceDescriptor("StaticMeshes:NetDemo:Vehicles:Truck.ive"));
+         mVehicle->SetNonDamagedResource(dtCore::ResourceDescriptor("StaticMeshes:NetDemo:Vehicles:Truck.ive"));
          mGM->CreateActor(*Actors::EntityActorRegistry::FOUR_WHEEL_VEHICLE_ACTOR_TYPE, mTrailer);
-         mTrailer->SetNonDamagedResource(dtDAL::ResourceDescriptor("StaticMeshes:NetDemo:Vehicles:Truck.ive"));
+         mTrailer->SetNonDamagedResource(dtCore::ResourceDescriptor("StaticMeshes:NetDemo:Vehicles:Truck.ive"));
       }
       catch (const dtUtil::Exception& ex)
       {

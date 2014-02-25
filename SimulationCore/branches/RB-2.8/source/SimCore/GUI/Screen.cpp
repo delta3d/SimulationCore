@@ -16,7 +16,7 @@
 // INCLUDE DIRECTIVES
 ////////////////////////////////////////////////////////////////////////////////
 #include <prefix/SimCorePrefix.h>
-#include <dtDAL/functor.h>
+#include <dtCore/functor.h>
 #include <dtUtil/log.h>
 #include <SimCore/Components/BaseHUDElements.h>
 #include <SimCore/GUI/Screen.h>

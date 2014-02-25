@@ -26,8 +26,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include <prefix/SimCorePrefix.h>
 #include <osgSim/DOFTransform>
-#include <dtDAL/namedparameter.h>
-#include <dtDAL/groupactorproperty.h>
+#include <dtCore/namedparameter.h>
+#include <dtCore/groupactorproperty.h>
 #include <dtGame/deadreckoninghelper.h>
 #include <SimCore/Components/ArticulationHelper.h>
 
@@ -102,7 +102,7 @@ namespace SimCore
 
       //////////////////////////////////////////////////////////////////////////
       bool ArticulationHelper::AddArticulatedParameter(
-         dtDAL::NamedGroupParameter& outArticArrayProp,
+         dtCore::NamedGroupParameter& outArticArrayProp,
          ArticulationMetricType& articulationType,
          const std::string& paramName,
          float value, unsigned valueChangeCount,
@@ -115,24 +115,24 @@ namespace SimCore
          std::string extendedParamName( PARAM_NAME_PREFIX_ARTICULATED + paramName );
 
          // Add the value
-         dtCore::RefPtr<dtDAL::NamedGroupParameter> articParam;
+         dtCore::RefPtr<dtCore::NamedGroupParameter> articParam;
          // --- Create the parameter if it does not already exist
          articParam = new dtGame::GroupMessageParameter(extendedParamName);
-         articParam->AddParameter( *new dtDAL::NamedFloatParameter( articulationType.GetName(), value ) );
-         articParam->AddParameter( *new dtDAL::NamedUnsignedShortIntParameter( PARAM_NAME_CHANGE, valueChangeCount ) );
-         articParam->AddParameter( *new dtDAL::NamedStringParameter( PARAM_NAME_DOF, dofName ) );
-         articParam->AddParameter( *new dtDAL::NamedStringParameter( PARAM_NAME_DOF_PARENT, dofParentName ) );
+         articParam->AddParameter( *new dtCore::NamedFloatParameter( articulationType.GetName(), value ) );
+         articParam->AddParameter( *new dtCore::NamedUnsignedShortIntParameter( PARAM_NAME_CHANGE, valueChangeCount ) );
+         articParam->AddParameter( *new dtCore::NamedStringParameter( PARAM_NAME_DOF, dofName ) );
+         articParam->AddParameter( *new dtCore::NamedStringParameter( PARAM_NAME_DOF_PARENT, dofParentName ) );
          outArticArrayProp.AddParameter( *articParam );
 
          // Add the rate
          extendedParamName = extendedParamName + PARAM_NAME_SUFFIX_RATE;
          // --- Create the parameter if it does not already exist
          articParam = new dtGame::GroupMessageParameter(extendedParamName);
-         articParam->AddParameter( *new dtDAL::NamedFloatParameter(
+         articParam->AddParameter( *new dtCore::NamedFloatParameter(
             articulationType.GetRelatedRateMetricName(), rate ) );
-         articParam->AddParameter( *new dtDAL::NamedUnsignedShortIntParameter( PARAM_NAME_CHANGE, rateChangeCount ) );
-         articParam->AddParameter( *new dtDAL::NamedStringParameter( PARAM_NAME_DOF, dofName ) );
-         articParam->AddParameter( *new dtDAL::NamedStringParameter( PARAM_NAME_DOF_PARENT, dofParentName ) );
+         articParam->AddParameter( *new dtCore::NamedUnsignedShortIntParameter( PARAM_NAME_CHANGE, rateChangeCount ) );
+         articParam->AddParameter( *new dtCore::NamedStringParameter( PARAM_NAME_DOF, dofName ) );
+         articParam->AddParameter( *new dtCore::NamedStringParameter( PARAM_NAME_DOF_PARENT, dofParentName ) );
          outArticArrayProp.AddParameter( *articParam );
 
          return true;
@@ -159,7 +159,7 @@ namespace SimCore
 
       ////////////////////////////////////////////////////////////////////////////////////
       void ArticulationHelper::HandleArticulatedParametersArray(
-         const dtDAL::NamedGroupParameter& articArrayParam,
+         const dtCore::NamedGroupParameter& articArrayParam,
          dtUtil::NodeCollector& nodeCollector, dtGame::DeadReckoningHelper& deadReckoningHelper )
       {
          if(nodeCollector.GetTransformNodeMap().empty())
@@ -175,7 +175,7 @@ namespace SimCore
 
          for(;iter != toFill.end(); ++iter)
          {
-            if((*iter)->GetDataType() == dtDAL::DataType::GROUP)
+            if((*iter)->GetDataType() == dtCore::DataType::GROUP)
             {
                char switchLetter = (*iter)->GetName()[1]; // "ArticulatedPartMessageParam"
                if(switchLetter == 'r')

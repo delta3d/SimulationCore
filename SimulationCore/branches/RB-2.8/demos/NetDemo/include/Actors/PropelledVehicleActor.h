@@ -28,7 +28,7 @@
 #define PROPELLEDVEHICLEACTOR_H_
 
 #include <DemoExport.h>
-#include <dtDAL/propertymacros.h>
+#include <dtCore/propertymacros.h>
 #include <SimCore/Actors/FourWheelVehicleActor.h>
 #include <SimCore/FourWheelVehiclePhysicsHelper.h>
 #include <dtCore/particlesystem.h>

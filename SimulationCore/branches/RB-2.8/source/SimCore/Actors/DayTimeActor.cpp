@@ -23,7 +23,7 @@
 
 #include <prefix/SimCorePrefix.h>
 #include <SimCore/Actors/DayTimeActor.h>
-#include <dtDAL/enginepropertytypes.h>
+#include <dtCore/enginepropertytypes.h>
 #include <dtUtil/mathdefines.h>
 
 namespace SimCore
@@ -100,15 +100,15 @@ namespace SimCore
          DayTimeActor* actor = NULL;
          GetActor(actor);
 
-         AddProperty(new dtDAL::IntActorProperty("Time Of Day", "Time Of Day", 
-            dtDAL::IntActorProperty::SetFuncType(actor, &DayTimeActor::SetTime),
-            dtDAL::IntActorProperty::GetFuncType(actor, &DayTimeActor::GetTime),
+         AddProperty(new dtCore::IntActorProperty("Time Of Day", "Time Of Day", 
+            dtCore::IntActorProperty::SetFuncType(actor, &DayTimeActor::SetTime),
+            dtCore::IntActorProperty::GetFuncType(actor, &DayTimeActor::GetTime),
             "The time of day measured in milliseconds"));
 
-         AddProperty(new dtDAL::IntActorProperty("Prime Meridian Hour Offset", 
+         AddProperty(new dtCore::IntActorProperty("Prime Meridian Hour Offset", 
             "Prime Meridian Hour Offset", 
-            dtDAL::IntActorProperty::SetFuncType(actor, &DayTimeActor::SetPrimeMeridianHourOffset),
-            dtDAL::IntActorProperty::GetFuncType(actor, &DayTimeActor::GetPrimeMeridianHourOffset),
+            dtCore::IntActorProperty::SetFuncType(actor, &DayTimeActor::SetPrimeMeridianHourOffset),
+            dtCore::IntActorProperty::GetFuncType(actor, &DayTimeActor::GetPrimeMeridianHourOffset),
             "The time zone hour offset from the Prime Meridian"));
       }
 

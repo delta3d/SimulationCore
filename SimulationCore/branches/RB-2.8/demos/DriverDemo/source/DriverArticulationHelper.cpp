@@ -15,7 +15,7 @@
 // INCLUDE DIRECTIVES
 ////////////////////////////////////////////////////////////////////////////////
 #include <dtUtil/nodecollector.h>
-#include <dtDAL/namedparameter.h>
+#include <dtCore/namedparameter.h>
 #include <dtGame/deadreckoninghelper.h>
 #include <dtUtil/mathdefines.h>
 #include <SimCore/Actors/ControlStateActor.h>
@@ -55,10 +55,10 @@ namespace DriverDemo
    }
 
    ////////////////////////////////////////////////////////////////////////////////
-   dtCore::RefPtr<dtDAL::NamedGroupParameter> DriverArticulationHelper::BuildGroupProperty()
+   dtCore::RefPtr<dtCore::NamedGroupParameter> DriverArticulationHelper::BuildGroupProperty()
    {
-      dtCore::RefPtr<dtDAL::NamedGroupParameter> articArrayProp 
-         = new dtDAL::NamedGroupParameter( GetArticulationArrayPropertyName() );
+      dtCore::RefPtr<dtCore::NamedGroupParameter> articArrayProp 
+         = new dtCore::NamedGroupParameter( GetArticulationArrayPropertyName() );
 
       if( mDOFTurret.valid() )
       {

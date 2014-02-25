@@ -18,7 +18,7 @@
 #include <dtPhysics/physicsactcomp.h>
 //#include <NxAgeiaWorldComponent.h>
 //#include <NxAgeiaRaycastReport.h>
-#include <dtDAL/enginepropertytypes.h>
+#include <dtCore/enginepropertytypes.h>
 #include <dtABC/application.h>
 #include <dtAudio/audiomanager.h>
 #include <dtAudio/sound.h>
@@ -271,9 +271,9 @@ namespace NetDemo
       HoverVehicleActor* actor = NULL;
       GetActor(actor);
 
-      AddProperty(new dtDAL::BooleanActorProperty("VehicleIsTheTurret", "Vehicle Is The Turret",
-               dtDAL::BooleanActorProperty::SetFuncType(actor, &HoverVehicleActor::SetVehicleIsTurret),
-               dtDAL::BooleanActorProperty::GetFuncType(actor, &HoverVehicleActor::GetVehicleIsTurret),
+      AddProperty(new dtCore::BooleanActorProperty("VehicleIsTheTurret", "Vehicle Is The Turret",
+               dtCore::BooleanActorProperty::SetFuncType(actor, &HoverVehicleActor::SetVehicleIsTurret),
+               dtCore::BooleanActorProperty::GetFuncType(actor, &HoverVehicleActor::GetVehicleIsTurret),
                "True means the turret and the vehicle rotate together (unlike a HMMWV with a distinct turret).", VEH_GROUP));
    }
 

@@ -167,7 +167,7 @@ namespace SimCore
             CPPUNIT_ASSERT(constComp.GetProjectionDirection() == temp);
 
             // Test file properties - ensure no crashing on file-not-found
-            dtDAL::ResourceDescriptor file("Test/Test.tga"); // Not a real file.
+            dtCore::ResourceDescriptor file("Test/Test.tga"); // Not a real file.
             CPPUNIT_ASSERT(constComp.GetPatternTexture().IsEmpty());
             mActComp->SetPatternTexture(file);
             CPPUNIT_ASSERT(constComp.GetPatternTexture() == file);
@@ -211,7 +211,7 @@ namespace SimCore
             // Set some values to force uniform objects to be made.
             osg::Vec2 tmpV2;
             osg::Vec4 tmpV4;
-            dtDAL::ResourceDescriptor tmpFile("Fake/File.tga");
+            dtCore::ResourceDescriptor tmpFile("Fake/File.tga");
             actComp->SetPaintState(0);
             actComp->SetDiffuseFrameScale(1.0f);
             actComp->SetOverlayFrameScale(1.0f);
@@ -280,7 +280,7 @@ namespace SimCore
             mActComp->SetConcealShaderGroup("test");
             CPPUNIT_ASSERT(constComp.GetConcealShaderGroup() == "test");
 
-            dtDAL::ResourceDescriptor testFile("Fake.file");
+            dtCore::ResourceDescriptor testFile("Fake.file");
             CPPUNIT_ASSERT(constComp.GetConcealMesh().IsEmpty());
             mActComp->SetConcealMesh(testFile);
             CPPUNIT_ASSERT(constComp.GetConcealMesh() == testFile);

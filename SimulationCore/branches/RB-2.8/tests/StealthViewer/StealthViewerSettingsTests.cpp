@@ -36,7 +36,7 @@
 #include <SimCore/UnitEnums.h>
 #include <dtUtil/fileutils.h>
 #include <dtUtil/mathdefines.h>
-#include <dtDAL/project.h>
+#include <dtCore/project.h>
 #include <QtGui/QApplication>
 #include <QtCore/QStringList>
 #include <StealthViewer/Qt/StealthViewerData.h>

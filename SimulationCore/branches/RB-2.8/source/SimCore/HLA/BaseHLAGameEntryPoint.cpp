@@ -25,7 +25,7 @@
 
 #include <dtUtil/log.h>
 #include <dtCore/refptr.h>
-#include <dtDAL/project.h>
+#include <dtCore/project.h>
 
 #include <dtGame/gameapplication.h>
 
@@ -69,10 +69,10 @@ namespace SimCore
             gm.GetComponentByName(SimCore::HLA::HLAConnectionComponent::DEFAULT_NAME, hlaCC);
             if(hlaCC != NULL)
             {
-               const std::string fedMappingFile = dtDAL::Project::GetInstance().
-                  GetResourcePath(dtDAL::ResourceDescriptor(mFedMappingResource, mFedMappingResource));
-               const std::string fedFile = dtDAL::Project::GetInstance().
-                  GetResourcePath(dtDAL::ResourceDescriptor(mFedFileResource, mFedFileResource));
+               const std::string fedMappingFile = dtCore::Project::GetInstance().
+                  GetResourcePath(dtCore::ResourceDescriptor(mFedMappingResource, mFedMappingResource));
+               const std::string fedFile = dtCore::Project::GetInstance().
+                  GetResourcePath(dtCore::ResourceDescriptor(mFedFileResource, mFedFileResource));
 
                hlaCC->AddMap(GetMapName());
                hlaCC->SetConfigFile(fedMappingFile);

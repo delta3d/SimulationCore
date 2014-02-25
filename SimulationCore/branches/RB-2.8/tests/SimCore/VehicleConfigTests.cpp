@@ -26,8 +26,8 @@
 */
 #include <prefix/SimCorePrefix.h>
 #include <cppunit/extensions/HelperMacros.h>
-#include <dtDAL/project.h>
-#include <dtDAL/datatype.h>
+#include <dtCore/project.h>
+#include <dtCore/datatype.h>
 #include <dtGame/gamemanager.h> 
 
 #include <dtCore/system.h>
@@ -39,7 +39,7 @@
 #include <SimCore/Actors/EntityActorRegistry.h>
 
 #include <dtUtil/log.h>
-#include <dtDAL/map.h>
+#include <dtCore/map.h>
 #include <dtGame/message.h>
 #include <dtGame/basemessages.h>
 
@@ -104,26 +104,26 @@ void VehicleConfigTests::TestFunction()
 
    CPPUNIT_ASSERT(objActor.valid());
    
-   dtDAL::ResourceDescriptor rdTest("StaticMeshes:hazard_cone.ive");
+   dtCore::ResourceDescriptor rdTest("StaticMeshes:hazard_cone.ive");
 
    {
-      CPPUNIT_ASSERT_EQUAL(objActor->GetInsideModelResourceGood(), dtDAL::ResourceDescriptor::NULL_RESOURCE);
+      CPPUNIT_ASSERT_EQUAL(objActor->GetInsideModelResourceGood(), dtCore::ResourceDescriptor::NULL_RESOURCE);
       objActor->SetInsideModelResourceGood(rdTest);
-      const dtDAL::ResourceDescriptor& testAgainst = objActor->GetInsideModelResourceGood();
+      const dtCore::ResourceDescriptor& testAgainst = objActor->GetInsideModelResourceGood();
       CPPUNIT_ASSERT_EQUAL(rdTest, testAgainst);
    }
 
    {
-      CPPUNIT_ASSERT_EQUAL(objActor->GetInsideModelResourceDamaged(), dtDAL::ResourceDescriptor::NULL_RESOURCE);
+      CPPUNIT_ASSERT_EQUAL(objActor->GetInsideModelResourceDamaged(), dtCore::ResourceDescriptor::NULL_RESOURCE);
       objActor->SetInsideModelResourceDamaged(rdTest);
-      const dtDAL::ResourceDescriptor& testAgainst = objActor->GetInsideModelResourceDamaged();
+      const dtCore::ResourceDescriptor& testAgainst = objActor->GetInsideModelResourceDamaged();
       CPPUNIT_ASSERT_EQUAL(rdTest, testAgainst);
    }
 
    {
-      CPPUNIT_ASSERT_EQUAL(objActor->GetInsideModelResourceDestroyed(), dtDAL::ResourceDescriptor::NULL_RESOURCE);
+      CPPUNIT_ASSERT_EQUAL(objActor->GetInsideModelResourceDestroyed(), dtCore::ResourceDescriptor::NULL_RESOURCE);
       objActor->SetInsideModelResourceDestroyed(rdTest);
-      const dtDAL::ResourceDescriptor& testAgainst = objActor->GetInsideModelResourceDestroyed();
+      const dtCore::ResourceDescriptor& testAgainst = objActor->GetInsideModelResourceDestroyed();
       CPPUNIT_ASSERT_EQUAL(rdTest, testAgainst);
    }
 

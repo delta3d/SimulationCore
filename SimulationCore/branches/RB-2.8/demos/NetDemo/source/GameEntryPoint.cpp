@@ -22,7 +22,7 @@
 #include <SimCore/Components/ViewerMessageProcessor.h>
 #include <SimCore/Components/VolumeRenderingComponent.h>
 
-#include <dtDAL/project.h>
+#include <dtCore/project.h>
 
 #include <dtGame/gamemanager.h>
 #include <dtGame/gameapplication.h>
@@ -110,7 +110,7 @@ namespace NetDemo
       //gameAppComp->InitializeCommandLineOptionsAndRead(parser);
       // Load state transitions.
       const char pathSep = dtUtil::FileUtils::PATH_SEPARATOR;
-      gameAppComp->LoadTransitions(dtDAL::Project::GetInstance().GetContext()
+      gameAppComp->LoadTransitions(dtCore::Project::GetInstance().GetContext()
          + pathSep + "Transitions" + pathSep + "NetDemoTransitions.xml");
       gameAppComp->MakeCurrent( gameAppComp->GetCurrentState() );
 

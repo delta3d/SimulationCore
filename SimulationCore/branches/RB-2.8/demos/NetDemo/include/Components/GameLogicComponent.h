@@ -162,7 +162,7 @@ namespace NetDemo
          void HandleEntityActionMessage(const dtGame::Message& msg);
          void HandleClientConnected(const dtGame::Message& msg);
 
-         void CreatePrototypes(const dtDAL::ActorType& type);
+         void CreatePrototypes(const dtCore::ActorType& type);
 
          void HandleUnloadingState();
          void HandleGameRunningState();
@@ -223,7 +223,7 @@ namespace NetDemo
    bool GameLogicComponent::FindActor(const dtCore::UniqueId& actorId, T_Actor*& outActor)
    {
       // Get the actor to which the message refers.
-      dtDAL::ActorProxy* proxy = NULL;
+      dtCore::ActorProxy* proxy = NULL;
       GetGameManager()->FindActorById(actorId, proxy);
 
       if(proxy != NULL)

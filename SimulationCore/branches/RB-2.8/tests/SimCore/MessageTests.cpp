@@ -39,8 +39,8 @@
 #include <dtCore/deltawin.h>
 #include <dtUtil/nodecollector.h>
 
-#include <dtDAL/project.h>
-#include <dtDAL/map.h>
+#include <dtCore/project.h>
+#include <dtCore/map.h>
 
 #include <dtUtil/mathdefines.h>
 #include <dtUtil/macros.h>
@@ -322,9 +322,9 @@ class MessageTests : public CPPUNIT_NS::TestFixture
 
             if (useSubNode)
             {
-               dtDAL::ResourceDescriptor modelFile("StaticMeshes:T80:t80u_good.ive");
+               dtCore::ResourceDescriptor modelFile("StaticMeshes:T80:t80u_good.ive");
 
-               CPPUNIT_ASSERT_NO_THROW_MESSAGE("The T80 Model does not exist", dtDAL::Project::GetInstance().GetResourcePath(modelFile));
+               CPPUNIT_ASSERT_NO_THROW_MESSAGE("The T80 Model does not exist", dtCore::Project::GetInstance().GetResourcePath(modelFile));
 
                t80Proxy->SetNonDamagedResource(modelFile);
             }

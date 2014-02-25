@@ -28,9 +28,9 @@
 #include <prefix/SimCorePrefix.h>
 #include <SimCore/Actors/LogicOnEventActor.h>
 #include <SimCore/Actors/LogicConditionalActor.h>
-#include <dtDAL/enginepropertytypes.h>
-#include <dtDAL/arrayactorproperty.h>
-#include <dtDAL/namedparameter.h>
+#include <dtCore/enginepropertytypes.h>
+#include <dtCore/arrayactorproperty.h>
+#include <dtCore/namedparameter.h>
 #include <dtGame/message.h>
 #include <dtGame/messagefactory.h>
 #include <dtGame/basemessages.h>
@@ -91,13 +91,13 @@ namespace SimCore
       }
 
       /////////////////////////////////////////////////////////////////////////////
-      void LogicOnEventActor::SetEventToFire(dtDAL::GameEvent* pEvent)
+      void LogicOnEventActor::SetEventToFire(dtCore::GameEvent* pEvent)
       {
          mEventToFire = pEvent;
       }
 
       /////////////////////////////////////////////////////////////////////////////
-      dtDAL::GameEvent* LogicOnEventActor::GetEventToFire()
+      dtCore::GameEvent* LogicOnEventActor::GetEventToFire()
       {
          return mEventToFire.get();
       }
@@ -109,7 +109,7 @@ namespace SimCore
          if(message.GetMessageType() == dtGame::MessageType::INFO_GAME_EVENT)
          {
             const dtGame::GameEventMessage& gem = static_cast<const dtGame::GameEventMessage&>(message);
-            const dtDAL::GameEvent& gameEvent = *gem.GetGameEvent();
+            const dtCore::GameEvent& gameEvent = *gem.GetGameEvent();
 
             ProcessGameEvent( gameEvent );
          }
@@ -144,7 +144,7 @@ namespace SimCore
       }
 
       /////////////////////////////////////////////////////////////////////////////
-      void LogicOnEventActor::ProcessGameEvent(const dtDAL::GameEvent& gameEvent)
+      void LogicOnEventActor::ProcessGameEvent(const dtCore::GameEvent& gameEvent)
       {
          bool bMatchingEventFound = false;
          // Initial cumulative value of all children is true when using AND but False for OR
@@ -328,34 +328,34 @@ namespace SimCore
          LogicOnEventActor* actor = NULL;
          GetActor( actor );
 
-         AddProperty(new dtDAL::EnumActorProperty<LogicOnEventActorProxy::LogicTypeEnum>(
+         AddProperty(new dtCore::EnumActorProperty<LogicOnEventActorProxy::LogicTypeEnum>(
             PROPERTY_LOGIC_TYPE, PROPERTY_LOGIC_TYPE,
-            dtDAL::EnumActorProperty<LogicOnEventActorProxy::LogicTypeEnum>::SetFuncType
+            dtCore::EnumActorProperty<LogicOnEventActorProxy::LogicTypeEnum>::SetFuncType
                (actor, &LogicOnEventActor::SetLogicType),
-            dtDAL::EnumActorProperty<LogicOnEventActorProxy::LogicTypeEnum>::GetFuncType
+            dtCore::EnumActorProperty<LogicOnEventActorProxy::LogicTypeEnum>::GetFuncType
                (actor, &LogicOnEventActor::GetLogicType),
             PROP_LOGIC_TYPE_DESC, GROUP));
 
-         AddProperty(new dtDAL::GameEventActorProperty(*this, PROPERTY_EVENT_TO_FIRE, PROPERTY_EVENT_TO_FIRE, 
-            dtDAL::GameEventActorProperty::SetFuncType(actor, &LogicOnEventActor::SetEventToFire),
-            dtDAL::GameEventActorProperty::GetFuncType(actor, &LogicOnEventActor::GetEventToFire),
+         AddProperty(new dtCore::GameEventActorProperty(*this, PROPERTY_EVENT_TO_FIRE, PROPERTY_EVENT_TO_FIRE, 
+            dtCore::GameEventActorProperty::SetFuncType(actor, &LogicOnEventActor::SetEventToFire),
+            dtCore::GameEventActorProperty::GetFuncType(actor, &LogicOnEventActor::GetEventToFire),
             PROP_EVENT_TO_FIRE_DESC, GROUP));
 
 
          // The following 2 props go together. Part of the array thing.
          // A Conditional in the Conditional List
-         dtDAL::ActorIDActorProperty* actorProp = new dtDAL::ActorIDActorProperty(
+         dtCore::ActorIDActorProperty* actorProp = new dtCore::ActorIDActorProperty(
             *this, PROPERTY_CONDITION, PROPERTY_CONDITION,
-            dtDAL::ActorIDActorProperty::SetFuncType(actor, &LogicOnEventActor::SetChildConditional),
-            dtDAL::ActorIDActorProperty::GetFuncType(actor, &LogicOnEventActor::GetChildConditional),
+            dtCore::ActorIDActorProperty::SetFuncType(actor, &LogicOnEventActor::SetChildConditional),
+            dtCore::ActorIDActorProperty::GetFuncType(actor, &LogicOnEventActor::GetChildConditional),
             "SimCore::Logic::LogicConditionalActor", PROP_CONDITION_DESC, GROUP);
          // The Task List.
-         AddProperty(new dtDAL::ArrayActorProperty<dtCore::UniqueId>(
+         AddProperty(new dtCore::ArrayActorProperty<dtCore::UniqueId>(
             PROPERTY_CONDITIONALS, PROPERTY_CONDITIONALS, PROP_CONDITIONAL_LIST_DESC,
-            dtDAL::ArrayActorProperty<dtCore::UniqueId>::SetIndexFuncType(actor, &LogicOnEventActor::ConditionalArraySetIndex),
-            dtDAL::ArrayActorProperty<dtCore::UniqueId>::GetDefaultFuncType(actor, &LogicOnEventActor::ConditionalArrayGetDefault),
-            dtDAL::ArrayActorProperty<dtCore::UniqueId>::GetArrayFuncType(actor, &LogicOnEventActor::ConditionalArrayGetValue),
-            dtDAL::ArrayActorProperty<dtCore::UniqueId>::SetArrayFuncType(actor, &LogicOnEventActor::ConditionalArraySetValue),
+            dtCore::ArrayActorProperty<dtCore::UniqueId>::SetIndexFuncType(actor, &LogicOnEventActor::ConditionalArraySetIndex),
+            dtCore::ArrayActorProperty<dtCore::UniqueId>::GetDefaultFuncType(actor, &LogicOnEventActor::ConditionalArrayGetDefault),
+            dtCore::ArrayActorProperty<dtCore::UniqueId>::GetArrayFuncType(actor, &LogicOnEventActor::ConditionalArrayGetValue),
+            dtCore::ArrayActorProperty<dtCore::UniqueId>::SetArrayFuncType(actor, &LogicOnEventActor::ConditionalArraySetValue),
             actorProp, GROUP));
 
       }

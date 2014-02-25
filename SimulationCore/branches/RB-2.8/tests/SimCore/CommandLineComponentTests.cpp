@@ -28,8 +28,8 @@
 #include <cppunit/extensions/HelperMacros.h>
 #include <string>
 
-#include <dtDAL/project.h>
-#include <dtDAL/datatype.h>
+#include <dtCore/project.h>
+#include <dtCore/datatype.h>
 #include <dtGame/gamemanager.h> 
 
 #include <dtCore/system.h>
@@ -42,7 +42,7 @@
 #include <dtGame/basemessages.h>
 
 #include <SimCore/CommandLineObject.h>
-#include <dtDAL/namedparameter.h>
+#include <dtCore/namedparameter.h>
 
 #include <UnitTestMain.h>
 #include <dtABC/application.h>
@@ -101,7 +101,7 @@ void CommandLineComponentTests::TestFunction()
    dtCore::System::GetInstance().Step();
    CPPUNIT_ASSERT_MESSAGE("mCommandLineComponent not initialized", (mCommandLineObject != NULL));
    
-   dtCore::RefPtr<dtDAL::NamedStringParameter> pArAmEtEr = new dtDAL::NamedStringParameter("SimpleName", "lollerskatez_dont_fall_down");
+   dtCore::RefPtr<dtCore::NamedStringParameter> pArAmEtEr = new dtCore::NamedStringParameter("SimpleName", "lollerskatez_dont_fall_down");
    mCommandLineObject->AddParameter(pArAmEtEr.get());
 
    CPPUNIT_ASSERT(mCommandLineObject->GetParameter("SimpleName") != NULL);

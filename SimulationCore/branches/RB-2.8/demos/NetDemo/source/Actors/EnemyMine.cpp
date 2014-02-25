@@ -15,7 +15,7 @@
 #include <dtUtil/mswin.h>
 #include <Actors/EnemyMine.h>
 
-#include <dtDAL/enginepropertytypes.h>
+#include <dtCore/enginepropertytypes.h>
 //#include <NxAgeiaWorldComponent.h>
 //#include <NxAgeiaRaycastReport.h>
 //#include <dtABC/application.h>

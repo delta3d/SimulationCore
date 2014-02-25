@@ -29,10 +29,10 @@
 #include <dtGame/gamemanager.h>
 #include <dtGame/deadreckoningcomponent.h>
 
-#include <dtDAL/actorproperty.h>
-#include <dtDAL/enginepropertytypes.h>
-#include <dtDAL/project.h>
-#include <dtDAL/resourcedescriptor.h>
+#include <dtCore/actorproperty.h>
+#include <dtCore/enginepropertytypes.h>
+#include <dtCore/project.h>
+#include <dtCore/resourcedescriptor.h>
 
 #include <dtCore/system.h>
 #include <dtCore/scene.h>

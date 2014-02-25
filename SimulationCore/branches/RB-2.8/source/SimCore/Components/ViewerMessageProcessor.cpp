@@ -49,8 +49,8 @@
 
 #include <dtUtil/mathdefines.h>
 
-#include <dtDAL/project.h>
-#include <dtDAL/map.h>
+#include <dtCore/project.h>
+#include <dtCore/map.h>
 
 using dtCore::RefPtr;
 using SimCore::Actors::BaseEntityActorProxy;
@@ -82,13 +82,13 @@ namespace SimCore
          if (msg.GetMessageType() == dtGame::MessageType::INFO_MAP_LOADED)
          {
             dtGame::GameManager& gameManager = *GetGameManager();
-            std::vector<dtDAL::ActorProxy*> actors;
+            std::vector<dtCore::ActorProxy*> actors;
 
             //dtAnim::AnimationComponent* animComp = NULL;
             //gameManager.GetComponentByName(dtAnim::AnimationComponent::DEFAULT_NAME, animComp);
 
             // SET THE TERRAIN
-            dtDAL::BaseActorObject* terrainAO = NULL;
+            dtCore::BaseActorObject* terrainAO = NULL;
             gameManager.FindActorByName("Terrain", terrainAO);
             if (!HandleTerrainActor(terrainAO))
             {
@@ -114,7 +114,7 @@ namespace SimCore
 
             const dtGame::ActorUpdateMessage& updateMessage = static_cast<const dtGame::ActorUpdateMessage&> (msg);
             // SET THE TERRAIN
-            dtDAL::BaseActorObject* terrainAO = GetGameManager()->FindActorById(msg.GetAboutActorId());
+            dtCore::BaseActorObject* terrainAO = GetGameManager()->FindActorById(msg.GetAboutActorId());
             if (terrainAO != NULL && terrainAO->GetName() == "Terrain")
             {
                HandleTerrainActor(terrainAO);
@@ -129,7 +129,7 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////////
-      bool ViewerMessageProcessor::HandleTerrainActor(dtDAL::ActorProxy* terrainProxy)
+      bool ViewerMessageProcessor::HandleTerrainActor(dtCore::ActorProxy* terrainProxy)
       {
          bool result = false;
 
@@ -156,7 +156,7 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////////
-      void ViewerMessageProcessor::HandleWaterActor(dtDAL::ActorProxy* waterProxy)
+      void ViewerMessageProcessor::HandleWaterActor(dtCore::ActorProxy* waterProxy)
       {
          if (waterProxy != NULL)
          {
@@ -441,7 +441,7 @@ namespace SimCore
          {
          }
 
-         void operator()(dtDAL::ActorProxy& ap)
+         void operator()(dtCore::ActorProxy& ap)
          {
             SimCore::Actors::BaseEntityActorProxy* eap = dynamic_cast<SimCore::Actors::BaseEntityActorProxy*>(&ap);
             if (eap != NULL && dynamic_cast<SimCore::Actors::StealthActorProxy*>(eap) == NULL)

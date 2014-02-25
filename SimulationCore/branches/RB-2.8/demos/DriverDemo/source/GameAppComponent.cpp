@@ -19,7 +19,7 @@
 #include <dtGame/basemessages.h>
 #include <dtGame/message.h>
 #include <dtGame/actorupdatemessage.h>
-#include <dtDAL/enginepropertytypes.h>
+#include <dtCore/enginepropertytypes.h>
 #include <dtUtil/matrixutil.h>
 
 ///////////////////////////////////
@@ -117,15 +117,15 @@ namespace DriverDemo
       // Get the start heading for the player
       float heading = 0.0f;
       parser->read( "--startHeading", heading );
-      dtCore::RefPtr<dtDAL::NamedFloatParameter> paramHeading
-         = new dtDAL::NamedFloatParameter(CMD_LINE_START_HEADING, heading);
+      dtCore::RefPtr<dtCore::NamedFloatParameter> paramHeading
+         = new dtCore::NamedFloatParameter(CMD_LINE_START_HEADING, heading);
       commandLineObject->AddParameter(paramHeading.get());
 
       std::string prototypeName;
       if(parser->read("--" + CMD_LINE_VEHICLE_PROTOTYPE_NAME, prototypeName))
       {
-         dtCore::RefPtr<dtDAL::NamedStringParameter> parameter
-            = new dtDAL::NamedStringParameter(CMD_LINE_VEHICLE_PROTOTYPE_NAME, prototypeName);
+         dtCore::RefPtr<dtCore::NamedStringParameter> parameter
+            = new dtCore::NamedStringParameter(CMD_LINE_VEHICLE_PROTOTYPE_NAME, prototypeName);
          commandLineObject->AddParameter(parameter.get());
       }
       else
@@ -151,8 +151,8 @@ namespace DriverDemo
 
       // look up the prototype name from the command line args. If the user supplied one,
       // then we use that instead of the default.  This would be like "Hover_Vehicle" or "Wheeled_Vehicle"
-      const dtDAL::NamedStringParameter* vehiclePrototypeName
-         = dynamic_cast<const dtDAL::NamedStringParameter*>
+      const dtCore::NamedStringParameter* vehiclePrototypeName
+         = dynamic_cast<const dtCore::NamedStringParameter*>
          (commandLineObject->GetParameter(GameAppComponent::CMD_LINE_VEHICLE_PROTOTYPE_NAME));
       if( vehiclePrototypeName != NULL )
       {
@@ -160,14 +160,14 @@ namespace DriverDemo
       }
 
       // Find the vehicle template based on the name. The default is 'Driver_Vehicle'.
-      std::vector<dtDAL::ActorProxy*> toFill;
+      std::vector<dtCore::ActorProxy*> toFill;
       GetGameManager()->FindPrototypesByName(vehicleName, toFill);
 
 
       // CREATE OUR NEW VEHICLE
       if(!toFill.empty())
       {
-         dtCore::RefPtr<dtDAL::ActorProxy> ourActualActorProxy =
+         dtCore::RefPtr<dtCore::ActorProxy> ourActualActorProxy =
             GetGameManager()->CreateActorFromPrototype(toFill.front()->GetId());
          if(ourActualActorProxy != NULL)
          {
@@ -182,8 +182,8 @@ namespace DriverDemo
                GetGameManager()->AddActor(vehicle->GetGameActorProxy(), false, true);
 
                // Set the vehicle heading.
-               const dtDAL::NamedFloatParameter* paramHeading
-                  = dynamic_cast<const dtDAL::NamedFloatParameter*>
+               const dtCore::NamedFloatParameter* paramHeading
+                  = dynamic_cast<const dtCore::NamedFloatParameter*>
                   (commandLineObject->GetParameter(GameAppComponent::CMD_LINE_START_HEADING));
                if( paramHeading != NULL )
                {

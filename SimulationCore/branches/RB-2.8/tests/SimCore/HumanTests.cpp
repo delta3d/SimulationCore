@@ -37,10 +37,10 @@
 #include <dtGame/deadreckoningcomponent.h>
 #include <dtGame/actorupdatemessage.h>
 
-#include <dtDAL/actorproperty.h>
-#include <dtDAL/enginepropertytypes.h>
-#include <dtDAL/project.h>
-#include <dtDAL/resourcedescriptor.h>
+#include <dtCore/actorproperty.h>
+#include <dtCore/enginepropertytypes.h>
+#include <dtCore/project.h>
+#include <dtCore/resourcedescriptor.h>
 
 #include <dtCore/system.h>
 #include <dtCore/refptr.h>
@@ -121,7 +121,7 @@ class HumanTests : public CPPUNIT_NS::TestFixture
          SimCore::Actors::Human* human = NULL;
          mHumanAP->GetActor(human);
 
-         dtDAL::StringActorProperty* meshNameProp;
+         dtCore::StringActorProperty* meshNameProp;
          mHumanAP->GetProperty(SimCore::Actors::HumanActorProxy::PROPERTY_WEAPON_MESH, meshNameProp);
          CPPUNIT_ASSERT(meshNameProp != NULL);
 

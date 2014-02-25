@@ -30,7 +30,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include <SimCore/Export.h>
 #include <osg/Vec4>
-#include <dtDAL/resourcedescriptor.h>
+#include <dtCore/resourcedescriptor.h>
 #include <dtUtil/getsetmacros.h>
 #include <dtGame/actorcomponentbase.h>
 
@@ -92,8 +92,8 @@ namespace SimCore
             DT_DECLARE_ACCESSOR(osg::Vec4, PaintColor4);
             DT_DECLARE_ACCESSOR(osg::Vec4, PatternScale);
             DT_DECLARE_ACCESSOR(osg::Vec4, ProjectionDirection);
-            DT_DECLARE_ACCESSOR(dtDAL::ResourceDescriptor, ReplacementDiffuseMaskTexture);
-            DT_DECLARE_ACCESSOR(dtDAL::ResourceDescriptor, PatternTexture);
+            DT_DECLARE_ACCESSOR(dtCore::ResourceDescriptor, ReplacementDiffuseMaskTexture);
+            DT_DECLARE_ACCESSOR(dtCore::ResourceDescriptor, PatternTexture);
 
             ////////////////////////////////////////////////////////////////////
             // OVERRIDE METHODS - ActorComponent
@@ -140,12 +140,12 @@ namespace SimCore
 
             void SetUniform(osg::StateSet* ss, const std::string& uniformName, const osg::Vec4& value);
 
-            void SetUniform(osg::StateSet* ss, const std::string& uniformName, const dtDAL::ResourceDescriptor& value, int texUnit);
+            void SetUniform(osg::StateSet* ss, const std::string& uniformName, const dtCore::ResourceDescriptor& value, int texUnit);
 
             void SetProperty(osg::Vec4& propertyToSet, const osg::Vec4& value,
                osg::StateSet* stateSetToUpdate, const std::string& shaderParamName);
 
-            void SetProperty(dtDAL::ResourceDescriptor& propertyToSet, const dtDAL::ResourceDescriptor& value,
+            void SetProperty(dtCore::ResourceDescriptor& propertyToSet, const dtCore::ResourceDescriptor& value,
                osg::StateSet* stateSetToUpdate, const std::string& shaderParamName, int texUnit);
       };
 

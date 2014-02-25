@@ -37,7 +37,7 @@
 #include <dtUtil/mathdefines.h>
 #include <dtCore/system.h>
 #include <dtCore/observerptr.h>
-#include <dtDAL/enginepropertytypes.h>
+#include <dtCore/enginepropertytypes.h>
 #include <dtGame/gamemanager.h>
 #include <dtGame/deadreckoningcomponent.h>
 
@@ -105,7 +105,7 @@ namespace SimCore
                PositionMarker* pm = NULL;
                CreatePositionMarker(pmap, pm);
 
-               dtDAL::StringActorProperty* prop = NULL;
+               dtCore::StringActorProperty* prop = NULL;
                pmap->GetProperty(PositionMarkerActorProxy::PROPERTY_SOURCE_CALLSIGN, prop);
                static const std::string TEST_STRING("Silly");
                prop->FromString(TEST_STRING);
@@ -119,7 +119,7 @@ namespace SimCore
                PositionMarker* pm = NULL;
                CreatePositionMarker(pmap, pm);
 
-               dtDAL::AbstractEnumActorProperty* prop = NULL;
+               dtCore::AbstractEnumActorProperty* prop = NULL;
                pmap->GetProperty(PositionMarkerActorProxy::PROPERTY_SOURCE_FORCE, prop);
                prop->SetEnumValue(BaseEntityActorProxy::ForceEnum::INSURGENT);
                CPPUNIT_ASSERT(BaseEntityActorProxy::ForceEnum::INSURGENT == prop->GetEnumValue());
@@ -134,7 +134,7 @@ namespace SimCore
 
                CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("The alpha should default to 1.0", 1.0f, pm->GetInitialAlpha(), 0.001f);
 
-               dtDAL::FloatActorProperty* prop = NULL;
+               dtCore::FloatActorProperty* prop = NULL;
                pmap->GetProperty(PositionMarkerActorProxy::PROPERTY_INITIAL_ALPHA, prop);
                prop->SetValue(0.3f);
                CPPUNIT_ASSERT_DOUBLES_EQUAL(0.3f, prop->GetValue(), 0.001f);
@@ -154,7 +154,7 @@ namespace SimCore
                CreatePositionMarker(pmap, pm);
 
                CPPUNIT_ASSERT(!pm->GetDeleteOnFadeOut());
-               dtDAL::BooleanActorProperty* prop = NULL;
+               dtCore::BooleanActorProperty* prop = NULL;
                pmap->GetProperty(PositionMarkerActorProxy::PROPERTY_DELETE_ON_FADE_OUT, prop);
                prop->SetValue(true);
                CPPUNIT_ASSERT(prop->GetValue());
@@ -167,7 +167,7 @@ namespace SimCore
                PositionMarker* pm = NULL;
                CreatePositionMarker(pmap, pm);
 
-               dtDAL::AbstractEnumActorProperty* prop = NULL;
+               dtCore::AbstractEnumActorProperty* prop = NULL;
                pmap->GetProperty(PositionMarkerActorProxy::PROPERTY_SOURCE_SERVICE, prop);
                prop->SetEnumValue(BaseEntityActorProxy::ServiceEnum::NAVY);
                CPPUNIT_ASSERT(BaseEntityActorProxy::ServiceEnum::NAVY == prop->GetEnumValue());
@@ -250,7 +250,7 @@ namespace SimCore
                PositionMarker* pm = NULL;
                CreatePositionMarker(pmap, pm);
 
-               dtDAL::ColorRgbaActorProperty* prop = NULL;
+               dtCore::ColorRgbaActorProperty* prop = NULL;
                pmap->GetProperty(PositionMarkerActorProxy::PROPERTY_FRIENDLY_COLOR, prop);
                osg::Vec4 theColorF(1.2, 0.03, 0.33, 1.0);
                prop->SetValue(theColorF);
@@ -288,7 +288,7 @@ namespace SimCore
                PositionMarker* pm = NULL;
                CreatePositionMarker(pmap, pm);
 
-               dtDAL::ColorRgbaActorProperty* prop = NULL;
+               dtCore::ColorRgbaActorProperty* prop = NULL;
                pmap->GetProperty(PositionMarkerActorProxy::PROPERTY_MARKER_COLOR, prop);
                CPPUNIT_ASSERT(prop != NULL);
                CPPUNIT_ASSERT(prop->IsReadOnly());

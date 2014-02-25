@@ -27,7 +27,7 @@
 #include <dtUtil/datapathutils.h>
 #include <dtCore/scene.h>
 #include <dtCore/shaderprogram.h>
-#include <dtDAL/project.h>
+#include <dtCore/project.h>
 #include <dtGame/actorupdatemessage.h>
 #include <dtGame/basemessages.h>
 #include <dtGame/gmsettings.h>
@@ -321,11 +321,11 @@ namespace NetDemo
       GetGameManager()->GetScene().GetSceneNode()->addChild(guiOSGNode);
 #else
       mGUI = new dtGUI::GUI(app.GetCamera(), app.GetKeyboard(), app.GetMouse());
-      mGUI->SetResourceGroupDirectory("imagesets", dtDAL::Project::GetInstance().GetContext());
-      mGUI->SetResourceGroupDirectory("looknfeels", dtDAL::Project::GetInstance().GetContext());
-      mGUI->SetResourceGroupDirectory("layouts", dtDAL::Project::GetInstance().GetContext());
-      mGUI->SetResourceGroupDirectory("schemes", dtDAL::Project::GetInstance().GetContext());
-      mGUI->SetResourceGroupDirectory("fonts", dtDAL::Project::GetInstance().GetContext());
+      mGUI->SetResourceGroupDirectory("imagesets", dtCore::Project::GetInstance().GetContext());
+      mGUI->SetResourceGroupDirectory("looknfeels", dtCore::Project::GetInstance().GetContext());
+      mGUI->SetResourceGroupDirectory("layouts", dtCore::Project::GetInstance().GetContext());
+      mGUI->SetResourceGroupDirectory("schemes", dtCore::Project::GetInstance().GetContext());
+      mGUI->SetResourceGroupDirectory("fonts", dtCore::Project::GetInstance().GetContext());
       osg::Node* guiOSGNode = &mGUI->GetRootNode();
 #endif
 
@@ -409,7 +409,7 @@ namespace NetDemo
    /////////////////////////////////////////////////////////////////////////////
    void GUIComponent::ProcessActorUpdate(const dtGame::ActorUpdateMessage& updateMessage)
    {
-      const dtDAL::ActorType& actorType = *updateMessage.GetActorType();
+      const dtCore::ActorType& actorType = *updateMessage.GetActorType();
       const dtCore::UniqueId& actorId = updateMessage.GetAboutActorId();
 
       if(actorType == *NetDemoActorRegistry::PLAYER_STATUS_ACTOR_TYPE)
@@ -426,7 +426,7 @@ namespace NetDemo
       {
          // If one of the forts sent out an update, go through all the forts 
          // and display the most damaged, but not completed destroyed tower.
-         std::vector<dtDAL::ActorProxy*> fortActors;
+         std::vector<dtCore::ActorProxy*> fortActors;
          GetGameManager()->FindActorsByType(*NetDemoActorRegistry::FORT_ACTOR_TYPE, fortActors);
 
          float curRatio = 0.0f;

@@ -26,7 +26,7 @@
 #include <SimCore/Components/Conversations/Conversation.h>
 #include <SimCore/Components/Conversations/Response.h>
 
-#include <dtDAL/gameevent.h>
+#include <dtCore/gameevent.h>
 #include <map>
 
 //for xml loading
@@ -53,7 +53,7 @@ namespace SimCore
          public:
 
             typedef dtCore::RefPtr<Conversation> ConversationPtr;
-            typedef std::map<const dtDAL::GameEvent*, ConversationPtr> ConversationMap;
+            typedef std::map<const dtCore::GameEvent*, ConversationPtr> ConversationMap;
 
             static const std::string DEFAULT_NAME;
 
@@ -79,12 +79,12 @@ namespace SimCore
             /*virtual*/ void OnRemovedFromGM();
 
             void ClearData();
-            void SendGameEvent(const dtDAL::GameEvent* ge);
+            void SendGameEvent(const dtCore::GameEvent* ge);
             void SendInteractionChangedMessage(const Interaction* i);
             void SendConversationResponseMessage(const Response* r);
-            void SendGameEventToConversations(dtDAL::GameEvent* ge);
+            void SendGameEventToConversations(dtCore::GameEvent* ge);
             //called by class conversation
-            void RegisterConversation(dtDAL::GameEvent* ge, Conversation* conv);
+            void RegisterConversation(dtCore::GameEvent* ge, Conversation* conv);
 
          private:
 

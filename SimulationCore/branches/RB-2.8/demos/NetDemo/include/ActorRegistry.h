@@ -25,7 +25,7 @@
 #ifndef _DRIVER_ACTOR_REGISTRY_H_
 #define _DRIVER_ACTOR_REGISTRY_H_
 
-#include <dtDAL/actorpluginregistry.h>
+#include <dtCore/actorpluginregistry.h>
 #include <DemoExport.h>
 
 
@@ -34,24 +34,24 @@ namespace NetDemo
    /**
     * Class that exports the applicable actor proxies to a library
     */
-   class NETDEMO_EXPORT NetDemoActorRegistry : public dtDAL::ActorPluginRegistry
+   class NETDEMO_EXPORT NetDemoActorRegistry : public dtCore::ActorPluginRegistry
    {
       public:
 
-         static dtCore::RefPtr<dtDAL::ActorType> HOVER_VEHICLE_ACTOR_TYPE;
-         static dtCore::RefPtr<dtDAL::ActorType> PLAYER_STATUS_ACTOR_TYPE;
-         static dtCore::RefPtr<dtDAL::ActorType> SERVER_GAME_STATUS_ACTOR_TYPE;
-         static dtCore::RefPtr<dtDAL::ActorType> FORT_ACTOR_TYPE;
-         static dtCore::RefPtr<dtDAL::ActorType> TOWER_ACTOR_TYPE;
-         static dtCore::RefPtr<dtDAL::ActorType> ENEMY_DESCRIPTION_TYPE;
-         static dtCore::RefPtr<dtDAL::ActorType> ENEMY_MINE_ACTOR_TYPE;
-         static dtCore::RefPtr<dtDAL::ActorType> ENEMY_MOTHERSHIP_ACTOR_TYPE;
-         static dtCore::RefPtr<dtDAL::ActorType> ENEMY_HELIX_ACTOR_TYPE;
-         static dtCore::RefPtr<dtDAL::ActorType> LIGHT_TOWER_ACTOR_TYPE;
-         static dtCore::RefPtr<dtDAL::ActorType> FIREBALL_TOWER_ACTOR_TYPE;
-         static dtCore::RefPtr<dtDAL::ActorType> FIREBALL_ACTOR_TYPE;
+         static dtCore::RefPtr<dtCore::ActorType> HOVER_VEHICLE_ACTOR_TYPE;
+         static dtCore::RefPtr<dtCore::ActorType> PLAYER_STATUS_ACTOR_TYPE;
+         static dtCore::RefPtr<dtCore::ActorType> SERVER_GAME_STATUS_ACTOR_TYPE;
+         static dtCore::RefPtr<dtCore::ActorType> FORT_ACTOR_TYPE;
+         static dtCore::RefPtr<dtCore::ActorType> TOWER_ACTOR_TYPE;
+         static dtCore::RefPtr<dtCore::ActorType> ENEMY_DESCRIPTION_TYPE;
+         static dtCore::RefPtr<dtCore::ActorType> ENEMY_MINE_ACTOR_TYPE;
+         static dtCore::RefPtr<dtCore::ActorType> ENEMY_MOTHERSHIP_ACTOR_TYPE;
+         static dtCore::RefPtr<dtCore::ActorType> ENEMY_HELIX_ACTOR_TYPE;
+         static dtCore::RefPtr<dtCore::ActorType> LIGHT_TOWER_ACTOR_TYPE;
+         static dtCore::RefPtr<dtCore::ActorType> FIREBALL_TOWER_ACTOR_TYPE;
+         static dtCore::RefPtr<dtCore::ActorType> FIREBALL_ACTOR_TYPE;
 
-         static dtCore::RefPtr<dtDAL::ActorType> PROPELLED_VEHICLE_ACTOR_TYPE;
+         static dtCore::RefPtr<dtCore::ActorType> PROPELLED_VEHICLE_ACTOR_TYPE;
          /// Constructor
          NetDemoActorRegistry();
 

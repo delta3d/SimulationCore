@@ -27,9 +27,9 @@
 #include <SimCore/Actors/PagedTerrainPhysicsActor.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
 #include <SimCore/MessageType.h>
-#include <dtDAL/enginepropertytypes.h>
-#include <dtDAL/actorproxyicon.h>
-#include <dtDAL/project.h>
+#include <dtCore/enginepropertytypes.h>
+#include <dtCore/actorproxyicon.h>
+#include <dtCore/project.h>
 
 #include <dtUtil/fileutils.h>
 #include <dtUtil/log.h>
@@ -174,43 +174,43 @@ namespace SimCore
                   " uses the cull visitor to load in the background for paged terrains, and IMMEDIATE loads the physics immediately based on the"
                   " properties on this actor.");
 
-         AddProperty(new dtDAL::EnumActorProperty<TerrainPhysicsMode>(
+         AddProperty(new dtCore::EnumActorProperty<TerrainPhysicsMode>(
                  PROPERTY_TERRAIN_PHYSICS_MODE, PROPERTY_TERRAIN_PHYSICS_MODE,
-            dtDAL::EnumActorProperty<TerrainPhysicsMode>::SetFuncType(ta, &TerrainActor::SetTerrainPhysicsMode),
-            dtDAL::EnumActorProperty<TerrainPhysicsMode>::GetFuncType(ta, &TerrainActor::GetTerrainPhysicsMode),
+            dtCore::EnumActorProperty<TerrainPhysicsMode>::SetFuncType(ta, &TerrainActor::SetTerrainPhysicsMode),
+            dtCore::EnumActorProperty<TerrainPhysicsMode>::GetFuncType(ta, &TerrainActor::GetTerrainPhysicsMode),
             PROPERTY_TERRAIN_PHYSICS_MODE_DESC, GROUP_));
 
-         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::TERRAIN,
+         AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::TERRAIN,
             "TerrainMesh", "TerrainMesh",
-            dtDAL::ResourceActorProperty::SetFuncType(ta, &TerrainActor::LoadFile),
+            dtCore::ResourceActorProperty::SetFuncType(ta, &TerrainActor::LoadFile),
             "Loads in a terrain mesh for this object", GROUP_));
 
          static const dtUtil::RefString PROPERTY_LOAD_TERRAIN_MESH_WITH_CACHING("LoadTerrainMeshWithCaching");
-         AddProperty(new dtDAL::BooleanActorProperty(
+         AddProperty(new dtCore::BooleanActorProperty(
             PROPERTY_LOAD_TERRAIN_MESH_WITH_CACHING, PROPERTY_LOAD_TERRAIN_MESH_WITH_CACHING,
-            dtDAL::BooleanActorProperty::SetFuncType(ta, &TerrainActor::SetLoadTerrainMeshWithCaching),
-            dtDAL::BooleanActorProperty::GetFuncType(ta, &TerrainActor::GetLoadTerrainMeshWithCaching),
+            dtCore::BooleanActorProperty::SetFuncType(ta, &TerrainActor::SetLoadTerrainMeshWithCaching),
+            dtCore::BooleanActorProperty::GetFuncType(ta, &TerrainActor::GetLoadTerrainMeshWithCaching),
             "Enables OSG caching when loading the terrain mesh.", GROUP_));
 
-         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::STATIC_MESH,
+         AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::STATIC_MESH,
             "PhysicsModel", "PhysicsModel",
-            dtDAL::ResourceActorProperty::SetFuncType(ta, &TerrainActor::SetPhysicsModelFile),
+            dtCore::ResourceActorProperty::SetFuncType(ta, &TerrainActor::SetPhysicsModelFile),
             "Loads a SINGLE physics model file to use for collision.", GROUP_));
 
          static const dtUtil::RefString PROPERTY_PHYSICSDIRECTORY("PhysicsDirectory");
-         AddProperty(new dtDAL::StringActorProperty(PROPERTY_PHYSICSDIRECTORY, PROPERTY_PHYSICSDIRECTORY,
-            dtDAL::StringActorProperty::SetFuncType(ta, &TerrainActor::SetPhysicsDirectory),
-            dtDAL::StringActorProperty::GetFuncType(ta, &TerrainActor::GetPhysicsDirectory),
+         AddProperty(new dtCore::StringActorProperty(PROPERTY_PHYSICSDIRECTORY, PROPERTY_PHYSICSDIRECTORY,
+            dtCore::StringActorProperty::SetFuncType(ta, &TerrainActor::SetPhysicsDirectory),
+            dtCore::StringActorProperty::GetFuncType(ta, &TerrainActor::GetPhysicsDirectory),
             "The directory name of MULTIPLE physics model files to use for collision within the Terrains folder in your map project.", GROUP_));
 
       }
 
       /////////////////////////////////////////////////////////////////////////////
-      dtDAL::ActorProxyIcon* TerrainActorProxy::GetBillBoardIcon()
+      dtCore::ActorProxyIcon* TerrainActorProxy::GetBillBoardIcon()
       {
          if (!mBillBoardIcon.valid())
          {
-            mBillBoardIcon = new dtDAL::ActorProxyIcon("billboards/staticmesh.png");
+            mBillBoardIcon = new dtCore::ActorProxyIcon("billboards/staticmesh.png");
          }
 
          return mBillBoardIcon.get();
@@ -387,7 +387,7 @@ namespace SimCore
                {
                   try
                   {
-                     std::string fullDirPath = dtDAL::Project::GetInstance().GetContext() + "/Terrains/" + mPhysicsDirectory;
+                     std::string fullDirPath = dtCore::Project::GetInstance().GetContext() + "/Terrains/" + mPhysicsDirectory;
 
                      if(dtUtil::FileUtils::GetInstance().DirExists(fullDirPath))
                      {

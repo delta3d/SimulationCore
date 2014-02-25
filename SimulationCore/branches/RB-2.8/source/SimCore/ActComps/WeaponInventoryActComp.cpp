@@ -53,7 +53,7 @@ namespace SimCore
       , mWeaponSwapRootNode("dof_gun_01")
       , mWeaponHotSpotNode("hotspot_01")
       {
-         typedef dtDAL::PropertyRegHelper<WeaponInventoryActComp::WeaponDescription&, WeaponInventoryActComp::WeaponDescription> PropRegType;
+         typedef dtCore::PropertyRegHelper<WeaponInventoryActComp::WeaponDescription&, WeaponInventoryActComp::WeaponDescription> PropRegType;
          PropRegType propRegHelper(*this, this, "WeaponDescription");
 
          DT_REGISTER_PROPERTY(
@@ -77,7 +77,7 @@ namespace SimCore
             PropRegType, propRegHelper);
 
 
-         DT_REGISTER_RESOURCE_PROPERTY(dtDAL::DataType::PARTICLE_SYSTEM,
+         DT_REGISTER_RESOURCE_PROPERTY(dtCore::DataType::PARTICLE_SYSTEM,
                   FiringParticleSystem,
             "Firing Particle System",
             "The particle system to use for firing",
@@ -127,7 +127,7 @@ namespace SimCore
       void WeaponInventoryActComp::BuildPropertyMap()
       {
          static const dtUtil::RefString GROUPNAME("Weapon Inventory");
-         typedef dtDAL::PropertyRegHelper<WeaponInventoryActComp&, WeaponInventoryActComp> PropRegType;
+         typedef dtCore::PropertyRegHelper<WeaponInventoryActComp&, WeaponInventoryActComp> PropRegType;
          PropRegType propRegHelper(*this, this, GROUPNAME);
 
          static const dtUtil::RefString PROPERTY_WEAPONS("Weapons");

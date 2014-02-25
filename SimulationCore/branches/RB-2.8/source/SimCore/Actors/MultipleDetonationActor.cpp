@@ -38,9 +38,9 @@
 #include <dtCore/transform.h>
 #include <dtCore/batchisector.h>
 
-#include <dtDAL/enginepropertytypes.h>
-#include <dtDAL/project.h>
-#include <dtDAL/propertymacros.h>
+#include <dtCore/enginepropertytypes.h>
+#include <dtCore/project.h>
+#include <dtCore/propertymacros.h>
 
 #include <dtABC/application.h>
 
@@ -88,10 +88,10 @@ namespace SimCore
 
          static const dtUtil::RefString groupImpactEffects("Multiple Detonation Effects");
 
-         typedef dtDAL::PropertyRegHelper<MultipleDetonationActorProxy&, MultipleDetonationActor> RegHelperType;
+         typedef dtCore::PropertyRegHelper<MultipleDetonationActorProxy&, MultipleDetonationActor> RegHelperType;
          RegHelperType propReg(*this, da, groupImpactEffects);
 
-         DT_REGISTER_RESOURCE_PROPERTY(dtDAL::DataType::PARTICLE_SYSTEM, MultipleImpactEffect, "Multiple Impact Effect", 
+         DT_REGISTER_RESOURCE_PROPERTY(dtCore::DataType::PARTICLE_SYSTEM, MultipleImpactEffect, "Multiple Impact Effect", 
             "The particle system to spawn on impact.", RegHelperType, propReg);
 
          DT_REGISTER_PROPERTY(NumDetonations, "The number of individual detonations to spawn on impact.", RegHelperType, propReg);
