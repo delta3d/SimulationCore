@@ -28,8 +28,8 @@
        #include <osg/Node>
        #include <osg/Texture>
        #include <osgDB/Registry>
-       #include <dtDAL/enginepropertytypes.h>
-       #include <dtDAL/namedparameter.h>
+       #include <dtCore/enginepropertytypes.h>
+       #include <dtCore/namedparameter.h>
        #include <dtGame/gameactor.h>
        #include <dtCore/particlesystem.h>
      #else //_MSC_VER

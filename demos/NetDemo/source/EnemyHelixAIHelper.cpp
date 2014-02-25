@@ -31,8 +31,8 @@
 #include <dtUtil/matrixutil.h>
 #include <dtUtil/mathdefines.h>
 
-#include <dtDAL/functor.h>
-#include <dtDAL/enginepropertytypes.h>
+#include <dtCore/functor.h>
+#include <dtCore/enginepropertytypes.h>
 
 #include <dtPhysics/physicsobject.h>
 #include <dtPhysics/bodywrapper.h>

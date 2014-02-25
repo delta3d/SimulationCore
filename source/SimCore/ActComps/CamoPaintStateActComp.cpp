@@ -30,9 +30,9 @@
 #include <osgDB/ReadFile>
 #include <dtCore/shaderprogram.h>
 #include <dtCore/shadermanager.h>
-#include <dtDAL/enginepropertytypes.h>
-#include <dtDAL/propertymacros.h>
-#include <dtDAL/project.h>
+#include <dtCore/enginepropertytypes.h>
+#include <dtCore/propertymacros.h>
+#include <dtCore/project.h>
 #include <dtGame/gameactor.h>
 #include <dtGame/gamemanager.h>
 #include <osg/ComputeBoundsVisitor>
@@ -132,7 +132,7 @@ namespace SimCore
       DT_IMPLEMENT_ACCESSOR_GETTER(CamoPaintStateActComp, int, CamoId); // Setter is implemented below
       DT_IMPLEMENT_ACCESSOR_GETTER(CamoPaintStateActComp, bool, ConcealedState); // Setter is implemented below
       DT_IMPLEMENT_ACCESSOR_GETTER(CamoPaintStateActComp, osg::Vec4, ConcealMeshDims); // Setter is implemented below
-      DT_IMPLEMENT_ACCESSOR_GETTER(CamoPaintStateActComp, dtDAL::ResourceDescriptor, ConcealMesh); // Setter is implemented below
+      DT_IMPLEMENT_ACCESSOR_GETTER(CamoPaintStateActComp, dtCore::ResourceDescriptor, ConcealMesh); // Setter is implemented below
       DT_IMPLEMENT_ACCESSOR(CamoPaintStateActComp, std::string, ConcealShaderGroup);
 
       //////////////////////////////////////////////////////////////////////////
@@ -245,7 +245,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void CamoPaintStateActComp::SetConcealMesh(const dtDAL::ResourceDescriptor& file)
+      void CamoPaintStateActComp::SetConcealMesh(const dtCore::ResourceDescriptor& file)
       {
          bool changed = mConcealMesh != file;
          if(changed || ( ! mConcealMeshNode.valid() && ! file.IsEmpty()))
@@ -276,7 +276,7 @@ namespace SimCore
                   mOffsetNode->removeChildren(0,mOffsetNode->getNumChildren());
                }
 
-               std::string meshFile = dtDAL::Project::GetInstance().GetResourcePath(mConcealMesh);
+               std::string meshFile = dtCore::Project::GetInstance().GetResourcePath(mConcealMesh);
                mConcealMeshNode = osgDB::readNodeFile(meshFile);
 
                if(mConcealMeshNode.valid())
@@ -318,7 +318,7 @@ namespace SimCore
             dtGame::GameManager* gm = actor->GetGameActorProxy().GetGameManager();
             if(gm != NULL)
             {
-               dtDAL::ActorProxy* proxy = NULL;
+               dtCore::ActorProxy* proxy = NULL;
                gm->FindActorByType(*EntityActorRegistry::CAMO_CONFIG_ACTOR_TYPE, proxy);
 
                CamoConfigActor* actor = NULL;
@@ -360,7 +360,7 @@ namespace SimCore
                if(shaderGroupName.empty())
                {
                   // Find the shader group name applied to the owner.
-                  dtDAL::ActorProperty* shaderProp = NULL;
+                  dtCore::ActorProperty* shaderProp = NULL;
                   dtGame::GameActor* gameActor = dynamic_cast<dtGame::GameActor*>(GetOwner());
                   if(gameActor != NULL)
                   {
@@ -441,7 +441,7 @@ namespace SimCore
       {
          BaseClass::BuildPropertyMap();
 
-         typedef dtDAL::PropertyRegHelper<CamoPaintStateActComp&, CamoPaintStateActComp> PropRegType;
+         typedef dtCore::PropertyRegHelper<CamoPaintStateActComp&, CamoPaintStateActComp> PropRegType;
          PropRegType propRegHelper(*this, this, "Camo Paint Id");
 
          // INT PROPERTIES

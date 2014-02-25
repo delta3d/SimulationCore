@@ -26,7 +26,7 @@
 #include <SimCore/Actors/SimpleMovingShapeActor.h>
 #include <dtGame/gameactor.h>
 #include <dtGame/deadreckoninghelper.h>
-#include <dtDAL/propertymacros.h>
+#include <dtCore/propertymacros.h>
 #include <dtUtil/mathdefines.h>
 #include <dtGame/messagetype.h>
 #include <dtGame/messagefactory.h>
@@ -202,7 +202,7 @@ namespace SimCore
       {
          static const dtUtil::RefString GROUPNAME("SimpleMovingShape");
 
-         typedef dtDAL::PropertyRegHelper<SimpleMovingShapeActorProxy&, SimpleMovingShapeActorProxy> PropRegHelperType;
+         typedef dtCore::PropertyRegHelper<SimpleMovingShapeActorProxy&, SimpleMovingShapeActorProxy> PropRegHelperType;
          PropRegHelperType propRegHelper(*this, this, GROUPNAME);
 
          DT_REGISTER_PROPERTY_WITH_NAME(LastKnownDimension, PROPERTY_LAST_KNOWN_DIMENSIONS, 

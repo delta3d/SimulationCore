@@ -31,7 +31,7 @@
 #include <osgDB/ReadFile>
 #include <dtCore/shadermanager.h>
 #include <dtCore/shaderprogram.h>
-#include <dtDAL/project.h>
+#include <dtCore/project.h>
 #include "GUI/ButtonHighlight.h"
 
 
@@ -189,7 +189,7 @@ namespace NetDemo
                std::string filePath(imageFileName);
                try
                {
-                  filePath = dtDAL::Project::GetInstance().GetResourcePath(dtDAL::ResourceDescriptor(filePath));
+                  filePath = dtCore::Project::GetInstance().GetResourcePath(dtCore::ResourceDescriptor(filePath));
                   image = osgDB::readImageFile(filePath);
                   texture->setImage(image);
                   texture->setWrap(osg::Texture::WRAP_S, osg::Texture::REPEAT);

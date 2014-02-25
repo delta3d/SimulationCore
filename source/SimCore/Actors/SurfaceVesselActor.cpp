@@ -26,7 +26,7 @@
 #include <dtCore/shadermanager.h>
 #include <dtCore/particlesystem.h>
 #include <dtCore/transform.h>
-#include <dtDAL/enginepropertytypes.h>
+#include <dtCore/enginepropertytypes.h>
 #include <dtGame/gamemanager.h>
 #include <dtGame/invokable.h>
 #include <dtGame/basemessages.h>
@@ -82,52 +82,52 @@ namespace SimCore
          SurfaceVesselActor& actor = static_cast<SurfaceVesselActor&>(GetGameActor());
 
 
-         AddProperty(new dtDAL::BooleanActorProperty("WaterSpray Enabled", "WaterSpray Enabled",
-            dtDAL::BooleanActorProperty::SetFuncType(&actor, &SurfaceVesselActor::SetWaterSprayEnabled),
-            dtDAL::BooleanActorProperty::GetFuncType(&actor, &SurfaceVesselActor::GetWaterSprayEnabled),
+         AddProperty(new dtCore::BooleanActorProperty("WaterSpray Enabled", "WaterSpray Enabled",
+            dtCore::BooleanActorProperty::SetFuncType(&actor, &SurfaceVesselActor::SetWaterSprayEnabled),
+            dtCore::BooleanActorProperty::GetFuncType(&actor, &SurfaceVesselActor::GetWaterSprayEnabled),
             "Turns the WaterSpray particle system on or off", group));
 
-         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::PARTICLE_SYSTEM,
-            "WaterSprayFrontFile", "Water Spray Front File", dtDAL::ResourceActorProperty::SetFuncType(&actor, &SurfaceVesselActor::LoadWaterSprayFrontFile),
+         AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::PARTICLE_SYSTEM,
+            "WaterSprayFrontFile", "Water Spray Front File", dtCore::ResourceActorProperty::SetFuncType(&actor, &SurfaceVesselActor::LoadWaterSprayFrontFile),
             "Loads the particle system for the water spray effect on the front of the ship", group));
 
-         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::PARTICLE_SYSTEM,
-            "WaterSpraySideFile", "Water Spray Side File", dtDAL::ResourceActorProperty::SetFuncType(&actor, &SurfaceVesselActor::LoadWaterSpraySideFile),
+         AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::PARTICLE_SYSTEM,
+            "WaterSpraySideFile", "Water Spray Side File", dtCore::ResourceActorProperty::SetFuncType(&actor, &SurfaceVesselActor::LoadWaterSpraySideFile),
             "Loads the particle system for the water spray effect on the side of the ship", group));
 
-         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::PARTICLE_SYSTEM,
-            "WaterSprayBackFile", "Water Spray Back File", dtDAL::ResourceActorProperty::SetFuncType(&actor, &SurfaceVesselActor::LoadWaterSprayBackFile),
+         AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::PARTICLE_SYSTEM,
+            "WaterSprayBackFile", "Water Spray Back File", dtCore::ResourceActorProperty::SetFuncType(&actor, &SurfaceVesselActor::LoadWaterSprayBackFile),
             "Loads the particle system for the water spray effect on the back of the ship", group));
 
          
-         AddProperty(new dtDAL::Vec3ActorProperty("WaterSprayFrontOffset", "Water Spray Front Offset", 
-            dtDAL::Vec3ActorProperty::SetFuncType(&actor, &SurfaceVesselActor::SetWaterSprayFrontOffset),
-            dtDAL::Vec3ActorProperty::GetFuncType(&actor, &SurfaceVesselActor::GetWaterSprayFrontOffset),
+         AddProperty(new dtCore::Vec3ActorProperty("WaterSprayFrontOffset", "Water Spray Front Offset", 
+            dtCore::Vec3ActorProperty::SetFuncType(&actor, &SurfaceVesselActor::SetWaterSprayFrontOffset),
+            dtCore::Vec3ActorProperty::GetFuncType(&actor, &SurfaceVesselActor::GetWaterSprayFrontOffset),
             "The local offset on the starboard side to apply the water spray particle effect on the front of the ship.", group));
 
-         AddProperty(new dtDAL::Vec3ActorProperty("WaterSpraySideOffsetStarboard", "Water Spray Side Offset Starboard", 
-            dtDAL::Vec3ActorProperty::SetFuncType(&actor, &SurfaceVesselActor::SetWaterSpraySideOffsetStarboard),
-            dtDAL::Vec3ActorProperty::GetFuncType(&actor, &SurfaceVesselActor::GetWaterSpraySideOffsetStarboard),
+         AddProperty(new dtCore::Vec3ActorProperty("WaterSpraySideOffsetStarboard", "Water Spray Side Offset Starboard", 
+            dtCore::Vec3ActorProperty::SetFuncType(&actor, &SurfaceVesselActor::SetWaterSpraySideOffsetStarboard),
+            dtCore::Vec3ActorProperty::GetFuncType(&actor, &SurfaceVesselActor::GetWaterSpraySideOffsetStarboard),
             "The local offset on the starboard side to apply the water spray particle effect on the side of the ship.", group));
 
-         AddProperty(new dtDAL::Vec3ActorProperty("WaterSpraySideOffsetPort", "Water Spray Side Offset Port", 
-            dtDAL::Vec3ActorProperty::SetFuncType(&actor, &SurfaceVesselActor::SetWaterSpraySideOffsetPort),
-            dtDAL::Vec3ActorProperty::GetFuncType(&actor, &SurfaceVesselActor::GetWaterSpraySideOffsetPort),
+         AddProperty(new dtCore::Vec3ActorProperty("WaterSpraySideOffsetPort", "Water Spray Side Offset Port", 
+            dtCore::Vec3ActorProperty::SetFuncType(&actor, &SurfaceVesselActor::SetWaterSpraySideOffsetPort),
+            dtCore::Vec3ActorProperty::GetFuncType(&actor, &SurfaceVesselActor::GetWaterSpraySideOffsetPort),
             "The local offset on the port side to apply the water spray particle effect on the side of the ship.", group));
 
-         AddProperty(new dtDAL::Vec3ActorProperty("WaterSprayBackOffset", "Water Spray Back Offset", 
-            dtDAL::Vec3ActorProperty::SetFuncType(&actor, &SurfaceVesselActor::SetWaterSprayBackOffset),
-            dtDAL::Vec3ActorProperty::GetFuncType(&actor, &SurfaceVesselActor::GetWaterSprayBackOffset),
+         AddProperty(new dtCore::Vec3ActorProperty("WaterSprayBackOffset", "Water Spray Back Offset", 
+            dtCore::Vec3ActorProperty::SetFuncType(&actor, &SurfaceVesselActor::SetWaterSprayBackOffset),
+            dtCore::Vec3ActorProperty::GetFuncType(&actor, &SurfaceVesselActor::GetWaterSprayBackOffset),
             "The local offset on the back side to apply the water spray particle effect on the back of the ship.", group));
 
-         AddProperty(new dtDAL::FloatActorProperty(PROPERTY_SPRAY_VELOCITY_MIN, PROPERTY_SPRAY_VELOCITY_MIN, 
-            dtDAL::FloatActorProperty::SetFuncType(&actor, &SurfaceVesselActor::SetSprayVelocityMin),
-            dtDAL::FloatActorProperty::GetFuncType(&actor, &SurfaceVesselActor::GetSprayVelocityMin),
+         AddProperty(new dtCore::FloatActorProperty(PROPERTY_SPRAY_VELOCITY_MIN, PROPERTY_SPRAY_VELOCITY_MIN, 
+            dtCore::FloatActorProperty::SetFuncType(&actor, &SurfaceVesselActor::SetSprayVelocityMin),
+            dtCore::FloatActorProperty::GetFuncType(&actor, &SurfaceVesselActor::GetSprayVelocityMin),
             "The speed at which to start the water spray particle effect.", group));
 
-         AddProperty(new dtDAL::FloatActorProperty(PROPERTY_SPRAY_VELOCITY_MAX, PROPERTY_SPRAY_VELOCITY_MAX, 
-            dtDAL::FloatActorProperty::SetFuncType(&actor, &SurfaceVesselActor::SetSprayVelocityMax),
-            dtDAL::FloatActorProperty::GetFuncType(&actor, &SurfaceVesselActor::GetSprayVelocityMax),
+         AddProperty(new dtCore::FloatActorProperty(PROPERTY_SPRAY_VELOCITY_MAX, PROPERTY_SPRAY_VELOCITY_MAX, 
+            dtCore::FloatActorProperty::SetFuncType(&actor, &SurfaceVesselActor::SetSprayVelocityMax),
+            dtCore::FloatActorProperty::GetFuncType(&actor, &SurfaceVesselActor::GetSprayVelocityMax),
             "The speed at which to clamp the water spray particle systems' maximum effect.", group));
 
       }

@@ -26,7 +26,7 @@
 
 #include <DemoExport.h>
 #include <dtGame/gameactor.h>
-#include <dtDAL/propertycontainer.h>
+#include <dtCore/propertycontainer.h>
 
 #include <AIUtility.h>
 #include <Actors/EnemyDescriptionActor.h>
@@ -78,7 +78,7 @@ namespace NetDemo
       SpawnVolumeActorProxy();
       /*virtual*/ void BuildPropertyMap();
 
-      /*virtual*/ const dtDAL::BaseActorObject::RenderMode& GetRenderMode();
+      /*virtual*/ const dtCore::BaseActorObject::RenderMode& GetRenderMode();
 
       EnemyDescriptionActor* FindEnemyById(const EnemyDescriptionId& id);
       EnemyDescriptionActor* FindEnemyByName(const std::string& name);

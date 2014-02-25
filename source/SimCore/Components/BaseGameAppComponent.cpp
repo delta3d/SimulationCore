@@ -107,22 +107,22 @@ namespace SimCore
 
          if (parser->read("--projectPath", tempString))
          {
-            dtCore::RefPtr<dtDAL::NamedStringParameter> parameter
-               = new dtDAL::NamedStringParameter(CMD_LINE_PROJECTPATH, tempString);
+            dtCore::RefPtr<dtCore::NamedStringParameter> parameter
+               = new dtCore::NamedStringParameter(CMD_LINE_PROJECTPATH, tempString);
             mCommandLineObject->AddParameter(parameter.get());
          }
 
          if(parser->read("--statisticsInterval", tempInt))
          {
-            dtCore::RefPtr<dtDAL::NamedIntParameter> parameter
-               = new dtDAL::NamedIntParameter(CMD_LINE_STATISTICS_INTERVAL, tempInt);
+            dtCore::RefPtr<dtCore::NamedIntParameter> parameter
+               = new dtCore::NamedIntParameter(CMD_LINE_STATISTICS_INTERVAL, tempInt);
             mCommandLineObject->AddParameter(parameter.get());
          }
 
          if(parser->read("--mapName", tempString))
          {
-            dtCore::RefPtr<dtDAL::NamedStringParameter> parameter
-               = new dtDAL::NamedStringParameter(CMD_LINE_MAP_NAME, tempString);
+            dtCore::RefPtr<dtCore::NamedStringParameter> parameter
+               = new dtCore::NamedStringParameter(CMD_LINE_MAP_NAME, tempString);
             mCommandLineObject->AddParameter(parameter.get());
          }
       }
@@ -140,7 +140,7 @@ namespace SimCore
             // The BaseGameEntryPoint seems to pull mapname off of the command line options
             // so it usually isn't here by this time, but we will check as a last resort.
             SimCore::CommandLineObject* commandLineObject = GetCommandLineObject();
-            const dtDAL::NamedStringParameter* mapNameParam = dynamic_cast<const dtDAL::NamedStringParameter*>
+            const dtCore::NamedStringParameter* mapNameParam = dynamic_cast<const dtCore::NamedStringParameter*>
                (commandLineObject->GetParameter(CMD_LINE_MAP_NAME));
             if( mapNameParam != NULL )
             {

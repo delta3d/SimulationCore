@@ -31,7 +31,7 @@
 #include <osg/Node>
 #include <osg/Vec4>
 #include <dtUtil/getsetmacros.h>
-#include <dtDAL/resourcedescriptor.h>
+#include <dtCore/resourcedescriptor.h>
 #include <dtGame/gameactor.h>
 
 
@@ -57,8 +57,8 @@ namespace SimCore
             DT_DECLARE_ACCESSOR(osg::Vec4, Color2);
             DT_DECLARE_ACCESSOR(osg::Vec4, Color3);
             DT_DECLARE_ACCESSOR(osg::Vec4, Color4);
-            DT_DECLARE_ACCESSOR(dtDAL::ResourceDescriptor, PatternTexture);
-            DT_DECLARE_ACCESSOR(dtDAL::ResourceDescriptor, ConcealMesh);
+            DT_DECLARE_ACCESSOR(dtCore::ResourceDescriptor, PatternTexture);
+            DT_DECLARE_ACCESSOR(dtCore::ResourceDescriptor, ConcealMesh);
 
          protected:
             virtual ~CamoParams();
@@ -114,13 +114,13 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       // PROXY CODE
       //////////////////////////////////////////////////////////////////////////
-      class SIMCORE_EXPORT CamoConfigActorProxy : public dtDAL::ActorProxy
+      class SIMCORE_EXPORT CamoConfigActorProxy : public dtCore::ActorProxy
       {
          public:
             static const dtUtil::RefString CLASS_NAME;
             static const dtUtil::RefString PROPERTY_CONFIG_FILE;
 
-            typedef dtDAL::ActorProxy BaseClass;
+            typedef dtCore::ActorProxy BaseClass;
 
             CamoConfigActorProxy();
 

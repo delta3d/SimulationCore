@@ -30,11 +30,11 @@
 #include <SimCore/Export.h>
 #include <dtCore/deltadrawable.h>
 #include <dtCore/observerptr.h>
-#include <dtDAL/actorproxy.h>
+#include <dtCore/actorproxy.h>
 #include <osg/Group>
 
 
-namespace dtDAL
+namespace dtCore
 {
    class GameEvent;
 }
@@ -62,12 +62,12 @@ namespace SimCore
             virtual osg::Node* GetOSGNode();
             virtual const osg::Node* GetOSGNode() const;
 
-            void SetTrueEvent( dtDAL::GameEvent* gameEvent );
-            dtDAL::GameEvent* GetTrueEvent();
+            void SetTrueEvent( dtCore::GameEvent* gameEvent );
+            dtCore::GameEvent* GetTrueEvent();
 
             /// The False event can be checked to set it true.
-            void SetFalseEvent( dtDAL::GameEvent* gameEvent );
-            dtDAL::GameEvent* GetFalseEvent();
+            void SetFalseEvent( dtCore::GameEvent* gameEvent );
+            dtCore::GameEvent* GetFalseEvent();
 
             /* 
             * When created, IsTrue is a starting condition. Then, it is set 
@@ -81,8 +81,8 @@ namespace SimCore
 
          private:
             dtCore::RefPtr<osg::Group> mPlaceholderNode; // Required by Delta3D, but we don't need it.
-            dtCore::ObserverPtr<dtDAL::GameEvent> mTrueEvent;
-            dtCore::ObserverPtr<dtDAL::GameEvent> mFalseEvent;
+            dtCore::ObserverPtr<dtCore::GameEvent> mTrueEvent;
+            dtCore::ObserverPtr<dtCore::GameEvent> mFalseEvent;
             bool mIsTrue;
       };
 
@@ -91,7 +91,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       // PROXY CODE
       //////////////////////////////////////////////////////////////////////////
-      class SIMCORE_EXPORT LogicConditionalActorProxy : public dtDAL::ActorProxy
+      class SIMCORE_EXPORT LogicConditionalActorProxy : public dtCore::ActorProxy
       {
          public:
             static const dtUtil::RefString CLASS_NAME;
@@ -99,7 +99,7 @@ namespace SimCore
             static const dtUtil::RefString PROPERTY_FALSE_EVENT;
             static const dtUtil::RefString PROPERTY_IS_TRUE;
 
-            typedef dtDAL::ActorProxy BaseClass;
+            typedef dtCore::ActorProxy BaseClass;
 
             LogicConditionalActorProxy();
 

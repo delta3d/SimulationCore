@@ -18,7 +18,7 @@
 #include <dtPhysics/physicsobject.h>
 //#include <NxAgeiaWorldComponent.h>
 //#include <NxAgeiaRaycastReport.h>
-#include <dtDAL/enginepropertytypes.h>
+#include <dtCore/enginepropertytypes.h>
 #include <dtABC/application.h>
 #include <dtAudio/audiomanager.h>
 #include <dtAudio/sound.h>
@@ -170,7 +170,7 @@ namespace NetDemo
       float minDist = 200.0;
       dtCore::Transformable* enemy = NULL;
 
-      std::vector<dtDAL::ActorProxy*> actorArray;
+      std::vector<dtCore::ActorProxy*> actorArray;
       GetGameActorProxy().GetGameManager()->FindActorsByType(*NetDemoActorRegistry::ENEMY_MINE_ACTOR_TYPE, actorArray);
       //GetGameActorProxy().GetGameManager()->FindActorsByType(*NetDemoActorRegistry::ENEMY_HELIX_ACTOR_TYPE, actorArray);
 

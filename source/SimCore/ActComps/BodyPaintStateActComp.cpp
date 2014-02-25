@@ -27,8 +27,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include <prefix/SimCorePrefix.h>
 #include <osg/Texture2D>
-#include <dtDAL/enginepropertytypes.h>
-#include <dtDAL/propertymacros.h>
+#include <dtCore/enginepropertytypes.h>
+#include <dtCore/propertymacros.h>
 #include <dtGame/gameactor.h>
 #include <SimCore/ActComps/BodyPaintStateActComp.h>
 
@@ -93,7 +93,7 @@ namespace SimCore
       DT_IMPLEMENT_ACCESSOR_GETTER(BodyPaintStateActComp, float, PaintState); // Setter is implemented below
       DT_IMPLEMENT_ACCESSOR_GETTER(BodyPaintStateActComp, float, DiffuseFrameScale); // Setter is implemented below
       DT_IMPLEMENT_ACCESSOR_GETTER(BodyPaintStateActComp, float, OverlayFrameScale); // Setter is implemented below
-      DT_IMPLEMENT_ACCESSOR_GETTER(BodyPaintStateActComp, dtDAL::ResourceDescriptor, OverlayTexture); // Setter is implemented below
+      DT_IMPLEMENT_ACCESSOR_GETTER(BodyPaintStateActComp, dtCore::ResourceDescriptor, OverlayTexture); // Setter is implemented below
 
       //////////////////////////////////////////////////////////////////////////
       void BodyPaintStateActComp::SetPaintState(float state)
@@ -135,7 +135,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void BodyPaintStateActComp::SetOverlayTexture(const dtDAL::ResourceDescriptor& file)
+      void BodyPaintStateActComp::SetOverlayTexture(const dtCore::ResourceDescriptor& file)
       {
          SetProperty(mOverlayTexture, file, GetStateSet(), UNIFORM_OVERLAY_TEXTURE, 2);
       }
@@ -145,7 +145,7 @@ namespace SimCore
       {
          BaseClass::BuildPropertyMap();
 
-         typedef dtDAL::PropertyRegHelper<BodyPaintStateActComp&, BodyPaintStateActComp> PropRegType;
+         typedef dtCore::PropertyRegHelper<BodyPaintStateActComp&, BodyPaintStateActComp> PropRegType;
          PropRegType propRegHelper(*this, this, "Body Paint (States)");
 
          // VEC PROPERTIES
@@ -172,7 +172,7 @@ namespace SimCore
 
          // FILE PROPERTIES
          DT_REGISTER_RESOURCE_PROPERTY_WITH_NAME(
-            dtDAL::DataType::TEXTURE,
+            dtCore::DataType::TEXTURE,
             OverlayTexture,
             PROPERTY_OVERLAY_TEXTURE,
             PROPERTY_OVERLAY_TEXTURE,

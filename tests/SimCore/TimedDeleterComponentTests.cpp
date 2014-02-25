@@ -32,7 +32,7 @@
 #include <dtCore/scene.h>
 #include <dtCore/uniqueid.h>
 #include <dtCore/timer.h>
-#include <dtDAL/project.h>
+#include <dtCore/project.h>
 #include <dtGame/basemessages.h>
 #include <dtGame/message.h>
 #include <dtGame/messagetype.h>

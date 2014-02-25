@@ -31,7 +31,7 @@
 
 
 
-namespace dtDAL
+namespace dtCore
 {
    class GameEvent;
 }

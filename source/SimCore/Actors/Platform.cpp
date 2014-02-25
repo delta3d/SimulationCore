@@ -62,15 +62,15 @@
 #include <dtUtil/nodecollector.h>
 #include <dtCore/camera.h>
 
-#include <dtDAL/enginepropertytypes.h>
-#include <dtDAL/groupactorproperty.h>
-#include <dtDAL/actorproxyicon.h>
-#include <dtDAL/actortype.h>
-#include <dtDAL/namedparameter.h>
-#include <dtDAL/functor.h> // deprecated
-#include <dtDAL/propertymacros.h>
-#include <dtDAL/resourcedescriptor.h>
-#include <dtDAL/project.h> // to lookup resource.
+#include <dtCore/enginepropertytypes.h>
+#include <dtCore/groupactorproperty.h>
+#include <dtCore/actorproxyicon.h>
+#include <dtCore/actortype.h>
+#include <dtCore/namedparameter.h>
+#include <dtCore/functor.h> // deprecated
+#include <dtCore/propertymacros.h>
+#include <dtCore/resourcedescriptor.h>
+#include <dtCore/project.h> // to lookup resource.
 
 #include <dtUtil/boundingshapeutils.h>
 #include <dtUtil/log.h>
@@ -143,8 +143,8 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
-      DT_IMPLEMENT_ACCESSOR_GETTER(PlatformActorProxy, dtDAL::ResourceDescriptor, NonDamagedResource);
-      void PlatformActorProxy::SetNonDamagedResource(const dtDAL::ResourceDescriptor& rd)
+      DT_IMPLEMENT_ACCESSOR_GETTER(PlatformActorProxy, dtCore::ResourceDescriptor, NonDamagedResource);
+      void PlatformActorProxy::SetNonDamagedResource(const dtCore::ResourceDescriptor& rd)
       {
          mNonDamagedResource = rd;
          if (GetHasLoadedResources() || IsInSTAGE())
@@ -156,8 +156,8 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
-      DT_IMPLEMENT_ACCESSOR_GETTER(PlatformActorProxy, dtDAL::ResourceDescriptor, DamagedResource);
-      void PlatformActorProxy::SetDamagedResource(const dtDAL::ResourceDescriptor& rd)
+      DT_IMPLEMENT_ACCESSOR_GETTER(PlatformActorProxy, dtCore::ResourceDescriptor, DamagedResource);
+      void PlatformActorProxy::SetDamagedResource(const dtCore::ResourceDescriptor& rd)
       {
          mDamagedResource = rd;
          if (GetHasLoadedResources() || IsInSTAGE())
@@ -169,8 +169,8 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
-      DT_IMPLEMENT_ACCESSOR_GETTER(PlatformActorProxy, dtDAL::ResourceDescriptor, DestroyedResource);
-      void PlatformActorProxy::SetDestroyedResource(const dtDAL::ResourceDescriptor& rd)
+      DT_IMPLEMENT_ACCESSOR_GETTER(PlatformActorProxy, dtCore::ResourceDescriptor, DestroyedResource);
+      void PlatformActorProxy::SetDestroyedResource(const dtCore::ResourceDescriptor& rd)
       {
          mDestroyedResource = rd;
          if (GetHasLoadedResources() || IsInSTAGE())
@@ -200,76 +200,76 @@ namespace SimCore
       {
          Platform& plat = static_cast<Platform&>(GetGameActor());
 
-         typedef dtDAL::PropertyRegHelper<PlatformActorProxy&, Platform> PropRegType;
+         typedef dtCore::PropertyRegHelper<PlatformActorProxy&, Platform> PropRegType;
          PropRegType propRegHelper(*this, &plat, "Platform");
 
          BaseClass::BuildPropertyMap();
 
-         AddProperty(new dtDAL::ResourceActorProperty(dtDAL::DataType::STATIC_MESH,
+         AddProperty(new dtCore::ResourceActorProperty(dtCore::DataType::STATIC_MESH,
                PROPERTY_MESH_NON_DAMAGED_ACTOR,
                PROPERTY_MESH_NON_DAMAGED_ACTOR,
-               dtDAL::ResourceActorProperty::SetDescFuncType(this, &PlatformActorProxy::SetNonDamagedResource),
-               dtDAL::ResourceActorProperty::GetDescFuncType(this, &PlatformActorProxy::GetNonDamagedResource),
+               dtCore::ResourceActorProperty::SetDescFuncType(this, &PlatformActorProxy::SetNonDamagedResource),
+               dtCore::ResourceActorProperty::GetDescFuncType(this, &PlatformActorProxy::GetNonDamagedResource),
                "This is the model for a non damaged actor"));
 
-         AddProperty(new dtDAL::ResourceActorProperty(dtDAL::DataType::STATIC_MESH,
+         AddProperty(new dtCore::ResourceActorProperty(dtCore::DataType::STATIC_MESH,
                PROPERTY_MESH_DAMAGED_ACTOR,
                PROPERTY_MESH_DAMAGED_ACTOR,
-               dtDAL::ResourceActorProperty::SetDescFuncType(this, &PlatformActorProxy::SetDamagedResource),
-               dtDAL::ResourceActorProperty::GetDescFuncType(this, &PlatformActorProxy::GetDamagedResource),
+               dtCore::ResourceActorProperty::SetDescFuncType(this, &PlatformActorProxy::SetDamagedResource),
+               dtCore::ResourceActorProperty::GetDescFuncType(this, &PlatformActorProxy::GetDamagedResource),
                "This is the model for a damaged actor"));
 
-         AddProperty(new dtDAL::ResourceActorProperty(dtDAL::DataType::STATIC_MESH,
+         AddProperty(new dtCore::ResourceActorProperty(dtCore::DataType::STATIC_MESH,
                PROPERTY_MESH_DESTROYED_ACTOR,
                PROPERTY_MESH_DESTROYED_ACTOR,
-               dtDAL::ResourceActorProperty::SetDescFuncType(this, &PlatformActorProxy::SetDestroyedResource),
-               dtDAL::ResourceActorProperty::GetDescFuncType(this, &PlatformActorProxy::GetDestroyedResource),
+               dtCore::ResourceActorProperty::SetDescFuncType(this, &PlatformActorProxy::SetDestroyedResource),
+               dtCore::ResourceActorProperty::GetDescFuncType(this, &PlatformActorProxy::GetDestroyedResource),
                "This is the model for a destroyed actor"));
 
          static const dtUtil::RefString PROPERTY_MUZZLE_FLASH_POSITION("Muzzle Flash Position");
-         AddProperty(new dtDAL::Vec3ActorProperty(PROPERTY_MUZZLE_FLASH_POSITION,
+         AddProperty(new dtCore::Vec3ActorProperty(PROPERTY_MUZZLE_FLASH_POSITION,
             PROPERTY_MUZZLE_FLASH_POSITION,
-            dtDAL::Vec3ActorProperty::SetFuncType(&plat, &Platform::SetMuzzleFlashPosition),
-            dtDAL::Vec3ActorProperty::GetFuncType(&plat, &Platform::GetMuzzleFlashPosition),
+            dtCore::Vec3ActorProperty::SetFuncType(&plat, &Platform::SetMuzzleFlashPosition),
+            dtCore::Vec3ActorProperty::GetFuncType(&plat, &Platform::GetMuzzleFlashPosition),
             "Sets the muzzle flash position on an entity"));
 
          static const dtUtil::RefString PROPERTY_ARTICULATION_PARAM_ARRAY("Articulated Parameters Array");
-         AddProperty(new dtDAL::GroupActorProperty(PROPERTY_ARTICULATION_PARAM_ARRAY,
+         AddProperty(new dtCore::GroupActorProperty(PROPERTY_ARTICULATION_PARAM_ARRAY,
             PROPERTY_ARTICULATION_PARAM_ARRAY,
-            dtDAL::GroupActorProperty::SetFuncType(&plat, &Platform::SetArticulatedParametersArray),
-            dtDAL::GroupActorProperty::GetFuncType(&plat, &Platform::GetArticulatedParametersArray),
+            dtCore::GroupActorProperty::SetFuncType(&plat, &Platform::SetArticulatedParametersArray),
+            dtCore::GroupActorProperty::GetFuncType(&plat, &Platform::GetArticulatedParametersArray),
             "The list of articulated parameters for modifying DOF's", ""));
 
-         AddProperty(new dtDAL::BooleanActorProperty(PROPERTY_HEAD_LIGHTS_ENABLED,
+         AddProperty(new dtCore::BooleanActorProperty(PROPERTY_HEAD_LIGHTS_ENABLED,
             PROPERTY_HEAD_LIGHTS_ENABLED,
-            dtDAL::BooleanActorProperty::SetFuncType(&plat, &Platform::SetHeadLightsEnabled),
-            dtDAL::BooleanActorProperty::GetFuncType(&plat, &Platform::IsHeadLightsEnabled),
+            dtCore::BooleanActorProperty::SetFuncType(&plat, &Platform::SetHeadLightsEnabled),
+            dtCore::BooleanActorProperty::GetFuncType(&plat, &Platform::IsHeadLightsEnabled),
             "Determines if the entity has it head lights on or not."));
 
          static const dtUtil::RefString PROPERTY_SEAT_CONFIG_TABLE_NAME("VehiclesSeatConfigActorNameTable");
-         AddProperty(new dtDAL::StringActorProperty(PROPERTY_SEAT_CONFIG_TABLE_NAME,
+         AddProperty(new dtCore::StringActorProperty(PROPERTY_SEAT_CONFIG_TABLE_NAME,
             PROPERTY_SEAT_CONFIG_TABLE_NAME,
-            dtDAL::StringActorProperty::SetFuncType(&plat, &Platform::SetVehiclesSeatConfigActorName),
-            dtDAL::StringActorProperty::GetFuncType(&plat, &Platform::GetVehiclesSeatConfigActorName),
+            dtCore::StringActorProperty::SetFuncType(&plat, &Platform::SetVehiclesSeatConfigActorName),
+            dtCore::StringActorProperty::GetFuncType(&plat, &Platform::GetVehiclesSeatConfigActorName),
             "The Vehicle seat config option to coincide with the use of portals.",""));
 
          static const dtUtil::RefString PROPERTY_ENTITY_TYPE("EntityType");
-         AddProperty(new dtDAL::StringActorProperty(PROPERTY_ENTITY_TYPE,
+         AddProperty(new dtCore::StringActorProperty(PROPERTY_ENTITY_TYPE,
             PROPERTY_ENTITY_TYPE,
-            dtDAL::StringActorProperty::SetFuncType(&plat, &Platform::SetEntityType),
-            dtDAL::StringActorProperty::GetFuncType(&plat, &Platform::GetEntityType),
+            dtCore::StringActorProperty::SetFuncType(&plat, &Platform::SetEntityType),
+            dtCore::StringActorProperty::GetFuncType(&plat, &Platform::GetEntityType),
             "The type of the entity, such as HMMWVDrivingSim. Used to determine what behaviors this entity can have at runtime, such as embark, gunner, commander, ...", ""));
 
          static const dtUtil::RefString SOUND_PROPERTY_TYPE("Sounds");
 
-         AddProperty(new dtDAL::FloatActorProperty("MaxDistanceIdleSound", "MaxDistanceIdleSound",
-            dtDAL::FloatActorProperty::SetFuncType(&plat, &Platform::SetMaxDistanceIdleSound),
-            dtDAL::FloatActorProperty::GetFuncType(&plat, &Platform::GetMaxDistanceIdleSound),
+         AddProperty(new dtCore::FloatActorProperty("MaxDistanceIdleSound", "MaxDistanceIdleSound",
+            dtCore::FloatActorProperty::SetFuncType(&plat, &Platform::SetMaxDistanceIdleSound),
+            dtCore::FloatActorProperty::GetFuncType(&plat, &Platform::GetMaxDistanceIdleSound),
             "Distance for the sound", SOUND_PROPERTY_TYPE));
 
-         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::SOUND,
+         AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::SOUND,
             "mSFXSoundIdleEffect", "mSFXSoundIdleEffect",
-            dtDAL::ResourceActorProperty::SetFuncType(&plat, &Platform::SetSFXEngineIdleLoop),
+            dtCore::ResourceActorProperty::SetFuncType(&plat, &Platform::SetSFXEngineIdleLoop),
             "What is the filepath / string of the sound effect", SOUND_PROPERTY_TYPE));
 
          DT_REGISTER_PROPERTY_WITH_NAME_AND_LABEL(EngineSmokePos, PROPERTY_ENGINE_SMOKE_POSITION, "Engine Smoke Position",
@@ -278,20 +278,20 @@ namespace SimCore
          DT_REGISTER_PROPERTY_WITH_NAME_AND_LABEL(EngineSmokeOn, PROPERTY_ENGINE_SMOKE_ON, "Engine Smoke On",
                   "Enables engine smoke", PropRegType, propRegHelper);
          static const dtUtil::RefString PROPERTY_ENGINE_POSITION_DESC("Position of the engine in the vehicle");
-         dtDAL::Vec3ActorProperty *prop = new dtDAL::Vec3ActorProperty(PROPERTY_ENGINE_POSITION, PROPERTY_ENGINE_POSITION,
-                  dtDAL::Vec3ActorProperty::SetFuncType(),
-                  dtDAL::Vec3ActorProperty::GetFuncType(&plat, &Platform::GetEngineSmokePos),
+         dtCore::Vec3ActorProperty *prop = new dtCore::Vec3ActorProperty(PROPERTY_ENGINE_POSITION, PROPERTY_ENGINE_POSITION,
+                  dtCore::Vec3ActorProperty::SetFuncType(),
+                  dtCore::Vec3ActorProperty::GetFuncType(&plat, &Platform::GetEngineSmokePos),
                   PROPERTY_ENGINE_POSITION_DESC, "Platform");
 
          prop->SetReadOnly(true);
          AddProperty(prop);
 
-         dtCore::RefPtr<dtDAL::ResourceActorProperty> rp = new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::PARTICLE_SYSTEM,
+         dtCore::RefPtr<dtCore::ResourceActorProperty> rp = new dtCore::ResourceActorProperty(*this, dtCore::DataType::PARTICLE_SYSTEM,
             "Engine smoke particles", "Engine smoke particles",
-            dtDAL::ResourceActorProperty::SetFuncType(&plat, &Platform::SetEngineSmokeFile),
+            dtCore::ResourceActorProperty::SetFuncType(&plat, &Platform::SetEngineSmokeFile),
             "This is the file for engine smoke particles", "Platform");
 
-         dtDAL::ResourceDescriptor rdEngine("Particles:smoke.osg");
+         dtCore::ResourceDescriptor rdEngine("Particles:smoke.osg");
          rp->SetValue(rdEngine);
          AddProperty(rp.get());
       }
@@ -313,7 +313,7 @@ namespace SimCore
       /////////////////////////////////////////////////////////////////////////////
       void PlatformActorProxy::BuildActorComponents()
       {
-         const dtDAL::ActorType& at = GetActorType();
+         const dtCore::ActorType& at = GetActorType();
          if (at.InstanceOf(*EntityActorRegistry::GROUND_PLATFORM_ACTOR_TYPE))
          {
             if (!HasComponent(SimCore::ActComps::WheelActComp::TYPE))
@@ -376,11 +376,11 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
-      dtDAL::ActorProxyIcon* PlatformActorProxy::GetBillboardIcon()
+      dtCore::ActorProxyIcon* PlatformActorProxy::GetBillboardIcon()
       {
          if (!mBillboardIcon.valid())
          {
-            mBillboardIcon = new dtDAL::ActorProxyIcon(dtDAL::ActorProxyIcon::IMAGE_BILLBOARD_STATICMESH);
+            mBillboardIcon = new dtCore::ActorProxyIcon(dtCore::ActorProxyIcon::IMAGE_BILLBOARD_STATICMESH);
          }
 
          return mBillboardIcon.get();
@@ -811,7 +811,7 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
-      void Platform::LoadDamageableFile(const dtDAL::ResourceDescriptor& rd, PlatformActorProxy::DamageStateEnum& state)
+      void Platform::LoadDamageableFile(const dtCore::ResourceDescriptor& rd, PlatformActorProxy::DamageStateEnum& state)
       {
          std::string fileName;
 
@@ -819,7 +819,7 @@ namespace SimCore
          {
             try
             {
-                fileName = dtDAL::Project::GetInstance().GetResourcePath(rd);
+                fileName = dtCore::Project::GetInstance().GetResourcePath(rd);
             }
             catch (const dtCore::ProjectException& ex)
             {
@@ -1146,7 +1146,7 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
-      void Platform::SetArticulatedParametersArray(const dtDAL::NamedGroupParameter& newValue)
+      void Platform::SetArticulatedParametersArray(const dtCore::NamedGroupParameter& newValue)
       {
          if ( mArticHelper.valid() && GetNodeCollector() != NULL)
          {
@@ -1156,14 +1156,14 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
-      dtCore::RefPtr<dtDAL::NamedGroupParameter> Platform::GetArticulatedParametersArray()
+      dtCore::RefPtr<dtCore::NamedGroupParameter> Platform::GetArticulatedParametersArray()
       {
          if ( mArticHelper.valid() )
          {
             return mArticHelper->BuildGroupProperty();
          }
 
-         return new dtDAL::NamedGroupParameter(Components::ArticulationHelper::PROPERTY_NAME_ARTICULATED_ARRAY);
+         return new dtCore::NamedGroupParameter(Components::ArticulationHelper::PROPERTY_NAME_ARTICULATED_ARRAY);
       }
 
       ////////////////////////////////////////////////////////////////////////////////////

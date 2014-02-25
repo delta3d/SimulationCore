@@ -47,7 +47,7 @@ namespace dtUtil
    class NodeCollector;
 }
 
-namespace dtDAL
+namespace dtCore
 {
    class NamedGroupParameter;
 }
@@ -166,7 +166,7 @@ namespace SimCore
              * @return group parameter representing the articulation hierarchy.
              *         The returned group property is intended to be used by update messages.
              */
-            virtual dtCore::RefPtr<dtDAL::NamedGroupParameter> BuildGroupProperty() = 0;
+            virtual dtCore::RefPtr<dtCore::NamedGroupParameter> BuildGroupProperty() = 0;
 
             /**
              * Capture references to specific DOFs in a model.
@@ -245,7 +245,7 @@ namespace SimCore
              * @param deadReckoningHelper The object that is responsible for dead reckoning
              *        and the physical movement of the entity's DOFs.
              */
-            void HandleArticulatedParametersArray( const dtDAL::NamedGroupParameter& articArrayParam,
+            void HandleArticulatedParametersArray( const dtCore::NamedGroupParameter& articArrayParam,
                dtUtil::NodeCollector& nodeCollector, dtGame::DeadReckoningHelper& deadReckoningHelper );
 
             /**
@@ -288,7 +288,7 @@ namespace SimCore
              * @param dofParentName Name of the DOF that is the parent to the direct DOF, dofName
              */
             bool AddArticulatedParameter(
-               dtDAL::NamedGroupParameter& outArticArrayProp,
+               dtCore::NamedGroupParameter& outArticArrayProp,
                ArticulationMetricType& articulationType, 
                const std::string& paramName, 
                float value, unsigned valueChangeCount,

@@ -8,8 +8,8 @@
 #include <dtGame/messagetype.h>
 
 
-#include <dtDAL/enginepropertytypes.h>
-#include <dtDAL/project.h>
+#include <dtCore/enginepropertytypes.h>
+#include <dtCore/project.h>
 
 #include <dtUtil/functor.h>
 #include <dtUtil/log.h>
@@ -49,7 +49,7 @@ namespace SimCore
       {
          dtCore::RefPtr<osg::Node> original, copied;
          std::string resourceDesc("StaticMeshes:Hemisphere.ive");
-         std::string filename = dtDAL::Project::GetInstance().GetResourcePath(resourceDesc);
+         std::string filename = dtCore::Project::GetInstance().GetResourcePath(resourceDesc);
          if(!filename.empty())
          {
             IGActor::LoadFileStatic(filename, original, copied);
@@ -534,118 +534,118 @@ namespace SimCore
          GetActor(pm);
 
          static const dtUtil::RefString PROPERTY_SOURCE_FORCE_DESC("The force of the entity that reported this.");
-         AddProperty(new dtDAL::EnumActorProperty<BaseEntityActorProxy::ForceEnum>(
+         AddProperty(new dtCore::EnumActorProperty<BaseEntityActorProxy::ForceEnum>(
             PROPERTY_SOURCE_FORCE, PROPERTY_SOURCE_FORCE,
-            dtDAL::EnumActorProperty<BaseEntityActorProxy::ForceEnum>::SetFuncType(pm, &PositionMarker::SetSourceForce),
-            dtDAL::EnumActorProperty<BaseEntityActorProxy::ForceEnum>::GetFuncType(pm, &PositionMarker::GetSourceForce),
+            dtCore::EnumActorProperty<BaseEntityActorProxy::ForceEnum>::SetFuncType(pm, &PositionMarker::SetSourceForce),
+            dtCore::EnumActorProperty<BaseEntityActorProxy::ForceEnum>::GetFuncType(pm, &PositionMarker::GetSourceForce),
             PROPERTY_SOURCE_FORCE_DESC, POSITION_MARKER_GROUP));
 
          static const dtUtil::RefString PROPERTY_SOURCE_SERVICE_DESC("The service of the entity that reported this.");
-         AddProperty(new dtDAL::EnumActorProperty<BaseEntityActorProxy::ServiceEnum>(
+         AddProperty(new dtCore::EnumActorProperty<BaseEntityActorProxy::ServiceEnum>(
             PROPERTY_SOURCE_SERVICE, PROPERTY_SOURCE_SERVICE,
-            dtDAL::EnumActorProperty<BaseEntityActorProxy::ServiceEnum>::SetFuncType(pm, &PositionMarker::SetSourceService),
-            dtDAL::EnumActorProperty<BaseEntityActorProxy::ServiceEnum>::GetFuncType(pm, &PositionMarker::GetSourceService),
+            dtCore::EnumActorProperty<BaseEntityActorProxy::ServiceEnum>::SetFuncType(pm, &PositionMarker::SetSourceService),
+            dtCore::EnumActorProperty<BaseEntityActorProxy::ServiceEnum>::GetFuncType(pm, &PositionMarker::GetSourceService),
             PROPERTY_SOURCE_SERVICE_DESC, POSITION_MARKER_GROUP));
 
          static const dtUtil::RefString PROPERTY_SOURCE_CALLSIGN_DESC("The callsign of the entity that reported this.");
-         AddProperty(new dtDAL::StringActorProperty(
+         AddProperty(new dtCore::StringActorProperty(
             PROPERTY_SOURCE_CALLSIGN, PROPERTY_SOURCE_CALLSIGN,
-            dtDAL::StringActorProperty::SetFuncType(pm, &PositionMarker::SetSourceCallsign),
-            dtDAL::StringActorProperty::GetFuncType(pm, &PositionMarker::GetSourceCallsign),
+            dtCore::StringActorProperty::SetFuncType(pm, &PositionMarker::SetSourceCallsign),
+            dtCore::StringActorProperty::GetFuncType(pm, &PositionMarker::GetSourceCallsign),
             PROPERTY_SOURCE_CALLSIGN_DESC, POSITION_MARKER_GROUP));
 
          static const dtUtil::RefString PROPERTY_REPORT_TIME_DESC("The time the entity reported this.");
-         AddProperty(new dtDAL::DoubleActorProperty(
+         AddProperty(new dtCore::DoubleActorProperty(
             PROPERTY_REPORT_TIME, PROPERTY_REPORT_TIME,
-            dtDAL::DoubleActorProperty::SetFuncType(pm, &PositionMarker::SetReportTime),
-            dtDAL::DoubleActorProperty::GetFuncType(pm, &PositionMarker::GetReportTime),
+            dtCore::DoubleActorProperty::SetFuncType(pm, &PositionMarker::SetReportTime),
+            dtCore::DoubleActorProperty::GetFuncType(pm, &PositionMarker::GetReportTime),
             PROPERTY_REPORT_TIME_DESC, POSITION_MARKER_GROUP));
 
          static const dtUtil::RefString PROPERTY_FADE_OUT_TIME_DESC("The time in minutes it takes for the marker to fade out.");
-         AddProperty(new dtDAL::FloatActorProperty(
+         AddProperty(new dtCore::FloatActorProperty(
             PROPERTY_FADE_OUT_TIME, PROPERTY_FADE_OUT_TIME,
-            dtDAL::FloatActorProperty::SetFuncType(pm, &PositionMarker::SetFadeOutTime),
-            dtDAL::FloatActorProperty::GetFuncType(pm, &PositionMarker::GetFadeOutTime),
+            dtCore::FloatActorProperty::SetFuncType(pm, &PositionMarker::SetFadeOutTime),
+            dtCore::FloatActorProperty::GetFuncType(pm, &PositionMarker::GetFadeOutTime),
             PROPERTY_FADE_OUT_TIME_DESC, POSITION_MARKER_GROUP));
 
          static const dtUtil::RefString PROPERTY_STALE_TIME_DESC("The time in minutes it takes for the marker to become stale/old.");
-         AddProperty(new dtDAL::FloatActorProperty(
+         AddProperty(new dtCore::FloatActorProperty(
             PROPERTY_STALE_TIME, PROPERTY_STALE_TIME,
-            dtDAL::FloatActorProperty::SetFuncType(pm, &PositionMarker::SetStaleTime),
-            dtDAL::FloatActorProperty::GetFuncType(pm, &PositionMarker::GetStaleTime),
+            dtCore::FloatActorProperty::SetFuncType(pm, &PositionMarker::SetStaleTime),
+            dtCore::FloatActorProperty::GetFuncType(pm, &PositionMarker::GetStaleTime),
             PROPERTY_STALE_TIME_DESC, POSITION_MARKER_GROUP));
 
          static const dtUtil::RefString PROPERTY_DELETE_ON_FADE_OUT_DESC("Delete this position marker when actor fades out.");
-         AddProperty(new dtDAL::BooleanActorProperty(
+         AddProperty(new dtCore::BooleanActorProperty(
             PROPERTY_DELETE_ON_FADE_OUT, PROPERTY_DELETE_ON_FADE_OUT,
-            dtDAL::BooleanActorProperty::SetFuncType(pm, &PositionMarker::SetDeleteOnFadeOut),
-            dtDAL::BooleanActorProperty::GetFuncType(pm, &PositionMarker::GetDeleteOnFadeOut),
+            dtCore::BooleanActorProperty::SetFuncType(pm, &PositionMarker::SetDeleteOnFadeOut),
+            dtCore::BooleanActorProperty::GetFuncType(pm, &PositionMarker::GetDeleteOnFadeOut),
             PROPERTY_DELETE_ON_FADE_OUT_DESC, POSITION_MARKER_GROUP));
 
          static const dtUtil::RefString PROPERTY_ASSOCIATED_ENTITY_DESC("The entity this position marker represents.");
-         AddProperty(new dtDAL::ActorActorProperty(*this,
+         AddProperty(new dtCore::ActorActorProperty(*this,
             PROPERTY_ASSOCIATED_ENTITY, PROPERTY_ASSOCIATED_ENTITY,
-            dtDAL::ActorActorProperty::SetFuncType(this, &PositionMarkerActorProxy::SetAssociatedEntity),
-            dtDAL::ActorActorProperty::GetFuncType(),
+            dtCore::ActorActorProperty::SetFuncType(this, &PositionMarkerActorProxy::SetAssociatedEntity),
+            dtCore::ActorActorProperty::GetFuncType(),
             PROPERTY_ASSOCIATED_ENTITY_DESC, POSITION_MARKER_GROUP));
 
          static const dtUtil::RefString PROPERTY_MARKER_COLOR_DESC("The color of the marker.");
-         AddProperty(new dtDAL::ColorRgbaActorProperty(PROPERTY_MARKER_COLOR, PROPERTY_MARKER_COLOR,
-                  dtDAL::ColorRgbaActorProperty::SetFuncType(),
-                  dtDAL::ColorRgbaActorProperty::GetFuncType(pm, &PositionMarker::GetInitialColorWithAlpha),
+         AddProperty(new dtCore::ColorRgbaActorProperty(PROPERTY_MARKER_COLOR, PROPERTY_MARKER_COLOR,
+                  dtCore::ColorRgbaActorProperty::SetFuncType(),
+                  dtCore::ColorRgbaActorProperty::GetFuncType(pm, &PositionMarker::GetInitialColorWithAlpha),
                   PROPERTY_MARKER_COLOR_DESC, POSITION_MARKER_GROUP
          ));
          GetProperty(PROPERTY_MARKER_COLOR)->SetReadOnly(true);
 
          static const dtUtil::RefString PROPERTY_FRIENDLY_COLOR_DESC("The color if the force is friendly.");
-         AddProperty(new dtDAL::ColorRgbaActorProperty(PROPERTY_FRIENDLY_COLOR, PROPERTY_FRIENDLY_COLOR,
-                  dtDAL::ColorRgbaActorProperty::SetFuncType(pm, &PositionMarker::SetFriendlyColor),
-                  dtDAL::ColorRgbaActorProperty::GetFuncType(pm, &PositionMarker::GetFriendlyColor),
+         AddProperty(new dtCore::ColorRgbaActorProperty(PROPERTY_FRIENDLY_COLOR, PROPERTY_FRIENDLY_COLOR,
+                  dtCore::ColorRgbaActorProperty::SetFuncType(pm, &PositionMarker::SetFriendlyColor),
+                  dtCore::ColorRgbaActorProperty::GetFuncType(pm, &PositionMarker::GetFriendlyColor),
                   PROPERTY_FRIENDLY_COLOR_DESC, POSITION_MARKER_GROUP
          ));
 
          static const dtUtil::RefString PROPERTY_NEUTRAL_COLOR_DESC("The color if the force is neutral.");
-         AddProperty(new dtDAL::ColorRgbaActorProperty(PROPERTY_NEUTRAL_COLOR, PROPERTY_NEUTRAL_COLOR,
-                  dtDAL::ColorRgbaActorProperty::SetFuncType(pm, &PositionMarker::SetNeutralColor),
-                  dtDAL::ColorRgbaActorProperty::GetFuncType(pm, &PositionMarker::GetNeutralColor),
+         AddProperty(new dtCore::ColorRgbaActorProperty(PROPERTY_NEUTRAL_COLOR, PROPERTY_NEUTRAL_COLOR,
+                  dtCore::ColorRgbaActorProperty::SetFuncType(pm, &PositionMarker::SetNeutralColor),
+                  dtCore::ColorRgbaActorProperty::GetFuncType(pm, &PositionMarker::GetNeutralColor),
                   PROPERTY_NEUTRAL_COLOR_DESC, POSITION_MARKER_GROUP
          ));
 
          static const dtUtil::RefString PROPERTY_OPPOSING_COLOR_DESC("The color if the force is opposing or insurgent.");
-         AddProperty(new dtDAL::ColorRgbaActorProperty(PROPERTY_OPPOSING_COLOR, PROPERTY_OPPOSING_COLOR,
-                  dtDAL::ColorRgbaActorProperty::SetFuncType(pm, &PositionMarker::SetOpposingColor),
-                  dtDAL::ColorRgbaActorProperty::GetFuncType(pm, &PositionMarker::GetOpposingColor),
+         AddProperty(new dtCore::ColorRgbaActorProperty(PROPERTY_OPPOSING_COLOR, PROPERTY_OPPOSING_COLOR,
+                  dtCore::ColorRgbaActorProperty::SetFuncType(pm, &PositionMarker::SetOpposingColor),
+                  dtCore::ColorRgbaActorProperty::GetFuncType(pm, &PositionMarker::GetOpposingColor),
                   PROPERTY_OPPOSING_COLOR_DESC, POSITION_MARKER_GROUP
          ));
 
          static const dtUtil::RefString PROPERTY_OTHER_COLOR_DESC("The color if the force is other.");
-         AddProperty(new dtDAL::ColorRgbaActorProperty(PROPERTY_OTHER_COLOR, PROPERTY_OTHER_COLOR,
-                  dtDAL::ColorRgbaActorProperty::SetFuncType(pm, &PositionMarker::SetOtherColor),
-                  dtDAL::ColorRgbaActorProperty::GetFuncType(pm, &PositionMarker::GetOtherColor),
+         AddProperty(new dtCore::ColorRgbaActorProperty(PROPERTY_OTHER_COLOR, PROPERTY_OTHER_COLOR,
+                  dtCore::ColorRgbaActorProperty::SetFuncType(pm, &PositionMarker::SetOtherColor),
+                  dtCore::ColorRgbaActorProperty::GetFuncType(pm, &PositionMarker::GetOtherColor),
                   PROPERTY_OTHER_COLOR_DESC, POSITION_MARKER_GROUP
          ));
 
          static const dtUtil::RefString PROPERTY_STALE_COLOR_DESC("The color if the force is other.");
-         AddProperty(new dtDAL::ColorRgbaActorProperty(PROPERTY_STALE_COLOR, PROPERTY_STALE_COLOR,
-                  dtDAL::ColorRgbaActorProperty::SetFuncType(pm, &PositionMarker::SetStaleColor),
-                  dtDAL::ColorRgbaActorProperty::GetFuncType(pm, &PositionMarker::GetStaleColor),
+         AddProperty(new dtCore::ColorRgbaActorProperty(PROPERTY_STALE_COLOR, PROPERTY_STALE_COLOR,
+                  dtCore::ColorRgbaActorProperty::SetFuncType(pm, &PositionMarker::SetStaleColor),
+                  dtCore::ColorRgbaActorProperty::GetFuncType(pm, &PositionMarker::GetStaleColor),
                   PROPERTY_STALE_COLOR_DESC, POSITION_MARKER_GROUP
          ));
 
          static const dtUtil::RefString PROPERTY_ICON_IMAGE_DESC("This image represents the rough "
                   "type of the entity marked by this position.");
-         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::TEXTURE,
+         AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::TEXTURE,
                   PROPERTY_ICON_IMAGE, PROPERTY_ICON_IMAGE,
-                  dtDAL::ResourceActorProperty::SetFuncType(pm, &PositionMarker::LoadImage),
+                  dtCore::ResourceActorProperty::SetFuncType(pm, &PositionMarker::LoadImage),
                   PROPERTY_ICON_IMAGE_DESC, POSITION_MARKER_GROUP
          ));
 
          static const dtUtil::RefString PROPERTY_INITIAL_ALPHA_DESC("The initial alpha, i.e. transparency, of the marker."
                   "Valid values are 0.0 - 1.0 where 0.0 is invisible.");
-         AddProperty(new dtDAL::FloatActorProperty(
+         AddProperty(new dtCore::FloatActorProperty(
             PROPERTY_INITIAL_ALPHA, PROPERTY_INITIAL_ALPHA,
-            dtDAL::FloatActorProperty::SetFuncType(pm, &PositionMarker::SetInitialAlpha),
-            dtDAL::FloatActorProperty::GetFuncType(pm, &PositionMarker::GetInitialAlpha),
+            dtCore::FloatActorProperty::SetFuncType(pm, &PositionMarker::SetInitialAlpha),
+            dtCore::FloatActorProperty::GetFuncType(pm, &PositionMarker::GetInitialAlpha),
             PROPERTY_INITIAL_ALPHA_DESC, POSITION_MARKER_GROUP));
       }
 
@@ -662,7 +662,7 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////
-      void PositionMarkerActorProxy::SetAssociatedEntity(dtDAL::ActorProxy* assocEntity)
+      void PositionMarkerActorProxy::SetAssociatedEntity(dtCore::ActorProxy* assocEntity)
       {
          PositionMarker* pm = NULL;
          GetDrawable(pm);

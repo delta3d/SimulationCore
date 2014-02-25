@@ -30,7 +30,7 @@
 #include <SimCore/Actors/WeaponActor.h>
 #include <SimCore/CollisionGroupEnum.h>
 
-#include <dtDAL/enginepropertytypes.h>
+#include <dtCore/enginepropertytypes.h>
 
 #include <dtGame/basemessages.h>
 
@@ -587,14 +587,14 @@ namespace SimCore
          MunitionParticlesActor* actor = NULL;
          GetActor(actor);
 
-         AddProperty(new dtDAL::IntActorProperty("FrequencyOfTracers", "FrequencyOfTracers",
-                  dtDAL::IntActorProperty::SetFuncType(actor, &MunitionParticlesActor::SetFrequencyOfTracers),
-                  dtDAL::IntActorProperty::GetFuncType(actor, &MunitionParticlesActor::GetFrequencyOfTracers),
+         AddProperty(new dtCore::IntActorProperty("FrequencyOfTracers", "FrequencyOfTracers",
+                  dtCore::IntActorProperty::SetFuncType(actor, &MunitionParticlesActor::SetFrequencyOfTracers),
+                  dtCore::IntActorProperty::GetFuncType(actor, &MunitionParticlesActor::GetFrequencyOfTracers),
                   "", GROUP));
 
-         AddProperty(new dtDAL::BooleanActorProperty("UseTracers", "UseTracers",
-                  dtDAL::BooleanActorProperty::SetFuncType(actor, &MunitionParticlesActor::SetSystemToUseTracers),
-                  dtDAL::BooleanActorProperty::GetFuncType(actor, &MunitionParticlesActor::GetSystemToUseTracers),
+         AddProperty(new dtCore::BooleanActorProperty("UseTracers", "UseTracers",
+                  dtCore::BooleanActorProperty::SetFuncType(actor, &MunitionParticlesActor::SetSystemToUseTracers),
+                  dtCore::BooleanActorProperty::GetFuncType(actor, &MunitionParticlesActor::GetSystemToUseTracers),
                   "", GROUP));
       }
 

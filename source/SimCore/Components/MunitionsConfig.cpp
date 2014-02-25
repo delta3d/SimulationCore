@@ -37,7 +37,7 @@
 
 #include <dtCore/scene.h>
 
-#include <dtDAL/project.h>
+#include <dtCore/project.h>
 
 #include <SimCore/Components/DamageHelper.h>
 #include <SimCore/Components/MunitionsComponent.h>
@@ -115,7 +115,7 @@ namespace SimCore
          mXercesParser->setFeature(xercesc::XMLUni::fgXercesUseCachedGrammarInParse, true);
          mXercesParser->setFeature(xercesc::XMLUni::fgXercesCacheGrammarFromParse, true);
 
-         std::string schemaFileName = dtDAL::Project::GetInstance().GetResourcePath(dtDAL::ResourceDescriptor("Configs:MunitionsConfig.xsd"));
+         std::string schemaFileName = dtCore::Project::GetInstance().GetResourcePath(dtCore::ResourceDescriptor("Configs:MunitionsConfig.xsd"));
 
          if (!dtUtil::FileUtils::GetInstance().FileExists(schemaFileName))
          {

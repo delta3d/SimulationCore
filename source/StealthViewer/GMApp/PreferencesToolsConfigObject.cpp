@@ -271,7 +271,7 @@ namespace StealthGM
 
       if (binos != NULL && binos->IsEnabled())
       {
-         std::vector<dtDAL::ActorProxy*> proxies;
+         std::vector<dtCore::ActorProxy*> proxies;
          gameManager.FindActorsByName("Terrain", proxies);
          if (!proxies.empty())
          {

@@ -22,8 +22,8 @@
 */
 #include <prefix/SimCorePrefix.h>
 #include <SimCore/Actors/FireActor.h>
-#include <dtDAL/enginepropertytypes.h>
-#include <dtDAL/exceptionenum.h>
+#include <dtCore/enginepropertytypes.h>
+#include <dtCore/exceptionenum.h>
 
 namespace SimCore
 {
@@ -42,12 +42,12 @@ namespace SimCore
 
       }
 
-      dtDAL::ActorProxyIcon* FireActorProxy::GetBillBoardIcon()
+      dtCore::ActorProxyIcon* FireActorProxy::GetBillBoardIcon()
       {
          if(!mBillBoardIcon.valid())
          {
             mBillBoardIcon =
-               new dtDAL::ActorProxyIcon(dtDAL::ActorProxyIcon::IMAGE_BILLBOARD_PARTICLESYSTEM);
+               new dtCore::ActorProxyIcon(dtCore::ActorProxyIcon::IMAGE_BILLBOARD_PARTICLESYSTEM);
          }
 
          return mBillBoardIcon.get();
@@ -60,18 +60,18 @@ namespace SimCore
 
          LocalEffectActorProxy::BuildPropertyMap();
 
-         AddProperty(new dtDAL::BooleanActorProperty("Enable Fire", "Enable Fire", 
-            dtDAL::BooleanActorProperty::SetFuncType(fa, &FireActor::SetEnabled),
-            dtDAL::BooleanActorProperty::GetFuncType(fa, &FireActor::GetEnabled),
+         AddProperty(new dtCore::BooleanActorProperty("Enable Fire", "Enable Fire", 
+            dtCore::BooleanActorProperty::SetFuncType(fa, &FireActor::SetEnabled),
+            dtCore::BooleanActorProperty::GetFuncType(fa, &FireActor::GetEnabled),
             "Toggles the state of the particle system", "Fire"));
             
-         AddProperty(new dtDAL::FloatActorProperty("Light Range", "Light Range", 
-            dtDAL::FloatActorProperty::SetFuncType(fa, &FireActor::SetLightRange),
-            dtDAL::FloatActorProperty::GetFuncType(fa, &FireActor::GetLightRange),
+         AddProperty(new dtCore::FloatActorProperty("Light Range", "Light Range", 
+            dtCore::FloatActorProperty::SetFuncType(fa, &FireActor::SetLightRange),
+            dtCore::FloatActorProperty::GetFuncType(fa, &FireActor::GetLightRange),
             "Light range of the illumination of this fire"));
 
-         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::PARTICLE_SYSTEM, 
-            "Fire File", "Fire File", dtDAL::ResourceActorProperty::SetFuncType(this, &FireActorProxy::LoadFile),
+         AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::PARTICLE_SYSTEM, 
+            "Fire File", "Fire File", dtCore::ResourceActorProperty::SetFuncType(this, &FireActorProxy::LoadFile),
             "Loads the file of this particle system", "Fire"));
       }
 

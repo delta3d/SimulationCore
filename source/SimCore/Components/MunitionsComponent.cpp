@@ -33,8 +33,8 @@
 #include <dtCore/camera.h>
 #include <dtCore/transformable.h>
 #include <dtCore/scene.h>
-#include <dtDAL/project.h>
-#include <dtDAL/map.h>
+#include <dtCore/project.h>
+#include <dtCore/map.h>
 #include <dtGame/basemessages.h>
 #include <dtGame/deadreckoningcomponent.h>
 #include <dtGame/gamemanager.h>
@@ -218,8 +218,8 @@ namespace SimCore
          }
 
          // Find the specified file
-         std::string resourcePath = dtDAL::Project::GetInstance()
-            .GetResourcePath(dtDAL::ResourceDescriptor( munitionConfigPath ));
+         std::string resourcePath = dtCore::Project::GetInstance()
+            .GetResourcePath(dtCore::ResourceDescriptor( munitionConfigPath ));
          if( resourcePath.empty() )
          {
             std::stringstream ss;
@@ -341,7 +341,7 @@ namespace SimCore
          {
             InitMunitionTypeTable();
 
-            std::vector<dtDAL::ActorProxy*> terrains;
+            std::vector<dtCore::ActorProxy*> terrains;
             GetGameManager()->FindActorsByType( *SimCore::Actors::EntityActorRegistry::TERRAIN_ACTOR_TYPE, terrains );
 
             if( ! terrains.empty() )
@@ -674,7 +674,7 @@ namespace SimCore
          bool entityIsHuman = false;
          if( hitEntity )
          {
-            dtDAL::ActorProxy * targetProxy = GetGameManager()->FindActorById(message.GetAboutActorId());
+            dtCore::ActorProxy * targetProxy = GetGameManager()->FindActorById(message.GetAboutActorId());
             // Note - the mIsector here is kinda wonky cause it holds the terrain Drawable.
             // Change hitEntity to false if this is found to be the terrain actor.
             if(targetProxy != NULL)
@@ -959,7 +959,7 @@ namespace SimCore
             const dtCore::UniqueId frontId = mCreatedMunitionsQueue.front();
             mCreatedMunitionsQueue.pop_front();
 
-            dtDAL::ActorProxy *frontProxy = GetGameManager()->FindActorById(frontId);
+            dtCore::ActorProxy *frontProxy = GetGameManager()->FindActorById(frontId);
             if (frontProxy != NULL)
                GetGameManager()->DeleteActor(*frontProxy);
          }
@@ -1092,7 +1092,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void MunitionsComponent::InitMunitionTypeTable()
       {
-         std::vector<dtDAL::ActorProxy* > proxies;
+         std::vector<dtCore::ActorProxy* > proxies;
          GetGameManager()->FindActorsByType(*SimCore::Actors::EntityActorRegistry::MUNITION_TYPE_ACTOR_TYPE, proxies);
 
          // Declare variable for the loop
@@ -1100,7 +1100,7 @@ namespace SimCore
          unsigned int munitions = 0;
 
          // Populate the table with valid MunitionTypeActors
-         std::vector<dtDAL::ActorProxy*>::iterator iter = proxies.begin();
+         std::vector<dtCore::ActorProxy*>::iterator iter = proxies.begin();
          for( ; iter != proxies.end(); ++iter )
          {
             curProxy = dynamic_cast<SimCore::Actors::MunitionTypeActorProxy*> (*iter);
@@ -1118,10 +1118,10 @@ namespace SimCore
       void MunitionsComponent::ConvertMunitionInfoActorsToDetonationActors(const std::string& mapName)
       {
          // Load the map file
-         dtDAL::Map* map = NULL;
+         dtCore::Map* map = NULL;
          try
          {
-            map = &dtDAL::Project::GetInstance().GetMap(mapName);
+            map = &dtCore::Project::GetInstance().GetMap(mapName);
          }
          catch(const dtUtil::Exception &e)
          {
@@ -1138,14 +1138,14 @@ namespace SimCore
          InfoToIdMap effectMapping;
 
          //now iterate through all the munition info's
-         dtDAL::Map& actorMap = *map;
-         std::vector<dtCore::RefPtr<dtDAL::ActorProxy> > proxies;
+         dtCore::Map& actorMap = *map;
+         std::vector<dtCore::RefPtr<dtCore::ActorProxy> > proxies;
          actorMap.GetAllProxies(proxies);
 
          dtCore::RefPtr<SimCore::Actors::MunitionEffectsInfoActorProxy> infoProxy = NULL;
 
          // Populate the table with valid MunitionTypeActors
-         std::vector<dtCore::RefPtr<dtDAL::ActorProxy> >::iterator iter = proxies.begin();
+         std::vector<dtCore::RefPtr<dtCore::ActorProxy> >::iterator iter = proxies.begin();
          for(; iter != proxies.end(); ++iter)
          {
             infoProxy = dynamic_cast<SimCore::Actors::MunitionEffectsInfoActorProxy*>(iter->get());
@@ -1185,7 +1185,7 @@ namespace SimCore
             }
          }
 
-         dtDAL::Project::GetInstance().SaveMap(*map);
+         dtCore::Project::GetInstance().SaveMap(*map);
          proxies.clear();
       }
 
@@ -1198,7 +1198,7 @@ namespace SimCore
          detonationActor.SetName(infoActor.GetName());
          detonationProxy.SetInitialOwnership(dtGame::GameActorProxy::Ownership::PROTOTYPE);
          
-         dtDAL::ResourceDescriptor desc;
+         dtCore::ResourceDescriptor desc;
          
          desc = infoProxy.GetResource("Ground Impact Effect");
          detonationActor.SetGroundImpactEffect(desc);

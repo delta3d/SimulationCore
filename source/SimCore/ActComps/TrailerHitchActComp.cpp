@@ -38,7 +38,7 @@
 
 #include <dtUtil/nodecollector.h>
 #include <dtUtil/matrixutil.h>
-#include <dtDAL/propertymacros.h>
+#include <dtCore/propertymacros.h>
 
 #include <dtGame/gamemanager.h>
 
@@ -88,7 +88,7 @@ namespace SimCore
 
       void TrailerHitchActComp::BuildPropertyMap()
       {
-         typedef dtDAL::PropertyRegHelper<TrailerHitchActComp&, TrailerHitchActComp> PropRegType;
+         typedef dtCore::PropertyRegHelper<TrailerHitchActComp&, TrailerHitchActComp> PropRegType;
          PropRegType propRegHelper(*this, this, "Trailer Hitch");
 
          DT_REGISTER_PROPERTY(
@@ -346,7 +346,7 @@ namespace SimCore
 
          SimCore::Actors::IGActor* igDraw = NULL;
          GetOwner(igDraw);
-         dtDAL::BaseActorObject* actor = igDraw->GetGameActorProxy().GetGameManager()->FindActorById(mTrailerActorId);
+         dtCore::BaseActorObject* actor = igDraw->GetGameActorProxy().GetGameManager()->FindActorById(mTrailerActorId);
          if (actor != NULL)
          {
             return dynamic_cast<SimCore::Actors::IGActor*>(actor->GetDrawable());

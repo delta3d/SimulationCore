@@ -30,7 +30,7 @@
 #include <DemoExport.h>
 #include <EnemyAIHelper.h>
  
-#include <dtDAL/propertymacros.h>
+#include <dtCore/propertymacros.h>
 #include <dtAI/controllable.h>
 #include <dtAI/steeringbehavior.h>
 #include <dtAI/steeringpipeline.h>

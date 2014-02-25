@@ -19,7 +19,7 @@
 #include <HoverExplodingTargetActor.h>
 #include <HoverVehiclePhysicsHelper.h>
 #include <dtPhysics/physicsactcomp.h>
-#include <dtDAL/enginepropertytypes.h>
+#include <dtCore/enginepropertytypes.h>
 #include <dtABC/application.h>
 #include <dtAudio/audiomanager.h>
 #include <dtAudio/sound.h>

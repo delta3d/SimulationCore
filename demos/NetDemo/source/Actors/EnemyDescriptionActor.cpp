@@ -26,12 +26,12 @@
 #include <dtUtil/mswin.h>
 #include <Actors/EnemyDescriptionActor.h>
 
-#include <dtDAL/enginepropertytypes.h>
+#include <dtCore/enginepropertytypes.h>
 #include <dtGame/basemessages.h>
 #include <dtGame/gamemanager.h>
 #include <dtGame/actorupdatemessage.h>
 #include <dtUtil/mathdefines.h>
-#include <dtDAL/propertymacros.h>
+#include <dtCore/propertymacros.h>
 
 namespace NetDemo
 {
@@ -73,9 +73,9 @@ namespace NetDemo
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
-   void EnemyDescriptionActor::EnemySpawnInfo::RegisterProperties(dtDAL::PropertyContainer& pc, const std::string& group)
+   void EnemyDescriptionActor::EnemySpawnInfo::RegisterProperties(dtCore::PropertyContainer& pc, const std::string& group)
    {
-      typedef dtDAL::PropertyRegHelper<dtDAL::PropertyContainer&, value_type> RegHelperType;
+      typedef dtCore::PropertyRegHelper<dtCore::PropertyContainer&, value_type> RegHelperType;
       RegHelperType propReg(pc, this, group);
 
       DT_REGISTER_PROPERTY(LastSpawnTime, "The total amount SimTime that has past since the last spawn.", RegHelperType, propReg);
@@ -86,9 +86,9 @@ namespace NetDemo
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
-   void EnemyDescriptionActor::EnemySpawnInfo::RegisterProperties(dtDAL::ContainerActorProperty& pc, const std::string& group)
+   void EnemyDescriptionActor::EnemySpawnInfo::RegisterProperties(dtCore::ContainerActorProperty& pc, const std::string& group)
    {
-      typedef dtDAL::PropertyRegHelper<dtDAL::ContainerActorProperty&, value_type> RegHelperType;
+      typedef dtCore::PropertyRegHelper<dtCore::ContainerActorProperty&, value_type> RegHelperType;
       RegHelperType propReg(pc, this, group);
 
       DT_REGISTER_PROPERTY(LastSpawnTime, "The total amount SimTime that has past since the last spawn.", RegHelperType, propReg);
@@ -146,9 +146,9 @@ namespace NetDemo
       GetActor(actor);
 
       static const dtUtil::RefString PROP_ENEMY_TYPE_DESC("Indicates the enemy type.");
-      AddProperty(new dtDAL::EnumActorProperty<EnemyDescriptionActor::EnemyType>(PROP_ENEMY_TYPE, PROP_ENEMY_TYPE,
-               dtDAL::EnumActorProperty<EnemyDescriptionActor::EnemyType>::SetFuncType(actor, &EnemyDescriptionActor::SetEnemyType),
-               dtDAL::EnumActorProperty<EnemyDescriptionActor::EnemyType>::GetFuncType(actor, &EnemyDescriptionActor::GetEnemyType),
+      AddProperty(new dtCore::EnumActorProperty<EnemyDescriptionActor::EnemyType>(PROP_ENEMY_TYPE, PROP_ENEMY_TYPE,
+               dtCore::EnumActorProperty<EnemyDescriptionActor::EnemyType>::SetFuncType(actor, &EnemyDescriptionActor::SetEnemyType),
+               dtCore::EnumActorProperty<EnemyDescriptionActor::EnemyType>::GetFuncType(actor, &EnemyDescriptionActor::GetEnemyType),
                PROP_ENEMY_TYPE_DESC, GROUP));
 
       //do this to register properties from EnemySpawnInfo

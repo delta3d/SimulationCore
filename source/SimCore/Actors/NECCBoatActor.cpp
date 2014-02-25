@@ -25,7 +25,7 @@
 #include <SimCore/Actors/NECCBoatActor.h>
 #include <NxAgeiaWorldComponent.h>
 
-#include <dtDAL/enginepropertytypes.h>
+#include <dtCore/enginepropertytypes.h>
 
 #include <dtABC/application.h>
 
@@ -639,7 +639,7 @@ namespace SimCore
          }
          else
          {
-            std::vector<dtDAL::ActorProxy*> toFillin;
+            std::vector<dtCore::ActorProxy*> toFillin;
             GetGameActorProxy().GetGameManager()->FindActorsByType(*EntityActorRegistry::INTERIOR_ACTOR_TYPE.get() , toFillin);
             if(toFillin.size())
             {
@@ -896,28 +896,28 @@ namespace SimCore
          PlatformActorProxy::BuildPropertyMap();
 
          NECCBoatActor  &actor = static_cast<NECCBoatActor &>(GetGameActor());
-         std::vector<dtCore::RefPtr<dtDAL::ActorProperty> >  toFillIn;
+         std::vector<dtCore::RefPtr<dtCore::ActorProperty> >  toFillIn;
          actor.GetPhysicsHelper()->BuildPropertyMap(toFillIn);
          for(unsigned int i = 0 ; i < toFillIn.size(); ++i)
             AddProperty(toFillIn[i].get());
 
-         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::SOUND,
-            "SOUND_EFFECT_IGNITION", "SFX Ignition Path", dtDAL::MakeFunctor(actor,
+         AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::SOUND,
+            "SOUND_EFFECT_IGNITION", "SFX Ignition Path", dtCore::MakeFunctor(actor,
             &NECCBoatActor::SetSound_effect_ignition),
             "What is the filepath / string of the sound effect", SOUND_GROUP));
 
-         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::SOUND,
-            "SOUND_EFFECT_VEHICLE_LOOP", "SFX Vehicle Idle Path", dtDAL::MakeFunctor(actor,
+         AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::SOUND,
+            "SOUND_EFFECT_VEHICLE_LOOP", "SFX Vehicle Idle Path", dtCore::MakeFunctor(actor,
             &NECCBoatActor::SetSound_effect_vehicle_loop),
             "What is the filepath / string of the sound effect", SOUND_GROUP));
 
-         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::SOUND,
-            "SOUND_EFFECT_COLLISION_HIT", "SFX Collision Hit Path", dtDAL::MakeFunctor(actor,
+         AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::SOUND,
+            "SOUND_EFFECT_COLLISION_HIT", "SFX Collision Hit Path", dtCore::MakeFunctor(actor,
             &NECCBoatActor::SetSound_effect_collision_hit),
             "What is the filepath / string of the sound effect", SOUND_GROUP));
 
-         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::SOUND,
-            "SOUND_EFFECT_HORN_SOUND", "SFX Horn Path", dtDAL::MakeFunctor(actor,
+         AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::SOUND,
+            "SOUND_EFFECT_HORN_SOUND", "SFX Horn Path", dtCore::MakeFunctor(actor,
             &NECCBoatActor::SetSound_Effect_Horn),
             "What is the filepath / string of the sound effect", SOUND_GROUP));
       }

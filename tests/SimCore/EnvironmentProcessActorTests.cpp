@@ -33,8 +33,8 @@
 #include <dtUtil/log.h>
 #include <dtUtil/exception.h>
 #include <dtCore/system.h>
-#include <dtDAL/namedgroupparameter.h>
-#include <dtDAL/namedgroupparameter.inl>
+#include <dtCore/namedgroupparameter.h>
+#include <dtCore/namedgroupparameter.inl>
 #include <dtGame/deadreckoningcomponent.h>
 #include <dtGame/gameactor.h>
 #include <UnitTestMain.h>
@@ -90,10 +90,10 @@ namespace SimCore
 
             mGM->AddActor(*envProcAct, false, false);
 
-            dtCore::RefPtr<dtDAL::NamedGroupParameter> groupParam = new dtDAL::NamedGroupParameter("Record");
+            dtCore::RefPtr<dtCore::NamedGroupParameter> groupParam = new dtCore::NamedGroupParameter("Record");
 
-            dtCore::RefPtr<dtDAL::NamedGroupParameter> rec1 = new dtDAL::NamedGroupParameter("1");
-            dtCore::RefPtr<dtDAL::NamedGroupParameter> rec2 = new dtDAL::NamedGroupParameter("2");
+            dtCore::RefPtr<dtCore::NamedGroupParameter> rec1 = new dtCore::NamedGroupParameter("1");
+            dtCore::RefPtr<dtCore::NamedGroupParameter> rec2 = new dtCore::NamedGroupParameter("2");
 
             const osg::Vec3d testPos1(-1000.4, 1.0, 7.3);
             const osg::Vec3d testPos2(11.4, -1.66, -4366.88);

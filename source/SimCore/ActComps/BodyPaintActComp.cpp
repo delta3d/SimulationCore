@@ -28,9 +28,9 @@
 #include <prefix/SimCorePrefix.h>
 #include <osg/Texture2D>
 #include <osgDB/ReadFile>
-#include <dtDAL/enginepropertytypes.h>
-#include <dtDAL/propertymacros.h>
-#include <dtDAL/project.h>
+#include <dtCore/enginepropertytypes.h>
+#include <dtCore/propertymacros.h>
+#include <dtCore/project.h>
 #include <dtGame/gameactor.h>
 #include <dtUtil/boundingshapeutils.h>
 #include <SimCore/ActComps/BodyPaintActComp.h>
@@ -111,8 +111,8 @@ namespace SimCore
       DT_IMPLEMENT_ACCESSOR_GETTER(BodyPaintActComp, osg::Vec4, PaintColor4);
       DT_IMPLEMENT_ACCESSOR_GETTER(BodyPaintActComp, osg::Vec4, PatternScale);
       DT_IMPLEMENT_ACCESSOR_GETTER(BodyPaintActComp, osg::Vec4, ProjectionDirection);
-      DT_IMPLEMENT_ACCESSOR_GETTER(BodyPaintActComp, dtDAL::ResourceDescriptor, ReplacementDiffuseMaskTexture); // Setter is implemented below
-      DT_IMPLEMENT_ACCESSOR_GETTER(BodyPaintActComp, dtDAL::ResourceDescriptor, PatternTexture); // Setter is implemented below
+      DT_IMPLEMENT_ACCESSOR_GETTER(BodyPaintActComp, dtCore::ResourceDescriptor, ReplacementDiffuseMaskTexture); // Setter is implemented below
+      DT_IMPLEMENT_ACCESSOR_GETTER(BodyPaintActComp, dtCore::ResourceDescriptor, PatternTexture); // Setter is implemented below
 
       //////////////////////////////////////////////////////////////////////////
       void BodyPaintActComp::SetPaintColor1(const osg::Vec4& color)
@@ -152,14 +152,14 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void BodyPaintActComp::SetReplacementDiffuseMaskTexture(const dtDAL::ResourceDescriptor& file)
+      void BodyPaintActComp::SetReplacementDiffuseMaskTexture(const dtCore::ResourceDescriptor& file)
       {
          SetProperty(mReplacementDiffuseMaskTexture, file, GetStateSet(),
             UNIFORM_REPLACEMENT_DIFFUSE_MASK_TEXTURE, 0);
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void BodyPaintActComp::SetPatternTexture(const dtDAL::ResourceDescriptor& file)
+      void BodyPaintActComp::SetPatternTexture(const dtCore::ResourceDescriptor& file)
       {
          SetProperty(mPatternTexture, file, GetStateSet(), UNIFORM_PATTERN_TEXTURE, 1);
       }
@@ -244,7 +244,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void BodyPaintActComp::SetUniform(osg::StateSet* ss, const std::string& uniformName, const dtDAL::ResourceDescriptor& value, int texUnit)
+      void BodyPaintActComp::SetUniform(osg::StateSet* ss, const std::string& uniformName, const dtCore::ResourceDescriptor& value, int texUnit)
       {
          if(ss != NULL && ! value.IsEmpty())
          {
@@ -254,7 +254,7 @@ namespace SimCore
                uniform->set(texUnit);
 
                dtCore::RefPtr<osg::Texture2D> tex = new osg::Texture2D();
-               std::string textureFile = dtDAL::Project::GetInstance().GetResourcePath(value);
+               std::string textureFile = dtCore::Project::GetInstance().GetResourcePath(value);
                
                dtCore::RefPtr<osgDB::ReaderWriter::Options> options = new osgDB::ReaderWriter::Options;
                options->setObjectCacheHint(osgDB::ReaderWriter::Options::CACHE_ALL);
@@ -300,7 +300,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void BodyPaintActComp::SetProperty(dtDAL::ResourceDescriptor& propertyToSet, const dtDAL::ResourceDescriptor& value,
+      void BodyPaintActComp::SetProperty(dtCore::ResourceDescriptor& propertyToSet, const dtCore::ResourceDescriptor& value,
          osg::StateSet* stateSetToUpdate, const std::string& shaderParamName, int texUnit)
       {
          propertyToSet = value;
@@ -325,7 +325,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void BodyPaintActComp::BuildPropertyMap()
       {
-         typedef dtDAL::PropertyRegHelper<BodyPaintActComp&, BodyPaintActComp> PropRegType;
+         typedef dtCore::PropertyRegHelper<BodyPaintActComp&, BodyPaintActComp> PropRegType;
          PropRegType propRegHelper(*this, this, "Body Paint");
 
          DT_REGISTER_PROPERTY_WITH_NAME_AND_LABEL(
@@ -372,7 +372,7 @@ namespace SimCore
 
          // FILE PROPERTIES
          DT_REGISTER_RESOURCE_PROPERTY_WITH_NAME(
-            dtDAL::DataType::TEXTURE,
+            dtCore::DataType::TEXTURE,
             ReplacementDiffuseMaskTexture,
             PROPERTY_REPLACEMENT_DIFFUSE_MASK_TEXTURE,
             PROPERTY_REPLACEMENT_DIFFUSE_MASK_TEXTURE,
@@ -380,7 +380,7 @@ namespace SimCore
             PropRegType, propRegHelper);
 
          DT_REGISTER_RESOURCE_PROPERTY_WITH_NAME(
-            dtDAL::DataType::TEXTURE,
+            dtCore::DataType::TEXTURE,
             PatternTexture,
             PROPERTY_PATTERN_TEXTURE,
             PROPERTY_PATTERN_TEXTURE,

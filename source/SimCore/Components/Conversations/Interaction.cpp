@@ -25,7 +25,7 @@
 #include <prefix/SimCorePrefix.h>
 #include <SimCore/Components/Conversations/Interaction.h>
 #include <SimCore/Components/Conversations/Response.h>
-#include <dtDAL/gameevent.h>
+#include <dtCore/gameevent.h>
 #include <algorithm>
 
 

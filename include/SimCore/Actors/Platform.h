@@ -33,7 +33,7 @@
 
 #include <SimCore/Actors/BaseEntity.h>
 #include <osg/Group>
-#include <dtDAL/resourcedescriptor.h>
+#include <dtCore/resourcedescriptor.h>
 
 namespace dtCore
 {
@@ -50,7 +50,7 @@ namespace dtAudio
    class Sound;
 }
 
-namespace dtDAL
+namespace dtCore
 {
    class NamedGroupParameter;
    class ActorProxyIcon;
@@ -119,11 +119,11 @@ namespace SimCore
             virtual void CreateDrawable();
 
             /// mesh Resource to use for the non-damaged state.  @see #EnsureResourcesAreLoaded
-            DT_DECLARE_ACCESSOR(dtDAL::ResourceDescriptor, NonDamagedResource);
+            DT_DECLARE_ACCESSOR(dtCore::ResourceDescriptor, NonDamagedResource);
             /// mesh Resource to use for the damaged state. @see #EnsureResourcesAreLoaded
-            DT_DECLARE_ACCESSOR(dtDAL::ResourceDescriptor, DamagedResource);
+            DT_DECLARE_ACCESSOR(dtCore::ResourceDescriptor, DamagedResource);
             /// mesh Resource to use for the destroyed state. @see #EnsureResourcesAreLoaded
-            DT_DECLARE_ACCESSOR(dtDAL::ResourceDescriptor, DestroyedResource);
+            DT_DECLARE_ACCESSOR(dtCore::ResourceDescriptor, DestroyedResource);
 
             /// Called by tick local when sending a partial update to get a list of the properties to send.
             virtual void GetPartialUpdateProperties(std::vector<dtUtil::RefString>& propNamesToFill);
@@ -146,7 +146,7 @@ namespace SimCore
              * for this proxy (PARTICLE_SYSTEM)
              * @return mBillboardIcon
              */
-            virtual dtDAL::ActorProxyIcon* GetBillboardIcon();
+            virtual dtCore::ActorProxyIcon* GetBillboardIcon();
 
             /**
              * This call exists so that the resources can be loaded when the developer needs them to be.
@@ -177,7 +177,7 @@ namespace SimCore
             virtual ~PlatformActorProxy();
 
          private:
-            dtCore::RefPtr<dtDAL::ActorProxyIcon> mBillboardIcon;
+            dtCore::RefPtr<dtCore::ActorProxyIcon> mBillboardIcon;
             bool mHasLoadedResources;
 
             static bool mPhysicsCreationEnabled;
@@ -208,7 +208,7 @@ namespace SimCore
              * @param rd The resource descriptor to load.
              * @param state The damage state enum that the resource represents
              */
-            void LoadDamageableFile(const dtDAL::ResourceDescriptor& rd, PlatformActorProxy::DamageStateEnum& state);
+            void LoadDamageableFile(const dtCore::ResourceDescriptor& rd, PlatformActorProxy::DamageStateEnum& state);
 
             /**
              * Returns the switch node of this entity
@@ -268,9 +268,9 @@ namespace SimCore
             /*virtual*/ void SetDamageState(BaseEntityActorProxy::DamageStateEnum &damageState);
 
             /// Sets the group parameter of articulations.  This is for supporting the property.
-            void SetArticulatedParametersArray(const dtDAL::NamedGroupParameter& newValue);
+            void SetArticulatedParametersArray(const dtCore::NamedGroupParameter& newValue);
             /// @return the group parameter for articulations.  This is for supporting the property.
-            dtCore::RefPtr<dtDAL::NamedGroupParameter> GetArticulatedParametersArray();
+            dtCore::RefPtr<dtCore::NamedGroupParameter> GetArticulatedParametersArray();
 
             /**
              * Sets the entity type.  Entity Type is a string that is used by the Input component

@@ -20,7 +20,7 @@
 #include <dtPhysics/physicsobject.h>
 //#include <NxAgeiaWorldComponent.h>
 //#include <NxAgeiaRaycastReport.h>
-#include <dtDAL/enginepropertytypes.h>
+#include <dtCore/enginepropertytypes.h>
 #include <dtABC/application.h>
 #include <dtAudio/audiomanager.h>
 #include <dtAudio/sound.h>

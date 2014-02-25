@@ -29,9 +29,9 @@
 #include <dtGame/gameactor.h>
 #include <dtGame/gamemanager.h>
 #include <dtGame/gamemanager.inl>
-#include <dtDAL/propertymacros.h>
-#include <dtDAL/namedgroupparameter.inl> //needed for Get and Set Value methods.
-#include <dtDAL/namedvectorparameters.h>
+#include <dtCore/propertymacros.h>
+#include <dtCore/namedgroupparameter.inl> //needed for Get and Set Value methods.
+#include <dtCore/namedvectorparameters.h>
 #include <dtUtil/configproperties.h>
 #include <dtUtil/stringutils.h>
 
@@ -100,7 +100,7 @@ namespace SimCore
          BaseClass::BuildPropertyMap();
          static const dtUtil::RefString GROUPNAME("EnvironmentProcess");
 
-         typedef dtDAL::PropertyRegHelper<EnvironmentProcessActorProxy&, EnvironmentProcessActorProxy> PropRegHelperType;
+         typedef dtCore::PropertyRegHelper<EnvironmentProcessActorProxy&, EnvironmentProcessActorProxy> PropRegHelperType;
          PropRegHelperType propRegHelper(*this, this, GROUPNAME);
 
          DT_REGISTER_PROPERTY_WITH_LABEL(Active, "Active",
@@ -202,7 +202,7 @@ namespace SimCore
       };
 
       ////////////////////////////////////////////
-      void EnvironmentProcessActorProxy::OnStateTypeChange(const dtCore::RefPtr<dtDAL::NamedGroupParameter>& record)
+      void EnvironmentProcessActorProxy::OnStateTypeChange(const dtCore::RefPtr<dtCore::NamedGroupParameter>& record)
       {
          //unsigned index = record->GetValue(PARAM_INDEX, 0U);
          unsigned typeCode = record->GetValue(PARAM_TYPE_CODE, 0U);
@@ -256,7 +256,7 @@ namespace SimCore
             multiplier = dtUtil::ToType<float>(GetGameManager()->GetConfiguration().GetConfigPropertyValue(multiplierConfig, "1.0"));
 
 
-            dtCore::RefPtr<dtDAL::NamedVec3Parameter> colorParam = new dtDAL::NamedVec3Parameter("color");
+            dtCore::RefPtr<dtCore::NamedVec3Parameter> colorParam = new dtCore::NamedVec3Parameter("color");
             colorParam->FromString(GetGameManager()->GetConfiguration().GetConfigPropertyValue(colorConfig, defaultColor));
 
             actor.SetDensityMultiplier(multiplier);
@@ -270,7 +270,7 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////
-      void EnvironmentProcessActorProxy::OnRecordChange(const dtCore::RefPtr<dtDAL::NamedGroupParameter>& record)
+      void EnvironmentProcessActorProxy::OnRecordChange(const dtCore::RefPtr<dtCore::NamedGroupParameter>& record)
       {
          unsigned recordIndex = record->GetValue(PARAM_INDEX, 0U);
          unsigned typeCode = record->GetValue(PARAM_TYPE_CODE, 0U);
@@ -358,11 +358,11 @@ namespace SimCore
          : mRecords(records)
          {}
 
-         void operator() (const dtCore::RefPtr<dtDAL::NamedParameter>& param)
+         void operator() (const dtCore::RefPtr<dtCore::NamedParameter>& param)
          {
-            if (param->GetDataType() == dtDAL::DataType::GROUP)
+            if (param->GetDataType() == dtCore::DataType::GROUP)
             {
-               mRecords.push_back(new dtDAL::NamedGroupParameter(static_cast<const dtDAL::NamedGroupParameter&>(*param)));
+               mRecords.push_back(new dtCore::NamedGroupParameter(static_cast<const dtCore::NamedGroupParameter&>(*param)));
             }
          }
 
@@ -372,7 +372,7 @@ namespace SimCore
       ////////////////////////////////////////////
 
       ////////////////////////////////////////////
-      void EnvironmentProcessActorProxy::SetRecords(const dtDAL::NamedGroupParameter& groupParam)
+      void EnvironmentProcessActorProxy::SetRecords(const dtCore::NamedGroupParameter& groupParam)
       {
          mRecords.clear();
          mRecords.reserve(groupParam.GetParameterCount());
@@ -384,9 +384,9 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////
-      dtCore::RefPtr<dtDAL::NamedGroupParameter> EnvironmentProcessActorProxy::GetRecords() const
+      dtCore::RefPtr<dtCore::NamedGroupParameter> EnvironmentProcessActorProxy::GetRecords() const
       {
-         return new dtDAL::NamedGroupParameter("Records", mRecords);
+         return new dtCore::NamedGroupParameter("Records", mRecords);
       }
 
    }

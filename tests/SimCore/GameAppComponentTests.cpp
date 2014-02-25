@@ -26,8 +26,8 @@
 */
 #include <prefix/SimCorePrefix.h>
 #include <cppunit/extensions/HelperMacros.h>
-#include <dtDAL/project.h>
-#include <dtDAL/datatype.h>
+#include <dtCore/project.h>
+#include <dtCore/datatype.h>
 #include <dtGame/gamemanager.h> 
 
 #include <dtCore/system.h>
@@ -39,7 +39,7 @@
 #include <SimCore/Actors/EntityActorRegistry.h>
 
 #include <dtUtil/log.h>
-#include <dtDAL/map.h>
+#include <dtCore/map.h>
 #include <dtGame/message.h>
 #include <dtGame/basemessages.h>
 

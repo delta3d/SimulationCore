@@ -45,7 +45,7 @@ namespace dtCore
    class NodeCollector;
 }
 
-namespace dtDAL
+namespace dtCore
 {
    class NamedGroupParameter;
 }
@@ -73,7 +73,7 @@ namespace DriverDemo
          //virtual void SetControlState( SimCore::Actors::ControlStateActor* controlState );
          //virtual const SimCore::Actors::ControlStateActor* GetControlState() const;
 
-         virtual dtCore::RefPtr<dtDAL::NamedGroupParameter> BuildGroupProperty();
+         virtual dtCore::RefPtr<dtCore::NamedGroupParameter> BuildGroupProperty();
 
          virtual void UpdateDOFReferences( dtUtil::NodeCollector* nodeCollector );
 

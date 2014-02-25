@@ -16,7 +16,7 @@
 #include <dtGame/gameapplication.h>
 #include <dtGame/messagefactory.h>
 
-#include <dtDAL/project.h>
+#include <dtCore/project.h>
 
 #include <SimCore/Actors/EntityActorRegistry.h>
 #include <SimCore/CommandLineObject.h>
@@ -195,8 +195,8 @@ namespace DriverDemo
 
       ////////////////////////////////////////////////////////////////////////
       // HUD GUI COMPONENT
-      //const dtDAL::NamedStringParameter* callsignName =
-      //   dynamic_cast<const dtDAL::NamedStringParameter*>(commandLineObject->GetParameter(GameAppComponent::CMD_LINE_VEHICLE_CALLSIGN));
+      //const dtCore::NamedStringParameter* callsignName =
+      //   dynamic_cast<const dtCore::NamedStringParameter*>(commandLineObject->GetParameter(GameAppComponent::CMD_LINE_VEHICLE_CALLSIGN));
 
       dtCore::RefPtr<DriverHUD> mHudGUI = new DriverHUD(gm.GetApplication().GetWindow());
       gm.AddComponent(*mHudGUI, dtGame::GameManager::ComponentPriority::NORMAL);

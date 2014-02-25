@@ -32,13 +32,13 @@ namespace SimCore
    // WEAPON TYPE ENUMERATION CODE
    ////////////////////////////////////////////////////////////////////////////////
    IMPLEMENT_ENUM(WeaponTypeEnum);
-   WeaponTypeEnum WeaponTypeEnum::WEAPON_50CAL("Weaon_50Cal", 0, dtDAL::ResourceDescriptor("StaticMeshes:m2 .50cal:m2_50cal.ive"));
-   WeaponTypeEnum WeaponTypeEnum::WEAPON_MK19("Weaon_MK19", 1, dtDAL::ResourceDescriptor("StaticMeshes:mk19:mk19.ive"));
-   WeaponTypeEnum WeaponTypeEnum::WEAPON_M240("Weaon_M240", 2, dtDAL::ResourceDescriptor("StaticMeshes:m240:m240.ive"));
-   WeaponTypeEnum WeaponTypeEnum::WEAPON_M249("Weaon_M249", 3, dtDAL::ResourceDescriptor("StaticMeshes:m249:m249.ive"));
+   WeaponTypeEnum WeaponTypeEnum::WEAPON_50CAL("Weaon_50Cal", 0, dtCore::ResourceDescriptor("StaticMeshes:m2 .50cal:m2_50cal.ive"));
+   WeaponTypeEnum WeaponTypeEnum::WEAPON_MK19("Weaon_MK19", 1, dtCore::ResourceDescriptor("StaticMeshes:mk19:mk19.ive"));
+   WeaponTypeEnum WeaponTypeEnum::WEAPON_M240("Weaon_M240", 2, dtCore::ResourceDescriptor("StaticMeshes:m240:m240.ive"));
+   WeaponTypeEnum WeaponTypeEnum::WEAPON_M249("Weaon_M249", 3, dtCore::ResourceDescriptor("StaticMeshes:m249:m249.ive"));
 
    ////////////////////////////////////////////////////////////////////////////////
-   WeaponTypeEnum::WeaponTypeEnum(const std::string& name, unsigned enumValue, const dtDAL::ResourceDescriptor& modelResource)
+   WeaponTypeEnum::WeaponTypeEnum(const std::string& name, unsigned enumValue, const dtCore::ResourceDescriptor& modelResource)
    : dtUtil::Enumeration(name),
    mEnumValue(enumValue),
    mModelResource(modelResource)
@@ -53,13 +53,13 @@ namespace SimCore
    }
 
    ////////////////////////////////////////////////////////////////////////////////
-   const dtDAL::ResourceDescriptor& WeaponTypeEnum::GetModelResource() const
+   const dtCore::ResourceDescriptor& WeaponTypeEnum::GetModelResource() const
    {
       return mModelResource;
    }
 
    ////////////////////////////////////////////////////////////////////////////////
-   void WeaponTypeEnum::GetModelResourceList( std::vector<dtDAL::ResourceDescriptor>& outFileList )
+   void WeaponTypeEnum::GetModelResourceList( std::vector<dtCore::ResourceDescriptor>& outFileList )
    {
       const std::vector<dtUtil::Enumeration*>& weaponTypes = WeaponTypeEnum::Enumerate();
 

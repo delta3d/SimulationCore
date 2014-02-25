@@ -36,9 +36,9 @@
 #include <dtCore/uniqueid.h>
 #include <dtCore/timer.h>
 
-#include <dtDAL/actorproperty.h>
-#include <dtDAL/project.h>
-#include <dtDAL/resourcedescriptor.h>
+#include <dtCore/actorproperty.h>
+#include <dtCore/project.h>
+#include <dtCore/resourcedescriptor.h>
 
 #include <dtGame/basemessages.h>
 #include <dtGame/deadreckoningcomponent.h>
@@ -333,7 +333,7 @@ namespace SimCore
             mGM->AddComponent(*mDamageComp, dtGame::GameManager::ComponentPriority::NORMAL);
 
             //std::string context = dtUtil::GetDeltaRootPath() + "/examples/data/demoMap";
-            //dtDAL::Project::GetInstance().SetContext(context, true);
+            //dtCore::Project::GetInstance().SetContext(context, true);
             mGM->ChangeMap("UnitTestMunitionTypesMap");
 
             //step a few times to ensure the map loaded
@@ -1448,14 +1448,14 @@ namespace SimCore
          dtCore::AppSleep(10);
          dtCore::System::GetInstance().Step();
 
-         std::vector<dtDAL::ActorProxy*> container;
+         std::vector<dtCore::ActorProxy*> container;
          mGM->GetAllActors(container);
          CPPUNIT_ASSERT_MESSAGE("The actors container should not be empty.", !container.empty());
          unsigned numActors = container.size(); // numActors exists for debugging purposes
          CPPUNIT_ASSERT_EQUAL_MESSAGE("The actors container should have 2 actors in it.", 2U, numActors);
          mGM->FindActorsByType(*SimCore::Actors::EntityActorRegistry::DETONATION_ACTOR_TYPE, container);
          CPPUNIT_ASSERT_EQUAL_MESSAGE("The actors container should have 1 detonation actors in it.", 1U, unsigned(container.size()));
-         RefPtr<dtDAL::ActorProxy> proxy = container[0];
+         RefPtr<dtCore::ActorProxy> proxy = container[0];
          SimCore::Actors::DetonationActorProxy* dap = dynamic_cast<SimCore::Actors::DetonationActorProxy*>(proxy.get());
          CPPUNIT_ASSERT_MESSAGE("The 1 actor in the GM should a be a detonation actor, hence the dynamic_cast should not have failed", dap != NULL);
          SimCore::Actors::DetonationActor& detActor = static_cast<SimCore::Actors::DetonationActor&>(dap->GetGameActor());
@@ -1515,7 +1515,7 @@ namespace SimCore
          // --- Create an empty munition that has no effects info reference.
          //     This will be used to test that GetMunitionEffectsInfo will
          //     return the effects from the default munition.
-         dtCore::RefPtr<dtDAL::ActorProxy> proxy;
+         dtCore::RefPtr<dtCore::ActorProxy> proxy;
          mGM->CreateActor( *SimCore::Actors::EntityActorRegistry::MUNITION_TYPE_ACTOR_TYPE, proxy );
          SimCore::Actors::MunitionTypeActor* emptyMunition = NULL;
          proxy->GetActor( emptyMunition );
@@ -1821,7 +1821,7 @@ namespace SimCore
 
          // Test DetonationActor creation
          // --- Ensure GM is free of actors
-         std::vector<dtDAL::ActorProxy*> proxies;
+         std::vector<dtCore::ActorProxy*> proxies;
          mGM->DeleteAllActors(true);
          mGM->GetAllActors(proxies);
          dtCore::System::GetInstance().Step();
@@ -2017,7 +2017,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void MunitionsComponentTests::TestMunitionTypeActorProperties()
       {
-         dtCore::RefPtr<dtDAL::ActorProxy> proxy;
+         dtCore::RefPtr<dtCore::ActorProxy> proxy;
          mGM->CreateActor( *SimCore::Actors::EntityActorRegistry::MUNITION_TYPE_ACTOR_TYPE, proxy );
          dtCore::RefPtr<SimCore::Actors::MunitionTypeActor> munitionType
             = dynamic_cast<SimCore::Actors::MunitionTypeActor*>(proxy->GetDrawable());
@@ -2065,7 +2065,7 @@ namespace SimCore
          CPPUNIT_ASSERT( munitionType->GetDISIdentifierString() == testString );
          CPPUNIT_ASSERT( munitionType->GetDISIdentifier() == testDIS );
 
-         dtCore::RefPtr<dtDAL::ActorProxy> proxy2;
+         dtCore::RefPtr<dtCore::ActorProxy> proxy2;
          mGM->CreateActor( *SimCore::Actors::EntityActorRegistry::MUNITION_EFFECTS_INFO_ACTOR_TYPE, proxy2 );
          dtCore::RefPtr<SimCore::Actors::MunitionEffectsInfoActor> effectsInfo
             = static_cast<SimCore::Actors::MunitionEffectsInfoActor*>(proxy2->GetDrawable());

@@ -15,7 +15,7 @@
 #include <Actors/BaseEnemyActor.h>
 #include <dtPhysics/physicsactcomp.h>
 #include <dtPhysics/physicsobject.h>
-#include <dtDAL/enginepropertytypes.h>
+#include <dtCore/enginepropertytypes.h>
 #include <dtABC/application.h>
 #include <dtAudio/audiomanager.h>
 #include <dtAudio/sound.h>
@@ -310,7 +310,7 @@ namespace NetDemo
    {
       if(gap != NULL)
       {
-         const dtDAL::ActorType& atype = gap->GetActorType();
+         const dtCore::ActorType& atype = gap->GetActorType();
          if( atype == *NetDemoActorRegistry::ENEMY_HELIX_ACTOR_TYPE || 
             atype == * NetDemoActorRegistry::ENEMY_MINE_ACTOR_TYPE ||
             atype == * NetDemoActorRegistry::ENEMY_MOTHERSHIP_ACTOR_TYPE )
@@ -329,7 +329,7 @@ namespace NetDemo
    dtCore::Transformable* BaseEnemyActor::GetClosestTower()
    {
       //temporarily lets just look for a fort to destroy
-      std::vector<dtDAL::ActorProxy*> actors;
+      std::vector<dtCore::ActorProxy*> actors;
       GetGameActorProxy().GetGameManager()->FindActorsByType(*NetDemoActorRegistry::TOWER_ACTOR_TYPE, actors);
 
       osg::Vec3 pos = mAIHelper->mCurrentState.GetPos();
@@ -374,7 +374,7 @@ namespace NetDemo
       BaseEnemyActor* actor = NULL;
       GetActor(actor);
 
-      using namespace dtDAL;
+      using namespace dtCore;
       const std::string GROUP = "Enemy Props";
 
       // INTEGER PROPERTIES

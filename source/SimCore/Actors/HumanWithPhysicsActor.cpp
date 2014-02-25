@@ -26,7 +26,7 @@
 #include <SimCore/Messages.h>
 #include <SimCore/MessageType.h>
 
-#include <dtDAL/enginepropertytypes.h>
+#include <dtCore/enginepropertytypes.h>
 
 #include <dtGame/invokable.h>
 #include <dtGame/basemessages.h>

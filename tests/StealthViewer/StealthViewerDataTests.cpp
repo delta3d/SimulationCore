@@ -29,7 +29,7 @@
 #include <cppunit/extensions/HelperMacros.h>
 #include <StealthViewer/Qt/StealthViewerData.h>
 #include <dtUtil/fileutils.h>
-#include <dtDAL/project.h>
+#include <dtCore/project.h>
 #include <QtGui/QApplication>
 
 class StealthViewerDataTests : public CPPUNIT_NS::TestFixture 

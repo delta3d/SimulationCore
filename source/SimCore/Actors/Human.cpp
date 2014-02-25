@@ -393,26 +393,26 @@ namespace SimCore
 
          static const dtUtil::RefString PROPERTY_STANCE_DESC
             ("The stance of the human.");
-         AddProperty(new dtDAL::EnumActorProperty<HumanActorProxy::StanceEnum>(
+         AddProperty(new dtCore::EnumActorProperty<HumanActorProxy::StanceEnum>(
                PROPERTY_STANCE, PROPERTY_STANCE,
-               dtDAL::EnumActorProperty<HumanActorProxy::StanceEnum>::SetFuncType(human, &Human::SetStance),
-               dtDAL::EnumActorProperty<HumanActorProxy::StanceEnum>::GetFuncType(human, &Human::GetStance),
+               dtCore::EnumActorProperty<HumanActorProxy::StanceEnum>::SetFuncType(human, &Human::SetStance),
+               dtCore::EnumActorProperty<HumanActorProxy::StanceEnum>::GetFuncType(human, &Human::GetStance),
                PROPERTY_STANCE_DESC, HUMAN_GROUP));
 
          static const dtUtil::RefString PROPERTY_PRIMARY_WEAPON_STATE_DESC
             ("The state/availability of the primary weapon.");
-         AddProperty(new dtDAL::EnumActorProperty<HumanActorProxy::WeaponStateEnum>(
+         AddProperty(new dtCore::EnumActorProperty<HumanActorProxy::WeaponStateEnum>(
                PROPERTY_PRIMARY_WEAPON_STATE, PROPERTY_PRIMARY_WEAPON_STATE,
-               dtDAL::EnumActorProperty<HumanActorProxy::WeaponStateEnum>::SetFuncType(human, &Human::SetPrimaryWeaponState),
-               dtDAL::EnumActorProperty<HumanActorProxy::WeaponStateEnum>::GetFuncType(human, &Human::GetPrimaryWeaponState),
+               dtCore::EnumActorProperty<HumanActorProxy::WeaponStateEnum>::SetFuncType(human, &Human::SetPrimaryWeaponState),
+               dtCore::EnumActorProperty<HumanActorProxy::WeaponStateEnum>::GetFuncType(human, &Human::GetPrimaryWeaponState),
                PROPERTY_PRIMARY_WEAPON_STATE_DESC, HUMAN_GROUP));
 
          static const dtUtil::RefString PROPERTY_WEAPON_MESH_DESC
             ("The name of the mesh in the skeletal mesh that refers to the weapon");
-         AddProperty(new dtDAL::StringActorProperty(
+         AddProperty(new dtCore::StringActorProperty(
                PROPERTY_WEAPON_MESH, PROPERTY_WEAPON_MESH,
-               dtDAL::StringActorProperty::SetFuncType(human, &Human::SetWeaponMeshName),
-               dtDAL::StringActorProperty::GetFuncType(human, &Human::GetWeaponMeshName),
+               dtCore::StringActorProperty::SetFuncType(human, &Human::SetWeaponMeshName),
+               dtCore::StringActorProperty::GetFuncType(human, &Human::GetWeaponMeshName),
                PROPERTY_WEAPON_MESH_DESC, HUMAN_GROUP));
 
 //         static const dtUtil::RefString PROPERTY_MIN_RUN_VELOCITY_DESC
@@ -421,9 +421,9 @@ namespace SimCore
 //         static const dtUtil::RefString PROPERTY_FULL_RUN_VELOCITY_DESC
 //            ("The velocity at which the human will be fully running");
 //
-//         AddProperty(new dtDAL::FloatActorProperty(*this,
+//         AddProperty(new dtCore::FloatActorProperty(*this,
 //               PROPERTY_FULL_RUN_VELOCITY, PROPERTY_FULL_RUN_VELOCITY,
-//               dtDAL::MakeFunctor(human, &Human::SetSkeletalMeshFile),
+//               dtCore::MakeFunctor(human, &Human::SetSkeletalMeshFile),
 //               PROPERTY_FULL_RUN_VELOCITY_DESC, HUMAN_GROUP));
 //
       }
@@ -437,7 +437,7 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////
       void HumanActorProxy::BuildActorComponents()
       {
-         const dtDAL::ActorType& at = GetActorType();
+         const dtCore::ActorType& at = GetActorType();
 
          BaseClass::BuildActorComponents();
 

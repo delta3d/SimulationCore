@@ -23,8 +23,8 @@
 
 #include <prefix/SimCorePrefix.h>
 #include <SimCore/Actors/ViewerMaterialActor.h>
-#include <dtDAL/enginepropertytypes.h>
-#include <dtDAL/functor.h>
+#include <dtCore/enginepropertytypes.h>
+#include <dtCore/functor.h>
 #include <SimCore/Components/ViewerMaterialComponent.h>
 
 namespace SimCore
@@ -63,103 +63,103 @@ namespace SimCore
 
          ViewerMaterialActor *actor = dynamic_cast<ViewerMaterialActor*>(GetDrawable());
 
-         AddProperty(new dtDAL::ColorRgbaActorProperty("Base Color Value", "Base Color Value",
-            dtDAL::MakeFunctor(*actor, &ViewerMaterialActor::SetBaseColorvalue),
-            dtDAL::MakeFunctorRet(*actor, &ViewerMaterialActor::GetBaseColorvalue),
+         AddProperty(new dtCore::ColorRgbaActorProperty("Base Color Value", "Base Color Value",
+            dtCore::MakeFunctor(*actor, &ViewerMaterialActor::SetBaseColorvalue),
+            dtCore::MakeFunctorRet(*actor, &ViewerMaterialActor::GetBaseColorvalue),
             "", VISLGROUP));
 
-         AddProperty(new dtDAL::ColorRgbaActorProperty("Highlight Color Value", "Highlight Color Value",
-            dtDAL::MakeFunctor(*actor, &ViewerMaterialActor::SetHighlighteColorvalue),
-            dtDAL::MakeFunctorRet(*actor, &ViewerMaterialActor::GetHighlighteColorvalue),
+         AddProperty(new dtCore::ColorRgbaActorProperty("Highlight Color Value", "Highlight Color Value",
+            dtCore::MakeFunctor(*actor, &ViewerMaterialActor::SetHighlighteColorvalue),
+            dtCore::MakeFunctorRet(*actor, &ViewerMaterialActor::GetHighlighteColorvalue),
             "", VISLGROUP));
 
-         AddProperty(new dtDAL::FloatActorProperty("DynamicFriction", "DynamicFriction",
-            dtDAL::MakeFunctor(*actor, &ViewerMaterialActor::SetDynamicFriction),
-            dtDAL::MakeFunctorRet(*actor, &ViewerMaterialActor::GetDynamicFriction),
+         AddProperty(new dtCore::FloatActorProperty("DynamicFriction", "DynamicFriction",
+            dtCore::MakeFunctor(*actor, &ViewerMaterialActor::SetDynamicFriction),
+            dtCore::MakeFunctorRet(*actor, &ViewerMaterialActor::GetDynamicFriction),
             "Ageia Material Setting - coefficient of dynamic friction -- should be in [0, +inf]. If set to greater than staticFriction, the effective value of staticFriction will be increased to match. if flags & NX_MF_ANISOTROPIC is set, then this value is used for the primary direction of anisotropy (U axis)", PHYSGROUP));
 
-         AddProperty(new dtDAL::FloatActorProperty("StaticFriction", "StaticFriction",
-            dtDAL::MakeFunctor(*actor, &ViewerMaterialActor::SetStaticFriction),
-            dtDAL::MakeFunctorRet(*actor, &ViewerMaterialActor::GetStaticFriction),
+         AddProperty(new dtCore::FloatActorProperty("StaticFriction", "StaticFriction",
+            dtCore::MakeFunctor(*actor, &ViewerMaterialActor::SetStaticFriction),
+            dtCore::MakeFunctorRet(*actor, &ViewerMaterialActor::GetStaticFriction),
             "Ageia Material Setting - coefficient of static friction -- should be in [0, +inf] if flags & NX_MF_ANISOTROPIC is set, then this value is used for the primary direction of anisotropy (U axis)", PHYSGROUP));
 
-         AddProperty(new dtDAL::FloatActorProperty("Restitution", "Restitution",
-            dtDAL::MakeFunctor(*actor, &ViewerMaterialActor::SetRestitution),
-            dtDAL::MakeFunctorRet(*actor, &ViewerMaterialActor::GetRestitution),
+         AddProperty(new dtCore::FloatActorProperty("Restitution", "Restitution",
+            dtCore::MakeFunctor(*actor, &ViewerMaterialActor::SetRestitution),
+            dtCore::MakeFunctorRet(*actor, &ViewerMaterialActor::GetRestitution),
             "Ageia Material Setting - coefficient of restitution -- 0 makes the object bounce as little as possible, higher values up to 1.0 result in more bounce. Note that values close to or above 1 may cause stability problems and/or increasing energy. Range: [0,1]", PHYSGROUP));
 
 
-         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::SOUND,
-            "SmallHitSoundEffect", "SmallHitSoundEffect",  dtDAL::MakeFunctor(*actor, &ViewerMaterialActor::SetSmallHitSoundEffect),
+         AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::SOUND,
+            "SmallHitSoundEffect", "SmallHitSoundEffect",  dtCore::MakeFunctor(*actor, &ViewerMaterialActor::SetSmallHitSoundEffect),
             "", SFXGROUP));
 
-         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::SOUND, "MediumHitSoundEffect", "MediumHitSoundEffect",
-            dtDAL::MakeFunctor(*actor, &ViewerMaterialActor::SetMediumHitSoundEffect),
+         AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::SOUND, "MediumHitSoundEffect", "MediumHitSoundEffect",
+            dtCore::MakeFunctor(*actor, &ViewerMaterialActor::SetMediumHitSoundEffect),
             "", SFXGROUP));
 
-         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::SOUND, "LargeHitSoundEffect", "LargeHitSoundEffect",
-            dtDAL::MakeFunctor(*actor, &ViewerMaterialActor::SetLargeHitSoundEffect),
+         AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::SOUND, "LargeHitSoundEffect", "LargeHitSoundEffect",
+            dtCore::MakeFunctor(*actor, &ViewerMaterialActor::SetLargeHitSoundEffect),
             "", SFXGROUP));
 
-         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::SOUND, "AmbientSoundEffect", "AmbientSoundEffect",
-            dtDAL::MakeFunctor(*actor, &ViewerMaterialActor::SetAmbientSoundEffect),
+         AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::SOUND, "AmbientSoundEffect", "AmbientSoundEffect",
+            dtCore::MakeFunctor(*actor, &ViewerMaterialActor::SetAmbientSoundEffect),
             "", SFXGROUP));
 
-         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::SOUND, "AmbientMusicEffect", "AmbientMusicEffect",
-            dtDAL::MakeFunctor(*actor, &ViewerMaterialActor::SetAmbientMusicEffect),
+         AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::SOUND, "AmbientMusicEffect", "AmbientMusicEffect",
+            dtCore::MakeFunctor(*actor, &ViewerMaterialActor::SetAmbientMusicEffect),
             "", MUSCGROUP));
 
-         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::TEXTURE, "DecalSmallHit", "DecalSmallHit",
-            dtDAL::MakeFunctor(*actor, &ViewerMaterialActor::SetDecalSmallHit),
+         AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::TEXTURE, "DecalSmallHit", "DecalSmallHit",
+            dtCore::MakeFunctor(*actor, &ViewerMaterialActor::SetDecalSmallHit),
             "", VISLGROUP));
 
-         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::TEXTURE, "DecalMediumHit", "DecalMediumHit",
-            dtDAL::MakeFunctor(*actor, &ViewerMaterialActor::SetDecalMediumHit),
+         AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::TEXTURE, "DecalMediumHit", "DecalMediumHit",
+            dtCore::MakeFunctor(*actor, &ViewerMaterialActor::SetDecalMediumHit),
             "", VISLGROUP));
 
-         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::TEXTURE, "DecalLargeHit", "DecalLargeHit",
-            dtDAL::MakeFunctor(*actor, &ViewerMaterialActor::SetDecalLargeHit),
+         AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::TEXTURE, "DecalLargeHit", "DecalLargeHit",
+            dtCore::MakeFunctor(*actor, &ViewerMaterialActor::SetDecalLargeHit),
             "", VISLGROUP));
 
-         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::PARTICLE_SYSTEM, "DustTrailEffect", "DustTrailEffect",
-            dtDAL::MakeFunctor(*actor, &ViewerMaterialActor::SetDustTrailEffect),
+         AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::PARTICLE_SYSTEM, "DustTrailEffect", "DustTrailEffect",
+            dtCore::MakeFunctor(*actor, &ViewerMaterialActor::SetDustTrailEffect),
             "", PARTGROUP));
 
-         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::PARTICLE_SYSTEM, "SmallHitEffect", "SmallHitEffect",
-            dtDAL::MakeFunctor(*actor, &ViewerMaterialActor::SetSmallHitEffect),
+         AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::PARTICLE_SYSTEM, "SmallHitEffect", "SmallHitEffect",
+            dtCore::MakeFunctor(*actor, &ViewerMaterialActor::SetSmallHitEffect),
             "", PARTGROUP));
 
-         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::PARTICLE_SYSTEM, "MediumHitEffect", "MediumHitEffect",
-            dtDAL::MakeFunctor(*actor, &ViewerMaterialActor::SetMediumHitEffect),
+         AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::PARTICLE_SYSTEM, "MediumHitEffect", "MediumHitEffect",
+            dtCore::MakeFunctor(*actor, &ViewerMaterialActor::SetMediumHitEffect),
             "", PARTGROUP));
 
-         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::PARTICLE_SYSTEM, "LargeHitEffect", "LargeHitEffect",
-            dtDAL::MakeFunctor(*actor, &ViewerMaterialActor::SetLargeHitEffect),
+         AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::PARTICLE_SYSTEM, "LargeHitEffect", "LargeHitEffect",
+            dtCore::MakeFunctor(*actor, &ViewerMaterialActor::SetLargeHitEffect),
             "", PARTGROUP));
 
-         AddProperty(new dtDAL::StringActorProperty("PhysicsParticleLookupStringOne", "PhysicsParticleLookupStringOne",
-            dtDAL::MakeFunctor(*actor, &ViewerMaterialActor::SetPhysicsParticleLookupStringOne),
-            dtDAL::MakeFunctorRet(*actor, &ViewerMaterialActor::GetPhysicsParticleLookupStringOne),
+         AddProperty(new dtCore::StringActorProperty("PhysicsParticleLookupStringOne", "PhysicsParticleLookupStringOne",
+            dtCore::MakeFunctor(*actor, &ViewerMaterialActor::SetPhysicsParticleLookupStringOne),
+            dtCore::MakeFunctorRet(*actor, &ViewerMaterialActor::GetPhysicsParticleLookupStringOne),
             "", VISLGROUP));
 
-         AddProperty(new dtDAL::StringActorProperty("PhysicsParticleLookupStringTwo", "PhysicsParticleLookupStringTwo",
-            dtDAL::MakeFunctor(*actor, &ViewerMaterialActor::SetPhysicsParticleLookupStringTwo),
-            dtDAL::MakeFunctorRet(*actor, &ViewerMaterialActor::GetPhysicsParticleLookupStringTwo),
+         AddProperty(new dtCore::StringActorProperty("PhysicsParticleLookupStringTwo", "PhysicsParticleLookupStringTwo",
+            dtCore::MakeFunctor(*actor, &ViewerMaterialActor::SetPhysicsParticleLookupStringTwo),
+            dtCore::MakeFunctorRet(*actor, &ViewerMaterialActor::GetPhysicsParticleLookupStringTwo),
             "", VISLGROUP));
 
-         AddProperty(new dtDAL::StringActorProperty("PhysicsParticleLookupStringThr", "PhysicsParticleLookupStringThr",
-            dtDAL::MakeFunctor(*actor, &ViewerMaterialActor::SetPhysicsParticleLookupStringThr),
-            dtDAL::MakeFunctorRet(*actor, &ViewerMaterialActor::GetPhysicsParticleLookupStringThr),
+         AddProperty(new dtCore::StringActorProperty("PhysicsParticleLookupStringThr", "PhysicsParticleLookupStringThr",
+            dtCore::MakeFunctor(*actor, &ViewerMaterialActor::SetPhysicsParticleLookupStringThr),
+            dtCore::MakeFunctorRet(*actor, &ViewerMaterialActor::GetPhysicsParticleLookupStringThr),
             "", VISLGROUP));
 
-         AddProperty(new dtDAL::StringActorProperty("PhysicsParticleLookupStringFour", "PhysicsParticleLookupStringFour",
-            dtDAL::MakeFunctor(*actor, &ViewerMaterialActor::SetPhysicsParticleLookupStringFour),
-            dtDAL::MakeFunctorRet(*actor, &ViewerMaterialActor::GetPhysicsParticleLookupStringFour),
+         AddProperty(new dtCore::StringActorProperty("PhysicsParticleLookupStringFour", "PhysicsParticleLookupStringFour",
+            dtCore::MakeFunctor(*actor, &ViewerMaterialActor::SetPhysicsParticleLookupStringFour),
+            dtCore::MakeFunctorRet(*actor, &ViewerMaterialActor::GetPhysicsParticleLookupStringFour),
             "", VISLGROUP));
 
-         AddProperty(new dtDAL::StringActorProperty("PhysicsParticleLookupStringFive", "PhysicsParticleLookupStringFive",
-            dtDAL::MakeFunctor(*actor, &ViewerMaterialActor::SetPhysicsParticleLookupStringFive),
-            dtDAL::MakeFunctorRet(*actor, &ViewerMaterialActor::GetPhysicsParticleLookupStringFive),
+         AddProperty(new dtCore::StringActorProperty("PhysicsParticleLookupStringFive", "PhysicsParticleLookupStringFive",
+            dtCore::MakeFunctor(*actor, &ViewerMaterialActor::SetPhysicsParticleLookupStringFive),
+            dtCore::MakeFunctorRet(*actor, &ViewerMaterialActor::GetPhysicsParticleLookupStringFive),
             "", VISLGROUP));
 
       }

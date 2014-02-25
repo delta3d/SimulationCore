@@ -30,10 +30,10 @@
 #include <dtGame/deadreckoningcomponent.h>
 #include <dtGame/drpublishingactcomp.h>
 
-#include <dtDAL/actorproperty.h>
-#include <dtDAL/enginepropertytypes.h>
-#include <dtDAL/project.h>
-#include <dtDAL/resourcedescriptor.h>
+#include <dtCore/actorproperty.h>
+#include <dtCore/enginepropertytypes.h>
+#include <dtCore/project.h>
+#include <dtCore/resourcedescriptor.h>
 
 #include <dtCore/system.h>
 #include <dtCore/scene.h>
@@ -99,10 +99,10 @@ namespace SimCore
                PlatformWithPhysics* temp;
                mPlatformWithPhysicsActorProxy->GetActor(temp);
                mPlatformWithPhysics = temp;
-               dtDAL::ResourceActorProperty* res = NULL;
+               dtCore::ResourceActorProperty* res = NULL;
                mPlatformWithPhysicsActorProxy->GetProperty(PlatformActorProxy::PROPERTY_MESH_NON_DAMAGED_ACTOR, res);
-               dtDAL::ResourceDescriptor truck("StaticMeshes:NetDemo:Vehicles:Truck.ive");
-               dtDAL::ResourceDescriptor brokenresource("StaticMeshes:BrokenandNonexistent.ive");
+               dtCore::ResourceDescriptor truck("StaticMeshes:NetDemo:Vehicles:Truck.ive");
+               dtCore::ResourceDescriptor brokenresource("StaticMeshes:BrokenandNonexistent.ive");
                CPPUNIT_ASSERT_NO_THROW_MESSAGE("Passing a missing resource should not throw an exception.", res->SetValue(brokenresource));
                res->SetValue(truck);
                mPlatformWithPhysicsActorProxy->GetProperty(PlatformActorProxy::PROPERTY_MESH_DAMAGED_ACTOR, res);

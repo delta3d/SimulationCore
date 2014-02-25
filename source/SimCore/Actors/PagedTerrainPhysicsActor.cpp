@@ -23,7 +23,7 @@
 #include <prefix/SimCorePrefix.h>
 #include <SimCore/Actors/PagedTerrainPhysicsActor.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
-#include <dtDAL/enginepropertytypes.h>
+#include <dtCore/enginepropertytypes.h>
 #include <dtGame/logcontroller.h>
 #include <osg/MatrixTransform>
 

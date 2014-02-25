@@ -35,9 +35,9 @@
 #include <dtCore/scene.h>
 #include <dtCore/uniqueid.h>
 
-#include <dtDAL/actorproperty.h>
-#include <dtDAL/project.h>
-#include <dtDAL/resourcedescriptor.h>
+#include <dtCore/actorproperty.h>
+#include <dtCore/project.h>
+#include <dtCore/resourcedescriptor.h>
 
 #include <dtGame/basemessages.h>
 #include <dtGame/gmcomponent.h>
@@ -107,7 +107,7 @@ namespace SimCore
             // This function hides the PhysX code from the unit test code.
             void CreateShooter();
 
-            size_t GetActorCount(dtDAL::ActorType& actorType);
+            size_t GetActorCount(dtCore::ActorType& actorType);
 
          protected:
          private:
@@ -316,9 +316,9 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      size_t WeaponActorTests::GetActorCount(dtDAL::ActorType& actorType)
+      size_t WeaponActorTests::GetActorCount(dtCore::ActorType& actorType)
       {
-         std::vector<dtDAL::ActorProxy*> proxyArray;
+         std::vector<dtCore::ActorProxy*> proxyArray;
          mGM->FindActorsByType(actorType, proxyArray);
          return proxyArray.size();
       }
@@ -509,7 +509,7 @@ namespace SimCore
          CPPUNIT_ASSERT(shooterProxy != NULL);
          mGM->AddActor(*shooterProxy, false, false);
 
-         dtDAL::ActorType& shooterType = *SimCore::Actors::EntityActorRegistry::PHYSICS_MUNITIONS_PARTICLE_SYSTEM_TYPE;
+         dtCore::ActorType& shooterType = *SimCore::Actors::EntityActorRegistry::PHYSICS_MUNITIONS_PARTICLE_SYSTEM_TYPE;
 
          CPPUNIT_ASSERT_EQUAL(size_t(1), GetActorCount(shooterType));
 

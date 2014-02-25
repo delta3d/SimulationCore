@@ -50,9 +50,9 @@
 #include <dtCore/shadermanager.h>
 #include <dtCore/system.h>
 
-#include <dtDAL/project.h>
-#include <dtDAL/map.h>
-#include <dtDAL/librarymanager.h>
+#include <dtCore/project.h>
+#include <dtCore/map.h>
+#include <dtCore/librarymanager.h>
 
 #include <dtABC/application.h>
 
@@ -74,7 +74,7 @@
 #ifdef None
 #undef None
 #endif
-#include <CEGUI.h>
+#include <CEGUI/CEGUI.h>
 
 static std::ostringstream mSlowTests;
 
@@ -152,7 +152,7 @@ void SetupCEGUI(dtABC::Application& app)
    globalGUI = new dtGUI::GUI(app.GetCamera(),
             app.GetKeyboard(), app.GetMouse());
    globalGUI->SetScriptModule(new dtGUI::ScriptModule());
-//   std::string ceguiDir(dtDAL::Project::GetInstance().GetContext(0));
+//   std::string ceguiDir(dtCore::Project::GetInstance().GetContext(0));
 //   globalGUI->SetResourceGroupDirectory("schemes", ceguiDir);
 //   globalGUI->SetResourceGroupDirectory("imagesets", ceguiDir);
 //   globalGUI->SetResourceGroupDirectory("looknfeel", ceguiDir);
@@ -239,9 +239,9 @@ int main (int argc, char* argv[])
       //Force this to false because many of the tests expect it to be false.
       dtCore::System::GetInstance().SetUseFixedTimeStep(false);
       dtUtil::SetDataFilePathList(dtUtil::GetDeltaDataPathList());
-      dtDAL::Project::GetInstance().SetContext("demos/ProjectAssets_Demos");
-      dtDAL::Project::GetInstance().AddContext("ProjectAssets_Shared");
-      dtDAL::LibraryManager::GetInstance().LoadActorRegistry(SimCore::BaseGameEntryPoint::LIBRARY_NAME);
+      dtCore::Project::GetInstance().SetContext("demos/ProjectAssets_Demos");
+      dtCore::Project::GetInstance().AddContext("ProjectAssets_Shared");
+      dtCore::LibraryManager::GetInstance().LoadActorRegistry(SimCore::BaseGameEntryPoint::LIBRARY_NAME);
       SetupCEGUI(*globalApplication);
    }
    catch(const dtUtil::Exception& ex)
@@ -362,7 +362,7 @@ int main (int argc, char* argv[])
 #endif
    globalGUI = NULL;
 
-   dtDAL::LibraryManager::GetInstance().UnloadActorRegistry(SimCore::BaseGameEntryPoint::LIBRARY_NAME);
+   dtCore::LibraryManager::GetInstance().UnloadActorRegistry(SimCore::BaseGameEntryPoint::LIBRARY_NAME);
    dtAudio::AudioManager::Destroy();
 
    return collectedResults.wasSuccessful () ? 0 : 1;

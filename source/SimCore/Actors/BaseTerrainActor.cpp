@@ -22,8 +22,8 @@
 */
 #include <prefix/SimCorePrefix.h>
 #include <SimCore/Actors/BaseTerrainActor.h>
-#include <dtDAL/enginepropertytypes.h>
-#include <dtDAL/actorproxyicon.h>
+#include <dtCore/enginepropertytypes.h>
+#include <dtCore/actorproxyicon.h>
 
 #include <dtCore/shadergroup.h>
 #include <dtCore/shaderprogram.h>
@@ -105,9 +105,9 @@ namespace SimCore
          dtGame::GameActorProxy::BuildPropertyMap();
          BaseTerrainActor &ta = static_cast<BaseTerrainActor&>(GetGameActor());
 
-         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::TERRAIN, 
+         AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::TERRAIN, 
             "TerrainMesh", "TerrainMesh", 
-            dtDAL::ResourceActorProperty::SetFuncType(&ta, &BaseTerrainActor::LoadFile),
+            dtCore::ResourceActorProperty::SetFuncType(&ta, &BaseTerrainActor::LoadFile),
             "Loads in a terrain mesh for this object", "Terrain"));
       }
    }

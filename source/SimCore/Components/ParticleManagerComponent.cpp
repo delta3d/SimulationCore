@@ -362,11 +362,11 @@ namespace SimCore
             mWindWasUpdated = true;
 
             // Update the physics particles wind....
-            std::vector<dtDAL::ActorProxy*> toFill;
+            std::vector<dtCore::ActorProxy*> toFill;
             GetGameManager()->FindActorsByClassName("NxAgeiaParticleSystemActor", toFill);
             if (!toFill.empty())
             {
-               std::vector<dtDAL::ActorProxy*>::iterator toFillInIter = toFill.begin();
+               std::vector<dtCore::ActorProxy*>::iterator toFillInIter = toFill.begin();
                for (; toFillInIter != toFill.end(); ++toFillInIter)
                {
                    SimCore::Actors::PhysicsParticleSystemActor* currentParticleSystem = NULL;

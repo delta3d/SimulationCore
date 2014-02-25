@@ -24,7 +24,7 @@
 #include <SimCore/Actors/TextureProjectorActor.h>
 #include <SimCore/Components/TextureProjectorComponent.h>
 
-#include <dtDAL/resourcedescriptor.h>
+#include <dtCore/resourcedescriptor.h>
 #include <dtCore/transform.h>
 
 #include <dtGame/basemessages.h>

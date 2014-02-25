@@ -8,7 +8,7 @@
 #include <dtCore/shadermanager.h>
 #include <dtCore/system.h>
 
-#include <dtDAL/project.h>
+#include <dtCore/project.h>
 
 #include <dtUtil/noisetexture.h>
 #include <dtUtil/log.h>
@@ -104,8 +104,8 @@ namespace DriverDemo
       mNoiseTexture = new osg::Uniform( osg::Uniform::SAMPLER_3D, "NoiseTexture" );
       mNoiseTexture->set( 0 );
 
-      dtDAL::ResourceDescriptor forceFieldResource("StaticMeshes:Sphere_ForceField.ive");
-      std::string fullPath = dtDAL::Project::GetInstance().GetResourcePath(forceFieldResource);
+      dtCore::ResourceDescriptor forceFieldResource("StaticMeshes:Sphere_ForceField.ive");
+      std::string fullPath = dtCore::Project::GetInstance().GetResourcePath(forceFieldResource);
       if(fullPath.empty())
       {
          LOG_ERROR("Error Loading StaticMesh '" + forceFieldResource.GetResourceIdentifier() + "'.");

@@ -29,7 +29,7 @@
 // INCLUDE DIRECTIVES
 ////////////////////////////////////////////////////////////////////////////////
 #include <SimCore/Export.h>
-#include <dtDAL/resourcedescriptor.h>
+#include <dtCore/resourcedescriptor.h>
 #include <dtUtil/getsetmacros.h>
 #include <dtGame/actorcomponentbase.h>
 
@@ -105,7 +105,7 @@ namespace SimCore
             /**
              * The particle system file that represents the effect.
              */
-            DT_DECLARE_ACCESSOR(dtDAL::ResourceDescriptor, TrailParticlesFile);
+            DT_DECLARE_ACCESSOR(dtCore::ResourceDescriptor, TrailParticlesFile);
 
             ////////////////////////////////////////////////////////////////////
             // SPECIAL METHODS

@@ -77,8 +77,8 @@
 #include <dtCore/transformable.h>
 #include <dtCore/transform.h>
 
-#include <dtDAL/project.h>
-#include <dtDAL/actorproperty.h>
+#include <dtCore/project.h>
+#include <dtCore/actorproperty.h>
 
 #include <dtGame/gameapplication.h>
 #include <dtGame/exceptionenum.h>
@@ -207,8 +207,8 @@ namespace StealthQt
 
       // This was coverted to a png from a jpg because of weird loading problems
       // on Windows XP
-      dtDAL::ResourceDescriptor helpImageResource("icons:help_controls_small.png");
-      const std::string file = dtDAL::Project::GetInstance().GetResourcePath(helpImageResource);
+      dtCore::ResourceDescriptor helpImageResource("icons:help_controls_small.png");
+      const std::string file = dtCore::Project::GetInstance().GetResourcePath(helpImageResource);
       if (!file.empty())
       {
          QPixmap pixmap;
@@ -222,8 +222,8 @@ namespace StealthQt
          LOG_ERROR("Couldn't find camera help image \"" + helpImageResource.GetResourceIdentifier() + "\".");
       }
 
-      dtDAL::ResourceDescriptor iconImageResource("icons:stealthviewer.png");
-      const std::string iconFile = dtDAL::Project::GetInstance().GetResourcePath(iconImageResource);
+      dtCore::ResourceDescriptor iconImageResource("icons:stealthviewer.png");
+      const std::string iconFile = dtCore::Project::GetInstance().GetResourcePath(iconImageResource);
       if (!iconFile.empty())
       {
          QIcon *icon = new QIcon;
@@ -2489,7 +2489,7 @@ namespace StealthQt
       // NOTE: To avoid confusion.
       // Entity Type will write to Entity Type ID line edit
       // Mapping Name will write to Entity Type line edit.
-      const dtDAL::ActorProperty* param
+      const dtCore::ActorProperty* param
       = proxy.GetProperty(SimCore::Actors::BaseEntityActorProxy::PROPERTY_ENTITY_TYPE_ID);
       mUi->mEntityTypeIDLineEdit->setText(tr( param == NULL ? "" : param->ToString().c_str() ));
 

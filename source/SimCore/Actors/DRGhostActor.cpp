@@ -171,7 +171,7 @@ namespace SimCore
                PlatformActorProxy* platform = dynamic_cast<PlatformActorProxy*>(&mSlavedEntity->GetGameActorProxy());
                if (platform != NULL)
                {
-                  dtDAL::ResourceActorProperty* rap = NULL;
+                  dtCore::ResourceActorProperty* rap = NULL;
                   GetGameActorProxy().GetProperty("static mesh", rap);
                   if (rap != NULL)
                   {

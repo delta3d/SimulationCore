@@ -24,7 +24,7 @@
 
 #include <SimCore/Export.h>
 #include <dtGame/gameactor.h>
-#include <dtDAL/resourcedescriptor.h>
+#include <dtCore/resourcedescriptor.h>
 
 namespace dtAudio
 {
@@ -120,12 +120,12 @@ namespace SimCore
 //         /**
 //          * Assigns the sound resource
 //          */
-//         void SetSoundResource(const dtDAL::ResourceDescriptor* soundResource);
+//         void SetSoundResource(const dtCore::ResourceDescriptor* soundResource);
 //
 //         /**
 //          * @return the sound resource
 //          */
-//         dtDAL::ResourceDescriptor* GetSoundResource();
+//         dtCore::ResourceDescriptor* GetSoundResource();
 
          void SetSoundResource(const std::string& fileName);
 
@@ -177,16 +177,16 @@ namespace SimCore
          *  strange considering you cannot actually draw a sound, however, this informs the
          *  world that this proxy's actor and billboard should be represented in the scene.
          */
-         virtual const dtDAL::BaseActorObject::RenderMode& GetRenderMode()
+         virtual const dtCore::BaseActorObject::RenderMode& GetRenderMode()
          {
-            return dtDAL::BaseActorObject::RenderMode::DRAW_ACTOR_AND_BILLBOARD_ICON;
+            return dtCore::BaseActorObject::RenderMode::DRAW_ACTOR_AND_BILLBOARD_ICON;
          }
 
          /**
          * Gets the billboard icon associated with sound actor proxies.
          * @return
          */
-         virtual dtDAL::ActorProxyIcon* GetBillBoardIcon();
+         virtual dtCore::ActorProxyIcon* GetBillBoardIcon();
 
          /// Builds the invokables of this actor
          void BuildInvokables();
@@ -300,7 +300,7 @@ namespace SimCore
 
       private:
 
-         //dtDAL::ResourceDescriptor mSoundResource;
+         //dtCore::ResourceDescriptor mSoundResource;
          std::string mSoundResourceFile;
 
          osg::Vec3 mDirection, mVelocity;

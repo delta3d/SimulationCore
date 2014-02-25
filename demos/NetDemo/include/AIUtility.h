@@ -84,7 +84,7 @@ namespace NetDemo
       DT_DECLARE_ACCESSOR_INLINE(float, Thrusters);
       
 
-      void RegisterProperties(dtDAL::PropertyContainer& pc, const std::string& group);
+      void RegisterProperties(dtCore::PropertyContainer& pc, const std::string& group);
    };
 
    struct BaseAIGoalState: public BaseAIGameState
@@ -121,7 +121,7 @@ namespace NetDemo
       DT_DECLARE_ACCESSOR_INLINE(float, MinElevation);
       DT_DECLARE_ACCESSOR_INLINE(float, MaxElevation);
 
-      void RegisterProperties(dtDAL::PropertyContainer& pc, const std::string& group);
+      void RegisterProperties(dtCore::PropertyContainer& pc, const std::string& group);
    };
 
    struct BaseAIControls
@@ -136,7 +136,7 @@ namespace NetDemo
       DT_DECLARE_ACCESSOR_INLINE(float, Lift);
       DT_DECLARE_ACCESSOR_INLINE(float, Yaw);
 
-      void RegisterProperties(dtDAL::PropertyContainer& pc, const std::string& group);
+      void RegisterProperties(dtCore::PropertyContainer& pc, const std::string& group);
    };
 
    //////////////////////////////////////////////////////////////////////////

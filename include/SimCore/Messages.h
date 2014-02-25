@@ -117,9 +117,9 @@ namespace SimCore
    protected:
       /// Destructor
       virtual ~AttachToActorMessage();
-      dtDAL::NamedActorParameter& mAttachToActorParam;
-      dtDAL::NamedStringParameter& mAttachPointNodeNameParam;
-      dtDAL::NamedVec3fParameter& mInitialAttachRotationHPRParam;
+      dtCore::NamedActorParameter& mAttachToActorParam;
+      dtCore::NamedStringParameter& mAttachPointNodeNameParam;
+      dtCore::NamedVec3fParameter& mInitialAttachRotationHPRParam;
    };
 
    /**
@@ -204,8 +204,8 @@ namespace SimCore
          virtual ~TimeQueryMessage() {}
 
       private:
-         dtGame::StringMessageParameter* mSenderName;
-         dtGame::UnsignedLongIntMessageParameter* mQueryTransmitRealTime;
+         dtCore::NamedStringParameter* mSenderName;
+         dtCore::NamedUnsignedIntParameter* mQueryTransmitRealTime;
    };
 
    class SIMCORE_EXPORT TimeValueMessage : public TimeQueryMessage
@@ -269,13 +269,13 @@ namespace SimCore
          virtual ~TimeValueMessage() {}
 
       private:
-         dtGame::UnsignedLongIntMessageParameter* mQueryReceivedRealTime;
-         dtGame::UnsignedLongIntMessageParameter* mValueTransmitRealTime;
-         dtGame::UnsignedLongIntMessageParameter* mSynchronizedTime;
-         dtGame::FloatMessageParameter*           mTimeScale;
-         dtGame::BooleanMessageParameter*         mPaused;
+         dtCore::NamedUnsignedIntParameter* mQueryReceivedRealTime;
+         dtCore::NamedUnsignedIntParameter* mValueTransmitRealTime;
+         dtCore::NamedUnsignedIntParameter* mSynchronizedTime;
+         dtCore::NamedFloatParameter*           mTimeScale;
+         dtCore::NamedBooleanParameter*         mPaused;
 
-         dtGame::StringMessageParameter*          mTimeMaster;
+         dtCore::NamedStringParameter*          mTimeMaster;
    };
 
 
@@ -346,9 +346,9 @@ namespace SimCore
          virtual ~EmbeddedDataMessage();
 
       private:
-         dtGame::UnsignedShortIntMessageParameter* mEncoding;
-         dtGame::UnsignedShortIntMessageParameter* mDataSize;
-         dtGame::StringMessageParameter* mDataParameter;
+         dtCore::NamedUnsignedShortIntParameter* mEncoding;
+         dtCore::NamedUnsignedShortIntParameter* mDataSize;
+         dtCore::NamedStringParameter* mDataParameter;
    };
 }
 #endif
