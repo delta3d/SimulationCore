@@ -262,7 +262,10 @@ namespace Utils
             const dtPhysics::RayCast::Report& report = *i;
 
             float distance = dtUtil::Abs(pos.z() - report.mHitPos.z());
-            if (shortestDistance > distance || (report.mHitPos.z() > hp.z() && report.mHitPos.z() - hp.z() < bodyHeight))
+            //If the current best hit is below this hit pos, but the space is less than the height of the body, it won't fit
+            // in there, so it has to be moved up to the higher level.
+            bool bodyTooTallForCurrentHit = (report.mHitPos.z() > hp.z() && report.mHitPos.z() - hp.z() < bodyHeight);
+            if (shortestDistance > distance || bodyTooTallForCurrentHit)
             {
                hp = report.mHitPos;
                shortestDistance = distance;
