@@ -248,7 +248,7 @@ namespace Utils
 
       std::vector<dtPhysics::RayCast::Report> hits;
       hits.reserve(10);
-      dtPhysics::PhysicsWorld::GetInstance().TraceRay(ray, hits);
+      dtPhysics::PhysicsWorld::GetInstance().TraceRay(ray, hits, true);
 
       if (!hits.empty())
       {

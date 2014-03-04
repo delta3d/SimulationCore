@@ -108,7 +108,6 @@ namespace SimCore
          , mRadius(0.0f)
          , mMinAltitude(0.0f)
          , mMaxAltitude(100.0f)
-         , mDirtyFlag(false)
          , mEnableTopGeometry(false)
       {
          SetClassName("SimCore::Actors::BattlefieldGraphicsActorProxy");
