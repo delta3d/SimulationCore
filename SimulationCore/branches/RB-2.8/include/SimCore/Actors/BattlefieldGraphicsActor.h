@@ -133,7 +133,6 @@ namespace SimCore
          bool Intersects(const osg::Vec3& line1From, const osg::Vec3& line1To, const osg::Vec3& line2From, const osg::Vec3& line2To, osg::Vec3& intersectPoint);
          bool CheckUpdate();
 
-         bool mDirtyFlag;
          bool mEnableTopGeometry;
          static bool mEnableTopGeometryGlobal;
          dtCore::RefPtr<osg::Geode> mGeode;
