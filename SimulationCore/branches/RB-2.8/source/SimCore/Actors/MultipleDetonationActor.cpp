@@ -104,8 +104,8 @@ namespace SimCore
       // Actor code
       //////////////////////////////////////////////////////////////
 
-      MultipleDetonationActor::MultipleDetonationActor(dtGame::GameActorProxy& proxy)
-      : DetonationActor(proxy)
+      MultipleDetonationActor::MultipleDetonationActor(dtGame::GameActorProxy& owner)
+      : DetonationActor(owner)
       , mNumDetonations(24)
       , mDetonationRadius(200)
       , mDetonationOffsets()

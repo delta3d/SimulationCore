@@ -57,7 +57,7 @@ namespace SimCore
          typedef dtGame::IEnvGameActor BaseClass;
 
          // Constructor
-         IGEnvironmentActor( dtGame::GameActorProxy& proxy );
+         IGEnvironmentActor( dtGame::GameActorProxy& parent );
 
          // Adds an actor proxy to the internal hierarchy of the environment
          // @param actor The proxy to add/

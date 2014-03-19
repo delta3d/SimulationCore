@@ -405,8 +405,8 @@ namespace SimCore
 
       const std::string BaseEntity::MUZZLE_NODE_PREFIX = "hotspot_";
 
-      BaseEntity::BaseEntity(dtGame::GameActorProxy& proxy)
-         : IGActor(proxy)
+      BaseEntity::BaseEntity(dtGame::GameActorProxy& owner)
+         : IGActor(owner)
          , mMaxDamageAmount(1.0f)
          , mCurDamageRatio(0.0f)
          , mDomain(&BaseEntityActorProxy::DomainEnum::GROUND)

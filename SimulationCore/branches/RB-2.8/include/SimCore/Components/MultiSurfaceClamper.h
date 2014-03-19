@@ -33,7 +33,7 @@
 #include <dtGame/defaultgroundclamper.h>
 #include <SimCore/Actors/BaseWaterActor.h>
 #include <SimCore/Actors/BaseEntity.h>
-
+#include <dtCore/batchisector.h>
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -41,7 +41,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 namespace dtCore
 {
-   class BatchIsector::SingleISector;
    class Transform;
 }
 

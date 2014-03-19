@@ -211,8 +211,8 @@ namespace SimCore
       // Actor code
       //////////////////////////////////////////////////////////////
 
-      DetonationActor::DetonationActor(dtGame::GameActorProxy &proxy)
-      : IGActor(proxy)
+      DetonationActor::DetonationActor(dtGame::GameActorProxy& owner)
+      : IGActor(owner)
       , mSmokeLifeTime(0.0f)
       , mCurrentImpact(IMPACT_TERRAIN)
       , mDelayTime(3.0f)

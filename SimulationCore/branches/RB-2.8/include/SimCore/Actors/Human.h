@@ -214,7 +214,7 @@ namespace SimCore
             ///setting this config option will force a weapon to be shown if one exists
             static const dtUtil::RefString CONFIG_ALWAYS_SHOW_WEAPON;
 
-            Human(dtGame::GameActorProxy& proxy);
+            Human(dtGame::GameActorProxy& parent);
 
             /// Changes the human's stance
             void SetStance(HumanActorProxy::StanceEnum& stance);
@@ -311,8 +311,8 @@ namespace SimCore
             typedef std::map<BasicStanceEnum*, unsigned> ExecuteActionCountMap;
             ExecuteActionCountMap mExecutedActionCounts;
 
-            float mMinRunVelocity;
-            float mFullRunVelocity;
+//            float mMinRunVelocity;
+//            float mFullRunVelocity;
 
             dtUtil::Log& mLogger;
 

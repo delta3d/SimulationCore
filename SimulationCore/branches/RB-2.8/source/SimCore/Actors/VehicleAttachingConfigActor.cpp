@@ -29,8 +29,8 @@ namespace SimCore
    namespace Actors
    {
       /////////////////////////////////////////////////////////////////////////
-      VehicleAttachingConfigActor::VehicleAttachingConfigActor(dtGame::GameActorProxy& proxy)
-      : dtGame::GameActor(proxy)
+      VehicleAttachingConfigActor::VehicleAttachingConfigActor(dtGame::GameActorProxy& owner)
+      : dtGame::GameActor(owner)
       , mUseInsideModel(false)
       {
                    

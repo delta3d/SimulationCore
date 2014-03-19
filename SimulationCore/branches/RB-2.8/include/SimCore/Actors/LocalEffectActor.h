@@ -35,7 +35,7 @@ namespace SimCore
          public:
 
             /// Constructor
-            LocalEffectActor(dtGame::GameActorProxy &proxy);
+            LocalEffectActor(dtGame::GameActorProxy& parent);
 
             /**
              * Gets the radius of the bounding sphere of this dust actor

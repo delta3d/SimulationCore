@@ -160,8 +160,8 @@ namespace SimCore
       //////////////////////////////////////////////////////////
       // Actor code
       //////////////////////////////////////////////////////////
-      SurfaceVesselActor::SurfaceVesselActor(dtGame::GameActorProxy& proxy)
-         : Platform(proxy)
+      SurfaceVesselActor::SurfaceVesselActor(dtGame::GameActorProxy& owner)
+         : Platform(owner)
          , mLastSprayRatio(0.0f)
          , mSprayVelocityMin(1.0f)
          , mSprayVelocityMax(8.0f)

@@ -812,10 +812,10 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////
-      bool ParticleManagerComponent::RegisterActor( dtGame::GameActorProxy& proxy )
+      bool ParticleManagerComponent::RegisterActor( dtGame::GameActorProxy& actor )
       {
          return mIdToActorMap.insert(
-            std::make_pair( proxy.GetId(), new ActorInfo( proxy ) )
+            std::make_pair( actor.GetId(), new ActorInfo( actor ) )
             ).second;
       }
 
@@ -831,12 +831,12 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////
-      ActorInfo::ActorInfo( dtGame::GameActorProxy& proxy )
+      ActorInfo::ActorInfo( dtGame::GameActorProxy& actor )
          :  dtCore::Base("ActorInfo")
       {
          // Using the set function in case more needs to be
          // done to the info based on the passed in particles.
-         Set( proxy );
+         Set( actor );
       }
 
 
@@ -852,9 +852,9 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////
-      void ActorInfo::Set( dtGame::GameActorProxy& proxy )
+      void ActorInfo::Set( dtGame::GameActorProxy& actor )
       {
-         mRef = &proxy;
+         mRef = &actor;
       }
 
       //////////////////////////////////////////////////////////

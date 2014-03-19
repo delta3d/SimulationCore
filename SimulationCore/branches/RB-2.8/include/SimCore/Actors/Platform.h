@@ -199,7 +199,7 @@ namespace SimCore
              *
              * @param name the instance name
              */
-            Platform(dtGame::GameActorProxy& proxy);
+            Platform(dtGame::GameActorProxy& parent);
 
             /**
              * Generic method for loading damageable resources.  It is called automatically

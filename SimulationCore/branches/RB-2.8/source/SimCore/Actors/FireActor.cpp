@@ -86,8 +86,8 @@ namespace SimCore
       //////////////////////////////////////////////////////////
       // Actor code
       //////////////////////////////////////////////////////////
-      FireActor::FireActor(dtGame::GameActorProxy &proxy) : 
-         LocalEffectActor(proxy), 
+      FireActor::FireActor(dtGame::GameActorProxy& owner) :
+         LocalEffectActor(owner),
          mLightRange(0)
       {
        

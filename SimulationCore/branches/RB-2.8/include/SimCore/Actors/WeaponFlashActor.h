@@ -73,7 +73,7 @@ namespace SimCore
          public:
 
             // Constructor
-            WeaponFlashActor( dtGame::GameActorProxy &proxy );
+            WeaponFlashActor( dtGame::GameActorProxy& parent );
 
             void SetParticleEffect( const std::string& filePath ) { mParticleFile = filePath; }
 

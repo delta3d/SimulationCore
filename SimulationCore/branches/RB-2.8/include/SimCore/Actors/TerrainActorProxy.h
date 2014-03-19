@@ -81,7 +81,7 @@ namespace SimCore
 
             static const std::string DEFAULT_NAME;
             /// Constructor
-            TerrainActor(dtGame::GameActorProxy& proxy);
+            TerrainActor(dtGame::GameActorProxy& parent);
 
             /**
              * Loads a mesh file which contains terrain.

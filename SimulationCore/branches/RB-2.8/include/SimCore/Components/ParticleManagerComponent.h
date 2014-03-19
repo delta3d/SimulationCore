@@ -139,14 +139,14 @@ namespace SimCore
          public:
             ActorInfo();
 
-            ActorInfo( dtGame::GameActorProxy& proxy );
+            ActorInfo( dtGame::GameActorProxy& parent );
 
             // Updates the info based on the referenced particle system.
             //@return TRUE if update was successful, FALSE if the reference
             // to the particle system is NULL.
             bool Update();
 
-            void Set( dtGame::GameActorProxy& proxy );
+            void Set( dtGame::GameActorProxy& parent );
 
             const dtGame::GameActorProxy* GetActor() const;
 
@@ -241,7 +241,7 @@ namespace SimCore
          // Changes and/or removes particle info.;
          // Info is removed if its weak reference to the particle system is NULL.
          void UpdateActorInfo();
-         bool RegisterActor( dtGame::GameActorProxy& proxy );
+         bool RegisterActor( dtGame::GameActorProxy& parent );
 
          osg::Vec3 ConvertWorldToLocalForce( const osg::Vec3& globalForce, dtCore::Transformable& object,
             osg::Matrix& outWorldLocalMatrix );

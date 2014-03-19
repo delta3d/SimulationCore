@@ -39,7 +39,7 @@ namespace SimCore
    namespace Actors
    {
       /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      TextureProjectorActor::TextureProjectorActor(dtGame::GameActorProxy &proxy) : dtGame::GameActor(proxy)
+      TextureProjectorActor::TextureProjectorActor(dtGame::GameActorProxy& owner) : dtGame::GameActor(owner)
          , mCurrentTime(0)
          , mMaxTime(5)
          , mCurrentAlpha(0)

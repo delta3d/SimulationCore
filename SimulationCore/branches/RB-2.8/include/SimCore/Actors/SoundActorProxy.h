@@ -44,7 +44,7 @@ namespace SimCore
       {
       public:
 
-         SoundActor(dtGame::GameActorProxy& proxy);
+         SoundActor(dtGame::GameActorProxy& parent);
 
          void CreateSound();
          void DestroySound();

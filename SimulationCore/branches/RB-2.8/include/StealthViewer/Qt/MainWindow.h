@@ -447,7 +447,7 @@ namespace StealthQt
          /**
           * Updates the data fields of the Entity Info window. Made into a method cause it's called from several places
           */
-         void UpdateEntityInfoData(dtGame::GameActorProxy& proxy);
+         void UpdateEntityInfoData(dtGame::GameActorProxy& parent);
 
          /**
           * There is only one of 3 coordinate systems active at any one time. Therefore, hide 2 of the 3 possible

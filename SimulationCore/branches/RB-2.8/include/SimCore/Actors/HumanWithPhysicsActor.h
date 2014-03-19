@@ -47,7 +47,7 @@ namespace SimCore
             typedef Human BaseClass;
 
             /// Constructor
-            HumanWithPhysicsActor(dtGame::GameActorProxy& proxy);
+            HumanWithPhysicsActor(dtGame::GameActorProxy& parent);
 
             /// Destructor
             virtual ~HumanWithPhysicsActor();
@@ -85,9 +85,9 @@ namespace SimCore
             osg::Vec3   mMoveRateConstant;// for multiplying for movement amount.
             osg::Vec3   mPreviousTransform;
             osg::Vec3   mSentOverTransform;
-            float mSecsSinceLastUpdateSent;
-            float mMaxUpdateSendRate;
-            bool        mAcceptInput;     // for ai vs human.
+//            float mSecsSinceLastUpdateSent;
+//            float mMaxUpdateSendRate;
+//            bool        mAcceptInput;     // for ai vs human.
             bool        mNotifyChangePosition;
             bool        mNotifyChangeOrient;
             bool        mNotifyChangeVelocity;

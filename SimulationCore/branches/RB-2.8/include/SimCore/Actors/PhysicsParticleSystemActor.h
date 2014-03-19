@@ -62,7 +62,7 @@ namespace SimCore
 
       public:
          /// constructor for NxAgeiaBaseActor
-         PhysicsParticleSystemActor(dtGame::GameActorProxy& proxy);
+         PhysicsParticleSystemActor(dtGame::GameActorProxy& parent);
 
          /**
           * This method is an invokable called when an object is local and

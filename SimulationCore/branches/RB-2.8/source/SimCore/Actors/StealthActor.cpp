@@ -116,11 +116,11 @@ namespace SimCore
       //////////////////////////////////////////////////////
       // Actor code
       //////////////////////////////////////////////////////
-      StealthActor::StealthActor(dtGame::GameActorProxy& proxy) :
-         Platform(proxy),
-         mAttachAsThirdPerson(true),
-         mOldDRA(&dtGame::DeadReckoningAlgorithm::NONE),
-         mAttachOffset(0.0f, 0.0f, 1.5f)
+      StealthActor::StealthActor(dtGame::GameActorProxy& owner)
+         : Platform(owner)
+         , mAttachAsThirdPerson(true)
+         , mOldDRA(&dtGame::DeadReckoningAlgorithm::NONE)
+         , mAttachOffset(0.0f, 0.0f, 1.5f)
       {
          mLogger = &dtUtil::Log::GetInstance("StealthActor.cpp");
          SetAutoRegisterWithMunitionsComponent(false);

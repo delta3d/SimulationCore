@@ -2372,7 +2372,7 @@ namespace StealthQt
    }
 
    ///////////////////////////////////////////////////////////////////
-   void MainWindow::UpdateEntityInfoData(dtGame::GameActorProxy& proxy)
+   void MainWindow::UpdateEntityInfoData(dtGame::GameActorProxy& actor)
    {
       std::ostringstream oss;
       // Get the StealthHUD so we can get the coordinate Converter. Makes our coordinates be location specific.
@@ -2387,11 +2387,11 @@ namespace StealthQt
       dtUtil::Coordinates& coordinateConverter = hudComponent->GetCoordinateConverter();
 
       // Calculate the directional speed from the entities velocity
-      SimCore::Actors::BaseEntity* entity = NULL;
-      proxy.GetActor(entity);
+      SimCore::Actors::BaseEntity* entityDraw = NULL;
+      actor.GetDrawable(entityDraw);
 
       dtCore::Transform trans;
-      entity->GetTransform(trans, dtCore::Transformable::REL_CS);
+      entityDraw->GetTransform(trans, dtCore::Transformable::REL_CS);
       osg::Vec3 pos;
       trans.GetTranslation(pos);
       osg::Vec3 rot;
@@ -2452,15 +2452,15 @@ namespace StealthQt
       oss << SimCore::UnitOfAngle::Convert(SimCore::UnitOfAngle::DEGREE, toolsConfig.GetAngleUnit(), roll);
       mUi->mEntityInfoRotRollEdit->setText(tr(oss.str().c_str()));
 
-      osg::Vec3 velocity = entity->GetComponent<dtGame::DeadReckoningHelper>()->GetLastKnownVelocity();
+      osg::Vec3 velocity = entityDraw->GetComponent<dtGame::DeadReckoningHelper>()->GetLastKnownVelocity();
       // speed is distance of velocity. Then, convert from m/s to MPH
       float speed = velocity.length();
       oss.str("");
       oss.precision(4);
       // sea entities use knots.
-      if (entity->GetDomain() == SimCore::Actors::BaseEntityActorProxy::DomainEnum::SURFACE
-               || entity->GetDomain() == SimCore::Actors::BaseEntityActorProxy::DomainEnum::SUBMARINE
-               || entity->GetDomain() == SimCore::Actors::BaseEntityActorProxy::DomainEnum::AMPHIBIOUS)
+      if (entityDraw->GetDomain() == SimCore::Actors::BaseEntityActorProxy::DomainEnum::SURFACE
+               || entityDraw->GetDomain() == SimCore::Actors::BaseEntityActorProxy::DomainEnum::SUBMARINE
+               || entityDraw->GetDomain() == SimCore::Actors::BaseEntityActorProxy::DomainEnum::AMPHIBIOUS)
       {
          // Convert to knots and truncate past two decimal places.
          oss << std::floor((speed * 1.94384449f) * 100.0f) / 100.0f << " KNOTS";
@@ -2482,18 +2482,18 @@ namespace StealthQt
       oss << " " << toolsConfig.GetAngleUnit().GetAbbreviation();
       mUi->mEntityInfoSpeedDir->setText(tr(oss.str().c_str()));
 
-      mUi->mEntityInfoCallSignLineEdit->setText(tr(proxy.GetName().c_str()));
-      mUi->mEntityInfoForceLineEdit->setText(tr(proxy.GetProperty("Force Affiliation")->ToString().c_str()));
-      mUi->mDamageStateLineEdit->setText(tr(proxy.GetProperty(SimCore::Actors::BaseEntityActorProxy::PROPERTY_DAMAGE_STATE)->ToString().c_str()));
+      mUi->mEntityInfoCallSignLineEdit->setText(tr(actor.GetName().c_str()));
+      mUi->mEntityInfoForceLineEdit->setText(tr(actor.GetProperty("Force Affiliation")->ToString().c_str()));
+      mUi->mDamageStateLineEdit->setText(tr(actor.GetProperty(SimCore::Actors::BaseEntityActorProxy::PROPERTY_DAMAGE_STATE)->ToString().c_str()));
 
       // NOTE: To avoid confusion.
       // Entity Type will write to Entity Type ID line edit
       // Mapping Name will write to Entity Type line edit.
       const dtCore::ActorProperty* param
-      = proxy.GetProperty(SimCore::Actors::BaseEntityActorProxy::PROPERTY_ENTITY_TYPE_ID);
+      = actor.GetProperty(SimCore::Actors::BaseEntityActorProxy::PROPERTY_ENTITY_TYPE_ID);
       mUi->mEntityTypeIDLineEdit->setText(tr( param == NULL ? "" : param->ToString().c_str() ));
 
-      param = proxy.GetProperty(SimCore::Actors::BaseEntityActorProxy::PROPERTY_MAPPING_NAME);
+      param = actor.GetProperty(SimCore::Actors::BaseEntityActorProxy::PROPERTY_MAPPING_NAME);
       mUi->mEntityTypeLineEdit->setText(tr( param == NULL ? "" : param->ToString().c_str() ));
 
       // we hide the last update time now, since in reality, we can't use this field. The last update time

@@ -84,7 +84,7 @@ namespace StealthQt
             const std::string &value = entity.GetDamageState().GetName();
 
             // Skip it.
-            if(value != damageState)
+            if (value != damageState)
                continue;
          }
 
@@ -93,12 +93,12 @@ namespace StealthQt
       }
    }
 
-   double EntitySearch::GetLastUpdateTime(const dtGame::GameActorProxy &proxy)
+   double EntitySearch::GetLastUpdateTime(const dtGame::GameActorProxy& actor)
    {
-      const SimCore::Actors::BaseEntity *entity =
-         dynamic_cast<const SimCore::Actors::BaseEntity*>(&proxy.GetGameActor());
+      const SimCore::Actors::BaseEntity* entity =
+         dynamic_cast<const SimCore::Actors::BaseEntity*>(&actor.GetGameActor());
 
-         if(entity == NULL)
+         if (entity == NULL)
             return 0.0;
 
          const dtGame::DeadReckoningHelper* drhelp = NULL;

@@ -69,8 +69,8 @@ namespace SimCore
    namespace Actors
    {
 
-      EphemerisEnvironmentActor::EphemerisEnvironmentActor(dtGame::GameActorProxy& proxy)
-      : BaseClass(proxy)
+      EphemerisEnvironmentActor::EphemerisEnvironmentActor(dtGame::GameActorProxy& owner)
+      : BaseClass(owner)
       , mEphemerisModel(new osgEphemeris::EphemerisModel())
       , mFogSphere(0)
       , mFogSphereEyePointTransform(new MoveWithEyePointTransform())

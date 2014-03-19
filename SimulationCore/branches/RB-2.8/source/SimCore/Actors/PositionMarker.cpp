@@ -31,8 +31,8 @@ namespace SimCore
       const std::string PositionMarker::COLOR_UNIFORM("forceColor");
 
       ////////////////////////////////////////////////////////////////////////
-      PositionMarker::PositionMarker(dtGame::GameActorProxy& proxy)
-         : BaseClass(proxy)
+      PositionMarker::PositionMarker(dtGame::GameActorProxy& owner)
+         : BaseClass(owner)
          , mReportTime(0.0)
          , mStaleTime(0.0)
          , mFadeOutTime(0.0)
