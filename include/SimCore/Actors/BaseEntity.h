@@ -170,7 +170,7 @@ namespace SimCore
 
             static const std::string MUZZLE_NODE_PREFIX;
 
-            BaseEntity(dtGame::GameActorProxy& proxy);
+            BaseEntity(dtGame::GameActorProxy& parent);
 
             virtual void OnEnteredWorld();
 

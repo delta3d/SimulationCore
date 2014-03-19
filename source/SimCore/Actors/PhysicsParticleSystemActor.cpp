@@ -64,7 +64,7 @@ namespace SimCore
       // could be done, not done - angular velocity over time...... wouldn't be hard.
 
       ////////////////////////////////////////////////////////////////////
-      PhysicsParticleSystemActor::PhysicsParticleSystemActor(dtGame::GameActorProxy& proxy) : dtGame::GameActor(proxy)
+      PhysicsParticleSystemActor::PhysicsParticleSystemActor(dtGame::GameActorProxy& owner) : dtGame::GameActor(owner)
       , mParticleEnumForObjectType(&PhysicsParticleSystemActor::TwoDOrThreeDTypeEnum::THREE_D)
       , mSpawnerParticleTimer(0.0f)
       , mParticleEmitterRateMin(0.05f) // NI

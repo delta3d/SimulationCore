@@ -61,8 +61,8 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////
       // Actor code
       ////////////////////////////////////////////////////////////////////////
-      IGEnvironmentActor::IGEnvironmentActor(dtGame::GameActorProxy& proxy)
-         : BaseClass(proxy)
+      IGEnvironmentActor::IGEnvironmentActor(dtGame::GameActorProxy& owner)
+         : BaseClass(owner)
          , mEnableCloudPlane(true)
          , mEnableLensFlare(false)
          , mInitSystemClock(false)

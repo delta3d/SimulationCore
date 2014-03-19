@@ -39,7 +39,7 @@ namespace SimCore
          public:
 
             /// Constructor
-            InteriorActor(dtGame::GameActorProxy &proxy);
+            InteriorActor(dtGame::GameActorProxy& parent);
 
             void SetVisible( bool visible );
             bool IsVisible() const;

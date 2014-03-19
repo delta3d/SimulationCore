@@ -54,7 +54,7 @@ namespace SimCore
       public:
 
          /// Constructor
-         MissileActor(dtGame::GameActorProxy& proxy);
+         MissileActor(dtGame::GameActorProxy& parent);
 
          void SetFlameEnabled( bool enable );
 
@@ -89,9 +89,6 @@ namespace SimCore
 
          dtCore::RefPtr<dtCore::ParticleSystem> mFlame;
          dtCore::RefPtr<dtActors::ParticleSystemActorProxy> mSmokeTrail;
-
-         bool mLastTranslationSet;
-         bool mLastRotationSet;
 
       };
 

@@ -134,7 +134,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////
       // Munition Effect Actor Proxy Code
       //////////////////////////////////////////////////////////
-      class SIMCORE_EXPORT MunitionEffectsInfoActorProxy : public dtCore::ActorProxy
+      class SIMCORE_EXPORT MunitionEffectsInfoActorProxy : public dtCore::BaseActorObject
       {
          public:
             static const std::string CLASS_NAME;
@@ -258,13 +258,9 @@ namespace SimCore
 
          private:
             float mProbabilityFireFlash;
-            float mSoundFire_Min;
             float mSoundFire_Max;
-            float mSoundImpactGround_Min;
             float mSoundImpactGround_Max;
-            float mSoundImpactEntity_Min;
             float mSoundImpactEntity_Max;
-            float mSoundFly_Min;
             float mSoundFly_Max;
             float mTimeSmoke;
             float mFireFlashTime;

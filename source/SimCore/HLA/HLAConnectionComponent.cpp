@@ -79,7 +79,6 @@ namespace SimCore
          , mRTIStandard(dtHLAGM::RTIAmbassador::RTI13_IMPLEMENTATION)
          , mRidFile()
          , mConnectionType(&ConnectionType::TYPE_NONE)
-         , mCurrentConnectionType(&ConnectionType::TYPE_NONE)
          , mServerGameVersion(1)
          , mDISIPAddress()
          , mDISPort()

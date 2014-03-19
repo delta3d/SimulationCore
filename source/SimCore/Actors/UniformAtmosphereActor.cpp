@@ -121,8 +121,8 @@ namespace SimCore
       //////////////////////////////////////////////////////////
       // Actor code
       //////////////////////////////////////////////////////////
-      UniformAtmosphereActor::UniformAtmosphereActor( dtGame::GameActorProxy &proxy )
-         : AtmosphereActor(proxy),
+      UniformAtmosphereActor::UniformAtmosphereActor( dtGame::GameActorProxy& owner )
+         : AtmosphereActor(owner),
          mVisibility(100.0f), // km
          mCloudBaseHeight(0.0f), // m
          mCloudTopHeight(0.0f), // m

@@ -243,8 +243,8 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////
-      MunitionParticlesActor::MunitionParticlesActor(dtGame::GameActorProxy& proxy)
-      : PhysicsParticleSystemActor(proxy)
+      MunitionParticlesActor::MunitionParticlesActor(dtGame::GameActorProxy& owner)
+      : PhysicsParticleSystemActor(owner)
       , mUseTracers(false)
       , mCurrentTracerRoundNumber(0)
       , mFrequencyOfTracers(10)

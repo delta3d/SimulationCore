@@ -70,8 +70,8 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////////
       // ACTOR CODE
       //////////////////////////////////////////////////////////////////////////////
-      SoundActor::SoundActor(dtGame::GameActorProxy& proxy)
-      : dtGame::GameActor(proxy)
+      SoundActor::SoundActor(dtGame::GameActorProxy& owner)
+      : dtGame::GameActor(owner)
       {
          //make sure AudioManager has been initialized
          if(!dtAudio::AudioManager::GetInstance().IsInitialized())

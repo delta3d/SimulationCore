@@ -38,7 +38,7 @@ namespace SimCore
       {
       public:
          typedef SimCore::Actors::IGEnvironmentActor BaseClass;
-         EphemerisEnvironmentActor(dtGame::GameActorProxy& proxy);
+         EphemerisEnvironmentActor(dtGame::GameActorProxy& parent);
 
          virtual void OnEnteredWorld();
 

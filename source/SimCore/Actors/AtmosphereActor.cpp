@@ -79,8 +79,8 @@ namespace SimCore
       //////////////////////////////////////////////////////////
       // Actor code
       //////////////////////////////////////////////////////////
-      AtmosphereActor::AtmosphereActor( dtGame::GameActorProxy &proxy )
-         : IGActor(proxy)
+      AtmosphereActor::AtmosphereActor( dtGame::GameActorProxy& owner )
+         : IGActor(owner)
       {
 
       }

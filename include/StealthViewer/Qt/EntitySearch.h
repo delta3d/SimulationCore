@@ -57,7 +57,7 @@ namespace StealthQt
           * @return The last update time of the rotation, or translation. 
           * Whichever is greater
           */
-         static double GetLastUpdateTime(const dtGame::GameActorProxy &proxy);
+         static double GetLastUpdateTime(const dtGame::GameActorProxy& parent);
    };
 }
 

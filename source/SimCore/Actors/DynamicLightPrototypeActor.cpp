@@ -143,8 +143,8 @@ namespace SimCore
       //////////////////////////////////////////////////////////
       // Actor code
       //////////////////////////////////////////////////////////
-      DynamicLightPrototypeActor::DynamicLightPrototypeActor( dtGame::GameActorProxy &proxy )
-         : IGActor(proxy), 
+      DynamicLightPrototypeActor::DynamicLightPrototypeActor( dtGame::GameActorProxy& owner )
+         : IGActor(owner),
          mIntensity(1.0f),
          mLightColor(osg::Vec3(1.0f, 1.0f, 1.0f)),
          mAttenuation(osg::Vec3(0.1f, 0.005f, 0.00002f)),
@@ -228,8 +228,8 @@ namespace SimCore
       //////////////////////////////////////////////////////////
       // Actor code
       //////////////////////////////////////////////////////////
-      SpotLightPrototypeActor::SpotLightPrototypeActor( dtGame::GameActorProxy &proxy )
-         : DynamicLightPrototypeActor(proxy)
+      SpotLightPrototypeActor::SpotLightPrototypeActor( dtGame::GameActorProxy& owner )
+         : DynamicLightPrototypeActor(owner)
          , mUseAbsoluteDirection(false)
          , mSpotExponent(0.5f)
          , mSpotCosCutoff(0.75)

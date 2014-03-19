@@ -58,8 +58,8 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       // Weapon Flash Actor Code
       //////////////////////////////////////////////////////////////////////////
-      WeaponFlashActor::WeaponFlashActor(dtGame::GameActorProxy &proxy)
-         : dtGame::GameActor(proxy),
+      WeaponFlashActor::WeaponFlashActor(dtGame::GameActorProxy& owner)
+         : dtGame::GameActor(owner),
          mVisible(true),
          mCurTime(0.0f),
          mFlashTime(0.5f),

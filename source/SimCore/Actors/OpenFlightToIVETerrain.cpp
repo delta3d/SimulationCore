@@ -53,8 +53,8 @@ namespace SimCore
    namespace Actors
    {
       ///////////////////////////////////////////////////////////////////////////////
-      OpenFlightToIVETerrainActor::OpenFlightToIVETerrainActor(dtGame::GameActorProxy& proxy)
-      : IGActor(proxy)
+      OpenFlightToIVETerrainActor::OpenFlightToIVETerrainActor(dtGame::GameActorProxy& owner)
+      : IGActor(owner)
       , mPaging_Min_X(0.0f)
       , mPaging_Min_Y(0.0f)
       , mPaging_Max_X(85.0f)

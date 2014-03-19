@@ -75,12 +75,10 @@ namespace SimCore
    , mRearTireStiffness(100000.0f)
    , mRearTireRestitution(0.1f)
    , mCurrentNormalizedSteering(0.0f)
-   , mCurrentEngineTorque(0.0f)
    , mCurrentNormalizedBrakes(0.0f)
    , mAccelerator(0.0f)
    , mFrontMaxJounce(0.0f)
    , mRearMaxJounce(0.0f)
-   , mFourWheelDrive(false)
    {
       mAxleRotation[0] = 0.0f;
       mAxleRotation[1] = 0.0f;

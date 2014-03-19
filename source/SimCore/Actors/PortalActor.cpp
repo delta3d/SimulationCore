@@ -112,8 +112,8 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////
-      Portal::Portal(dtGame::GameActorProxy &proxy) :
-         dtGame::GameActor(proxy),
+      Portal::Portal(dtGame::GameActorProxy& owner) :
+         dtGame::GameActor(owner),
          mIsOpen(false)
       {
          mTimeToSendOut = 10.0f;

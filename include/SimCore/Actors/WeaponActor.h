@@ -422,9 +422,6 @@ namespace SimCore
             //this is the id that corresponds to our dynamic light effect
             unsigned mDynamicLightID;
 
-            //keeps track of our dynamic light so we know if we should disable it
-            bool mDynamicLightEnabled;
-
             // The world location where the impact occurred.
             osg::Vec3 mLastHitLocation;
 

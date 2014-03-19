@@ -29,7 +29,7 @@ namespace SimCore
 
             static const std::string COLOR_UNIFORM;
 
-            PositionMarker(dtGame::GameActorProxy& proxy);
+            PositionMarker(dtGame::GameActorProxy& parent);
             virtual ~PositionMarker();
 
             void SetReportTime(double reportTime);

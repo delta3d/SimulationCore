@@ -125,10 +125,8 @@ namespace SimCore
       //////////////////////////////////////////////////////////
       // Actor code
       //////////////////////////////////////////////////////////
-      MissileActor::MissileActor(dtGame::GameActorProxy& proxy) :
-         Platform(proxy),
-         mLastTranslationSet(false),
-         mLastRotationSet(false)
+      MissileActor::MissileActor(dtGame::GameActorProxy& owner) :
+         Platform(owner)
       {
       }
 

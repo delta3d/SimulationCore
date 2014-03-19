@@ -60,7 +60,7 @@ namespace SimCore
          typedef Platform BaseClass;
 
          /// Constructor
-         SurfaceVesselActor(dtGame::GameActorProxy &proxy);
+         SurfaceVesselActor(dtGame::GameActorProxy& parent);
 
          void SetWaterSprayEnabled( bool enable );
 

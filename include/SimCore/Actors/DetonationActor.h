@@ -76,7 +76,7 @@ namespace SimCore
             enum IMPACT_TYPE{IMPACT_TERRAIN, IMPACT_ENTITY, IMPACT_HUMAN};
 
             /// Constructor
-            DetonationActor(dtGame::GameActorProxy& proxy);
+            DetonationActor(dtGame::GameActorProxy& parent);
 
             /**
              *  The impact type determines which particle system and sounds will be played.

@@ -175,7 +175,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////
 
       //////////////////////////////////////////////////////////
-      ViewerMaterialActor::ViewerMaterialActor(dtGame::GameActorProxy &proxy) : dtGame::GameActor(proxy)
+      ViewerMaterialActor::ViewerMaterialActor(dtGame::GameActorProxy& owner) : dtGame::GameActor(owner)
          , m_PHYS_DynamicFriction(0.5f)
          , m_PHYS_StaticFriction(0.5f)
          , m_PHYS_Restitution(0.2f)

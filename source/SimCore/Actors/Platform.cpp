@@ -187,7 +187,7 @@ namespace SimCore
          BaseClass::GetPartialUpdateProperties(propNamesToFill);
 
          Platform* platform;
-         GetActor(platform);
+         GetDrawable(platform);
 
          if (platform->GetArticulationHelper() != NULL && platform->GetArticulationHelper()->IsDirty() )
          {
@@ -420,8 +420,8 @@ namespace SimCore
       const std::string Platform::DOF_NAME_HEAD_LIGHTS("headlight_01");
 
       ////////////////////////////////////////////////////////////////////////////////////
-      Platform::Platform(dtGame::GameActorProxy& proxy)
-      : BaseEntity(proxy)
+      Platform::Platform(dtGame::GameActorProxy& owner)
+      : BaseEntity(owner)
       , mEngineSmokeOn(false)
       , mTimeBetweenControlStateUpdates(0.3333f)
       , mTimeUntilControlStateUpdate(0.0f)

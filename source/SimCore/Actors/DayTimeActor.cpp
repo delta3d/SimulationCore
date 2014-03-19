@@ -33,8 +33,8 @@ namespace SimCore
       //////////////////////////////////////////////////////////
       // Actor code
       //////////////////////////////////////////////////////////
-      DayTimeActor::DayTimeActor(dtGame::GameActorProxy &proxy)
-         : IGActor(proxy),
+      DayTimeActor::DayTimeActor(dtGame::GameActorProxy& owner)
+         : IGActor(owner),
          mTime(0),
          mPrimeMeridianHourOffset(0)
       {

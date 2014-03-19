@@ -242,8 +242,8 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////
 
          //////////////////////////////////////////////////////////////////////
-         PagedTerrainPhysicsActor::PagedTerrainPhysicsActor(dtGame::GameActorProxy &proxy)
-            : GameActor(proxy)
+         PagedTerrainPhysicsActor::PagedTerrainPhysicsActor(dtGame::GameActorProxy& owner)
+            : GameActor(owner)
             , mNumNodesLoaded(0)
             , mNumVertsLoaded(0)
          {
@@ -455,7 +455,7 @@ namespace SimCore
                DrawableTriangleVisitor<dtPhysics::TriangleRecorder> dtv(*this);
                nodeToParse->accept(dtv);
 
-               if (!dtv.mFunctor.mVertices.empty())
+               if (!dtv.mFunctor.mData.mVertices->empty())
                {
                   dtCore::RefPtr<dtPhysics::PhysicsObject> newTile = new dtPhysics::PhysicsObject(nameOfNode);
                   dtPhysics::PhysicsActComp* ac;
@@ -469,10 +469,10 @@ namespace SimCore
                   newTile->SetSkinThickness(0.0);
 
                   dtPhysics::VertexData data;
-                  data.mIndices = &dtv.mFunctor.mIndices.front();
-                  data.mVertices = (dtPhysics::Real*)&dtv.mFunctor.mVertices.front();
-                  data.mNumIndices = dtv.mFunctor.mIndices.size();
-                  data.mNumVertices = dtv.mFunctor.mVertices.size();
+                  data.mIndices = &dtv.mFunctor.mData.mFaces->front();
+                  data.mVertices = (dtPhysics::Real*)&dtv.mFunctor.mData.mVertices->front();
+                  data.mNumIndices = dtv.mFunctor.mData.mFaces->size();
+                  data.mNumVertices = dtv.mFunctor.mData.mVertices->size();
                   dtCore::Transform xform;
                   dtCore::RefPtr<dtPhysics::Geometry> geom = dtPhysics::Geometry::CreateConcaveGeometry(xform, data, 0);
                   geom->SetMargin(0.06);

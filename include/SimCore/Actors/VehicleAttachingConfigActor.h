@@ -38,7 +38,7 @@ namespace SimCore
          public:
 
             /// Constructor
-            VehicleAttachingConfigActor(dtGame::GameActorProxy &proxy);
+            VehicleAttachingConfigActor(dtGame::GameActorProxy& parent);
 
             //////////////////////////////////////////////////////////////////////////////////
             osg::Vec3 GetSeatPosition() {return mSeatPosition;}

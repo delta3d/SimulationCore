@@ -36,7 +36,7 @@ namespace SimCore
          public:
 
             /// Constructor
-            FireActor(dtGame::GameActorProxy &proxy);
+            FireActor(dtGame::GameActorProxy& parent);
 
             /**
              * Sets the light range on this actor

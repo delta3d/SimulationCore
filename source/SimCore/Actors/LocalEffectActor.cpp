@@ -104,8 +104,8 @@ namespace SimCore
       //////////////////////////////////////////////////////////
       // Actor code
       //////////////////////////////////////////////////////////
-      LocalEffectActor::LocalEffectActor(dtGame::GameActorProxy &proxy) : 
-         IGActor(proxy), 
+      LocalEffectActor::LocalEffectActor(dtGame::GameActorProxy& owner) :
+         IGActor(owner),
          mParticleSystem(new dtCore::ParticleSystem),
          mBoundingSphereRadius(0),
          mSmokePlumeLength(0), 

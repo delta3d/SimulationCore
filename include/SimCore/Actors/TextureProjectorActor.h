@@ -43,7 +43,7 @@ namespace SimCore
       {
          public:
             /// constructor for NxAgeiaBaseActor
-            TextureProjectorActor(dtGame::GameActorProxy& proxy);
+            TextureProjectorActor(dtGame::GameActorProxy& parent);
 
             /**
             * This method is an invokable called when an object is local and

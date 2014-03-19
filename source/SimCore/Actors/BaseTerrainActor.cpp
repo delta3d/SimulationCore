@@ -37,7 +37,7 @@ namespace SimCore
    namespace Actors
    {
       ///////////////////////////////////////////////////////////////////////////////
-      BaseTerrainActor::BaseTerrainActor(dtGame::GameActorProxy &proxy) : IGActor(proxy), mNeedToLoad(false)
+      BaseTerrainActor::BaseTerrainActor(dtGame::GameActorProxy& owner) : IGActor(owner), mNeedToLoad(false)
       {
       }
 

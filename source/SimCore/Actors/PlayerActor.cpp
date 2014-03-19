@@ -102,8 +102,8 @@ namespace SimCore
       //////////////////////////////////////////////////////////
       // Actor code
       //////////////////////////////////////////////////////////
-      PlayerActor::PlayerActor(dtGame::GameActorProxy &proxy) :
-         StealthActor(proxy),
+      PlayerActor::PlayerActor(dtGame::GameActorProxy& owner) :
+         StealthActor(owner),
          mActiveTool(&SimCore::MessageType::NO_TOOL)
       {
          SetAttachAsThirdPerson(false);

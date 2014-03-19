@@ -256,11 +256,11 @@ namespace SimCore
 
          // Determines if the mouse needs to be re-centered if
          // free-look has started from a non-free-look state.
-         bool mFreeLookWasHeld;
+//         bool mFreeLookWasHeld;
 
          // Determines if the mouse needs to be re-centered if
          // free-look has started from a non-free-look state.
-         bool mFreeLookMouseButtonWasHeld;
+//        bool mFreeLookMouseButtonWasHeld;
 
          // Controls whether the mouse pointer is reset to the 
          // center of the application window or not.
@@ -310,9 +310,9 @@ namespace SimCore
          dtCore::ObserverPtr<osgSim::DOFTransform> mDOF;
 
          bool mTestMode;
-         float mTestTimeSincePrint;
-         int mTestNumberOfZeros;
-         int mTestNumberOfCalls;
+//         float mTestTimeSincePrint;
+//         int mTestNumberOfZeros;
+//         int mTestNumberOfCalls;
    };
 }
  

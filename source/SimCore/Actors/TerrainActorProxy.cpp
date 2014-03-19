@@ -271,8 +271,8 @@ namespace SimCore
 
 
       ///////////////////////////////////////////////////////////////
-      TerrainActor::TerrainActor(dtGame::GameActorProxy& proxy)
-      : IGActor(proxy)
+      TerrainActor::TerrainActor(dtGame::GameActorProxy& owner)
+      : IGActor(owner)
       , mTerrainPhysicsMode(&SimCore::TerrainPhysicsMode::DEFERRED)
       , mNeedToLoad(false)
       , mLoadTerrainMeshWithCaching(false)
@@ -372,7 +372,6 @@ namespace SimCore
                osg::Vec3 pos;
                xform.GetTranslation(pos);
 
-               osg::Vec3 vec = pos;
                mCollisionResourceString = dtUtil::FindFileInPathList( mCollisionResourceString.c_str() );
                if (!mCollisionResourceString.empty())
                {

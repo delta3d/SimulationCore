@@ -56,12 +56,14 @@
 #include <dtUtil/stringutils.h>
 #include <dtUtil/configproperties.h>
 
+DT_DISABLE_WARNING_ALL_START
 #include <osg/Geode>
 #include <osg/MatrixTransform>
 #include <osg/io_utils>
 #include <sstream>
 
 #include <cal3d/cal3d.h>
+DT_DISABLE_WARNING_END
 
 #ifdef DELTA_WIN32
    #pragma warning(disable : 4355)
@@ -494,8 +496,8 @@ namespace SimCore
       const dtUtil::RefString Human::CONFIG_ALWAYS_SHOW_WEAPON("SimCore.Human.AlwaysShowWeapon");
 
       ////////////////////////////////////////////////////////////////////////////
-      Human::Human(dtGame::GameActorProxy& proxy)
-         : BaseEntity(proxy)
+      Human::Human(dtGame::GameActorProxy& owner)
+         : BaseEntity(owner)
          , mWeaponMeshName("PrimaryWeapon")
          , mPlannerHelper(
                dtAI::PlannerHelper::RemainingCostFunctor(this, &Human::GetRemainingCost),
@@ -504,8 +506,8 @@ namespace SimCore
          , mAnimOperators(mPlannerHelper)
          , mStance(&HumanActorProxy::StanceEnum::UPRIGHT_STANDING)
          , mPrimaryWeaponStateEnum(&HumanActorProxy::WeaponStateEnum::DEPLOYED)
-         , mMinRunVelocity(0.0f)
-         , mFullRunVelocity(0.0f)
+//         , mMinRunVelocity(0.0f)
+//         , mFullRunVelocity(0.0f)
          , mLogger(dtUtil::Log::GetInstance("Human.cpp"))
          , mMaxTimePerIteration(0.5)
          , mModelLoadedAndWaiting(false)

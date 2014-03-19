@@ -52,13 +52,13 @@ namespace SimCore
       //////////////////////////////////////////////////////////
       // Actor code
       //////////////////////////////////////////////////////////
-      HumanWithPhysicsActor::HumanWithPhysicsActor(dtGame::GameActorProxy& proxy) :
-         Human(proxy)
+      HumanWithPhysicsActor::HumanWithPhysicsActor(dtGame::GameActorProxy& owner) :
+         Human(owner)
       // With 30, this is about 12.66 MPH, which is a decently fast sustainable run. The fastest human sprint
       , mMoveRateConstant(30.0f, 30.0f, 0.0f)
-      , mSecsSinceLastUpdateSent(0.0f)
-      , mMaxUpdateSendRate(3.0f)
-      , mAcceptInput(false)
+//      , mSecsSinceLastUpdateSent(0.0f)
+//      , mMaxUpdateSendRate(3.0f)
+//      , mAcceptInput(false)
       , mNotifyChangePosition(false)
       , mNotifyChangeOrient(false)
       , mNotifyChangeVelocity(false)

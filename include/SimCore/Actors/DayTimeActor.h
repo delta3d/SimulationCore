@@ -36,7 +36,7 @@ namespace SimCore
       public:
 
          /// Constructor
-         DayTimeActor(dtGame::GameActorProxy &proxy);
+         DayTimeActor(dtGame::GameActorProxy& parent);
 
          // The following accessor and mutator are used
          // to satisfy the SIGNED IntActorProperty in

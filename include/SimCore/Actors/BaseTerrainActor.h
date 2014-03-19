@@ -36,7 +36,7 @@ namespace SimCore
          public:
 
             /// Constructor
-            BaseTerrainActor(dtGame::GameActorProxy &proxy);
+            BaseTerrainActor(dtGame::GameActorProxy& parent);
 
             /**
             * Loads a mesh file which contains terrain.

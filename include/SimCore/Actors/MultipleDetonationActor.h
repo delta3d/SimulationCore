@@ -37,7 +37,7 @@ namespace SimCore
          public:
             typedef DetonationActor BaseClass;
             /// Constructor
-            MultipleDetonationActor(dtGame::GameActorProxy& proxy);
+            MultipleDetonationActor(dtGame::GameActorProxy& parent);
 
             // Invoked when a actor is added to the Game Managerring
             virtual void OnEnteredWorld();
