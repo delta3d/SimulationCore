@@ -628,12 +628,15 @@ namespace SimCore
       void WaterGridActor::CreateGeometry()
       {
          mGeode = new osg::Geode();
+         mGeode->setDataVariance(osg::Object::DYNAMIC);
+
          mGeometry = BuildRadialGrid();
          mGeometry->setCullCallback(new WaterCullCallback());
 
          mGeode->addDrawable(mGeometry.get());
 
          osg::StateSet* ss = mGeode->getOrCreateStateSet();
+         ss->setDataVariance(osg::Object::DYNAMIC);
          ss->setMode(GL_BLEND, osg::StateAttribute::ON);
          osg::BlendFunc* bf = new osg::BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
          ss->setAttribute(bf);
@@ -740,6 +743,7 @@ namespace SimCore
 
          //set the elapsed time
          osg::Uniform* elapsedTime = ss->getOrCreateUniform(UNIFORM_ELAPSED_TIME, osg::Uniform::FLOAT);
+         elapsedTime->setDataVariance(osg::Object::DYNAMIC);
          elapsedTime->set(mElapsedTime);
 
          //set the wave direction modifier
@@ -756,6 +760,7 @@ namespace SimCore
 
          //update vertex wave uniforms
          osg::Uniform* waveArray = ss->getOrCreateUniform(UNIFORM_WAVE_ARRAY, osg::Uniform::FLOAT_VEC4, MAX_WAVES * 2);
+         waveArray->setDataVariance(osg::Object::DYNAMIC);
 
          // Update the
          osg::Uniform* centerOffset = ss->getOrCreateUniform(UNIFORM_CENTER_OFFSET, osg::Uniform::FLOAT_VEC3);
@@ -1405,6 +1410,7 @@ namespace SimCore
       {
          osg::StateSet* ss = pCamera.GetOSGCamera()->getOrCreateStateSet();
          osg::Uniform* waterFOVUniform = ss->getOrCreateUniform("waterPlaneFOV", osg::Uniform::FLOAT);
+         waterFOVUniform->setDataVariance(osg::Object::DYNAMIC);
 
          dtCore::Transform xform;
          osg::Vec3d waterCenter, screenPosOut, camPos;
@@ -1531,6 +1537,7 @@ namespace SimCore
       {
          osg::StateSet* ss = pCamera.GetOSGCamera()->getOrCreateStateSet();
          osg::Uniform* waterHeightScreenSpace = ss->getOrCreateUniform("waterHeightScreenSpace", osg::Uniform::FLOAT_VEC3);
+         waterHeightScreenSpace->setDataVariance(osg::Object::DYNAMIC);
 
          dtCore::Transform xform;
          osg::Vec3d waterCenter, screenPosOut, camPos;

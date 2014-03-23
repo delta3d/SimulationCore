@@ -262,6 +262,7 @@ namespace SimCore
          mCompassOverlay->setNodeMask(0);
 
          mLensFocus = new osg::Uniform(osg::Uniform::FLOAT_VEC2, "lensFocus");
+         mLensFocus->setDataVariance(osg::Object::DYNAMIC);
          std::string fragFileName = dtUtil::FindFileInPathList("Shaders/Base/fisheye.frag");
          std::string vertFileName = dtUtil::FindFileInPathList("Shaders/Base/fisheye.vert");
 
@@ -277,6 +278,7 @@ namespace SimCore
             resultValue = fishEyeProg->addShader( fragShader.get() );
 
             osg::StateSet *states = mDisk->getOrCreateStateSet();
+            states->setDataVariance(osg::Object::DYNAMIC);
             states->setAttributeAndModes(fishEyeProg.get(),osg::StateAttribute::ON);
             // The shader will access the 'baseTexture' loaded with your model - in slot 0
             osg::Uniform* pUniform = new osg::Uniform(osg::Uniform::SAMPLER_2D,"baseTexture");
