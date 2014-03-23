@@ -176,6 +176,7 @@ namespace SimCore
 
          osg::Uniform* particleColor = ss->getOrCreateUniform("color", osg::Uniform::FLOAT_VEC4);
          particleColor->set(color);
+         particleColor->setDataVariance(osg::Object::DYNAMIC);
 
          if(mPoints.size() == 1 && mRadius > 0.0001f)
          {
@@ -527,6 +528,7 @@ namespace SimCore
 
          osg::Uniform* particleColor = ss->getOrCreateUniform("color", osg::Uniform::FLOAT_VEC4);
          particleColor->set(color);
+         particleColor->setDataVariance(osg::Object::DYNAMIC);
 
          if(createGeometry)
          {

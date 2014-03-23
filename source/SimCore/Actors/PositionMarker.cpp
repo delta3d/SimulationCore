@@ -314,6 +314,7 @@ namespace SimCore
       {
          osg::StateSet* ss = GetOSGNode()->getOrCreateStateSet();
          osg::Uniform* uniform = ss->getOrCreateUniform(COLOR_UNIFORM, osg::Uniform::FLOAT_VEC4, 1);
+         uniform->setDataVariance(osg::Object::DYNAMIC);
          uniform->set(vec);
       }
 

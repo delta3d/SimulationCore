@@ -602,11 +602,22 @@ namespace SimCore
       {
          osg::StateSet* ss = pCamera.GetOSGCamera()->getOrCreateStateSet();
          osg::Uniform* viewInverseUniform = ss->getOrCreateUniform("inverseViewMatrix", osg::Uniform::FLOAT_MAT4);
+         viewInverseUniform->setDataVariance(osg::Object::DYNAMIC);
+         
          osg::Uniform* mvpiUniform = ss->getOrCreateUniform("modelViewProjectionInverse", osg::Uniform::FLOAT_MAT4);
+         mvpiUniform->setDataVariance(osg::Object::DYNAMIC);
+
          osg::Uniform* hprUniform = ss->getOrCreateUniform("cameraHPR", osg::Uniform::FLOAT_VEC3);
+         hprUniform->setDataVariance(osg::Object::DYNAMIC);
+
          osg::Uniform* nearPlaneUniform = ss->getOrCreateUniform("nearPlane", osg::Uniform::FLOAT);
+         nearPlaneUniform->setDataVariance(osg::Object::DYNAMIC);
+
          osg::Uniform* farPlaneUniform = ss->getOrCreateUniform("farPlane", osg::Uniform::FLOAT);
+         farPlaneUniform->setDataVariance(osg::Object::DYNAMIC);
+
          osg::Uniform* screenDims = ss->getOrCreateUniform("ScreenDimensions", osg::Uniform::FLOAT_VEC2);
+         screenDims->setDataVariance(osg::Object::DYNAMIC);
 
          osg::Vec2 dims(pCamera.GetOSGCamera()->getViewport()->width(), pCamera.GetOSGCamera()->getViewport()->height());
          screenDims->set(dims);
@@ -904,7 +915,10 @@ namespace SimCore
          static const std::string SPOT_LIGHT_UNIFORM = "spotLights";
 #endif
          osg::Uniform* lightArrayUniform = ss->getOrCreateUniform(DYN_LIGHT_UNIFORM, osg::Uniform::FLOAT_VEC4, mMaxDynamicLights * 3);
+         lightArrayUniform->setDataVariance(osg::Object::DYNAMIC);
+
          osg::Uniform* spotLightArrayUniform = ss->getOrCreateUniform(SPOT_LIGHT_UNIFORM, osg::Uniform::FLOAT_VEC4, mMaxSpotLights * 4);
+         spotLightArrayUniform->setDataVariance(osg::Object::DYNAMIC);
 
          UpdateDynamicLightUniforms(tempLightArray, lightArrayUniform, spotLightArrayUniform);
       }
@@ -1017,7 +1031,10 @@ namespace SimCore
          static const std::string SPOT_LIGHT_UNIFORM = "spotLights";
 #endif
          osg::Uniform* lightArray = ss->getOrCreateUniform(DYN_LIGHT_UNIFORM, osg::Uniform::FLOAT_VEC4, mMaxDynamicLights * 3);
+         lightArray->setDataVariance(osg::Object::DYNAMIC);
+
          osg::Uniform* spotLightArray = ss->getOrCreateUniform(SPOT_LIGHT_UNIFORM, osg::Uniform::FLOAT_VEC4, mMaxSpotLights * 4);
+         spotLightArray->setDataVariance(osg::Object::DYNAMIC);
 
          UpdateDynamicLightUniforms(mLights, lightArray, spotLightArray);
       }

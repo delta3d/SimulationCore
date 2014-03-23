@@ -131,6 +131,7 @@ namespace DriverDemo
 
       ss->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
       ss->setMode(GL_CULL_FACE, osg::StateAttribute::OFF );
+      ss->setDataVariance(osg::Object::DYNAMIC);
 
       node.addChild(mForceField.get());
    }

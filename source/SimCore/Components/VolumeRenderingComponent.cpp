@@ -562,6 +562,7 @@ namespace SimCore
       {
          osg::StateSet* ss = svr.mParticleDrawable->getOrCreateStateSet();
          osg::Uniform* particleArray = ss->getOrCreateUniform(VOLUME_PARTICLE_POS_UNIFORM, osg::Uniform::FLOAT_VEC4, svr.mParticleDrawable->GetNumParticles());
+         particleArray->setDataVariance(osg::Object::DYNAMIC);
 
          switch(svr.mShapeType)
          {
@@ -675,6 +676,7 @@ namespace SimCore
 
          osg::StateSet* ss = svr.mParticleDrawable->getOrCreateStateSet();
          osg::Uniform* particleRadiusUniform = ss->getOrCreateUniform(VOLUME_PARTICLE_RADIUS_UNIFORM, osg::Uniform::FLOAT);
+         particleRadiusUniform->setDataVariance(osg::Object::DYNAMIC);
 
          float particleRadius = multiplier * std::pow( (3.0f * particleVolume) / (4.0f * float(osg::PI)), 1.0f / 3.0f);
          svr.mParticleRadius = particleRadius;
@@ -736,11 +738,14 @@ namespace SimCore
    void VolumeRenderingComponent::CreateSimpleShape(ShapeVolumeRecord& newShape)
    {
       dtCore::RefPtr<osg::Geode> g = new osg::Geode();
+      g->setDataVariance(osg::Object::DYNAMIC);
+
       dtCore::RefPtr<osg::MatrixTransform> matTrans = new osg::MatrixTransform();
       newShape.mParentNode = matTrans.get();
       newShape.mParentNode->addChild(g.get());
 
       osg::StateSet* ss = g->getOrCreateStateSet();
+      ss->setDataVariance(osg::Object::DYNAMIC);
       ss->setMode(GL_BLEND, osg::StateAttribute::ON);
 
       osg::BlendFunc* blendFunc = new osg::BlendFunc();
@@ -768,6 +773,7 @@ namespace SimCore
       newShape.mParentNode->addChild(g.get());
 
       osg::StateSet* ss = g->getOrCreateStateSet();
+      ss->setDataVariance(osg::Object::DYNAMIC);
       ss->setMode(GL_BLEND, osg::StateAttribute::ON);
 
       osg::Depth* depthSS = new osg::Depth();
@@ -845,6 +851,7 @@ namespace SimCore
       if(newShape.mParticleDrawable.valid())
       {
          osg::StateSet* ss = newShape.mParticleDrawable->getOrCreateStateSet();
+         ss->setDataVariance(osg::Object::DYNAMIC);
 
          SetUniformData(newShape);
 
@@ -854,8 +861,8 @@ namespace SimCore
          mRootNode->getOrCreateStateSet()->addUniform(mNoiseTextureUniform.get());
          mRootNode->getOrCreateStateSet()->setTextureAttributeAndModes(1, mNoiseTexture.get(), osg::StateAttribute::ON);
 
-
          osg::Uniform* particleArray = ss->getOrCreateUniform(VOLUME_PARTICLE_POS_UNIFORM, osg::Uniform::FLOAT_VEC4, newShape.mParticleDrawable->GetNumParticles());
+         particleArray->setDataVariance(osg::Object::DYNAMIC);
          
          for(unsigned i = 0; i < newShape.mParticleDrawable->GetNumParticles(); ++i)
          {
@@ -889,6 +896,7 @@ namespace SimCore
       if(s.mParticleDrawable.valid())
       {
          osg::StateSet* ss = s.mParticleDrawable->getOrCreateStateSet();
+         ss->setDataVariance(osg::Object::DYNAMIC);
 
          osg::Uniform* particleColor = ss->getOrCreateUniform(VOLUME_PARTICLE_COLOR_UNIFORM, osg::Uniform::FLOAT_VEC4);
          particleColor->set(s.mColor);
@@ -1215,7 +1223,8 @@ namespace SimCore
       mDepthCamera->GetOSGCamera()->setClearColor(osg::Vec4(0.0, 0.0, 1.0, 1.0));
 
       mDepthTextureUniform = new osg::Uniform(osg::Uniform::SAMPLER_2D, "depthTexture");
-      mDepthTextureUniform->set(0);
+      mDepthTextureUniform->setDataVariance(osg::Object::DYNAMIC);
+      mDepthTextureUniform->set(0);     
 
       //the mDebugCamera just renders the result of the mRearViewTexture onto the screen
       //mDebugCamera = new osg::Camera();

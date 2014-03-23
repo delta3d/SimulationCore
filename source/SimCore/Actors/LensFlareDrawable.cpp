@@ -91,12 +91,16 @@ namespace SimCore
             }
 
             osg::Uniform* texUniform = new osg::Uniform(osg::Uniform::SAMPLER_2D, "lastDepthTexture");
+            texUniform->setDataVariance(osg::Object::DYNAMIC);
             texUniform->set(3);
+
             osg::StateSet* ss = lensFlareReference->getOrCreateStateSet();
             ss->addUniform(texUniform);
             ss->setTextureAttributeAndModes(3, params.mDepthTexture .get(), osg::StateAttribute::ON);
+            ss->setDataVariance(osg::Object::DYNAMIC);
 
             params.mDepthTexCoordUniform = new osg::Uniform(osg::Uniform::FLOAT_VEC2, "depthTexCoords");
+            params.mDepthTexCoordUniform->setDataVariance(osg::Object::DYNAMIC);
             cam->getOrCreateStateSet()->addUniform(params.mDepthTexCoordUniform);
         
          }
@@ -484,7 +488,8 @@ namespace SimCore
 #else
          mLightPosUniform = ss->getOrCreateUniform("sunPosition", osg::Uniform::DOUBLE_VEC3);
 #endif
-         //mEffectRadiusUniform = ss->getOrCreateUniform("effectRadius", osg::Uniform::FLOAT);
+         
+         mLightPosUniform->setDataVariance(osg::Object::DYNAMIC);
 
       }
 
