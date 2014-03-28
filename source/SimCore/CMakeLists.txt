@@ -182,6 +182,7 @@ set( LIB_SOURCES_7
    )
 set( LIB_SOURCES_8 
    "${SOURCE_PATH}/ActComps/AbstractWheeledVehicleInputActComp.cpp"
+   "${SOURCE_PATH}/ActComps/AnimationClipActComp.cpp"
    "${SOURCE_PATH}/ActComps/BodyPaintActComp.cpp"
    "${SOURCE_PATH}/ActComps/BodyPaintStateActComp.cpp"
    "${SOURCE_PATH}/ActComps/CamoPaintStateActComp.cpp"
