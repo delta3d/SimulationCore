@@ -288,7 +288,7 @@ namespace SimCore
 
         bool AnimationClipActComp::PlayAnimation(int animIndex, bool reset)
         {
-            AnimationPropertyContainer* apc = GetAnimationPropertyContainer(animIndex);
+            //AnimationPropertyContainer* apc = GetAnimationPropertyContainer(animIndex);
 
             if (animIndex >= 0 && size_t(animIndex) < mAnimProps.size())
             {
