@@ -187,7 +187,7 @@ namespace SimCore
 
             bool HasCamera(dtCore::Camera* cam) const;
             
-            int mTraversalMask;
+            //int mTraversalMask;
             dtCore::RefPtr<dtCore::BatchIsector> mIsector; 
             dtCore::RefPtr<osg::Group> mNode;
             dtCore::RefPtr<LensFlareOSGDrawable> mLensFlareDrawable;

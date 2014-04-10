@@ -200,15 +200,10 @@ SET(LIB_SOURCES ${LIB_SOURCES_1} ${LIB_SOURCES_2} ${LIB_SOURCES_3} ${LIB_SOURCES
 list(REMOVE_ITEM LIB_SOURCES ${SOURCE_PATH}/precomp.cpp)
 
 if (MSVC)
-   ADD_DEFINITIONS(-DOSGEPHEMERIS_LIBRARY_STATIC)
+   #ADD_DEFINITIONS(-DOSGEPHEMERIS_LIBRARY_STATIC)
 endif (MSVC)
 
 ADD_PRECOMPILED_HEADER(${LIB_NAME} prefix/SimCorePrefix.h prefix/SimCorePrefix.cpp LIB_SOURCES)
-
-ADD_LIBRARY(${LIB_NAME} SHARED
-    ${LIB_PUBLIC_HEADERS}
-    ${LIB_SOURCES}
-)
 
 source_group("Header Files\\ActorsH" FILES ${LIB_PUBLIC_HEADERS_2})
 source_group("Header Files\\ToolsH" FILES ${LIB_PUBLIC_HEADERS_3})
@@ -226,43 +221,40 @@ source_group("Source Files\\Components\\Conversations" FILES ${LIB_SOURCES_6})
 source_group("Source Files\\Components\\GameState" FILES ${LIB_SOURCES_7})
 source_group("Source Files\\ActComps" FILES ${LIB_SOURCES_8})
 
-LINK_WITH_VARIABLES(${LIB_NAME}
-                                   DTUTIL_LIBRARY
-                                   DTCORE_LIBRARY
-                                   DTANIM_LIBRARY
-                                   DTAI_LIBRARY
-                                   DTABC_LIBRARY
-                                   DTGAME_LIBRARY
-                                   DTGUI_LIBRARY
-                                   DTAUDIO_LIBRARY
-                                   DTACTORS_LIBRARY
-                                   OSG_LIBRARY
-                                   OSGGA_LIBRARY
-                                   OSGVIEWER_LIBRARY
-                                   OSGUTIL_LIBRARY
-                                   OSGFX_LIBRARY
-                                   OSGSIM_LIBRARY
-                                   OSGPARTICLE_LIBRARY
-                                   OSGTEXT_LIBRARY
-                                   GDAL_LIBRARY
-                                   CAL3D_LIBRARY
-                                   XERCES_LIBRARY
-                                   OSGDB_LIBRARY
-                                   OPENTHREADS_LIBRARY
-                                   CEGUI_LIBRARY
-                                   CEGUIOPENGL_LIBRARY
-                                   DTPHYSICS_LIBRARY
-                                   PAL_LIBRARY
-                                   )
+SET(LIB_EXTERNAL_DEPS ${LIB_NAME}
+  DTUTIL_LIBRARY
+  DTCORE_LIBRARY
+  DTANIM_LIBRARY
+  DTAI_LIBRARY
+  DTABC_LIBRARY
+  DTGAME_LIBRARY
+  DTGUI_LIBRARY
+  DTAUDIO_LIBRARY
+  DTACTORS_LIBRARY
+  OSG_LIBRARY
+  OSGGA_LIBRARY
+  OSGVIEWER_LIBRARY
+  OSGUTIL_LIBRARY
+  OSGFX_LIBRARY
+  OSGSIM_LIBRARY
+  OSGPARTICLE_LIBRARY
+  OSGTEXT_LIBRARY
+  GDAL_LIBRARY
+  CAL3D_LIBRARY
+  XERCES_LIBRARY
+  OSGDB_LIBRARY
+  OPENTHREADS_LIBRARY
+  CEGUI_LIBRARY
+  CEGUIOPENGL_LIBRARY
+  DTPHYSICS_LIBRARY
+  PAL_LIBRARY
+  )
 
-TARGET_LINK_LIBRARIES(${LIB_NAME} 
+SET(LIB_DEPS ${LIB_NAME} 
    ${OSGEPHEMERIS_LIBRARY}
    ${OPENGL_LIBRARY}
    ${AGL_LIBRARY}
    ${OPENAL_LIBRARY}
 )
 
-
-SET_TARGET_PROPERTIES(${LIB_NAME}
-                     PROPERTIES DEFINE_SYMBOL SIMCORE_LIBRARY)
-
+DELTA3D_ADD_LIBRARY(${LIB_NAME} SIMCORE_LIBRARY SHARED)

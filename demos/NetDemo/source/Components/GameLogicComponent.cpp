@@ -21,7 +21,7 @@
 #include <dtGame/gmsettings.h>
 #include <dtGame/basemessages.h>
 #include <dtNetGM/clientnetworkcomponent.h>
-#include <Components/ForwardingServerNetComponent.h>
+#include <dtNetGM/servernetworkcomponent.h>
 
 #include <dtActors/engineactorregistry.h>
 
@@ -113,7 +113,7 @@ namespace NetDemo
       // We can't add components while in a tick message, so we add both components up front.
       // SERVER COMPONENT
       dtCore::RefPtr<dtNetGM::ServerNetworkComponent> serverComp =
-         new ForwardingServerNetComponent(gameName, gameVersion);
+         new dtNetGM::ServerNetworkComponent(gameName, gameVersion);
       GetGameManager()->AddComponent(*serverComp, dtGame::GameManager::ComponentPriority::NORMAL);
       // CLIENT COMPONENT
       dtCore::RefPtr<dtNetGM::ClientNetworkComponent> clientComp =

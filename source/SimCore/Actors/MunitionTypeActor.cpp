@@ -568,7 +568,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void MunitionTypeActorProxy::CreateActor()
+      void MunitionTypeActorProxy::CreateDrawable()
       {
          SetDrawable( *new MunitionTypeActor(*this) );
       }
