@@ -56,7 +56,7 @@ namespace SimCore
             bool IsExplosive() const;
 
          private:
-            MunitionFamily(const std::string &name) : dtUtil::Enumeration(name)
+            MunitionFamily(const std::string& name) : dtUtil::Enumeration(name)
             {
                AddInstance(this);
             }
@@ -290,14 +290,14 @@ namespace SimCore
       //////////////////////////////////////////////////////////
       // Munition Type Actor Proxy Code
       //////////////////////////////////////////////////////////
-      class SIMCORE_EXPORT MunitionTypeActorProxy : public dtCore::ActorProxy
+      class SIMCORE_EXPORT MunitionTypeActorProxy : public dtCore::BaseActorObject
       {
          public:
             static const std::string CLASS_NAME;
 
             MunitionTypeActorProxy();
 
-            virtual void CreateActor();
+            virtual void CreateDrawable();
 
             virtual void BuildPropertyMap();
 

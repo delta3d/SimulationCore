@@ -174,7 +174,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       LensFlareDrawable::LensFlareDrawable()
          : dtCore::DeltaDrawable("LensFlareDrawable")
-         , mTraversalMask(0xFFFFFFFF)
+         //, mTraversalMask(0xFFFFFFFF)
          , mLensFlareDrawable(new LensFlareOSGDrawable())
       {
          AddSender(&dtCore::System::GetInstance());
