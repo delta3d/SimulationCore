@@ -363,7 +363,7 @@ namespace SimCore
             //enable lens flare
             //std::cout << std::endl << "Enabling lens flare" << std::endl << std::endl;
 
-            mEnvironmentActor->SetEnableLensFlare(true);
+            //mEnvironmentActor->SetEnableLensFlare(true);
 
          }
 
