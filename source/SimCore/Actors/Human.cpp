@@ -562,6 +562,27 @@ namespace SimCore
       }
 
       /////////////////////////////////////////////////////////////////
+      void SearchAndRegisterAnimationOptions(dtAnim::SequenceMixer& seqMixer, const dtUtil::RefString& name, std::vector<dtUtil::RefString>& options, dtAnim::Cal3DModelWrapper& wrapper)
+      {
+         dtCore::RefPtr<const dtAnim::Animatable> anim = seqMixer.GetRegisteredAnimation(AnimationOperators::ANIM_STAND_DEPLOYED);
+         if (anim != NULL) return;
+
+         for (unsigned i = 0; anim == NULL && i < options.size(); ++i)
+         {
+            anim = seqMixer.GetRegisteredAnimation(options[i]);
+         }
+
+         if (anim != NULL)
+         {
+            LOG_ALWAYS("Registering Animation named \"" + anim->GetName() + "\" in place of missing \"" + name + "\"");
+            dtCore::RefPtr<dtAnim::Animatable> animClone = anim->Clone(&wrapper).get();
+            animClone->SetName(name);
+
+            seqMixer.RegisterAnimation(animClone);
+         }
+      }
+
+      /////////////////////////////////////////////////////////////////
       void Human::SkeletalMeshLoadCallback(dtAnim::AnimationHelper* helper)
       {
          mModelLoadedAndWaiting = false;
@@ -572,38 +593,79 @@ namespace SimCore
          mModelNode->setName(helper->GetSkeletalMesh().GetResourceIdentifier());
 
          //setup speed blends
-         WalkRunBlend* walkRunReady = new WalkRunBlend(*this);
-         WalkRunBlend* walkRunDeployed = new WalkRunBlend(*this);
+         dtCore::RefPtr<WalkRunBlend> walkRunReady = new WalkRunBlend(*this);
+         dtCore::RefPtr<WalkRunBlend> walkRunDeployed = new WalkRunBlend(*this);
          walkRunReady->SetName(AnimationOperators::ANIM_WALK_READY);
          walkRunDeployed->SetName(AnimationOperators::ANIM_WALK_DEPLOYED);
 
          dtAnim::SequenceMixer& seqMixer = helper->GetSequenceMixer();
          dtAnim::Cal3DModelWrapper* wrapper = helper->GetModelWrapper();
 
+         dtUtil::RefString animationNamesW[4] = { "WalkReady", "Walk", "Walk Deployed", "" };
+         dtUtil::RefString animationNamesR[4] = { "RunReady", "Run", "Run Deployed", "" };
+
+         std::vector<dtUtil::RefString> options;
+
+         options.insert(options.end(), &animationNamesW[0], &animationNamesW[3]);
+         SearchAndRegisterAnimationOptions(seqMixer, "Walk Ready", options, *wrapper);
+
+         std::reverse(options.begin(), options.end());
+         SearchAndRegisterAnimationOptions(seqMixer, "Walk Deployed", options, *wrapper);
+
+         options.insert(options.end(), &animationNamesR[0], &animationNamesR[3]);
+         SearchAndRegisterAnimationOptions(seqMixer, "Run Ready", options, *wrapper);
+
+         std::reverse(options.begin(), options.end());
+         SearchAndRegisterAnimationOptions(seqMixer, "Run Deployed", options, *wrapper);
+
          const dtAnim::Animatable* walkReady = seqMixer.GetRegisteredAnimation("Walk Ready");
          const dtAnim::Animatable* runReady = seqMixer.GetRegisteredAnimation("Run Ready");
+         const dtAnim::Animatable* walkDeployed = seqMixer.GetRegisteredAnimation("Walk Deployed");
+         const dtAnim::Animatable* runDeployed = seqMixer.GetRegisteredAnimation("Run Deployed");
+
+
          if(walkReady && runReady)
          {
             walkRunReady->SetAnimations(walkReady->Clone(wrapper).get(), runReady->Clone(wrapper).get());
+            seqMixer.RegisterAnimation(walkRunReady);
          }
          else
          {
-            LOG_ERROR("Cannot load animations 'Walk Ready' and 'Run Ready' necessary for speed blend.")
+            LOGN_WARNING("Human.cpp", "Cannot load animations 'Walk Ready' and 'Run Ready' necessary for speed blend.")
+            if (walkReady)
+            {
+               dtCore::RefPtr<dtAnim::Animatable> walkClone = walkReady->Clone(wrapper).get();
+               walkClone->SetName(AnimationOperators::ANIM_WALK_READY);
+               seqMixer.RegisterAnimation(walkClone);
+               LOGN_WARNING("Human.cpp", "Found a walk ")
+            }
          }
 
-         const dtAnim::Animatable* walkDeployed = seqMixer.GetRegisteredAnimation("Walk Deployed");
-         const dtAnim::Animatable* runDeployed = seqMixer.GetRegisteredAnimation("Run Deployed");
          if(walkDeployed && runDeployed)
          {
             walkRunDeployed->SetAnimations(walkDeployed->Clone(wrapper).get(), runDeployed->Clone(wrapper).get());
+            seqMixer.RegisterAnimation(walkRunDeployed);
          }
          else
          {
-            LOG_ERROR("Cannot load animations 'Walk Deployed' and 'Run Deployed' necessary for speed blend.")
+            if (walkDeployed)
+            {
+               dtCore::RefPtr<dtAnim::Animatable> walkClone = walkDeployed->Clone(wrapper).get();
+               walkClone->SetName(AnimationOperators::ANIM_WALK_DEPLOYED);
+               seqMixer.RegisterAnimation(walkClone);
+            }
+            LOGN_WARNING("Human.cpp","Cannot load animations 'Walk Deployed' and 'Run Deployed' necessary for speed blend.")
          }
 
-         seqMixer.RegisterAnimation(walkRunReady);
-         seqMixer.RegisterAnimation(walkRunDeployed);
+         dtUtil::RefString animationNamesIdle[7] = { AnimationOperators::ANIM_STAND_DEPLOYED, "StandDeployed", "Stand", "Idle", "Stand Ready", AnimationOperators::ANIM_STAND_READY, "" };
+
+         options.clear();
+         options.insert(options.end(), &animationNamesIdle[0], &animationNamesIdle[6]);
+         SearchAndRegisterAnimationOptions(seqMixer, AnimationOperators::ANIM_STAND_DEPLOYED, options, *wrapper);
+
+         std::reverse(options.begin(), options.end());
+         SearchAndRegisterAnimationOptions(seqMixer, AnimationOperators::ANIM_STAND_READY, options, *wrapper);
+
 
          dtAnim::AttachmentController& atcl = helper->GetAttachmentController();
          for (unsigned i = 0; i < atcl.GetNumAttachments(); ++i)
