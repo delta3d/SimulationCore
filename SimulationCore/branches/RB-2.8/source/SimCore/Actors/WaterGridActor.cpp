@@ -530,6 +530,13 @@ namespace SimCore
             //   std::cout << "Direction mod changed to [" << mModForDirectionInDegrees << "]." << std::endl;
             //}
 
+
+            //if (kb->GetKeyState('j'))
+            //{
+            //   std::cout << "mModForDirectionInDegrees: " << mModForDirectionInDegrees << std::endl;
+            //}
+
+
             //if (kb->GetKeyState('1'))
             //{
             //   mModForFOV *= 0.96f; // 10% less
@@ -1819,6 +1826,10 @@ namespace SimCore
        const dtUtil::RefString WaterGridActorProxy::INVOKABLE_ACTOR_UPDATE("Actor Updated");
 
       WaterGridActorProxy::WaterGridActorProxy()
+         : mWaveDirection(0.0f)
+         , mAmplitudeModifier(1.0f)
+         , mWavelengthModifier(1.0f)
+         , mSpeedModifier(1.0f)
       {
          SetClassName(WaterGridActorProxy::CLASSNAME);
       }
@@ -1879,6 +1890,14 @@ namespace SimCore
          WaterGridActor* actor = NULL;
          GetActor(actor);
 
+         typedef dtCore::PropertyRegHelper<dtCore::PropertyContainer&, WaterGridActorProxy> RegHelperType;
+         RegHelperType propReg(*this, this, GROUPNAME);
+
+         DT_REGISTER_PROPERTY(WaveDirection, "The direction the waves are moving.", RegHelperType, propReg);
+         DT_REGISTER_PROPERTY(AmplitudeModifier, "A percentage multiplied times the amplitude.", RegHelperType, propReg);
+         DT_REGISTER_PROPERTY(WavelengthModifier, "A percentage multiplied with the wave length.", RegHelperType, propReg);
+         DT_REGISTER_PROPERTY(SpeedModifier, "A percentage multiplied with the speed.", RegHelperType, propReg);
+
          AddProperty(new dtCore::ColorRgbaActorProperty(PROPERTY_WATER_COLOR, PROPERTY_WATER_COLOR,
             dtCore::ColorRgbaActorProperty::SetFuncType(actor,&WaterGridActor::SetWaterColor),
             dtCore::ColorRgbaActorProperty::GetFuncType(actor,&WaterGridActor::GetWaterColor),
@@ -1894,6 +1913,52 @@ namespace SimCore
             dtCore::EnumActorProperty<WaterGridActor::SeaState>::GetFuncType(actor, &WaterGridActor::GetSeaState),
             "The Sea State number based on the Beaufort wind force scale.", GROUPNAME));
 
+      }
+
+      /////////////////////////////////////////////////////////////////////////////
+      DT_IMPLEMENT_ACCESSOR_GETTER(WaterGridActorProxy, float, WaveDirection);
+      DT_IMPLEMENT_ACCESSOR_GETTER(WaterGridActorProxy, float, AmplitudeModifier);
+      DT_IMPLEMENT_ACCESSOR_GETTER(WaterGridActorProxy, float, WavelengthModifier);
+      DT_IMPLEMENT_ACCESSOR_GETTER(WaterGridActorProxy, float, SpeedModifier);
+
+      /////////////////////////////////////////////////////////////////////////////
+      void WaterGridActorProxy::SetWaveDirection(float f)
+      {
+         WaterGridActor* wga = NULL;
+         GetActor(wga);
+
+         mWaveDirection = f;
+         wga->SetModForDirectionInDegrees(mWaveDirection);
+      }
+
+      /////////////////////////////////////////////////////////////////////////////
+      void WaterGridActorProxy::SetWavelengthModifier(float f)
+      {
+         WaterGridActor* wga = NULL;
+         GetActor(wga);
+
+         mWavelengthModifier = f;
+         wga->SetModForWaveLength(mWavelengthModifier);
+      }
+
+      /////////////////////////////////////////////////////////////////////////////
+      void WaterGridActorProxy::SetAmplitudeModifier(float f)
+      {
+         WaterGridActor* wga = NULL;
+         GetActor(wga);
+
+         mAmplitudeModifier = f;
+         wga->SetAmplitudeMultiplier(mAmplitudeModifier);
+      }
+
+      /////////////////////////////////////////////////////////////////////////////
+      void WaterGridActorProxy::SetSpeedModifier(float f)
+      {
+         WaterGridActor* wga = NULL;
+         GetActor(wga);
+
+         mSpeedModifier = f;
+         wga->SetSpeedMultiplier(f);
       }
 
       /////////////////////////////////////////////////////////////////////////////

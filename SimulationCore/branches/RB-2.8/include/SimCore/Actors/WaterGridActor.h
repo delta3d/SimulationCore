@@ -40,6 +40,8 @@
 #include <osg/Texture2D>
 #include <osg/Texture3D>
 
+#include <dtCore/propertymacros.h>
+
 namespace osg
 {
    class Camera;
@@ -232,6 +234,14 @@ namespace SimCore
          void ClearWaves();
          void AddRandomizedWaves(float meanWaveLength, float meanAmplitude, float minPeriod, float maxPeriod, unsigned numWaves);
 
+
+         // Modulation of the base wave structures.
+         DT_DECLARE_ACCESSOR_INLINE(float, ModForWaveLength)
+         DT_DECLARE_ACCESSOR_INLINE(float, ModForSpeed)
+         DT_DECLARE_ACCESSOR_INLINE(float, ModForSteepness)         
+         DT_DECLARE_ACCESSOR_INLINE(float, ModForAmplitude)
+         DT_DECLARE_ACCESSOR_INLINE(float, ModForDirectionInDegrees)
+
       protected:
          ~WaterGridActor();
 
@@ -277,12 +287,6 @@ namespace SimCore
          float     mComputedRadialDistance;
          float     mTextureWaveAmpOverLength;
 
-         // Modulation of the base wave structures.
-         float mModForWaveLength;
-         float mModForSpeed;
-         float mModForSteepness;
-         float mModForAmplitude;
-         float mModForDirectionInDegrees;
          float mModForFOV;
          float mCameraFoVScalar; // changes wave detail based on how much FoV is visible
          float mMaxWaveHeight;
@@ -341,6 +345,11 @@ namespace SimCore
          dtCore::ActorProxyIcon* GetBillBoardIcon();
          /*virtual*/ const dtCore::ActorProxy::RenderMode& GetRenderMode();
 
+         DT_DECLARE_ACCESSOR(float, WaveDirection);
+         DT_DECLARE_ACCESSOR(float, AmplitudeModifier);
+         DT_DECLARE_ACCESSOR(float, WavelengthModifier);
+         DT_DECLARE_ACCESSOR(float, SpeedModifier);
+         
       protected:
          ~WaterGridActorProxy();
 
