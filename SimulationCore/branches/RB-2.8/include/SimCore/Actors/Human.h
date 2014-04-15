@@ -133,6 +133,8 @@ namespace SimCore
             static const dtUtil::RefString PROPERTY_PRIMARY_WEAPON_STATE;
             static const dtUtil::RefString PROPERTY_MIN_RUN_VELOCITY;
             static const dtUtil::RefString PROPERTY_FULL_RUN_VELOCITY;
+            static const dtUtil::RefString PROPERTY_WALK_ANIMATION_SPEED;
+
 
             class SIMCORE_EXPORT StanceEnum : public dtUtil::Enumeration
             {
@@ -274,7 +276,10 @@ namespace SimCore
             virtual void SkeletalMeshUnloadCallback(dtAnim::AnimationHelper*);
 
             /// This is called by the walk/run animation to get the value for the walk speed.  Override to change the way it works.
-            virtual float CalculateAnimationWalkingSpeed() const;
+            virtual float CalculateWalkingSpeed() const;
+
+            /// This is the inherent speed of the walk animation.
+            DT_DECLARE_ACCESSOR(float, WalkAnimationSpeed);
 
          protected:
             virtual ~Human();

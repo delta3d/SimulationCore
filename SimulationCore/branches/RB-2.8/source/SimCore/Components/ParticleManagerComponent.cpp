@@ -363,7 +363,7 @@ namespace SimCore
 
             // Update the physics particles wind....
             std::vector<dtCore::ActorProxy*> toFill;
-            GetGameManager()->FindActorsByClassName("NxAgeiaParticleSystemActor", toFill);
+            GetGameManager()->FindActorsByClassName("PhysicsParticleSystemActor", toFill);
             if (!toFill.empty())
             {
                std::vector<dtCore::ActorProxy*>::iterator toFillInIter = toFill.begin();
@@ -410,7 +410,7 @@ namespace SimCore
             return false;
          }
 
-		 particles.GetOSGNode()->setNodeMask(SimCore::Components::RenderingSupportComponent::DISABLE_SHADOW_NODE_MASK);
+         particles.GetOSGNode()->setNodeMask(SimCore::Components::RenderingSupportComponent::DISABLE_SHADOW_NODE_MASK);
 
          bool success = mIdToInfoMap.insert(
             std::make_pair( particles.GetUniqueId(), new ParticleInfo( particles, attrFlags, priority ) )
@@ -784,7 +784,7 @@ namespace SimCore
          {
             //osgParticle::ParticleSystem* ref = &itor->GetParticleSystem();
 
-            //attaching a shader to the particle, one for emmisive particles the other for non emmisive
+            //attaching a shader to the particle, one for emissive particles the other for non emissive
             dtCore::ParticleLayer& pLayer = *itor;
             osg::StateSet* ss = pLayer.GetParticleSystem().getOrCreateStateSet();
             std::string shaderName = (ss->getMode(GL_LIGHTING) == osg::StateAttribute::ON) ? "NonEmissive" : "Emissive";
