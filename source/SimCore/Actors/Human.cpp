@@ -210,7 +210,7 @@ namespace SimCore
                      LOG_ERROR("Human with all 0 weights");
                   }
 
-                  LOG_ALWAYS(mParentHuman->GetName() + " Speed: " + dtUtil::ToString(mSpeed) + " weights "
+                  LOGN_DEBUG("Human.cpp", mParentHuman->GetName() + " Speed: " + dtUtil::ToString(mSpeed) + " weights "
                      + " " + dtUtil::ToString(standWeight)
                      + " " + dtUtil::ToString(walkWeight)
                      + " " + dtUtil::ToString(runWeight)
