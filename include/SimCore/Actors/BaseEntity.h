@@ -311,11 +311,6 @@ namespace SimCore
 
             virtual void ProcessMessage(const dtGame::Message& message);
 
-            // Call GetComponent() instead to get this.
-            DEPRECATE_FUNC dtGame::DeadReckoningHelper& GetDeadReckoningHelper();
-            DEPRECATE_FUNC const dtGame::DeadReckoningHelper& GetDeadReckoningHelper() const;
-            DEPRECATE_FUNC bool IsDeadReckoningHelperValid() const;
-
             /**
              * This function is intended for use by entities that implement physics
              * simulation behaviors.
@@ -361,9 +356,6 @@ namespace SimCore
 
             /// Call when an important property changes that requires a full update. The update is not sent immediately, but later during the DR Publishing
             void CauseFullUpdate();
-
-            /// Accessor for the dr publishing component. Allows setting properties, changing behaviors, forcing updates, unit tests, etc. 
-            DEPRECATE_FUNC dtGame::DRPublishingActComp* GetDRPublishingActComp();
 
             /**
              * Get the bounding sphere information for this Entity.

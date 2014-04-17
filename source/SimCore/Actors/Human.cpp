@@ -35,6 +35,7 @@
 #include <dtAnim/animationwrapper.h>
 #include <dtAnim/sequencemixer.h>
 #include <dtAnim/cal3dmodelwrapper.h>
+#include <dtAnim/walkrunblend.h>
 
 #include <dtAI/worldstate.h>
 #include <dtAI/basenpcutils.h>
@@ -76,285 +77,6 @@ namespace SimCore
 
    namespace Actors
    {
-
-      //A class to simulate a walk run blend
-      class WalkRunBlend: public dtAnim::AnimationSequence
-      {
-      public:
-
-         class WRController: public dtAnim::AnimationSequence::AnimationController
-         {
-            public:
-               typedef dtAnim::AnimationSequence::AnimationController BaseClass;
-
-               WRController(WalkRunBlend& pWR, Human& h)
-                  : BaseClass(pWR)
-                  , mSpeed(0.0f)
-                  , mStandStart(0.000000f)//in m/s
-                  , mStandFadeIn(0.0f)
-                  , mStandStop(0.25) // in m/s
-                  , mStandFadeOut(0.15f)
-                  , mWalkStart(0.000001f)//in m/s
-                  , mWalkFadeIn(0.15f)
-                  , mWalkStop(1.5f)//in m/s
-                  , mWalkFadeOut(0.15f)
-                  , mRunStart(1.35f)//in m/s
-                  , mRunFadeIn(0.15f)
-                  , mRunStop(std::numeric_limits<float>::max()) //we don't want to stop running
-                  , mRunFadeOut(0.0f)
-                  , mParentHuman(&h)
-               {
-               }
-
-               WRController(const WRController& pWR)
-                  : BaseClass(pWR)
-                  , mSpeed(pWR.mSpeed)
-                  , mStandStart(pWR.mStandStart)
-                  , mStandFadeIn(pWR.mStandFadeIn)
-                  , mStandStop(pWR.mStandStop)
-                  , mStandFadeOut(pWR.mStandFadeOut)
-                  , mWalkStart(pWR.mWalkStart)
-                  , mWalkFadeIn(pWR.mWalkFadeIn)
-                  , mWalkStop(pWR.mWalkStop)
-                  , mWalkFadeOut(pWR.mWalkFadeOut)
-                  , mRunStart(pWR.mRunStart)
-                  , mRunFadeIn(pWR.mRunFadeIn)
-                  , mRunStop(pWR.mRunStop)
-                  , mRunFadeOut(pWR.mRunFadeOut)
-                  , mParentHuman(pWR.mParentHuman)
-               {
-
-               }
-
-               void SetAnimations(dtAnim::Animatable* stand, dtAnim::Animatable* walk, dtAnim::Animatable* run)
-               {
-                  mStand = stand;
-                  mRun = run;
-                  mWalk = walk;
-               }
-
-               //this sets the basic necessary blend values, the others get expected values
-               void SetRunWalkBasic(float inherentWalkSpeed, float walkFade, float runFade)
-               {
-                  mStandStart = 0.0f;
-                  mStandFadeOut = walkFade;
-                  mStandStop = walkFade;
-                  mWalkStart = FLT_EPSILON;
-                  mWalkFadeIn = walkFade;
-                  mWalkStop= inherentWalkSpeed * 2.0f;
-                  mWalkFadeOut = walkFade;
-                  mRunStart = inherentWalkSpeed * 1.05;
-                  mRunFadeIn = runFade;
-                  mRunStop = std::numeric_limits<float>::max();
-                  mRunFadeOut = 0.0f;
-               }
-
-               void SetStand(float start, float fadeIn, float stop, float fadeOut)
-               {
-                  mStandStart = start;
-                  mStandFadeIn = fadeIn;
-                  mStandStop = stop;
-                  mStandFadeOut = fadeOut;
-               }
-
-               //customize the walk
-               void SetWalk(float start, float fadeIn, float stop, float fadeOut)
-               {
-                  mWalkStart = start;
-                  mWalkFadeIn = fadeIn;
-                  mWalkStop = stop;
-                  mWalkFadeOut = fadeOut;
-               }
-
-               //customize the run
-               void SetRun(float start, float fadeIn, float stop, float fadeOut)
-               {
-                  mRunStart = start;
-                  mRunFadeIn = fadeIn;
-                  mRunStop = stop;
-                  mRunFadeOut = fadeOut;
-               }
-
-               void SetCurrentSpeed(float pSpeed)
-               {
-                  mSpeed = pSpeed;
-               }
-
-               /*virtual*/ void Update(float dt)
-               {
-                  if (!mStand.valid() || !mWalk.valid() || !mRun.valid())
-                  {
-                     //A warning was already printed out that this won't work, so just make sure we don't crash.
-                     return;
-                  }
-
-                  //update our velocity vector
-                  if(mParentHuman.valid())
-                  {
-                     mSpeed = mParentHuman->CalculateWalkingSpeed();
-                     //std::cout << "Human Speed: " << mSpeed << std::endl;
-                  }
-                  else
-                  {
-                     LOG_ERROR("Controller has no valid parent pointer");
-                  }
-
-
-                  float standWeight = ComputeWeight(mStand.get(), mStandStart, mStandFadeIn, mStandStop, mStandFadeOut);
-                  float walkWeight = ComputeWeight(mWalk.get(), mWalkStart, mWalkFadeIn, mWalkStop, mWalkFadeOut);
-                  float runWeight = ComputeWeight(mRun.get(), mRunStart, mRunFadeIn, mRunStop, mRunFadeOut);
-
-                  if (standWeight <= FLT_EPSILON && walkWeight <= FLT_EPSILON && runWeight <= FLT_EPSILON)
-                  {
-                     walkWeight = 1.0f;
-                     LOG_ERROR("Human with all 0 weights");
-                  }
-
-                  LOGN_DEBUG("Human.cpp", mParentHuman->GetName() + " Speed: " + dtUtil::ToString(mSpeed) + " weights "
-                     + " " + dtUtil::ToString(standWeight)
-                     + " " + dtUtil::ToString(walkWeight)
-                     + " " + dtUtil::ToString(runWeight)
-                  );
-
-                  mStand->SetCurrentWeight(standWeight);
-                  mWalk->SetCurrentWeight(walkWeight);
-
-                  mStand->Update(dt);
-
-                  if (mRun == NULL)
-                  {
-                     walkWeight = walkWeight + runWeight;
-                     dtUtil::Clamp(walkWeight, 0.0f, 1.0f);
-                  }
-                  else
-                  {
-                     mRun->Update(dt);
-                  }
-
-                  mWalk->Update(dt);
-
-               }
-
-               dtAnim::Animatable* GetStand()
-               {
-                  return mStand.get();
-               }
-
-               dtAnim::Animatable* GetWalk()
-               {
-                  return mWalk.get();
-               }
-
-               dtAnim::Animatable* GetRun()
-               {
-                  return mRun.get();
-               }
-
-               dtCore::RefPtr<WRController> CloneDerived() const
-               {
-                  return new WRController(*this);
-               }
-
-            protected:
-               ~WRController()
-               {
-
-               }
-
-               float ComputeWeight(dtAnim::Animatable* pAnim, float startSpeed, float fadeIn, float stopSpeed, float fadeOut)
-               {
-                  //we will have the default imply mSpeed is between startSpeed and stopSpeed
-                  //which basically just saves us another if check
-                  float weight = 1.0f;
-
-                  //if we are out of bounds
-                  if(mSpeed < startSpeed || mSpeed > stopSpeed)
-                  {
-                     weight = 0.00f;
-                  }
-                  else if(mSpeed < startSpeed + fadeIn) //else if we are fading in
-                  {
-                     weight = (mSpeed - startSpeed) / fadeIn;
-                  }
-                  else if(mSpeed > (stopSpeed - fadeOut)) //else we are fading out
-                  {
-                     weight = (stopSpeed - mSpeed) / fadeOut;
-                  }
-
-                  dtUtil::Clamp(weight, 0.0f, 1.0f);
-                  return weight;
-               }
-
-               float mSpeed;
-               float mStandStart, mStandFadeIn, mStandStop, mStandFadeOut;
-               float mWalkStart, mWalkFadeIn, mWalkStop, mWalkFadeOut;
-               float mRunStart, mRunFadeIn, mRunStop, mRunFadeOut;
-
-
-               dtCore::ObserverPtr<Human> mParentHuman;
-               dtCore::RefPtr<dtAnim::Animatable> mStand;
-               dtCore::RefPtr<dtAnim::Animatable> mWalk;
-               dtCore::RefPtr<dtAnim::Animatable> mRun;
-            };
-
-
-            WalkRunBlend(Human& h)
-            {
-               mWRController = new WRController(*this, h);
-               SetController(mWRController.get());
-            }
-
-            WalkRunBlend(WRController& controller)
-               : mWRController(&controller)
-
-            {
-               SetController(mWRController.get());
-            }
-
-            void SetAnimations(dtAnim::Animatable* stand, dtAnim::Animatable* walk, dtAnim::Animatable* run)
-            {
-               AddAnimation(stand);
-               AddAnimation(walk);
-               if (run != NULL)
-               {
-                  AddAnimation(run);
-               }
-               mWRController->SetAnimations(stand, walk, run);
-            }
-
-            void SetupWithWalkSpeed(float inherentSpeed)
-            {
-               mWRController->SetRunWalkBasic(inherentSpeed, inherentSpeed* 0.5, inherentSpeed * 0.5);
-            }
-
-            WRController& GetWalkRunController()
-            {
-               return *mWRController;
-            }
-
-            dtCore::RefPtr<dtAnim::Animatable> Clone(dtAnim::Cal3DModelWrapper* modelWrapper) const
-            {
-               WalkRunBlend* wrb = new WalkRunBlend(*mWRController->CloneDerived());
-
-               if(mWRController->GetWalk() && mWRController->GetRun())
-               {
-                  wrb->SetAnimations(mWRController->GetStand()->Clone(modelWrapper).get(), mWRController->GetWalk()->Clone(modelWrapper).get(), mWRController->GetRun()->Clone(modelWrapper).get());
-               }
-               return wrb;
-            }
-
-      protected:
-         ~WalkRunBlend()
-         {
-            mWRController = 0;
-         }
-
-         dtCore::RefPtr<WRController> mWRController;
-      };
-
-
-
-
 
       ////////////////////////////////////////////////////////////////////////////
       ////////////////////////    HumanActorProxy      ///////////////////////////
@@ -651,8 +373,20 @@ namespace SimCore
          mModelNode->setName(helper->GetSkeletalMesh().GetResourceIdentifier());
 
          //setup speed blends
-         dtCore::RefPtr<WalkRunBlend> walkRunReady = new WalkRunBlend(*this);
-         dtCore::RefPtr<WalkRunBlend> walkRunDeployed = new WalkRunBlend(*this);
+         dtCore::RefPtr<dtAnim::WalkRunBlend> walkRunReady;
+         dtCore::RefPtr<dtAnim::WalkRunBlend> walkRunDeployed;
+
+         if (IsRemote())
+         {
+            walkRunReady = new dtAnim::WalkRunBlend(*GetComponent<dtGame::DeadReckoningHelper>());
+            walkRunDeployed = new dtAnim::WalkRunBlend(*GetComponent<dtGame::DeadReckoningHelper>());
+         }
+         else
+         {
+            walkRunReady = new dtAnim::WalkRunBlend(*GetComponent<dtGame::DRPublishingActComp>());
+            walkRunDeployed = new dtAnim::WalkRunBlend(*GetComponent<dtGame::DRPublishingActComp>());
+         }
+
          walkRunReady->SetName(AnimationOperators::ANIM_WALK_READY);
          walkRunDeployed->SetName(AnimationOperators::ANIM_WALK_DEPLOYED);
 
@@ -941,11 +675,11 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////
       float Human::CalculateWalkingSpeed() const
       {
-         if (GetComponent<dtGame::DRPublishingActComp>() != NULL)
+         if (IsRemote())
          {
-            return GetComponent<dtGame::DRPublishingActComp>()->GetCurrentVelocity().length();
+            return GetComponent<dtGame::DeadReckoningHelper>()->GetLastKnownVelocity().length();
          }
-         return GetComponent<dtGame::DeadReckoningHelper>()->GetLastKnownVelocity().length();
+         return GetComponent<dtGame::DRPublishingActComp>()->GetVelocity().length();
       }
 
       DT_IMPLEMENT_ACCESSOR(Human, float, WalkAnimationSpeed);
