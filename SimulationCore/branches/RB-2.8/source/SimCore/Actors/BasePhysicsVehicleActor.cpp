@@ -275,7 +275,7 @@ namespace SimCore
          {
             osg::Vec3 physAngularVelocity;
             physAngularVelocity = physObj->GetAngularVelocity();
-            GetComponent<dtGame::DRPublishingActComp>()->SetCurrentAngularVelocity(physAngularVelocity);
+            GetComponent<dtGame::DRPublishingActComp>()->SetAngularVelocity(physAngularVelocity);
          }
          else
          {

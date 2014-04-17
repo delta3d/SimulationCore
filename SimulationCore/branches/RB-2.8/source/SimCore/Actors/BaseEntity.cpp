@@ -575,37 +575,6 @@ namespace SimCore
          CauseFullUpdate();
       }
 
-
-      ////////////////////////////////////////////////////////////////////////////////////
-      dtGame::DRPublishingActComp* BaseEntity::GetDRPublishingActComp()
-      {
-         dtGame::DRPublishingActComp* drPubAC = NULL;
-         GetComponent(drPubAC);
-         return drPubAC;
-      }
-
-      ////////////////////////////////////////////////////////////////////////////////////
-      dtGame::DeadReckoningHelper& BaseEntity::GetDeadReckoningHelper()
-      {
-         dtGame::DeadReckoningHelper* drAC = NULL;
-         GetComponent(drAC);
-         return *drAC;
-      }
-
-      ////////////////////////////////////////////////////////////////////////////////////
-      const dtGame::DeadReckoningHelper& BaseEntity::GetDeadReckoningHelper() const
-      {
-         const dtGame::DeadReckoningHelper* drAC = NULL;
-         GetComponent(drAC);
-         return *drAC;
-      }
-
-      ////////////////////////////////////////////////////////////////////////////////////
-      bool BaseEntity::IsDeadReckoningHelperValid() const
-      {
-         return HasComponent(dtGame::DeadReckoningHelper::TYPE);
-      }
-
       ////////////////////////////////////////////////////////////////////////////////////
       void BaseEntity::GetBoundingSphere(osg::Vec3& center, float& radius)
       {
