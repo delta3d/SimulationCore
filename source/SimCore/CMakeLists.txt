@@ -103,7 +103,6 @@ set(LIB_SOURCES_2
    "${SOURCE_PATH}/Actors/PortalActor.cpp"
    "${SOURCE_PATH}/Actors/PositionMarker.cpp"
    "${SOURCE_PATH}/Actors/SimpleMovingShapeActor.cpp"
-   "${SOURCE_PATH}/Actors/SoundActorProxy.cpp"
    "${SOURCE_PATH}/Actors/StealthActor.cpp"
    "${SOURCE_PATH}/Actors/SurfaceHazeDataActor.cpp"
    "${SOURCE_PATH}/Actors/SurfaceVesselActor.cpp"
