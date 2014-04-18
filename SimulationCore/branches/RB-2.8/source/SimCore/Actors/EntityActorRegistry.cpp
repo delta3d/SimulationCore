@@ -52,7 +52,7 @@
 #include <SimCore/Actors/DynamicLightPrototypeActor.h>
 #include <SimCore/Actors/WaterGridActor.h>
 #include <SimCore/Actors/SurfaceVesselActor.h>
-#include <SimCore/Actors/SoundActorProxy.h>
+#include <dtAudio/soundactor.h>
 #include <SimCore/Actors/DynamicParticleSystem.h>
 #include <SimCore/Actors/PhysicsParticleSystemActor.h>
 #include <SimCore/Actors/MunitionParticlesActor.h>
@@ -349,7 +349,7 @@ namespace SimCore
          mActorFactory->RegisterType<WaterGridActorProxy>(WATER_GRID_ACTOR_TYPE.get());
          mActorFactory->RegisterType<DRGhostActorProxy>(DR_GHOST_ACTOR_TYPE.get());
          mActorFactory->RegisterType<SurfaceVesselActorProxy>(SURFACE_VESSEL_ACTOR_TYPE.get());
-         mActorFactory->RegisterType<SoundActorProxy>(SOUND_ACTOR_TYPE.get());
+         mActorFactory->RegisterType<dtAudio::SoundActor>(SOUND_ACTOR_TYPE.get());
 
          mActorFactory->RegisterType<DynamicParticleSystemActorProxy>(DYNAMIC_PARTICLE_SYSTEM_ACTOR_TYPE.get());
 
