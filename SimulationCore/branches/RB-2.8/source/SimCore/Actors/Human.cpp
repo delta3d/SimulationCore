@@ -677,7 +677,7 @@ namespace SimCore
       {
          if (IsRemote())
          {
-            return GetComponent<dtGame::DeadReckoningHelper>()->GetLastKnownVelocity().length();
+            return GetComponent<dtGame::DeadReckoningHelper>()->GetVelocity().length();
          }
          return GetComponent<dtGame::DRPublishingActComp>()->GetVelocity().length();
       }
