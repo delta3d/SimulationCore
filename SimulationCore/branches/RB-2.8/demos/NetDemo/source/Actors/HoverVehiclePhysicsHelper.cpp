@@ -105,10 +105,10 @@ namespace NetDemo
       physicsObject->ApplyImpulse(dir * upForce * deltaTime);
 
       // Get the forward vector and the perpendicular side (right) vector.
-      dtGame::GameActor* actor = NULL;
+      dtGame::GameActorProxy* actor = NULL;
       GetOwner( actor );
       osg::Matrix matrix;
-      dtCore::Transformable::GetAbsoluteMatrix( actor->GetOSGNode(), matrix);
+      dtCore::Transformable::GetAbsoluteMatrix( actor->GetDrawable()->GetOSGNode(), matrix);
       osg::Vec3 lookDir = dtUtil::MatrixUtil::GetRow3(matrix, 1);
       osg::Vec3 rightDir = dtUtil::MatrixUtil::GetRow3(matrix, 0);
       lookDir[2] = 0.0f; // remove Z component so we don't fly...

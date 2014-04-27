@@ -279,11 +279,11 @@ namespace SimCore
 
             virtual void OnRemovedFromWorld()
             {
-               DetonationActor* actor = NULL;
-               GetActor(actor);
-               if (actor != NULL)
+               DetonationActor* draw = NULL;
+               GetDrawable(draw);
+               if (draw != NULL)
                {
-                  actor->OnRemovedFromWorld();
+                  draw->OnRemovedFromWorld();
                }
             }
 

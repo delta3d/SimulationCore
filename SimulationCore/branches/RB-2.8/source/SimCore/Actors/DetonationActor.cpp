@@ -99,7 +99,7 @@ namespace SimCore
          dtGame::GameActorProxy::BuildPropertyMap();
 
          DetonationActor* da = NULL;
-         GetActor(da);
+         GetDrawable(da);
 
          static const dtUtil::RefString groupImpactEffects("Impact Effects");
 
@@ -170,8 +170,8 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////
       void DetonationActorProxy::OnEnteredWorld()
       {
-         DetonationActor &da = static_cast<DetonationActor&>(GetGameActor());
-         float time = da.GetDelayTime();
+         DetonationActor* da = GetDrawable<DetonationActor>();
+         float time = da->GetDelayTime();
          GetGameManager()->SetTimer("PlayDetonationSoundTimer", this, time);
 
       }
@@ -181,18 +181,18 @@ namespace SimCore
       {
          if(timeMsg.GetTimerName() == "PlayDetonationSoundTimer")
          {
-             static_cast<DetonationActor&>(GetGameActor()).PlaySound();
+            GetDrawable<DetonationActor>()->PlaySound();
          }
          else if(timeMsg.GetTimerName() == "ExplosionRendered")
          {
             DetonationActor* detonation = NULL;
-            GetActor(detonation);
+            GetDrawable(detonation);
             detonation->RenderSmoke();
             GetGameManager()->SetTimer("SmokeRendered", this, detonation->GetSmokeLifeTime());
          }
          else if(timeMsg.GetTimerName() == "SmokeRendered")
          {
-            static_cast<DetonationActor&>(GetGameActor()).StopRenderingSmoke();
+            GetDrawable<DetonationActor>()->StopRenderingSmoke();
          }
          else
             LOG_ERROR("Received a timer message of the correct type, but wrong name");

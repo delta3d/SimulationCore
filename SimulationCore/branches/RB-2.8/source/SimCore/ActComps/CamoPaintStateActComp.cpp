@@ -50,7 +50,8 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       // CONSTANTS
       //////////////////////////////////////////////////////////////////////////
-      const dtGame::ActorComponent::ACType CamoPaintStateActComp::TYPE("CamoPaintStateActComp");
+      const dtGame::ActorComponent::ACType CamoPaintStateActComp::TYPE(new dtCore::ActorType("CamoPaintStateActComp", "ActorComponents",
+            "Camoflage painting actor component.", SimCore::ActComps::BodyPaintActComp::TYPE));
       
       // Property Names
       const dtUtil::RefString CamoPaintStateActComp::PROPERTY_CAMO_ID("Camo Id");
@@ -311,25 +312,25 @@ namespace SimCore
 
          const CamoParams* camo = NULL;
 
-         dtGame::GameActor* actor = NULL;
+         dtGame::GameActorProxy* actor = NULL;
          GetOwner(actor);
          if(actor != NULL)
          {
-            dtGame::GameManager* gm = actor->GetGameActorProxy().GetGameManager();
+            dtGame::GameManager* gm = actor->GetGameManager();
             if(gm != NULL)
             {
-               dtCore::ActorProxy* proxy = NULL;
-               gm->FindActorByType(*EntityActorRegistry::CAMO_CONFIG_ACTOR_TYPE, proxy);
+               dtCore::BaseActorObject* configActor = NULL;
+               gm->FindActorByType(*EntityActorRegistry::CAMO_CONFIG_ACTOR_TYPE, configActor);
 
-               CamoConfigActor* actor = NULL;
-               if(proxy != NULL)
+               CamoConfigActor* configDraw = NULL;
+               if(configActor != NULL)
                {
-                  proxy->GetActor(actor);
+                  configActor->GetDrawable(configDraw);
                }
 
-               if(actor != NULL)
+               if(configDraw != NULL)
                {
-                  camo = actor->GetCamoParamsByCamoId(camoId);
+                  camo = configDraw->GetCamoParamsByCamoId(camoId);
                }
             }
          }
@@ -361,10 +362,11 @@ namespace SimCore
                {
                   // Find the shader group name applied to the owner.
                   dtCore::ActorProperty* shaderProp = NULL;
-                  dtGame::GameActor* gameActor = dynamic_cast<dtGame::GameActor*>(GetOwner());
-                  if(gameActor != NULL)
+                  dtGame::GameActorProxy* actor = NULL;
+                  GetOwner(actor);
+                  if(actor != NULL)
                   {
-                     shaderProp = gameActor->GetGameActorProxy().GetProperty("ShaderGroup");
+                     shaderProp = actor->GetProperty("ShaderGroup");
                      if(shaderProp != NULL)
                      {
                         shaderGroupName = (shaderProp->ToString());

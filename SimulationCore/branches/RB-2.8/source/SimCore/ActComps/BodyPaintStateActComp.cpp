@@ -41,7 +41,8 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       // CONSTANTS
       //////////////////////////////////////////////////////////////////////////
-      const dtGame::ActorComponent::ACType BodyPaintStateActComp::TYPE("BodyPaintStateActComp");
+      const dtGame::ActorComponent::ACType BodyPaintStateActComp::TYPE( new dtCore::ActorType("BodyPaintStateActComp","ActorComponents",
+            "Camoflage painting actor component.", dtGame::ActorComponent::BaseActorComponentType));
       const dtUtil::RefString BodyPaintStateActComp::PROPERTY_PAINT_STATE("Paint State");
       const dtUtil::RefString BodyPaintStateActComp::PROPERTY_DIFFUSE_FRAME_SCALE("Diffuse Frame Scale");
       const dtUtil::RefString BodyPaintStateActComp::PROPERTY_OVERLAY_FRAME_SCALE("Overlay Frame Scale");

@@ -60,10 +60,10 @@ namespace SimCore
       ////////////////////////////////////////////////
       void KeyboardWheeledVehicleInputActComp::Update(const dtGame::TickMessage& msg)
       {
-         dtGame::GameActor* actor = NULL;
+         dtGame::GameActorProxy* actor = NULL;
          GetOwner(actor);
 
-         dtCore::Keyboard *keyboard = actor->GetGameActorProxy().GetGameManager()->GetApplication().GetKeyboard();
+         dtCore::Keyboard *keyboard = actor->GetGameManager()->GetApplication().GetKeyboard();
          if (keyboard == NULL)
          {
             return;
@@ -140,7 +140,7 @@ namespace SimCore
       ////////////////////////////////////////////////
       void KeyboardWheeledVehicleInputActComp::OnEnteredWorld()
       {
-         dtGame::GameActor* actor = NULL;
+         dtGame::GameActorProxy* actor = NULL;
          GetOwner(actor);
 
          if (actor == NULL)
@@ -149,13 +149,13 @@ namespace SimCore
             return;
          }
 
-         std::string tickInvokable = "Tick Remote " + GetType().Get();
-         if (actor->GetGameActorProxy().GetInvokable(tickInvokable) == NULL)
+         std::string tickInvokable = "Tick Remote " + GetType()->GetFullName();
+         if (actor->GetInvokable(tickInvokable) == NULL)
          {
-            actor->GetGameActorProxy().AddInvokable(*new dtGame::Invokable(tickInvokable,
+            actor->AddInvokable(*new dtGame::Invokable(tickInvokable,
                dtUtil::MakeFunctor(&KeyboardWheeledVehicleInputActComp::Update, this)));
          }
-         actor->GetGameActorProxy().RegisterForMessages(dtGame::MessageType::TICK_LOCAL, tickInvokable);
+         actor->RegisterForMessages(dtGame::MessageType::TICK_LOCAL, tickInvokable);
       }
 
       ////////////////////////////////////////////////

@@ -37,492 +37,489 @@ using namespace dtAnim;
 
 namespace SimCore
 {
-    namespace ActComps
-    {
-        ////////////////////////////////////////////////////////////////////////////////
-        // CONSTANTS
-        ////////////////////////////////////////////////////////////////////////////////
-        IMPLEMENT_ENUM(PlayModeEnum)
-        PlayModeEnum PlayModeEnum::ONCE("ONCE");
-        PlayModeEnum PlayModeEnum::LOOP("LOOP");
-        PlayModeEnum PlayModeEnum::SWING("SWING");
+   namespace ActComps
+   {
+      ////////////////////////////////////////////////////////////////////////////////
+      // CONSTANTS
+      ////////////////////////////////////////////////////////////////////////////////
+      IMPLEMENT_ENUM(PlayModeEnum)
+              PlayModeEnum PlayModeEnum::ONCE("ONCE");
+      PlayModeEnum PlayModeEnum::LOOP("LOOP");
+      PlayModeEnum PlayModeEnum::SWING("SWING");
 
 
 
-        ////////////////////////////////////////////////////////////////////////////////
-        // ANIMATION PROPERTY CONTAINER
-        ////////////////////////////////////////////////////////////////////////////////
-        AnimationPropertyContainer::AnimationPropertyContainer()
-            : BaseClass()
-            , mBeginTime(0.0f)
-            , mEndTime(0.0f)
-            , mTimeScale(1.0f)
-            , mPlayMode(&PlayModeEnum::ONCE)
-        {
-            const dtUtil::RefString GROUPNAME("AnimationPropertyContainer");
-            typedef dtCore::PropertyRegHelper<AnimationPropertyContainer&, AnimationPropertyContainer> PropertyRegType;
-            PropertyRegType propertyRegHelper ( *this, this, GROUPNAME );
+      ////////////////////////////////////////////////////////////////////////////////
+      // ANIMATION PROPERTY CONTAINER
+      ////////////////////////////////////////////////////////////////////////////////
+      AnimationPropertyContainer::AnimationPropertyContainer()
+      : BaseClass()
+      , mBeginTime(0.0f)
+      , mEndTime(0.0f)
+      , mTimeScale(1.0f)
+      , mPlayMode(&PlayModeEnum::ONCE)
+      {
+         const dtUtil::RefString GROUPNAME("AnimationPropertyContainer");
+         typedef dtCore::PropertyRegHelper<AnimationPropertyContainer&, AnimationPropertyContainer> PropertyRegType;
+         PropertyRegType propertyRegHelper ( *this, this, GROUPNAME );
 
-            DT_REGISTER_PROPERTY(
-                Name,
-                "Name to refer to a segment of a long animation.",
-                PropertyRegType, propertyRegHelper );
+         DT_REGISTER_PROPERTY(
+               Name,
+               "Name to refer to a segment of a long animation.",
+               PropertyRegType, propertyRegHelper );
 
-            DT_REGISTER_PROPERTY(
-                BeginTime,
-                "Time in within a long animation that marks the beginning of an animation segment",
-                PropertyRegType, propertyRegHelper );
-            
-            DT_REGISTER_PROPERTY(
-                EndTime,
-                "Time in within a long animation that marks the ending of an animation segment",
-                PropertyRegType, propertyRegHelper );
-            
-            DT_REGISTER_PROPERTY(
-                TimeScale,
-                "Time scale to speed up or slow down playback. Defaults to 1.",
-                PropertyRegType, propertyRegHelper );
-            
-            AddProperty(new dtCore::EnumActorProperty<PlayModeEnum>(
-                "Play Mode",
-                "Play Mode",
-                dtCore::EnumActorProperty<PlayModeEnum>::SetFuncType(this,&AnimationPropertyContainer::SetPlayMode),
-                dtCore::EnumActorProperty<PlayModeEnum>::GetFuncType(this,&AnimationPropertyContainer::GetPlayMode),
-                "Sets the tether mode for this tripod actor.", GROUPNAME));
-        }
+         DT_REGISTER_PROPERTY(
+               BeginTime,
+               "Time in within a long animation that marks the beginning of an animation segment",
+               PropertyRegType, propertyRegHelper );
 
-        AnimationPropertyContainer::~AnimationPropertyContainer()
-        {
-        }
+         DT_REGISTER_PROPERTY(
+               EndTime,
+               "Time in within a long animation that marks the ending of an animation segment",
+               PropertyRegType, propertyRegHelper );
 
-        void AnimationPropertyContainer::SetName(const std::string& name)
-        {
-            mName = name;
-        }
+         DT_REGISTER_PROPERTY(
+               TimeScale,
+               "Time scale to speed up or slow down playback. Defaults to 1.",
+               PropertyRegType, propertyRegHelper );
 
-        const std::string& AnimationPropertyContainer::GetName() const
-        {
-            return mName;
-        }
+         AddProperty(new dtCore::EnumActorProperty<PlayModeEnum>(
+               "Play Mode",
+               "Play Mode",
+               dtCore::EnumActorProperty<PlayModeEnum>::SetFuncType(this,&AnimationPropertyContainer::SetPlayMode),
+               dtCore::EnumActorProperty<PlayModeEnum>::GetFuncType(this,&AnimationPropertyContainer::GetPlayMode),
+               "Sets the tether mode for this tripod actor.", GROUPNAME));
+      }
 
-        void AnimationPropertyContainer::SetBeginTime(float beginTime)
-        {
-            mBeginTime = beginTime;
-        }
+      AnimationPropertyContainer::~AnimationPropertyContainer()
+      {
+      }
 
-        float AnimationPropertyContainer::GetBeginTime() const
-        {
-            return mBeginTime;
-        }
+      void AnimationPropertyContainer::SetName(const std::string& name)
+      {
+         mName = name;
+      }
 
-        void AnimationPropertyContainer::SetEndTime(float endTime)
-        {
-            mEndTime = endTime;
-        }
+      const std::string& AnimationPropertyContainer::GetName() const
+      {
+         return mName;
+      }
 
-        float AnimationPropertyContainer::GetEndTime() const
-        {
-            return mEndTime;
-        }
+      void AnimationPropertyContainer::SetBeginTime(float beginTime)
+      {
+         mBeginTime = beginTime;
+      }
 
-        void AnimationPropertyContainer::SetTimeScale(float timeScale)
-        {
-            mTimeScale = timeScale;
-        }
+      float AnimationPropertyContainer::GetBeginTime() const
+      {
+         return mBeginTime;
+      }
 
-        float AnimationPropertyContainer::GetTimeScale() const
-        {
-            return mTimeScale;
-        }
+      void AnimationPropertyContainer::SetEndTime(float endTime)
+      {
+         mEndTime = endTime;
+      }
 
-        void AnimationPropertyContainer::SetPlayMode(PlayModeEnum& mode)
-        {
-            mPlayMode = &mode;
-        }
+      float AnimationPropertyContainer::GetEndTime() const
+      {
+         return mEndTime;
+      }
 
-        PlayModeEnum& AnimationPropertyContainer::GetPlayMode() const
-        {
-            return *mPlayMode;
-        }
+      void AnimationPropertyContainer::SetTimeScale(float timeScale)
+      {
+         mTimeScale = timeScale;
+      }
+
+      float AnimationPropertyContainer::GetTimeScale() const
+      {
+         return mTimeScale;
+      }
+
+      void AnimationPropertyContainer::SetPlayMode(PlayModeEnum& mode)
+      {
+         mPlayMode = &mode;
+      }
+
+      PlayModeEnum& AnimationPropertyContainer::GetPlayMode() const
+      {
+         return *mPlayMode;
+      }
 
 
 
-        ////////////////////////////////////////////////////////////////////////////////
-        // ANIMATION CLIP ACTOR COMPONENT
-        ////////////////////////////////////////////////////////////////////////////////
-        const dtGame::ActorComponent::ACType AnimationClipActComp::TYPE("AnimationClipActComp::");
-        const dtUtil::RefString AnimationClipActComp::PROPERTY_ANIMATION_PROPERTY_ARRAY("Animation Property Array");
-        const dtUtil::RefString AnimationClipActComp::PROPERTY_PAUSED;
+      ////////////////////////////////////////////////////////////////////////////////
+      // ANIMATION CLIP ACTOR COMPONENT
+      ////////////////////////////////////////////////////////////////////////////////
+      const dtGame::ActorComponent::ACType AnimationClipActComp::TYPE(new dtCore::ActorType("AnimationClipActComp","ActorComponents",
+            "Plays animation clips stored in the geometry of a drawable.", dtGame::ActorComponent::BaseActorComponentType));
+      const dtUtil::RefString AnimationClipActComp::PROPERTY_ANIMATION_PROPERTY_ARRAY("Animation Property Array");
+      const dtUtil::RefString AnimationClipActComp::PROPERTY_PAUSED;
 
-        AnimationClipActComp::AnimationClipActComp()
-            : BaseClass(AnimationClipActComp::TYPE)
-            , mIsValid(false)
-            , mPaused(false)
-            , mCurrentAnimation(-1)
-        {
-        }
+      AnimationClipActComp::AnimationClipActComp()
+      : BaseClass(AnimationClipActComp::TYPE)
+      , mIsValid(false)
+      , mPaused(false)
+      , mCurrentAnimation(-1)
+      {
+      }
 
-        AnimationClipActComp::~AnimationClipActComp()
-        {
-        }
+      AnimationClipActComp::~AnimationClipActComp()
+      {
+      }
 
-        osg::Node* AnimationClipActComp::GetOwnerNode()
-        {
-            dtGame::GameActor* actor = dynamic_cast<dtGame::GameActor*>(GetOwner());
-            if (actor == NULL)
-            {
-                return NULL;
-            }
-            
-            return actor->GetOSGNode();
-        }
-
-        const osg::Node* AnimationClipActComp::GetOwnerNode() const
-        {
-            const dtGame::GameActor* actor = dynamic_cast<const dtGame::GameActor*>(GetOwner());
-            if (actor == NULL)
-            {
-                return NULL;
-            }
-            
-            return actor->GetOSGNode();
-        }
-
-        bool AnimationClipActComp::IsValid() const
-        {
-            return mIsValid;
-        }
-
-        int AnimationClipActComp::GetAnimationPropertyContainerIndex(const std::string& name) const
-        {
-            int result = -1;
-
-            AnimPropVector::const_iterator iter = mAnimProps.begin();
-            AnimPropVector::const_iterator iterEnd = mAnimProps.end();
-            for (int i = 0; iter != iterEnd; ++iter, ++i)
-            {
-                if (iter->get()->GetName() == name)
-                {
-                    result = i;
-                    break;
-                }
-            }
-
-            return result;
-        }
-
-        AnimationPropertyContainer* AnimationClipActComp::GetAnimationPropertyContainerByName(const std::string& name)
-        {
-            int index = GetAnimationPropertyContainerIndex(name);
-            return GetAnimationPropertyContainer(index);
-        }
-        
-        AnimationPropertyContainer* AnimationClipActComp::GetAnimationPropertyContainer(int index)
-        {
-            if (index >= 0 && size_t(index) < mAnimProps.size())
-            {
-                return mAnimProps[index];
-            }
-
+      osg::Node* AnimationClipActComp::GetOwnerNode()
+      {
+         dtGame::GameActorProxy* gap = NULL;
+         GetOwner(gap);
+         if (gap == NULL)
+         {
             return NULL;
-        }
+         }
 
-        void AnimationClipActComp::SetAnimationPropertyContainer(int index, AnimationPropertyContainer* animProps)
-        {
-            if (animProps != NULL && mAnimProps.size() > size_t(index) && index >= 0)
+         return gap->GetDrawable()->GetOSGNode();
+      }
+
+      const osg::Node* AnimationClipActComp::GetOwnerNode() const
+      {
+         dtGame::GameActorProxy* gap = NULL;
+         GetOwner(gap);
+         if (gap == NULL)
+         {
+            return NULL;
+         }
+
+         return gap->GetDrawable()->GetOSGNode();
+      }
+
+      bool AnimationClipActComp::IsValid() const
+      {
+         return mIsValid;
+      }
+
+      int AnimationClipActComp::GetAnimationPropertyContainerIndex(const std::string& name) const
+      {
+         int result = -1;
+
+         AnimPropVector::const_iterator iter = mAnimProps.begin();
+         AnimPropVector::const_iterator iterEnd = mAnimProps.end();
+         for (int i = 0; iter != iterEnd; ++iter, ++i)
+         {
+            if (iter->get()->GetName() == name)
             {
-                mAnimProps[index] = new AnimationPropertyContainer(*animProps);
+               result = i;
+               break;
             }
-        }
+         }
 
-        void AnimationClipActComp::InsertNewAnimationPropertyContainer(int index)
-        {
-            if (index >= 0 && size_t(index) <= mAnimProps.size())
-            {
-                mAnimProps.insert(mAnimProps.begin() + index, new AnimationPropertyContainer());
-            }
-        }
+         return result;
+      }
 
-        void AnimationClipActComp::RemoveAnimationPropertyContainer(int index)
-        {
-            if (index >= 0 && size_t(index) < mAnimProps.size())
-            {
-                mAnimProps.erase(mAnimProps.begin() + index);
-            }
-        }
+      AnimationPropertyContainer* AnimationClipActComp::GetAnimationPropertyContainerByName(const std::string& name)
+      {
+         int index = GetAnimationPropertyContainerIndex(name);
+         return GetAnimationPropertyContainer(index);
+      }
 
-        size_t AnimationClipActComp::GetNumAnimationPropertyContainers() const
-        {
-            return mAnimProps.size();
-        }
-        
-        void AnimationClipActComp::SetPaused(bool paused)
-        {
-            if (mPaused != paused)
-            {
-                InternalPauseAnimation(paused);
-            }
-        }
-        
-        bool AnimationClipActComp::IsPaused() const
-        {
-            return mPaused;
-        }
+      AnimationPropertyContainer* AnimationClipActComp::GetAnimationPropertyContainer(int index)
+      {
+         if (index >= 0 && size_t(index) < mAnimProps.size())
+         {
+            return mAnimProps[index];
+         }
 
-        int AnimationClipActComp::GetCurrentAnimationPropertyIndex() const
-        {
-            return mCurrentAnimation;
-        }
+         return NULL;
+      }
 
-        int AnimationClipActComp::PlayAnimation(const std::string& name, bool reset)
-        {
-            int index = GetAnimationPropertyContainerIndex(name);
+      void AnimationClipActComp::SetAnimationPropertyContainer(int index, AnimationPropertyContainer* animProps)
+      {
+         if (animProps != NULL && mAnimProps.size() > size_t(index) && index >= 0)
+         {
+            mAnimProps[index] = new AnimationPropertyContainer(*animProps);
+         }
+      }
 
-            if (index >= 0)
-            {
-                InternalPlayAnimation(index, reset);
-            }
+      void AnimationClipActComp::InsertNewAnimationPropertyContainer(int index)
+      {
+         if (index >= 0 && size_t(index) <= mAnimProps.size())
+         {
+            mAnimProps.insert(mAnimProps.begin() + index, new AnimationPropertyContainer());
+         }
+      }
 
-            return index;
-        }
+      void AnimationClipActComp::RemoveAnimationPropertyContainer(int index)
+      {
+         if (index >= 0 && size_t(index) < mAnimProps.size())
+         {
+            mAnimProps.erase(mAnimProps.begin() + index);
+         }
+      }
 
-        bool AnimationClipActComp::PlayAnimation(int animIndex, bool reset)
-        {
-            //AnimationPropertyContainer* apc = GetAnimationPropertyContainer(animIndex);
+      size_t AnimationClipActComp::GetNumAnimationPropertyContainers() const
+      {
+         return mAnimProps.size();
+      }
 
-            if (animIndex >= 0 && size_t(animIndex) < mAnimProps.size())
-            {
-                InternalPlayAnimation(animIndex, reset);
-            }
+      void AnimationClipActComp::SetPaused(bool paused)
+      {
+         if (mPaused != paused)
+         {
+            InternalPauseAnimation(paused);
+         }
+      }
 
-            return !mPaused;
-        }
+      bool AnimationClipActComp::IsPaused() const
+      {
+         return mPaused;
+      }
 
-        void AnimationClipActComp::ResetAnimation()
-        {
-            if( ! mIsValid)
-            {
-                return;
-            }
+      int AnimationClipActComp::GetCurrentAnimationPropertyIndex() const
+      {
+         return mCurrentAnimation;
+      }
 
-            osg::Node* node = GetOwnerNode();
-            if (node != NULL)
-            {
-                AnimCallbackVisitor visitor;
-                node->accept(visitor);
+      int AnimationClipActComp::PlayAnimation(const std::string& name, bool reset)
+      {
+         int index = GetAnimationPropertyContainerIndex(name);
 
-                visitor.ResetCallbacks();
-            }
-        }
+         if (index >= 0)
+         {
+            InternalPlayAnimation(index, reset);
+         }
 
-        void AnimationClipActComp::OnEnteredWorld()
-        {
-            BaseClass::OnEnteredWorld();
+         return index;
+      }
 
-            ProcessModel();
-        }
+      bool AnimationClipActComp::PlayAnimation(int animIndex, bool reset)
+      {
+         //AnimationPropertyContainer* apc = GetAnimationPropertyContainer(animIndex);
 
-        void AnimationClipActComp::BuildPropertyMap()
-        {
-            BaseClass::BuildPropertyMap();
+         if (animIndex >= 0 && size_t(animIndex) < mAnimProps.size())
+         {
+            InternalPlayAnimation(animIndex, reset);
+         }
 
-            const dtUtil::RefString ANIM_CLIP_PROPERTY_GROUP("Animation Clip Properties");
-            typedef dtCore::PropertyRegHelper<AnimationClipActComp&, AnimationClipActComp> PropRegType;
-            PropRegType propRegHelper(*this, this, ANIM_CLIP_PROPERTY_GROUP);
+         return !mPaused;
+      }
 
-            typedef dtCore::ArrayActorPropertyComplex<dtCore::RefPtr<AnimationPropertyContainer> > AnimPropArrayPropType;
-            dtCore::RefPtr<AnimPropArrayPropType> arrayProp = new AnimPropArrayPropType(
-                 PROPERTY_ANIMATION_PROPERTY_ARRAY,
-                 PROPERTY_ANIMATION_PROPERTY_ARRAY,
-                 AnimPropArrayPropType::SetFuncType(this, &AnimationClipActComp::SetAnimationPropertyContainer),
-                 AnimPropArrayPropType::GetFuncType(this, &AnimationClipActComp::GetAnimationPropertyContainer),
-                 AnimPropArrayPropType::GetSizeFuncType(this, &AnimationClipActComp::GetNumAnimationPropertyContainers),
-                 AnimPropArrayPropType::InsertFuncType(this, &AnimationClipActComp::InsertNewAnimationPropertyContainer),
-                 AnimPropArrayPropType::RemoveFuncType(this, &AnimationClipActComp::RemoveAnimationPropertyContainer),
-                 "Array of animation clip parameters. Each element defines an individual animation clip to play from a shared larger animation.",
-                 ANIM_CLIP_PROPERTY_GROUP);
-            
-            dtCore::RefPtr<dtCore::BasePropertyContainerActorProperty> propContainerProp =
-                new dtCore::SimplePropertyContainerActorProperty<AnimationPropertyContainer>(
-                    "AnimationClipParameters",
-                    "AnimationClipParameters",
-                    dtCore::SimplePropertyContainerActorProperty<AnimationPropertyContainer>::SetFuncType(arrayProp.get(), &AnimPropArrayPropType::SetCurrentValue),
-                    dtCore::SimplePropertyContainerActorProperty<AnimationPropertyContainer>::GetFuncType(arrayProp.get(), &AnimPropArrayPropType::GetCurrentValue),
-                    "Defines a segment from a larger animation to play.",
-                    ANIM_CLIP_PROPERTY_GROUP);
+      void AnimationClipActComp::ResetAnimation()
+      {
+         if( ! mIsValid)
+         {
+            return;
+         }
 
-            arrayProp->SetArrayProperty(*propContainerProp);
-            AddProperty(arrayProp);
-
-            AddProperty(new dtCore::BooleanActorProperty(
-                PROPERTY_PAUSED,
-                PROPERTY_PAUSED,
-                dtCore::BooleanActorProperty::SetFuncType(this, &AnimationClipActComp::SetPaused),
-                dtCore::BooleanActorProperty::GetFuncType(this, &AnimationClipActComp::IsPaused),
-                "Set all animation callbacks paused.",
-                ANIM_CLIP_PROPERTY_GROUP));
-        }
-
-        void AnimationClipActComp::ProcessModel()
-        {
-            osg::Node* node = GetOwnerNode();
-            if (node == NULL)
-            {
-                LOG_ERROR("No access to a root node.");
-            }
-            else
-            {
-                if (mIsValid)
-                {
-                    InternalPauseAnimation(true);
-                }
-
-                AnimCallbackVisitor visitor;
-                node->accept(visitor);
-                
-                // Convert the animation paths to path types
-                // that can play segments of a full animation.
-                // This could take a good amount of time depending
-                // the number of objects and length of animation
-                // to be copied between animation paths.
-                typedef AnimCallbackVisitor::AnimCallbackVector AnimCallbackVector;
-                AnimCallbackVector::iterator iter = visitor.GetAnimCallbacks().begin();
-                AnimCallbackVector::iterator iterEnd = visitor.GetAnimCallbacks().end();
-                for (; iter != iterEnd; ++iter)
-                {
-                    dtCore::RefPtr<AnimClipPath> newPath
-                        = new AnimClipPath(*(iter->get()->getAnimationPath()));
-                    iter->get()->setAnimationPath(newPath);
-                }
-
-                mIsValid = ! visitor.GetAnimCallbacks().empty();
-
-                // Ensure proper states.
-                InternalPauseAnimation(mPaused);
-            }
-        }
-
-        void AnimationClipActComp::InternalPlayAnimation(int animIndex, bool reset)
-        {
-            if( ! mIsValid)
-            {
-                return;
-            }
-
-            osg::Node* node = GetOwnerNode();
+         osg::Node* node = GetOwnerNode();
+         if (node != NULL)
+         {
             AnimCallbackVisitor visitor;
-            if (node == NULL)
-            {
-                LOG_ERROR("Could not access actor root node.");
-                return;
-            }
-            
             node->accept(visitor);
 
-            // Apply another set of parameters if another index has been specified.
-            if (mCurrentAnimation != animIndex)
+            visitor.ResetCallbacks();
+         }
+      }
+
+      void AnimationClipActComp::OnEnteredWorld()
+      {
+         BaseClass::OnEnteredWorld();
+
+         ProcessModel();
+      }
+
+      void AnimationClipActComp::BuildPropertyMap()
+      {
+         BaseClass::BuildPropertyMap();
+
+         const dtUtil::RefString ANIM_CLIP_PROPERTY_GROUP("Animation Clip Properties");
+         typedef dtCore::PropertyRegHelper<AnimationClipActComp&, AnimationClipActComp> PropRegType;
+         PropRegType propRegHelper(*this, this, ANIM_CLIP_PROPERTY_GROUP);
+
+         typedef dtCore::ArrayActorPropertyComplex<dtCore::RefPtr<AnimationPropertyContainer> > AnimPropArrayPropType;
+         dtCore::RefPtr<AnimPropArrayPropType> arrayProp = new AnimPropArrayPropType(
+               PROPERTY_ANIMATION_PROPERTY_ARRAY,
+               PROPERTY_ANIMATION_PROPERTY_ARRAY,
+               AnimPropArrayPropType::SetFuncType(this, &AnimationClipActComp::SetAnimationPropertyContainer),
+               AnimPropArrayPropType::GetFuncType(this, &AnimationClipActComp::GetAnimationPropertyContainer),
+               AnimPropArrayPropType::GetSizeFuncType(this, &AnimationClipActComp::GetNumAnimationPropertyContainers),
+               AnimPropArrayPropType::InsertFuncType(this, &AnimationClipActComp::InsertNewAnimationPropertyContainer),
+               AnimPropArrayPropType::RemoveFuncType(this, &AnimationClipActComp::RemoveAnimationPropertyContainer),
+               "Array of animation clip parameters. Each element defines an individual animation clip to play from a shared larger animation.",
+               ANIM_CLIP_PROPERTY_GROUP);
+
+         dtCore::RefPtr<dtCore::BasePropertyContainerActorProperty> propContainerProp =
+               new dtCore::SimplePropertyContainerActorProperty<AnimationPropertyContainer>(
+                     "AnimationClipParameters",
+                     "AnimationClipParameters",
+                     dtCore::SimplePropertyContainerActorProperty<AnimationPropertyContainer>::SetFuncType(arrayProp.get(), &AnimPropArrayPropType::SetCurrentValue),
+                     dtCore::SimplePropertyContainerActorProperty<AnimationPropertyContainer>::GetFuncType(arrayProp.get(), &AnimPropArrayPropType::GetCurrentValue),
+                     "Defines a segment from a larger animation to play.",
+                     ANIM_CLIP_PROPERTY_GROUP);
+
+         arrayProp->SetArrayProperty(*propContainerProp);
+         AddProperty(arrayProp);
+
+         AddProperty(new dtCore::BooleanActorProperty(
+               PROPERTY_PAUSED,
+               PROPERTY_PAUSED,
+               dtCore::BooleanActorProperty::SetFuncType(this, &AnimationClipActComp::SetPaused),
+               dtCore::BooleanActorProperty::GetFuncType(this, &AnimationClipActComp::IsPaused),
+               "Set all animation callbacks paused.",
+               ANIM_CLIP_PROPERTY_GROUP));
+      }
+
+      void AnimationClipActComp::ProcessModel()
+      {
+         osg::Node* node = GetOwnerNode();
+         if (node == NULL)
+         {
+            LOG_ERROR("No access to a root node.");
+         }
+         else
+         {
+            if (mIsValid)
             {
-                AnimationPropertyContainer* animProps = GetAnimationPropertyContainer(animIndex);
-
-                if (animProps == NULL)
-                {
-                    std::ostringstream oss;
-                    oss << "Could not access animation parameters at index "
-                        << animIndex << "." << std::endl;
-                    LOG_ERROR(oss.str());
-
-                    mCurrentAnimation = -1;
-                    return;
-                }
-                
-                ApplyAnimationClipParameters(*animProps, visitor, true, true);
-
-                mCurrentAnimation = animIndex;
+               InternalPauseAnimation(true);
             }
-            else
+
+            AnimCallbackVisitor visitor;
+            node->accept(visitor);
+
+            // Convert the animation paths to path types
+            // that can play segments of a full animation.
+            // This could take a good amount of time depending
+            // the number of objects and length of animation
+            // to be copied between animation paths.
+            typedef AnimCallbackVisitor::AnimCallbackVector AnimCallbackVector;
+            AnimCallbackVector::iterator iter = visitor.GetAnimCallbacks().begin();
+            AnimCallbackVector::iterator iterEnd = visitor.GetAnimCallbacks().end();
+            for (; iter != iterEnd; ++iter)
             {
-                if (reset)
-                {
-                    visitor.ResetCallbacks();
-                }
-
-                visitor.SetPaused(false);
+               dtCore::RefPtr<AnimClipPath> newPath
+               = new AnimClipPath(*(iter->get()->getAnimationPath()));
+               iter->get()->setAnimationPath(newPath);
             }
 
-            mPaused = false;
-        }
+            mIsValid = ! visitor.GetAnimCallbacks().empty();
 
-        void AnimationClipActComp::InternalPauseAnimation(bool pause)
-        {
-            if( ! mIsValid)
+            // Ensure proper states.
+            InternalPauseAnimation(mPaused);
+         }
+      }
+
+      void AnimationClipActComp::InternalPlayAnimation(int animIndex, bool reset)
+      {
+         if( ! mIsValid)
+         {
+            return;
+         }
+
+         osg::Node* node = GetOwnerNode();
+         AnimCallbackVisitor visitor;
+         if (node == NULL)
+         {
+            LOG_ERROR("Could not access actor root node.");
+            return;
+         }
+
+         node->accept(visitor);
+
+         // Apply another set of parameters if another index has been specified.
+         if (mCurrentAnimation != animIndex)
+         {
+            AnimationPropertyContainer* animProps = GetAnimationPropertyContainer(animIndex);
+
+            if (animProps == NULL)
             {
-                return;
+               std::ostringstream oss;
+               oss << "Could not access animation parameters at index "
+                     << animIndex << "." << std::endl;
+               LOG_ERROR(oss.str());
+
+               mCurrentAnimation = -1;
+               return;
             }
 
-            dtGame::GameActor* actor = dynamic_cast<dtGame::GameActor*>(GetOwner());
-            if (actor == NULL)
+            ApplyAnimationClipParameters(*animProps, visitor, true, true);
+
+            mCurrentAnimation = animIndex;
+         }
+         else
+         {
+            if (reset)
             {
-                return;
+               visitor.ResetCallbacks();
             }
 
-            osg::Node* node = actor->GetOSGNode();
+            visitor.SetPaused(false);
+         }
 
-            if (node != NULL)
-            {
-                AnimCallbackVisitor visitor;
-                node->accept(visitor);
+         mPaused = false;
+      }
 
-                visitor.SetPaused(pause);
-                mPaused = pause;
-            }
-        }
+      void AnimationClipActComp::InternalPauseAnimation(bool pause)
+      {
+         if( ! mIsValid)
+         {
+            return;
+         }
 
-        void AnimationClipActComp::ApplyAnimationClipParameters(
+         osg::Node* node = GetOwnerNode();
+
+         if (node != NULL)
+         {
+            AnimCallbackVisitor visitor;
+            node->accept(visitor);
+
+            visitor.SetPaused(pause);
+            mPaused = pause;
+         }
+      }
+
+      void AnimationClipActComp::ApplyAnimationClipParameters(
             AnimationPropertyContainer& animParams,
             osg::NodeVisitor& visitorBaseType,
             bool play, bool reset)
-        {
-            AnimCallbackVisitor* visitor = static_cast<AnimCallbackVisitor*>(&visitorBaseType);
+      {
+         AnimCallbackVisitor* visitor = static_cast<AnimCallbackVisitor*>(&visitorBaseType);
 
-            AnimClipPath* curPath = NULL;
-            osg::AnimationPath::LoopMode curLoopMode = osg::AnimationPath::NO_LOOPING;
+         AnimClipPath* curPath = NULL;
+         osg::AnimationPath::LoopMode curLoopMode = osg::AnimationPath::NO_LOOPING;
 
-            typedef AnimCallbackVisitor::AnimCallbackVector AnimCallbackVector;
-            AnimCallbackVector::iterator iter = visitor->GetAnimCallbacks().begin();
-            AnimCallbackVector::iterator iterEnd = visitor->GetAnimCallbacks().end();
-            for (; iter != iterEnd; ++iter)
+         typedef AnimCallbackVisitor::AnimCallbackVector AnimCallbackVector;
+         AnimCallbackVector::iterator iter = visitor->GetAnimCallbacks().begin();
+         AnimCallbackVector::iterator iterEnd = visitor->GetAnimCallbacks().end();
+         for (; iter != iterEnd; ++iter)
+         {
+            if(animParams.GetPlayMode() == PlayModeEnum::LOOP)
             {
-                if(animParams.GetPlayMode() == PlayModeEnum::LOOP)
-                {
-                    curLoopMode = osg::AnimationPath::LOOP;
-                }
-                else if(animParams.GetPlayMode() == PlayModeEnum::SWING)
-                {
-                    curLoopMode = osg::AnimationPath::SWING;
-                }
-                else
-                {
-                    curLoopMode = osg::AnimationPath::NO_LOOPING;
-                }
-                
-                curPath = dynamic_cast<AnimClipPath*>(iter->get()->getAnimationPath());
-                if(curPath != NULL)
-                {
-                    curPath->setBeginTime(animParams.GetBeginTime());
-                    curPath->setEndTime(animParams.GetEndTime());
-                    curPath->setLoopMode(curLoopMode);
-                }
-
-                iter->get()->setTimeMultiplier(animParams.GetTimeScale());
+               curLoopMode = osg::AnimationPath::LOOP;
+            }
+            else if(animParams.GetPlayMode() == PlayModeEnum::SWING)
+            {
+               curLoopMode = osg::AnimationPath::SWING;
+            }
+            else
+            {
+               curLoopMode = osg::AnimationPath::NO_LOOPING;
             }
 
-            if (reset)
+            curPath = dynamic_cast<AnimClipPath*>(iter->get()->getAnimationPath());
+            if(curPath != NULL)
             {
-                visitor->ResetCallbacks();
+               curPath->setBeginTime(animParams.GetBeginTime());
+               curPath->setEndTime(animParams.GetEndTime());
+               curPath->setLoopMode(curLoopMode);
             }
 
-            visitor->SetPaused(!play);
-        }
+            iter->get()->setTimeMultiplier(animParams.GetTimeScale());
+         }
 
-    }
+         if (reset)
+         {
+            visitor->ResetCallbacks();
+         }
+
+         visitor->SetPaused(!play);
+      }
+
+   }
 }

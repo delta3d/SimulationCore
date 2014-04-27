@@ -44,7 +44,8 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       // CONSTANTS
       //////////////////////////////////////////////////////////////////////////
-      const dtGame::ActorComponent::ACType BodyPaintActComp::TYPE("BodyPaintActComp");
+      const dtGame::ActorComponent::ACType BodyPaintActComp::TYPE( new dtCore::ActorType("BodyPaintActComp", "ActorComponents",
+            "Repaints geometry in the shader given colors", dtGame::ActorComponent::BaseActorComponentType));
       const dtUtil::RefString BodyPaintActComp::PROPERTY_PAINT_COLOR_1("Paint Color 1");
       const dtUtil::RefString BodyPaintActComp::PROPERTY_PAINT_COLOR_2("Paint Color 2");
       const dtUtil::RefString BodyPaintActComp::PROPERTY_PAINT_COLOR_3("Paint Color 3");
@@ -167,17 +168,17 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       osg::Node* BodyPaintActComp::GetOwnerNode()
       {
-         dtGame::GameActor* actor = NULL;
+         dtGame::GameActorProxy* actor = NULL;
          GetOwner(actor);
-         return actor != NULL ? actor->GetOSGNode() : NULL;
+         return actor != NULL ? actor->GetDrawable()->GetOSGNode() : NULL;
       }
 
       //////////////////////////////////////////////////////////////////////////
       const osg::Node* BodyPaintActComp::GetOwnerNode() const
       {
-         const dtGame::GameActor* actor = NULL;
+         dtGame::GameActorProxy* actor = NULL;
          GetOwner(actor);
-         return actor != NULL ? actor->GetOSGNode() : NULL;
+         return actor != NULL ? actor->GetDrawable()->GetOSGNode() : NULL;
       }
 
       //////////////////////////////////////////////////////////////////////////

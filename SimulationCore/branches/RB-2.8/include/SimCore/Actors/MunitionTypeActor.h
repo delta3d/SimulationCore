@@ -141,7 +141,7 @@ namespace SimCore
 
             MunitionEffectsInfoActorProxy();
 
-            virtual void CreateActor();
+            virtual void CreateDrawable();
 
             virtual void BuildPropertyMap();
 

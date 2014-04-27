@@ -56,7 +56,7 @@ namespace SimCore
       void FireActorProxy::BuildPropertyMap()
       {
          FireActor* fa = NULL;
-         GetActor(fa);
+         GetDrawable(fa);
 
          LocalEffectActorProxy::BuildPropertyMap();
 

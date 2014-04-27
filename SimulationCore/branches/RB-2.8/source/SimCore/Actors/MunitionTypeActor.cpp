@@ -261,7 +261,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void MunitionEffectsInfoActorProxy::CreateActor()
+      void MunitionEffectsInfoActorProxy::CreateDrawable()
       {
          SetDrawable( *new MunitionEffectsInfoActor(*this) );
       }

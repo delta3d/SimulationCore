@@ -92,7 +92,6 @@ set(LIB_SOURCES_2
    "${SOURCE_PATH}/Actors/MultipleDetonationActor.cpp"
    "${SOURCE_PATH}/Actors/MunitionParticlesActor.cpp"
    "${SOURCE_PATH}/Actors/MunitionTypeActor.cpp"
-   "${SOURCE_PATH}/Actors/NECCBoatActor.cpp"
    "${SOURCE_PATH}/Actors/NxAgeiaFourWheelVehicleActor.cpp"
    "${SOURCE_PATH}/Actors/OceanDataActor.cpp"
    "${SOURCE_PATH}/Actors/OpenFlightToIVETerrain.cpp"

@@ -141,12 +141,6 @@ namespace SimCore
              */
             virtual void OnTickLocal(const dtGame::TickMessage& tickMessage);
 
-            /** 
-             * Called when this ActorComponent is removed from the parent actor.
-             * @param actor The GameActor this ActorComponent has just been removed from.
-             */
-            virtual void OnRemovedFromActor(dtGame::GameActor& actor);
-
             /**
              * Override method to handle additional setup that can only be handled
              * prior to entering the world, such as message handler registration.

@@ -103,6 +103,7 @@ namespace SimCore
       DRGhostActor::DRGhostActor(DRGhostActorProxy& proxy)
       : dtActors::GameMeshActor(proxy)
       , mSlaveUpdatedParticleIsActive(false)
+      , mPosUpdatedParticleCountdown(0)
       , mVelocityArrowColor(0.2f, 0.2f, 1.0f)
       , mAccelerationArrowColor(0.2f, 1.0f, 0.2f)
       , mArrowDrawScalar(1.0f)
@@ -135,7 +136,7 @@ namespace SimCore
          if (mArrowGlobalParentNode.valid() && envProxy != NULL)
          {
             dtGame::IEnvGameActor *envActor;
-            envProxy->GetActor(envActor);
+            envProxy->GetDrawable(envActor);
             envActor->RemoveActor(*mArrowGlobalParentNode);
          }
       }
@@ -232,7 +233,7 @@ namespace SimCore
             if (envProxy != NULL)
             {
                dtGame::IEnvGameActor *envActor;
-               envProxy->GetActor(envActor);
+               envProxy->GetDrawable(envActor);
                envActor->AddActor(*mArrowGlobalParentNode);
 
                // Make this a settable value.

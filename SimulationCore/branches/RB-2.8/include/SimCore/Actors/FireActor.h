@@ -104,10 +104,6 @@ namespace SimCore
             virtual ~FireActorProxy();
 
 
-         private:
-
-            dtCore::RefPtr<dtCore::ActorProxyIcon> mBillBoardIcon;
-
       };
    }
 }

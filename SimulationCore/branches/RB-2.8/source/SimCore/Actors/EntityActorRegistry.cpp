@@ -354,8 +354,8 @@ namespace SimCore
          mActorFactory->RegisterType<DynamicParticleSystemActorProxy>(DYNAMIC_PARTICLE_SYSTEM_ACTOR_TYPE.get());
 
          // Game Event Logic pieces
-         mActorFactory->RegisterType<LogicConditionalActorProxy>(LOGIC_CONDITIONAL_ACTOR_TYPE.get());
-         mActorFactory->RegisterType<LogicOnEventActorProxy>(LOGIC_ON_EVENT_ACTOR_TYPE.get());
+         mActorFactory->RegisterType<LogicConditionalActor>(LOGIC_CONDITIONAL_ACTOR_TYPE.get());
+         mActorFactory->RegisterType<LogicOnEventActor>(LOGIC_ON_EVENT_ACTOR_TYPE.get());
          
          // Config Actors
          mActorFactory->RegisterType<CamoConfigActorProxy>(CAMO_CONFIG_ACTOR_TYPE.get());

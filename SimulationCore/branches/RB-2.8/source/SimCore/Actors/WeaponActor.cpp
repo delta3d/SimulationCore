@@ -534,7 +534,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      dtCore::ActorProxy* WeaponActor::GetOwner()
+      dtCore::BaseActorObject* WeaponActor::GetOwner()
       {
          return mOwner.get();
       }

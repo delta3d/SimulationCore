@@ -84,7 +84,7 @@ namespace SimCore
          BaseClass::BuildPropertyMap();
 
          MultipleDetonationActor* da = NULL;
-         GetActor(da);
+         GetDrawable(da);
 
          static const dtUtil::RefString groupImpactEffects("Multiple Detonation Effects");
 
