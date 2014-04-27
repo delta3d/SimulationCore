@@ -86,7 +86,7 @@ namespace SimCore
 
                // the datastream will delete the buffer.
                dtUtil::DataStream ds(buffer, 4U, true);
-               long timeMillis = 3002201;
+               int timeMillis = 3002201;
                ds.Write(timeMillis);
 
                mTranslator->MapToMessageParameters(buffer, 4U, parameters, otm);
@@ -112,10 +112,10 @@ namespace SimCore
 
                // the datastream will delete the buffer.
                dtUtil::DataStream ds(buffer, 4U, true);
-               long timeMillis;
+               int timeMillis;
                ds.Read(timeMillis);
 
-               CPPUNIT_ASSERT_EQUAL(43433250L, timeMillis);
+               CPPUNIT_ASSERT_EQUAL(43433250, timeMillis);
             }
             catch (const dtUtil::Exception& ex)
             {

@@ -518,7 +518,7 @@ namespace SimCore
          BasePhysicsVehicleActorProxy::BuildPropertyMap();
 
          FourWheelVehicleActor* actor = NULL;
-         GetActor(actor);
+         GetDrawable(actor);
 
          typedef dtCore::PropertyRegHelper<FourWheelVehicleActorProxy&, FourWheelVehicleActor> PropRegType;
          PropRegType propRegHelper(*this, actor, VEH_GROUP);

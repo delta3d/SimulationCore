@@ -19,7 +19,6 @@
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
 *
-* @author Curtiss Murphy
 */
 #ifndef LOGIC_ON_EVENT_ACTOR_H
 #define LOGIC_ON_EVENT_ACTOR_H
@@ -31,19 +30,22 @@
 #include <dtGame/gameactor.h>
 #include <dtCore/gameevent.h>
 
-
+namespace dtGame
+{
+   class GameEventMessage;
+}
 
 namespace SimCore
 {
    namespace Actors
    {
-      class LogicOnEventActor;
-      class LogicConditionalActorProxy;
+      class LogicOnEventDrawable;
+      class LogicConditionalActor;
 
       //////////////////////////////////////////////////////////////////////////
-      // PROXY CODE
+      // Actor CODE
       //////////////////////////////////////////////////////////////////////////
-      class SIMCORE_EXPORT LogicOnEventActorProxy : public dtGame::GameActorProxy
+      class SIMCORE_EXPORT LogicOnEventActor : public dtGame::GameActorProxy
       {
       public:
          typedef dtGame::GameActorProxy BaseClass;
@@ -66,73 +68,74 @@ namespace SimCore
          };
 
          // Standard Actor Proxy Behaviors
-         LogicOnEventActorProxy();
+         LogicOnEventActor();
          virtual void CreateDrawable();
          virtual void BuildPropertyMap();
          virtual void OnEnteredWorld();
+         /// The event to fire when our condition is satisfied.
+         void SetEventToFire( dtCore::GameEvent* gameEvent );
+         dtCore::GameEvent* GetEventToFire();
+
+         /// Decides whether we consider ALL (AND) or ANY (OR) when looking at the conditional events
+         void SetLogicType(LogicOnEventActor::LogicTypeEnum& logicType);
+         LogicOnEventActor::LogicTypeEnum& GetLogicType() const;
+
+         /// This method holds onto to the status from the last time we got a relevant game event
+         bool GetCurrentStatus() const {return mCurrentStatus; }
+
+         virtual void ProcessGameEventMessage(const dtGame::GameEventMessage& gem);
+         virtual void ProcessGameEvent(const dtCore::GameEvent& gameEvent);
+
+         void SendGameEventMessage(dtCore::GameEvent& gameEvent);
+
+         /**
+         * Conditional Array actor property functors.
+         */
+         void AddConditional(dtCore::UniqueId id);
+         void SetChildConditional(dtCore::UniqueId value);
+         dtCore::UniqueId GetChildConditional();
+
+         void ConditionalArraySetIndex(int index);
+         dtCore::UniqueId ConditionalArrayGetDefault();
+         std::vector<dtCore::UniqueId> ConditionalArrayGetValue();
+         void ConditionalArraySetValue(const std::vector<dtCore::UniqueId>& value);
 
       protected:
-         virtual ~LogicOnEventActorProxy();
+         virtual ~LogicOnEventActor();
+         void ResolveDirtyList();
+      private:
 
+         LogicOnEventActor::LogicTypeEnum* mLogicType;
+         dtCore::ObserverPtr<dtCore::GameEvent> mEventToFire;
+         std::vector< dtCore::ObserverPtr< LogicConditionalActor > > mConditionsListAsActors;
+         bool mCurrentStatus; // false
+         bool mConditionListIsDirty;
+
+         // List of child conditions
+         std::vector<dtCore::UniqueId> mConditions;
+         int mConditionsIndex;
       };
 
 
       //////////////////////////////////////////////////////////////////////////
-      // ACTOR CODE - This actor holds onto an array of LogicConditionalActors
+      // Drawable CODE - This actor holds onto an array of LogicConditionalActors
       // Then, when it gets an event, it walks through the array and checks to 
       // see if it has any matches. If so, it updates the child, and then updates
       // itself. Depending on the settings, it fires an event.
       //////////////////////////////////////////////////////////////////////////
-      class SIMCORE_EXPORT LogicOnEventActor : public dtGame::GameActor
+      class SIMCORE_EXPORT LogicOnEventDrawable : public dtGame::GameActor
       {
          public:
             typedef dtGame::GameActor BaseClass;
 
-            LogicOnEventActor(LogicOnEventActorProxy &proxy);
+            LogicOnEventDrawable(LogicOnEventActor& actor);
 
-            /// The event to fire when our condition is satisfied.
-            void SetEventToFire( dtCore::GameEvent* gameEvent );
-            dtCore::GameEvent* GetEventToFire();
-
-            /// Decides whether we consider ALL (AND) or ANY (OR) when looking at the conditional events
-            void SetLogicType(LogicOnEventActorProxy::LogicTypeEnum& logicType);
-            LogicOnEventActorProxy::LogicTypeEnum& GetLogicType() const;
-
-            /// This method holds onto to the status from the last time we got a relevant game event 
-            bool GetCurrentStatus() const {return mCurrentStatus; }
-
-            virtual void ProcessMessage(const dtGame::Message& message);
-            virtual void ProcessGameEvent(const dtCore::GameEvent& gameEvent);
-
-            void SendGameEventMessage(dtCore::GameEvent& gameEvent);
-
-            /**
-            * Conditional Array actor property functors.
-            */
-            void AddConditional(dtCore::UniqueId id);
-            void SetChildConditional(dtCore::UniqueId value);
-            dtCore::UniqueId GetChildConditional();
-
-            void ConditionalArraySetIndex(int index);
-            dtCore::UniqueId ConditionalArrayGetDefault();
-            std::vector<dtCore::UniqueId> ConditionalArrayGetValue();
-            void ConditionalArraySetValue(const std::vector<dtCore::UniqueId>& value);
 
          protected:
-            virtual ~LogicOnEventActor();
+            virtual ~LogicOnEventDrawable();
 
-            void ResolveDirtyList();
 
          private:
-            LogicOnEventActorProxy::LogicTypeEnum* mLogicType;
-            dtCore::ObserverPtr<dtCore::GameEvent> mEventToFire;
-            std::vector< dtCore::ObserverPtr< LogicConditionalActorProxy > > mConditionsListAsActors;
-            bool mCurrentStatus; // false
-            bool mConditionListIsDirty;
-
-            // List of child conditions
-            std::vector<dtCore::UniqueId> mConditions;
-            int mConditionsIndex;
       };
 
 

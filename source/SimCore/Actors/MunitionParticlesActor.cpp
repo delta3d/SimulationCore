@@ -98,8 +98,10 @@ namespace SimCore
 
                if(physicsHelper != NULL)
                {
+                  dtGame::GameActorProxy* hitActor;
                   // null checked up above in the return
-                  physicsHelper->GetOwner(hitTarget);
+                  physicsHelper->GetOwner(hitActor);
+                  hitActor->GetDrawable(hitTarget);
                }
 
                // We don't want to hit ourselves.  So, if we don't have a 'self' owner, then we take
@@ -335,10 +337,10 @@ namespace SimCore
 
                   if (report.mClosestHitsObject != NULL && physActComp != NULL)
                   {
-                        dtGame::GameActor* ga = NULL;
+                        dtGame::GameActorProxy* ga = NULL;
                         physActComp->GetOwner(ga);
 
-                        mWeapon->ReceiveContactReport(contactReport, &ga->GetGameActorProxy());
+                        mWeapon->ReceiveContactReport(contactReport, ga);
                   }
                   else
                   {

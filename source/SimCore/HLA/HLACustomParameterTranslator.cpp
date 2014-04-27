@@ -654,7 +654,7 @@ namespace SimCore
          if (parameterDataType == dtCore::DataType::DOUBLE)
          {
             const dtGame::DoubleMessageParameter& dmp = static_cast<const dtGame::DoubleMessageParameter&>(parameter);
-            ds << (unsigned long)(dmp.GetValue() * 1000.0);
+            ds << (unsigned)(dmp.GetValue() * 1000.0);
          }
       }
 

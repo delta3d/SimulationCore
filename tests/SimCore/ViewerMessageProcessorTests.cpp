@@ -183,7 +183,7 @@ namespace SimCore
 
       void ViewerMessageProcessorTests::TestPlayerEnteredWorldMessage()
       {
-         dtGame::DeadReckoningComponent* drComp;
+         dtGame::DeadReckoningComponent* drComp = NULL;
          mGM->GetComponentByName(dtGame::DeadReckoningComponent::DEFAULT_NAME, drComp);
 
          RefPtr<dtGame::GameActorProxy> proxy;
@@ -241,7 +241,7 @@ namespace SimCore
          mGM->SendMessage(*timeValue);
          dtCore::System::GetInstance().Step();
 
-         // The math is seems mystical here, but 47 should be the value in seconds because the
+         // The math seems mystical here, but 47 should be the value in seconds because the
          // the average latencey based on the send and receive times should say we should add 2 seconds
          // to the clock to make it sync up.
          CPPUNIT_ASSERT_EQUAL(dtCore::Timer_t(47), dtCore::Timer_t(mGM->GetSimulationTime()));

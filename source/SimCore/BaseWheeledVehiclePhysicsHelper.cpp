@@ -159,7 +159,7 @@ namespace SimCore
       GetMainPhysicsObject()->SetTransform(transformForRot);
       GetMainPhysicsObject()->CreateFromProperties(mt);
 
-      dtGame::GameActor* ga = NULL;
+      dtGame::GameActorProxy* ga = NULL;
       GetOwner(ga);
 
       if (ga == NULL)
@@ -167,7 +167,7 @@ namespace SimCore
          return false;
       }
 
-      if (!ga->GetGameActorProxy().IsRemote())
+      if (!ga->IsRemote())
       {
          //Create the vehicle here so we can add wheels any time.
          mVehicle = dynamic_cast<palVehicle*>(dtPhysics::PhysicsWorld::GetInstance().GetPalFactory()->CreateObject("palVehicle"));

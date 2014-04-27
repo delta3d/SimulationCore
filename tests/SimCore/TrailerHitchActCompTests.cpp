@@ -202,7 +202,9 @@ public:
       mTrailer->GetDrawable(tx);
       tx->GetTransform(xformTrailer);
 
-      CPPUNIT_ASSERT(dtUtil::Equivalent(xform.GetRotation(), xformTrailer.GetRotation(), 1.0f));
+      std::ostringstream oss;
+      oss << "These two should have been about the same: [" << xform.GetRotation() << "] [" << xformTrailer.GetRotation() << "]";
+      CPPUNIT_ASSERT_MESSAGE(oss.str(), dtUtil::Equivalent(xform.GetRotation(), xformTrailer.GetRotation(), 1.0f));
       // Rough check to make sure the trailer is in the about the right place.
       CPPUNIT_ASSERT(xform.GetTranslation()[0] < xformTrailer.GetTranslation()[0]);
       CPPUNIT_ASSERT_DOUBLES_EQUAL(xform.GetTranslation()[1], xformTrailer.GetTranslation()[1], 0.5f);
@@ -259,8 +261,12 @@ public:
 
       // Since the vehicle is at identity rotation, the rotation of the trailer should match the hitch rotation.
       tx->GetTransform(xform);
-      CPPUNIT_ASSERT(dtUtil::Equivalent(firstRot, xform.GetRotation(), 1.0f));
-      CPPUNIT_ASSERT(dtUtil::Equivalent(firstRot, trailerAC->GetCurrentHitchRotHPR(), 1.0f));
+      std::ostringstream oss;
+      oss << "These two should have been about the same: [" << firstRot << "] [" << xform.GetRotation() << "]";
+      CPPUNIT_ASSERT_MESSAGE(oss.str(), dtUtil::Equivalent(firstRot, xform.GetRotation(), 1.0f));
+      oss.str("");
+      oss << "These two should have been about the same: [" << firstRot << "] [" << trailerAC->GetCurrentHitchRotHPR() << "]";
+      CPPUNIT_ASSERT_MESSAGE(oss.str(), dtUtil::Equivalent(firstRot, trailerAC->GetCurrentHitchRotHPR(), 1.0f));
 
       // Set to identity
       osg::Vec3 secondRot(0.0f, 0.0f, 0.0f);

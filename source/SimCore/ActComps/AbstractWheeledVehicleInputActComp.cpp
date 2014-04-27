@@ -26,7 +26,8 @@ namespace SimCore
 {
    namespace ActComps
    {
-      const dtGame::ActorComponent::ACType AbstractWheeledVehicleInputActComp::TYPE("WheeledVehicleInput");
+      const dtGame::ActorComponent::ACType AbstractWheeledVehicleInputActComp::TYPE(new dtCore::ActorType("WheeledVehicleInput", "ActorComponents",
+            "", dtGame::ActorComponent::BaseActorComponentType));
 
       AbstractWheeledVehicleInputActComp::AbstractWheeledVehicleInputActComp()
       : dtGame::ActorComponent(AbstractWheeledVehicleInputActComp::TYPE)

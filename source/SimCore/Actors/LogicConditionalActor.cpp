@@ -36,13 +36,42 @@ namespace SimCore
    namespace Actors
    {
       //////////////////////////////////////////////////////////////////////////
+      // EMPTY DRAWABLE CODE
+      //////////////////////////////////////////////////////////////////////////
+      LogicConditionalDrawable::LogicConditionalDrawable(const std::string& name)
+      {
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      LogicConditionalDrawable::~LogicConditionalDrawable()
+      {
+      }
+
+      /////////////////////////////////////////////////////////////////////////////
+      osg::Node* LogicConditionalDrawable::GetOSGNode()
+      {
+         return mPlaceholderNode.get();
+      }
+
+      /////////////////////////////////////////////////////////////////////////////
+      const osg::Node* LogicConditionalDrawable::GetOSGNode() const
+      {
+         return mPlaceholderNode.get();
+      }
+
+      //////////////////////////////////////////////////////////////////////////
       // ACTOR CODE
       //////////////////////////////////////////////////////////////////////////
-      LogicConditionalActor::LogicConditionalActor(const std::string& name)
-         : BaseClass(name)
-         , mPlaceholderNode(new osg::Group)
-         , mIsTrue(false)
+      const dtUtil::RefString LogicConditionalActor::PROPERTY_TRUE_EVENT("True Event");
+      const dtUtil::RefString LogicConditionalActor::PROPERTY_FALSE_EVENT("False Event");
+      const dtUtil::RefString LogicConditionalActor::PROPERTY_IS_TRUE("IsTrue");
+      const dtUtil::RefString LogicConditionalActor::CLASS_NAME("SimCore::Logic::LogicConditionalActor");
+      
+      //////////////////////////////////////////////////////////////////////////
+      LogicConditionalActor::LogicConditionalActor()
+      : mIsTrue(false)
       {
+         SetClassName(LogicConditionalActor::CLASS_NAME);
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -50,78 +79,20 @@ namespace SimCore
       {
       }
 
-      /////////////////////////////////////////////////////////////////////////////
-      osg::Node* LogicConditionalActor::GetOSGNode()
-      {
-         return mPlaceholderNode.get();
-      }
-
-      /////////////////////////////////////////////////////////////////////////////
-      const osg::Node* LogicConditionalActor::GetOSGNode() const
-      {
-         return mPlaceholderNode.get();
-      }
-
-
-      /////////////////////////////////////////////////////////////////////////////
-      void LogicConditionalActor::SetTrueEvent(dtCore::GameEvent* pEvent)
-      {
-         mTrueEvent = pEvent;
-      }
-
-      /////////////////////////////////////////////////////////////////////////////
-      dtCore::GameEvent* LogicConditionalActor::GetTrueEvent() 
-      {
-         return mTrueEvent.get();
-      }
-
-      /////////////////////////////////////////////////////////////////////////////
-      void LogicConditionalActor::SetFalseEvent(dtCore::GameEvent* pEvent)
-      {
-         mFalseEvent = pEvent;
-      }
-
-      /////////////////////////////////////////////////////////////////////////////
-      dtCore::GameEvent* LogicConditionalActor::GetFalseEvent() 
-      {
-         return mFalseEvent.get();
-      }
-
-
       //////////////////////////////////////////////////////////////////////////
-      // PROXY CODE
-      //////////////////////////////////////////////////////////////////////////
-      const dtUtil::RefString LogicConditionalActorProxy::PROPERTY_TRUE_EVENT("True Event");
-      const dtUtil::RefString LogicConditionalActorProxy::PROPERTY_FALSE_EVENT("False Event");
-      const dtUtil::RefString LogicConditionalActorProxy::PROPERTY_IS_TRUE("IsTrue");
-      const dtUtil::RefString LogicConditionalActorProxy::CLASS_NAME("SimCore::Logic::LogicConditionalActor");
-      
-      //////////////////////////////////////////////////////////////////////////
-      LogicConditionalActorProxy::LogicConditionalActorProxy()
+      void LogicConditionalActor::CreateDrawable()
       {
-         SetClassName(LogicConditionalActorProxy::CLASS_NAME);
-      }
-
-      //////////////////////////////////////////////////////////////////////////
-      LogicConditionalActorProxy::~LogicConditionalActorProxy()
-      {
-      }
-
-      //////////////////////////////////////////////////////////////////////////
-      void LogicConditionalActorProxy::CreateActor()
-      {
-         SetDrawable( *new LogicConditionalActor("LogicConditional") );
+         SetDrawable( *new LogicConditionalDrawable("LogicConditional") );
       }
 
       //////////////////////////////////////////////////////////
-      void LogicConditionalActorProxy::BuildPropertyMap()
+      void LogicConditionalActor::BuildPropertyMap()
       {
          BaseClass::BuildPropertyMap();
 
          const std::string GROUP("Logic Data"); // only used to group props in STAGE
 
-         LogicConditionalActor* actor = NULL;
-         GetActor( actor );
+         LogicConditionalActor* actor = this;
 
          AddProperty(new dtCore::BooleanActorProperty(PROPERTY_IS_TRUE, PROPERTY_IS_TRUE, 
             dtCore::BooleanActorProperty::SetFuncType(actor, &LogicConditionalActor::SetIsTrue),
@@ -141,6 +112,29 @@ namespace SimCore
             "The event to look for to set this actor to FALSE. Used by a parent logic controller.",
             GROUP));
 
+      }
+      /////////////////////////////////////////////////////////////////////////////
+      void LogicConditionalActor::SetTrueEvent(dtCore::GameEvent* pEvent)
+      {
+         mTrueEvent = pEvent;
+      }
+
+      /////////////////////////////////////////////////////////////////////////////
+      dtCore::GameEvent* LogicConditionalActor::GetTrueEvent()
+      {
+         return mTrueEvent.get();
+      }
+
+      /////////////////////////////////////////////////////////////////////////////
+      void LogicConditionalActor::SetFalseEvent(dtCore::GameEvent* pEvent)
+      {
+         mFalseEvent = pEvent;
+      }
+
+      /////////////////////////////////////////////////////////////////////////////
+      dtCore::GameEvent* LogicConditionalActor::GetFalseEvent()
+      {
+         return mFalseEvent.get();
       }
 
    }

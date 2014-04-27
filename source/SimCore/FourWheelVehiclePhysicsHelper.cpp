@@ -186,7 +186,7 @@ namespace SimCore
    bool FourWheelVehiclePhysicsActComp::CreateVehicle(const dtCore::Transform& transformForRot,
             osg::Node& bodyNode, const osg::Vec3& scale)
    {
-      dtGame::GameActor* ga = NULL;
+      dtGame::GameActorProxy* ga = NULL;
       GetOwner(ga);
 
       if (ga == NULL)
@@ -296,7 +296,7 @@ namespace SimCore
          rearLeverArm = frontLeverArm;
       }
 
-      if (!ga->GetGameActorProxy().IsRemote())
+      if (!ga->IsRemote())
       {
 
          float wheelbase  = frontLeverArm + rearLeverArm;
@@ -602,21 +602,24 @@ namespace SimCore
    {
       BaseClass::OnEnteredWorld();
 
-      SimCore::Actors::IGActor* igActor = NULL;
-      GetOwner(igActor);
-      if (igActor == NULL)
+      dtGame::GameActorProxy* actor;
+      SimCore::Actors::IGActor* igDrawable = NULL;
+      GetOwner(actor);
+      if (actor != NULL)
+         actor->GetDrawable(igDrawable);
+      if (igDrawable == NULL)
       {
          LOG_ERROR("The four wheel vehicle physics helper only support IG Actors as owners currently.");
          return;
       }
 
       dtCore::Transform ourTransform;
-      igActor->GetTransform(ourTransform);
+      igDrawable->GetTransform(ourTransform);
 
-      dtUtil::NodeCollector* nodeCollector = igActor->GetNodeCollector();
+      dtUtil::NodeCollector* nodeCollector = igDrawable->GetNodeCollector();
 
       dtCore::Vec3ActorProperty* scaleProp = NULL;
-      igActor->GetGameActorProxy().GetProperty(SimCore::Actors::BaseEntityActorProxy::PROPERTY_DEFAULT_SCALE, scaleProp);
+      actor->GetProperty(SimCore::Actors::BaseEntityActorProxy::PROPERTY_DEFAULT_SCALE, scaleProp);
 
       osg::Node* chassis = NULL;
       if (nodeCollector != NULL)

@@ -37,7 +37,8 @@ namespace SimCore
 
    namespace ActComps
    {
-      const dtGame::ActorComponent::ACType WeaponSwapActComp::TYPE("WeaponSwapActComp");
+      const dtGame::ActorComponent::ACType WeaponSwapActComp::TYPE(new dtCore::ActorType("WeaponSwapActComp","ActorComponents",
+            "Swaps the weopon geometry on a drawable.", dtGame::ActorComponent::BaseActorComponentType));
 
       //////////////////////////////////////////////////////////////////////////
       WeaponSwapActComp::WeaponSwapActComp()
@@ -138,9 +139,9 @@ namespace SimCore
          BaseClass::OnEnteredWorld();
          if (!mNodeCollector.valid())
          {
-            dtGame::GameActor* owner = NULL;
+            dtGame::GameActorProxy* owner = NULL;
             GetOwner(owner);
-            SetNodeCollector(new dtUtil::NodeCollector(owner->GetOSGNode(), dtUtil::NodeCollector::AllNodeTypes));
+            SetNodeCollector(new dtUtil::NodeCollector(owner->GetDrawable()->GetOSGNode(), dtUtil::NodeCollector::AllNodeTypes));
          }
 
          if (mWeaponSwapMesh != dtCore::ResourceDescriptor::NULL_RESOURCE)
@@ -177,7 +178,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void WeaponSwapActComp::SwapWeapon()
       {
-         dtGame::GameActor* owner = NULL;
+         dtGame::GameActorProxy* owner = NULL;
          GetOwner(owner);
          if (owner != NULL)
          {

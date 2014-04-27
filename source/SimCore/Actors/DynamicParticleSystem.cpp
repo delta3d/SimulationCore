@@ -412,7 +412,7 @@ namespace SimCore
          const std::string &GROUPNAME = "Particle System";
 
          DynamicParticleSystemActor* actor = NULL;
-         GetActor( actor );
+         GetDrawable( actor );
 
          // BOOLEAN PROPERTIES
          AddProperty(new dtCore::BooleanActorProperty(
@@ -456,7 +456,7 @@ namespace SimCore
       DynamicParticleSystemActor& DynamicParticleSystemActorProxy::GetDynamicParticleSystemActor()
       {
          DynamicParticleSystemActor* actor = NULL;
-         GetActor( actor );
+         GetDrawable( actor );
          return *actor;
       }
 
@@ -464,7 +464,7 @@ namespace SimCore
       const DynamicParticleSystemActor& DynamicParticleSystemActorProxy::GetDynamicParticleSystemActor() const
       {
          const DynamicParticleSystemActor* actor = NULL;
-         GetActor( actor );
+         GetDrawable( actor );
          return *actor;
       }
 

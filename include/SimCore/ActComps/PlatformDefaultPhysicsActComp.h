@@ -65,12 +65,7 @@ namespace SimCore
             }
          }
 
-         virtual void OnAddedToActor(dtGame::GameActor& actor)
-         {
-            dtPhysics::PhysicsActComp::OnAddedToActor(actor);
-         }
-
-         virtual void OnRemovedFromActor(dtGame::GameActor& actor)
+         virtual void OnRemovedFromActor(dtCore::BaseActorObject& actor)
          {
             dtPhysics::PhysicsActComp::OnRemovedFromActor(actor);
             SetPrePhysicsCallback(dtPhysics::PhysicsActComp::UpdateCallback());
@@ -91,9 +86,13 @@ namespace SimCore
          void LoadCollision(bool reloadPhysics)
          {
             SimCore::Actors::Platform* plat = NULL;
-            GetOwner(plat);
+            dtGame::GameActorProxy* actor = NULL;
+            GetOwner(actor);
+            if (actor != NULL)
+               actor->GetDrawable(plat);
             if (plat == NULL)
             {
+               LOG_ERROR("The drawable of the owner of the platform physics is not a platform drawable.");
                return;
             }
 

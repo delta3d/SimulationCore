@@ -1200,19 +1200,19 @@ namespace SimCore
          
          dtCore::ResourceDescriptor desc;
          
-         desc = infoProxy.GetResource("Ground Impact Effect");
+         desc = static_cast<dtCore::ResourceActorProperty*>(infoProxy.GetProperty("Ground Impact Effect"))->GetValue();
          detonationActor.SetGroundImpactEffect(desc);
 
-         desc = infoProxy.GetResource("Ground Impact Sound");
+         desc = static_cast<dtCore::ResourceActorProperty*>(infoProxy.GetProperty("Ground Impact Sound"))->GetValue();
          detonationActor.SetGroundImpactSound(desc);
 
          detonationActor.SetGroundImpactLight(infoActor.GetGroundImpactLight());
 
 
-         desc = infoProxy.GetResource("Entity Impact Effect");
+         desc = static_cast<dtCore::ResourceActorProperty*>(infoProxy.GetProperty("Entity Impact Effect"))->GetValue();
          detonationActor.SetEntityImpactEffect(desc);
 
-         desc = infoProxy.GetResource("Entity Impact Sound");
+         desc = static_cast<dtCore::ResourceActorProperty*>(infoProxy.GetProperty("Entity Impact Sound"))->GetValue();
          detonationActor.SetEntityImpactSound(desc);
 
          detonationActor.SetEntityImpactLight(infoActor.GetEntityImpactLight());
@@ -1220,7 +1220,7 @@ namespace SimCore
          //there were no human impact effects on the MunitionEffectsInfoActor so we skip setting them here
 
 
-         desc = infoProxy.GetResource("Smoke Effect");
+         desc = static_cast<dtCore::ResourceActorProperty*>(infoProxy.GetProperty("Smoke Effect"))->GetValue();
          detonationActor.SetSmokeEffect(desc);
 
          detonationActor.SetSmokeLifeTime(infoActor.GetSmokeLifeTime());
