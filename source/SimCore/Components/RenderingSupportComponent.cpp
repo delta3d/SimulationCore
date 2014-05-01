@@ -59,6 +59,7 @@
 #include <osg/Depth>
 #include <osg/Geometry>
 #include <osg/StateSet>
+#include <osg/Version>
 
 #include <osg/Notify>//to squelch warnings
 
@@ -69,6 +70,15 @@ namespace SimCore
 {
    namespace Components
    {
+
+#if defined (__APPLE__) && OSG_VERSION_LESS_THAN(3,2,0)
+      static const std::string DYN_LIGHT_UNIFORM = "dynamicLights[0]";
+      static const std::string SPOT_LIGHT_UNIFORM = "spotLights[0]";
+#else
+      static const std::string DYN_LIGHT_UNIFORM = "dynamicLights";
+      static const std::string SPOT_LIGHT_UNIFORM = "spotLights";
+#endif
+
 
      //useful functors
       struct findLightById
@@ -742,7 +752,7 @@ namespace SimCore
             if (landActorProxy != NULL)
             {
                SimCore::Actors::PagedTerrainPhysicsActor* landActor = NULL;
-               landActorProxy->GetActor(landActor);
+               landActorProxy->GetDrawable(landActor);
 
                // Get the terrain - which has our mesh node
                dtCore::ActorProxy* terrainActorProxy;
@@ -907,13 +917,6 @@ namespace SimCore
          //now setup the lighting uniforms necessary for rendering the dynamic lights
          osg::StateSet* ss = actor.GetOSGNode()->getOrCreateStateSet();
          //temporary hack
-#ifdef __APPLE__
-         static const std::string DYN_LIGHT_UNIFORM = "dynamicLights[0]";
-         static const std::string SPOT_LIGHT_UNIFORM = "spotLights[0]";
-#else
-         static const std::string DYN_LIGHT_UNIFORM = "dynamicLights";
-         static const std::string SPOT_LIGHT_UNIFORM = "spotLights";
-#endif
          osg::Uniform* lightArrayUniform = ss->getOrCreateUniform(DYN_LIGHT_UNIFORM, osg::Uniform::FLOAT_VEC4, mMaxDynamicLights * 3);
          lightArrayUniform->setDataVariance(osg::Object::DYNAMIC);
 
@@ -1022,14 +1025,6 @@ namespace SimCore
 
          //now setup the lighting uniforms necessary for rendering the dynamic lights
          osg::StateSet* ss = GetGameManager()->GetScene().GetSceneNode()->getOrCreateStateSet();
-//temporary hack
-#ifdef __APPLE__
-         static const std::string DYN_LIGHT_UNIFORM = "dynamicLights[0]";
-         static const std::string SPOT_LIGHT_UNIFORM = "spotLights[0]";
-#else
-         static const std::string DYN_LIGHT_UNIFORM = "dynamicLights";
-         static const std::string SPOT_LIGHT_UNIFORM = "spotLights";
-#endif
          osg::Uniform* lightArray = ss->getOrCreateUniform(DYN_LIGHT_UNIFORM, osg::Uniform::FLOAT_VEC4, mMaxDynamicLights * 3);
          lightArray->setDataVariance(osg::Object::DYNAMIC);
 
@@ -1097,7 +1092,7 @@ namespace SimCore
             if (landActorProxy != NULL)
             {
                SimCore::Actors::PagedTerrainPhysicsActor* landActor = NULL;
-               landActorProxy->GetActor(landActor);
+               landActorProxy->GetDrawable(landActor);
                mCullVisitor->SetLandActor(landActor);
             }
             else
@@ -1106,7 +1101,7 @@ namespace SimCore
                GetGameManager()->CreateActor(*SimCore::Actors::EntityActorRegistry::PAGED_TERRAIN_PHYSICS_ACTOR_TYPE, terrainPhysicsActorProxy);
                GetGameManager()->AddActor(*terrainPhysicsActorProxy, false, false);
                SimCore::Actors::PagedTerrainPhysicsActor* landActor = NULL;
-               terrainPhysicsActorProxy->GetActor(landActor);
+               terrainPhysicsActorProxy->GetDrawable(landActor);
                mCullVisitor->SetLandActor(landActor);
             }
          }
