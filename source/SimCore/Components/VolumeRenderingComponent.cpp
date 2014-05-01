@@ -54,6 +54,7 @@
 #include <osg/Uniform>
 #include <osg/Billboard>
 #include <osg/Depth>
+#include <osg/Version>
 #include <math.h>
 #include <iostream>
 #define SQRT2PI 2.506628274631000502415765284811045253006
@@ -140,7 +141,7 @@ namespace SimCore
    namespace Components
    {
 
-#ifdef __APPLE__
+#if defined (__APPLE__) && OSG_VERSION_LESS_THAN(3,2,0)
    const std::string VolumeRenderingComponent::VOLUME_PARTICLE_POS_UNIFORM = "volumeParticlePos[0]";
 #else
    const std::string VolumeRenderingComponent::VOLUME_PARTICLE_POS_UNIFORM = "volumeParticlePos";

@@ -180,7 +180,7 @@ namespace SimCore
       const int WaterGridActor::MAX_TEXTURE_WAVES(32);
       const dtUtil::RefString WaterGridActor::UNIFORM_ELAPSED_TIME("elapsedTime");
       const dtUtil::RefString WaterGridActor::UNIFORM_MAX_COMPUTED_DISTANCE("maxComputedDistance");
-#ifdef __APPLE__
+#if defined (__APPLE__) && OSG_VERSION_LESS_THAN(3,2,0)
       const dtUtil::RefString WaterGridActor::UNIFORM_WAVE_ARRAY("waveArray[0]");
 #else
       const dtUtil::RefString WaterGridActor::UNIFORM_WAVE_ARRAY("waveArray");
