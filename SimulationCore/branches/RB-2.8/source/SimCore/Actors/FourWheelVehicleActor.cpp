@@ -101,14 +101,6 @@ namespace SimCore
             mSndAcceleration.release();
          }
 
-         if (!IsRemote() && mVehiclesPortal.valid() )
-         {
-            Portal* portal = dynamic_cast<Portal*>(mVehiclesPortal->GetDrawable());
-            portal->SetActorLink(NULL);
-            GetGameActorProxy().GetGameManager()->DeleteActor(*mVehiclesPortal.get());
-            mVehiclesPortal = NULL;
-         }
-
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
@@ -152,6 +144,20 @@ namespace SimCore
             ex.LogException(dtUtil::Log::LOG_ERROR);
          }
          return false;
+      }
+
+      ///////////////////////////////////////////////////////////////////////////////////
+      void FourWheelVehicleActor::OnRemovedFromWorld()
+      {
+         BaseClass::OnRemovedFromWorld();
+         if (!IsRemote() && mVehiclesPortal.valid() )
+         {
+            Portal* portal = NULL;
+            mVehiclesPortal->GetDrawable(portal);
+            portal->SetActorLink(NULL);
+            GetGameActorProxy().GetGameManager()->DeleteActor(*mVehiclesPortal.get());
+            mVehiclesPortal = NULL;
+         }
       }
 
       ///////////////////////////////////////////////////////////////////////////////////

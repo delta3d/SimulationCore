@@ -266,13 +266,6 @@ namespace NetDemo
                   (mLogicComp->GetDebugInfo().mCurDebugVar == "DR Ground Clamp" 
                      ? highlightColor : normalColor));
 
-               // Ground Clamp
-               tempValue = "DR Blending Type: " + (mLogicComp->GetDebugInfo().mDRUseSplines 
-                  ? std::string("Splines") : std::string("Projective"));
-               SetDebugInfoTextLine(5, tempValue,
-                  (mLogicComp->GetDebugInfo().mCurDebugVar == "DR Blending Type" 
-                     ? highlightColor : normalColor));
-
                // DR Ghost Mode
                tempValue = "DR Ghost Mode: " + mLogicComp->GetDebugInfo().mDRGhostMode;
                SetDebugInfoTextLine(6, tempValue, normalColor);

@@ -61,6 +61,7 @@ namespace SimCore
             // Called when the actor has been added to the game manager.
             // You can respond to OnEnteredWorld on either the proxy or actor or both.
             virtual void OnEnteredWorld();
+            virtual void OnRemovedFromWorld();
             virtual void PostPhysicsUpdate();
          public:
             /// Utility Methods

@@ -51,11 +51,11 @@ namespace SimCore
 
                SimpleShapeDRHelper();
 
-               virtual bool DoDR(dtGame::GameActor& gameActor, dtCore::Transform& xform, dtUtil::Log* pLogger, dtGame::BaseGroundClamper::GroundClampRangeType*& gcType);
+               virtual bool DoDR(dtCore::Transformable& txable, dtCore::Transform& xform, dtUtil::Log* pLogger, dtGame::BaseGroundClamper::GroundClampRangeType*& gcType);
 
                virtual void CalculateSmoothingTimes(const dtCore::Transform& xform);
 
-               virtual void IncrementTimeSinceUpdate(float simTimeDelta, float curSimulationTime);
+               virtual void IncrementTimeSinceUpdate(float simTimeDelta, double curSimulationTime);
 
                float mCurTimeDelta;
                DeadReckoningHelper::DRVec3Util mDRScale;
