@@ -74,7 +74,6 @@ namespace NetDemo
          /// Constructor
          DebugInformation()
             : mShowDebugWindow(false)
-            , mDRUseSplines(false)
             , mDRPublishRate(1)
             , mDRUseFixedBlend(false)
             , mDRPublishAngularVel(false)
@@ -87,7 +86,6 @@ namespace NetDemo
          std::string mDRAlgorithm;
          std::string mDRGroundClampStatus;
          std::string mDRGhostMode;
-         bool mDRUseSplines;
          int mDRPublishRate;
          bool mDRUseFixedBlend; 
          bool mDRPublishAngularVel;

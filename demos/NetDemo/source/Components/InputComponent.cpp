@@ -907,11 +907,6 @@ namespace NetDemo
       }
       else if (mDebugToggleMode == DEBUG_TOGGLE_PUBLISH_ANGULAR_VELOCITY)
       {
-         mDebugToggleMode = DEBUG_TOGGLE_DR_WITH_CUBIC_SPLINE;
-         LOG_ALWAYS("DEBUG -- Changing Toggle Mode to DR_WITH_CUBIC_SPLINE. Press 0 to do toggle.");
-      }
-      else if (mDebugToggleMode == DEBUG_TOGGLE_DR_WITH_CUBIC_SPLINE)
-      {
          mDebugToggleMode = DEBUG_TOGGLE_GROUND_CLAMPING;
          LOG_ALWAYS("DEBUG -- Changing Toggle Mode to GROUND_CLAMPING. Press 0 to do toggle.");
       }
@@ -940,10 +935,10 @@ namespace NetDemo
       {
          TogglePublishAngularVelocity();
       }
-      else if (mDebugToggleMode == DEBUG_TOGGLE_DR_WITH_CUBIC_SPLINE)
-      {
-         ToggleUseCubicSplineForDR();
-      }
+//      else if (mDebugToggleMode == DEBUG_TOGGLE_DR_WITH_CUBIC_SPLINE)
+//      {
+//         ToggleUseCubicSplineForDR();
+//      }
       else if (mDebugToggleMode == DEBUG_TOGGLE_GROUND_CLAMPING)
       {
          ToggleGroundClamping();
@@ -1012,26 +1007,26 @@ namespace NetDemo
    ////////////////////////////////////////////////////////////////////////////////
    void InputComponent::ToggleUseCubicSplineForDR()
    {
-      // Toggle the Use Cubic Spline
-      if (mVehicle.valid())
-      {
-         dtGame::DeadReckoningHelper* drHelper = NULL;
-         mVehicle->GetComponent(drHelper);
-
-         if (drHelper != NULL)
-         {
-            if (drHelper->GetUseCubicSplineTransBlend())
-            {
-               drHelper->SetUseCubicSplineTransBlend(false);
-               LOG_ALWAYS("TEST -- Toggling - Use CUBIC Spline - FALSE");
-            }
-            else
-            {
-               drHelper->SetUseCubicSplineTransBlend(true);
-               LOG_ALWAYS("TEST -- Toggling - Use CUBIC Spline - TRUE");
-            }
-         }
-      }
+//      // Toggle the Use Cubic Spline
+//      if (mVehicle.valid())
+//      {
+//         dtGame::DeadReckoningHelper* drHelper = NULL;
+//         mVehicle->GetComponent(drHelper);
+//
+//         if (drHelper != NULL)
+//         {
+//            if (drHelper->GetUseCubicSplineTransBlend())
+//            {
+//               drHelper->SetUseCubicSplineTransBlend(false);
+//               LOG_ALWAYS("TEST -- Toggling - Use CUBIC Spline - FALSE");
+//            }
+//            else
+//            {
+//               drHelper->SetUseCubicSplineTransBlend(true);
+//               LOG_ALWAYS("TEST -- Toggling - Use CUBIC Spline - TRUE");
+//            }
+//         }
+//      }
    }
 
    ////////////////////////////////////////////////////////////////////////////////
@@ -1134,8 +1129,6 @@ namespace NetDemo
             drHelper->GetGroundClampType().GetName();
          glComp->GetDebugInfo().mDRAlgorithm =
             drHelper->GetDeadReckoningAlgorithm().GetName();
-         glComp->GetDebugInfo().mDRUseSplines =
-            drHelper->GetUseCubicSplineTransBlend();
          glComp->GetDebugInfo().mDRUseFixedBlend =
             drHelper->GetUseFixedSmoothingTime();
       }
@@ -1143,7 +1136,6 @@ namespace NetDemo
       {
          glComp->GetDebugInfo().mDRGroundClampStatus = "NA";
          glComp->GetDebugInfo().mDRAlgorithm = "NA";
-         glComp->GetDebugInfo().mDRUseSplines = "NA";
       }
 
 
@@ -1163,7 +1155,6 @@ namespace NetDemo
          glComp->GetDebugInfo().mDRPublishAngularVel = false;
          glComp->GetDebugInfo().mDRGroundClampStatus = "NA";
          glComp->GetDebugInfo().mDRAlgorithm = "NA";
-         glComp->GetDebugInfo().mDRUseSplines = "NA";
       }
 
       // Current Debug Var
@@ -1175,10 +1166,10 @@ namespace NetDemo
       {
          glComp->GetDebugInfo().mCurDebugVar = "DR Publish Ang Vel";
       }
-      else if (mDebugToggleMode == DEBUG_TOGGLE_DR_WITH_CUBIC_SPLINE)
-      {
-         glComp->GetDebugInfo().mCurDebugVar = "DR Blending Type";
-      }
+//      else if (mDebugToggleMode == DEBUG_TOGGLE_DR_WITH_CUBIC_SPLINE)
+//      {
+//         glComp->GetDebugInfo().mCurDebugVar = "DR Blending Type";
+//      }
       else if (mDebugToggleMode == DEBUG_TOGGLE_GROUND_CLAMPING)
       {
          glComp->GetDebugInfo().mCurDebugVar = "DR Ground Clamp";

@@ -48,37 +48,27 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      bool SimpleMovingShapeActorProxy::SimpleShapeDRHelper::DoDR(dtGame::GameActor& gameActor, dtCore::Transform& xform, dtUtil::Log* pLogger, dtGame::BaseGroundClamper::GroundClampRangeType*& gcType)
+      bool SimpleMovingShapeActorProxy::SimpleShapeDRHelper::DoDR(dtCore::Transformable& txable, dtCore::Transform& xform, dtUtil::Log* pLogger, dtGame::BaseGroundClamper::GroundClampRangeType*& gcType)
       {
-         BaseClass::DoDR(gameActor, xform, pLogger, gcType);
+         BaseClass::DoDR(txable, xform, pLogger, gcType);
             
          bool useAcceleration = GetDeadReckoningAlgorithm() == dtGame::DeadReckoningAlgorithm::VELOCITY_AND_ACCELERATION;
 
          if (IsUpdated())
          {
             //CalculateSmoothingTimes(xform);
-          
-            // If doing Cubic splines, we have to pre-compute some values
-            if (GetUseCubicSplineTransBlend() && GetDeadReckoningAlgorithm() == dtGame::DeadReckoningAlgorithm::VELOCITY_AND_ACCELERATION)
-            {  // Use Accel
-               mDRScale.RecomputeTransSplineValues(mDRScale.mAcceleration);
-            }
-            else if (GetUseCubicSplineTransBlend()) // No accel
-            {
-               osg::Vec3 zeroAccel;
-               mDRScale.RecomputeTransSplineValues(zeroAccel);
-            }
          }
 
          osg::Vec3 pos;
-         mDRScale.DeadReckonThePosition(pos, pLogger, gameActor, 
-            useAcceleration, mDRScale.mLastUpdatedTime, GetUseCubicSplineTransBlend());
-         
-         if (GetEffectiveUpdateMode(gameActor.IsRemote())
+         mDRScale.DeadReckonPosition(pos, pLogger, txable,
+            useAcceleration, mDRScale.mLastUpdatedTime);
+         dtGame::GameActorProxy* gap;
+         GetOwner(gap);
+         if (GetEffectiveUpdateMode(gap->IsRemote())
                   == DeadReckoningHelper::UpdateMode::CALCULATE_AND_MOVE_ACTOR)
          {
             //std::cout << "DIMS: " << pos << std::endl;
-            SimpleMovingShapeActorProxy& s = static_cast<SimpleMovingShapeActorProxy&>(gameActor.GetGameActorProxy());
+            SimpleMovingShapeActorProxy& s = static_cast<SimpleMovingShapeActorProxy&>(*gap);
             s.SetCurrentDimensions(pos);
          }
          return true;
@@ -117,7 +107,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void SimpleMovingShapeActorProxy::SimpleShapeDRHelper::IncrementTimeSinceUpdate( float simTimeDelta, float curSimulationTime )
+      void SimpleMovingShapeActorProxy::SimpleShapeDRHelper::IncrementTimeSinceUpdate( float simTimeDelta, double curSimulationTime )
       {
          BaseClass::IncrementTimeSinceUpdate(simTimeDelta, curSimulationTime);
 
