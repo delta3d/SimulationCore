@@ -429,9 +429,6 @@ namespace SimCore
          const dtAnim::Animatable* walkDeployed = seqMixer.GetRegisteredAnimation("Walk Deployed");
          const dtAnim::Animatable* runDeployed = seqMixer.GetRegisteredAnimation("Run Deployed");
 
-         walkRunDeployed->SetupWithWalkSpeed(GetWalkAnimationSpeed());
-         walkRunReady->SetupWithWalkSpeed(GetWalkAnimationSpeed());
-
          if(standReady && walkReady && runReady)
          {
             walkRunReady->SetAnimations(standReady->Clone(wrapper).get(), walkReady->Clone(wrapper).get(), runReady->Clone(wrapper).get());
@@ -453,7 +450,7 @@ namespace SimCore
             LOGN_WARNING("Human.cpp", "Cannot load animations 'Walk Ready' and 'Run Ready' necessary for speed blend.")
          }
 
-         if(standDeployed && walkDeployed && runDeployed)
+         if (standDeployed && walkDeployed && runDeployed)
          {
             walkRunDeployed->SetAnimations(standDeployed->Clone(wrapper).get(), walkDeployed->Clone(wrapper).get(), runDeployed->Clone(wrapper).get());
             seqMixer.RegisterAnimation(walkRunDeployed);
@@ -473,6 +470,9 @@ namespace SimCore
             }
             LOGN_WARNING("Human.cpp","Cannot load animations 'Walk Deployed' and 'Run Deployed' necessary for speed blend.")
          }
+
+         walkRunDeployed->Setup(GetWalkAnimationSpeed(), GetWalkAnimationSpeed() * 2.0f);
+         walkRunReady->Setup(GetWalkAnimationSpeed(), GetWalkAnimationSpeed() * 2.0f);
 
 
          dtAnim::AttachmentController& atcl = helper->GetAttachmentController();
