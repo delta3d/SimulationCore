@@ -62,37 +62,15 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-#if CEGUI_VERSION_MAJOR == 0 && CEGUI_VERSION_MINOR < 7
-      void SceneWindow::InitializeCamera(
-#else
       void SceneWindow::InitializeCamera( dtGUI::GUI& mainGUI,
-#endif
          int textureWidth, int textureHeight )
       {
          CEGUI::Window* w = GetCEGUIWindow();
          dtCore::RefPtr<osg::Texture2D> rttTex;// = mainGUI.CreateRenderTargetTexture(*w, NULL, "RTT", "RTTImage");
-#if CEGUI_VERSION_MAJOR == 0 && CEGUI_VERSION_MINOR < 7
-         GetOrCreateOSGTexture(rttTex, *w, textureWidth, textureHeight);
-#else
          GetOrCreateOSGTexture(rttTex, mainGUI, *w, textureWidth, textureHeight);
-#endif
          //osg::Vec2 viewDims(w->getPixelSize().d_width, w->getPixelSize().d_height);
          osg::Vec2 viewDims(textureWidth, textureHeight);
-#if CEGUI_VERSION_MAJOR == 0 && CEGUI_VERSION_MINOR < 7
-         mCamera = new dtCore::Camera();
-
-         //mCamera->setRenderOrder(osg::Camera::PRE_RENDER, 0);
-         mCamera->GetOSGCamera()->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
-         mCamera->GetOSGCamera()->setRenderTargetImplementation( osg::Camera::FRAME_BUFFER_OBJECT );
-         mCamera->GetOSGCamera()->detach( osg::Camera::COLOR_BUFFER );
-         mCamera->GetOSGCamera()->attach( osg::Camera::COLOR_BUFFER, rttTex.get() );
-         mCamera->GetOSGCamera()->setNodeMask(0xFFFFFFFF);
-         mCamera->GetOSGCamera()->setViewport(0, 0, textureWidth, textureHeight);
-         mCamera->GetOSGCamera()->setClearMask(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-         mCamera->GetOSGCamera()->setClearColor( osg::Vec4(0.0f, 0.0f, 0.0f, 0.0f) );
-#else
          mCamera = mainGUI.CreateCameraForRenderTargetTexture(*rttTex, viewDims);
-#endif
 
          dtCore::Transform xform;
          xform.SetRotation(0.0, -90.0f, 0.0f);
@@ -222,11 +200,7 @@ namespace SimCore
 
       //////////////////////////////////////////////////////////////////////////
       void SceneWindow::GetOrCreateOSGTexture(dtCore::RefPtr<osg::Texture2D>& outTexture,
-#if CEGUI_VERSION_MAJOR == 0 && CEGUI_VERSION_MINOR < 7
-         CEGUI::Window& widget,
-#else
          dtGUI::GUI& mainGUI, CEGUI::Window& widget,
-#endif
          int textureWidth, int textureHeight)
       {
          // Determine if an image already exists for the widget.
@@ -240,23 +214,14 @@ namespace SimCore
          {
             // Generate an image set with a unique name.
             std::string imagesetName = "RenderTargetTexture." + std::string(widget.getName().c_str());
-#if CEGUI_VERSION_MAJOR == 0 && CEGUI_VERSION_MINOR < 7
-            while( CEGUI::ImagesetManager::getSingleton().isImagesetPresent(imagesetName) )
-#else
             while( CEGUI::ImagesetManager::getSingleton().isDefined(imagesetName) )
-#endif
             {
                imagesetName = imagesetName + "X";
             }
 
             // Create and assign the texture to the widget.
-#if CEGUI_VERSION_MAJOR == 0 && CEGUI_VERSION_MINOR < 7
-            dtGUI::CEGUITexture* texture = (dtGUI::CEGUITexture *)(CEGUI::System::getSingleton().getRenderer()->createTexture(textureWidth));
-            outTexture = texture->GetOSGTexture();
-#else
             osg::Vec2 texSize(textureWidth, textureHeight);
             outTexture = mainGUI.CreateRenderTargetTexture(widget, &texSize, imagesetName);
-#endif
          }
       }
 

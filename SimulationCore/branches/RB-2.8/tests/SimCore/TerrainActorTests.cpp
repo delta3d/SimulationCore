@@ -134,7 +134,7 @@ namespace SimCore
 
          mGameManager->CreateActor(*SimCore::Actors::EntityActorRegistry::TERRAIN_ACTOR_TYPE, terrain);
          CPPUNIT_ASSERT_MESSAGE("Could not create a terrain actor", terrain.valid());
-         terrain->GetActor(terrainDrawable);
+         terrain->GetDrawable(terrainDrawable);
 
          dtCore::ResourceActorProperty* rap = NULL;
          terrain->GetProperty("TerrainMesh", rap);
@@ -160,7 +160,7 @@ namespace SimCore
 
          mGameManager->CreateActor(*SimCore::Actors::EntityActorRegistry::TERRAIN_ACTOR_TYPE, terrain);
          CPPUNIT_ASSERT_MESSAGE("Could not create a terrain actor", terrain.valid());
-         terrain->GetActor(terrainDrawable);
+         terrain->GetDrawable(terrainDrawable);
 
          dtCore::ResourceActorProperty* rap = NULL;
          terrain->GetProperty("TerrainMesh", rap);
