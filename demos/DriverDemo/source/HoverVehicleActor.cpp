@@ -299,7 +299,7 @@ namespace DriverDemo
       SimCore::Actors::BasePhysicsVehicleActorProxy::BuildPropertyMap();
 
       HoverVehicleActor* actor = NULL;
-      GetActor(actor);
+      GetDrawable(actor);
 
       AddProperty(new dtCore::BooleanActorProperty("VehicleIsTheTurret", "Vehicle Is The Turret",
                dtCore::BooleanActorProperty::SetFuncType(actor, &HoverVehicleActor::SetVehicleIsTurret),
@@ -324,9 +324,6 @@ namespace DriverDemo
    ///////////////////////////////////////////////////////////////////////////////////
    void HoverVehicleActorProxy::BuildActorComponents()
    {
-      dtGame::GameActor* owner = NULL;
-      GetActor(owner);
-
       if (!HasComponent(dtPhysics::PhysicsActComp::TYPE))
       {
          AddComponent(*new HoverVehiclePhysicsActComp());
