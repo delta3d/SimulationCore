@@ -1,5 +1,5 @@
 
 ADD_SUBDIRECTORY(MapMerger)
-ADD_SUBDIRECTORY(Optimizer)
+#ADD_SUBDIRECTORY(Optimizer)
 ADD_SUBDIRECTORY(LightCompiler)
 
