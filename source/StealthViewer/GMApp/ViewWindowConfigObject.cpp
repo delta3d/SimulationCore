@@ -372,6 +372,7 @@ namespace StealthGM
          if (!cam.valid())
          {
             cam = new dtCore::Camera(mView->GetName());
+            cam->SetupBackwardCompatibleStateset();
             osg::Camera* osgCam = cam->GetOSGCamera();
             osgCam->setCullMask(SimCore::Components::RenderingSupportComponent::ADDITIONAL_CAMERA_CULL_MASK);
             mView->SetCamera(cam.get());
