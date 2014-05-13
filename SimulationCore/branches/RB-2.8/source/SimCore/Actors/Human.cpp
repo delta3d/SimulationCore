@@ -265,7 +265,7 @@ namespace SimCore
       const dtUtil::RefString Human::STATE_BASIC_STANCE("BasicStanceState");
       const dtUtil::RefString Human::STATE_WEAPON("WeaponState");
       const dtUtil::RefString Human::STATE_DEAD("DeadState");
-      const dtUtil::RefString Human::STATE_MOVING("MovingState");
+      //const dtUtil::RefString Human::STATE_MOVING("MovingState");
       const dtUtil::RefString Human::STATE_TRANSITION("TranstionState");
       const dtUtil::RefString Human::STATE_STANDING_ACTION_COUNT("StandingActionCountState");
       const dtUtil::RefString Human::STATE_KNEELING_ACTION_COUNT("KneelingActionCountState");
@@ -321,7 +321,7 @@ namespace SimCore
 
          initialState.AddState(STATE_DEAD,                  new dtAI::StateVariable(false));
 
-         initialState.AddState(STATE_MOVING,                new dtAI::StateVariable(false));
+//         initialState.AddState(STATE_MOVING,                new dtAI::StateVariable(false));
          //Setting transition to true will make the planner generate the correct initial animation.
          initialState.AddState(STATE_TRANSITION,            new dtAI::StateVariable(true));
          initialState.AddState(STATE_STANDING_ACTION_COUNT, new dtAI::StateVar<unsigned>(0U));
@@ -342,9 +342,9 @@ namespace SimCore
       }
 
       /////////////////////////////////////////////////////////////////
-      void SearchAndRegisterAnimationOptions(dtAnim::SequenceMixer& seqMixer, const dtUtil::RefString& name, std::vector<dtUtil::RefString>& options, dtAnim::Cal3DModelWrapper& wrapper)
+      void SearchAndRegisterAnimationOptions(dtAnim::SequenceMixer& seqMixer, const dtUtil::RefString& name, const std::vector<dtUtil::RefString>& options, dtAnim::Cal3DModelWrapper& wrapper)
       {
-         dtCore::RefPtr<const dtAnim::Animatable> anim = seqMixer.GetRegisteredAnimation(AnimationOperators::ANIM_STAND_DEPLOYED);
+         dtCore::RefPtr<const dtAnim::Animatable> anim = seqMixer.GetRegisteredAnimation(name);
          if (anim != NULL) return;
 
          for (unsigned i = 0; anim == NULL && i < options.size(); ++i)
@@ -363,6 +363,63 @@ namespace SimCore
       }
 
       /////////////////////////////////////////////////////////////////
+      void Human::SetupWalkRunBlend(dtAnim::AnimationHelper* helper, const dtUtil::RefString& OpName,
+            const std::vector<dtUtil::RefString>& nameWalkOptions, const std::string& newWalkAnimName,
+            const std::vector<dtUtil::RefString>& nameRunOptions, const std::string& newRunAnimName,
+            const std::vector<dtUtil::RefString>& nameStandOptions, const std::string& newStandAnimName,
+            float walkSpeed, float runSpeed)
+      {
+         dtCore::RefPtr<dtAnim::WalkRunBlend> newWRBlend;
+         if (IsRemote())
+         {
+            newWRBlend = new dtAnim::WalkRunBlend(*GetComponent<dtGame::DeadReckoningHelper>());
+         }
+         else
+         {
+            newWRBlend = new dtAnim::WalkRunBlend(*GetComponent<dtGame::DRPublishingActComp>());
+         }
+         newWRBlend->SetName(OpName);
+
+         dtAnim::SequenceMixer& seqMixer = helper->GetSequenceMixer();
+         dtAnim::Cal3DModelWrapper* wrapper = helper->GetModelWrapper();
+
+         SearchAndRegisterAnimationOptions(seqMixer, newWalkAnimName, nameWalkOptions, *wrapper);
+         SearchAndRegisterAnimationOptions(seqMixer, newRunAnimName, nameRunOptions, *wrapper);
+         SearchAndRegisterAnimationOptions(seqMixer, newStandAnimName, nameStandOptions, *wrapper);
+
+         const dtAnim::Animatable* stand = seqMixer.GetRegisteredAnimation(newStandAnimName);
+         const dtAnim::Animatable* walk = seqMixer.GetRegisteredAnimation(newWalkAnimName);
+         const dtAnim::Animatable* run = seqMixer.GetRegisteredAnimation(newRunAnimName);
+
+         if(stand && walk && run)
+         {
+            newWRBlend->SetAnimations(stand->Clone(wrapper).get(), walk->Clone(wrapper).get(), run->Clone(wrapper).get());
+            seqMixer.RegisterAnimation(newWRBlend);
+         }
+         else
+         {
+            if (stand && walk)
+            {
+               newWRBlend->SetAnimations(stand->Clone(wrapper).get(), walk->Clone(wrapper).get(), NULL);
+               seqMixer.RegisterAnimation(newWRBlend);
+            }
+            else if (walk)
+            {
+               // Can't do much right now with just a walk.
+               dtCore::RefPtr<dtAnim::Animatable> walkClone = walk->Clone(wrapper).get();
+               walkClone->SetName(OpName);
+               seqMixer.RegisterAnimation(walkClone);
+               LOGN_WARNING("Human.cpp", "Cannot load find a motionless animation for: " + OpName);
+            }
+            else
+            {
+               LOGN_WARNING("Human.cpp", "Cannot load any walk or run animations for: " + OpName);
+            }
+         }
+         newWRBlend->Setup(walkSpeed, runSpeed);
+      }
+
+      /////////////////////////////////////////////////////////////////
       void Human::SkeletalMeshLoadCallback(dtAnim::AnimationHelper* helper)
       {
          mModelLoadedAndWaiting = false;
@@ -372,108 +429,76 @@ namespace SimCore
          transform.addChild(mModelNode.get());
          mModelNode->setName(helper->GetSkeletalMesh().GetResourceIdentifier());
 
-         //setup speed blends
-         dtCore::RefPtr<dtAnim::WalkRunBlend> walkRunReady;
-         dtCore::RefPtr<dtAnim::WalkRunBlend> walkRunDeployed;
-
-         if (IsRemote())
-         {
-            walkRunReady = new dtAnim::WalkRunBlend(*GetComponent<dtGame::DeadReckoningHelper>());
-            walkRunDeployed = new dtAnim::WalkRunBlend(*GetComponent<dtGame::DeadReckoningHelper>());
-         }
-         else
-         {
-            walkRunReady = new dtAnim::WalkRunBlend(*GetComponent<dtGame::DRPublishingActComp>());
-            walkRunDeployed = new dtAnim::WalkRunBlend(*GetComponent<dtGame::DRPublishingActComp>());
-         }
-
-         walkRunReady->SetName(AnimationOperators::ANIM_WALK_READY);
-         walkRunDeployed->SetName(AnimationOperators::ANIM_WALK_DEPLOYED);
-
-         dtAnim::SequenceMixer& seqMixer = helper->GetSequenceMixer();
-         dtAnim::Cal3DModelWrapper* wrapper = helper->GetModelWrapper();
+         std::vector<dtUtil::RefString> optionsWalk;
+         std::vector<dtUtil::RefString> optionsRun;
+         std::vector<dtUtil::RefString> optionsStand;
 
          dtUtil::RefString animationNamesW[4] = { "WalkReady", "Walk", "Walk Deployed", "" };
-
-         std::vector<dtUtil::RefString> options;
-
-         options.insert(options.end(), &animationNamesW[0], &animationNamesW[3]);
-         SearchAndRegisterAnimationOptions(seqMixer, "Walk Ready", options, *wrapper);
-
-         std::reverse(options.begin(), options.end());
-         SearchAndRegisterAnimationOptions(seqMixer, "Walk Deployed", options, *wrapper);
-
          dtUtil::RefString animationNamesR[4] = { "RunReady", "Run", "Run Deployed", "" };
+         dtUtil::RefString animationNamesIdle[8] = { "Stand Deployed", "StandDeployed", "Stand", "Idle", "Idle_2", "StandReady", "Stand Ready", "" };
 
-         options.clear();
-         options.insert(options.end(), &animationNamesR[0], &animationNamesR[3]);
-         SearchAndRegisterAnimationOptions(seqMixer, "Run Ready", options, *wrapper);
+         optionsWalk.insert(optionsWalk.end(), &animationNamesW[0], &animationNamesW[3]);
+         optionsRun.insert(optionsRun.end(), &animationNamesR[0], &animationNamesR[3]);
+         optionsStand.insert(optionsStand.end(), &animationNamesIdle[0], &animationNamesIdle[7]);
 
-         std::reverse(options.begin(), options.end());
-         SearchAndRegisterAnimationOptions(seqMixer, "Run Deployed", options, *wrapper);
 
-         dtUtil::RefString animationNamesIdle[7] = { AnimationOperators::ANIM_STAND_DEPLOYED, "StandDeployed", "Stand", "Idle", "Stand Ready", AnimationOperators::ANIM_STAND_READY, "" };
+         SetupWalkRunBlend(helper, AnimationOperators::ANIM_WALK_READY, optionsWalk, "Walk Ready",
+               optionsRun, "Run Ready",
+               optionsStand, "Stand Ready",
+               GetWalkAnimationSpeed(), GetWalkAnimationSpeed() * 2.0f);
 
-         options.clear();
-         options.insert(options.end(), &animationNamesIdle[0], &animationNamesIdle[6]);
-         SearchAndRegisterAnimationOptions(seqMixer, AnimationOperators::ANIM_STAND_DEPLOYED, options, *wrapper);
+         std::reverse(optionsWalk.begin(), optionsWalk.end());
+         std::reverse(optionsRun.begin(), optionsRun.end());
+         std::reverse(optionsStand.begin(), optionsStand.end());
+         SetupWalkRunBlend(helper, AnimationOperators::ANIM_WALK_DEPLOYED, optionsWalk, "Walk Deployed",
+               optionsRun, "Run Deployed",
+               optionsStand, "Stand Deployed",
+               GetWalkAnimationSpeed(), GetWalkAnimationSpeed() * 2.0f);
 
-         std::reverse(options.begin(), options.end());
-         SearchAndRegisterAnimationOptions(seqMixer, AnimationOperators::ANIM_STAND_READY, options, *wrapper);
 
-         const dtAnim::Animatable* standReady = seqMixer.GetRegisteredAnimation(AnimationOperators::ANIM_STAND_READY);
-         const dtAnim::Animatable* walkReady = seqMixer.GetRegisteredAnimation("Walk Ready");
-         const dtAnim::Animatable* runReady = seqMixer.GetRegisteredAnimation("Run Ready");
+         dtUtil::RefString animationNamesCrawl[6] = { "Crawl Ready", "CrawlReady", "Crawl", "CrawlDeployed", "Crawl Deployed", "" };
+         dtUtil::RefString animationNamesProne[6] = { "Prone Deployed", "ProneDeployed", "Prone", "ProneReady","Prone Ready", "" };
 
-         const dtAnim::Animatable* standDeployed = seqMixer.GetRegisteredAnimation(AnimationOperators::ANIM_STAND_DEPLOYED);
-         const dtAnim::Animatable* walkDeployed = seqMixer.GetRegisteredAnimation("Walk Deployed");
-         const dtAnim::Animatable* runDeployed = seqMixer.GetRegisteredAnimation("Run Deployed");
+         optionsStand.clear();
+         optionsWalk.clear();
+         optionsRun.clear();
+         optionsWalk.insert(optionsWalk.end(), &animationNamesCrawl[0], &animationNamesCrawl[5]);
+         optionsStand.insert(optionsStand.end(), &animationNamesProne[0], &animationNamesProne[5]);
 
-         if(standReady && walkReady && runReady)
-         {
-            walkRunReady->SetAnimations(standReady->Clone(wrapper).get(), walkReady->Clone(wrapper).get(), runReady->Clone(wrapper).get());
-            seqMixer.RegisterAnimation(walkRunReady);
-         }
-         else
-         {
-            if (standReady && walkReady)
-            {
-               walkRunReady->SetAnimations(standReady->Clone(wrapper).get(), walkReady->Clone(wrapper).get(), NULL);
-               seqMixer.RegisterAnimation(walkRunReady);
-            }
-            else if (walkReady)
-            {
-               dtCore::RefPtr<dtAnim::Animatable> walkClone = walkReady->Clone(wrapper).get();
-               walkClone->SetName(AnimationOperators::ANIM_WALK_READY);
-               seqMixer.RegisterAnimation(walkClone);
-            }
-            LOGN_WARNING("Human.cpp", "Cannot load animations 'Walk Ready' and 'Run Ready' necessary for speed blend.")
-         }
+         SetupWalkRunBlend(helper, AnimationOperators::ANIM_CRAWL_READY, optionsWalk, "Crawl Ready",
+               optionsRun, "",
+               optionsStand, "Prone Ready",
+               GetWalkAnimationSpeed(), GetWalkAnimationSpeed() * 2.0f);
 
-         if (standDeployed && walkDeployed && runDeployed)
-         {
-            walkRunDeployed->SetAnimations(standDeployed->Clone(wrapper).get(), walkDeployed->Clone(wrapper).get(), runDeployed->Clone(wrapper).get());
-            seqMixer.RegisterAnimation(walkRunDeployed);
-         }
-         else
-         {
-            if (standDeployed && walkDeployed)
-            {
-               walkRunDeployed->SetAnimations(standDeployed->Clone(wrapper).get(), walkDeployed->Clone(wrapper).get(), walkDeployed->Clone(wrapper).get());
-               seqMixer.RegisterAnimation(walkRunDeployed);
-            }
-            else if (walkDeployed)
-            {
-               dtCore::RefPtr<dtAnim::Animatable> walkClone = walkDeployed->Clone(wrapper).get();
-               walkClone->SetName(AnimationOperators::ANIM_WALK_DEPLOYED);
-               seqMixer.RegisterAnimation(walkClone);
-            }
-            LOGN_WARNING("Human.cpp","Cannot load animations 'Walk Deployed' and 'Run Deployed' necessary for speed blend.")
-         }
+         std::reverse(optionsWalk.begin(), optionsWalk.end());
+         std::reverse(optionsRun.begin(), optionsRun.end());
+         std::reverse(optionsStand.begin(), optionsStand.end());
+         SetupWalkRunBlend(helper, AnimationOperators::ANIM_CRAWL_DEPLOYED, optionsWalk, "Crawl Deployed",
+               optionsRun, "",
+               optionsStand, "Prone Deployed",
+               GetWalkAnimationSpeed(), GetWalkAnimationSpeed() * 2.0f);
 
-         walkRunDeployed->Setup(GetWalkAnimationSpeed(), GetWalkAnimationSpeed() * 2.0f);
-         walkRunReady->Setup(GetWalkAnimationSpeed(), GetWalkAnimationSpeed() * 2.0f);
+         dtUtil::RefString animationNamesLowWalk[6] = { "Low Walk Ready", "LowWalkReady", "Low Walk", "LowWalkDeployed", "Low Walk Deployed", "" };
+         dtUtil::RefString animationNamesCrouch[6] = { "Crouch Deployed", "CrouchDeployed", "Crouch", "CrouchReady","Crouch Ready", "" };
 
+         optionsStand.clear();
+         optionsWalk.clear();
+         optionsRun.clear();
+         optionsWalk.insert(optionsWalk.end(), &animationNamesLowWalk[0], &animationNamesLowWalk[5]);
+         optionsStand.insert(optionsStand.end(), &animationNamesCrouch[0], &animationNamesCrouch[5]);
+
+         SetupWalkRunBlend(helper, AnimationOperators::ANIM_LOW_WALK_READY, optionsWalk, "Low Walk Ready",
+               optionsRun, "",
+               optionsStand, "Kneel Ready",
+               GetWalkAnimationSpeed(), GetWalkAnimationSpeed() * 2.0f);
+
+         std::reverse(optionsWalk.begin(), optionsWalk.end());
+         std::reverse(optionsRun.begin(), optionsRun.end());
+         std::reverse(optionsStand.begin(), optionsStand.end());
+         SetupWalkRunBlend(helper, AnimationOperators::ANIM_LOW_WALK_DEPLOYED, optionsWalk, "Low Walk Deployed",
+               optionsRun, "",
+               optionsStand, "Kneel Deployed",
+               GetWalkAnimationSpeed(), GetWalkAnimationSpeed() * 2.0f);
 
          dtAnim::AttachmentController& atcl = helper->GetAttachmentController();
          for (unsigned i = 0; i < atcl.GetNumAttachments(); ++i)
@@ -789,13 +814,14 @@ namespace SimCore
          if (weaponState->GetWeaponStateEnum() != *effectiveWeaponState)
             return false;
 
-         const dtAI::StateVariable* movingState;
-         pWS->GetState(STATE_MOVING, movingState);
+//         const dtAI::StateVariable* movingState;
+//         pWS->GetState(STATE_MOVING, movingState);
 
          //This requires that plans be made in one frame.
          //Moving is the same as the velocity > 0.
-         if (movingState->Get() != !dtUtil::Equivalent(CalculateWalkingSpeed(), 0.0f))
-            return false;
+         // When standing, we use the same thing for both standing
+//         if (stanceState->GetStance() != BasicStanceEnum::STANDING && movingState->Get() != !dtUtil::Equivalent(CalculateWalkingSpeed(), 0.0f))
+//            return false;
 
          bool actionStateResult =
             0U == CheckActionState(pWS, STATE_STANDING_ACTION_COUNT, mExecutedActionCounts.find(&BasicStanceEnum::STANDING)->second) &&
@@ -1267,25 +1293,24 @@ namespace SimCore
 
       ////////////////////////////////////////////////////////////////////////////
       ////////////////////////////////////////////////////////////////////////////
-      const dtUtil::RefString AnimationOperators::ANIM_STAND_READY("Stand Ready");
-      const dtUtil::RefString AnimationOperators::ANIM_STAND_DEPLOYED("Stand Deployed");
+      //const dtUtil::RefString AnimationOperators::ANIM_STAND_READY("Stand Ready");
+      //const dtUtil::RefString AnimationOperators::ANIM_STAND_DEPLOYED("Stand Deployed");
       const dtUtil::RefString AnimationOperators::ANIM_WALK_READY("Walk Run Ready");
       const dtUtil::RefString AnimationOperators::ANIM_WALK_DEPLOYED("Walk Run Deployed");
 
-      const dtUtil::RefString AnimationOperators::ANIM_KNEEL_READY("Kneel Ready");
-      const dtUtil::RefString AnimationOperators::ANIM_KNEEL_DEPLOYED("Kneel Deployed");
+      //const dtUtil::RefString AnimationOperators::ANIM_KNEEL_READY("Kneel Ready");
+      //const dtUtil::RefString AnimationOperators::ANIM_KNEEL_DEPLOYED("Kneel Deployed");
 
-      const dtUtil::RefString AnimationOperators::ANIM_LOW_WALK_READY("Low Walk Ready");
-      const dtUtil::RefString AnimationOperators::ANIM_LOW_WALK_DEPLOYED("Low Walk Deployed");
-
-      const dtUtil::RefString AnimationOperators::ANIM_CRAWL_READY("Crawl Ready");
-      const dtUtil::RefString AnimationOperators::ANIM_CRAWL_DEPLOYED("Crawl Deployed");
+      const dtUtil::RefString AnimationOperators::ANIM_LOW_WALK_READY("Kneel-Low Walk Ready");
+      const dtUtil::RefString AnimationOperators::ANIM_LOW_WALK_DEPLOYED("Kneel-Low Walk Deployed");
 
       const dtUtil::RefString AnimationOperators::ANIM_STAND_TO_KNEEL("Stand To Kneel");
       const dtUtil::RefString AnimationOperators::ANIM_KNEEL_TO_STAND("Kneel To Stand");
 
-      const dtUtil::RefString AnimationOperators::ANIM_PRONE_READY("Prone Ready");
-      const dtUtil::RefString AnimationOperators::ANIM_PRONE_DEPLOYED("Prone Deployed");
+      //const dtUtil::RefString AnimationOperators::ANIM_PRONE_READY("Prone Ready");
+      //const dtUtil::RefString AnimationOperators::ANIM_PRONE_DEPLOYED("Prone Deployed");
+      const dtUtil::RefString AnimationOperators::ANIM_CRAWL_READY("Prone-Crawl Ready");
+      const dtUtil::RefString AnimationOperators::ANIM_CRAWL_DEPLOYED("Prone-Crawl Deployed");
 
       const dtUtil::RefString AnimationOperators::ANIM_PRONE_TO_KNEEL("Prone To Kneel");
       const dtUtil::RefString AnimationOperators::ANIM_KNEEL_TO_PRONE("Kneel To Prone");
@@ -1350,11 +1375,11 @@ namespace SimCore
             = new HumanOperator::WeaponStateEnumConditional(Human::STATE_WEAPON, HumanActorProxy::WeaponStateEnum::FIRING_POSITION);
 
 
-         dtCore::RefPtr<dtAI::Precondition> isMoving
-            = new dtAI::Precondition(Human::STATE_MOVING, true);
-
-         dtCore::RefPtr<dtAI::Precondition> notMoving
-            = new dtAI::Precondition(Human::STATE_MOVING, false);
+//         dtCore::RefPtr<dtAI::Precondition> isMoving
+//            = new dtAI::Precondition(Human::STATE_MOVING, true);
+//
+//         dtCore::RefPtr<dtAI::Precondition> notMoving
+//            = new dtAI::Precondition(Human::STATE_MOVING, false);
 
 
          dtCore::RefPtr<dtAI::Precondition> isDead
@@ -1393,11 +1418,11 @@ namespace SimCore
          dtCore::RefPtr<HumanOperator::UnsignedIntIncrementEffect >
             incrementProneActionCount = new HumanOperator::UnsignedIntIncrementEffect(Human::STATE_PRONE_ACTION_COUNT);
 
-         dtCore::RefPtr<dtAI::Effect>
-            movingEff = new dtAI::Effect(Human::STATE_MOVING, true);
-
-         dtCore::RefPtr<dtAI::Effect>
-            notMovingEff = new dtAI::Effect(Human::STATE_MOVING, false);
+//         dtCore::RefPtr<dtAI::Effect>
+//            movingEff = new dtAI::Effect(Human::STATE_MOVING, true);
+//
+//         dtCore::RefPtr<dtAI::Effect>
+//            notMovingEff = new dtAI::Effect(Human::STATE_MOVING, false);
 
          dtCore::RefPtr<dtAI::Effect>
             deadEff = new dtAI::Effect(Human::STATE_DEAD, true);
@@ -1412,28 +1437,28 @@ namespace SimCore
             notTransitionEff = new dtAI::Effect(Human::STATE_TRANSITION, false);
 
          HumanOperator* newOp;
-         newOp = AddOperator(ANIM_STAND_READY);
-         newOp->AddPreCondition(standing.get());
-         newOp->AddPreCondition(ready.get());
-
-         newOp->AddEffect(standingEff.get());
-         newOp->AddEffect(notMovingEff.get());
-         newOp->AddEffect(notTransitionEff.get());
-
-         newOp = AddOperator(ANIM_STAND_DEPLOYED);
-         newOp->AddPreCondition(standing.get());
-         newOp->AddPreCondition(deployed.get());
-
-         newOp->AddEffect(standingEff.get());
-         newOp->AddEffect(notMovingEff.get());
-         newOp->AddEffect(notTransitionEff.get());
+//         newOp = AddOperator(ANIM_STAND_READY);
+//         newOp->AddPreCondition(standing.get());
+//         newOp->AddPreCondition(ready.get());
+//
+//         newOp->AddEffect(standingEff.get());
+//         newOp->AddEffect(notMovingEff.get());
+//         newOp->AddEffect(notTransitionEff.get());
+//
+//         newOp = AddOperator(ANIM_STAND_DEPLOYED);
+//         newOp->AddPreCondition(standing.get());
+//         newOp->AddPreCondition(deployed.get());
+//
+//         newOp->AddEffect(standingEff.get());
+//         newOp->AddEffect(notMovingEff.get());
+//         newOp->AddEffect(notTransitionEff.get());
 
          newOp = AddOperator(ANIM_WALK_READY);
          newOp->AddPreCondition(standing.get());
          newOp->AddPreCondition(ready.get());
 
          newOp->AddEffect(standingEff.get());
-         newOp->AddEffect(movingEff.get());
+         //newOp->AddEffect(movingEff.get());
          newOp->AddEffect(notTransitionEff.get());
 
          newOp = AddOperator(ANIM_WALK_DEPLOYED);
@@ -1441,31 +1466,31 @@ namespace SimCore
          newOp->AddPreCondition(deployed.get());
 
          newOp->AddEffect(standingEff.get());
-         newOp->AddEffect(movingEff.get());
+         //newOp->AddEffect(movingEff.get());
          newOp->AddEffect(notTransitionEff.get());
 
-         newOp = AddOperator(ANIM_KNEEL_READY);
-         newOp->AddPreCondition(kneeling.get());
-         newOp->AddPreCondition(ready.get());
+//         newOp = AddOperator(ANIM_KNEEL_READY);
+//         newOp->AddPreCondition(kneeling.get());
+//         newOp->AddPreCondition(ready.get());
+//
+//         newOp->AddEffect(kneelingEff.get());
+//         //newOp->AddEffect(notMovingEff.get());
+//         newOp->AddEffect(notTransitionEff.get());
+//
+//         newOp = AddOperator(ANIM_KNEEL_DEPLOYED);
+//         newOp->AddPreCondition(kneeling.get());
+//         newOp->AddPreCondition(deployed.get());
 
-         newOp->AddEffect(kneelingEff.get());
-         newOp->AddEffect(notMovingEff.get());
-         newOp->AddEffect(notTransitionEff.get());
-
-         newOp = AddOperator(ANIM_KNEEL_DEPLOYED);
-         newOp->AddPreCondition(kneeling.get());
-         newOp->AddPreCondition(deployed.get());
-
-         newOp->AddEffect(kneelingEff.get());
-         newOp->AddEffect(notMovingEff.get());
-         newOp->AddEffect(notTransitionEff.get());
+//         newOp->AddEffect(kneelingEff.get());
+//         //newOp->AddEffect(notMovingEff.get());
+//         newOp->AddEffect(notTransitionEff.get());
 
          newOp = AddOperator(ANIM_LOW_WALK_READY);
          newOp->AddPreCondition(kneeling.get());
          newOp->AddPreCondition(ready.get());
 
          newOp->AddEffect(kneelingEff.get());
-         newOp->AddEffect(movingEff.get());
+         //newOp->AddEffect(movingEff.get());
          newOp->AddEffect(notTransitionEff.get());
 
          newOp = AddOperator(ANIM_LOW_WALK_DEPLOYED);
@@ -1473,13 +1498,13 @@ namespace SimCore
          newOp->AddPreCondition(deployed.get());
 
          newOp->AddEffect(kneelingEff.get());
-         newOp->AddEffect(movingEff.get());
+         //newOp->AddEffect(movingEff.get());
          newOp->AddEffect(notTransitionEff.get());
 
          newOp = AddOperator(ANIM_STAND_TO_KNEEL);
          newOp->AddPreCondition(standing.get());
          newOp->AddPreCondition(deployed.get());
-         newOp->AddPreCondition(notMoving.get());
+         //newOp->AddPreCondition(notMoving.get());
 
          newOp->AddEffect(kneelingEff.get());
          newOp->AddEffect(transitionEff.get());
@@ -1487,31 +1512,31 @@ namespace SimCore
          newOp = AddOperator(ANIM_KNEEL_TO_STAND);
          newOp->AddPreCondition(kneeling.get());
          newOp->AddPreCondition(deployed.get());
-         newOp->AddPreCondition(notMoving.get());
+         //newOp->AddPreCondition(notMoving.get());
 
          newOp->AddEffect(standingEff.get());
          newOp->AddEffect(transitionEff.get());
 
-         newOp = AddOperator(ANIM_PRONE_READY);
-         newOp->AddPreCondition(prone.get());
-         newOp->AddPreCondition(ready.get());
-
-         newOp->AddEffect(proneEff.get());
-         newOp->AddEffect(notMovingEff.get());
-         newOp->AddEffect(notTransitionEff.get());
-
-         newOp = AddOperator(ANIM_PRONE_DEPLOYED);
-         newOp->AddPreCondition(prone.get());
-         newOp->AddPreCondition(deployed.get());
-
-         newOp->AddEffect(proneEff.get());
-         newOp->AddEffect(notMovingEff.get());
-         newOp->AddEffect(notTransitionEff.get());
+//         newOp = AddOperator(ANIM_PRONE_READY);
+//         newOp->AddPreCondition(prone.get());
+//         newOp->AddPreCondition(ready.get());
+//
+//         newOp->AddEffect(proneEff.get());
+//         newOp->AddEffect(notMovingEff.get());
+//         newOp->AddEffect(notTransitionEff.get());
+//
+//         newOp = AddOperator(ANIM_PRONE_DEPLOYED);
+//         newOp->AddPreCondition(prone.get());
+//         newOp->AddPreCondition(deployed.get());
+//
+//         newOp->AddEffect(proneEff.get());
+//         newOp->AddEffect(notMovingEff.get());
+//         newOp->AddEffect(notTransitionEff.get());
 
          newOp = AddOperator(ANIM_PRONE_TO_KNEEL);
          newOp->AddPreCondition(prone.get());
          newOp->AddPreCondition(deployed.get());
-         newOp->AddPreCondition(notMoving.get());
+         //newOp->AddPreCondition(notMoving.get());
 
          newOp->AddEffect(kneelingEff.get());
          newOp->AddEffect(transitionEff.get());
@@ -1521,7 +1546,7 @@ namespace SimCore
          newOp->AddPreCondition(ready.get());
 
          newOp->AddEffect(proneEff.get());
-         newOp->AddEffect(movingEff.get());
+         //newOp->AddEffect(movingEff.get());
          newOp->AddEffect(notTransitionEff.get());
 
          newOp = AddOperator(ANIM_CRAWL_DEPLOYED);
@@ -1529,13 +1554,13 @@ namespace SimCore
          newOp->AddPreCondition(deployed.get());
 
          newOp->AddEffect(proneEff.get());
-         newOp->AddEffect(movingEff.get());
+         //newOp->AddEffect(movingEff.get());
          newOp->AddEffect(notTransitionEff.get());
 
          newOp = AddOperator(ANIM_KNEEL_TO_PRONE);
          newOp->AddPreCondition(kneeling.get());
          newOp->AddPreCondition(deployed.get());
-         newOp->AddPreCondition(notMoving.get());
+         //newOp->AddPreCondition(notMoving.get());
 
          newOp->AddEffect(proneEff.get());
          newOp->AddEffect(transitionEff.get());
@@ -1586,21 +1611,21 @@ namespace SimCore
          newOp = AddOperator(ANIM_STANDING_ACTION);
          newOp->AddPreCondition(standing.get());
          newOp->AddPreCondition(deployed.get());
-         newOp->AddPreCondition(notMoving.get());
+         //newOp->AddPreCondition(notMoving.get());
          newOp->AddEffect(incrementStandingActionCount.get());
          newOp->AddEffect(transitionEff.get());
 
          newOp = AddOperator(ANIM_KNEELING_ACTION);
          newOp->AddPreCondition(kneeling.get());
          newOp->AddPreCondition(deployed.get());
-         newOp->AddPreCondition(notMoving.get());
+         //newOp->AddPreCondition(notMoving.get());
          newOp->AddEffect(incrementKneelingActionCount.get());
          newOp->AddEffect(transitionEff.get());
 
          newOp = AddOperator(ANIM_PRONE_ACTION);
          newOp->AddPreCondition(prone.get());
          newOp->AddPreCondition(deployed.get());
-         newOp->AddPreCondition(notMoving.get());
+         //newOp->AddPreCondition(notMoving.get());
          newOp->AddEffect(incrementProneActionCount.get());
          newOp->AddEffect(transitionEff.get());
       }

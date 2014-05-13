@@ -1189,7 +1189,7 @@ void BaseEntityActorProxyTests::TestBaseEntityDRRegistration(SimCore::Actors::Ba
          mDeadReckoningComponent->IsRegisteredActor(actor));
 
    dtCore::Transform xform;
-   actor.GetGameActor().GetTransform(xform);
+   actor.GetDrawable<dtCore::Transformable>()->GetTransform(xform);
    osg::Vec3 vec;
    xform.GetTranslation(vec);
    CPPUNIT_ASSERT(osg::equivalent(vec.x(), 0.0f, 1e-2f) &&
@@ -1202,7 +1202,7 @@ void BaseEntityActorProxyTests::TestBaseEntityDRRegistration(SimCore::Actors::Ba
          osg::equivalent(vec.z(), 0.0f, 1e-2f)
    );
 
-   SimCore::Actors::BaseEntity& entity = dynamic_cast<SimCore::Actors::BaseEntity&>(actor.GetGameActor());
+   SimCore::Actors::BaseEntity& entity = *actor.GetDrawable<SimCore::Actors::BaseEntity>();
 
    osg::Vec3 setVec = osg::Vec3(1.0, 1.2, 1.3);
 
