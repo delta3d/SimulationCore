@@ -126,7 +126,7 @@ class HumanTests : public CPPUNIT_NS::TestFixture
       void TestPrimaryWeapon()
       {
          SimCore::Actors::Human* human = NULL;
-         mHumanAP->GetActor(human);
+         mHumanAP->GetDrawable(human);
 
          dtCore::StringActorProperty* meshNameProp;
          mHumanAP->GetProperty(SimCore::Actors::HumanActorProxy::PROPERTY_WEAPON_MESH, meshNameProp);
@@ -145,7 +145,7 @@ class HumanTests : public CPPUNIT_NS::TestFixture
       void TestPlanReadyToDeployed()
       {
          SimCore::Actors::Human* human = NULL;
-         mHumanAP->GetActor(human);
+         mHumanAP->GetDrawable(human);
 
          human->SetStance(SimCore::Actors::HumanActorProxy::StanceEnum::UPRIGHT_WALKING);
          human->SetPrimaryWeaponState(SimCore::Actors::HumanActorProxy::WeaponStateEnum::DEPLOYED);
@@ -169,7 +169,7 @@ class HumanTests : public CPPUNIT_NS::TestFixture
          CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::OPER_DEPLOYED_TO_READY.Get(), (*iter)->GetName());
          ++iter;
 
-         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_STAND_READY.Get(), (*iter)->GetName());
+         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_WALK_READY.Get(), (*iter)->GetName());
       }
 
       void TestPlanDeployedToReady()
@@ -177,7 +177,7 @@ class HumanTests : public CPPUNIT_NS::TestFixture
          try
          {
             SimCore::Actors::Human* human = NULL;
-            mHumanAP->GetActor(human);
+            mHumanAP->GetDrawable(human);
 
             human->SetStance(SimCore::Actors::HumanActorProxy::StanceEnum::UPRIGHT_STANDING);
             human->SetPrimaryWeaponState(SimCore::Actors::HumanActorProxy::WeaponStateEnum::FIRING_POSITION);
@@ -201,7 +201,7 @@ class HumanTests : public CPPUNIT_NS::TestFixture
             CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::OPER_READY_TO_DEPLOYED.Get(), (*iter)->GetName());
             ++iter;
 
-            CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_STAND_DEPLOYED.Get(), (*iter)->GetName());
+            CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_WALK_DEPLOYED.Get(), (*iter)->GetName());
          }
          catch (const dtUtil::Exception& ex)
          {
@@ -212,7 +212,7 @@ class HumanTests : public CPPUNIT_NS::TestFixture
       void TestPlanStandingToKneelingDeployed()
       {
          SimCore::Actors::Human* human = NULL;
-         mHumanAP->GetActor(human);
+         mHumanAP->GetDrawable(human);
 
          human->SetStance(SimCore::Actors::HumanActorProxy::StanceEnum::UPRIGHT_STANDING);
          human->SetPrimaryWeaponState(SimCore::Actors::HumanActorProxy::WeaponStateEnum::DEPLOYED);
@@ -236,13 +236,13 @@ class HumanTests : public CPPUNIT_NS::TestFixture
          CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_STAND_TO_KNEEL.Get(), (*iter)->GetName());
          ++iter;
 
-         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_KNEEL_DEPLOYED.Get(), (*iter)->GetName());
+         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_LOW_WALK_DEPLOYED.Get(), (*iter)->GetName());
       }
 
       void TestPlanStandingToCrouchingNoWeaponMoving()
       {
          SimCore::Actors::Human* human = NULL;
-         mHumanAP->GetActor(human);
+         mHumanAP->GetDrawable(human);
 
          human->SetStance(SimCore::Actors::HumanActorProxy::StanceEnum::UPRIGHT_STANDING);
          human->SetPrimaryWeaponState(SimCore::Actors::HumanActorProxy::WeaponStateEnum::NO_WEAPON);
@@ -282,7 +282,7 @@ class HumanTests : public CPPUNIT_NS::TestFixture
       void TestCrouchingNoWeaponMovingToCrawlingReady()
       {
          SimCore::Actors::Human* human = NULL;
-         mHumanAP->GetActor(human);
+         mHumanAP->GetDrawable(human);
 
          dtGame::DRPublishingActComp* drPub = NULL;
          mHumanAP->GetComponent(drPub);
@@ -310,12 +310,9 @@ class HumanTests : public CPPUNIT_NS::TestFixture
          const dtAI::Planner::OperatorList& result = human->GetCurrentPlan();
 
          CPPUNIT_ASSERT_EQUAL_MESSAGE("The plan length",
-               4U, unsigned(result.size()));
+               3U, unsigned(result.size()));
 
          dtAI::Planner::OperatorList::const_iterator iter = result.begin();
-
-         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_KNEEL_DEPLOYED.Get(), (*iter)->GetName());
-         ++iter;
 
          CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_KNEEL_TO_PRONE.Get(), (*iter)->GetName());
          ++iter;
@@ -385,7 +382,7 @@ class HumanTests : public CPPUNIT_NS::TestFixture
       void TestPlanWalkingReadyToKneelingDeployed()
       {
          SimCore::Actors::Human* human = NULL;
-         mHumanAP->GetActor(human);
+         mHumanAP->GetDrawable(human);
 
          dtGame::DRPublishingActComp* drPub = NULL;
          mHumanAP->GetComponent(drPub);
@@ -409,7 +406,7 @@ class HumanTests : public CPPUNIT_NS::TestFixture
          const dtAI::Planner::OperatorList& result = human->GetCurrentPlan();
 
          CPPUNIT_ASSERT_EQUAL_MESSAGE("The plan length",
-               4U, unsigned(result.size()));
+               3U, unsigned(result.size()));
 
          dtAI::Planner::OperatorList::const_iterator iter = result.begin();
 
@@ -417,19 +414,16 @@ class HumanTests : public CPPUNIT_NS::TestFixture
          CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::OPER_READY_TO_DEPLOYED.Get(), (*iter)->GetName());
          ++iter;
 
-         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_STAND_DEPLOYED.Get(), (*iter)->GetName());
-         ++iter;
-
          CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_STAND_TO_KNEEL.Get(), (*iter)->GetName());
          ++iter;
 
-         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_KNEEL_DEPLOYED.Get(), (*iter)->GetName());
+         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_LOW_WALK_DEPLOYED.Get(), (*iter)->GetName());
       }
 
       void TestPlanActionStanding()
       {
          SimCore::Actors::Human* human = NULL;
-         mHumanAP->GetActor(human);
+         mHumanAP->GetDrawable(human);
 
          dtGame::DRPublishingActComp* drPub = NULL;
          mHumanAP->GetComponent(drPub);
@@ -452,12 +446,9 @@ class HumanTests : public CPPUNIT_NS::TestFixture
          const dtAI::Planner::OperatorList& result = human->GetCurrentPlan();
 
          CPPUNIT_ASSERT_EQUAL_MESSAGE("The plan length",
-               7U, unsigned(result.size()));
+               6U, unsigned(result.size()));
 
          dtAI::Planner::OperatorList::const_iterator iter = result.begin();
-
-         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_KNEEL_DEPLOYED.Get(), (*iter)->GetName());
-         ++iter;
 
          CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_KNEEL_TO_STAND.Get(), (*iter)->GetName());
          ++iter;
@@ -480,7 +471,7 @@ class HumanTests : public CPPUNIT_NS::TestFixture
       void TestPlanActionKneeling()
       {
          SimCore::Actors::Human* human = NULL;
-         mHumanAP->GetActor(human);
+         mHumanAP->GetDrawable(human);
 
          human->SetStance(SimCore::Actors::HumanActorProxy::StanceEnum::UPRIGHT_STANDING);
          human->SetPrimaryWeaponState(SimCore::Actors::HumanActorProxy::WeaponStateEnum::NO_WEAPON);
@@ -504,12 +495,9 @@ class HumanTests : public CPPUNIT_NS::TestFixture
          const dtAI::Planner::OperatorList& result = human->GetCurrentPlan();
 
          CPPUNIT_ASSERT_EQUAL_MESSAGE("The plan length",
-               8U, unsigned(result.size()));
+               7U, unsigned(result.size()));
 
          dtAI::Planner::OperatorList::const_iterator iter = result.begin();
-
-         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_STAND_DEPLOYED.Get(), (*iter)->GetName());
-         ++iter;
 
          CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_STAND_TO_KNEEL.Get(), (*iter)->GetName());
          ++iter;
@@ -535,7 +523,7 @@ class HumanTests : public CPPUNIT_NS::TestFixture
       void TestPlanActionProne()
       {
          SimCore::Actors::Human* human = NULL;
-         mHumanAP->GetActor(human);
+         mHumanAP->GetDrawable(human);
          //human->SetMaxTimePerIteration(2.00);
 
          human->SetStance(SimCore::Actors::HumanActorProxy::StanceEnum::UPRIGHT_STANDING);
@@ -562,12 +550,9 @@ class HumanTests : public CPPUNIT_NS::TestFixture
          const dtAI::Planner::OperatorList& result = human->GetCurrentPlan();
 
          CPPUNIT_ASSERT_EQUAL_MESSAGE("The plan length",
-               8U, unsigned(result.size()));
+               7U, unsigned(result.size()));
 
          dtAI::Planner::OperatorList::const_iterator iter = result.begin();
-
-         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_STAND_DEPLOYED.Get(), (*iter)->GetName());
-         ++iter;
 
          CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_STAND_TO_KNEEL.Get(), (*iter)->GetName());
          ++iter;
@@ -594,7 +579,7 @@ class HumanTests : public CPPUNIT_NS::TestFixture
       void TestStartup()
       {
          SimCore::Actors::Human* human = NULL;
-         mHumanAP->GetActor(human);
+         mHumanAP->GetDrawable(human);
 
          dtGame::DeadReckoningHelper* drHelper = NULL;
          mHumanAP->GetComponent(drHelper);
@@ -614,7 +599,7 @@ class HumanTests : public CPPUNIT_NS::TestFixture
 
          dtAI::Planner::OperatorList::const_iterator iter = result.begin();
 
-         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_STAND_DEPLOYED.Get(), (*iter)->GetName());
+         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_WALK_DEPLOYED.Get(), (*iter)->GetName());
       }
 
       void TestActorComponents()
@@ -641,7 +626,7 @@ class HumanTests : public CPPUNIT_NS::TestFixture
                const std::string& expectedDeadAnim )
       {
          SimCore::Actors::Human* human = NULL;
-         mHumanAP->GetActor(human);
+         mHumanAP->GetDrawable(human);
 
          human->SetStance(stance);
          human->SetPrimaryWeaponState(SimCore::Actors::HumanActorProxy::WeaponStateEnum::DEPLOYED);

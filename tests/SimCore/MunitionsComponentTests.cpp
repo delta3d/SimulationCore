@@ -1441,7 +1441,8 @@ namespace SimCore
          dtCore::Transform xform;
          entityAP->GetGameActor().GetTransform(xform);
          xform.SetTranslation(tankLocation);
-         SimCore::Actors::BaseEntity* curEntity = dynamic_cast<SimCore::Actors::BaseEntity*> (&(entityAP->GetGameActor()));
+         SimCore::Actors::BaseEntity* curEntity;
+         entityAP->GetDrawable(curEntity);
          curEntity->GetComponent<dtGame::DeadReckoningHelper>()->SetAutoRegisterWithGMComponent(false);
          mGM->AddActor(*entityAP, false, false);
 
@@ -1452,6 +1453,7 @@ namespace SimCore
          mGM->GetAllActors(container);
          CPPUNIT_ASSERT_MESSAGE("The actors container should not be empty.", !container.empty());
          unsigned numActors = container.size(); // numActors exists for debugging purposes
+         // The test says 2, but it ALWAYS has 1.
          CPPUNIT_ASSERT_EQUAL_MESSAGE("The actors container should have 2 actors in it.", 2U, numActors);
          mGM->FindActorsByType(*SimCore::Actors::EntityActorRegistry::DETONATION_ACTOR_TYPE, container);
          CPPUNIT_ASSERT_EQUAL_MESSAGE("The actors container should have 1 detonation actors in it.", 1U, unsigned(container.size()));
@@ -1838,7 +1840,7 @@ namespace SimCore
          std::vector<dtCore::RefPtr<SimCore::Actors::BaseEntity> > entities;
          // --- Re-register the entity
          CreateTestEntities( entities, 1, true );
-         entity = dynamic_cast<SimCore::Actors::BaseEntity*> (&(entities[0]->GetGameActorProxy().GetGameActor()));
+         entity = dynamic_cast<SimCore::Actors::BaseEntity*> (entities[0].get());
          CPPUNIT_ASSERT( entity.valid() );
          CPPUNIT_ASSERT( mDamageComp->Register(*entity, true, 5.0f));
          CPPUNIT_ASSERT( mDamageComp->HasRegistered( entity->GetUniqueId() ) );
