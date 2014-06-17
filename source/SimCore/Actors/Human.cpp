@@ -45,7 +45,6 @@
 #include <dtGame/messagetype.h>
 #include <dtGame/drpublishingactcomp.h>
 
-
 #include <dtCore/functor.h>
 #include <dtCore/enginepropertytypes.h>
 #include <dtCore/datatype.h>
@@ -391,32 +390,41 @@ namespace SimCore
          const dtAnim::Animatable* walk = seqMixer.GetRegisteredAnimation(newWalkAnimName);
          const dtAnim::Animatable* run = seqMixer.GetRegisteredAnimation(newRunAnimName);
 
-         if(stand && walk && run)
+         if(stand != NULL && walk != NULL && run != NULL)
          {
             newWRBlend->SetAnimations(stand->Clone(wrapper).get(), walk->Clone(wrapper).get(), run->Clone(wrapper).get());
+            newWRBlend->Setup(walkSpeed, runSpeed);
             seqMixer.RegisterAnimation(newWRBlend);
          }
          else
          {
-            if (stand && walk)
+            if (stand != NULL && walk != NULL)
             {
                newWRBlend->SetAnimations(stand->Clone(wrapper).get(), walk->Clone(wrapper).get(), NULL);
+               newWRBlend->Setup(walkSpeed, runSpeed);
                seqMixer.RegisterAnimation(newWRBlend);
             }
-            else if (walk)
+            else if (walk != NULL)
             {
                // Can't do much right now with just a walk.
                dtCore::RefPtr<dtAnim::Animatable> walkClone = walk->Clone(wrapper).get();
                walkClone->SetName(OpName);
                seqMixer.RegisterAnimation(walkClone);
-               LOGN_WARNING("Human.cpp", "Cannot load find a motionless animation for: " + OpName);
+               LOGN_WARNING("Human.cpp", "Cannot load/find a motionless animation for: " + OpName);
+            }
+            else if (stand != NULL)
+            {
+               // Can't do much right now with just a stand.
+               dtCore::RefPtr<dtAnim::Animatable> standClone = stand->Clone(wrapper).get();
+               standClone->SetName(OpName);
+               seqMixer.RegisterAnimation(standClone);
+               LOGN_WARNING("Human.cpp", "Cannot load/find a walking animation for: " + OpName);
             }
             else
             {
                LOGN_WARNING("Human.cpp", "Cannot load any walk or run animations for: " + OpName);
             }
          }
-         newWRBlend->Setup(walkSpeed, runSpeed);
       }
 
       /////////////////////////////////////////////////////////////////
@@ -858,7 +866,7 @@ namespace SimCore
             if (mLogger.IsLevelEnabled(dtUtil::Log::LOG_DEBUG))
             {
                mLogger.LogMessage(dtUtil::Log::LOG_DEBUG, __FUNCTION__, __LINE__,
-                     "Planner is not in the desired state.  Generating animations.");
+                     "The planner is not in the desired state on actor named \"" + GetName() + "\".  Generating animations.");
             }
 
             UpdatePlanAndAnimations();
