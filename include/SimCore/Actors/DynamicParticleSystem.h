@@ -156,12 +156,12 @@ namespace SimCore
             const DynamicParticleSystemActor& GetDynamicParticleSystemActor() const;
 
             // Used in STAGE
-            virtual dtDAL::ActorProxyIcon* GetBillBoardIcon();
+            virtual dtCore::ActorProxyIcon* GetBillBoardIcon();
 
             // STAGE - Draw Billboard or not?
-            virtual const dtDAL::ActorProxy::RenderMode& GetRenderMode()
+            virtual const dtCore::ActorProxy::RenderMode& GetRenderMode()
             {
-               return dtDAL::ActorProxy::RenderMode::DRAW_ACTOR_AND_BILLBOARD_ICON;
+               return dtCore::ActorProxy::RenderMode::DRAW_ACTOR_AND_BILLBOARD_ICON;
             }
 
          protected:

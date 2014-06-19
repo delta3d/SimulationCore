@@ -50,7 +50,7 @@ namespace NetDemo
       
       DT_DECLARE_ACCESSOR_INLINE(osg::Vec3, Origin);
 
-      void RegisterProperties(dtDAL::PropertyContainer& pc, const std::string& group)
+      void RegisterProperties(dtCore::PropertyContainer& pc, const std::string& group)
       {}
 
    };
@@ -71,7 +71,7 @@ namespace NetDemo
       DT_DECLARE_ACCESSOR_INLINE(osg::Vec2, AngleToTarget);
       DT_DECLARE_ACCESSOR_INLINE(osg::Vec3, TargetPos);
 
-      void RegisterProperties(dtDAL::PropertyContainer& pc, const std::string& group){}
+      void RegisterProperties(dtCore::PropertyContainer& pc, const std::string& group){}
 
    };
 
@@ -203,7 +203,7 @@ namespace NetDemo
          /*virtual*/ void UpdateState(float dt, const TurretWeaponState& steerData);
          /*virtual*/ void OutputControl(const BaseClass::AIPath& pathToFollow, const TurretWeaponState& current_state, TurretWeaponState& result) const;
 
-         /*virtual*/ void RegisterProperties(dtDAL::PropertyContainer& pc, const std::string& group){}
+         /*virtual*/ void RegisterProperties(dtCore::PropertyContainer& pc, const std::string& group){}
 
          TurretSteeringTargeter& GetTargeter();
 

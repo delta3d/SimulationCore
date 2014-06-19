@@ -29,7 +29,7 @@
 #include <SimCore/IGExceptionEnum.h>
 #include <SimCore/BaseGameEntryPoint.h>
 #include <dtABC/application.h>
-#include <dtDAL/project.h>
+#include <dtCore/project.h>
 #include <dtUtil/stringutils.h>
 #include <dtUtil/mathdefines.h>
 #include <dtCore/batchisector.h>
@@ -73,7 +73,7 @@ namespace Utils
       {
          // Determine if the specified map is valid.
          typedef std::set<std::string> MapNameList;
-         const MapNameList& names = dtDAL::Project::GetInstance().GetMapNames();
+         const MapNameList& names = dtCore::Project::GetInstance().GetMapNames();
          if( names.find( baseMapName ) == names.end() )
          {
             std::ostringstream oss;
@@ -248,7 +248,7 @@ namespace Utils
 
       std::vector<dtPhysics::RayCast::Report> hits;
       hits.reserve(10);
-      dtPhysics::PhysicsWorld::GetInstance().TraceRay(ray, hits);
+      dtPhysics::PhysicsWorld::GetInstance().TraceRay(ray, hits, true);
 
       if (!hits.empty())
       {
@@ -262,8 +262,10 @@ namespace Utils
             const dtPhysics::RayCast::Report& report = *i;
 
             float distance = dtUtil::Abs(pos.z() - report.mHitPos.z());
-            float distBtwHits = dtUtil::Abs(report.mHitPos.z() - hp.z());
-            if (shortestDistance > distance || distBtwHits < bodyHeight)
+            //If the current best hit is below this hit pos, but the space is less than the height of the body, it won't fit
+            // in there, so it has to be moved up to the higher level.
+            bool bodyTooTallForCurrentHit = (report.mHitPos.z() > hp.z() && report.mHitPos.z() - hp.z() < bodyHeight);
+            if (shortestDistance > distance || bodyTooTallForCurrentHit)
             {
                hp = report.mHitPos;
                shortestDistance = distance;

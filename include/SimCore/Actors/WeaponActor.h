@@ -174,7 +174,7 @@ namespace SimCore
             // However, these functions are used by ActorActorProperties so that the
             // MunitionTypeActor can be set from STAGE or by playback mode in AAR.
             // @param proxy The MunitionTypeActorProxy to be referenced.
-            void SetMunitionTypeProxy( dtDAL::ActorProxy* proxy );
+            void SetMunitionTypeProxy( dtCore::ActorProxy* proxy );
 
             // This function helps to load the MunitionTypeActor that this weapon
             // will need for messaging. The actor will attempt to access the
@@ -196,8 +196,8 @@ namespace SimCore
             //
             // NOTE: If an owner is not specified, the weapon will supply its own ID
             // as the sender for weapon fire messages.
-            void SetOwner( dtDAL::ActorProxy* proxy );
-            dtDAL::ActorProxy* GetOwner();
+            void SetOwner( dtCore::ActorProxy* proxy );
+            dtCore::ActorProxy* GetOwner();
 
             // The flash actor responsible for timing and rendering the flash effects
             // produced by this weapon.
@@ -422,9 +422,6 @@ namespace SimCore
             //this is the id that corresponds to our dynamic light effect
             unsigned mDynamicLightID;
 
-            //keeps track of our dynamic light so we know if we should disable it
-            bool mDynamicLightEnabled;
-
             // The world location where the impact occurred.
             osg::Vec3 mLastHitLocation;
 
@@ -450,7 +447,7 @@ namespace SimCore
             // The actor that owns this weapon and that is published
             // on the network. This object's ID will be sent in
             // the weapon fire messages.
-            dtCore::ObserverPtr<dtDAL::ActorProxy> mOwner;
+            dtCore::ObserverPtr<dtCore::ActorProxy> mOwner;
 
             // The flash actor that is responsible for rendering
             // and the timing of flash effects.

@@ -43,7 +43,7 @@
 #include <dtGame/gmsettings.h>
 #include <dtABC/application.h>
 
-#include <dtDAL/project.h>
+#include <dtCore/project.h>
 
 #include <dtUtil/stringutils.h>
 
@@ -79,7 +79,6 @@ namespace SimCore
          , mRTIStandard(dtHLAGM::RTIAmbassador::RTI13_IMPLEMENTATION)
          , mRidFile()
          , mConnectionType(&ConnectionType::TYPE_NONE)
-         , mCurrentConnectionType(&ConnectionType::TYPE_NONE)
          , mServerGameVersion(1)
          , mDISIPAddress()
          , mDISPort()
@@ -132,7 +131,7 @@ namespace SimCore
       {
          // Look for a coordinate config actor.
          dtActors::CoordinateConfigActor* ccActor = NULL;
-         std::vector<dtDAL::ActorProxy*> proxies;
+         std::vector<dtCore::ActorProxy*> proxies;
          GetGameManager()->FindActorsByType(*dtActors::EngineActorRegistry::COORDINATE_CONFIG_ACTOR_TYPE, proxies);
          if(proxies.empty())
          {

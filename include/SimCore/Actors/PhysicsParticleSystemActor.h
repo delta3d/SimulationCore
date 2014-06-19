@@ -22,18 +22,14 @@
  */
 #ifndef _PHYSICS_PARTICLE_SYSTEM_
 #define _PHYSICS_PARTICLE_SYSTEM_
+
 #include <SimCore/Export.h>
 
 #include <dtGame/gameactor.h>
 
 #include <SimCore/PhysicsTypes.h>
-#ifdef AGEIA_PHYSICS
-#include <NxAgeiaPrimitivePhysicsHelper.h>
-#else
 #include <dtPhysics/physicsactcomp.h>
 #include <dtPhysics/physicsobject.h>
-#endif
-//#include <dtCore/object.h>
 
 #include <osg/BlendFunc>
 #include <osg/StateSet>
@@ -55,14 +51,11 @@ namespace SimCore
 
       ///////////////////////////////////////////////////////////////////////////////////
       class SIMCORE_EXPORT PhysicsParticleSystemActor: public dtGame::GameActor
-#ifdef AGEIA_PHYSICS
-      , public dtAgeiaPhysX::NxAgeiaPhysicsInterface
-#endif
       {
 
       public:
          /// constructor for NxAgeiaBaseActor
-         PhysicsParticleSystemActor(dtGame::GameActorProxy& proxy);
+         PhysicsParticleSystemActor(dtGame::GameActorProxy& parent);
 
          /**
           * This method is an invokable called when an object is local and
@@ -104,24 +97,9 @@ namespace SimCore
          /// destructor
          virtual ~PhysicsParticleSystemActor(void);
 
-#ifdef AGEIA_PHYSICS
-         /// Corresponds to the AGEIA_FLAGS_PRE_UPDATE flag
-         virtual void AgeiaPrePhysicsUpdate(){}
-
-         /// Corresponds to the AGEIA_FLAGS_POST_UPDATE
-         virtual void AgeiaPostPhysicsUpdate();
-
-         /// Corresponds to the AGEIA_FLAGS_GET_COLLISION_REPORT
-         virtual void AgeiaCollisionReport(dtAgeiaPhysX::ContactReport& contactReport, dtPhysics::PhysicsObject& ourSelf, dtPhysics::PhysicsObject& whatWeHit);
-
-         // You would have to make a new raycast to get this report,
-         // so no flag associated with it.
-         virtual void AgeiaRaycastReport(const NxRaycastHit& hit, const dtPhysics::PhysicsObject& ourSelf, const dtPhysics::PhysicsObject& whatWeHit){}
-#else
 
          /// dtPhysics post physics callback.
          virtual void PostPhysicsUpdate();
-#endif
 
          public:
 
@@ -198,12 +176,8 @@ namespace SimCore
          bool GetObjectsStayStaticWhenHit()                    {return mObjectsStayStaticWhenHit;}
 
 
-#ifdef AGEIA_PHYSICS
-         dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper& GetPhysicsActComp() { return *mPhysicsActComp; }
-#else
          dtPhysics::PhysicsActComp& GetPhysicsActComp() { return *GetComponent<dtPhysics::PhysicsActComp>(); }
-#endif
-         protected:
+      protected:
 
          //////////////////////////////////////////////////////////////////
          virtual void AddParticle();
@@ -245,11 +219,7 @@ namespace SimCore
          osg::Vec3               mForceVectorMin;
          osg::Vec3               mForceVectorMax;
 
-#ifdef AGEIA_PHYSICS
-         dtCore::RefPtr<dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper> mPhysicsActComp;
-#else
          dtCore::RefPtr<dtPhysics::PhysicsActComp> mPhysicsActComp;
-#endif
       };
 
       ////////////////////////////////////////////////////////
@@ -263,7 +233,7 @@ namespace SimCore
          PhysicsParticleSystemActorProxy();
          virtual void BuildPropertyMap();
 
-         virtual dtCore::RefPtr<dtDAL::ActorProperty> GetDeprecatedProperty(const std::string& name);
+         virtual dtCore::RefPtr<dtCore::ActorProperty> GetDeprecatedProperty(const std::string& name);
 
          virtual void BuildActorComponents();
 
@@ -319,3 +289,4 @@ namespace SimCore
    }
 }
 #endif
+

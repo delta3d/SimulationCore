@@ -44,7 +44,7 @@ C:\Curtiss\Projects\Delta3D\SimulationCore\demos\NetDemo (as appropriate)
 
       <!-- dtPhysics -->
       <Property Name="dtPhysics.PhysicsEngine">Bullet</Property>  <!-- Bullet Novodex ODE -->
-      <Property Name="dtPhysics.PalPluginPath">../dtPhysics/ext/PalPlugins/</Property>
+      <Property Name="dtPhysics.PalPluginPath">../delta3d/ext/PalPlugins/</Property>
       <Property Name="dtPhysics.EnableStepPhysicsInBackground">true</Property>
       <Property Name="dtPhysics.NumProcessingElements">1</Property>
       <Property Name="dtPhysics.SolverIterationCount">10</Property>

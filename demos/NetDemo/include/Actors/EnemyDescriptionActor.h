@@ -26,8 +26,8 @@
 
 #include <DemoExport.h>
 #include <dtGame/gameactor.h>
-#include <dtDAL/propertycontainer.h>
-#include <dtDAL/containeractorproperty.h>
+#include <dtCore/propertycontainer.h>
+#include <dtCore/containeractorproperty.h>
 
 #include <AIUtility.h>
 
@@ -71,8 +71,8 @@ namespace NetDemo
          DT_DECLARE_ACCESSOR_INLINE(std::string, EnemyPrototypeName);
          DT_DECLARE_ACCESSOR_INLINE(int, MaxVelocity);
 
-         void RegisterProperties(dtDAL::PropertyContainer& pc, const std::string& group);
-         void RegisterProperties(dtDAL::ContainerActorProperty& pc, const std::string& group);
+         void RegisterProperties(dtCore::PropertyContainer& pc, const std::string& group);
+         void RegisterProperties(dtCore::ContainerActorProperty& pc, const std::string& group);
       };
 
 

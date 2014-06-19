@@ -28,9 +28,9 @@
 #include <prefix/SimCorePrefix.h>
 #include <SimCore/Actors/LogicOnEventActor.h>
 #include <SimCore/Actors/LogicConditionalActor.h>
-#include <dtDAL/enginepropertytypes.h>
-#include <dtDAL/arrayactorproperty.h>
-#include <dtDAL/namedparameter.h>
+#include <dtCore/enginepropertytypes.h>
+#include <dtCore/arrayactorproperty.h>
+#include <dtCore/namedparameter.h>
 #include <dtGame/message.h>
 #include <dtGame/messagefactory.h>
 #include <dtGame/basemessages.h>
@@ -47,30 +47,50 @@ namespace SimCore
    namespace Actors
    {
       //////////////////////////////////////////////////////////////////////////
-      IMPLEMENT_ENUM(LogicOnEventActorProxy::LogicTypeEnum);
-      LogicOnEventActorProxy::LogicTypeEnum::LogicTypeEnum(const std::string& name, const std::string& displayName)
+      IMPLEMENT_ENUM(LogicOnEventActor::LogicTypeEnum);
+      LogicOnEventActor::LogicTypeEnum::LogicTypeEnum(const std::string& name, const std::string& displayName)
          : dtUtil::Enumeration(name)
          , mDisplayName(displayName)
       {
          AddInstance(this);
       }
-      const std::string& LogicOnEventActorProxy::LogicTypeEnum::GetDisplayName() 
+      const std::string& LogicOnEventActor::LogicTypeEnum::GetDisplayName()
       { 
          return mDisplayName; 
       }
-      LogicOnEventActorProxy::LogicTypeEnum LogicOnEventActorProxy::LogicTypeEnum::BOOLEAN_OR("OR", "Listens for events on the children and triggers if ANY of them are true.");
-      LogicOnEventActorProxy::LogicTypeEnum LogicOnEventActorProxy::LogicTypeEnum::BOOLEAN_AND("AND", "Listens for events on the children and triggers only when ALL of them are true.");
+      LogicOnEventActor::LogicTypeEnum LogicOnEventActor::LogicTypeEnum::BOOLEAN_OR("OR", "Listens for events on the children and triggers if ANY of them are true.");
+      LogicOnEventActor::LogicTypeEnum LogicOnEventActor::LogicTypeEnum::BOOLEAN_AND("AND", "Listens for events on the children and triggers only when ALL of them are true.");
 
 
       //////////////////////////////////////////////////////////////////////////
-      // ACTOR CODE
+      // Drawable CODE
       //////////////////////////////////////////////////////////////////////////
-      LogicOnEventActor ::LogicOnEventActor ( LogicOnEventActorProxy& proxy )
+      LogicOnEventDrawable ::LogicOnEventDrawable ( LogicOnEventActor& proxy )
          : BaseClass(proxy)
-         , mLogicType(&LogicOnEventActorProxy::LogicTypeEnum::BOOLEAN_AND)
-         , mCurrentStatus(false)
-         , mConditionListIsDirty(true)
       {
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      LogicOnEventDrawable::~LogicOnEventDrawable()
+      {
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      // Actor CODE
+      //////////////////////////////////////////////////////////////////////////
+      const dtUtil::RefString LogicOnEventActor::CLASS_NAME("SimCore::Logic::LogicOnEventDrawable");
+      const dtUtil::RefString LogicOnEventActor::PROPERTY_LOGIC_TYPE("Logic Type");
+      const dtUtil::RefString LogicOnEventActor::PROPERTY_EVENT_TO_FIRE("Event To Fire");
+      const dtUtil::RefString LogicOnEventActor::PROPERTY_CONDITIONALS("Conditional Array");
+      
+      //////////////////////////////////////////////////////////////////////////
+      LogicOnEventActor::LogicOnEventActor()
+      : mLogicType(&LogicOnEventActor::LogicTypeEnum::BOOLEAN_AND)
+      , mCurrentStatus(false)
+      , mConditionListIsDirty(true)
+      , mConditionsIndex(0)
+      {
+         SetClassName(LogicOnEventActor::CLASS_NAME);
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -78,47 +98,101 @@ namespace SimCore
       {
       }
 
+      //////////////////////////////////////////////////////////////////////////
+      void LogicOnEventActor::OnEnteredWorld()
+      {
+         RegisterForMessages(dtGame::MessageType::INFO_GAME_EVENT, dtUtil::MakeFunctor(&LogicOnEventActor::ProcessGameEventMessage, this));
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void LogicOnEventActor::CreateDrawable()
+      {
+         SetDrawable( *new LogicOnEventDrawable(*this) );
+      }
+
+      //////////////////////////////////////////////////////////
+      void LogicOnEventActor::BuildPropertyMap()
+      {
+         static const dtUtil::RefString PROPERTY_CONDITION("Condition");
+         static const dtUtil::RefString PROP_LOGIC_TYPE_DESC("Indicates whether we check AND or OR on our child conditionals before firing our event.");
+         static const dtUtil::RefString PROP_EVENT_TO_FIRE_DESC("The event to fire when this set of conditionals is met.");
+         static const dtUtil::RefString PROP_CONDITION_DESC("One of the conditionals used for the OnEvent logic.");
+         static const dtUtil::RefString PROP_CONDITIONAL_LIST_DESC("A list of conditionals that this logic actor controls.");
+
+         BaseClass::BuildPropertyMap();
+
+         const std::string GROUP("Logic Data");
+
+         LogicOnEventActor* actor = this;
+
+         AddProperty(new dtCore::EnumActorProperty<LogicOnEventActor::LogicTypeEnum>(
+            PROPERTY_LOGIC_TYPE, PROPERTY_LOGIC_TYPE,
+            dtCore::EnumActorProperty<LogicOnEventActor::LogicTypeEnum>::SetFuncType
+               (actor, &LogicOnEventActor::SetLogicType),
+            dtCore::EnumActorProperty<LogicOnEventActor::LogicTypeEnum>::GetFuncType
+               (actor, &LogicOnEventActor::GetLogicType),
+            PROP_LOGIC_TYPE_DESC, GROUP));
+
+         AddProperty(new dtCore::GameEventActorProperty(*this, PROPERTY_EVENT_TO_FIRE, PROPERTY_EVENT_TO_FIRE, 
+            dtCore::GameEventActorProperty::SetFuncType(actor, &LogicOnEventActor::SetEventToFire),
+            dtCore::GameEventActorProperty::GetFuncType(actor, &LogicOnEventActor::GetEventToFire),
+            PROP_EVENT_TO_FIRE_DESC, GROUP));
+
+
+         // The following 2 props go together. Part of the array thing.
+         // A Conditional in the Conditional List
+         dtCore::ActorIDActorProperty* actorProp = new dtCore::ActorIDActorProperty(
+            *this, PROPERTY_CONDITION, PROPERTY_CONDITION,
+            dtCore::ActorIDActorProperty::SetFuncType(actor, &LogicOnEventActor::SetChildConditional),
+            dtCore::ActorIDActorProperty::GetFuncType(actor, &LogicOnEventActor::GetChildConditional),
+            "SimCore::Logic::LogicConditionalActor", PROP_CONDITION_DESC, GROUP);
+         // The Task List.
+         AddProperty(new dtCore::ArrayActorProperty<dtCore::UniqueId>(
+            PROPERTY_CONDITIONALS, PROPERTY_CONDITIONALS, PROP_CONDITIONAL_LIST_DESC,
+            dtCore::ArrayActorProperty<dtCore::UniqueId>::SetIndexFuncType(actor, &LogicOnEventActor::ConditionalArraySetIndex),
+            dtCore::ArrayActorProperty<dtCore::UniqueId>::GetDefaultFuncType(actor, &LogicOnEventActor::ConditionalArrayGetDefault),
+            dtCore::ArrayActorProperty<dtCore::UniqueId>::GetArrayFuncType(actor, &LogicOnEventActor::ConditionalArrayGetValue),
+            dtCore::ArrayActorProperty<dtCore::UniqueId>::SetArrayFuncType(actor, &LogicOnEventActor::ConditionalArraySetValue),
+            actorProp, GROUP));
+
+      }
       ////////////////////////////////////////////////////////////////////////////////////
-      LogicOnEventActorProxy::LogicTypeEnum& LogicOnEventActor::GetLogicType() const
+      LogicOnEventActor::LogicTypeEnum& LogicOnEventActor::GetLogicType() const
       {
          return *mLogicType;
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
-      void LogicOnEventActor::SetLogicType(LogicOnEventActorProxy::LogicTypeEnum& logicType)
+      void LogicOnEventActor::SetLogicType(LogicOnEventActor::LogicTypeEnum& logicType)
       {
          mLogicType = &logicType;
       }
 
       /////////////////////////////////////////////////////////////////////////////
-      void LogicOnEventActor::SetEventToFire(dtDAL::GameEvent* pEvent)
+      void LogicOnEventActor::SetEventToFire(dtCore::GameEvent* pEvent)
       {
          mEventToFire = pEvent;
       }
 
       /////////////////////////////////////////////////////////////////////////////
-      dtDAL::GameEvent* LogicOnEventActor::GetEventToFire()
+      dtCore::GameEvent* LogicOnEventActor::GetEventToFire()
       {
          return mEventToFire.get();
       }
 
 
       /////////////////////////////////////////////////////////////////////////////
-      void LogicOnEventActor::ProcessMessage(const dtGame::Message& message)
+      void LogicOnEventActor::ProcessGameEventMessage(const dtGame::GameEventMessage& gem)
       {
-         if(message.GetMessageType() == dtGame::MessageType::INFO_GAME_EVENT)
-         {
-            const dtGame::GameEventMessage& gem = static_cast<const dtGame::GameEventMessage&>(message);
-            const dtDAL::GameEvent& gameEvent = *gem.GetGameEvent();
+         const dtCore::GameEvent& gameEvent = *gem.GetGameEvent();
 
-            ProcessGameEvent( gameEvent );
-         }
+         ProcessGameEvent( gameEvent );
       }
 
       /////////////////////////////////////////////////////////////////////////////
       void LogicOnEventActor::ResolveDirtyList()
       {
-         dtGame::GameManager *gm = GetGameActorProxy().GetGameManager();
+         dtGame::GameManager* gm = GetGameManager();
 
          // Resolve dirty list.
          if (mConditionListIsDirty && gm != NULL)
@@ -130,12 +204,12 @@ namespace SimCore
             unsigned int numConditions = mConditions.size();
             for (unsigned int i = 0; i < numConditions; ++i)
             {
-               dtCore::UniqueId &newId = mConditions[i];
-               SimCore::Actors::LogicConditionalActorProxy *newProxy = 
-                  dynamic_cast<SimCore::Actors::LogicConditionalActorProxy*>(gm->FindActorById(newId));
-               if (newProxy != NULL)
+               dtCore::UniqueId& newId = mConditions[i];
+               SimCore::Actors::LogicConditionalActor* newActor =
+                  dynamic_cast<SimCore::Actors::LogicConditionalActor*>(gm->FindActorById(newId));
+               if (newActor != NULL)
                {
-                  mConditionsListAsActors.push_back(newProxy);
+                  mConditionsListAsActors.push_back(newActor);
                }
             }
 
@@ -144,46 +218,45 @@ namespace SimCore
       }
 
       /////////////////////////////////////////////////////////////////////////////
-      void LogicOnEventActor::ProcessGameEvent(const dtDAL::GameEvent& gameEvent)
+      void LogicOnEventActor::ProcessGameEvent(const dtCore::GameEvent& gameEvent)
       {
          bool bMatchingEventFound = false;
          // Initial cumulative value of all children is true when using AND but False for OR
-         bool bCumulativeStatusCheck = (mLogicType == &LogicOnEventActorProxy::LogicTypeEnum::BOOLEAN_AND);
+         bool bCumulativeStatusCheck = (mLogicType == &LogicOnEventActor::LogicTypeEnum::BOOLEAN_AND);
 
          //if(mEventEnableFocus.valid() && gameEvent == *mEventEnableFocus)
          ResolveDirtyList();
 
-         // go through our children. check the true/false conditions. 
+         // go through our children. check the true/false conditions.
          unsigned int numConditions = mConditionsListAsActors.size();
          for (unsigned int i = 0; i < numConditions; ++i)
          {
-            SimCore::Actors::LogicConditionalActorProxy* conditionProxy = mConditionsListAsActors[i].get();
-            if (conditionProxy == NULL)
+            SimCore::Actors::LogicConditionalActor* condition = mConditionsListAsActors[i].get();
+            if (condition == NULL)
             {
                mConditionListIsDirty = true;
                continue;
             }
 
-            SimCore::Actors::LogicConditionalActor& condition = conditionProxy->GetActorAsConditional();
-            if (condition.GetFalseEvent() == &gameEvent)
+            if (condition->GetFalseEvent() == &gameEvent)
             {
                bMatchingEventFound = true;
-               condition.SetIsTrue(false);
+               condition->SetIsTrue(false);
             }
-            else if (condition.GetTrueEvent() == &gameEvent)
+            else if (condition->GetTrueEvent() == &gameEvent)
             {
                bMatchingEventFound = true;
-               condition.SetIsTrue(true);
+               condition->SetIsTrue(true);
             }
 
-            // Regardless, do a cumulative logic result. 
-            if (mLogicType == &LogicOnEventActorProxy::LogicTypeEnum::BOOLEAN_AND)
+            // Regardless, do a cumulative logic result.
+            if (mLogicType == &LogicOnEventActor::LogicTypeEnum::BOOLEAN_AND)
             {
-               bCumulativeStatusCheck = bCumulativeStatusCheck && condition.GetIsTrue();
+               bCumulativeStatusCheck = bCumulativeStatusCheck && condition->GetIsTrue();
             }
             else  // OR
             {
-               bCumulativeStatusCheck = bCumulativeStatusCheck || condition.GetIsTrue();
+               bCumulativeStatusCheck = bCumulativeStatusCheck || condition->GetIsTrue();
             }
          }
 
@@ -194,20 +267,20 @@ namespace SimCore
             if (mCurrentStatus && mEventToFire.valid())
             {
                SendGameEventMessage(*mEventToFire);
-            }            
+            }
          }
       }
 
       /////////////////////////////////////////////////////////////////////////////
       void LogicOnEventActor::SendGameEventMessage(dtCore::GameEvent& gameEvent)
       {
-         dtGame::GameManager* gm = GetGameActorProxy().GetGameManager();
+         dtGame::GameManager* gm = GetGameManager();
          if( gm != NULL )
          {
             dtCore::RefPtr<dtGame::GameEventMessage> eventMessage;
             gm->GetMessageFactory().CreateMessage( dtGame::MessageType::INFO_GAME_EVENT, eventMessage );
 
-            eventMessage->SetAboutActorId( GetUniqueId() );
+            eventMessage->SetAboutActorId( GetId() );
             eventMessage->SetGameEvent( gameEvent );
             gm->SendMessage( *eventMessage );
          }
@@ -279,85 +352,6 @@ namespace SimCore
          }
 
          mConditionListIsDirty = true;
-      }
-
-      //////////////////////////////////////////////////////////////////////////
-      // PROXY CODE
-      //////////////////////////////////////////////////////////////////////////
-      const dtUtil::RefString LogicOnEventActorProxy::CLASS_NAME("SimCore::Logic::LogicOnEventActor");
-      const dtUtil::RefString LogicOnEventActorProxy::PROPERTY_LOGIC_TYPE("Logic Type");
-      const dtUtil::RefString LogicOnEventActorProxy::PROPERTY_EVENT_TO_FIRE("Event To Fire");
-      const dtUtil::RefString LogicOnEventActorProxy::PROPERTY_CONDITIONALS("Conditional Array");
-      
-      //////////////////////////////////////////////////////////////////////////
-      LogicOnEventActorProxy::LogicOnEventActorProxy()
-      {
-         SetClassName(LogicOnEventActorProxy::CLASS_NAME);
-      }
-
-      //////////////////////////////////////////////////////////////////////////
-      LogicOnEventActorProxy::~LogicOnEventActorProxy()
-      {
-      }
-
-      //////////////////////////////////////////////////////////////////////////
-      void LogicOnEventActorProxy::OnEnteredWorld()
-      {
-         RegisterForMessages(dtGame::MessageType::INFO_GAME_EVENT);
-      }
-
-      //////////////////////////////////////////////////////////////////////////
-      void LogicOnEventActorProxy::CreateDrawable()
-      {
-         SetDrawable( *new LogicOnEventActor(*this) );
-      }
-
-      //////////////////////////////////////////////////////////
-      void LogicOnEventActorProxy::BuildPropertyMap()
-      {
-         static const dtUtil::RefString PROPERTY_CONDITION("Condition");
-         static const dtUtil::RefString PROP_LOGIC_TYPE_DESC("Indicates whether we check AND or OR on our child conditionals before firing our event.");
-         static const dtUtil::RefString PROP_EVENT_TO_FIRE_DESC("The event to fire when this set of conditionals is met.");
-         static const dtUtil::RefString PROP_CONDITION_DESC("One of the conditionals used for the OnEvent logic.");
-         static const dtUtil::RefString PROP_CONDITIONAL_LIST_DESC("A list of conditionals that this logic actor controls.");
-
-         BaseClass::BuildPropertyMap();
-
-         const std::string GROUP("Logic Data");
-
-         LogicOnEventActor* actor = NULL;
-         GetActor( actor );
-
-         AddProperty(new dtDAL::EnumActorProperty<LogicOnEventActorProxy::LogicTypeEnum>(
-            PROPERTY_LOGIC_TYPE, PROPERTY_LOGIC_TYPE,
-            dtDAL::EnumActorProperty<LogicOnEventActorProxy::LogicTypeEnum>::SetFuncType
-               (actor, &LogicOnEventActor::SetLogicType),
-            dtDAL::EnumActorProperty<LogicOnEventActorProxy::LogicTypeEnum>::GetFuncType
-               (actor, &LogicOnEventActor::GetLogicType),
-            PROP_LOGIC_TYPE_DESC, GROUP));
-
-         AddProperty(new dtDAL::GameEventActorProperty(*this, PROPERTY_EVENT_TO_FIRE, PROPERTY_EVENT_TO_FIRE, 
-            dtDAL::GameEventActorProperty::SetFuncType(actor, &LogicOnEventActor::SetEventToFire),
-            dtDAL::GameEventActorProperty::GetFuncType(actor, &LogicOnEventActor::GetEventToFire),
-            PROP_EVENT_TO_FIRE_DESC, GROUP));
-
-
-         // The following 2 props go together. Part of the array thing.
-         // A Conditional in the Conditional List
-         dtDAL::ActorIDActorProperty* actorProp = new dtDAL::ActorIDActorProperty(
-            *this, PROPERTY_CONDITION, PROPERTY_CONDITION,
-            dtDAL::ActorIDActorProperty::SetFuncType(actor, &LogicOnEventActor::SetChildConditional),
-            dtDAL::ActorIDActorProperty::GetFuncType(actor, &LogicOnEventActor::GetChildConditional),
-            "SimCore::Logic::LogicConditionalActor", PROP_CONDITION_DESC, GROUP);
-         // The Task List.
-         AddProperty(new dtDAL::ArrayActorProperty<dtCore::UniqueId>(
-            PROPERTY_CONDITIONALS, PROPERTY_CONDITIONALS, PROP_CONDITIONAL_LIST_DESC,
-            dtDAL::ArrayActorProperty<dtCore::UniqueId>::SetIndexFuncType(actor, &LogicOnEventActor::ConditionalArraySetIndex),
-            dtDAL::ArrayActorProperty<dtCore::UniqueId>::GetDefaultFuncType(actor, &LogicOnEventActor::ConditionalArrayGetDefault),
-            dtDAL::ArrayActorProperty<dtCore::UniqueId>::GetArrayFuncType(actor, &LogicOnEventActor::ConditionalArrayGetValue),
-            dtDAL::ArrayActorProperty<dtCore::UniqueId>::SetArrayFuncType(actor, &LogicOnEventActor::ConditionalArraySetValue),
-            actorProp, GROUP));
-
       }
 
    }

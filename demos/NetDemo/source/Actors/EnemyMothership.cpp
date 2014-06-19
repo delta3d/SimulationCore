@@ -24,7 +24,7 @@
 #include <dtUtil/mswin.h>
 #include <Actors/EnemyMothership.h>
 
-#include <dtDAL/enginepropertytypes.h>
+#include <dtCore/enginepropertytypes.h>
 #include <dtUtil/matrixutil.h>
 #include <dtUtil/mathdefines.h>
 #include <dtGame/basemessages.h>
@@ -167,7 +167,7 @@ namespace NetDemo
    void EnemyMothershipActor::SelectFortToAttack()
    {
       //temporarily lets just look for a fort to destroy
-      std::vector<dtDAL::ActorProxy*> actors;
+      std::vector<dtCore::ActorProxy*> actors;
       GetGameActorProxy().GetGameManager()->FindActorsByType(*NetDemoActorRegistry::FORT_ACTOR_TYPE, actors);
 
       osg::Vec3 pos = mAIHelper->mCurrentState.GetPos();

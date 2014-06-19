@@ -30,7 +30,7 @@
 #include <SimCore/Actors/IGActor.h>
 //#include <SimCore/Actors/ViewerMaterialActor.h>
 #include <dtUtil/getsetmacros.h>
-#include <dtDAL/resourcedescriptor.h>
+#include <dtCore/resourcedescriptor.h>
 
 namespace dtGame
 {
@@ -76,7 +76,7 @@ namespace SimCore
             enum IMPACT_TYPE{IMPACT_TERRAIN, IMPACT_ENTITY, IMPACT_HUMAN};
 
             /// Constructor
-            DetonationActor(dtGame::GameActorProxy& proxy);
+            DetonationActor(dtGame::GameActorProxy& parent);
 
             /**
              *  The impact type determines which particle system and sounds will be played.
@@ -173,26 +173,26 @@ namespace SimCore
          
             //Ground Impact Properties
             //note: if no other impact properties are set it defaults to using the ground impact properties
-            DT_DECLARE_ACCESSOR_INLINE(dtDAL::ResourceDescriptor, GroundImpactEffect);
-            DT_DECLARE_ACCESSOR_INLINE(dtDAL::ResourceDescriptor, GroundImpactSound);
+            DT_DECLARE_ACCESSOR_INLINE(dtCore::ResourceDescriptor, GroundImpactEffect);
+            DT_DECLARE_ACCESSOR_INLINE(dtCore::ResourceDescriptor, GroundImpactSound);
             void SetGroundImpactLight( const std::string& lightName );
             const std::string& GetGroundImpactLight() const;
 
             //Entity Impact Properties
-            DT_DECLARE_ACCESSOR_INLINE(dtDAL::ResourceDescriptor, EntityImpactEffect);
-            DT_DECLARE_ACCESSOR_INLINE(dtDAL::ResourceDescriptor, EntityImpactSound);
+            DT_DECLARE_ACCESSOR_INLINE(dtCore::ResourceDescriptor, EntityImpactEffect);
+            DT_DECLARE_ACCESSOR_INLINE(dtCore::ResourceDescriptor, EntityImpactSound);
             void SetEntityImpactLight( const std::string& lightName );
             const std::string& GetEntityImpactLight() const;
 
             //Human Impact Properties
-            DT_DECLARE_ACCESSOR_INLINE(dtDAL::ResourceDescriptor, HumanImpactEffect);
-            DT_DECLARE_ACCESSOR_INLINE(dtDAL::ResourceDescriptor, HumanImpactSound);
+            DT_DECLARE_ACCESSOR_INLINE(dtCore::ResourceDescriptor, HumanImpactEffect);
+            DT_DECLARE_ACCESSOR_INLINE(dtCore::ResourceDescriptor, HumanImpactSound);
             void SetHumanImpactLight( const std::string& lightName );
             const std::string& GetHumanImpactLight() const;
 
             //smoke effect
-            DT_DECLARE_ACCESSOR_INLINE(dtDAL::ResourceDescriptor, SmokeEffect);
-            void LoadSmokeFile(const dtDAL::ResourceDescriptor& resource);
+            DT_DECLARE_ACCESSOR_INLINE(dtCore::ResourceDescriptor, SmokeEffect);
+            void LoadSmokeFile(const dtCore::ResourceDescriptor& resource);
 
             DT_DECLARE_ACCESSOR_INLINE(float, SmokeLifeTime);
 
@@ -222,8 +222,8 @@ namespace SimCore
 
             /// Enables the smoke particle system of this Detonation Actor
             void StartSmokeEffect(dtCore::ParticleSystem& particles);
-            void LoadSoundFile(const dtDAL::ResourceDescriptor& resource, dtCore::RefPtr<dtAudio::Sound>& soundIn);
-            void LoadParticleSystem(const dtDAL::ResourceDescriptor& resource, dtCore::RefPtr<dtCore::ParticleSystem>& particleSysIn);
+            void LoadSoundFile(const dtCore::ResourceDescriptor& resource, dtCore::RefPtr<dtAudio::Sound>& soundIn);
+            void LoadParticleSystem(const dtCore::ResourceDescriptor& resource, dtCore::RefPtr<dtCore::ParticleSystem>& particleSysIn);
 
             ///adds a light for the explosion effect
             void AddDynamicLight(const std::string& lightName);
@@ -279,11 +279,11 @@ namespace SimCore
 
             virtual void OnRemovedFromWorld()
             {
-               DetonationActor* actor = NULL;
-               GetActor(actor);
-               if (actor != NULL)
+               DetonationActor* draw = NULL;
+               GetDrawable(draw);
+               if (draw != NULL)
                {
-                  actor->OnRemovedFromWorld();
+                  draw->OnRemovedFromWorld();
                }
             }
 

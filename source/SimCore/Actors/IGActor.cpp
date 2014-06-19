@@ -69,8 +69,8 @@ namespace SimCore
       static dtCore::RefPtr<HideNodeCallback> HIDE_NODE_CALLBACK(new HideNodeCallback);
 
       ///////////////////////////////////////////////////////////////////////////
-      IGActor::IGActor(dtGame::GameActorProxy &proxy)
-      : GameActor(proxy)
+      IGActor::IGActor(dtGame::GameActorProxy& owner)
+      : GameActor(owner)
       , mIsVisible(true)
       {
       }

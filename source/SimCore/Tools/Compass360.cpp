@@ -37,7 +37,7 @@
 #include <dtCore/shadermanager.h>
 #include <dtCore/shaderprogram.h>
 #include <dtCore/transform.h>
-#include <dtDAL/project.h>
+#include <dtCore/project.h>
 #include <SimCore/Tools/Compass360.h>
 #include <sstream>
 
@@ -148,7 +148,7 @@ namespace SimCore
             std::string filePath(imageFileName);
             try
             {
-               filePath = dtDAL::Project::GetInstance().GetResourcePath(dtDAL::ResourceDescriptor(filePath));
+               filePath = dtCore::Project::GetInstance().GetResourcePath(dtCore::ResourceDescriptor(filePath));
                image = osgDB::readImageFile(filePath);
                texture->setImage(image);
                texture->setWrap(osg::Texture::WRAP_S, osg::Texture::REPEAT);

@@ -29,7 +29,7 @@
 // INCLUDE DIRECTIVES
 ////////////////////////////////////////////////////////////////////////////////
 #include <SimCore/Export.h>
-#include <dtDAL/resourcedescriptor.h>
+#include <dtCore/resourcedescriptor.h>
 #include <dtUtil/getsetmacros.h>
 #include <dtGame/actorcomponentbase.h>
 
@@ -105,7 +105,7 @@ namespace SimCore
             /**
              * The particle system file that represents the effect.
              */
-            DT_DECLARE_ACCESSOR(dtDAL::ResourceDescriptor, TrailParticlesFile);
+            DT_DECLARE_ACCESSOR(dtCore::ResourceDescriptor, TrailParticlesFile);
 
             ////////////////////////////////////////////////////////////////////
             // SPECIAL METHODS
@@ -140,12 +140,6 @@ namespace SimCore
              * Local tick handler for owner actors in local-mode.
              */
             virtual void OnTickLocal(const dtGame::TickMessage& tickMessage);
-
-            /** 
-             * Called when this ActorComponent is removed from the parent actor.
-             * @param actor The GameActor this ActorComponent has just been removed from.
-             */
-            virtual void OnRemovedFromActor(dtGame::GameActor& actor);
 
             /**
              * Override method to handle additional setup that can only be handled

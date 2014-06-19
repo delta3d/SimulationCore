@@ -24,7 +24,7 @@
 #ifdef None
 #undef None
 #endif
-#include <CEGUI.h>
+#include <CEGUI/CEGUI.h>
 
 
 

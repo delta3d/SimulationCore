@@ -19,9 +19,9 @@
 #include <dtAudio/audiomanager.h>
 #include <dtAudio/sound.h>
 
-#include <dtDAL/actorproxy.h>
-#include <dtDAL/actorproperty.h>
-#include <dtDAL/enginepropertytypes.h>
+#include <dtCore/actorproxy.h>
+#include <dtCore/actorproperty.h>
+#include <dtCore/enginepropertytypes.h>
 
 #include <dtCore/logicalinputdevice.h>
 #include <dtCore/camera.h>
@@ -81,11 +81,11 @@
 #include <dtPhysics/physicscomponent.h>
 #include <SimCore/Actors/BasePhysicsVehicleActor.h>
 #include <SimCore/Actors/HumanWithPhysicsActor.h>
-#include <dtDAL/project.h>
+#include <dtCore/project.h>
 //#endif
 
 // TEST INCLUDES --- START
-#include <dtDAL/groupactorproperty.h>
+#include <dtCore/groupactorproperty.h>
 // TEST INCLUDES --- END
 
 #include <DriverArticulationHelper.h>
@@ -1041,7 +1041,7 @@ namespace DriverDemo
    {
       dtGame::GameManager* gm = GetGameManager();
 
-      std::vector<dtDAL::ActorProxy*> proxyArray;
+      std::vector<dtCore::ActorProxy*> proxyArray;
       gm->FindPrototypesByName( weaponName, proxyArray );
 
       if( proxyArray.empty() )
@@ -1075,7 +1075,7 @@ namespace DriverDemo
 
       if( ! proxyArray.empty() )
       {
-         dtCore::RefPtr<dtDAL::ActorProxy> ourActualActorProxy
+         dtCore::RefPtr<dtCore::ActorProxy> ourActualActorProxy
             = gm->CreateActorFromPrototype(proxyArray.front()->GetId());
 
          if(ourActualActorProxy != NULL)
@@ -1390,7 +1390,7 @@ namespace DriverDemo
    void DriverInputComponent::CreateTarget()
    {
       dtGame::GameManager* gm = GetGameManager();
-      std::vector<dtDAL::ActorProxy*> foundProxies;
+      std::vector<dtCore::ActorProxy*> foundProxies;
 
       float randChance = dtUtil::RandFloat(0.0, 1.0);
       std::string prototypeName("UNKNOWN");

@@ -45,8 +45,8 @@
 #include <dtCore/system.h>
 #include <dtCore/transform.h>
 
-#include <dtDAL/enginepropertytypes.h>
-#include <dtDAL/project.h>
+#include <dtCore/enginepropertytypes.h>
+#include <dtCore/project.h>
 
 #include <dtUtil/noiseutility.h>
 #include <dtUtil/log.h>
@@ -59,6 +59,7 @@
 #include <osg/Depth>
 #include <osg/Geometry>
 #include <osg/StateSet>
+#include <osg/Version>
 
 #include <osg/Notify>//to squelch warnings
 
@@ -69,6 +70,15 @@ namespace SimCore
 {
    namespace Components
    {
+
+#if defined (__APPLE__) && OSG_VERSION_LESS_THAN(3,2,0)
+      static const std::string DYN_LIGHT_UNIFORM = "dynamicLights[0]";
+      static const std::string SPOT_LIGHT_UNIFORM = "spotLights[0]";
+#else
+      static const std::string DYN_LIGHT_UNIFORM = "dynamicLights";
+      static const std::string SPOT_LIGHT_UNIFORM = "spotLights";
+#endif
+
 
      //useful functors
       struct findLightById
@@ -358,7 +368,7 @@ namespace SimCore
       void RenderingSupportComponent::LoadPrototypes()
       {
          // Find all the dynamic light prototypes
-         std::vector<dtDAL::ActorProxy*> prototypes;
+         std::vector<dtCore::ActorProxy*> prototypes;
          GetGameManager()->FindPrototypesByActorType(*SimCore::Actors::EntityActorRegistry::DYNAMIC_LIGHT_PROTOTYPE_ACTOR_TYPE, prototypes);
 
          // Add all the prototypes to our map of light proxies. This allows others to quickly add a light by name
@@ -602,11 +612,22 @@ namespace SimCore
       {
          osg::StateSet* ss = pCamera.GetOSGCamera()->getOrCreateStateSet();
          osg::Uniform* viewInverseUniform = ss->getOrCreateUniform("inverseViewMatrix", osg::Uniform::FLOAT_MAT4);
+         viewInverseUniform->setDataVariance(osg::Object::DYNAMIC);
+         
          osg::Uniform* mvpiUniform = ss->getOrCreateUniform("modelViewProjectionInverse", osg::Uniform::FLOAT_MAT4);
+         mvpiUniform->setDataVariance(osg::Object::DYNAMIC);
+
          osg::Uniform* hprUniform = ss->getOrCreateUniform("cameraHPR", osg::Uniform::FLOAT_VEC3);
+         hprUniform->setDataVariance(osg::Object::DYNAMIC);
+
          osg::Uniform* nearPlaneUniform = ss->getOrCreateUniform("nearPlane", osg::Uniform::FLOAT);
+         nearPlaneUniform->setDataVariance(osg::Object::DYNAMIC);
+
          osg::Uniform* farPlaneUniform = ss->getOrCreateUniform("farPlane", osg::Uniform::FLOAT);
+         farPlaneUniform->setDataVariance(osg::Object::DYNAMIC);
+
          osg::Uniform* screenDims = ss->getOrCreateUniform("ScreenDimensions", osg::Uniform::FLOAT_VEC2);
+         screenDims->setDataVariance(osg::Object::DYNAMIC);
 
          osg::Vec2 dims(pCamera.GetOSGCamera()->getViewport()->width(), pCamera.GetOSGCamera()->getViewport()->height());
          screenDims->set(dims);
@@ -731,10 +752,10 @@ namespace SimCore
             if (landActorProxy != NULL)
             {
                SimCore::Actors::PagedTerrainPhysicsActor* landActor = NULL;
-               landActorProxy->GetActor(landActor);
+               landActorProxy->GetDrawable(landActor);
 
                // Get the terrain - which has our mesh node
-               dtDAL::ActorProxy* terrainActorProxy;
+               dtCore::ActorProxy* terrainActorProxy;
                GetGameManager()->FindActorByName(SimCore::Actors::TerrainActor::DEFAULT_NAME, terrainActorProxy);
                if (terrainActorProxy != NULL)
                {
@@ -896,15 +917,11 @@ namespace SimCore
          //now setup the lighting uniforms necessary for rendering the dynamic lights
          osg::StateSet* ss = actor.GetOSGNode()->getOrCreateStateSet();
          //temporary hack
-#ifdef __APPLE__
-         static const std::string DYN_LIGHT_UNIFORM = "dynamicLights[0]";
-         static const std::string SPOT_LIGHT_UNIFORM = "spotLights[0]";
-#else
-         static const std::string DYN_LIGHT_UNIFORM = "dynamicLights";
-         static const std::string SPOT_LIGHT_UNIFORM = "spotLights";
-#endif
          osg::Uniform* lightArrayUniform = ss->getOrCreateUniform(DYN_LIGHT_UNIFORM, osg::Uniform::FLOAT_VEC4, mMaxDynamicLights * 3);
+         lightArrayUniform->setDataVariance(osg::Object::DYNAMIC);
+
          osg::Uniform* spotLightArrayUniform = ss->getOrCreateUniform(SPOT_LIGHT_UNIFORM, osg::Uniform::FLOAT_VEC4, mMaxSpotLights * 4);
+         spotLightArrayUniform->setDataVariance(osg::Object::DYNAMIC);
 
          UpdateDynamicLightUniforms(tempLightArray, lightArrayUniform, spotLightArrayUniform);
       }
@@ -1008,16 +1025,11 @@ namespace SimCore
 
          //now setup the lighting uniforms necessary for rendering the dynamic lights
          osg::StateSet* ss = GetGameManager()->GetScene().GetSceneNode()->getOrCreateStateSet();
-//temporary hack
-#ifdef __APPLE__
-         static const std::string DYN_LIGHT_UNIFORM = "dynamicLights[0]";
-         static const std::string SPOT_LIGHT_UNIFORM = "spotLights[0]";
-#else
-         static const std::string DYN_LIGHT_UNIFORM = "dynamicLights";
-         static const std::string SPOT_LIGHT_UNIFORM = "spotLights";
-#endif
          osg::Uniform* lightArray = ss->getOrCreateUniform(DYN_LIGHT_UNIFORM, osg::Uniform::FLOAT_VEC4, mMaxDynamicLights * 3);
+         lightArray->setDataVariance(osg::Object::DYNAMIC);
+
          osg::Uniform* spotLightArray = ss->getOrCreateUniform(SPOT_LIGHT_UNIFORM, osg::Uniform::FLOAT_VEC4, mMaxSpotLights * 4);
+         spotLightArray->setDataVariance(osg::Object::DYNAMIC);
 
          UpdateDynamicLightUniforms(mLights, lightArray, spotLightArray);
       }
@@ -1070,7 +1082,7 @@ namespace SimCore
             return false;
          }
 
-         std::vector<dtDAL::ActorProxy*> toFill;
+         std::vector<dtCore::ActorProxy*> toFill;
 
          if (mCullVisitor->GetLandActor() == NULL)
          {
@@ -1080,7 +1092,7 @@ namespace SimCore
             if (landActorProxy != NULL)
             {
                SimCore::Actors::PagedTerrainPhysicsActor* landActor = NULL;
-               landActorProxy->GetActor(landActor);
+               landActorProxy->GetDrawable(landActor);
                mCullVisitor->SetLandActor(landActor);
             }
             else
@@ -1089,7 +1101,7 @@ namespace SimCore
                GetGameManager()->CreateActor(*SimCore::Actors::EntityActorRegistry::PAGED_TERRAIN_PHYSICS_ACTOR_TYPE, terrainPhysicsActorProxy);
                GetGameManager()->AddActor(*terrainPhysicsActorProxy, false, false);
                SimCore::Actors::PagedTerrainPhysicsActor* landActor = NULL;
-               terrainPhysicsActorProxy->GetActor(landActor);
+               terrainPhysicsActorProxy->GetDrawable(landActor);
                mCullVisitor->SetLandActor(landActor);
             }
          }
@@ -1120,7 +1132,7 @@ namespace SimCore
          char* csmData = getenv("CSM_DATA");
          if(csmData == NULL)
          {
-            std::string csmPath = dtDAL::Project::GetInstance().GetContext();
+            std::string csmPath = dtCore::Project::GetInstance().GetContext();
             for(size_t i = 0; i < csmPath.size(); i++)
             {
                if(csmPath[i] == '\\')

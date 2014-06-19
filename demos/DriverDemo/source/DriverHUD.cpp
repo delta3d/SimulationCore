@@ -34,11 +34,11 @@
 #include <dtGame/messagetype.h>
 #include <dtGame/serverloggercomponent.h>
 
-#include <dtDAL/enginepropertytypes.h>
-#include <dtDAL/project.h>
-#include <dtDAL/map.h>
-#include <dtDAL/actorproxy.h>
-#include <dtDAL/transformableactorproxy.h>
+#include <dtCore/enginepropertytypes.h>
+#include <dtCore/project.h>
+#include <dtCore/map.h>
+#include <dtCore/actorproxy.h>
+#include <dtCore/transformableactorproxy.h>
 
 #include <dtActors/taskactor.h>
 #include <dtActors/coordinateconfigactor.h>
@@ -170,7 +170,7 @@ namespace DriverDemo
          }
 #endif
 
-         std::vector<dtDAL::ActorProxy*> proxies;
+         std::vector<dtCore::ActorProxy*> proxies;
          GetGameManager()->FindActorsByType(*dtActors::EngineActorRegistry::COORDINATE_CONFIG_ACTOR_TYPE, proxies);
 
          if(proxies.empty())

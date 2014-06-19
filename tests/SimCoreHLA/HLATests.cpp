@@ -32,9 +32,9 @@
 #include <string>
 #include <osg/Endian>
 #include <dtUtil/coordinates.h>
-#include <dtDAL/datatype.h>
-#include <dtDAL/project.h>
-#include <dtDAL/resourcedescriptor.h>
+#include <dtCore/datatype.h>
+#include <dtCore/project.h>
+#include <dtCore/resourcedescriptor.h>
 #include <dtHLAGM/objecttoactor.h>
 #include <dtHLAGM/interactiontomessage.h>
 #include <dtHLAGM/hlacomponent.h>
@@ -134,7 +134,7 @@ void HLATests::TestHLAConnection()
    }
 
    const std::string fedResource("Federations:RPR-FOM.fed");
-   std::string fedFilePath = dtDAL::Project::GetInstance().GetResourcePath(dtDAL::ResourceDescriptor(fedResource));
+   std::string fedFilePath = dtCore::Project::GetInstance().GetResourcePath(dtCore::ResourceDescriptor(fedResource));
 
    CPPUNIT_ASSERT_MESSAGE("Fed file \"" + fedResource + "\" was not found.", !fedFilePath.empty());
 

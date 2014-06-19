@@ -28,7 +28,7 @@
 #include <string>
 #include <SimCore/Components/Conversations/Interaction.h>
 #include <SimCore/Components/Conversations/Command.h>
-#include <dtDAL/gameevent.h>
+#include <dtCore/gameevent.h>
 
 //for xml loading
 #include <dtUtil/xercesparser.h>
@@ -44,7 +44,7 @@
 #endif
 #endif
 
-namespace dtDAL
+namespace dtCore
 {
    class GameEvent;
 }
@@ -57,10 +57,10 @@ namespace SimCore
       {
          public:
             typedef std::vector< dtCore::RefPtr<Interaction> > InteractionArray;
-            typedef std::multimap<dtCore::ObserverPtr<dtDAL::GameEvent>, dtCore::RefPtr<Command<void> > > EventToCommandMap;
-            typedef std::multimap<const Response*, dtCore::ObserverPtr<dtDAL::GameEvent> > ResponseToEventMap;
+            typedef std::multimap<dtCore::ObserverPtr<dtCore::GameEvent>, dtCore::RefPtr<Command<void> > > EventToCommandMap;
+            typedef std::multimap<const Response*, dtCore::ObserverPtr<dtCore::GameEvent> > ResponseToEventMap;
 
-            typedef dtUtil::Functor<void, TYPELIST_2(dtDAL::GameEvent*, Conversation*)> RegisterConversationFunctor;
+            typedef dtUtil::Functor<void, TYPELIST_2(dtCore::GameEvent*, Conversation*)> RegisterConversationFunctor;
 
          public:
             Conversation(RegisterConversationFunctor regFunc);
@@ -75,7 +75,7 @@ namespace SimCore
 
             Interaction* HandleResponse(const Response* r);
 
-            void HandleGameEvent(dtDAL::GameEvent* ge);
+            void HandleGameEvent(dtCore::GameEvent* ge);
 
             ResponseToEventMap& GetResponseEvents();
 
@@ -87,10 +87,10 @@ namespace SimCore
             /*virtual*/ ~Conversation();
             void ClearData();
 
-            dtDAL::GameEvent* LookupGameEvent(const std::string& str) const;
+            dtCore::GameEvent* LookupGameEvent(const std::string& str) const;
 
-            void AddCommand(dtDAL::GameEvent* ge, Command<void>* com);
-            void AddResponseEvent(Response* r, dtDAL::GameEvent* ge);
+            void AddCommand(dtCore::GameEvent* ge, Command<void>* com);
+            void AddResponseEvent(Response* r, dtCore::GameEvent* ge);
 
             template <class T>
             Command<void>* CreateCommand(T* i, bool enable)

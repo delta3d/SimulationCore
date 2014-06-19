@@ -85,7 +85,7 @@ namespace SimCore
             static const unsigned ADDITIONAL_CAMERA_CULL_MASK;
             static const unsigned MAIN_CAMERA_ONLY_FEATURE_NODE_MASK;
             
-			static const unsigned RECEIVE_SHADOW_NODE_MASK;
+            static const unsigned RECEIVE_SHADOW_NODE_MASK;
             static const unsigned CAST_SHADOW_NODE_MASK;
             static const unsigned DISABLE_SHADOW_NODE_MASK;
 
@@ -96,7 +96,7 @@ namespace SimCore
                static LightType OMNI_DIRECTIONAL;
                static LightType SPOT_LIGHT;
 
-               LightType(const std::string &name) : dtUtil::Enumeration(name)
+               LightType(const std::string& name) : dtUtil::Enumeration(name)
                {
                   AddInstance(this);
                }

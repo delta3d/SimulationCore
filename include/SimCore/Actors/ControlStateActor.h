@@ -32,7 +32,7 @@
 #include <dtCore/observerptr.h>
 #include <dtCore/refptr.h>
 #include <dtGame/gameactor.h>
-#include <dtDAL/namedgroupparameter.h>
+#include <dtCore/namedgroupparameter.h>
 #include <SimCore/Actors/Platform.h>
 
 
@@ -45,7 +45,7 @@ namespace dtCore
    class DeltaDrawable;
 }
 
-namespace dtDAL
+namespace dtCore
 {
    class NamedGroupParameter;
 }
@@ -78,8 +78,8 @@ namespace SimCore
 
             virtual void Clear();
 
-            virtual void SetByGroupParameter( const dtDAL::NamedGroupParameter& groupParam );
-            virtual dtCore::RefPtr<dtDAL::NamedGroupParameter> GetAsGroupParameter() const;
+            virtual void SetByGroupParameter( const dtCore::NamedGroupParameter& groupParam );
+            virtual dtCore::RefPtr<dtCore::NamedGroupParameter> GetAsGroupParameter() const;
 
          protected:
             virtual ~BaseControl();
@@ -118,8 +118,8 @@ namespace SimCore
 
             virtual void Clear();
 
-            virtual void SetByGroupParameter( const dtDAL::NamedGroupParameter& groupParam );
-            virtual dtCore::RefPtr<dtDAL::NamedGroupParameter> GetAsGroupParameter() const;
+            virtual void SetByGroupParameter( const dtCore::NamedGroupParameter& groupParam );
+            virtual dtCore::RefPtr<dtCore::NamedGroupParameter> GetAsGroupParameter() const;
 
          protected:
             virtual ~ContinuousControl();
@@ -157,8 +157,8 @@ namespace SimCore
 
             virtual void Clear();
 
-            virtual void SetByGroupParameter( const dtDAL::NamedGroupParameter& groupParam );
-            virtual dtCore::RefPtr<dtDAL::NamedGroupParameter> GetAsGroupParameter() const;
+            virtual void SetByGroupParameter( const dtCore::NamedGroupParameter& groupParam );
+            virtual dtCore::RefPtr<dtCore::NamedGroupParameter> GetAsGroupParameter() const;
 
          protected:
             virtual ~DiscreteControl();
@@ -189,7 +189,7 @@ namespace SimCore
 
             const dtCore::UniqueId& GetEntityID() const;
 
-            void SetEntity( dtDAL::ActorProxy* proxy );
+            void SetEntity( dtCore::ActorProxy* proxy );
             Platform* GetEntity();
 
             void SetStationType( int stationType );
@@ -227,11 +227,11 @@ namespace SimCore
             void SetNumContinuousControls( int numControls );
             int GetNumContinuousControls() const;
 
-            void SetDiscreteControlsByGroupParameter( const dtDAL::NamedGroupParameter& groupParam );
-            dtCore::RefPtr<dtDAL::NamedGroupParameter> GetDiscreteControlsAsGroupParameter() const;
+            void SetDiscreteControlsByGroupParameter( const dtCore::NamedGroupParameter& groupParam );
+            dtCore::RefPtr<dtCore::NamedGroupParameter> GetDiscreteControlsAsGroupParameter() const;
 
-            void SetContinuousControlsByGroupParameter( const dtDAL::NamedGroupParameter& groupParam );
-            dtCore::RefPtr<dtDAL::NamedGroupParameter> GetContinuousControlsAsGroupParameter() const;
+            void SetContinuousControlsByGroupParameter( const dtCore::NamedGroupParameter& groupParam );
+            dtCore::RefPtr<dtCore::NamedGroupParameter> GetContinuousControlsAsGroupParameter() const;
 
             void Clear();
 
@@ -260,14 +260,14 @@ namespace SimCore
                const std::map<const std::string, dtCore::RefPtr<baseType> >& controlMap ) const;
 
             template<class baseType>
-            dtCore::RefPtr<dtDAL::NamedGroupParameter> GetMapAsGroupParameter(
+            dtCore::RefPtr<dtCore::NamedGroupParameter> GetMapAsGroupParameter(
                const std::map<const std::string, dtCore::RefPtr<baseType> >& controlMap,
                const std::string& groupName ) const;
 
             template<class baseType>
             void SetMapByGroupParameter(
                std::map<const std::string, dtCore::RefPtr<baseType> >& controlMap,
-               const dtDAL::NamedGroupParameter& groupParam );
+               const dtCore::NamedGroupParameter& groupParam );
 
          private:
             bool mChanged;
@@ -365,7 +365,7 @@ namespace SimCore
 
       //////////////////////////////////////////////////////////////////////////
       template<class baseType>
-      dtCore::RefPtr<dtDAL::NamedGroupParameter> ControlStateActor::GetMapAsGroupParameter(
+      dtCore::RefPtr<dtCore::NamedGroupParameter> ControlStateActor::GetMapAsGroupParameter(
          const std::map<const std::string, dtCore::RefPtr<baseType> >& controlMap,
          const std::string& groupName ) const
       {
@@ -373,8 +373,8 @@ namespace SimCore
             return NULL;
 
          // Create the group parameter that will represent the control array (map)
-         dtCore::RefPtr<dtDAL::NamedGroupParameter> controlArrayParams
-            = new dtDAL::NamedGroupParameter( groupName );
+         dtCore::RefPtr<dtCore::NamedGroupParameter> controlArrayParams
+            = new dtCore::NamedGroupParameter( groupName );
 
          // Iterate through the control map and acquire a group parameter representation
          // of each control and add it to the new group parameter that represents the array.
@@ -389,7 +389,7 @@ namespace SimCore
             {
                // Add the group parameter that represents the individual control
                // to the main array group parameter.
-               dtCore::RefPtr<dtDAL::NamedGroupParameter> controlParam = currentControl->GetAsGroupParameter();
+               dtCore::RefPtr<dtCore::NamedGroupParameter> controlParam = currentControl->GetAsGroupParameter();
                if( controlParam.valid() )
                   controlArrayParams->AddParameter( *controlParam );
             }
@@ -402,18 +402,18 @@ namespace SimCore
       template<class baseType>
       void ControlStateActor::SetMapByGroupParameter(
          std::map<const std::string, dtCore::RefPtr<baseType> >& controlMap,
-         const dtDAL::NamedGroupParameter& groupParam )
+         const dtCore::NamedGroupParameter& groupParam )
       {
-         std::vector<const dtDAL::NamedParameter*> params;
+         std::vector<const dtCore::NamedParameter*> params;
          groupParam.GetParameters( params );
 
          // Visit each nested group parameter and set their values to a control
          // that shares the same name.
-         const dtDAL::NamedGroupParameter* currentParam = NULL;
+         const dtCore::NamedGroupParameter* currentParam = NULL;
          const unsigned limit = params.size();
          for( unsigned i = 0; i < limit; ++i )
          {
-            currentParam = dynamic_cast<const dtDAL::NamedGroupParameter*>(params[i]);
+            currentParam = dynamic_cast<const dtCore::NamedGroupParameter*>(params[i]);
             if( currentParam != NULL )
             {
                baseType* control = GetControlFromMap( currentParam->GetName(), controlMap );

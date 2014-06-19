@@ -40,8 +40,8 @@
 #include <dtCore/environment.h>
 #include <dtCore/deltawin.h>
 
-#include <dtDAL/project.h>
-#include <dtDAL/map.h>
+#include <dtCore/project.h>
+#include <dtCore/map.h>
 
 #include <dtGame/actorupdatemessage.h>
 #include <dtGame/basemessages.h>
@@ -802,8 +802,8 @@ namespace SimCore
          CPPUNIT_ASSERT_MESSAGE("WeatherComponent SHOULD have the ORIGINAL AtmosphereActor",
             mAtmos.get() == weatherComp.GetAtmosphereActor());
 
-         SimCore::Actors::UniformAtmosphereActor &atmos =
-            static_cast<SimCore::Actors::UniformAtmosphereActor&>(mAtmos->GetGameActor());
+         SimCore::Actors::UniformAtmosphereActor& atmos =
+            *mAtmos->GetDrawable<SimCore::Actors::UniformAtmosphereActor>();
 
          // Test update changes to the original atmosphere actor
          AtmosphereParams params = {5.0f,5000.0f,10000.0f,10.0f,20.0f,500.0f,15.0f,

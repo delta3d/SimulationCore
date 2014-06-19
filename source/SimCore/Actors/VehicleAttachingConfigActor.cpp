@@ -22,15 +22,15 @@
  */
 #include <prefix/SimCorePrefix.h>
 #include <SimCore/Actors/VehicleAttachingConfigActor.h>
-#include <dtDAL/enginepropertytypes.h>
+#include <dtCore/enginepropertytypes.h>
 
 namespace SimCore
 {
    namespace Actors
    {
       /////////////////////////////////////////////////////////////////////////
-      VehicleAttachingConfigActor::VehicleAttachingConfigActor(dtGame::GameActorProxy& proxy)
-      : dtGame::GameActor(proxy)
+      VehicleAttachingConfigActor::VehicleAttachingConfigActor(dtGame::GameActorProxy& owner)
+      : dtGame::GameActor(owner)
       , mUseInsideModel(false)
       {
                    
@@ -42,9 +42,9 @@ namespace SimCore
          
       }
 
-      DT_IMPLEMENT_ACCESSOR(VehicleAttachingConfigActor, dtDAL::ResourceDescriptor, InsideModelResourceGood);
-      DT_IMPLEMENT_ACCESSOR(VehicleAttachingConfigActor, dtDAL::ResourceDescriptor, InsideModelResourceDamaged);
-      DT_IMPLEMENT_ACCESSOR(VehicleAttachingConfigActor, dtDAL::ResourceDescriptor, InsideModelResourceDestroyed);
+      DT_IMPLEMENT_ACCESSOR(VehicleAttachingConfigActor, dtCore::ResourceDescriptor, InsideModelResourceGood);
+      DT_IMPLEMENT_ACCESSOR(VehicleAttachingConfigActor, dtCore::ResourceDescriptor, InsideModelResourceDamaged);
+      DT_IMPLEMENT_ACCESSOR(VehicleAttachingConfigActor, dtCore::ResourceDescriptor, InsideModelResourceDestroyed);
 
       ////////////////////////////////////////////////////////////////////
       // Actor Proxy Below here
@@ -62,37 +62,37 @@ namespace SimCore
          VehicleAttachingConfigActor* actor = NULL;
          GetActor(actor);
 
-         AddProperty(new dtDAL::ResourceActorProperty(dtDAL::DataType::STATIC_MESH,
+         AddProperty(new dtCore::ResourceActorProperty(dtCore::DataType::STATIC_MESH,
             "VEHICLE_INSIDE_MODEL_GOOD", "VEHICLE_INSIDE_MODEL_PATH_GOOD",
-            dtDAL::ResourceActorProperty::SetDescFuncType(actor, &VehicleAttachingConfigActor::SetInsideModelResourceGood),
-            dtDAL::ResourceActorProperty::GetDescFuncType(actor, &VehicleAttachingConfigActor::GetInsideModelResourceGood),
+            dtCore::ResourceActorProperty::SetDescFuncType(actor, &VehicleAttachingConfigActor::SetInsideModelResourceGood),
+            dtCore::ResourceActorProperty::GetDescFuncType(actor, &VehicleAttachingConfigActor::GetInsideModelResourceGood),
             "What is the filepath / string of the inside model good", GROUP));
 
-         AddProperty(new dtDAL::ResourceActorProperty(dtDAL::DataType::STATIC_MESH,
+         AddProperty(new dtCore::ResourceActorProperty(dtCore::DataType::STATIC_MESH,
             "VEHICLE_INSIDE_MODEL_DESTROYED", "VEHICLE_INSIDE_MODEL_PATH_DESTROYED",
-            dtDAL::ResourceActorProperty::SetDescFuncType(actor, &VehicleAttachingConfigActor::SetInsideModelResourceDestroyed),
-            dtDAL::ResourceActorProperty::GetDescFuncType(actor, &VehicleAttachingConfigActor::GetInsideModelResourceDestroyed),
+            dtCore::ResourceActorProperty::SetDescFuncType(actor, &VehicleAttachingConfigActor::SetInsideModelResourceDestroyed),
+            dtCore::ResourceActorProperty::GetDescFuncType(actor, &VehicleAttachingConfigActor::GetInsideModelResourceDestroyed),
             "What is the filepath / string of the inside model dmged", GROUP));
          
-         AddProperty(new dtDAL::ResourceActorProperty(dtDAL::DataType::STATIC_MESH,
+         AddProperty(new dtCore::ResourceActorProperty(dtCore::DataType::STATIC_MESH,
             "VEHICLE_INSIDE_MODEL_DAMAGED", "VEHICLE_INSIDE_MODEL_PATH_DAMAGED",
-            dtDAL::ResourceActorProperty::SetDescFuncType(actor, &VehicleAttachingConfigActor::SetInsideModelResourceDamaged),
-            dtDAL::ResourceActorProperty::GetDescFuncType(actor, &VehicleAttachingConfigActor::GetInsideModelResourceDamaged),
+            dtCore::ResourceActorProperty::SetDescFuncType(actor, &VehicleAttachingConfigActor::SetInsideModelResourceDamaged),
+            dtCore::ResourceActorProperty::GetDescFuncType(actor, &VehicleAttachingConfigActor::GetInsideModelResourceDamaged),
             "What is the filepath / string of the inside model destroyed", GROUP));
 
-         AddProperty(new dtDAL::Vec3ActorProperty("SeatOffSetPosition", "SeatOffSetPosition",
-            dtDAL::Vec3ActorProperty::SetFuncType(actor, &VehicleAttachingConfigActor::SetSeatPosition),
-            dtDAL::Vec3ActorProperty::GetFuncType(actor, &VehicleAttachingConfigActor::GetSeatPosition),
+         AddProperty(new dtCore::Vec3ActorProperty("SeatOffSetPosition", "SeatOffSetPosition",
+            dtCore::Vec3ActorProperty::SetFuncType(actor, &VehicleAttachingConfigActor::SetSeatPosition),
+            dtCore::Vec3ActorProperty::GetFuncType(actor, &VehicleAttachingConfigActor::GetSeatPosition),
             "For positioning, wheres the offset?", GROUP));
 
-         AddProperty(new dtDAL::Vec3ActorProperty("SeatOffSetRotation", "SeatOffSetRotation",
-            dtDAL::Vec3ActorProperty::SetFuncType(actor, &VehicleAttachingConfigActor::SetRotationOffSet),
-            dtDAL::Vec3ActorProperty::GetFuncType(actor, &VehicleAttachingConfigActor::GetRotationOffSet),
+         AddProperty(new dtCore::Vec3ActorProperty("SeatOffSetRotation", "SeatOffSetRotation",
+            dtCore::Vec3ActorProperty::SetFuncType(actor, &VehicleAttachingConfigActor::SetRotationOffSet),
+            dtCore::Vec3ActorProperty::GetFuncType(actor, &VehicleAttachingConfigActor::GetRotationOffSet),
             "For rotation, wheres the offset?", GROUP));
 
-         AddProperty(new dtDAL::BooleanActorProperty("UseInsideModel", "UseInsideModel",
-            dtDAL::BooleanActorProperty::SetFuncType(actor, &VehicleAttachingConfigActor::SetUsesInsideModel),
-            dtDAL::BooleanActorProperty::GetFuncType(actor, &VehicleAttachingConfigActor::GetUsesInsideModel),
+         AddProperty(new dtCore::BooleanActorProperty("UseInsideModel", "UseInsideModel",
+            dtCore::BooleanActorProperty::SetFuncType(actor, &VehicleAttachingConfigActor::SetUsesInsideModel),
+            dtCore::BooleanActorProperty::GetFuncType(actor, &VehicleAttachingConfigActor::GetUsesInsideModel),
             "Does it use the inside model or not?", GROUP));
       }
 

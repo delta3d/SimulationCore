@@ -17,7 +17,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include <osgDB/ReadFile>
 #include <dtCore/transform.h>
-#include <dtDAL/project.h>
+#include <dtCore/project.h>
 #include <dtGame/gamemanager.h>
 #include <dtGame/messagefactory.h>
 #include <dtUtil/fileutils.h>
@@ -95,12 +95,12 @@ namespace NetDemo
    ////////////////////////////////////////////////////////////////////////////////
    osg::Node* LoadNodeFile(const std::string& projectRelativePath)
    {
-      dtDAL::ResourceDescriptor descriptor(projectRelativePath);
+      dtCore::ResourceDescriptor descriptor(projectRelativePath);
 
       std::string resPath;
       try
       {
-         resPath = dtDAL::Project::GetInstance().GetResourcePath(descriptor);
+         resPath = dtCore::Project::GetInstance().GetResourcePath(descriptor);
       }
       catch (...)
       {

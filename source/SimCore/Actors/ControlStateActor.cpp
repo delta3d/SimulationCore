@@ -27,10 +27,10 @@
 #include <prefix/SimCorePrefix.h>
 #include <dtCore/deltadrawable.h>
 #include <dtCore/uniqueid.h>
-#include <dtDAL/actorproperty.h>
-#include <dtDAL/enginepropertytypes.h>
-#include <dtDAL/groupactorproperty.h>
-#include <dtDAL/namedparameter.h>
+#include <dtCore/actorproperty.h>
+#include <dtCore/enginepropertytypes.h>
+#include <dtCore/groupactorproperty.h>
+#include <dtCore/namedparameter.h>
 #include <dtUtil/log.h>
 #include <SimCore/Actors/ControlStateActor.h>
 #include <osg/Endian>
@@ -108,16 +108,16 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void BaseControl::SetByGroupParameter( const dtDAL::NamedGroupParameter& groupParam )
+      void BaseControl::SetByGroupParameter( const dtCore::NamedGroupParameter& groupParam )
       {
          SetName( groupParam.GetName() );
       }
 
       //////////////////////////////////////////////////////////////////////////
-      dtCore::RefPtr<dtDAL::NamedGroupParameter> BaseControl::GetAsGroupParameter() const
+      dtCore::RefPtr<dtCore::NamedGroupParameter> BaseControl::GetAsGroupParameter() const
       {
-         dtCore::RefPtr<dtDAL::NamedGroupParameter> groupParam
-            = new dtDAL::NamedGroupParameter( GetName() );
+         dtCore::RefPtr<dtCore::NamedGroupParameter> groupParam
+            = new dtCore::NamedGroupParameter( GetName() );
 
          return groupParam;
       }
@@ -264,28 +264,28 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void ContinuousControl::SetByGroupParameter( const dtDAL::NamedGroupParameter& groupParam )
+      void ContinuousControl::SetByGroupParameter( const dtCore::NamedGroupParameter& groupParam )
       {
          // Set the name and any other base members
          BaseControl::SetByGroupParameter( groupParam );
 
          // Set min value
-         const dtDAL::NamedFloatParameter* param
-            = dynamic_cast<const dtDAL::NamedFloatParameter*>
+         const dtCore::NamedFloatParameter* param
+            = dynamic_cast<const dtCore::NamedFloatParameter*>
             (groupParam.GetParameter( PARAM_NAME_VALUE_MIN ));
 
          if( param != NULL )
             mMinValue = param->GetValue();
 
          // Set max value
-         param = dynamic_cast<const dtDAL::NamedFloatParameter*>
+         param = dynamic_cast<const dtCore::NamedFloatParameter*>
             (groupParam.GetParameter( PARAM_NAME_VALUE_MAX ));
 
          if( param != NULL )
             mMaxValue = param->GetValue();
 
          // Set value
-         param = dynamic_cast<const dtDAL::NamedFloatParameter*>
+         param = dynamic_cast<const dtCore::NamedFloatParameter*>
             (groupParam.GetParameter( PARAM_NAME_VALUE ));
 
          if( param != NULL )
@@ -293,27 +293,27 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      dtCore::RefPtr<dtDAL::NamedGroupParameter> ContinuousControl::GetAsGroupParameter() const
+      dtCore::RefPtr<dtCore::NamedGroupParameter> ContinuousControl::GetAsGroupParameter() const
       {
-         dtCore::RefPtr<dtDAL::NamedGroupParameter> groupParam
+         dtCore::RefPtr<dtCore::NamedGroupParameter> groupParam
             = BaseControl::GetAsGroupParameter();
 
          if( ! groupParam.valid() )
             return NULL;
 
          // Set min value
-         dtCore::RefPtr<dtDAL::NamedFloatParameter> paramValue
-            = new dtDAL::NamedFloatParameter( PARAM_NAME_VALUE_MIN );
+         dtCore::RefPtr<dtCore::NamedFloatParameter> paramValue
+            = new dtCore::NamedFloatParameter( PARAM_NAME_VALUE_MIN );
          paramValue->SetValue( mMinValue );
          groupParam->AddParameter( *paramValue );
 
          // Set max value
-         paramValue = new dtDAL::NamedFloatParameter( PARAM_NAME_VALUE_MAX );
+         paramValue = new dtCore::NamedFloatParameter( PARAM_NAME_VALUE_MAX );
          paramValue->SetValue( mMaxValue );
          groupParam->AddParameter( *paramValue );
 
          // Set value
-         paramValue = new dtDAL::NamedFloatParameter( PARAM_NAME_VALUE );
+         paramValue = new dtCore::NamedFloatParameter( PARAM_NAME_VALUE );
          paramValue->SetValue( mValue );
          groupParam->AddParameter( *paramValue );
 
@@ -433,22 +433,22 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void DiscreteControl::SetByGroupParameter( const dtDAL::NamedGroupParameter& groupParam )
+      void DiscreteControl::SetByGroupParameter( const dtCore::NamedGroupParameter& groupParam )
       {
          // Set the name and any other base members
          BaseControl::SetByGroupParameter( groupParam );
 
          // Set total states
-         const dtDAL::NamedUnsignedIntParameter* paramTotalStates
-            = dynamic_cast<const dtDAL::NamedUnsignedIntParameter*>
+         const dtCore::NamedUnsignedIntParameter* paramTotalStates
+            = dynamic_cast<const dtCore::NamedUnsignedIntParameter*>
             (groupParam.GetParameter( PARAM_NAME_TOTAL_STATES ));
 
          if( paramTotalStates != NULL )
             mTotalStates = paramTotalStates->GetValue();
 
          // Set current state
-         const dtDAL::NamedIntParameter* paramCurrentState
-            = dynamic_cast<const dtDAL::NamedIntParameter*>
+         const dtCore::NamedIntParameter* paramCurrentState
+            = dynamic_cast<const dtCore::NamedIntParameter*>
             (groupParam.GetParameter( PARAM_NAME_CURRENT_STATE ));
 
          if( paramCurrentState != NULL )
@@ -456,23 +456,23 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      dtCore::RefPtr<dtDAL::NamedGroupParameter> DiscreteControl::GetAsGroupParameter() const
+      dtCore::RefPtr<dtCore::NamedGroupParameter> DiscreteControl::GetAsGroupParameter() const
       {
-         dtCore::RefPtr<dtDAL::NamedGroupParameter> groupParam
+         dtCore::RefPtr<dtCore::NamedGroupParameter> groupParam
             = BaseControl::GetAsGroupParameter();
 
          if( ! groupParam.valid() )
             return NULL;
 
          // Set total states
-         dtCore::RefPtr<dtDAL::NamedUnsignedIntParameter> paramTotalStates
-            = new dtDAL::NamedUnsignedIntParameter( PARAM_NAME_TOTAL_STATES );
+         dtCore::RefPtr<dtCore::NamedUnsignedIntParameter> paramTotalStates
+            = new dtCore::NamedUnsignedIntParameter( PARAM_NAME_TOTAL_STATES );
          paramTotalStates->SetValue( mTotalStates );
          groupParam->AddParameter( *paramTotalStates );
 
          // Set current state
-         dtCore::RefPtr<dtDAL::NamedIntParameter> paramCurrentState
-            = new dtDAL::NamedIntParameter( PARAM_NAME_CURRENT_STATE );
+         dtCore::RefPtr<dtCore::NamedIntParameter> paramCurrentState
+            = new dtCore::NamedIntParameter( PARAM_NAME_CURRENT_STATE );
          paramCurrentState->SetValue( mCurrentState );
          groupParam->AddParameter( *paramCurrentState );
 
@@ -524,7 +524,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void ControlStateActor::SetEntity( dtDAL::ActorProxy* proxy )
+      void ControlStateActor::SetEntity( dtCore::ActorProxy* proxy )
       {
          Platform* oldEntity = mEntity.get();
 
@@ -713,25 +713,25 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void ControlStateActor::SetDiscreteControlsByGroupParameter( const dtDAL::NamedGroupParameter& groupParam )
+      void ControlStateActor::SetDiscreteControlsByGroupParameter( const dtCore::NamedGroupParameter& groupParam )
       {
          SetMapByGroupParameter( mDiscreteTypes, groupParam );
       }
 
       //////////////////////////////////////////////////////////////////////////
-      dtCore::RefPtr<dtDAL::NamedGroupParameter> ControlStateActor::GetDiscreteControlsAsGroupParameter() const
+      dtCore::RefPtr<dtCore::NamedGroupParameter> ControlStateActor::GetDiscreteControlsAsGroupParameter() const
       {
          return GetMapAsGroupParameter( mDiscreteTypes, PARAM_NAME_ARRAY_DISCRETE_CONTROLS );
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void ControlStateActor::SetContinuousControlsByGroupParameter( const dtDAL::NamedGroupParameter& groupParam )
+      void ControlStateActor::SetContinuousControlsByGroupParameter( const dtCore::NamedGroupParameter& groupParam )
       {
          SetMapByGroupParameter( mContinuousTypes, groupParam );
       }
 
       //////////////////////////////////////////////////////////////////////////
-      dtCore::RefPtr<dtDAL::NamedGroupParameter> ControlStateActor::GetContinuousControlsAsGroupParameter() const
+      dtCore::RefPtr<dtCore::NamedGroupParameter> ControlStateActor::GetContinuousControlsAsGroupParameter() const
       {
          return GetMapAsGroupParameter( mContinuousTypes, PARAM_NAME_ARRAY_CONTINUOUS_CONTROLS );
       }
@@ -785,36 +785,36 @@ namespace SimCore
          ControlStateActor* actor = NULL;
          GetActor(actor);
 
-         AddProperty(new dtDAL::ActorActorProperty( *this, "EntityID", "EntityID",
-            dtDAL::ActorActorProperty::SetFuncType( actor, &ControlStateActor::SetEntity ),
-            dtDAL::ActorActorProperty::GetFuncType( ),
+         AddProperty(new dtCore::ActorActorProperty( *this, "EntityID", "EntityID",
+            dtCore::ActorActorProperty::SetFuncType( actor, &ControlStateActor::SetEntity ),
+            dtCore::ActorActorProperty::GetFuncType( ),
             "SimCore::Actors::Platform",
             "Entity to which the control state points and modifies"));
 
-         AddProperty(new dtDAL::IntActorProperty( "StationType", "StationType",
-            dtDAL::IntActorProperty::SetFuncType( actor, &ControlStateActor::SetStationType ),
-            dtDAL::IntActorProperty::GetFuncType( actor, &ControlStateActor::GetStationType ),
+         AddProperty(new dtCore::IntActorProperty( "StationType", "StationType",
+            dtCore::IntActorProperty::SetFuncType( actor, &ControlStateActor::SetStationType ),
+            dtCore::IntActorProperty::GetFuncType( actor, &ControlStateActor::GetStationType ),
             "Station type of the controls state"));
 
-         AddProperty(new dtDAL::IntActorProperty( "NumDiscreteControls", "NumDiscreteControls",
-            dtDAL::IntActorProperty::SetFuncType( actor, &ControlStateActor::SetNumDiscreteControls ),
-            dtDAL::IntActorProperty::GetFuncType( actor, &ControlStateActor::GetNumDiscreteControls ),
+         AddProperty(new dtCore::IntActorProperty( "NumDiscreteControls", "NumDiscreteControls",
+            dtCore::IntActorProperty::SetFuncType( actor, &ControlStateActor::SetNumDiscreteControls ),
+            dtCore::IntActorProperty::GetFuncType( actor, &ControlStateActor::GetNumDiscreteControls ),
             "The expected number of elements in the discrete controls array"));
 
-         AddProperty(new dtDAL::GroupActorProperty( "DiscreteControlsArray", "DiscreteControlsArray",
-            dtDAL::GroupActorProperty::SetFuncType( actor, &ControlStateActor::SetDiscreteControlsByGroupParameter ),
-            dtDAL::GroupActorProperty::GetFuncType( actor, &ControlStateActor::GetDiscreteControlsAsGroupParameter ),
+         AddProperty(new dtCore::GroupActorProperty( "DiscreteControlsArray", "DiscreteControlsArray",
+            dtCore::GroupActorProperty::SetFuncType( actor, &ControlStateActor::SetDiscreteControlsByGroupParameter ),
+            dtCore::GroupActorProperty::GetFuncType( actor, &ControlStateActor::GetDiscreteControlsAsGroupParameter ),
             "", // Description - unknown use
             "Arrays"));
 
-         AddProperty(new dtDAL::IntActorProperty( "NumContinuousControls", "NumContinuousControls",
-            dtDAL::IntActorProperty::SetFuncType( actor, &ControlStateActor::SetNumContinuousControls ),
-            dtDAL::IntActorProperty::GetFuncType( actor, &ControlStateActor::GetNumContinuousControls ),
+         AddProperty(new dtCore::IntActorProperty( "NumContinuousControls", "NumContinuousControls",
+            dtCore::IntActorProperty::SetFuncType( actor, &ControlStateActor::SetNumContinuousControls ),
+            dtCore::IntActorProperty::GetFuncType( actor, &ControlStateActor::GetNumContinuousControls ),
             "The expected number of elements in the continuous controls array"));
 
-         AddProperty(new dtDAL::GroupActorProperty( "ContinuousControlsArray", "ContinuousControlsArray",
-            dtDAL::GroupActorProperty::SetFuncType( actor, &ControlStateActor::SetContinuousControlsByGroupParameter ),
-            dtDAL::GroupActorProperty::GetFuncType( actor, &ControlStateActor::GetContinuousControlsAsGroupParameter ),
+         AddProperty(new dtCore::GroupActorProperty( "ContinuousControlsArray", "ContinuousControlsArray",
+            dtCore::GroupActorProperty::SetFuncType( actor, &ControlStateActor::SetContinuousControlsByGroupParameter ),
+            dtCore::GroupActorProperty::GetFuncType( actor, &ControlStateActor::GetContinuousControlsAsGroupParameter ),
             "", // Description - unknown use
             "Arrays"));
       }

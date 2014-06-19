@@ -29,7 +29,7 @@ namespace NetDemo
 {
 
    /////////////////////////////////////////////////////////////////////////////
-   dtCore::RefPtr<dtDAL::ObjectType> NetDemoWaypointTypes::CHECKPOINT(new dtDAL::ObjectType("Checkpoint", "NetDemoWaypointTypes"));
+   dtCore::RefPtr<dtCore::ObjectType> NetDemoWaypointTypes::CHECKPOINT(new dtCore::ObjectType("Checkpoint", "NetDemoWaypointTypes"));
 
 
    /////////////////////////////////////////////////////////////////////////////
@@ -66,14 +66,14 @@ namespace NetDemo
    }
 
    /////////////////////////////////////////////////////////////////////////////
-   NetDemoWaypoint::NetDemoWaypoint( const dtDAL::ObjectType* ot )
+   NetDemoWaypoint::NetDemoWaypoint( const dtCore::ObjectType* ot )
       : BaseClass(ot)
    {
 
    }
 
    /////////////////////////////////////////////////////////////////////////////
-   NetDemoWaypoint::NetDemoWaypoint( const dtDAL::ObjectType* ot, const osg::Vec3& pos )
+   NetDemoWaypoint::NetDemoWaypoint( const dtCore::ObjectType* ot, const osg::Vec3& pos )
       : BaseClass(ot)
       , mPosition(pos)
    {
@@ -81,7 +81,7 @@ namespace NetDemo
    }
 
    /////////////////////////////////////////////////////////////////////////////
-   NetDemoWaypoint::NetDemoWaypoint( const dtDAL::ObjectType* ot, const dtUtil::RefString& name )
+   NetDemoWaypoint::NetDemoWaypoint( const dtCore::ObjectType* ot, const dtUtil::RefString& name )
       : BaseClass(ot)
       , mName(name)
    {
@@ -89,7 +89,7 @@ namespace NetDemo
    }
 
    /////////////////////////////////////////////////////////////////////////////
-   NetDemoWaypoint::NetDemoWaypoint( const dtDAL::ObjectType* ot, const osg::Vec3& pos, const dtUtil::RefString& name )
+   NetDemoWaypoint::NetDemoWaypoint( const dtCore::ObjectType* ot, const osg::Vec3& pos, const dtUtil::RefString& name )
       : BaseClass(ot)
       , mName(name)
       , mPosition(pos)

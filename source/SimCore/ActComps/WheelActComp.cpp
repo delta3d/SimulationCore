@@ -244,7 +244,8 @@ namespace SimCore
       {
       }
 
-      const dtGame::ActorComponent::ACType WheelActComp::TYPE("WheelActComp");
+      const dtGame::ActorComponent::ACType WheelActComp::TYPE(new dtCore::ActorType("WheelActComp","ActorComponents",
+            "Wheel finding and managing actor component.", dtGame::ActorComponent::BaseActorComponentType));
 
       /////////////////////////////////////////////////////
       WheelActComp::WheelActComp()
@@ -292,19 +293,19 @@ namespace SimCore
             FindAxles();
          }
 
-         dtGame::GameActor* actor = NULL;
+         dtGame::GameActorProxy* actor = NULL;
          GetOwner(actor);
 
          if (GetAutoUpdateMode() == AutoUpdateModeEnum::LOCAL_AND_REMOTE
-                  || actor->IsRemote() && GetAutoUpdateMode() == AutoUpdateModeEnum::REMOTE_ONLY)
+                  || (actor->IsRemote() && GetAutoUpdateMode() == AutoUpdateModeEnum::REMOTE_ONLY))
          {
-            std::string tickInvokable = "Tick Remote " + GetType().Get();
-            if (actor->GetGameActorProxy().GetInvokable(tickInvokable) == NULL)
+            std::string tickInvokable = "Tick Remote " + GetType()->GetFullName();
+            if (actor->GetInvokable(tickInvokable) == NULL)
             {
-               actor->GetGameActorProxy().AddInvokable(*new dtGame::Invokable(tickInvokable,
+               actor->AddInvokable(*new dtGame::Invokable(tickInvokable,
                   dtUtil::MakeFunctor(&WheelActComp::Update, this)));
             }
-            actor->GetGameActorProxy().RegisterForMessages(dtGame::MessageType::TICK_REMOTE, tickInvokable);
+            actor->RegisterForMessages(dtGame::MessageType::TICK_REMOTE, tickInvokable);
          }
       }
 
@@ -326,16 +327,19 @@ namespace SimCore
          dtCore::RefPtr<dtUtil::NodeCollector> nodeCollectorPtr = nodeCollector;
          if (!nodeCollectorPtr.valid())
          {
-            SimCore::Actors::IGActor* igActor = NULL;
-            GetOwner(igActor);
-            if (igActor != NULL)
+            dtGame::GameActorProxy* actor;
+            GetOwner(actor);
+            SimCore::Actors::IGActor* igDrawable = NULL;
+            if (actor != NULL)
+               actor->GetDrawable(igDrawable);
+            if (igDrawable != NULL)
             {
-               nodeCollectorPtr = igActor->GetNodeCollector();
+               nodeCollectorPtr = igDrawable->GetNodeCollector();
             }
-            else
+            else if (actor != NULL)
             {
                dtCore::DeltaDrawable* dd = NULL;
-               GetOwner(dd);
+               actor->GetDrawable(dd);
                if (dd != NULL)
                {
                   nodeCollectorPtr = new dtUtil::NodeCollector(dd->GetOSGNode(), dtUtil::NodeCollector::AllNodeTypes);
@@ -385,7 +389,7 @@ namespace SimCore
       /////////////////////////////////////////////////////
       void WheelActComp::Update(const dtGame::TickMessage& msg)
       {
-         dtGame::GameActor* actor = NULL;
+         dtGame::GameActorProxy* actor = NULL;
          GetOwner(actor);
 
          if (actor == NULL)
@@ -406,7 +410,9 @@ namespace SimCore
          }
 
          dtCore::Transform xform;
-         actor->GetTransform(xform);
+         dtCore::Transformable* xformable;
+         actor->GetDrawable(xformable);
+         xformable->GetTransform(xform);
          osg::Vec3 fwd;
          osg::Vec3 right;
          xform.GetRow(1, fwd);

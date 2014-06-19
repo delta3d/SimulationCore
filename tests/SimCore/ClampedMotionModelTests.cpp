@@ -37,7 +37,7 @@
 #include <dtGame/gamemanager.h>
 #include <dtGame/basemessages.h>
 
-#include <dtDAL/map.h>
+#include <dtCore/map.h>
 
 #include <SimCore/ClampedMotionModel.h>
 

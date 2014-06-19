@@ -69,8 +69,8 @@ namespace SimCore
    namespace Actors
    {
 
-      EphemerisEnvironmentActor::EphemerisEnvironmentActor(dtGame::GameActorProxy& proxy)
-      : BaseClass(proxy)
+      EphemerisEnvironmentActor::EphemerisEnvironmentActor(dtGame::GameActorProxy& owner)
+      : BaseClass(owner)
       , mEphemerisModel(new osgEphemeris::EphemerisModel())
       , mFogSphere(0)
       , mFogSphereEyePointTransform(new MoveWithEyePointTransform())
@@ -79,6 +79,9 @@ namespace SimCore
          mEphemerisModel->setSkyDomeRadius( 499.0f );
          mEphemerisModel->setSunLightNum(0);
          mEphemerisModel->setMoveWithEyePoint(true);
+
+         osgEphemeris::DateTime osgDT(true);
+         mEphemerisModel->setDateTime(osgDT);
 
          //FogSphere SetUp
          mFogSphere = new osgEphemeris::Sphere( 497.0f,
@@ -249,7 +252,7 @@ namespace SimCore
             ephem->dateTime.setDayOfMonth(dt.GetDay()); // DateTime numbers days from 1 to 31, not 0 to 30
             ephem->dateTime.setHour(dt.GetHour());
             ephem->dateTime.setMinute(dt.GetMinute());
-            ephem->dateTime.setSecond(int(dt.GetSecond()));
+            ephem->dateTime.setSecond(unsigned(dt.GetSecond()));
          }
          else
          {

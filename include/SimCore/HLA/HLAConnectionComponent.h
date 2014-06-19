@@ -284,8 +284,6 @@ namespace SimCore
             std::string mFedFile;
             std::string mRidFile;
             const ConnectionType *mConnectionType; 
-            // The current connection type refers to the last known active connection type
-            const ConnectionType *mCurrentConnectionType; 
             std::string mServerIPAddress;
             std::string mServerPort;
             std::string mServerGameName;

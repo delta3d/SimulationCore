@@ -61,7 +61,7 @@ namespace SimCore
             | osg::CopyOp::DEEP_COPY_UNIFORMS );
 
             /// Constructor
-            IGActor(dtGame::GameActorProxy& proxy);
+            IGActor(dtGame::GameActorProxy& parent);
 
             /**
              * Loads in a model file.  Is now a wrapper that calls LoadFileStatic().

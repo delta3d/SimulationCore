@@ -24,7 +24,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include <prefix/SimCorePrefix.h>
 #include <SimCore/Components/Conversations/Response.h>
-#include <dtDAL/gameevent.h>
+#include <dtCore/gameevent.h>
 #include <dtUtil/stringutils.h>
 
 

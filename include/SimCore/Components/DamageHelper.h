@@ -208,7 +208,6 @@ namespace SimCore
             float mMaxDamageAmount; // Default is 1.0
             DamageType* mLastNotifiedDamageState;
             DamageType* mCurrentDamageState;
-            dtGame::DeadReckoningAlgorithm* mLastDRAlgorithm;
             dtCore::ObserverPtr<MunitionDamageTable> mTable;
             dtCore::ObserverPtr<SimCore::Actors::BaseEntity> mEntity; // the observed entity
             dtCore::RefPtr<DamageProbability> mScratchProbs;

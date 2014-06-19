@@ -30,11 +30,11 @@
 #include <SimCore/Export.h>
 #include <dtCore/deltadrawable.h>
 #include <dtCore/observerptr.h>
-#include <dtDAL/actorproxy.h>
+#include <dtCore/actorproxy.h>
 #include <osg/Group>
 
 
-namespace dtDAL
+namespace dtCore
 {
    class GameEvent;
 }
@@ -44,34 +44,62 @@ namespace SimCore
 {
    namespace Actors
    {
-      class LogicConditionalActorProxy;
+      class LogicConditionalActor;
 
       //////////////////////////////////////////////////////////////////////////
-      // ACTOR CODE - This actor is a bit odd.  By itself, it doesn't do anything
-      // Rather, it is used by a logic actor (such as LogicOnEvent) to perform some 
-      // sort of logic when events occur. It has an event that maps to true & false
-      // as well as a starting/current IsTrue value.
+      // Empty drawable
       //////////////////////////////////////////////////////////////////////////
-      class SIMCORE_EXPORT LogicConditionalActor: public dtCore::DeltaDrawable
+      class SIMCORE_EXPORT LogicConditionalDrawable: public dtCore::DeltaDrawable
       {
          public:
             typedef dtCore::DeltaDrawable BaseClass;
 
-            LogicConditionalActor(const std::string& name);
+            LogicConditionalDrawable(const std::string& name);
 
             virtual osg::Node* GetOSGNode();
             virtual const osg::Node* GetOSGNode() const;
 
-            void SetTrueEvent( dtDAL::GameEvent* gameEvent );
-            dtDAL::GameEvent* GetTrueEvent();
+
+         protected:
+            virtual ~LogicConditionalDrawable();
+
+         private:
+            dtCore::RefPtr<osg::Group> mPlaceholderNode; // Required by delta3d, but we don't need it.
+      };
+
+
+
+      //////////////////////////////////////////////////////////////////////////
+      // ACTOR CODE
+      //////////////////////////////////////////////////////////////////////////
+      class SIMCORE_EXPORT LogicConditionalActor : public dtCore::BaseActorObject
+      {
+         public:
+            static const dtUtil::RefString CLASS_NAME;
+            static const dtUtil::RefString PROPERTY_TRUE_EVENT;
+            static const dtUtil::RefString PROPERTY_FALSE_EVENT;
+            static const dtUtil::RefString PROPERTY_IS_TRUE;
+
+            typedef dtCore::BaseActorObject BaseClass;
+
+            LogicConditionalActor();
+
+            virtual void CreateDrawable();
+
+            virtual void BuildPropertyMap();
+
+            virtual bool IsPlaceable() const { return false; }
+
+            void SetTrueEvent( dtCore::GameEvent* gameEvent );
+            dtCore::GameEvent* GetTrueEvent();
 
             /// The False event can be checked to set it true.
-            void SetFalseEvent( dtDAL::GameEvent* gameEvent );
-            dtDAL::GameEvent* GetFalseEvent();
+            void SetFalseEvent( dtCore::GameEvent* gameEvent );
+            dtCore::GameEvent* GetFalseEvent();
 
-            /* 
-            * When created, IsTrue is a starting condition. Then, it is set 
-            * when the controlling logic actor receives one of the true/false events 
+            /*
+            * When created, IsTrue is a starting condition. Then, it is set
+            * when the controlling logic actor receives one of the true/false events
             */
             void SetIsTrue(bool value) { mIsTrue = value; }
             bool GetIsTrue() const {return mIsTrue; }
@@ -80,46 +108,9 @@ namespace SimCore
             virtual ~LogicConditionalActor();
 
          private:
-            dtCore::RefPtr<osg::Group> mPlaceholderNode; // Required by Delta3D, but we don't need it.
-            dtCore::ObserverPtr<dtDAL::GameEvent> mTrueEvent;
-            dtCore::ObserverPtr<dtDAL::GameEvent> mFalseEvent;
+            dtCore::ObserverPtr<dtCore::GameEvent> mTrueEvent;
+            dtCore::ObserverPtr<dtCore::GameEvent> mFalseEvent;
             bool mIsTrue;
-      };
-
-
-
-      //////////////////////////////////////////////////////////////////////////
-      // PROXY CODE
-      //////////////////////////////////////////////////////////////////////////
-      class SIMCORE_EXPORT LogicConditionalActorProxy : public dtDAL::ActorProxy
-      {
-         public:
-            static const dtUtil::RefString CLASS_NAME;
-            static const dtUtil::RefString PROPERTY_TRUE_EVENT;
-            static const dtUtil::RefString PROPERTY_FALSE_EVENT;
-            static const dtUtil::RefString PROPERTY_IS_TRUE;
-
-            typedef dtDAL::ActorProxy BaseClass;
-
-            LogicConditionalActorProxy();
-
-            virtual void CreateActor();
-
-            virtual void BuildPropertyMap();
-
-            virtual bool IsPlaceable() const { return false; }
-
-            /// Returns a useful reference to our actor. If no actor is created yet, this will likely crash.
-            LogicConditionalActor &GetActorAsConditional()
-            {
-               return *(static_cast<LogicConditionalActor*>(GetDrawable()));
-            }
-
-
-         protected:
-            virtual ~LogicConditionalActorProxy();
-
-         private:
       };
 
    }

@@ -100,7 +100,6 @@ namespace SimCore
 
             osg::observer_ptr<osg::Geode>    mGeodePTR;
             bool                             mFilledBL;
-            bool                             mFlagsChanged;
             char                             mFlags;
             char                             mLastFlags;
             dtCore::UniqueId                 mUniqueID;
@@ -113,7 +112,7 @@ namespace SimCore
          public:
             static const std::string DEFAULT_NAME;
             /// Constructor
-            PagedTerrainPhysicsActor(dtGame::GameActorProxy& proxy);
+            PagedTerrainPhysicsActor(dtGame::GameActorProxy& parent);
 
          protected:
             /// Destructor

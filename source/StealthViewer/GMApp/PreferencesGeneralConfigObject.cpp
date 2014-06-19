@@ -86,7 +86,7 @@ namespace StealthGM
       if (GetShouldAutoAttachToEntity() && !IsStealthActorCurrentlyAttached()
                && !GetAutoAttachEntityCallsign().empty())
       {
-         dtDAL::ActorProxy* proxy = NULL;
+         dtCore::ActorProxy* proxy = NULL;
          gameManager.FindActorByName(GetAutoAttachEntityCallsign(), proxy);
          if (proxy != NULL)
          {

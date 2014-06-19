@@ -43,7 +43,7 @@ namespace dtUtil
    class Log;
 }
 
-namespace dtDAL
+namespace dtCore
 {
    class DataType;
    class NamedGroupParameter;
@@ -111,37 +111,37 @@ namespace SimCore
                const dtHLAGM::AttributeType& type,
                char* buffer,
                size_t& maxSize,
-               const dtDAL::NamedGroupParameter& parameter ) const;
+               const dtCore::NamedGroupParameter& parameter ) const;
 
             void MapToGroupParamFromControlArray(
                const dtHLAGM::AttributeType& type,
                const char* buffer,
                const size_t size,
-               dtDAL::NamedGroupParameter& parameter ) const;
+               dtCore::NamedGroupParameter& parameter ) const;
 
             void MapToParamFromVec3(
                const char* buffer,
                const size_t size,
                dtGame::MessageParameter& parameter,
-               const dtDAL::DataType& parameterDataType ) const;
+               const dtCore::DataType& parameterDataType ) const;
 
             void MapFromParamToVec3(
                char* buffer,
                const size_t maxSize,
                const dtGame::MessageParameter& parameter,
-               const dtDAL::DataType& parameterDataType) const;
+               const dtCore::DataType& parameterDataType) const;
 
             void MapToParamFromTime(
                const char* buffer,
                const size_t size,
                dtGame::MessageParameter& parameter,
-               const dtDAL::DataType& parameterDataType ) const;
+               const dtCore::DataType& parameterDataType ) const;
 
             void MapFromParamToTime(
                char* buffer,
                size_t& maxSize,
                const dtGame::MessageParameter& parameter,
-               const dtDAL::DataType& parameterDataType) const;
+               const dtCore::DataType& parameterDataType) const;
 
             void MapToParamFromFloatArray2D(
                const char* buffer,

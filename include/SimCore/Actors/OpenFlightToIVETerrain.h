@@ -36,7 +36,7 @@ namespace SimCore
       public:
 
          /// Constructor
-         OpenFlightToIVETerrainActor(dtGame::GameActorProxy& proxy);
+         OpenFlightToIVETerrainActor(dtGame::GameActorProxy& parent);
 
          /**
          * Loads a mesh file which contains terrain using the configured base name and directory.

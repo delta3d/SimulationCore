@@ -29,8 +29,8 @@
 #include <osgSim/DOFTransform>
 #include <dtCore/uniqueid.h>
 #include <dtUtil/nodecollector.h>
-#include <dtDAL/actorproxy.h>
-#include <dtDAL/project.h>
+#include <dtCore/actorproxy.h>
+#include <dtCore/project.h>
 #include <dtGame/actorupdatemessage.h>
 #include <dtGame/basemessages.h>
 #include <dtGame/deadreckoninghelper.h>
@@ -139,7 +139,7 @@ namespace SimCore
          if( GetGameManager() != NULL )
          {
             // Get the associated vehicle.
-            dtDAL::ActorProxy* proxy = GetGameManager()->FindActorById( controlState.GetEntityID() );
+            dtCore::ActorProxy* proxy = GetGameManager()->FindActorById( controlState.GetEntityID() );
             if( proxy != NULL )
             {
                return dynamic_cast<SimCore::Actors::Platform*>(proxy->GetDrawable());
@@ -156,7 +156,7 @@ namespace SimCore
 
          if( gm != NULL )
          {
-            dtDAL::ActorProxy* proxy = gm->FindActorById( actorID );
+            dtCore::ActorProxy* proxy = gm->FindActorById( actorID );
 
             if( proxy != NULL
                && proxy->GetActorType() == *SimCore::Actors::EntityActorRegistry::CONTROL_STATE_ACTOR_TYPE )
@@ -176,7 +176,7 @@ namespace SimCore
 
          if( gm != NULL )
          {
-            const dtDAL::ActorProxy* proxy = gm->FindActorById( actorID );
+            const dtCore::ActorProxy* proxy = gm->FindActorById( actorID );
 
             if( proxy != NULL
                && proxy->GetActorType() == *SimCore::Actors::EntityActorRegistry::CONTROL_STATE_ACTOR_TYPE )
@@ -304,7 +304,7 @@ namespace SimCore
                      {
                         ControlStateInfo* vehicleControlInfo = GetRemoteVehicleControlStateInfo( vehicleID );
 
-                        dtDAL::ActorProxy* proxy = GetGameManager()->FindActorById(vehicleID);
+                        dtCore::ActorProxy* proxy = GetGameManager()->FindActorById(vehicleID);
                         SimCore::Actors::Platform* vehicle = proxy != NULL
                            ? dynamic_cast<SimCore::Actors::Platform*>(proxy->GetDrawable()) : NULL;
 
@@ -329,7 +329,7 @@ namespace SimCore
                      }
                      if( info->mGunnerModel.valid() && ! info->mGunnerModelAttached )
                      {
-                        dtDAL::ActorProxy* proxy = GetGameManager()->FindActorById(vehicleID);
+                        dtCore::ActorProxy* proxy = GetGameManager()->FindActorById(vehicleID);
                         SimCore::Actors::Platform* vehicle = proxy != NULL
                            ? dynamic_cast<SimCore::Actors::Platform*>(proxy->GetDrawable()) : NULL;
 
@@ -407,7 +407,7 @@ namespace SimCore
 
          // Capture all control states so that they can be searched to find the ones
          // referencing the specified vehicle.
-         std::vector<dtDAL::ActorProxy*> controlStates;
+         std::vector<dtCore::ActorProxy*> controlStates;
          GetGameManager()->FindActorsByType( *SimCore::Actors::EntityActorRegistry::CONTROL_STATE_ACTOR_TYPE, controlStates );
 
          // Iterate through all the control states to find the ones referencing the vehicle.
@@ -536,19 +536,19 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////
-      const std::vector<dtDAL::ResourceDescriptor>& ControlStateComponent::GetWeaponModelResourceList() const
+      const std::vector<dtCore::ResourceDescriptor>& ControlStateComponent::GetWeaponModelResourceList() const
       {
          return mWeaponModelFileList;
       }
 
       ////////////////////////////////////////////////////////////////////////////////
-      void ControlStateComponent::SetWeaponModelResourceList(const std::vector<dtDAL::ResourceDescriptor>& newList)
+      void ControlStateComponent::SetWeaponModelResourceList(const std::vector<dtCore::ResourceDescriptor>& newList)
       {
          mWeaponModelFileList = newList;
       }
 
       ////////////////////////////////////////////////////////////////////////////////
-      const dtDAL::ResourceDescriptor& ControlStateComponent::GetWeaponModelResource( unsigned weaponIndex )
+      const dtCore::ResourceDescriptor& ControlStateComponent::GetWeaponModelResource( unsigned weaponIndex )
       {
          if( ! mWeaponModelFileList.empty() && mWeaponModelFileList.size() > weaponIndex )
          {
@@ -557,7 +557,7 @@ namespace SimCore
             //   << "\n\tchangeToWeapon(" << weaponIndex << ")" << std::endl;
             return mWeaponModelFileList[weaponIndex];
          }
-         return dtDAL::ResourceDescriptor::NULL_RESOURCE;
+         return dtCore::ResourceDescriptor::NULL_RESOURCE;
       }
 
       ////////////////////////////////////////////////////////////////////////////////
@@ -701,11 +701,11 @@ namespace SimCore
             }
 
             // Attempt attachment of a new weapon model.
-            dtDAL::ResourceDescriptor weaponResource = GetWeaponModelResource( controlStateInfo.mWeaponSelected );
+            dtCore::ResourceDescriptor weaponResource = GetWeaponModelResource( controlStateInfo.mWeaponSelected );
             bool isModelLoaded = false;
-            if (weaponResource != dtDAL::ResourceDescriptor::NULL_RESOURCE)
+            if (weaponResource != dtCore::ResourceDescriptor::NULL_RESOURCE)
             {
-               const std::string& weaponFileName = dtDAL::Project::GetInstance().GetResourcePath(weaponResource);
+               const std::string& weaponFileName = dtCore::Project::GetInstance().GetResourcePath(weaponResource);
                dtCore::RefPtr<osg::Node> cachedModel;
 
                isModelLoaded

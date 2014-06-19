@@ -38,10 +38,10 @@
 #include <dtCore/camera.h>
 #include <dtCore/system.h>
 #include <dtUtil/nodecollector.h>
-#include <dtDAL/enginepropertytypes.h>
+#include <dtCore/enginepropertytypes.h>
 #include <dtUtil/log.h>
 #include <dtUtil/stringutils.h>
-#include <dtDAL/project.h>
+#include <dtCore/project.h>
 
 #include <osg/Drawable>
 #include <osg/Matrix>
@@ -61,8 +61,8 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////
       // Actor code
       ////////////////////////////////////////////////////////////////////////
-      IGEnvironmentActor::IGEnvironmentActor(dtGame::GameActorProxy& proxy)
-         : BaseClass(proxy)
+      IGEnvironmentActor::IGEnvironmentActor(dtGame::GameActorProxy& owner)
+         : BaseClass(owner)
          , mEnableCloudPlane(true)
          , mEnableLensFlare(false)
          , mInitSystemClock(false)
@@ -141,7 +141,7 @@ namespace SimCore
          bool loaded;
          // Look up the cloud texture from the map so we have the right path. Using ./projectassets doesn't work in all cases depending on path
          std::string cloudTextureResource("Textures:CloudTexture" + dtUtil::ToString(cloudNumber) + ".dds");
-         std::string texturePath = dtDAL::Project::GetInstance().GetResourcePath(dtDAL::ResourceDescriptor(cloudTextureResource));
+         std::string texturePath = dtCore::Project::GetInstance().GetResourcePath(dtCore::ResourceDescriptor(cloudTextureResource));
          if (texturePath.empty())
          {
             LOG_ERROR("The Cloud File Texture [" + texturePath + "] Could Not be Found");
@@ -532,24 +532,24 @@ namespace SimCore
 
          IGEnvironmentActor* env = static_cast<IGEnvironmentActor*>(GetDrawable());
 
-         AddProperty(new dtDAL::BooleanActorProperty("Enable Fog", "Enable Fog",
-            dtDAL::BooleanActorProperty::SetFuncType(env, &IGEnvironmentActor::SetFogEnabled),
-            dtDAL::BooleanActorProperty::GetFuncType(env, &IGEnvironmentActor::IsFogEnabled),
+         AddProperty(new dtCore::BooleanActorProperty("Enable Fog", "Enable Fog",
+            dtCore::BooleanActorProperty::SetFuncType(env, &IGEnvironmentActor::SetFogEnabled),
+            dtCore::BooleanActorProperty::GetFuncType(env, &IGEnvironmentActor::IsFogEnabled),
             "Toggles fog on and off"));
 
-         AddProperty(new dtDAL::BooleanActorProperty("Init System Clock", "Set the system clock to this time and date on startup",
-            dtDAL::BooleanActorProperty::SetFuncType(env, &IGEnvironmentActor::SetInitializeSystemClock),
-            dtDAL::BooleanActorProperty::GetFuncType(env, &IGEnvironmentActor::GetInitializeSystemClock),
+         AddProperty(new dtCore::BooleanActorProperty("Init System Clock", "Set the system clock to this time and date on startup",
+            dtCore::BooleanActorProperty::SetFuncType(env, &IGEnvironmentActor::SetInitializeSystemClock),
+            dtCore::BooleanActorProperty::GetFuncType(env, &IGEnvironmentActor::GetInitializeSystemClock),
             "Set the system clock to this time and date on startup"));
 
-         AddProperty(new dtDAL::StringActorProperty("Time and Date", "Time and Date",
-            dtDAL::StringActorProperty::SetFuncType(env, &IGEnvironmentActor::SetTimeAndDateString),
-            dtDAL::StringActorProperty::GetFuncType(env, &IGEnvironmentActor::GetTimeAndDateString),
+         AddProperty(new dtCore::StringActorProperty("Time and Date", "Time and Date",
+            dtCore::StringActorProperty::SetFuncType(env, &IGEnvironmentActor::SetTimeAndDateString),
+            dtCore::StringActorProperty::GetFuncType(env, &IGEnvironmentActor::GetTimeAndDateString),
             "Sets the time and date of the application. This string must be in the following UTC format: yyyy-mm-ddThh:mm:ss"));
 
-         AddProperty(new dtDAL::Vec3ActorProperty("Wind", "Wind",
-            dtDAL::Vec3ActorProperty::SetFuncType(env, &IGEnvironmentActor::SetWind),
-            dtDAL::Vec3ActorProperty::GetFuncType(env, &IGEnvironmentActor::GetWind),
+         AddProperty(new dtCore::Vec3ActorProperty("Wind", "Wind",
+            dtCore::Vec3ActorProperty::SetFuncType(env, &IGEnvironmentActor::SetWind),
+            dtCore::Vec3ActorProperty::GetFuncType(env, &IGEnvironmentActor::GetWind),
             "Sets the force of wind, measured in meters per second"));
       }
 

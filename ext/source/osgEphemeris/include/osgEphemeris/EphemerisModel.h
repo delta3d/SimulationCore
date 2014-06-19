@@ -1,3 +1,4 @@
+#include <assert.h>
 /*
  -------------------------------------------------------------------------------
  | osgEphemeris - Copyright (C) 2007  Don Burns                                |
@@ -127,7 +128,7 @@ class OSGEPHEMERIS_EXPORT EphemerisModel : public osg::Group
                 SKY_DOME
                 GROUND_PLANE
                 MOON
-                PLANTES
+                PLANETS
                 STAR_FIELD
            
                ALL_MEMBERS combines all of the above.
@@ -338,6 +339,12 @@ class OSGEPHEMERIS_EXPORT EphemerisModel : public osg::Group
           */
         const EphemerisUpdateCallback *getEphemerisUpdateCallback() const;
 
+        void setSkyDomeUseSouthernHemisphere( bool flag ) { _skyDomeUseSouthernHemisphere = flag; }
+        bool getSkyDomeUseSouthernHemisphere() { return _skyDomeUseSouthernHemisphere; }
+
+        void setSkyDomeMirrorSouthernHemisphere( bool flag ) { _skyDomeMirrorSouthernHemisphere = flag; }
+        bool getSkyDomeMirrorSouthernHemisphere() { return _skyDomeMirrorSouthernHemisphere; }
+
         /**
           Return a pointer to the GroundPlane
         */
@@ -346,17 +353,42 @@ class OSGEPHEMERIS_EXPORT EphemerisModel : public osg::Group
         /**
           * Effect an update.  Used internally by the internal UpdateCallback
           */
-        void update();
+        virtual void update();
 
         /**
           Used internally
           */
         virtual void traverse(osg::NodeVisitor&nv);
 
-    private:
+        /**
+          * User requirement to provide a "fudge" factor to the size of the sun -
+          * correct size is 0.53 degrees of visual field of view, but user often
+          * want to exaggerate this.  You may set a scale factor for the sun here
+          */
+        void setSunFudgeScale( double scale ); 
+        void setMoonFudgeScale( double scale );
+
+
+    protected:
 
         bool _inited;
         bool _init();
+
+        // Override one or many of these methods to customize how the 
+        // EphemerisModel creates its various members. A derived class could
+        // for example create an instance of a derived SkyDome class in 
+        // createSkyDome() instead of the osgEphemeris version. The overridden
+        // methods should only create the objects, assigning them to the 
+        // appropriate member variable below, and set it up appropriately. The
+        // _init() method will then add them as child of the EphemerisModel.
+        virtual void _createSunLightSource();
+        virtual void _createMoonLightSource();
+        virtual void _createSkyDome();
+        virtual void _createGroundPlane();
+        virtual void _createMoon();
+        virtual void _createPlanets();
+        virtual void _createStarField();
+
         /**
           Connect clipped or unclipped geometry, depending on if reflections are needed
           */
@@ -367,6 +399,8 @@ class OSGEPHEMERIS_EXPORT EphemerisModel : public osg::Group
         bool _autoDateTime;
         unsigned int _sunLightNum;
         unsigned int _moonLightNum;
+        bool _skyDomeUseSouthernHemisphere;
+        bool _skyDomeMirrorSouthernHemisphere;
 
         class UpdateCallback  : public osg::NodeCallback
         {
@@ -380,7 +414,7 @@ class OSGEPHEMERIS_EXPORT EphemerisModel : public osg::Group
                     traverse(node,nv);
                 }
 
-            private:
+            protected:
                 EphemerisModel &_ephemerisModel;
         };
 
@@ -408,7 +442,7 @@ class OSGEPHEMERIS_EXPORT EphemerisModel : public osg::Group
                     }
                     return true;
                 }
-            private:
+            protected:
                 bool _enabled;
                 osg::Vec3 _center;
         };
@@ -445,6 +479,9 @@ class OSGEPHEMERIS_EXPORT EphemerisModel : public osg::Group
         osg::ref_ptr<EphemerisEngine> _ephemerisEngine;
 
         osg::ref_ptr<EphemerisUpdateCallback> _ephemerisUpdateCallback;
+
+        double _sunFudgeScale;
+        double _moonFudgeScale;
 
 };
 

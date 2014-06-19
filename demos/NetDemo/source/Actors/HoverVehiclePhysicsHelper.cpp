@@ -15,7 +15,7 @@
 //#include <NxAgeiaRaycastReport.h>
 #include <osg/MatrixTransform>
 #include <dtGame/gameactor.h>
-#include <dtDAL/enginepropertytypes.h>
+#include <dtCore/enginepropertytypes.h>
 #include <dtUtil/mathdefines.h>
 #include <dtUtil/matrixutil.h>
 #include <SimCore/CollisionGroupEnum.h>
@@ -105,10 +105,10 @@ namespace NetDemo
       physicsObject->ApplyImpulse(dir * upForce * deltaTime);
 
       // Get the forward vector and the perpendicular side (right) vector.
-      dtGame::GameActor* actor = NULL;
+      dtGame::GameActorProxy* actor = NULL;
       GetOwner( actor );
       osg::Matrix matrix;
-      dtCore::Transformable::GetAbsoluteMatrix( actor->GetOSGNode(), matrix);
+      dtCore::Transformable::GetAbsoluteMatrix( actor->GetDrawable()->GetOSGNode(), matrix);
       osg::Vec3 lookDir = dtUtil::MatrixUtil::GetRow3(matrix, 1);
       osg::Vec3 rightDir = dtUtil::MatrixUtil::GetRow3(matrix, 0);
       lookDir[2] = 0.0f; // remove Z component so we don't fly...
@@ -226,24 +226,24 @@ namespace NetDemo
 
       static const dtUtil::RefString VEHICLEGROUP = "Vehicle Physics";
 
-      AddProperty(new dtDAL::FloatActorProperty("Max Forward MPH", "Max Forward MPH",
-         dtDAL::FloatActorProperty::SetFuncType(this, &HoverVehiclePhysicsActComp::SetVehicleMaxForwardMPH),
-         dtDAL::FloatActorProperty::GetFuncType(this, &HoverVehiclePhysicsActComp::GetVehicleMaxForwardMPH),
+      AddProperty(new dtCore::FloatActorProperty("Max Forward MPH", "Max Forward MPH",
+         dtCore::FloatActorProperty::SetFuncType(this, &HoverVehiclePhysicsActComp::SetVehicleMaxForwardMPH),
+         dtCore::FloatActorProperty::GetFuncType(this, &HoverVehiclePhysicsActComp::GetVehicleMaxForwardMPH),
          "The theoretical max speed this vehicle can go (using forward thrust) in any direction under normal conditions.", VEHICLEGROUP));
 
-      AddProperty(new dtDAL::FloatActorProperty("Max Strafe Or ReverseMPH", "Max Strafe Or ReverseMPH",
-         dtDAL::FloatActorProperty::SetFuncType(this, &HoverVehiclePhysicsActComp::SetVehicleMaxStrafeMPH),
-         dtDAL::FloatActorProperty::GetFuncType(this, &HoverVehiclePhysicsActComp::GetVehicleMaxStrafeMPH),
+      AddProperty(new dtCore::FloatActorProperty("Max Strafe Or ReverseMPH", "Max Strafe Or ReverseMPH",
+         dtCore::FloatActorProperty::SetFuncType(this, &HoverVehiclePhysicsActComp::SetVehicleMaxStrafeMPH),
+         dtCore::FloatActorProperty::GetFuncType(this, &HoverVehiclePhysicsActComp::GetVehicleMaxStrafeMPH),
          "The theoretical max speed this vehicle would go using just reverse or strafe thrust under normal conditions.", VEHICLEGROUP));
 
-      AddProperty(new dtDAL::FloatActorProperty("Ground Clearance", "Ground Clearance",
-         dtDAL::FloatActorProperty::SetFuncType(this, &HoverVehiclePhysicsActComp::SetGroundClearance),
-         dtDAL::FloatActorProperty::GetFuncType(this, &HoverVehiclePhysicsActComp::GetGroundClearance),
+      AddProperty(new dtCore::FloatActorProperty("Ground Clearance", "Ground Clearance",
+         dtCore::FloatActorProperty::SetFuncType(this, &HoverVehiclePhysicsActComp::SetGroundClearance),
+         dtCore::FloatActorProperty::GetFuncType(this, &HoverVehiclePhysicsActComp::GetGroundClearance),
          "The height we should try to leave beneath our vehicle (cause we hover...).", VEHICLEGROUP));
 
-      AddProperty(new dtDAL::FloatActorProperty("ForceBoostFactor", "Force Boost Factor",
-         dtDAL::FloatActorProperty::SetFuncType(this, &HoverVehiclePhysicsActComp::SetForceBoostFactor),
-         dtDAL::FloatActorProperty::GetFuncType(this, &HoverVehiclePhysicsActComp::GetForceBoostFactor),
+      AddProperty(new dtCore::FloatActorProperty("ForceBoostFactor", "Force Boost Factor",
+         dtCore::FloatActorProperty::SetFuncType(this, &HoverVehiclePhysicsActComp::SetForceBoostFactor),
+         dtCore::FloatActorProperty::GetFuncType(this, &HoverVehiclePhysicsActComp::GetForceBoostFactor),
          "Multiplied times the max speeds to determine force to apply (ex. 0.25).", VEHICLEGROUP));
 
    }

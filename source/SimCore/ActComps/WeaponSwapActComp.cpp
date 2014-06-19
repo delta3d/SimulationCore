@@ -24,8 +24,8 @@
 #include <prefix/SimCorePrefix.h>
 #include <SimCore/ActComps/WeaponSwapActComp.h>
 #include <dtUtil/nodecollector.h>
-#include <dtDAL/propertymacros.h>
-#include <dtDAL/project.h>
+#include <dtCore/propertymacros.h>
+#include <dtCore/project.h>
 
 #include <osgSim/DOFTransform>
 #include <SimCore/Actors/IGActor.h>
@@ -37,7 +37,8 @@ namespace SimCore
 
    namespace ActComps
    {
-      const dtGame::ActorComponent::ACType WeaponSwapActComp::TYPE("WeaponSwapActComp");
+      const dtGame::ActorComponent::ACType WeaponSwapActComp::TYPE(new dtCore::ActorType("WeaponSwapActComp","ActorComponents",
+            "Swaps the weopon geometry on a drawable.", dtGame::ActorComponent::BaseActorComponentType));
 
       //////////////////////////////////////////////////////////////////////////
       WeaponSwapActComp::WeaponSwapActComp()
@@ -64,7 +65,7 @@ namespace SimCore
       DT_IMPLEMENT_ACCESSOR_GETTER(WeaponSwapActComp, std::string, WeaponName);
       DT_IMPLEMENT_ACCESSOR_GETTER(WeaponSwapActComp, std::string, WeaponSwapRootNode);
       DT_IMPLEMENT_ACCESSOR_GETTER(WeaponSwapActComp, std::string, WeaponHotSpotDOF);
-      DT_IMPLEMENT_ACCESSOR_GETTER(WeaponSwapActComp, dtDAL::ResourceDescriptor, WeaponSwapMesh);
+      DT_IMPLEMENT_ACCESSOR_GETTER(WeaponSwapActComp, dtCore::ResourceDescriptor, WeaponSwapMesh);
 
       //////////////////////////////////////////////////////////////////////////
       void WeaponSwapActComp::SetWeaponName(const std::string& name)
@@ -79,7 +80,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void WeaponSwapActComp::SetWeaponSwapMesh(const dtDAL::ResourceDescriptor& rd)
+      void WeaponSwapActComp::SetWeaponSwapMesh(const dtCore::ResourceDescriptor& rd)
       {
          mWeaponSwapMesh = rd;
       }
@@ -106,7 +107,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void WeaponSwapActComp::BuildPropertyMap()
       {
-         typedef dtDAL::PropertyRegHelper<WeaponSwapActComp&, WeaponSwapActComp> PropRegType;
+         typedef dtCore::PropertyRegHelper<WeaponSwapActComp&, WeaponSwapActComp> PropRegType;
          PropRegType propRegHelper(*this, this, "WeaponSwap");
 
          DT_REGISTER_PROPERTY(
@@ -125,7 +126,7 @@ namespace SimCore
             PropRegType, propRegHelper);
 
 
-         DT_REGISTER_RESOURCE_PROPERTY(dtDAL::DataType::STATIC_MESH,
+         DT_REGISTER_RESOURCE_PROPERTY(dtCore::DataType::STATIC_MESH,
             WeaponSwapMesh,
             "Weapon Swap Mesh",
             "The weapon mesh resource to use instead of the one in the model.",
@@ -138,12 +139,12 @@ namespace SimCore
          BaseClass::OnEnteredWorld();
          if (!mNodeCollector.valid())
          {
-            dtGame::GameActor* owner = NULL;
+            dtGame::GameActorProxy* owner = NULL;
             GetOwner(owner);
-            SetNodeCollector(new dtUtil::NodeCollector(owner->GetOSGNode(), dtUtil::NodeCollector::AllNodeTypes));
+            SetNodeCollector(new dtUtil::NodeCollector(owner->GetDrawable()->GetOSGNode(), dtUtil::NodeCollector::AllNodeTypes));
          }
 
-         if (mWeaponSwapMesh != dtDAL::ResourceDescriptor::NULL_RESOURCE)
+         if (mWeaponSwapMesh != dtCore::ResourceDescriptor::NULL_RESOURCE)
          {
             //we will configure a default weapon to use if the resource   
             bool weaponAdded = AddWeapon(mWeaponName, mWeaponHotSpotDOF, mWeaponSwapMesh);
@@ -177,7 +178,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void WeaponSwapActComp::SwapWeapon()
       {
-         dtGame::GameActor* owner = NULL;
+         dtGame::GameActorProxy* owner = NULL;
          GetOwner(owner);
          if (owner != NULL)
          {
@@ -251,14 +252,14 @@ namespace SimCore
          }
       }  
 
-      bool WeaponSwapActComp::AddWeapon(const std::string weaponName, const std::string& weaponHotspotName, const dtDAL::ResourceDescriptor& meshToLoad)
+      bool WeaponSwapActComp::AddWeapon(const std::string weaponName, const std::string& weaponHotspotName, const dtCore::ResourceDescriptor& meshToLoad)
       {
          bool isModelLoaded = false;
          dtCore::RefPtr<osg::Node> newModel;
 
-         if (meshToLoad != dtDAL::ResourceDescriptor::NULL_RESOURCE)
+         if (meshToLoad != dtCore::ResourceDescriptor::NULL_RESOURCE)
          {
-            const std::string& weaponFileName = dtDAL::Project::GetInstance().GetResourcePath(meshToLoad);
+            const std::string& weaponFileName = dtCore::Project::GetInstance().GetResourcePath(meshToLoad);
 
             isModelLoaded = SimCore::Actors::IGActor::LoadFileStatic(weaponFileName, newModel, newModel, false);
 

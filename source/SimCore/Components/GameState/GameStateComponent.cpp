@@ -29,7 +29,7 @@
 #include <SimCore/Components/GameState/GameStateComponent.h>
 #include <SimCore/Components/GameState/TransitionXMLHandler.h>
 #include <dtABC/application.h>
-#include <dtDAL/project.h>
+#include <dtCore/project.h>
 #include <dtGame/basemessages.h>
 #include <dtUtil/fileutils.h>
 

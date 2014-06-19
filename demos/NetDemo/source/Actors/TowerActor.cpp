@@ -18,7 +18,7 @@
 #include <dtPhysics/physicsobject.h>
 //#include <NxAgeiaWorldComponent.h>
 //#include <NxAgeiaRaycastReport.h>
-#include <dtDAL/enginepropertytypes.h>
+#include <dtCore/enginepropertytypes.h>
 #include <dtABC/application.h>
 #include <dtAudio/audiomanager.h>
 #include <dtAudio/sound.h>
@@ -186,7 +186,7 @@ namespace NetDemo
 
       wd->SetWeaponPrototypeName("Weapon_MachineGun");
       wd->SetShooterPrototypeName("Particle_System_Weapon_GunWithTracer");
-      wd->SetFiringParticleSystem(dtDAL::ResourceDescriptor("Particles:weapon_gun_flash.osg"));
+      wd->SetFiringParticleSystem(dtCore::ResourceDescriptor("Particles:weapon_gun_flash.osg"));
       wd->SetWeaponSwapRootNode("dof_gun_01");
 
       dtCore::RefPtr<SimCore::Actors::WeaponActor> weapon;
@@ -233,7 +233,7 @@ namespace NetDemo
       float minDist = 250.0;
       dtCore::Transformable* enemy = NULL;
 
-      std::vector<dtDAL::ActorProxy*> actorArray;
+      std::vector<dtCore::ActorProxy*> actorArray;
       GetGameActorProxy().GetGameManager()->FindActorsByType(*NetDemoActorRegistry::ENEMY_MINE_ACTOR_TYPE, actorArray);
       //GetGameActorProxy().GetGameManager()->FindActorsByType(*NetDemoActorRegistry::ENEMY_HELIX_ACTOR_TYPE, actorArray);
 

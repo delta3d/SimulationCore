@@ -28,7 +28,7 @@
 #ifdef None
 #undef None
 #endif
-#include <CEGUI.h>
+#include <CEGUI/CEGUI.h>
 
 
 
@@ -71,14 +71,14 @@ namespace NetDemo
          mListPlayers->resetList();
 
          // Capture all the player status objects.
-         typedef std::vector<dtDAL::ActorProxy*> ProxyArray;
+         typedef std::vector<dtCore::ActorProxy*> ProxyArray;
          ProxyArray proxies;
          mGM->FindActorsByType(*NetDemo::NetDemoActorRegistry::PLAYER_STATUS_ACTOR_TYPE, proxies);
 
          // Create list items for each of the player status objects.
          CEGUI::String checkboxSuffix("_ReadyBox");
          PlayerStatusActor* curPlayerStats = NULL;
-         dtDAL::ActorProxy* curProxy = NULL;
+         dtCore::ActorProxy* curProxy = NULL;
          ProxyArray::iterator proxyIter = proxies.begin();
          ProxyArray::iterator endProxyArray = proxies.end();
          for( ; proxyIter != endProxyArray; ++proxyIter)

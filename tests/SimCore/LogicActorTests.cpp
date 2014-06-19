@@ -130,28 +130,26 @@ void LogicActorTests::tearDown()
 ///////////////////////////////////////////////////////////////////////
 void LogicActorTests::TestConditionalActor()
 {
-   dtCore::RefPtr<SimCore::Actors::LogicConditionalActorProxy> lcap;
-   mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::LOGIC_CONDITIONAL_ACTOR_TYPE, lcap);
-   CPPUNIT_ASSERT(lcap.valid());
+   dtCore::RefPtr<SimCore::Actors::LogicConditionalActor> lcapActor;
+   mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::LOGIC_CONDITIONAL_ACTOR_TYPE, lcapActor);
+   CPPUNIT_ASSERT(lcapActor.valid());
 
-   SimCore::Actors::LogicConditionalActor& lcapActor = 
-      static_cast<SimCore::Actors::LogicConditionalActor&>(*lcap->GetDrawable());
-   CPPUNIT_ASSERT_MESSAGE("Default condition should be false", !lcapActor.GetIsTrue());
-   CPPUNIT_ASSERT_MESSAGE("Default true event should be NULL", lcapActor.GetTrueEvent() == NULL);
-   CPPUNIT_ASSERT_MESSAGE("Default false event should be NULL", lcapActor.GetFalseEvent() == NULL);
+   CPPUNIT_ASSERT_MESSAGE("Default condition should be false", !lcapActor->GetIsTrue());
+   CPPUNIT_ASSERT_MESSAGE("Default true event should be NULL", lcapActor->GetTrueEvent() == NULL);
+   CPPUNIT_ASSERT_MESSAGE("Default false event should be NULL", lcapActor->GetFalseEvent() == NULL);
 
    dtCore::RefPtr<dtCore::GameEvent> testTrueEvent = new dtCore::GameEvent("LogicTestTRUEEvent");
    //dtCore::GameEventManager::GetInstance().AddEvent(*testTrueEvent);
-   lcapActor.SetTrueEvent(testTrueEvent);
-   CPPUNIT_ASSERT_MESSAGE("True event should have been set", lcapActor.GetTrueEvent() == testTrueEvent);
+   lcapActor->SetTrueEvent(testTrueEvent);
+   CPPUNIT_ASSERT_MESSAGE("True event should have been set", lcapActor->GetTrueEvent() == testTrueEvent);
 
    dtCore::RefPtr<dtCore::GameEvent> testFalseEvent = new dtCore::GameEvent("LogicTestFALSEEvent");
    //dtCore::GameEventManager::GetInstance().AddEvent(*testFalseEvent);
-   lcapActor.SetFalseEvent(testFalseEvent);
-   CPPUNIT_ASSERT_MESSAGE("False event should have been set", lcapActor.GetFalseEvent() == testFalseEvent);
+   lcapActor->SetFalseEvent(testFalseEvent);
+   CPPUNIT_ASSERT_MESSAGE("False event should have been set", lcapActor->GetFalseEvent() == testFalseEvent);
 
-   lcapActor.SetIsTrue(true);
-   CPPUNIT_ASSERT_MESSAGE("Is True should be true", lcapActor.GetIsTrue());
+   lcapActor->SetIsTrue(true);
+   CPPUNIT_ASSERT_MESSAGE("Is True should be true", lcapActor->GetIsTrue());
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -189,52 +187,49 @@ void LogicActorTests::TestLogicOnEventActor()
    //     - Conditional 2
 
    // Conditional 1
-   dtCore::RefPtr<SimCore::Actors::LogicConditionalActorProxy> lcap1;
-   mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::LOGIC_CONDITIONAL_ACTOR_TYPE, lcap1);
-   CPPUNIT_ASSERT(lcap1.valid());
-   SimCore::Actors::LogicConditionalActor& lcap1Actor = static_cast<SimCore::Actors::LogicConditionalActor&>(*lcap1->GetDrawable());
-   mGM->AddActor(*lcap1);
+   dtCore::RefPtr<SimCore::Actors::LogicConditionalActor> lcap1Actor;
+   mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::LOGIC_CONDITIONAL_ACTOR_TYPE, lcap1Actor);
+   CPPUNIT_ASSERT(lcap1Actor.valid());
+   mGM->AddActor(*lcap1Actor);
 
    // Conditional 2
-   dtCore::RefPtr<SimCore::Actors::LogicConditionalActorProxy> lcap2;
-   mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::LOGIC_CONDITIONAL_ACTOR_TYPE, lcap2);
-   CPPUNIT_ASSERT(lcap2.valid());
-   SimCore::Actors::LogicConditionalActor& lcap2Actor = static_cast<SimCore::Actors::LogicConditionalActor&>(*lcap2->GetDrawable());
-   mGM->AddActor(*lcap2);
+   dtCore::RefPtr<SimCore::Actors::LogicConditionalActor> lcap2Actor;
+   mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::LOGIC_CONDITIONAL_ACTOR_TYPE, lcap2Actor);
+   CPPUNIT_ASSERT(lcap2Actor.valid());
+   mGM->AddActor(*lcap2Actor);
 
    // On Event Actor
-   dtCore::RefPtr<SimCore::Actors::LogicOnEventActorProxy> onEventProxy;
-   mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::LOGIC_ON_EVENT_ACTOR_TYPE, onEventProxy);
-   CPPUNIT_ASSERT(onEventProxy.valid());
-   SimCore::Actors::LogicOnEventActor& onEventActor = static_cast<SimCore::Actors::LogicOnEventActor&>(onEventProxy->GetGameActor());
-   mGM->AddActor(*onEventProxy, false, true);
+   dtCore::RefPtr<SimCore::Actors::LogicOnEventActor> onEventActor;
+   mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::LOGIC_ON_EVENT_ACTOR_TYPE, onEventActor);
+   CPPUNIT_ASSERT(onEventActor.valid());
+   mGM->AddActor(*onEventActor, false, true);
 
    // Event 1 True
    dtCore::RefPtr<dtCore::GameEvent> true1Event = new dtCore::GameEvent("Test 1 True Event");
    dtCore::GameEventManager::GetInstance().AddEvent(*true1Event);
-   lcap1Actor.SetTrueEvent(true1Event.get());
+   lcap1Actor->SetTrueEvent(true1Event.get());
    // Event 1 False
    dtCore::RefPtr<dtCore::GameEvent> false1Event = new dtCore::GameEvent("Test 1 False Event");
    dtCore::GameEventManager::GetInstance().AddEvent(*false1Event);
-   lcap1Actor.SetFalseEvent(false1Event.get());
+   lcap1Actor->SetFalseEvent(false1Event.get());
 
    // Event 2 True
    dtCore::RefPtr<dtCore::GameEvent> true2Event = new dtCore::GameEvent("Test 2 True Event");
    dtCore::GameEventManager::GetInstance().AddEvent(*true2Event);
-   lcap2Actor.SetTrueEvent(true2Event.get());
+   lcap2Actor->SetTrueEvent(true2Event.get());
    // Event 2 False
    dtCore::RefPtr<dtCore::GameEvent> false2Event = new dtCore::GameEvent("Test 2 False Event");
    dtCore::GameEventManager::GetInstance().AddEvent(*false2Event);
-   lcap2Actor.SetFalseEvent(false2Event.get());
+   lcap2Actor->SetFalseEvent(false2Event.get());
 
    // ConditionalsMetEvent
    dtCore::RefPtr<dtCore::GameEvent> conditionsMetEvent = new dtCore::GameEvent("Test Conditions Met Event");
    dtCore::GameEventManager::GetInstance().AddEvent(*conditionsMetEvent);
-   onEventActor.SetEventToFire(conditionsMetEvent.get());
+   onEventActor->SetEventToFire(conditionsMetEvent.get());
 
    // Add conditions to the actor
-   onEventActor.AddConditional(lcap1->GetId());
-   onEventActor.AddConditional(lcap2->GetId());
+   onEventActor->AddConditional(lcap1Actor->GetId());
+   onEventActor->AddConditional(lcap2Actor->GetId());
    //std::vector<dtCore::UniqueId> conditionsArray;
    //conditionsArray.push_back(lcap1->GetId());
    //conditionsArray.push_back(lcap2->GetId());
@@ -248,63 +243,63 @@ void LogicActorTests::TestLogicOnEventActor()
 
    // Test logic type
    CPPUNIT_ASSERT_EQUAL_MESSAGE("Default Condition should be AND", 
-      onEventActor.GetLogicType(), SimCore::Actors::LogicOnEventActorProxy::LogicTypeEnum::BOOLEAN_AND);
-   onEventActor.SetLogicType(SimCore::Actors::LogicOnEventActorProxy::LogicTypeEnum::BOOLEAN_OR);
+      onEventActor->GetLogicType(), SimCore::Actors::LogicOnEventActor::LogicTypeEnum::BOOLEAN_AND);
+   onEventActor->SetLogicType(SimCore::Actors::LogicOnEventActor::LogicTypeEnum::BOOLEAN_OR);
    CPPUNIT_ASSERT_EQUAL_MESSAGE("Should be set to OR", 
-      onEventActor.GetLogicType(), SimCore::Actors::LogicOnEventActorProxy::LogicTypeEnum::BOOLEAN_OR);
-   CPPUNIT_ASSERT_MESSAGE("Should initially be false", !onEventActor.GetCurrentStatus());
-   onEventActor.SetLogicType(SimCore::Actors::LogicOnEventActorProxy::LogicTypeEnum::BOOLEAN_AND);
-   CPPUNIT_ASSERT_MESSAGE("Should return to false", !onEventActor.GetCurrentStatus());
+      onEventActor->GetLogicType(), SimCore::Actors::LogicOnEventActor::LogicTypeEnum::BOOLEAN_OR);
+   CPPUNIT_ASSERT_MESSAGE("Should initially be false", !onEventActor->GetCurrentStatus());
+   onEventActor->SetLogicType(SimCore::Actors::LogicOnEventActor::LogicTypeEnum::BOOLEAN_AND);
+   CPPUNIT_ASSERT_MESSAGE("Should return to false", !onEventActor->GetCurrentStatus());
 
    // Fire Event 1 True
    // Test that NOT true & NOT fired conditionMet Event
    mTestComponent->reset();
-   onEventActor.SendGameEventMessage(*true1Event);
+   onEventActor->SendGameEventMessage(*true1Event);
    dtCore::System::GetInstance().Step();
-   CPPUNIT_ASSERT_MESSAGE("Non-match should set current status to false.(A)", !onEventActor.GetCurrentStatus());
+   CPPUNIT_ASSERT_MESSAGE("Non-match should set current status to false.(A)", !onEventActor->GetCurrentStatus());
    CheckGameEventReceived(conditionsMetEvent.get(), false, "AND condition should not have been met yet");
 
    // Fire Event 2 True
    // Test that IS true and DID fire condition Met Event
    mTestComponent->reset();
-   onEventActor.SendGameEventMessage(*true2Event);
+   onEventActor->SendGameEventMessage(*true2Event);
    dtCore::System::GetInstance().Step();
-   CPPUNIT_ASSERT_MESSAGE("Full match should set current status to true.(B)", onEventActor.GetCurrentStatus());
+   CPPUNIT_ASSERT_MESSAGE("Full match should set current status to true.(B)", onEventActor->GetCurrentStatus());
    CheckGameEventReceived(conditionsMetEvent.get(), true, "AND condition should NOW be met");
 
    // Fire Event 2 False
    // Test that is now false and did NOT fire condition met event
    mTestComponent->reset();
-   onEventActor.SendGameEventMessage(*false2Event);
+   onEventActor->SendGameEventMessage(*false2Event);
    dtCore::System::GetInstance().Step();
-   CPPUNIT_ASSERT_MESSAGE("Partial match should set current status to false.(C)", !onEventActor.GetCurrentStatus());
+   CPPUNIT_ASSERT_MESSAGE("Partial match should set current status to false.(C)", !onEventActor->GetCurrentStatus());
    CheckGameEventReceived(conditionsMetEvent.get(), false, "AND condition is no longer met. ");
 
    // Set to OR
-   onEventActor.SetLogicType(SimCore::Actors::LogicOnEventActorProxy::LogicTypeEnum::BOOLEAN_OR);
+   onEventActor->SetLogicType(SimCore::Actors::LogicOnEventActor::LogicTypeEnum::BOOLEAN_OR);
 
    // Fire Event 1 True - AGAIN
    // Test that is now true and DID fire condition met event
    mTestComponent->reset();
-   onEventActor.SendGameEventMessage(*true1Event);
+   onEventActor->SendGameEventMessage(*true1Event);
    dtCore::System::GetInstance().Step();
-   CPPUNIT_ASSERT_MESSAGE("Partial match with OR should set current status to true.(D)", onEventActor.GetCurrentStatus());
+   CPPUNIT_ASSERT_MESSAGE("Partial match with OR should set current status to true.(D)", onEventActor->GetCurrentStatus());
    CheckGameEventReceived(conditionsMetEvent.get(), true, "OR condition should NOW be met. ");
 
    // Fire Event 2 False 
    // Test that is still true and DID fire condition met event
    mTestComponent->reset();
-   onEventActor.SendGameEventMessage(*false2Event);
+   onEventActor->SendGameEventMessage(*false2Event);
    dtCore::System::GetInstance().Step();
-   CPPUNIT_ASSERT_MESSAGE("Partial match with OR should set current status to true.(E)", onEventActor.GetCurrentStatus());
+   CPPUNIT_ASSERT_MESSAGE("Partial match with OR should set current status to true.(E)", onEventActor->GetCurrentStatus());
    CheckGameEventReceived(conditionsMetEvent.get(), true, "OR condition should still be met. ");
 
    // Fire Event 1 False
    // Test that is now false and did NOT fire condition met event
    mTestComponent->reset();
-   onEventActor.SendGameEventMessage(*false1Event);
+   onEventActor->SendGameEventMessage(*false1Event);
    dtCore::System::GetInstance().Step();
-   CPPUNIT_ASSERT_MESSAGE("No matching conditions with OR should set current status to false.(F)", !onEventActor.GetCurrentStatus());
+   CPPUNIT_ASSERT_MESSAGE("No matching conditions with OR should set current status to false.(F)", !onEventActor->GetCurrentStatus());
    CheckGameEventReceived(conditionsMetEvent.get(), false, "OR condition should no longer be met. ");
 
 }

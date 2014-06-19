@@ -32,8 +32,8 @@
 
 #include <dtUtil/getsetmacros.h>
 #include <dtUtil/stringutils.h>
-#include <dtDAL/propertymacros.h>
-#include <dtDAL/arrayactorpropertycomplex.h>
+#include <dtCore/propertymacros.h>
+#include <dtCore/arrayactorpropertycomplex.h>
 #include <dtCore/shadermanager.h>
 
 #include <SimCore/Components/RenderingSupportComponent.h>
@@ -108,7 +108,6 @@ namespace SimCore
          , mRadius(0.0f)
          , mMinAltitude(0.0f)
          , mMaxAltitude(100.0f)
-         , mDirtyFlag(false)
          , mEnableTopGeometry(false)
       {
          SetClassName("SimCore::Actors::BattlefieldGraphicsActorProxy");
@@ -177,6 +176,7 @@ namespace SimCore
 
          osg::Uniform* particleColor = ss->getOrCreateUniform("color", osg::Uniform::FLOAT_VEC4);
          particleColor->set(color);
+         particleColor->setDataVariance(osg::Object::DYNAMIC);
 
          if(mPoints.size() == 1 && mRadius > 0.0001f)
          {
@@ -528,6 +528,7 @@ namespace SimCore
 
          osg::Uniform* particleColor = ss->getOrCreateUniform("color", osg::Uniform::FLOAT_VEC4);
          particleColor->set(color);
+         particleColor->setDataVariance(osg::Object::DYNAMIC);
 
          if(createGeometry)
          {
@@ -618,7 +619,7 @@ namespace SimCore
       {
          static const dtUtil::RefString GROUPNAME("BattlefieldGraphics");
 
-         typedef dtDAL::PropertyRegHelper<BattlefieldGraphicsActorProxy&, BattlefieldGraphicsActorProxy> PropRegHelperType;
+         typedef dtCore::PropertyRegHelper<BattlefieldGraphicsActorProxy&, BattlefieldGraphicsActorProxy> PropRegHelperType;
          PropRegHelperType propRegHelper(*this, this, GROUPNAME);
 
          DT_REGISTER_PROPERTY(Type, "A type code defining what the graphic represents", PropRegHelperType, propRegHelper);
@@ -636,7 +637,7 @@ namespace SimCore
          DT_REGISTER_PROPERTY(MaxAltitude, "The maximum height that the volume is extruded to.", PropRegHelperType, propRegHelper);
 
 
-         typedef dtDAL::ArrayActorPropertyComplex<osg::Vec3> Vec3ArrayPropType;
+         typedef dtCore::ArrayActorPropertyComplex<osg::Vec3> Vec3ArrayPropType;
          dtCore::RefPtr<Vec3ArrayPropType> arrayProp =
             new Vec3ArrayPropType
                ("PointArray", "PointArray",
@@ -651,11 +652,11 @@ namespace SimCore
                );
 
          
-         dtCore::RefPtr<dtDAL::Vec3ActorProperty> vec3prop =
-         new dtDAL::Vec3ActorProperty("NestedVec3",
+         dtCore::RefPtr<dtCore::Vec3ActorProperty> vec3prop =
+         new dtCore::Vec3ActorProperty("NestedVec3",
                   "Nested Vec3",
-                  dtDAL::Vec3ActorProperty::SetFuncType(arrayProp.get(), &Vec3ArrayPropType::SetCurrentValue),
-                  dtDAL::Vec3ActorProperty::GetFuncType(arrayProp.get(), &Vec3ArrayPropType::GetCurrentValue),
+                  dtCore::Vec3ActorProperty::SetFuncType(arrayProp.get(), &Vec3ArrayPropType::SetCurrentValue),
+                  dtCore::Vec3ActorProperty::GetFuncType(arrayProp.get(), &Vec3ArrayPropType::GetCurrentValue),
                   "", GROUPNAME);
 
          arrayProp->SetArrayProperty(*vec3prop);
@@ -810,11 +811,11 @@ namespace SimCore
       {
          mEnableTopGeometryGlobal = b;
 
-         std::vector<dtDAL::BaseActorObject*> vect;
+         std::vector<dtCore::BaseActorObject*> vect;
          gm.FindActorsByType(*SimCore::Actors::EntityActorRegistry::BATTLEFIELD_GRAPHICS_ACTOR_TYPE, vect);
 
-         std::vector<dtDAL::BaseActorObject*>::iterator iter = vect.begin();
-         std::vector<dtDAL::BaseActorObject*>::iterator iterEnd = vect.end();
+         std::vector<dtCore::BaseActorObject*>::iterator iter = vect.begin();
+         std::vector<dtCore::BaseActorObject*>::iterator iterEnd = vect.end();
 
          for(;iter != iterEnd; ++iter)
          {

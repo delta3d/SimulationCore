@@ -87,7 +87,7 @@ namespace SimCore
       public:
 
          /// Constructor
-         AtmosphereActor(dtGame::GameActorProxy &proxy);
+         AtmosphereActor(dtGame::GameActorProxy& parent);
 
       protected:
 

@@ -36,7 +36,7 @@ class Compass : public osg::Projection
 
         Compass(const Compass& copy, const osg::CopyOp& copyop = osg::CopyOp::SHALLOW_COPY);
 
-        META_Node(osgCompass, Compass);
+        META_Node(Compass, Compass);
 
         void setViewport( osg::Viewport *vp );
         const osg::Viewport *getViewport() const;

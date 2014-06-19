@@ -23,7 +23,7 @@
 #ifndef DELTA_SURFACE_VESSEL_ACTOR_H
 #define DELTA_SURFACE_VESSEL_ACTOR_H
 
-#include <dtDAL/propertymacros.h>
+#include <dtCore/propertymacros.h>
 #include <SimCore/Actors/Platform.h>
 
 namespace dtActors
@@ -60,7 +60,7 @@ namespace SimCore
          typedef Platform BaseClass;
 
          /// Constructor
-         SurfaceVesselActor(dtGame::GameActorProxy &proxy);
+         SurfaceVesselActor(dtGame::GameActorProxy& parent);
 
          void SetWaterSprayEnabled( bool enable );
 

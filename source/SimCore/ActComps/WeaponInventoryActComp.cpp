@@ -53,7 +53,7 @@ namespace SimCore
       , mWeaponSwapRootNode("dof_gun_01")
       , mWeaponHotSpotNode("hotspot_01")
       {
-         typedef dtDAL::PropertyRegHelper<WeaponInventoryActComp::WeaponDescription&, WeaponInventoryActComp::WeaponDescription> PropRegType;
+         typedef dtCore::PropertyRegHelper<WeaponInventoryActComp::WeaponDescription&, WeaponInventoryActComp::WeaponDescription> PropRegType;
          PropRegType propRegHelper(*this, this, "WeaponDescription");
 
          DT_REGISTER_PROPERTY(
@@ -77,7 +77,7 @@ namespace SimCore
             PropRegType, propRegHelper);
 
 
-         DT_REGISTER_RESOURCE_PROPERTY(dtDAL::DataType::PARTICLE_SYSTEM,
+         DT_REGISTER_RESOURCE_PROPERTY(dtCore::DataType::PARTICLE_SYSTEM,
                   FiringParticleSystem,
             "Firing Particle System",
             "The particle system to use for firing",
@@ -107,7 +107,8 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       //////////////////////////////////////////////////////////////////////////
 
-      const dtGame::ActorComponent::ACType WeaponInventoryActComp::TYPE("WeaponInventoryActComp");
+      const dtGame::ActorComponent::ACType WeaponInventoryActComp::TYPE( new dtCore::ActorType("WeaponInventoryActComp", "ActorComponents",
+            "An actor component that holds an inventory of weapons to use.", dtGame::ActorComponent::BaseActorComponentType));
 
       //////////////////////////////////////////////////////////////////////////
       WeaponInventoryActComp::WeaponInventoryActComp()
@@ -127,7 +128,7 @@ namespace SimCore
       void WeaponInventoryActComp::BuildPropertyMap()
       {
          static const dtUtil::RefString GROUPNAME("Weapon Inventory");
-         typedef dtDAL::PropertyRegHelper<WeaponInventoryActComp&, WeaponInventoryActComp> PropRegType;
+         typedef dtCore::PropertyRegHelper<WeaponInventoryActComp&, WeaponInventoryActComp> PropRegType;
          PropRegType propRegHelper(*this, this, GROUPNAME);
 
          static const dtUtil::RefString PROPERTY_WEAPONS("Weapons");
@@ -187,14 +188,14 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       WeaponInventoryActComp::WeaponData* WeaponInventoryActComp::CreateAndAddWeapon(WeaponDescription& wd, bool makeCurrent)
       {
-         SimCore::Actors::IGActor* owner;
+         dtGame::GameActorProxy* owner;
          GetOwner(owner);
          if (owner == NULL)
          {
             return NULL;
          }
 
-         dtGame::GameManager* gm = owner->GetGameActorProxy().GetGameManager();
+         dtGame::GameManager* gm = owner->GetGameManager();
 
 
          dtCore::RefPtr<SimCore::Actors::WeaponActorProxy> weaponActor;
@@ -203,7 +204,7 @@ namespace SimCore
          if (!weaponActor.valid())
          {
             LOG_ERROR("No weapon actor prototype named \"" + wd.GetWeaponPrototypeName() + "\" could be found.");
-            return false;
+            return NULL;
          }
 
          SimCore::Actors::WeaponActor* outWeapon = NULL;
@@ -211,7 +212,7 @@ namespace SimCore
 
          // Place the weapon into the world
          gm->AddActor(*weaponActor, false, false);
-         outWeapon->SetOwner(&owner->GetGameActorProxy());
+         outWeapon->SetOwner(owner);
          outWeapon->Emancipate();
 
          float shotVelocity = 0.0f;
@@ -225,7 +226,7 @@ namespace SimCore
             if (!shooterActor.valid())
             {
                LOG_ERROR("No shooter actor prototype named \"" + wd.GetShooterPrototypeName() + "\" could be found.");
-               return false;
+               return NULL;
             }
 
             SimCore::Actors::MunitionParticlesActor* shooter = NULL;
@@ -236,7 +237,7 @@ namespace SimCore
             shooter->Emancipate();
 
             // Delete the weapons when the actor is deleted.
-            dtGame::CascadingDeleteActorComponent::Connect(owner->GetGameActorProxy(), *weaponActor);
+            dtGame::CascadingDeleteActorComponent::Connect(*owner, *weaponActor);
 
             dtGame::CascadingDeleteActorComponent::Connect(*weaponActor, *shooterActor);
 
@@ -415,7 +416,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void WeaponInventoryActComp::SelectWeapon(WeaponData* wd)
       {
-         SimCore::Actors::IGActor* owner = NULL;
+         dtGame::GameActorProxy* owner = NULL;
          GetOwner(owner);
          if (owner == NULL)
          {
@@ -425,13 +426,18 @@ namespace SimCore
          if (mCurrentWeapon.valid() && mCurrentWeapon->mWeapon.valid())
          {
             StopFiring();
-            owner->RemoveChild(mCurrentWeapon->mWeapon->GetDrawable());
+            owner->GetDrawable()->RemoveChild(mCurrentWeapon->mWeapon->GetDrawable());
             mCurrentWeapon = NULL;
          }
 
          if (wd != NULL && wd->mWeapon != NULL && wd->mDescription != NULL)
          {
-            owner->AddChild(wd->mWeapon->GetDrawable(), wd->mDescription->GetWeaponSwapRootNode());
+            SimCore::Actors::IGActor* igDrawable = NULL;
+            owner->GetDrawable(igDrawable);
+            if (igDrawable != NULL)
+            {
+               igDrawable->AddChild(wd->mWeapon->GetDrawable(), wd->mDescription->GetWeaponSwapRootNode());
+            }
             mCurrentWeapon = wd;
          }
       }
@@ -479,14 +485,14 @@ namespace SimCore
 
          if (mCurrentWeapon.valid() && mCurrentWeapon->mDescription->GetWeaponPrototypeName() == weaponName)
          {
-            SimCore::Actors::IGActor* owner = NULL;
+            dtGame::GameActorProxy* owner = NULL;
             GetOwner(owner);
             if (owner == NULL)
             {
                return;
             }
 
-            owner->RemoveChild(mCurrentWeapon->mWeapon->GetDrawable());
+            owner->GetDrawable()->RemoveChild(mCurrentWeapon->mWeapon->GetDrawable());
          }
 
          CompareWeaponByName compareWeaponByName(weaponName);

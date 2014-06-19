@@ -38,7 +38,7 @@ namespace NetDemo
    class NETDEMO_EXPORT NetDemoWaypointTypes
    {
    public:
-      static dtCore::RefPtr<dtDAL::ObjectType> CHECKPOINT;
+      static dtCore::RefPtr<dtCore::ObjectType> CHECKPOINT;
    };
 
 
@@ -81,10 +81,10 @@ namespace NetDemo
 
    protected:
       // these allow derivatives of named waypoint to pass in their derivated object type
-      NetDemoWaypoint(const dtDAL::ObjectType* ot);
-      NetDemoWaypoint(const dtDAL::ObjectType* ot, const osg::Vec3& pos);
-      NetDemoWaypoint(const dtDAL::ObjectType* ot, const dtUtil::RefString& name);
-      NetDemoWaypoint(const dtDAL::ObjectType* ot, const osg::Vec3& pos, const dtUtil::RefString& name);
+      NetDemoWaypoint(const dtCore::ObjectType* ot);
+      NetDemoWaypoint(const dtCore::ObjectType* ot, const osg::Vec3& pos);
+      NetDemoWaypoint(const dtCore::ObjectType* ot, const dtUtil::RefString& name);
+      NetDemoWaypoint(const dtCore::ObjectType* ot, const osg::Vec3& pos, const dtUtil::RefString& name);
 
    private:
       dtUtil::RefString mName;

@@ -37,12 +37,12 @@ namespace SimCore
          public:
             typedef DetonationActor BaseClass;
             /// Constructor
-            MultipleDetonationActor(dtGame::GameActorProxy& proxy);
+            MultipleDetonationActor(dtGame::GameActorProxy& parent);
 
             // Invoked when a actor is added to the Game Managerring
             virtual void OnEnteredWorld();
 
-            DT_DECLARE_ACCESSOR_INLINE(dtDAL::ResourceDescriptor, MultipleImpactEffect);
+            DT_DECLARE_ACCESSOR_INLINE(dtCore::ResourceDescriptor, MultipleImpactEffect);
 
             DT_DECLARE_ACCESSOR_INLINE(int, NumDetonations);
             DT_DECLARE_ACCESSOR_INLINE(float, DetonationRadius);

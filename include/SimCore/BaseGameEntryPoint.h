@@ -139,7 +139,7 @@ namespace SimCore
 
          osg::ArgumentParser* parser;
 
-         dtCore::RefPtr<dtDAL::BaseActorObject> terrainActor;
+         dtCore::RefPtr<dtCore::BaseActorObject> terrainActor;
 
          std::string mProjectPath;
          float mAspectRatio;

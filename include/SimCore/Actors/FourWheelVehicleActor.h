@@ -31,7 +31,7 @@
 #include <SimCore/FourWheelVehiclePhysicsHelper.h>
 #include <SimCore/Actors/BasePhysicsVehicleActor.h>
 #include <dtUtil/getsetmacros.h>
-#include <dtDAL/resourcedescriptor.h>
+#include <dtCore/resourcedescriptor.h>
 
 // must include because of the refptrs
 #include <dtAudio/sound.h>
@@ -61,6 +61,7 @@ namespace SimCore
             // Called when the actor has been added to the game manager.
             // You can respond to OnEnteredWorld on either the proxy or actor or both.
             virtual void OnEnteredWorld();
+            virtual void OnRemovedFromWorld();
             virtual void PostPhysicsUpdate();
          public:
             /// Utility Methods
@@ -78,12 +79,12 @@ namespace SimCore
             DT_DECLARE_ACCESSOR(float, GearChangeLow);
             DT_DECLARE_ACCESSOR(float, GearChangeMedium);
             DT_DECLARE_ACCESSOR(float, GearChangeHigh);
-            DT_DECLARE_ACCESSOR(dtDAL::ResourceDescriptor, SoundEffectIgnition);
-            DT_DECLARE_ACCESSOR(dtDAL::ResourceDescriptor, SoundEffectIdleLoop);
-            DT_DECLARE_ACCESSOR(dtDAL::ResourceDescriptor, SoundEffectBrake);
-            DT_DECLARE_ACCESSOR(dtDAL::ResourceDescriptor, SoundEffectAcceleration);
-            DT_DECLARE_ACCESSOR(dtDAL::ResourceDescriptor, SoundEffectCollisionHit);
-            DT_DECLARE_ACCESSOR(dtDAL::ResourceDescriptor, VehicleInteriorModel);
+            DT_DECLARE_ACCESSOR(dtCore::ResourceDescriptor, SoundEffectIgnition);
+            DT_DECLARE_ACCESSOR(dtCore::ResourceDescriptor, SoundEffectIdleLoop);
+            DT_DECLARE_ACCESSOR(dtCore::ResourceDescriptor, SoundEffectBrake);
+            DT_DECLARE_ACCESSOR(dtCore::ResourceDescriptor, SoundEffectAcceleration);
+            DT_DECLARE_ACCESSOR(dtCore::ResourceDescriptor, SoundEffectCollisionHit);
+            DT_DECLARE_ACCESSOR(dtCore::ResourceDescriptor, VehicleInteriorModel);
 
             /// Turns it up and moves up
             virtual void RepositionVehicle(float deltaTime);
@@ -109,7 +110,7 @@ namespace SimCore
              * @param sound  Output, the sound ref pointer to assign.
              * @return true if the sound was loaded successfully.
              */
-            virtual bool LoadSound(const dtDAL::ResourceDescriptor& rd, dtCore::RefPtr<dtAudio::Sound>& soundOut);
+            virtual bool LoadSound(const dtCore::ResourceDescriptor& rd, dtCore::RefPtr<dtAudio::Sound>& soundOut);
 
          private:
 

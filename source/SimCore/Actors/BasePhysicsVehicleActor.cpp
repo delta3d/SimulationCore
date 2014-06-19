@@ -32,7 +32,7 @@
 #include <dtPhysics/palphysicsworld.h>
 
 
-#include <dtDAL/enginepropertytypes.h>
+#include <dtCore/enginepropertytypes.h>
 #include <dtABC/application.h>
 #include <dtAudio/audiomanager.h>
 #include <dtAudio/sound.h>
@@ -275,7 +275,7 @@ namespace SimCore
          {
             osg::Vec3 physAngularVelocity;
             physAngularVelocity = physObj->GetAngularVelocity();
-            GetComponent<dtGame::DRPublishingActComp>()->SetCurrentAngularVelocity(physAngularVelocity);
+            GetComponent<dtGame::DRPublishingActComp>()->SetAngularVelocity(physAngularVelocity);
          }
          else
          {
@@ -562,10 +562,10 @@ namespace SimCore
 
          BasePhysicsVehicleActor& actor = static_cast<BasePhysicsVehicleActor &>(GetGameActor());
 
-         AddProperty(new dtDAL::BooleanActorProperty("Perform_Above_Ground_Safety_Check",
+         AddProperty(new dtCore::BooleanActorProperty("Perform_Above_Ground_Safety_Check",
             "Perform above ground safety check",
-            dtDAL::BooleanActorProperty::SetFuncType(&actor, &BasePhysicsVehicleActor::SetPerformAboveGroundSafetyCheck),
-            dtDAL::BooleanActorProperty::GetFuncType(&actor, &BasePhysicsVehicleActor::GetPerformAboveGroundSafetyCheck),
+            dtCore::BooleanActorProperty::SetFuncType(&actor, &BasePhysicsVehicleActor::SetPerformAboveGroundSafetyCheck),
+            dtCore::BooleanActorProperty::GetFuncType(&actor, &BasePhysicsVehicleActor::GetPerformAboveGroundSafetyCheck),
             "Use an Isector as a safety check to keep the vehicle above ground if the collision detection fails.",
             VEH_GROUP));
 
@@ -589,9 +589,9 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      dtCore::RefPtr<dtDAL::ActorProperty> BasePhysicsVehicleActorProxy::GetDeprecatedProperty(const std::string& name)
+      dtCore::RefPtr<dtCore::ActorProperty> BasePhysicsVehicleActorProxy::GetDeprecatedProperty(const std::string& name)
       {
-         dtCore::RefPtr<dtDAL::ActorProperty> depProp = BaseClass::GetDeprecatedProperty(name);
+         dtCore::RefPtr<dtCore::ActorProperty> depProp = BaseClass::GetDeprecatedProperty(name);
          return depProp;
       }
 

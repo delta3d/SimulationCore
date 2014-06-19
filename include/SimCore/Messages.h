@@ -117,9 +117,9 @@ namespace SimCore
    protected:
       /// Destructor
       virtual ~AttachToActorMessage();
-      dtDAL::NamedActorParameter& mAttachToActorParam;
-      dtDAL::NamedStringParameter& mAttachPointNodeNameParam;
-      dtDAL::NamedVec3fParameter& mInitialAttachRotationHPRParam;
+      dtCore::NamedActorParameter& mAttachToActorParam;
+      dtCore::NamedStringParameter& mAttachPointNodeNameParam;
+      dtCore::NamedVec3fParameter& mInitialAttachRotationHPRParam;
    };
 
    /**
@@ -194,9 +194,9 @@ namespace SimCore
          void SetSenderName(const std::string& newName);
 
          /// @return the real time the query was sent.
-         unsigned long GetQueryTransmitRealTime() const;
+         unsigned int GetQueryTransmitRealTime() const;
          /// Sets the real time the query was sent.
-         void SetQueryTransmitRealTime(unsigned long newTime);
+         void SetQueryTransmitRealTime(unsigned int newTime);
 
       protected:
 
@@ -204,8 +204,8 @@ namespace SimCore
          virtual ~TimeQueryMessage() {}
 
       private:
-         dtGame::StringMessageParameter* mSenderName;
-         dtGame::UnsignedLongIntMessageParameter* mQueryTransmitRealTime;
+         dtCore::NamedStringParameter* mSenderName;
+         dtCore::NamedUnsignedIntParameter* mQueryTransmitRealTime;
    };
 
    class SIMCORE_EXPORT TimeValueMessage : public TimeQueryMessage
@@ -233,19 +233,19 @@ namespace SimCore
          TimeValueMessage();
 
          /// @return the real time the server received the time query.
-         unsigned long GetQueryReceivedRealTime() const;
+         unsigned int GetQueryReceivedRealTime() const;
          /// Set the real time the query was received by the server.
-         void SetQueryReceivedRealTime(unsigned long newTime);
+         void SetQueryReceivedRealTime(unsigned int newTime);
 
          /// @return the real time the server sent this message.
-         unsigned long GetValueTransmitRealTime() const;
+         unsigned int GetValueTransmitRealTime() const;
          /// Sets the time the server sent this message.
-         void SetValueTransmitRealTime(unsigned long newTime);
+         void SetValueTransmitRealTime(unsigned int newTime);
 
          /// @return the synchronized time value when the server sent the message.
-         unsigned long GetSynchronizedTime() const;
+         unsigned int GetSynchronizedTime() const;
          /// Sets the synchronized time value when the server sent the message.
-         void SetSynchronizedTime(unsigned long newTime);
+         void SetSynchronizedTime(unsigned int newTime);
 
          /// @return the time scale factor (Multiple of real time)
          float GetTimeScale() const;
@@ -269,13 +269,13 @@ namespace SimCore
          virtual ~TimeValueMessage() {}
 
       private:
-         dtGame::UnsignedLongIntMessageParameter* mQueryReceivedRealTime;
-         dtGame::UnsignedLongIntMessageParameter* mValueTransmitRealTime;
-         dtGame::UnsignedLongIntMessageParameter* mSynchronizedTime;
-         dtGame::FloatMessageParameter*           mTimeScale;
-         dtGame::BooleanMessageParameter*         mPaused;
+         dtCore::NamedUnsignedIntParameter* mQueryReceivedRealTime;
+         dtCore::NamedUnsignedIntParameter* mValueTransmitRealTime;
+         dtCore::NamedUnsignedIntParameter* mSynchronizedTime;
+         dtCore::NamedFloatParameter*           mTimeScale;
+         dtCore::NamedBooleanParameter*         mPaused;
 
-         dtGame::StringMessageParameter*          mTimeMaster;
+         dtCore::NamedStringParameter*          mTimeMaster;
    };
 
 
@@ -346,9 +346,9 @@ namespace SimCore
          virtual ~EmbeddedDataMessage();
 
       private:
-         dtGame::UnsignedShortIntMessageParameter* mEncoding;
-         dtGame::UnsignedShortIntMessageParameter* mDataSize;
-         dtGame::StringMessageParameter* mDataParameter;
+         dtCore::NamedUnsignedShortIntParameter* mEncoding;
+         dtCore::NamedUnsignedShortIntParameter* mDataSize;
+         dtCore::NamedStringParameter* mDataParameter;
    };
 }
 #endif

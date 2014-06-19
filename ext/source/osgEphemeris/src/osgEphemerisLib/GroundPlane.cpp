@@ -192,6 +192,9 @@ void GroundPlane::_initializeSimpleTerrainGeneratorShader()
         stateset->addUniform(scaleDownUniform.get());
 
         stateset->addUniform(new osg::Uniform("altitudeRange",m_altitudeRange));
+        // The value on this one can be changed.
+        stateset->getUniform("altitudeRange")->setDataVariance(osg::Object::DYNAMIC);
+
         stateset->addUniform(new osg::Uniform("textureSize",osg::Vec2(256,256)));
         stateset->addUniform(new osg::Uniform("texelSize",osg::Vec2(1.0/256.0,1.0/256.0)));
 

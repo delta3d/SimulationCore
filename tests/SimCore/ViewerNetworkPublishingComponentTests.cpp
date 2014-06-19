@@ -34,8 +34,8 @@
 
 #include <dtABC/application.h>
 
-#include <dtDAL/enginepropertytypes.h>
-#include <dtDAL/map.h>
+#include <dtCore/enginepropertytypes.h>
+#include <dtCore/map.h>
 
 #include <dtGame/gamemanager.h>
 #include <dtGame/messagefactory.h>
@@ -84,7 +84,7 @@ class ViewerNetworkPublishingComponentTests : public CPPUNIT_NS::TestFixture
          mTestComp = new dtGame::TestComponent;
          mGM->AddComponent(*mTestComp, dtGame::GameManager::ComponentPriority::NORMAL);
 
-         RefPtr<dtDAL::ActorProxy> ap = mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::STEALTH_ACTOR_TYPE);
+         RefPtr<dtCore::ActorProxy> ap = mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::STEALTH_ACTOR_TYPE);
 
          CPPUNIT_ASSERT(ap.valid());
 
@@ -214,7 +214,7 @@ class ViewerNetworkPublishingComponentTests : public CPPUNIT_NS::TestFixture
             CPPUNIT_ASSERT_MESSAGE("The about actor id on the stealth rotation message should match the actor value.",
                mStealthActor->GetUniqueId() == msg->GetAboutActorId());
 
-            osg::Vec3 value = static_cast<dtDAL::Vec3ActorProperty*>(mStealthActor->GetGameActorProxy().GetProperty("Last Known Rotation"))->GetValue();
+            osg::Vec3 value = static_cast<dtCore::Vec3ActorProperty*>(mStealthActor->GetGameActorProxy().GetProperty("Last Known Rotation"))->GetValue();
             osg::Vec3 msgRot = msg->GetRotation();
             CPPUNIT_ASSERT_MESSAGE("The rotation on the message should match the actor value.",
                dtUtil::Equivalent(value, msgRot, 1e-3f));
@@ -236,7 +236,7 @@ class ViewerNetworkPublishingComponentTests : public CPPUNIT_NS::TestFixture
 
             CPPUNIT_ASSERT_MESSAGE("The about actor id on the stealth rotation message should match the actor value.",
                mStealthActor->GetUniqueId() == msg->GetAboutActorId());
-            osg::Vec3 value = static_cast<dtDAL::Vec3ActorProperty*>(mStealthActor->GetGameActorProxy().GetProperty("Last Known Translation"))->GetValue();
+            osg::Vec3 value = static_cast<dtCore::Vec3ActorProperty*>(mStealthActor->GetGameActorProxy().GetProperty("Last Known Translation"))->GetValue();
             CPPUNIT_ASSERT_EQUAL_MESSAGE("The Translation on the message should match the actor value.",
                value,
                msg->GetTranslation());

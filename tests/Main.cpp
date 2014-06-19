@@ -50,9 +50,9 @@
 #include <dtCore/shadermanager.h>
 #include <dtCore/system.h>
 
-#include <dtDAL/project.h>
-#include <dtDAL/map.h>
-#include <dtDAL/librarymanager.h>
+#include <dtCore/project.h>
+#include <dtCore/map.h>
+#include <dtCore/librarymanager.h>
 
 #include <dtABC/application.h>
 
@@ -74,23 +74,15 @@
 #ifdef None
 #undef None
 #endif
-#include <CEGUI.h>
+#include <CEGUI/CEGUI.h>
 
 static std::ostringstream mSlowTests;
 
 static dtCore::RefPtr<dtABC::Application> globalApplication;
-#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
-static dtCore::RefPtr<dtGUI::CEUIDrawable> globalGUI;
-#else
 static dtCore::RefPtr<dtGUI::GUI> globalGUI;
-#endif
 
 dtABC::Application& GetGlobalApplication() { return *globalApplication; }
-#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
-dtGUI::CEUIDrawable& GetGlobalCEGUIDrawable() { return *globalGUI; }
-#else
 dtGUI::GUI& GetGlobalGUI() { return *globalGUI; }
-#endif
 
 class TimingListener : public CppUnit::TestListener
 {
@@ -131,49 +123,22 @@ class TimingListener : public CppUnit::TestListener
 
 void SetupCEGUI(dtABC::Application& app)
 {
-#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
-   const std::string guiScheme = "CEGUI/schemes/WindowsLook.scheme";
-   globalGUI = new dtGUI::CEUIDrawable(app.GetWindow(),
-            app.GetKeyboard(), app.GetMouse(), new dtGUI::ScriptModule());
-
-   std::string path = dtUtil::FindFileInPathList(guiScheme);
-   if (path.empty())
-   {
-      throw dtUtil::Exception("Failed to find the scheme file.",
-         __FILE__, __LINE__);
-   }
-
-   std::string dir = path.substr(0, path.length() - (guiScheme.length() - 5));
-   //dtUtil::FileUtils::GetInstance().PushDirectory(dir);
-   try
-   {
-      CEGUI::SchemeManager::getSingleton().loadScheme(path);
-#else
    globalGUI = new dtGUI::GUI(app.GetCamera(),
             app.GetKeyboard(), app.GetMouse());
    globalGUI->SetScriptModule(new dtGUI::ScriptModule());
-//   std::string ceguiDir(dtDAL::Project::GetInstance().GetContext(0));
-//   globalGUI->SetResourceGroupDirectory("schemes", ceguiDir);
-//   globalGUI->SetResourceGroupDirectory("imagesets", ceguiDir);
-//   globalGUI->SetResourceGroupDirectory("looknfeel", ceguiDir);
-//   globalGUI->SetResourceGroupDirectory("layouts", ceguiDir);
-//   globalGUI->SetResourceGroupDirectory("fonts", ceguiDir);
    try
    {
       //std::cout << "CEGUI in: " << ceguiDir << "\n\n";
       globalGUI->LoadScheme("CEGUI/schemes/WindowsLook.scheme");
-#endif
    }
    catch (const CEGUI::Exception& ex)
    {
       //make sure the directory gets popped if it fails.
-      //dtUtil::FileUtils::GetInstance().PopDirectory();
       std::ostringstream ss;
       ss << ex.getMessage();
       LOG_ERROR(ss.str());
       throw;
    }
-   //dtUtil::FileUtils::GetInstance().PopDirectory();
 }
 
 #ifndef TEST_ROOT
@@ -239,9 +204,9 @@ int main (int argc, char* argv[])
       //Force this to false because many of the tests expect it to be false.
       dtCore::System::GetInstance().SetUseFixedTimeStep(false);
       dtUtil::SetDataFilePathList(dtUtil::GetDeltaDataPathList());
-      dtDAL::Project::GetInstance().SetContext("demos/ProjectAssets_Demos");
-      dtDAL::Project::GetInstance().AddContext("ProjectAssets_Shared");
-      dtDAL::LibraryManager::GetInstance().LoadActorRegistry(SimCore::BaseGameEntryPoint::LIBRARY_NAME);
+      dtCore::Project::GetInstance().SetContext("demos/ProjectAssets_Demos");
+      dtCore::Project::GetInstance().AddContext("ProjectAssets_Shared");
+      dtCore::LibraryManager::GetInstance().LoadActorRegistry(SimCore::BaseGameEntryPoint::LIBRARY_NAME);
       SetupCEGUI(*globalApplication);
    }
    catch(const dtUtil::Exception& ex)
@@ -362,7 +327,7 @@ int main (int argc, char* argv[])
 #endif
    globalGUI = NULL;
 
-   dtDAL::LibraryManager::GetInstance().UnloadActorRegistry(SimCore::BaseGameEntryPoint::LIBRARY_NAME);
+   dtCore::LibraryManager::GetInstance().UnloadActorRegistry(SimCore::BaseGameEntryPoint::LIBRARY_NAME);
    dtAudio::AudioManager::Destroy();
 
    return collectedResults.wasSuccessful () ? 0 : 1;

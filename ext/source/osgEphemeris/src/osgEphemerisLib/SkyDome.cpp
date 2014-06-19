@@ -26,6 +26,7 @@
 
 #include <osgUtil/UpdateVisitor>
 
+#include <osg/Version>
 #include <osg/StateSet>
 #include <osg/BlendFunc>
 #include <osg/Texture2D>
@@ -33,7 +34,6 @@
 #include <osg/TexEnv>
 
 #include <osgEphemeris/SkyDome.h>
-#include <osg/Version>
 
 
 using namespace osgEphemeris;
@@ -42,21 +42,57 @@ const double SkyDome::_meanDistanceToMoon = 384403000.0;
 #define SKY_DOME_X_SIZE 128
 #define SKY_DOME_Y_SIZE 128
 
-SkyDome::SkyDome():
+// Looks like somewhere along the way, OSG stopped calling Drawable Callbacks....
+// So we'll do it ourselves.
+class SkyDomeUpdateCallback: public osg::NodeCallback
+{
+    public:
+        SkyDomeUpdateCallback( SkyDome *skyDome ):
+            _skyDome(skyDome)
+        {}
+
+        virtual void operator()(osg::Node* node, osg::NodeVisitor* nv)
+        {
+            _callDrawableCallbacks( _skyDome->getNorthernHemisphere(), nv );
+            _callDrawableCallbacks( _skyDome->getSouthernHemisphere(), nv );
+            traverse(node,nv);
+        }
+
+    private:
+        SkyDome* _skyDome;
+
+        void _callDrawableCallbacks( osg::Geode *geode, osg::NodeVisitor *nv )
+        {
+            if( geode != NULL )
+            {
+                for( unsigned int i= 0; i < geode->getNumDrawables(); i++ )
+                {
+                    osg::Drawable *dbl = geode->getDrawable(i);
+                    osg::Drawable::UpdateCallback *updateCallback = dbl->getUpdateCallback();
+                    if( updateCallback != NULL )
+                        updateCallback->update( nv, dbl );
+                }
+            }
+        }
+
+};
+
+SkyDome::SkyDome( bool useBothHemispheres, bool mirrorInSouthernHemisphere ):
     Sphere( _meanDistanceToMoon,
             Sphere::TessLow,
             Sphere::InnerOrientation,
-            Sphere::BothHemispheres,
-            //Sphere::NorthernHemisphere,
-            true
-            ) ,
+            useBothHemispheres ? Sphere::BothHemispheres : Sphere::NorthernHemisphere,
+            true ),
+    _sunFudgeScale(1.0),
     _skyTextureUnit(0),
     _sunTextureUnit(1),
-    _mirrorInSouthernHemisphere(true),
+    _mirrorInSouthernHemisphere( mirrorInSouthernHemisphere ),
     _T(2.0f),
     _current_tex_row(0)
 {
     unsigned int nsectors = _northernHemisphere->getNumDrawables();
+
+    /*_northernHemisphere->*/setUpdateCallback( new SkyDomeUpdateCallback( this ) );
 
     // This sets up the "state culling" of the projected texture for the sun.
     // We want to avoid projecting the sun texture on any other sphere sectors
@@ -168,11 +204,12 @@ void SkyDome::traverse(osg::NodeVisitor&nv)
 {
     if (dynamic_cast<osgUtil::UpdateVisitor*>(&nv))
                    return;
+
     // The sun fills 0.53 degrees of visual angle.  The 1.45 multiplier is because the sun texture includes
     // a partially transparent halo around it so there isn't a hard edge.
     osg::Matrix  P;
-    double hfov   = osg::DegreesToRadians(0.53 * 1.45);
-    double vfov   = osg::DegreesToRadians(0.53 * 1.45);
+    double hfov   = osg::DegreesToRadians(0.53 * 1.45 * _sunFudgeScale);
+    double vfov   = osg::DegreesToRadians(0.53 * 1.45 * _sunFudgeScale);
     double left   = -tan(hfov/2.0);
     double right  =  tan(hfov/2.0);
     double bottom = -tan(vfov/2.0);
@@ -410,6 +447,8 @@ void SkyDome::_updateDistributionCoefficients()
     _Cr = 0.5f;
     _Dr = _T * -0.63333f + 40.0f;
     _Er = 0.19f;
+    _horiz_atten_r = 0.0f;
+    _solar_atten_r = 0.0f;
 
     _Ag = _T * 0.00367f + 0.11f;
     _Bg = _T * -0.08f + 6.0f;
@@ -448,7 +487,7 @@ void SkyDome::_updateZenithxyY()
     _Yz = (((4.0453f * _T) - 4.971f) * tanf(chi)) - (0.2155f * _T) + 2.4192f;
 }
 
-inline const float SkyDome::_xDistributionFunction(const float theta, const float cos_theta,
+inline float SkyDome::_xDistributionFunction(const float /*theta*/, const float cos_theta,
                                             const float gamma, const float cos_gamma_sq)
 {
     return _xz
@@ -458,7 +497,7 @@ inline const float SkyDome::_xDistributionFunction(const float theta, const floa
         * (1.0f + (_Cx * expf(_Dx * _theta_sun)) + (_Ex * _cos_theta_sun_squared)) );
 }
 
-inline const float SkyDome::_yDistributionFunction(const float theta, const float cos_theta,
+inline float SkyDome::_yDistributionFunction(const float /*theta*/, const float cos_theta,
                                             const float gamma, const float cos_gamma_sq)
 {
     return _yz
@@ -468,7 +507,7 @@ inline const float SkyDome::_yDistributionFunction(const float theta, const floa
         * (1.0f + (_Cy * expf(_Dy * _theta_sun)) + (_Ey * _cos_theta_sun_squared)) );
 }
 
-inline const float SkyDome::_YDistributionFunction(const float theta, const float cos_theta,
+inline float SkyDome::_YDistributionFunction(const float /*theta*/, const float cos_theta,
                                             const float gamma, const float cos_gamma_sq)
 {
     return _Yz
@@ -478,17 +517,17 @@ inline const float SkyDome::_YDistributionFunction(const float theta, const floa
         * (1.0f + (_CY * expf(_DY * _theta_sun)) + (_EY * _cos_theta_sun_squared)) );
 }
 
-inline const float SkyDome::_RedFunction(const float theta, const float theta_0_1,
-                                         const float gamma, const float gamma_1_0)
+inline float SkyDome::_RedFunction(const float /*theta*/, const float theta_0_1,
+                                         const float /*gamma*/, const float gamma_1_0)
 {
-    return ( (_Ar * powf(theta_0_1, _Br))  // horizon light
-        + (_Cr * powf(gamma_1_0, _Dr))     // circumsolar light
+    return ( (_Ar * powf(theta_0_1, _Br) * (1.0f - _horiz_atten_r * _sunset_atten))  // horizon light
+        + (_Cr * powf(gamma_1_0, _Dr) * (1.0f - _solar_atten_r * _sunset_atten))     // circumsolar light
         + _Er )                            // overall light
         * _light_due_to_alt;
 }
 
-inline const float SkyDome::_GreenFunction(const float theta, const float theta_0_1,
-                                           const float gamma, const float gamma_1_0)
+inline float SkyDome::_GreenFunction(const float /*theta*/, const float theta_0_1,
+                                           const float /*gamma*/, const float gamma_1_0)
 {
     return ( (_Ag * powf(theta_0_1, _Bg) * (1.0f - _horiz_atten_g * _sunset_atten))
         + (_Cg * powf(gamma_1_0, _Dg) * (1.0f - _solar_atten_g * _sunset_atten))
@@ -496,8 +535,8 @@ inline const float SkyDome::_GreenFunction(const float theta, const float theta_
         * _light_due_to_alt;
 }
 
-inline const float SkyDome::_BlueFunction(const float theta, const float theta_0_1,
-                                          const float gamma, const float gamma_1_0)
+inline float SkyDome::_BlueFunction(const float /*theta*/, const float theta_0_1,
+                                          const float /*gamma*/, const float gamma_1_0)
 {
     return ( (_Ab * powf(theta_0_1, _Bb) * (1.0f - _horiz_atten_b * _sunset_atten))
         + (_Cb * powf(gamma_1_0, _Db) * (1.0f - _solar_atten_b * _sunset_atten))
@@ -614,8 +653,11 @@ void SkyDome::_computeSkyTexture()
         if(_current_tex_row >= SKY_DOME_Y_SIZE)
             _current_tex_row = 0;
 
-#if (OSG_VERSION_MAJOR >= 2) && (OSG_VERSION_MINOR >= 8)
+// DANG robert.... how about some backwards compatibility... especially with versions?
+//#if (OSG_VERSION_MAJOR >= 2) && (OSG_VERSION_MINOR >= 6 )
+#if ( OPENSCENEGRAPH_MAJOR_VERSION > 2 ) || ( ( OPENSCENEGRAPH_MAJOR_VERSION >= 2 ) && ( OPENSCENEGRAPH_MINOR_VERSION >= 6 ) )
         image->dirty();
+        _skyTexture->setImage( image );
 #else
         _skyTexture->setImage( image );
 #endif

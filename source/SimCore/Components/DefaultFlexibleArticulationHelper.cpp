@@ -26,7 +26,7 @@
 #include <osgSim/DOFTransform>
 #include <dtUtil/nodecollector.h>
 #include <dtUtil/mathdefines.h>
-#include <dtDAL/namedparameter.h>
+#include <dtCore/namedparameter.h>
 #include <dtGame/deadreckoninghelper.h>
 //#include <SimCore/Actors/ControlStateActor.h>
 #include <SimCore/Components/DefaultFlexibleArticulationHelper.h>
@@ -85,12 +85,12 @@ namespace Components
    }
 
    ////////////////////////////////////////////////////////////////////////////////
-   dtCore::RefPtr<dtDAL::NamedGroupParameter> DefaultFlexibleArticulationHelper::BuildGroupProperty()
+   dtCore::RefPtr<dtCore::NamedGroupParameter> DefaultFlexibleArticulationHelper::BuildGroupProperty()
    {
       // NOTE - The group params are built on the fly. 
       // This method is called when the entity needs to do an actor update message. 
-      dtCore::RefPtr<dtDAL::NamedGroupParameter> articArrayProp 
-         = new dtDAL::NamedGroupParameter(GetArticulationArrayPropertyName());
+      dtCore::RefPtr<dtCore::NamedGroupParameter> articArrayProp 
+         = new dtCore::NamedGroupParameter(GetArticulationArrayPropertyName());
 
       if(!mArticEntries.empty())
       {

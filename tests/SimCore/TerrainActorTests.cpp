@@ -56,8 +56,8 @@
 #include <SimCore/MessageType.h>
 #include <dtCore/system.h>
 #include <dtCore/scene.h>
-#include <dtDAL/resourceactorproperty.h>
-#include <dtDAL/project.h>
+#include <dtCore/resourceactorproperty.h>
+#include <dtCore/project.h>
 #include <dtGame/gamemanager.h>
 
 #include <UnitTestMain.h>
@@ -107,7 +107,7 @@ namespace SimCore
       {
          try
          {
-            dtDAL::Project::GetInstance().SetEditMode(false);
+            dtCore::Project::GetInstance().SetEditMode(false);
 
             dtCore::System::GetInstance().SetPause(false);
             dtCore::System::GetInstance().Stop();
@@ -127,20 +127,20 @@ namespace SimCore
 
       void TestLoadInStage()
       {
-         dtDAL::Project::GetInstance().SetEditMode(true);
+         dtCore::Project::GetInstance().SetEditMode(true);
 
          dtCore::RefPtr<SimCore::Actors::TerrainActorProxy> terrain;
          SimCore::Actors::TerrainActor* terrainDrawable = NULL;
 
          mGameManager->CreateActor(*SimCore::Actors::EntityActorRegistry::TERRAIN_ACTOR_TYPE, terrain);
          CPPUNIT_ASSERT_MESSAGE("Could not create a terrain actor", terrain.valid());
-         terrain->GetActor(terrainDrawable);
+         terrain->GetDrawable(terrainDrawable);
 
-         dtDAL::ResourceActorProperty* rap = NULL;
+         dtCore::ResourceActorProperty* rap = NULL;
          terrain->GetProperty("TerrainMesh", rap);
          CPPUNIT_ASSERT(rap != NULL);
 
-         rap->SetValue(dtDAL::ResourceDescriptor("StaticMeshes:Gun.ive"));
+         rap->SetValue(dtCore::ResourceDescriptor("StaticMeshes:Gun.ive"));
 
          // Terrain should already be loaded.
          CPPUNIT_ASSERT(!terrainDrawable->CheckForTerrainLoaded());
@@ -160,14 +160,14 @@ namespace SimCore
 
          mGameManager->CreateActor(*SimCore::Actors::EntityActorRegistry::TERRAIN_ACTOR_TYPE, terrain);
          CPPUNIT_ASSERT_MESSAGE("Could not create a terrain actor", terrain.valid());
-         terrain->GetActor(terrainDrawable);
+         terrain->GetDrawable(terrainDrawable);
 
-         dtDAL::ResourceActorProperty* rap = NULL;
+         dtCore::ResourceActorProperty* rap = NULL;
          terrain->GetProperty("TerrainMesh", rap);
          CPPUNIT_ASSERT(rap != NULL);
 
          // Load something really tiny.
-         rap->SetValue(dtDAL::ResourceDescriptor("StaticMeshes:Gun.ive"));
+         rap->SetValue(dtCore::ResourceDescriptor("StaticMeshes:Gun.ive"));
          CPPUNIT_ASSERT(!terrainDrawable->CheckForTerrainLoaded());
 
          mGameManager->AddActor(*terrain, false, false);

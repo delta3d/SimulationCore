@@ -73,7 +73,7 @@ namespace SimCore
       public:
 
          /// Constructor
-         DynamicLightPrototypeActor(dtGame::GameActorProxy &proxy);
+         DynamicLightPrototypeActor(dtGame::GameActorProxy& parent);
 
          // Intensity - the intensity is a multiplier of the effect of the light, can be used to disable or enable a light, typically 1 or 0
          void SetIntensity( float intensity ) { mIntensity = intensity; }
@@ -183,7 +183,7 @@ namespace SimCore
       public:
 
          /// Constructor
-         SpotLightPrototypeActor(dtGame::GameActorProxy &proxy);
+         SpotLightPrototypeActor(dtGame::GameActorProxy& parent);
 
       public:
 

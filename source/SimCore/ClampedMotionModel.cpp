@@ -47,8 +47,8 @@ namespace SimCore
       , mFreeLookMouseButton(dtCore::Mouse::RightButton)
       , mFreeLookByKey(false)
       , mFreeLookByMouseButton(false)
-      , mFreeLookWasHeld(false)
-      , mFreeLookMouseButtonWasHeld(false)
+//      , mFreeLookWasHeld(false)
+//      , mFreeLookMouseButtonWasHeld(false)
       , mRecenterMouse(false)
       , mResetRotation(false)
       , mReverseLeftRight(false)
@@ -61,9 +61,9 @@ namespace SimCore
       , mKeyboard(keyboard)
       , mDOF(NULL)
       , mTestMode(false)
-      , mTestTimeSincePrint(0.0f)
-      , mTestNumberOfZeros(0)
-      , mTestNumberOfCalls(0)
+//      , mTestTimeSincePrint(0.0f)
+//      , mTestNumberOfZeros(0)
+//      , mTestNumberOfCalls(0)
    {
    }
 
@@ -88,7 +88,7 @@ namespace SimCore
          //else 
             //std::cout << "    -- ZERO ZERO ZERO cur pos." << std::endl;
 
-         // Curt Hack - Mouse update test code         
+         // Hack - Mouse update test code
          //const double myTime = static_cast<const double*>(data->userData)[1];
          //mTestNumberOfCalls ++;
          //mTestTimeSincePrint += myTime;
@@ -105,7 +105,7 @@ namespace SimCore
          //   mTestNumberOfCalls = 0;
          //   mTestTimeSincePrint = 0.0f;
          //}
-         //// End Curt Mouse Test
+         //// End Mouse Test
 
 
          if( ! IsFreeLookHeld() )

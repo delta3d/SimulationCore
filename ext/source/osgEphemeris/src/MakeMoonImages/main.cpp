@@ -49,7 +49,10 @@ void printImage( osg::Image *image, const std::string &name )
 int main(int argc, char **argv )
 {
     if( argc < 3 )
+    {
+        fprintf(stderr, "Usage: %s <rgb_image> <normal_image>\n", argv[0] );
         return 1;
+    }
 
     std::string moonImageFile = std::string(argv[1]);
     std::string moonNormalImageFile = std::string(argv[2]);
@@ -64,6 +67,11 @@ int main(int argc, char **argv )
     printf( "\n#include <osgEphemeris/MoonModel.h>\n\n" );
 
     osg::ref_ptr<osg::Image> image = osgDB::readImageFile( moonImageFile );
+    if( !image.valid() )
+    {
+        fprintf( stderr, "Unable to open moon RGB ImageFile\"%s\"\n", moonImageFile.c_str() );
+        return 1;
+    }
 
     printf( "unsigned int osgEphemeris::MoonModel::_moonImageInternalTextureFormat = 0x%x;\n", image->getInternalTextureFormat() );
     printf( "unsigned int osgEphemeris::MoonModel::_moonImagePixelFormat           = 0x%x;\n", image->getPixelFormat() );
@@ -76,6 +84,12 @@ int main(int argc, char **argv )
     printImage( image.get(), "_moonImageLoLod" );
 
     image = osgDB::readImageFile( moonNormalImageFile );
+    if( !image.valid() )
+    {
+        fprintf( stderr, "Unable to open moon Normal ImageFile\"%s\"\n", moonImageFile.c_str() );
+        return 1;
+    }
+
     printf( "\n" );
     printf( "unsigned int osgEphemeris::MoonModel::_moonNormalImageInternalTextureFormat = 0x%x;\n", image->getInternalTextureFormat() );
     printf( "unsigned int osgEphemeris::MoonModel::_moonNormalImagePixelFormat           = 0x%x;\n", image->getPixelFormat() );

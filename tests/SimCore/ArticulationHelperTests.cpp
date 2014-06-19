@@ -35,8 +35,8 @@
 #include <dtCore/refptr.h>
 #include <dtCore/scene.h>
 #include <dtUtil/nodecollector.h>
-#include <dtDAL/namedparameter.h>
-#include <dtDAL/project.h>
+#include <dtCore/namedparameter.h>
+#include <dtCore/project.h>
 #include <dtGame/gamemanager.h>
 #include <osgSim/DOFTransform>
 
@@ -81,12 +81,12 @@ namespace SimCore
          void tearDown();
 
          // Utility Functions:
-         dtCore::RefPtr<dtDAL::NamedGroupParameter> CreateIncomingGroupParameter( 
+         dtCore::RefPtr<dtCore::NamedGroupParameter> CreateIncomingGroupParameter( 
             SimCore::Components::ArticulationMetricType& type );
 
          // Sub-Test Functions:
          void SubTestArticArrayGroupProperty(
-            const dtCore::RefPtr<dtDAL::NamedGroupParameter>& groupProperty,
+            const dtCore::RefPtr<dtCore::NamedGroupParameter>& groupProperty,
             const TestArticHelper& articHelper );
 
          // Test Functions:
@@ -124,7 +124,7 @@ namespace SimCore
             {}
 
             // Inherited Override Functions
-            virtual dtCore::RefPtr<dtDAL::NamedGroupParameter> BuildGroupProperty();
+            virtual dtCore::RefPtr<dtCore::NamedGroupParameter> BuildGroupProperty();
 
             virtual void UpdateDOFReferences( dtUtil::NodeCollector* nodeCollector );
 
@@ -140,13 +140,13 @@ namespace SimCore
             float GetTestMetricValue( const std::string& metricName ) const;
 
             // Utility Functions for Tests
-            const dtDAL::NamedGroupParameter* GetMetricParameter( 
-               const dtDAL::NamedGroupParameter& articulatedParam,
+            const dtCore::NamedGroupParameter* GetMetricParameter( 
+               const dtCore::NamedGroupParameter& articulatedParam,
                const std::string& metricParamName ) const;
 
-            float GetMetricValue( const dtDAL::NamedGroupParameter& metricParam ) const;
+            float GetMetricValue( const dtCore::NamedGroupParameter& metricParam ) const;
 
-            void GetMetricDOFNames( const dtDAL::NamedGroupParameter& metricParam,
+            void GetMetricDOFNames( const dtCore::NamedGroupParameter& metricParam,
                std::string& outDOFName, std::string& outDOFParentName ) const;
 
          protected:
@@ -173,10 +173,10 @@ namespace SimCore
          +SimCore::Components::ArticulationHelper::PARAM_NAME_SUFFIX_RATE);
 
       //////////////////////////////////////////////////////////////////////////
-      dtCore::RefPtr<dtDAL::NamedGroupParameter> TestArticHelper::BuildGroupProperty()
+      dtCore::RefPtr<dtCore::NamedGroupParameter> TestArticHelper::BuildGroupProperty()
       {
-         dtCore::RefPtr<dtDAL::NamedGroupParameter> articArrayProp 
-            = new dtDAL::NamedGroupParameter( GetArticulationArrayPropertyName() );
+         dtCore::RefPtr<dtCore::NamedGroupParameter> articArrayProp 
+            = new dtCore::NamedGroupParameter( GetArticulationArrayPropertyName() );
 
          AddArticulatedParameter( *articArrayProp,
             SimCore::Components::ArticulationMetricType::ARTICULATE_AZIMUTH,
@@ -240,29 +240,29 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      const dtDAL::NamedGroupParameter* TestArticHelper::GetMetricParameter( 
-         const dtDAL::NamedGroupParameter& articulatedParam,
+      const dtCore::NamedGroupParameter* TestArticHelper::GetMetricParameter( 
+         const dtCore::NamedGroupParameter& articulatedParam,
          const std::string& metricParamName ) const
       {
-         const dtDAL::NamedGroupParameter* metricParam
-            = dynamic_cast<const dtDAL::NamedGroupParameter*>
+         const dtCore::NamedGroupParameter* metricParam
+            = dynamic_cast<const dtCore::NamedGroupParameter*>
             (articulatedParam.GetParameter( 
                SimCore::Components::ArticulationHelper::PARAM_NAME_PREFIX_ARTICULATED + metricParamName ));
          return metricParam;
       }
 
       //////////////////////////////////////////////////////////////////////////
-      float TestArticHelper::GetMetricValue( const dtDAL::NamedGroupParameter& metricParam ) const
+      float TestArticHelper::GetMetricValue( const dtCore::NamedGroupParameter& metricParam ) const
       {
-         const dtDAL::NamedFloatParameter* valueParam = NULL;
+         const dtCore::NamedFloatParameter* valueParam = NULL;
 
-         std::vector<const dtDAL::NamedParameter*> params;
+         std::vector<const dtCore::NamedParameter*> params;
          metricParam.GetParameters( params );
 
          unsigned limit = params.size();
          for( unsigned i = 0; i < limit; ++i )
          {
-            valueParam = dynamic_cast<const dtDAL::NamedFloatParameter*> (params[i]);
+            valueParam = dynamic_cast<const dtCore::NamedFloatParameter*> (params[i]);
 
             if( valueParam != NULL )
             {
@@ -275,18 +275,18 @@ namespace SimCore
 
       //////////////////////////////////////////////////////////////////////////
       void TestArticHelper::GetMetricDOFNames( 
-         const dtDAL::NamedGroupParameter& metricParam,
+         const dtCore::NamedGroupParameter& metricParam,
          std::string& outDOFName, std::string& outDOFParentName ) const
       {
          // Get the direct DOF name.
-         const dtDAL::NamedStringParameter* dofNameParam
-            = dynamic_cast<const dtDAL::NamedStringParameter*>
+         const dtCore::NamedStringParameter* dofNameParam
+            = dynamic_cast<const dtCore::NamedStringParameter*>
             (metricParam.GetParameter(SimCore::Components::ArticulationHelper::PARAM_NAME_DOF));
 
          outDOFName = dofNameParam != NULL ? dofNameParam->GetValue() : "";
 
          // Get the name of the DOF that parents the direct DOF.
-         dofNameParam = dynamic_cast<const dtDAL::NamedStringParameter*>
+         dofNameParam = dynamic_cast<const dtCore::NamedStringParameter*>
             (metricParam.GetParameter(SimCore::Components::ArticulationHelper::PARAM_NAME_DOF_PARENT));
 
          outDOFParentName = dofNameParam != NULL ? dofNameParam->GetValue() : "";
@@ -380,13 +380,13 @@ namespace SimCore
          CPPUNIT_ASSERT( mHelper->IsDirty() );
 
          // Compare the generated group parameter with the helper's values.
-         dtCore::RefPtr<dtDAL::NamedGroupParameter> articProp = mHelper->BuildGroupProperty();
+         dtCore::RefPtr<dtCore::NamedGroupParameter> articProp = mHelper->BuildGroupProperty();
          SubTestArticArrayGroupProperty( articProp, *mHelper );
       }
 
       //////////////////////////////////////////////////////////////////////////
       void ArticulationHelperTests::SubTestArticArrayGroupProperty(
-         const dtCore::RefPtr<dtDAL::NamedGroupParameter>& groupProperty,
+         const dtCore::RefPtr<dtCore::NamedGroupParameter>& groupProperty,
          const TestArticHelper& helper )
       {
          CPPUNIT_ASSERT( groupProperty.valid() );
@@ -411,7 +411,7 @@ namespace SimCore
          // Test each metric parameter contained in the helper and articulation
          // group parameter.
          const std::string* curMetricName = NULL;
-         const dtDAL::NamedGroupParameter* curMetricParam = NULL;
+         const dtCore::NamedGroupParameter* curMetricParam = NULL;
          for( unsigned i = 0; i < limit; ++i )
          {
             curMetricName = metricNames[i];

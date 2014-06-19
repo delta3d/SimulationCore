@@ -30,8 +30,8 @@
 #include <StealthViewer/Qt/HLAWindow.h>
 #include <StealthViewer/Qt/StealthViewerSettings.h>
 #include <dtUtil/fileutils.h>
-#include <dtDAL/project.h>
-#include <dtDAL/map.h>
+#include <dtCore/project.h>
+#include <dtCore/map.h>
 #include <dtGame/gamemanager.h>
 #include <dtABC/application.h>
 #include <QtGui/QApplication>

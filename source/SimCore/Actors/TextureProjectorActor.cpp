@@ -24,7 +24,7 @@
 #include <SimCore/Actors/TextureProjectorActor.h>
 #include <SimCore/Components/TextureProjectorComponent.h>
 
-#include <dtDAL/resourcedescriptor.h>
+#include <dtCore/resourcedescriptor.h>
 #include <dtCore/transform.h>
 
 #include <dtGame/basemessages.h>
@@ -39,7 +39,7 @@ namespace SimCore
    namespace Actors
    {
       /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      TextureProjectorActor::TextureProjectorActor(dtGame::GameActorProxy &proxy) : dtGame::GameActor(proxy)
+      TextureProjectorActor::TextureProjectorActor(dtGame::GameActorProxy& owner) : dtGame::GameActor(owner)
          , mCurrentTime(0)
          , mMaxTime(5)
          , mCurrentAlpha(0)

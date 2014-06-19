@@ -30,7 +30,7 @@
 #include <SimCore/Actors/WeaponActor.h>
 #include <SimCore/CollisionGroupEnum.h>
 
-#include <dtDAL/enginepropertytypes.h>
+#include <dtCore/enginepropertytypes.h>
 
 #include <dtGame/basemessages.h>
 
@@ -98,13 +98,15 @@ namespace SimCore
 
                if(physicsHelper != NULL)
                {
+                  dtGame::GameActorProxy* hitActor;
                   // null checked up above in the return
-                  physicsHelper->GetOwner(hitTarget);
+                  physicsHelper->GetOwner(hitActor);
+                  hitActor->GetDrawable(hitTarget);
                }
 
                // We don't want to hit ourselves.  So, if we don't have a 'self' owner, then we take
                // whatever hit we get.  Otherwise, we check the owner drawables
-               if (mOwnerActor == NULL || hitTarget != mOwnerActor
+               if ((mOwnerActor == NULL || hitTarget != mOwnerActor)
                         // So we dont want to return false if collision is off, this onHit is called for
                         // every hit along the line, and returning false tells it to stop the raycast
                         // report, its amazing how rereading the sdk can help so much :(
@@ -243,8 +245,8 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////
-      MunitionParticlesActor::MunitionParticlesActor(dtGame::GameActorProxy& proxy)
-      : PhysicsParticleSystemActor(proxy)
+      MunitionParticlesActor::MunitionParticlesActor(dtGame::GameActorProxy& owner)
+      : PhysicsParticleSystemActor(owner)
       , mUseTracers(false)
       , mCurrentTracerRoundNumber(0)
       , mFrequencyOfTracers(10)
@@ -335,10 +337,10 @@ namespace SimCore
 
                   if (report.mClosestHitsObject != NULL && physActComp != NULL)
                   {
-                        dtGame::GameActor* ga = NULL;
+                        dtGame::GameActorProxy* ga = NULL;
                         physActComp->GetOwner(ga);
 
-                        mWeapon->ReceiveContactReport(contactReport, &ga->GetGameActorProxy());
+                        mWeapon->ReceiveContactReport(contactReport, ga);
                   }
                   else
                   {
@@ -587,14 +589,14 @@ namespace SimCore
          MunitionParticlesActor* actor = NULL;
          GetActor(actor);
 
-         AddProperty(new dtDAL::IntActorProperty("FrequencyOfTracers", "FrequencyOfTracers",
-                  dtDAL::IntActorProperty::SetFuncType(actor, &MunitionParticlesActor::SetFrequencyOfTracers),
-                  dtDAL::IntActorProperty::GetFuncType(actor, &MunitionParticlesActor::GetFrequencyOfTracers),
+         AddProperty(new dtCore::IntActorProperty("FrequencyOfTracers", "FrequencyOfTracers",
+                  dtCore::IntActorProperty::SetFuncType(actor, &MunitionParticlesActor::SetFrequencyOfTracers),
+                  dtCore::IntActorProperty::GetFuncType(actor, &MunitionParticlesActor::GetFrequencyOfTracers),
                   "", GROUP));
 
-         AddProperty(new dtDAL::BooleanActorProperty("UseTracers", "UseTracers",
-                  dtDAL::BooleanActorProperty::SetFuncType(actor, &MunitionParticlesActor::SetSystemToUseTracers),
-                  dtDAL::BooleanActorProperty::GetFuncType(actor, &MunitionParticlesActor::GetSystemToUseTracers),
+         AddProperty(new dtCore::BooleanActorProperty("UseTracers", "UseTracers",
+                  dtCore::BooleanActorProperty::SetFuncType(actor, &MunitionParticlesActor::SetSystemToUseTracers),
+                  dtCore::BooleanActorProperty::GetFuncType(actor, &MunitionParticlesActor::GetSystemToUseTracers),
                   "", GROUP));
       }
 
