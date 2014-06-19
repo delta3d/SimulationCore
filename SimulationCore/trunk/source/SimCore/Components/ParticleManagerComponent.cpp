@@ -362,11 +362,11 @@ namespace SimCore
             mWindWasUpdated = true;
 
             // Update the physics particles wind....
-            std::vector<dtDAL::ActorProxy*> toFill;
-            GetGameManager()->FindActorsByClassName("NxAgeiaParticleSystemActor", toFill);
+            std::vector<dtCore::ActorProxy*> toFill;
+            GetGameManager()->FindActorsByClassName("PhysicsParticleSystemActor", toFill);
             if (!toFill.empty())
             {
-               std::vector<dtDAL::ActorProxy*>::iterator toFillInIter = toFill.begin();
+               std::vector<dtCore::ActorProxy*>::iterator toFillInIter = toFill.begin();
                for (; toFillInIter != toFill.end(); ++toFillInIter)
                {
                    SimCore::Actors::PhysicsParticleSystemActor* currentParticleSystem = NULL;
@@ -410,7 +410,7 @@ namespace SimCore
             return false;
          }
 
-		 particles.GetOSGNode()->setNodeMask(SimCore::Components::RenderingSupportComponent::DISABLE_SHADOW_NODE_MASK);
+         particles.GetOSGNode()->setNodeMask(SimCore::Components::RenderingSupportComponent::DISABLE_SHADOW_NODE_MASK);
 
          bool success = mIdToInfoMap.insert(
             std::make_pair( particles.GetUniqueId(), new ParticleInfo( particles, attrFlags, priority ) )
@@ -784,7 +784,7 @@ namespace SimCore
          {
             //osgParticle::ParticleSystem* ref = &itor->GetParticleSystem();
 
-            //attaching a shader to the particle, one for emmisive particles the other for non emmisive
+            //attaching a shader to the particle, one for emissive particles the other for non emissive
             dtCore::ParticleLayer& pLayer = *itor;
             osg::StateSet* ss = pLayer.GetParticleSystem().getOrCreateStateSet();
             std::string shaderName = (ss->getMode(GL_LIGHTING) == osg::StateAttribute::ON) ? "NonEmissive" : "Emissive";
@@ -812,10 +812,10 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////
-      bool ParticleManagerComponent::RegisterActor( dtGame::GameActorProxy& proxy )
+      bool ParticleManagerComponent::RegisterActor( dtGame::GameActorProxy& actor )
       {
          return mIdToActorMap.insert(
-            std::make_pair( proxy.GetId(), new ActorInfo( proxy ) )
+            std::make_pair( actor.GetId(), new ActorInfo( actor ) )
             ).second;
       }
 
@@ -831,12 +831,12 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////
-      ActorInfo::ActorInfo( dtGame::GameActorProxy& proxy )
+      ActorInfo::ActorInfo( dtGame::GameActorProxy& actor )
          :  dtCore::Base("ActorInfo")
       {
          // Using the set function in case more needs to be
          // done to the info based on the passed in particles.
-         Set( proxy );
+         Set( actor );
       }
 
 
@@ -852,9 +852,9 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////
-      void ActorInfo::Set( dtGame::GameActorProxy& proxy )
+      void ActorInfo::Set( dtGame::GameActorProxy& actor )
       {
-         mRef = &proxy;
+         mRef = &actor;
       }
 
       //////////////////////////////////////////////////////////

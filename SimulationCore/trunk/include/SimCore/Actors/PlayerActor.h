@@ -42,7 +42,7 @@ namespace SimCore
          typedef StealthActor BaseClass;
 
          /// Constructor
-         PlayerActor(dtGame::GameActorProxy &proxy);
+         PlayerActor(dtGame::GameActorProxy& parent);
 
          /// Destructor
          virtual ~PlayerActor();

@@ -31,7 +31,7 @@
 #include <dtGame/actorupdatemessage.h>
 #include <dtGame/defaultmessageprocessor.h>
 #include <dtGame/deadreckoningcomponent.h>
-#include <dtDAL/enginepropertytypes.h>
+#include <dtCore/enginepropertytypes.h>
 #include <dtCore/system.h>
 #include <dtCore/scene.h>
 #include <dtCore/timer.h>
@@ -116,10 +116,10 @@ void PauseResumeTests::TestPauseAndResume()
    mGM->SetPaused(true);
    CPPUNIT_ASSERT(mGM->IsPaused());
 
-   static_cast<dtDAL::Vec3ActorProperty*>(gap->GetProperty("Velocity Vector"))->SetValue(osg::Vec3(0, 10, 0));
-   static_cast<dtDAL::Vec3ActorProperty*>(gap->GetProperty("Last Known Translation"))->SetValue(osg::Vec3(0, 0, 0));
-   static_cast<dtDAL::Vec3ActorProperty*>(gap->GetProperty("Last Known Rotation"))->SetValue(osg::Vec3(0, 0, 0));
-   static_cast<dtDAL::EnumActorProperty<dtGame::DeadReckoningAlgorithm>*>(gap->GetProperty("Dead Reckoning Algorithm"))->SetValue(dtGame::DeadReckoningAlgorithm::VELOCITY_ONLY);
+   static_cast<dtCore::Vec3ActorProperty*>(gap->GetProperty("Velocity Vector"))->SetValue(osg::Vec3(0, 10, 0));
+   static_cast<dtCore::Vec3ActorProperty*>(gap->GetProperty("Last Known Translation"))->SetValue(osg::Vec3(0, 0, 0));
+   static_cast<dtCore::Vec3ActorProperty*>(gap->GetProperty("Last Known Rotation"))->SetValue(osg::Vec3(0, 0, 0));
+   static_cast<dtCore::EnumActorProperty<dtGame::DeadReckoningAlgorithm>*>(gap->GetProperty("Dead Reckoning Algorithm"))->SetValue(dtGame::DeadReckoningAlgorithm::VELOCITY_ONLY);
    osg::Vec3 oldPos = gap->GetTranslation();
 
    //Step to init the dr stuff, since sim time change should be 0.

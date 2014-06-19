@@ -76,7 +76,7 @@ namespace SimCore
       {
       public:
          /// constructor for NxAgeiaBaseActor
-         MunitionParticlesActor(dtGame::GameActorProxy& proxy);
+         MunitionParticlesActor(dtGame::GameActorProxy& parent);
 
          /**
          * This method is an invokable called when an object is local and

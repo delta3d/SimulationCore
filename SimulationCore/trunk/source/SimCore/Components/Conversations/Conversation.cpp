@@ -23,13 +23,13 @@
 // INCLUDE DIRECTIVES
 ////////////////////////////////////////////////////////////////////////////////
 #include <prefix/SimCorePrefix.h>
-#include <dtDAL/gameevent.h>
-#include <dtDAL/gameeventmanager.h>
+#include <dtCore/gameevent.h>
+#include <dtCore/gameeventmanager.h>
 #include <dtUtil/stringutils.h>
 #include <dtUtil/fileutils.h>
 #include <dtUtil/mathdefines.h>
 #include <dtUtil/log.h>
-#include <dtDAL/project.h>
+#include <dtCore/project.h>
 #include <SimCore/Components/Conversations/Conversation.h>
 #include <SimCore/Components/Conversations/Response.h>
 
@@ -164,7 +164,7 @@ namespace SimCore
          ClearData();
 
          //attempt to load conversation xml
-         std::string fileWithPath = dtDAL::Project::GetInstance().GetContext() + dtUtil::FileUtils::PATH_SEPARATOR + "Conversations" + dtUtil::FileUtils::PATH_SEPARATOR + filename;
+         std::string fileWithPath = dtCore::Project::GetInstance().GetContext() + dtUtil::FileUtils::PATH_SEPARATOR + "Conversations" + dtUtil::FileUtils::PATH_SEPARATOR + filename;
          if(dtUtil::FileUtils::GetInstance().FileExists(fileWithPath))
          {
             XMLHandler handler(this);
@@ -185,11 +185,11 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      dtDAL::GameEvent* Conversation::LookupGameEvent(const std::string& str) const
+      dtCore::GameEvent* Conversation::LookupGameEvent(const std::string& str) const
       {
-         dtDAL::GameEventManager& eventManager = dtDAL::GameEventManager::GetInstance();
+         dtCore::GameEventManager& eventManager = dtCore::GameEventManager::GetInstance();
 
-         dtDAL::GameEvent* ge = eventManager.FindEvent(str);
+         dtCore::GameEvent* ge = eventManager.FindEvent(str);
          if(ge == NULL && str != "")
          {
             LOG_WARNING("Error loading conversation file, did not find GameEvent of name '" + str + "' in current map.")
@@ -208,19 +208,19 @@ namespace SimCore
       };
 
       //////////////////////////////////////////////////////////////////////////
-      void Conversation::HandleGameEvent( dtDAL::GameEvent* ge )
+      void Conversation::HandleGameEvent( dtCore::GameEvent* ge )
       {
          std::for_each(mCommands.lower_bound(ge), mCommands.upper_bound(ge), funcExecuteCommands());
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void Conversation::AddCommand(dtDAL::GameEvent* ge, Command<void>* com)
+      void Conversation::AddCommand(dtCore::GameEvent* ge, Command<void>* com)
       {
          mCommands.insert(std::make_pair(ge, com));
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void Conversation::AddResponseEvent(Response* r, dtDAL::GameEvent* ge)
+      void Conversation::AddResponseEvent(Response* r, dtCore::GameEvent* ge)
       {
          mResponseEvents.insert(std::make_pair(r, ge));
       }
@@ -326,7 +326,7 @@ namespace SimCore
             if(enableeventiter != results.end())
             {
                std::string str((*enableeventiter).second);
-               dtDAL::GameEvent* ge = mManager->LookupGameEvent(str);
+               dtCore::GameEvent* ge = mManager->LookupGameEvent(str);
                if(ge != NULL)
                {
                   mManager->AddCommand(ge, mManager->CreateCommand(mCurrentInteraction.get(), true));
@@ -336,7 +336,7 @@ namespace SimCore
             if(disableeventiter != results.end())
             {
                std::string str((*disableeventiter).second);
-               dtDAL::GameEvent* ge = mManager->LookupGameEvent(str);
+               dtCore::GameEvent* ge = mManager->LookupGameEvent(str);
                if(ge != NULL)
                {
                   mManager->AddCommand(ge, mManager->CreateCommand(mCurrentInteraction.get(), false));
@@ -377,7 +377,7 @@ namespace SimCore
 
             if(eventiter != results.end())
             {
-               dtDAL::GameEvent* ge = mManager->LookupGameEvent((*eventiter).second);
+               dtCore::GameEvent* ge = mManager->LookupGameEvent((*eventiter).second);
                if(ge != NULL)
                {
                   mManager->AddResponseEvent(mCurrentResponse.get(), ge);
@@ -393,7 +393,7 @@ namespace SimCore
             if(enableeventiter != results.end())
             {
                std::string str((*enableeventiter).second);
-               dtDAL::GameEvent* ge = mManager->LookupGameEvent(str);
+               dtCore::GameEvent* ge = mManager->LookupGameEvent(str);
                if(ge != NULL)
                {
                   mManager->AddCommand(ge, mManager->CreateCommand(mCurrentResponse.get(), true));
@@ -403,7 +403,7 @@ namespace SimCore
             if(disableeventiter != results.end())
             {
                std::string str((*disableeventiter).second);
-               dtDAL::GameEvent* ge = mManager->LookupGameEvent(str);
+               dtCore::GameEvent* ge = mManager->LookupGameEvent(str);
                if(ge != NULL)
                {
                   mManager->AddCommand(ge, mManager->CreateCommand(mCurrentResponse.get(), false));
@@ -437,7 +437,7 @@ namespace SimCore
                if(eventiter != results.end())
                {
                   std::string str2((*eventiter).second);
-                  dtDAL::GameEvent* ge = mManager->LookupGameEvent(str2);
+                  dtCore::GameEvent* ge = mManager->LookupGameEvent(str2);
                   if(ge != NULL)
                   {
                      mManager->AddResponseEvent(r, ge);
@@ -630,7 +630,7 @@ namespace SimCore
             std::string gameEventString = dtUtil::XMLStringConverter(chars).ToString();
             if(!gameEventString.empty())
             {
-               dtDAL::GameEvent* ge = mManager->LookupGameEvent(gameEventString);
+               dtCore::GameEvent* ge = mManager->LookupGameEvent(gameEventString);
                if(ge != NULL)
                {
                   if(mInConversation && !mInResponse)

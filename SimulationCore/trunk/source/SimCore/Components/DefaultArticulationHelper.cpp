@@ -28,7 +28,7 @@
 #include <osgSim/DOFTransform>
 #include <dtUtil/nodecollector.h>
 #include <dtGame/deadreckoninghelper.h>
-#include <dtDAL/namedparameter.h>
+#include <dtCore/namedparameter.h>
 #include <SimCore/Components/DefaultArticulationHelper.h>
 
 
@@ -50,10 +50,10 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////
-      dtCore::RefPtr<dtDAL::NamedGroupParameter> DefaultArticulationHelper::BuildGroupProperty()
+      dtCore::RefPtr<dtCore::NamedGroupParameter> DefaultArticulationHelper::BuildGroupProperty()
       {
-         dtCore::RefPtr<dtDAL::NamedGroupParameter> articArrayProp 
-            = new dtDAL::NamedGroupParameter( GetArticulationArrayPropertyName() );
+         dtCore::RefPtr<dtCore::NamedGroupParameter> articArrayProp 
+            = new dtCore::NamedGroupParameter( GetArticulationArrayPropertyName() );
          return articArrayProp;
       }
 

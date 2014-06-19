@@ -158,7 +158,7 @@ namespace SimCore
          protected:
 
             // Constructor
-            ViewerMaterialActor(dtGame::GameActorProxy &proxy);
+            ViewerMaterialActor(dtGame::GameActorProxy& parent);
 
             // Destructor
             virtual ~ViewerMaterialActor() {};

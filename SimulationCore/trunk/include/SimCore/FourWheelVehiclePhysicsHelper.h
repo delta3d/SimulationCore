@@ -157,13 +157,11 @@ namespace SimCore
       std::vector<WheelType>   mWheels;                //!< All of the vehicle's wheels
 
       float            mCurrentNormalizedSteering;     //!< Current steering from -1.0 to 1.0
-      float            mCurrentEngineTorque;      //!< Current torque from engine: depends on mAccelerator and mEngineTorque
       float            mCurrentNormalizedBrakes;  //!< Current brakes from 0-1
       float            mAxleRotation[2];          //!< The current rotational velocity of each axle
       float            mAccelerator;              //!< current normalized pedal position
       float            mFrontMaxJounce;           //!< Vertical translation of front wheel (relative to body) with suspension fully compressed.
       float            mRearMaxJounce;            //!< Vertical translation of rear wheel (relative to body) with suspension fully compressed.
-      bool             mFourWheelDrive;           //!< Is this vehicle using 4 wheel drive or not? affects speed
    };
 }
 #endif //DELTA_FOUR_WHEEL_VEHICLE_PHYSICS_HELPER

@@ -21,7 +21,7 @@
 #include <dtPhysics/physicsmaterials.h>
 //#include <NxAgeiaWorldComponent.h>
 //#include <NxAgeiaRaycastReport.h>
-#include <dtDAL/enginepropertytypes.h>
+#include <dtCore/enginepropertytypes.h>
 #include <dtABC/application.h>
 #include <dtAudio/audiomanager.h>
 #include <dtAudio/sound.h>
@@ -299,11 +299,11 @@ namespace DriverDemo
       SimCore::Actors::BasePhysicsVehicleActorProxy::BuildPropertyMap();
 
       HoverVehicleActor* actor = NULL;
-      GetActor(actor);
+      GetDrawable(actor);
 
-      AddProperty(new dtDAL::BooleanActorProperty("VehicleIsTheTurret", "Vehicle Is The Turret",
-               dtDAL::BooleanActorProperty::SetFuncType(actor, &HoverVehicleActor::SetVehicleIsTurret),
-               dtDAL::BooleanActorProperty::GetFuncType(actor, &HoverVehicleActor::GetVehicleIsTurret),
+      AddProperty(new dtCore::BooleanActorProperty("VehicleIsTheTurret", "Vehicle Is The Turret",
+               dtCore::BooleanActorProperty::SetFuncType(actor, &HoverVehicleActor::SetVehicleIsTurret),
+               dtCore::BooleanActorProperty::GetFuncType(actor, &HoverVehicleActor::GetVehicleIsTurret),
                "True means the turret and the vehicle rotate together (unlike a HMMWV with a distinct turret).", VEH_GROUP));
    }
 
@@ -324,9 +324,6 @@ namespace DriverDemo
    ///////////////////////////////////////////////////////////////////////////////////
    void HoverVehicleActorProxy::BuildActorComponents()
    {
-      dtGame::GameActor* owner = NULL;
-      GetActor(owner);
-
       if (!HasComponent(dtPhysics::PhysicsActComp::TYPE))
       {
          AddComponent(*new HoverVehiclePhysicsActComp());

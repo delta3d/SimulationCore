@@ -71,7 +71,7 @@ namespace StealthGM
 
          virtual bool HandleKeyPressed(const dtCore::Keyboard* keyboard, int key);
 
-         dtDAL::ActorProxy* GetTerrainActor();
+         dtCore::ActorProxy* GetTerrainActor();
 
          void SetConnectionParameters(const std::string& executionName,
             const std::string& fedFile,

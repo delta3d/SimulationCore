@@ -213,7 +213,7 @@ namespace NetDemo
    {
    }
 
-   void BaseAIHelper::RegisterProperties(dtDAL::PropertyContainer& pc, const std::string& group)
+   void BaseAIHelper::RegisterProperties(dtCore::PropertyContainer& pc, const std::string& group)
    {
       BaseClass::RegisterProperties(pc, group);
    }

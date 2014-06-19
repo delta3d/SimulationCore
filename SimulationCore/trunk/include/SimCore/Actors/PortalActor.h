@@ -36,7 +36,7 @@ namespace SimCore
       class SIMCORE_EXPORT Portal : public dtGame::GameActor
       {
          public:
-            Portal(dtGame::GameActorProxy& proxy);
+            Portal(dtGame::GameActorProxy& parent);
 
             //////////////////////////////////////////////////////////////////
             void  SetActorLink(dtCore::BaseActorObject* linked)

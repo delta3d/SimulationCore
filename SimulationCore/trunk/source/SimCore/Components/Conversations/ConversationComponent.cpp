@@ -28,7 +28,7 @@
 #include <dtGame/messagefactory.h>
 #include <dtUtil/stringutils.h>
 #include <dtUtil/fileutils.h>
-#include <dtDAL/project.h>
+#include <dtCore/project.h>
 #include <SimCore/Messages.h>
 #include <SimCore/MessageType.h>
 #include <SimCore/Components/Conversations/ConversationComponent.h>
@@ -102,7 +102,7 @@ namespace SimCore
                = static_cast<const dtGame::GameEventMessage&>(message);
 
             //TODO- Investigate this const cast, even with a const iterator it still doesnt work without it
-            dtDAL::GameEvent* ge = const_cast<dtDAL::GameEvent*>(eventMessage.GetGameEvent());
+            dtCore::GameEvent* ge = const_cast<dtCore::GameEvent*>(eventMessage.GetGameEvent());
 
             //first send to the conversations
             SendGameEventToConversations(ge);
@@ -241,7 +241,7 @@ namespace SimCore
 
       //////////////////////////////////////////////////////////////////////////
       //TODO: THIS CODE IS ALSO IN WORLDITEMACTOR, AND THE INPUT COMPONENT, PERHAPS MOVE TO UTILS.H
-      void ConversationComponent::SendGameEvent(const dtDAL::GameEvent* pEvent )
+      void ConversationComponent::SendGameEvent(const dtCore::GameEvent* pEvent )
       {
          dtGame::GameManager& mgr = *GetGameManager();
          dtCore::RefPtr<dtGame::Message> msg = 
@@ -249,7 +249,7 @@ namespace SimCore
 
          dtGame::GameEventMessage& gem = static_cast<dtGame::GameEventMessage&>(*msg);
          //why can't I send a const game event????
-         gem.SetGameEvent(const_cast<dtDAL::GameEvent&>(*pEvent));
+         gem.SetGameEvent(const_cast<dtCore::GameEvent&>(*pEvent));
          mgr.SendMessage(gem);
       }
 
@@ -260,7 +260,7 @@ namespace SimCore
          srand(time(NULL));
 
          //attempt to load conversation xml
-         std::string fileWithPath = dtDAL::Project::GetInstance().GetContext() + dtUtil::FileUtils::PATH_SEPARATOR + "Conversations" + dtUtil::FileUtils::PATH_SEPARATOR + filename;
+         std::string fileWithPath = dtCore::Project::GetInstance().GetContext() + dtUtil::FileUtils::PATH_SEPARATOR + "Conversations" + dtUtil::FileUtils::PATH_SEPARATOR + filename;
          if(dtUtil::FileUtils::GetInstance().FileExists(fileWithPath))
          {
             XMLHandler handler(this);
@@ -274,7 +274,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void ConversationComponent::RegisterConversation( dtDAL::GameEvent* ge, Conversation* conv )
+      void ConversationComponent::RegisterConversation( dtCore::GameEvent* ge, Conversation* conv )
       {
          if(mConversations.find(ge) != mConversations.end())
          {
@@ -290,7 +290,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       struct funcSendGameEvents
       {
-            funcSendGameEvents(dtDAL::GameEvent* ge): mEvent(ge){}
+            funcSendGameEvents(dtCore::GameEvent* ge): mEvent(ge){}
 
             template <class T>
             void operator()(T& t)
@@ -299,11 +299,11 @@ namespace SimCore
             }
 
          private:
-            dtDAL::GameEvent* mEvent;
+            dtCore::GameEvent* mEvent;
       };
 
       //////////////////////////////////////////////////////////////////////////
-      void ConversationComponent::SendGameEventToConversations( dtDAL::GameEvent* ge )
+      void ConversationComponent::SendGameEventToConversations( dtCore::GameEvent* ge )
       {
          std::for_each(mConversations.begin(), mConversations.end(), funcSendGameEvents(ge));
       }

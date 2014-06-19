@@ -81,7 +81,7 @@ namespace SimCore
 
             static const std::string DEFAULT_NAME;
             /// Constructor
-            TerrainActor(dtGame::GameActorProxy& proxy);
+            TerrainActor(dtGame::GameActorProxy& parent);
 
             /**
              * Loads a mesh file which contains terrain.
@@ -185,15 +185,15 @@ namespace SimCore
              * render mode is RenderMode::DRAW_BILLBOARD_ICON.
              * @return a pointer to the icon
              */
-            virtual dtDAL::ActorProxyIcon* GetBillBoardIcon();
+            virtual dtCore::ActorProxyIcon* GetBillBoardIcon();
 
             /**
              * Gets the current render mode for positional lights.
-             * @return dtDAL::BaseActorObject::RenderMode::DRAW_ACTOR_AND_BILLBOARD_ICON.
+             * @return dtCore::BaseActorObject::RenderMode::DRAW_ACTOR_AND_BILLBOARD_ICON.
              */
-            virtual const dtDAL::BaseActorObject::RenderMode& GetRenderMode()
+            virtual const dtCore::BaseActorObject::RenderMode& GetRenderMode()
             {
-               return dtDAL::BaseActorObject::RenderMode::DRAW_ACTOR_AND_BILLBOARD_ICON;
+               return dtCore::BaseActorObject::RenderMode::DRAW_ACTOR_AND_BILLBOARD_ICON;
             }
 
             void HandleNodeLoaded(const dtGame::TimerElapsedMessage& timerElapsed);

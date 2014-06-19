@@ -34,13 +34,13 @@
 #include <dtCore/timer.h>
 #include <dtCore/deltawin.h>
 
-#include <dtDAL/actorproxy.h>
-#include <dtDAL/actorproperty.h>
-#include <dtDAL/project.h>
-#include <dtDAL/gameevent.h>
-#include <dtDAL/gameeventmanager.h>
-#include <dtDAL/map.h>
-#include <dtDAL/librarymanager.h>
+#include <dtCore/actorproxy.h>
+#include <dtCore/actorproperty.h>
+#include <dtCore/project.h>
+#include <dtCore/gameevent.h>
+#include <dtCore/gameeventmanager.h>
+#include <dtCore/map.h>
+#include <dtCore/librarymanager.h>
 
 #include <dtAudio/audiomanager.h>
 
@@ -87,7 +87,7 @@ void PrintMissing(const container& c)
 }
 
 /////////////////////////////////////////////////////////////////////
-void PrintMissingData(dtDAL::Map& m)
+void PrintMissingData(dtCore::Map& m)
 {
    std::cerr << m.GetName() << " tried to load the following actor types, but they were not found.\n";
    PrintMissing(m.GetMissingActorTypes());
@@ -98,7 +98,7 @@ void PrintMissingData(dtDAL::Map& m)
 }
 
 /////////////////////////////////////////////////////////////////////
-void MergeLibraries(dtDAL::Map& mapFrom, dtDAL::Map& mapTo)
+void MergeLibraries(dtCore::Map& mapFrom, dtCore::Map& mapTo)
 {
    const std::vector<std::string>& libs = mapFrom.GetAllLibraries();
    std::vector<std::string>::const_iterator i, iend;
@@ -117,18 +117,18 @@ void MergeLibraries(dtDAL::Map& mapFrom, dtDAL::Map& mapTo)
 }
 
 /////////////////////////////////////////////////////////////////////
-void SyncProperties(const dtDAL::ActorProxy& from, dtDAL::ActorProxy& to, std::set<std::string> ignorePropsSet)
+void SyncProperties(const dtCore::ActorProxy& from, dtCore::ActorProxy& to, std::set<std::string> ignorePropsSet)
 {
    bool actorPropChanged = false;
-   std::vector<const dtDAL::ActorProperty*> props;
+   std::vector<const dtCore::ActorProperty*> props;
    from.GetPropertyList(props);
 
-   std::vector<const dtDAL::ActorProperty*>::const_iterator i, iend;
+   std::vector<const dtCore::ActorProperty*>::const_iterator i, iend;
    i = props.begin();
    iend = props.end();
    for (; i != iend; ++i)
    {
-      const dtDAL::ActorProperty& curProp = **i;
+      const dtCore::ActorProperty& curProp = **i;
       if (curProp.IsReadOnly())
       {
          continue;
@@ -137,7 +137,7 @@ void SyncProperties(const dtDAL::ActorProxy& from, dtDAL::ActorProxy& to, std::s
       /// make sure the property name is not in the ignore set.
       if (ignorePropsSet.find(curProp.GetName()) == ignorePropsSet.end())
       {
-         dtDAL::ActorProperty* toProp = to.GetProperty(curProp.GetName());
+         dtCore::ActorProperty* toProp = to.GetProperty(curProp.GetName());
          if (toProp == NULL)
          {
             std::cerr << "Proxies with the same Id, don't have the same properties??" << std::endl
@@ -174,17 +174,17 @@ void SyncProperties(const dtDAL::ActorProxy& from, dtDAL::ActorProxy& to, std::s
 }
 
 /////////////////////////////////////////////////////////////////////
-void MergeProxies(dtDAL::Map& mapFrom, dtDAL::Map& mapTo, std::set<std::string> ignorePropsSet)
+void MergeProxies(dtCore::Map& mapFrom, dtCore::Map& mapTo, std::set<std::string> ignorePropsSet)
 {
-   std::vector<dtCore::RefPtr<dtDAL::ActorProxy> > proxiesFrom;
+   std::vector<dtCore::RefPtr<dtCore::ActorProxy> > proxiesFrom;
    mapFrom.GetAllProxies(proxiesFrom);
-   std::vector<dtCore::RefPtr<dtDAL::ActorProxy> >::iterator i, iend;
+   std::vector<dtCore::RefPtr<dtCore::ActorProxy> >::iterator i, iend;
    i = proxiesFrom.begin();
    iend = proxiesFrom.end();
    for (; i != iend; ++i)
    {
-      dtDAL::ActorProxy& mapFromProxyCurrent = **i;
-      dtDAL::ActorProxy* foundProxy = mapTo.GetProxyById(mapFromProxyCurrent.GetId());
+      dtCore::ActorProxy& mapFromProxyCurrent = **i;
+      dtCore::ActorProxy* foundProxy = mapTo.GetProxyById(mapFromProxyCurrent.GetId());
       if (foundProxy != NULL)
       {
          SyncProperties(mapFromProxyCurrent, *foundProxy, ignorePropsSet);
@@ -198,19 +198,19 @@ void MergeProxies(dtDAL::Map& mapFrom, dtDAL::Map& mapTo, std::set<std::string> 
 }
 
 /////////////////////////////////////////////////////////////////////
-void MergeEvents(dtDAL::Map& mapFrom, dtDAL::Map& mapTo)
+void MergeEvents(dtCore::Map& mapFrom, dtCore::Map& mapTo)
 {
-   std::vector<dtDAL::GameEvent* > mapFromEvents;
+   std::vector<dtCore::GameEvent* > mapFromEvents;
    mapFrom.GetEventManager().GetAllEvents(mapFromEvents);
 
-   dtDAL::GameEventManager& mapToEventMan = mapTo.GetEventManager();
-   std::vector<dtDAL::GameEvent* >::iterator i, iend;
+   dtCore::GameEventManager& mapToEventMan = mapTo.GetEventManager();
+   std::vector<dtCore::GameEvent* >::iterator i, iend;
    i = mapFromEvents.begin();
    iend = mapFromEvents.end();
    for (; i != iend; i++)
    {
-      dtDAL::GameEvent* curEvent =  *i;
-      dtDAL::GameEvent* foundEvent = mapToEventMan.FindEvent(curEvent->GetUniqueId());
+      dtCore::GameEvent* curEvent =  *i;
+      dtCore::GameEvent* foundEvent = mapToEventMan.FindEvent(curEvent->GetUniqueId());
       if (foundEvent != NULL)
       {
          if (foundEvent->GetDescription() != curEvent->GetDescription() && 
@@ -329,10 +329,10 @@ int main (int argc, char* argv[])
 
    try
    {
-      dtDAL::Project::GetInstance().SetContext(projectPath);
+      dtCore::Project::GetInstance().SetContext(projectPath);
 
-      dtDAL::Map& mapFrom = dtDAL::Project::GetInstance().GetMap(mapFromName);
-      dtDAL::Map& mapTo = dtDAL::Project::GetInstance().GetMap(mapToName);
+      dtCore::Map& mapFrom = dtCore::Project::GetInstance().GetMap(mapFromName);
+      dtCore::Map& mapTo = dtCore::Project::GetInstance().GetMap(mapToName);
 
       if (mapFrom.HasLoadingErrors())
       {
@@ -356,7 +356,7 @@ int main (int argc, char* argv[])
       MergeProxies(mapFrom, mapTo, ignorePropsSet);
       MergeEvents(mapFrom, mapTo);
 
-      dtDAL::Project::GetInstance().SaveMap(mapTo);
+      dtCore::Project::GetInstance().SaveMap(mapTo);
 
       std::cout << std::endl;
       std::cout << "Map Merge was a success!!! Successfully merged:" << std::endl << 
@@ -369,7 +369,7 @@ int main (int argc, char* argv[])
          mNumPropsChanged << "] Props Changed; " << std::endl;
 
 
-      dtDAL::Project::GetInstance().CloseAllMaps(true);
+      dtCore::Project::GetInstance().CloseAllMaps(true);
 
       dtAudio::AudioManager::Destroy();
    }
@@ -377,7 +377,7 @@ int main (int argc, char* argv[])
    {
       std::cout << "Map Merge failed. Error occurred merging from map [" <<
          mapFromName << "] onto [" << mapToName << "]." << std::endl;
-      dtDAL::Project::GetInstance().CloseAllMaps(true);
+      dtCore::Project::GetInstance().CloseAllMaps(true);
       dtAudio::AudioManager::Destroy();
       LOG_ERROR(ex.ToString());
       return 1;

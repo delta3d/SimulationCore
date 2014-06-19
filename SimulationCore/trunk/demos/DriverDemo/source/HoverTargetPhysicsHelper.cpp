@@ -13,7 +13,7 @@
 #include <HoverTargetPhysicsHelper.h>
 #include <osg/MatrixTransform>
 #include <dtGame/exceptionenum.h>
-#include <dtDAL/enginepropertytypes.h>
+#include <dtCore/enginepropertytypes.h>
 #include <dtUtil/mathdefines.h>
 #include <dtUtil/matrixutil.h>
 #include <SimCore/CollisionGroupEnum.h>
@@ -186,9 +186,9 @@ namespace DriverDemo
       BaseClass::BuildPropertyMap();
       const std::string GROUP = "Vehicle Property Values";
 
-      AddProperty(new dtDAL::FloatActorProperty("Ground Clearance", "Ground Clearance",
-               dtDAL::FloatActorProperty::SetFuncType(this, &HoverTargetPhysicsActComp::SetGroundClearance),
-               dtDAL::FloatActorProperty::GetFuncType(this, &HoverTargetPhysicsActComp::GetGroundClearance),
+      AddProperty(new dtCore::FloatActorProperty("Ground Clearance", "Ground Clearance",
+               dtCore::FloatActorProperty::SetFuncType(this, &HoverTargetPhysicsActComp::SetGroundClearance),
+               dtCore::FloatActorProperty::GetFuncType(this, &HoverTargetPhysicsActComp::GetGroundClearance),
          "The height we should try to leave beneath our vehicle (cause we hover...).", GROUP));
 
    }

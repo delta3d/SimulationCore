@@ -23,7 +23,7 @@
 #include <prefix/StealthQtPrefix.h>
 #include <StealthViewer/Qt/MapSelectDialog.h>
 #include <ui_MapSelectDialogUi.h>
-#include <dtDAL/project.h>
+#include <dtCore/project.h>
 
 namespace StealthQt
 {
@@ -33,7 +33,7 @@ namespace StealthQt
    {
       mUi->setupUi(this);
 
-      const std::set<std::string> &maps = dtDAL::Project::GetInstance().GetMapNames();
+      const std::set<std::string> &maps = dtCore::Project::GetInstance().GetMapNames();
       for(std::set<std::string>::const_iterator i = maps.begin(); i != maps.end(); ++i)
       {
          QString str = (*i).c_str();

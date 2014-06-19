@@ -29,10 +29,10 @@
 #include <dtGame/gamemanager.h>
 #include <dtGame/deadreckoningcomponent.h>
 #include <dtGame/drpublishingactcomp.h>
-#include <dtDAL/actorproperty.h>
-#include <dtDAL/enginepropertytypes.h>
-#include <dtDAL/project.h>
-#include <dtDAL/resourcedescriptor.h>
+#include <dtCore/actorproperty.h>
+#include <dtCore/enginepropertytypes.h>
+#include <dtCore/project.h>
+#include <dtCore/resourcedescriptor.h>
 #include <dtCore/system.h>
 #include <dtCore/scene.h>
 #include <dtCore/refptr.h>
@@ -91,7 +91,7 @@ namespace SimCore
                using namespace SimCore::ActComps;
                using namespace SimCore::Actors;
 
-               dtDAL::ResourceDescriptor particleFile("Particles:fire.osg");
+               dtCore::ResourceDescriptor particleFile("Particles:fire.osg");
 
                dtCore::RefPtr<TrailEffectActComp> actComp = new TrailEffectActComp();
                const TrailEffectActComp* constComp = actComp.get();
@@ -141,7 +141,7 @@ namespace SimCore
                TrailEffectActComp* actComp = platform->GetComponent<TrailEffectActComp>();
                CPPUNIT_ASSERT(actComp != NULL);
 
-               dtDAL::ResourceDescriptor particleFile("Particles:fire.osg");
+               dtCore::ResourceDescriptor particleFile("Particles:fire.osg");
                actComp->SetTrailParticlesFile(particleFile);
                actComp->SetTrailAttached(false);
 

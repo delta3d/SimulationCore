@@ -35,7 +35,7 @@
 #include <dtHLAGM/onetoonemapping.h>
 #include <dtHLAGM/onetomanymapping.h>
 
-#include <dtDAL/namedparameter.h>
+#include <dtCore/namedparameter.h>
 
 #include <dtUtil/log.h>
 #include <SimCore/Actors/MunitionTypeActor.h>
@@ -96,10 +96,10 @@ namespace SimCore
          T_ControlType& encodingControl,
          char* buffer,
          size_t& maxSize,
-         const dtDAL::NamedGroupParameter& parameter )
+         const dtCore::NamedGroupParameter& parameter )
       {
          // Access all the sub-group parameters that represent the controls
-         std::vector<const dtDAL::NamedParameter*> controlParams;
+         std::vector<const dtCore::NamedParameter*> controlParams;
          parameter.GetParameters( controlParams );
 
          // Avoid any unnecessary processing
@@ -113,14 +113,14 @@ namespace SimCore
          const unsigned controlSize = encodingControl.GetByteSize();
 
          // Iterate through all controls and write them to the buffer
-         const dtDAL::NamedGroupParameter* curControlParam = NULL;
+         const dtCore::NamedGroupParameter* curControlParam = NULL;
          unsigned bufferOffset = 0;
          const unsigned limit = controlParams.size();
          maxSize = controlSize * limit;
          for( unsigned i = 0; i < limit; ++i )
          {
             // Obtain the current parameter as a group parameter.
-            curControlParam = static_cast<const dtDAL::NamedGroupParameter*>(controlParams[i]);
+            curControlParam = static_cast<const dtCore::NamedGroupParameter*>(controlParams[i]);
 
             // Avoid processing this parameter if NULL. This should not happen.
             if (curControlParam == NULL)
@@ -152,7 +152,7 @@ namespace SimCore
          const dtHLAGM::AttributeType& type,
          char* buffer,
          size_t& maxSize,
-         const dtDAL::NamedGroupParameter& parameter ) const
+         const dtCore::NamedGroupParameter& parameter ) const
       {
          if (type == HLACustomAttributeType::CONTINUOUS_CONTROL_ARRAY_TYPE )
          {
@@ -172,7 +172,7 @@ namespace SimCore
          T_ControlType& decodingControl,
          const char* buffer,
          const size_t size,
-         dtDAL::NamedGroupParameter& parameter )
+         dtCore::NamedGroupParameter& parameter )
       {
          // Determine the control type size.
          const unsigned controlSize = decodingControl.GetByteSize();
@@ -186,7 +186,7 @@ namespace SimCore
             return;
 
          // Iterate through the buffer, appending new controls
-         dtCore::RefPtr<dtDAL::NamedGroupParameter> controlParam;
+         dtCore::RefPtr<dtCore::NamedGroupParameter> controlParam;
          unsigned bufferOffset = 0;
          while( bufferOffset + controlSize <= size )
          {
@@ -209,7 +209,7 @@ namespace SimCore
          const dtHLAGM::AttributeType& type,
          const char* buffer,
          const size_t size,
-         dtDAL::NamedGroupParameter& parameter ) const
+         dtCore::NamedGroupParameter& parameter ) const
       {
          if (type == HLACustomAttributeType::CONTINUOUS_CONTROL_ARRAY_TYPE )
          {
@@ -267,7 +267,7 @@ namespace SimCore
 
          // All the current mappings use only one parameter.
          const dtGame::MessageParameter& parameter = *parameters[0];
-         const dtDAL::DataType& parameterDataType  = parameter.GetDataType();
+         const dtCore::DataType& parameterDataType  = parameter.GetDataType();
          const dtHLAGM::OneToManyMapping::ParameterDefinition& paramDef = mapping.GetParameterDefinitions()[0];
 
          if (mLogger->IsLevelEnabled(dtUtil::Log::LOG_DEBUG))
@@ -288,7 +288,7 @@ namespace SimCore
          // Outgoing Munition Type
          if (hlaType == HLACustomAttributeType::MUNITION_TYPE )
          {
-            if (parameter.GetDataType() != dtDAL::DataType::STRING)
+            if (parameter.GetDataType() != dtCore::DataType::STRING)
             {
                mLogger->LogMessage(dtUtil::Log::LOG_DEBUG, __FUNCTION__, __LINE__,
                   "The incoming parameter \"%s\" is not of a supported type \"%s\" for conversion to a DIS identifier."
@@ -326,10 +326,10 @@ namespace SimCore
          else if (hlaType == HLACustomAttributeType::CONTINUOUS_CONTROL_ARRAY_TYPE
             || hlaType == HLACustomAttributeType::DISCRETE_CONTROL_ARRAY_TYPE)
          {
-            if (parameterDataType == dtDAL::DataType::GROUP)
+            if (parameterDataType == dtCore::DataType::GROUP)
             {
-               const dtDAL::NamedGroupParameter& groupParam
-                  = static_cast<const dtDAL::NamedGroupParameter&>(parameter);
+               const dtCore::NamedGroupParameter& groupParam
+                  = static_cast<const dtCore::NamedGroupParameter&>(parameter);
                MapFromGroupParamToControlArray( hlaType, buffer, maxSize, groupParam );
             }
             else
@@ -384,7 +384,7 @@ namespace SimCore
          dtGame::MessageParameter& parameter = *parameters[0];
          const dtHLAGM::OneToManyMapping::ParameterDefinition& paramDef = mapping.GetParameterDefinitions()[0];
 
-         const dtDAL::DataType& parameterDataType = parameter.GetDataType();
+         const dtCore::DataType& parameterDataType = parameter.GetDataType();
 
          if (mLogger->IsLevelEnabled(dtUtil::Log::LOG_DEBUG))
             mLogger->LogMessage(dtUtil::Log::LOG_DEBUG, __FUNCTION__, __LINE__,
@@ -396,7 +396,7 @@ namespace SimCore
          {
             // Ensure that there is a table to look up a munition name
             if (! mMunitionTypeTable.valid()
-               || parameterDataType != dtDAL::DataType::STRING ) { return; }
+               || parameterDataType != dtCore::DataType::STRING ) { return; }
 
             // Read in DIS binary data
             dtHLAGM::EntityType dis;
@@ -423,10 +423,10 @@ namespace SimCore
          else if (hlaType == HLACustomAttributeType::CONTINUOUS_CONTROL_ARRAY_TYPE
             || hlaType == HLACustomAttributeType::DISCRETE_CONTROL_ARRAY_TYPE)
          {
-            if (parameterDataType == dtDAL::DataType::GROUP )
+            if (parameterDataType == dtCore::DataType::GROUP )
             {
-               dtDAL::NamedGroupParameter& groupParam
-                  = static_cast<dtDAL::NamedGroupParameter&>(parameter);
+               dtCore::NamedGroupParameter& groupParam
+                  = static_cast<dtCore::NamedGroupParameter&>(parameter);
                MapToGroupParamFromControlArray( hlaType, buffer, size, groupParam );
             }
             else
@@ -475,7 +475,7 @@ namespace SimCore
          const char* buffer,
          const size_t size,
          dtGame::MessageParameter& parameter,
-         const dtDAL::DataType& parameterDataType ) const
+         const dtCore::DataType& parameterDataType ) const
       {
          osg::Vec3d position;
 
@@ -507,15 +507,15 @@ namespace SimCore
             "Vec3 has been decoded to %lf %lf %lf",
             position.x(), position.y(), position.z());
 
-         if (parameterDataType == dtDAL::DataType::VEC3)
+         if (parameterDataType == dtCore::DataType::VEC3)
          {
             static_cast<dtGame::Vec3MessageParameter&>(parameter).SetValue(position);
          }
-         else if (parameterDataType == dtDAL::DataType::VEC3D)
+         else if (parameterDataType == dtCore::DataType::VEC3D)
          {
             static_cast<dtGame::Vec3dMessageParameter&>(parameter).SetValue(position);
          }
-         else if (parameterDataType == dtDAL::DataType::VEC3F)
+         else if (parameterDataType == dtCore::DataType::VEC3F)
          {
             static_cast<dtGame::Vec3fMessageParameter&>(parameter).SetValue(
                osg::Vec3f(position.x(), position.y(), position.z()));
@@ -527,7 +527,7 @@ namespace SimCore
          char* buffer,
          const size_t maxSize,
          const dtGame::MessageParameter& parameter,
-         const dtDAL::DataType& parameterDataType) const
+         const dtCore::DataType& parameterDataType) const
       {
          osg::Vec3d position;
 
@@ -550,18 +550,18 @@ namespace SimCore
             return;
          }
 
-         if (parameterDataType == dtDAL::DataType::VEC3)
+         if (parameterDataType == dtCore::DataType::VEC3)
          {
             position = static_cast<const dtGame::Vec3MessageParameter&>(parameter).GetValue();
          }
-         else if (parameterDataType == dtDAL::DataType::VEC3F)
+         else if (parameterDataType == dtCore::DataType::VEC3F)
          {
             osg::Vec3f posTemp = static_cast<const dtGame::Vec3fMessageParameter&>(parameter).GetValue();
             position.x() = posTemp.x();
             position.y() = posTemp.y();
             position.z() = posTemp.z();
          }
-         else if (parameterDataType == dtDAL::DataType::VEC3D)
+         else if (parameterDataType == dtCore::DataType::VEC3D)
          {
             osg::Vec3d posTemp = static_cast<const dtGame::Vec3dMessageParameter&>(parameter).GetValue();
             //We're loosing precision here if a Vec3 is not compiled as a vec3d, but the
@@ -615,7 +615,7 @@ namespace SimCore
          const char* buffer,
          const size_t size,
          dtGame::MessageParameter& parameter,
-         const dtDAL::DataType& parameterDataType ) const
+         const dtCore::DataType& parameterDataType ) const
       {
          if (size < HLACustomAttributeType::MILLISECOND_TIME_TYPE.GetEncodedLength())
          {
@@ -625,10 +625,10 @@ namespace SimCore
          ///ewww, const cast, but the data stream won't use a non-const pointer.
          dtUtil::DataStream ds(const_cast<char *>(buffer), size, false);
          ds.SetForceLittleEndian(false);
-         if (parameterDataType == dtDAL::DataType::DOUBLE)
+         if (parameterDataType == dtCore::DataType::DOUBLE)
          {
             dtGame::DoubleMessageParameter& dmp = static_cast<dtGame::DoubleMessageParameter&>(parameter);
-            unsigned long value;
+            unsigned int value;
             ds >> value;
             dmp.SetValue(double(value) / 1000.0);
          }
@@ -639,7 +639,7 @@ namespace SimCore
          char* buffer,
          size_t& maxSize,
          const dtGame::MessageParameter& parameter,
-         const dtDAL::DataType& parameterDataType) const
+         const dtCore::DataType& parameterDataType) const
       {
          if (maxSize < HLACustomAttributeType::MILLISECOND_TIME_TYPE.GetEncodedLength())
          {
@@ -651,10 +651,10 @@ namespace SimCore
          dtUtil::DataStream ds(buffer, maxSize, false);
          ds.SetForceLittleEndian(false);
          ds.ClearBuffer();
-         if (parameterDataType == dtDAL::DataType::DOUBLE)
+         if (parameterDataType == dtCore::DataType::DOUBLE)
          {
             const dtGame::DoubleMessageParameter& dmp = static_cast<const dtGame::DoubleMessageParameter&>(parameter);
-            ds << (unsigned long)(dmp.GetValue() * 1000.0);
+            ds << (unsigned)(dmp.GetValue() * 1000.0);
          }
       }
 
@@ -664,10 +664,10 @@ namespace SimCore
          const size_t maxSize,
          dtGame::MessageParameter& parameter) const
       {
-         const dtDAL::DataType& paramType = parameter.GetDataType();
+         const dtCore::DataType& paramType = parameter.GetDataType();
 
-         if (paramType == dtDAL::DataType::FLOAT
-            || paramType == dtDAL::DataType::DOUBLE)
+         if (paramType == dtCore::DataType::FLOAT
+            || paramType == dtCore::DataType::DOUBLE)
          {
             Array2DParser<float> floatArray;
             floatArray.Decode(buffer, maxSize);
@@ -677,7 +677,7 @@ namespace SimCore
                return;
             }
 
-            if (paramType == dtDAL::DataType::DOUBLE)
+            if (paramType == dtCore::DataType::DOUBLE)
             {
                static_cast<dtGame::DoubleMessageParameter&>(parameter)
                   .SetValue( double(floatArray.GetValue(0,0)));
@@ -696,7 +696,7 @@ namespace SimCore
          size_t& maxSize,
          const dtGame::MessageParameter& parameter ) const
       {
-         const dtDAL::DataType& paramType = parameter.GetDataType();
+         const dtCore::DataType& paramType = parameter.GetDataType();
 
          Array2DParser<float> floatArray;
          floatArray.SetColumns(1);
@@ -705,12 +705,12 @@ namespace SimCore
 
          float value = 0.0f;
 
-         if( paramType == dtDAL::DataType::FLOAT )
+         if( paramType == dtCore::DataType::FLOAT )
          {
             value = static_cast<const dtGame::FloatMessageParameter&>
                (parameter).GetValue();
          }
-         else if( paramType == dtDAL::DataType::DOUBLE )
+         else if( paramType == dtCore::DataType::DOUBLE )
          {
             value = float(static_cast<const dtGame::DoubleMessageParameter&>
                (parameter).GetValue());
@@ -726,13 +726,13 @@ namespace SimCore
          const size_t maxSize,
          dtGame::MessageParameter& parameter) const
       {
-         const dtDAL::DataType& paramType = parameter.GetDataType();
+         const dtCore::DataType& paramType = parameter.GetDataType();
 
          // Integral Types
-         if (paramType == dtDAL::DataType::SHORTINT
-            || paramType == dtDAL::DataType::USHORTINT
-            || paramType == dtDAL::DataType::INT
-            || paramType == dtDAL::DataType::UINT)
+         if (paramType == dtCore::DataType::SHORTINT
+            || paramType == dtCore::DataType::USHORTINT
+            || paramType == dtCore::DataType::INT
+            || paramType == dtCore::DataType::UINT)
          {
             Array2DParser<short> shortArray;
             shortArray.Decode(buffer, maxSize);
@@ -742,17 +742,17 @@ namespace SimCore
                return;
             }
 
-            if (paramType == dtDAL::DataType::USHORTINT)
+            if (paramType == dtCore::DataType::USHORTINT)
             {
                static_cast<dtGame::UnsignedShortIntMessageParameter&>(parameter)
                   .SetValue((unsigned short)(shortArray.GetValue(0, 0)));
             }
-            else if (paramType == dtDAL::DataType::SHORTINT)
+            else if (paramType == dtCore::DataType::SHORTINT)
             {
                static_cast<dtGame::ShortIntMessageParameter&>(parameter)
                   .SetValue(shortArray.GetValue(0, 0));
             }
-            else if (paramType == dtDAL::DataType::UINT)
+            else if (paramType == dtCore::DataType::UINT)
             {
                static_cast<dtGame::UnsignedIntMessageParameter&>(parameter)
                   .SetValue((unsigned int)(shortArray.GetValue(0, 0)));
@@ -764,7 +764,7 @@ namespace SimCore
             }
          }
          // String Types
-         else if (paramType == dtDAL::DataType::ENUMERATION)
+         else if (paramType == dtCore::DataType::ENUMERATION)
          {
             // TODO:
          }
@@ -776,7 +776,7 @@ namespace SimCore
          size_t& maxSize,
          const dtGame::MessageParameter& parameter) const
       {
-         const dtDAL::DataType& paramType = parameter.GetDataType();
+         const dtCore::DataType& paramType = parameter.GetDataType();
 
          Array2DParser<short> shortArray;
          shortArray.SetColumns(1);
@@ -785,22 +785,22 @@ namespace SimCore
 
          short value = 0;
 
-         if (paramType == dtDAL::DataType::SHORTINT
-            || paramType == dtDAL::DataType::USHORTINT
-            || paramType == dtDAL::DataType::INT
-            || paramType == dtDAL::DataType::UINT)
+         if (paramType == dtCore::DataType::SHORTINT
+            || paramType == dtCore::DataType::USHORTINT
+            || paramType == dtCore::DataType::INT
+            || paramType == dtCore::DataType::UINT)
          {
-            if (paramType == dtDAL::DataType::UINT)
+            if (paramType == dtCore::DataType::UINT)
             {
                value = short(static_cast<const dtGame::UnsignedIntMessageParameter&>
                   (parameter).GetValue());
             }
-            else if (paramType == dtDAL::DataType::INT)
+            else if (paramType == dtCore::DataType::INT)
             {
                value = short(static_cast<const dtGame::IntMessageParameter&>
                   (parameter).GetValue());
             }
-            else if (paramType == dtDAL::DataType::USHORTINT)
+            else if (paramType == dtCore::DataType::USHORTINT)
             {
                value = short(static_cast<const dtGame::UnsignedShortIntMessageParameter&>
                   (parameter).GetValue());
@@ -812,7 +812,7 @@ namespace SimCore
             }
          }
          // String Types
-         else if (paramType == dtDAL::DataType::ENUMERATION)
+         else if (paramType == dtCore::DataType::ENUMERATION)
          {
             // TODO:
          }

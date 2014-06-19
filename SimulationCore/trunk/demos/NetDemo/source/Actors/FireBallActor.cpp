@@ -24,7 +24,7 @@
 #include <Actors/FireBallActor.h>
 #include <dtPhysics/physicshelper.h>
 #include <dtPhysics/physicsobject.h>
-#include <dtDAL/enginepropertytypes.h>
+#include <dtCore/enginepropertytypes.h>
 //#include <dtABC/application.h>
 //#include <dtAudio/audiomanager.h>
 //#include <dtAudio/sound.h>

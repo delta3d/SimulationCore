@@ -127,11 +127,11 @@ namespace NetDemo
          }
 
          //collect all enemy motherships
-         std::vector<dtDAL::ActorProxy*> proxies;
+         std::vector<dtCore::ActorProxy*> proxies;
          GetGameManager()->FindActorsByType(*NetDemoActorRegistry::ENEMY_MOTHERSHIP_ACTOR_TYPE, proxies);
 
-         std::vector<dtDAL::ActorProxy*>::iterator iter = proxies.begin();
-         std::vector<dtDAL::ActorProxy*>::iterator iterEnd = proxies.end();
+         std::vector<dtCore::ActorProxy*>::iterator iter = proxies.begin();
+         std::vector<dtCore::ActorProxy*>::iterator iterEnd = proxies.end();
 
          for(; iter != iterEnd; ++iter)
          {
@@ -226,7 +226,7 @@ namespace NetDemo
    {
       if(GetGameStatus() == ServerGameStatusActor::ServerGameStatusEnum::WAVE_IN_PROGRESS)
       {
-         std::vector<dtDAL::ActorProxy*> proxies;
+         std::vector<dtCore::ActorProxy*> proxies;
          GetGameManager()->FindActorsByType(*NetDemoActorRegistry::ENEMY_MINE_ACTOR_TYPE, proxies);
 
          int numEnemies = proxies.size();

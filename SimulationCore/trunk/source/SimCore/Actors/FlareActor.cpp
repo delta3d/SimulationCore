@@ -27,7 +27,7 @@
 #include <prefix/SimCorePrefix.h>
 #include <dtActors/engineactorregistry.h>
 #include <dtCore/particlesystem.h>
-#include <dtDAL/enginepropertytypes.h>
+#include <dtCore/enginepropertytypes.h>
 #include <dtGame/gamemanager.h>
 #include <dtGame/invokable.h>
 #include <SimCore/Actors/FlareActor.h>
@@ -309,88 +309,88 @@ namespace SimCore
          FlareActor* actor = NULL;
          GetActor(actor);
 
-         AddProperty(new dtDAL::IntActorProperty(
+         AddProperty(new dtCore::IntActorProperty(
             PROPERTY_CELL,
             PROPERTY_CELL,
-            dtDAL::IntActorProperty::SetFuncType(actor, &FlareActor::SetCell),
-            dtDAL::IntActorProperty::GetFuncType(actor, &FlareActor::GetCell),
+            dtCore::IntActorProperty::SetFuncType(actor, &FlareActor::SetCell),
+            dtCore::IntActorProperty::GetFuncType(actor, &FlareActor::GetCell),
             "Assumed to be the regional atmospheric position"));
 
-         AddProperty(new dtDAL::IntActorProperty(
+         AddProperty(new dtCore::IntActorProperty(
             PROPERTY_GUISE,
             PROPERTY_GUISE,
-            dtDAL::IntActorProperty::SetFuncType(actor, &FlareActor::SetGuise),
-            dtDAL::IntActorProperty::GetFuncType(actor, &FlareActor::GetGuise),
+            dtCore::IntActorProperty::SetFuncType(actor, &FlareActor::SetGuise),
+            dtCore::IntActorProperty::GetFuncType(actor, &FlareActor::GetGuise),
             "")); // ?
 
-         AddProperty(new dtDAL::IntActorProperty(
+         AddProperty(new dtCore::IntActorProperty(
             PROPERTY_NUMBER_OF_SOURCES,
             PROPERTY_NUMBER_OF_SOURCES,
-            dtDAL::IntActorProperty::SetFuncType(actor, &FlareActor::SetNumberOfSources),
-            dtDAL::IntActorProperty::GetFuncType(actor, &FlareActor::GetNumberOfSources),
+            dtCore::IntActorProperty::SetFuncType(actor, &FlareActor::SetNumberOfSources),
+            dtCore::IntActorProperty::GetFuncType(actor, &FlareActor::GetNumberOfSources),
             "Assumed to be the number of sub-components that produce light"));
 
-         AddProperty(new dtDAL::IntActorProperty(
+         AddProperty(new dtCore::IntActorProperty(
             PROPERTY_TIME_SINCE_DETONATION,
             PROPERTY_TIME_SINCE_DETONATION,
-            dtDAL::IntActorProperty::SetFuncType(actor, &FlareActor::SetTimeSinceDetonation),
-            dtDAL::IntActorProperty::GetFuncType(actor, &FlareActor::GetTimeSinceDetonation),
+            dtCore::IntActorProperty::SetFuncType(actor, &FlareActor::SetTimeSinceDetonation),
+            dtCore::IntActorProperty::GetFuncType(actor, &FlareActor::GetTimeSinceDetonation),
             "Length of time that the flare has been luminous, measured in milliseconds"));
 
-         AddProperty(new dtDAL::FloatActorProperty(
+         AddProperty(new dtCore::FloatActorProperty(
             PROPERTY_HEIGHT,
             PROPERTY_HEIGHT,
-            dtDAL::FloatActorProperty::SetFuncType(actor, &FlareActor::SetHeight),
-            dtDAL::FloatActorProperty::GetFuncType(actor, &FlareActor::GetHeight),
+            dtCore::FloatActorProperty::SetFuncType(actor, &FlareActor::SetHeight),
+            dtCore::FloatActorProperty::GetFuncType(actor, &FlareActor::GetHeight),
             "Assumed to be height above ground level measured in meters"));
 
-         AddProperty(new dtDAL::FloatActorProperty(
+         AddProperty(new dtCore::FloatActorProperty(
             PROPERTY_HEIGHT_DELTA,
             PROPERTY_HEIGHT_DELTA,
-            dtDAL::FloatActorProperty::SetFuncType(actor, &FlareActor::SetHeightDelta),
-            dtDAL::FloatActorProperty::GetFuncType(actor, &FlareActor::GetHeightDelta),
+            dtCore::FloatActorProperty::SetFuncType(actor, &FlareActor::SetHeightDelta),
+            dtCore::FloatActorProperty::GetFuncType(actor, &FlareActor::GetHeightDelta),
             "Assumed to be the change in height since the last actor update, measured in meters"));
 
-         AddProperty(new dtDAL::FloatActorProperty(
+         AddProperty(new dtCore::FloatActorProperty(
             PROPERTY_PEAK_ANGLE,
             PROPERTY_PEAK_ANGLE,
-            dtDAL::FloatActorProperty::SetFuncType(actor, &FlareActor::SetPeakAngle),
-            dtDAL::FloatActorProperty::GetFuncType(actor, &FlareActor::GetPeakAngle),
+            dtCore::FloatActorProperty::SetFuncType(actor, &FlareActor::SetPeakAngle),
+            dtCore::FloatActorProperty::GetFuncType(actor, &FlareActor::GetPeakAngle),
             "")); // ?
 
-         AddProperty(new dtDAL::FloatActorProperty(
+         AddProperty(new dtCore::FloatActorProperty(
             PROPERTY_PEAK_ANGLE_DELTA,
             PROPERTY_PEAK_ANGLE_DELTA,
-            dtDAL::FloatActorProperty::SetFuncType(actor, &FlareActor::SetPeakAngleDelta),
-            dtDAL::FloatActorProperty::GetFuncType(actor, &FlareActor::GetPeakAngleDelta),
+            dtCore::FloatActorProperty::SetFuncType(actor, &FlareActor::SetPeakAngleDelta),
+            dtCore::FloatActorProperty::GetFuncType(actor, &FlareActor::GetPeakAngleDelta),
             "")); // ?
 
-         AddProperty(new dtDAL::FloatActorProperty(
+         AddProperty(new dtCore::FloatActorProperty(
             PROPERTY_SOURCE_INTENSITY,
             PROPERTY_SOURCE_INTENSITY,
-            dtDAL::FloatActorProperty::SetFuncType(actor, &FlareActor::SetSourceIntensity),
-            dtDAL::FloatActorProperty::GetFuncType(actor, &FlareActor::GetSourceIntensity),
+            dtCore::FloatActorProperty::SetFuncType(actor, &FlareActor::SetSourceIntensity),
+            dtCore::FloatActorProperty::GetFuncType(actor, &FlareActor::GetSourceIntensity),
             "")); // ?
 
-         AddProperty(new dtDAL::StringActorProperty(
+         AddProperty(new dtCore::StringActorProperty(
             PROPERTY_MODEL_TYPE,
             PROPERTY_MODEL_TYPE,
-            dtDAL::StringActorProperty::SetFuncType(actor, &FlareActor::SetModelType),
-            dtDAL::StringActorProperty::GetFuncType(actor, &FlareActor::GetModelTypeString),
+            dtCore::StringActorProperty::SetFuncType(actor, &FlareActor::SetModelType),
+            dtCore::StringActorProperty::GetFuncType(actor, &FlareActor::GetModelTypeString),
             "The type of flare being modeled by this actor"));
 
-         AddProperty(new dtDAL::StringActorProperty(
+         AddProperty(new dtCore::StringActorProperty(
             PROPERTY_LIGHT_NAME,
             PROPERTY_LIGHT_NAME,
-            dtDAL::StringActorProperty::SetFuncType(actor, &FlareActor::SetLightName),
-            dtDAL::StringActorProperty::GetFuncType(actor, &FlareActor::GetLightName),
+            dtCore::StringActorProperty::SetFuncType(actor, &FlareActor::SetLightName),
+            dtCore::StringActorProperty::GetFuncType(actor, &FlareActor::GetLightName),
             "The name of the light prototype actor that describes the light effect used by this flare actor"));
 
-         AddProperty(new dtDAL::StringActorProperty(
+         AddProperty(new dtCore::StringActorProperty(
             PROPERTY_PARTICLE_FILE,
             PROPERTY_PARTICLE_FILE,
-            dtDAL::StringActorProperty::SetFuncType(actor, &FlareActor::SetParticleFileName),
-            dtDAL::StringActorProperty::GetFuncType(actor, &FlareActor::GetParticleFileName),
+            dtCore::StringActorProperty::SetFuncType(actor, &FlareActor::SetParticleFileName),
+            dtCore::StringActorProperty::GetFuncType(actor, &FlareActor::GetParticleFileName),
             "The type of flare being modeled by this actor"));
       }
 

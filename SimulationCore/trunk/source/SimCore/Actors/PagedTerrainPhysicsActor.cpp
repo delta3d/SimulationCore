@@ -23,7 +23,7 @@
 #include <prefix/SimCorePrefix.h>
 #include <SimCore/Actors/PagedTerrainPhysicsActor.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
-#include <dtDAL/enginepropertytypes.h>
+#include <dtCore/enginepropertytypes.h>
 #include <dtGame/logcontroller.h>
 #include <osg/MatrixTransform>
 
@@ -242,8 +242,8 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////
 
          //////////////////////////////////////////////////////////////////////
-         PagedTerrainPhysicsActor::PagedTerrainPhysicsActor(dtGame::GameActorProxy &proxy)
-            : GameActor(proxy)
+         PagedTerrainPhysicsActor::PagedTerrainPhysicsActor(dtGame::GameActorProxy& owner)
+            : GameActor(owner)
             , mNumNodesLoaded(0)
             , mNumVertsLoaded(0)
          {

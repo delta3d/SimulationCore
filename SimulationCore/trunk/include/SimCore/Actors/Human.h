@@ -38,7 +38,7 @@
 
 #include <dtCore/refptr.h>
 #include <dtAnim/animationhelper.h>
-#include <dtDAL/resourcedescriptor.h>
+#include <dtCore/resourcedescriptor.h>
 
 namespace dtUtil
 {
@@ -83,20 +83,20 @@ namespace SimCore
          public:
             typedef std::map<dtUtil::RefString, dtAI::Operator* > NameOperMap;
 
-            static const dtUtil::RefString ANIM_STAND_READY;
-            static const dtUtil::RefString ANIM_STAND_DEPLOYED;
+//            static const dtUtil::RefString ANIM_STAND_READY;
+//            static const dtUtil::RefString ANIM_STAND_DEPLOYED;
             static const dtUtil::RefString ANIM_WALK_READY;
             static const dtUtil::RefString ANIM_WALK_DEPLOYED;
             static const dtUtil::RefString ANIM_LOW_WALK_READY;
             static const dtUtil::RefString ANIM_LOW_WALK_DEPLOYED;
             static const dtUtil::RefString ANIM_CRAWL_READY;
             static const dtUtil::RefString ANIM_CRAWL_DEPLOYED;
-            static const dtUtil::RefString ANIM_KNEEL_READY;
-            static const dtUtil::RefString ANIM_KNEEL_DEPLOYED;
+//            static const dtUtil::RefString ANIM_KNEEL_READY;
+//            static const dtUtil::RefString ANIM_KNEEL_DEPLOYED;
             static const dtUtil::RefString ANIM_STAND_TO_KNEEL;
             static const dtUtil::RefString ANIM_KNEEL_TO_STAND;
-            static const dtUtil::RefString ANIM_PRONE_READY;
-            static const dtUtil::RefString ANIM_PRONE_DEPLOYED;
+//            static const dtUtil::RefString ANIM_PRONE_READY;
+//            static const dtUtil::RefString ANIM_PRONE_DEPLOYED;
             static const dtUtil::RefString ANIM_PRONE_TO_KNEEL;
             static const dtUtil::RefString ANIM_KNEEL_TO_PRONE;
             static const dtUtil::RefString ANIM_SHOT_STANDING;
@@ -133,6 +133,8 @@ namespace SimCore
             static const dtUtil::RefString PROPERTY_PRIMARY_WEAPON_STATE;
             static const dtUtil::RefString PROPERTY_MIN_RUN_VELOCITY;
             static const dtUtil::RefString PROPERTY_FULL_RUN_VELOCITY;
+            static const dtUtil::RefString PROPERTY_WALK_ANIMATION_SPEED;
+
 
             class SIMCORE_EXPORT StanceEnum : public dtUtil::Enumeration
             {
@@ -199,7 +201,7 @@ namespace SimCore
             /// A flag for if the human is dead.
             static const dtUtil::RefString STATE_DEAD;
             /// A flag that is true if the person is in motion.
-            static const dtUtil::RefString STATE_MOVING;
+            //static const dtUtil::RefString STATE_MOVING;
             /// A flag marking that the human is in a transition,  this makes sure it never ends in a transition.
             static const dtUtil::RefString STATE_TRANSITION;
             /// The number of completed actions while standing.  This counter increments every time an action should be completed.
@@ -214,7 +216,7 @@ namespace SimCore
             ///setting this config option will force a weapon to be shown if one exists
             static const dtUtil::RefString CONFIG_ALWAYS_SHOW_WEAPON;
 
-            Human(dtGame::GameActorProxy& proxy);
+            Human(dtGame::GameActorProxy& parent);
 
             /// Changes the human's stance
             void SetStance(HumanActorProxy::StanceEnum& stance);
@@ -273,6 +275,12 @@ namespace SimCore
             virtual void SkeletalMeshLoadCallback(dtAnim::AnimationHelper*);
             virtual void SkeletalMeshUnloadCallback(dtAnim::AnimationHelper*);
 
+            /// This is called by the walk/run animation to get the value for the walk speed.  Override to change the way it works.
+            virtual float CalculateWalkingSpeed() const;
+
+            /// This is the inherent speed of the walk animation.
+            DT_DECLARE_ACCESSOR(float, WalkAnimationSpeed);
+
          protected:
             virtual ~Human();
 
@@ -283,7 +291,11 @@ namespace SimCore
             void UpdateWeapon();
             bool GetContainsWeaponName(const std::vector<std::string>& vec, const std::string& meshName) const;
 
-
+            void SetupWalkRunBlend(dtAnim::AnimationHelper* helper, const dtUtil::RefString& OpName,
+                  const std::vector<dtUtil::RefString>& nameWalkOptions, const std::string& newWalkAnimName,
+                  const std::vector<dtUtil::RefString>& nameRunOptions, const std::string& newRunAnimName,
+                  const std::vector<dtUtil::RefString>& nameStandOptions, const std::string& newStandAnimName,
+                  float walkSpeed, float runSpeed);
          private:
             /// Apply the effects of the operator, and get the animatable, if any, associated with it.
             const dtAnim::Animatable* ApplyOperatorAndGetAnimatable(const dtAI::Operator& op);
@@ -308,8 +320,8 @@ namespace SimCore
             typedef std::map<BasicStanceEnum*, unsigned> ExecuteActionCountMap;
             ExecuteActionCountMap mExecutedActionCounts;
 
-            float mMinRunVelocity;
-            float mFullRunVelocity;
+//            float mMinRunVelocity;
+//            float mFullRunVelocity;
 
             dtUtil::Log& mLogger;
 

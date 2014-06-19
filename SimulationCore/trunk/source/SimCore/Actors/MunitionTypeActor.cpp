@@ -24,11 +24,11 @@
 #include <prefix/SimCorePrefix.h>
 #include <SimCore/Actors/MunitionTypeActor.h>
 #include <dtUtil/stringutils.h>
-#include <dtDAL/functor.h>
-#include <dtDAL/enginepropertytypes.h>
+#include <dtCore/functor.h>
+#include <dtCore/enginepropertytypes.h>
 #include <SimCore/Actors/DetonationActor.h>
 #include <SimCore/Actors/ViewerMaterialActor.h>
-#include <dtDAL/propertymacros.h>
+#include <dtCore/propertymacros.h>
 
 namespace SimCore
 {
@@ -261,7 +261,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void MunitionEffectsInfoActorProxy::CreateActor()
+      void MunitionEffectsInfoActorProxy::CreateDrawable()
       {
          SetDrawable( *new MunitionEffectsInfoActor(*this) );
       }
@@ -279,134 +279,134 @@ namespace SimCore
          static const dtUtil::RefString groupTracer("Tracer Effects");
 
          // MUNITION FLIGHT
-         AddProperty(new dtDAL::ResourceActorProperty( *this, dtDAL::DataType::PARTICLE_SYSTEM,
+         AddProperty(new dtCore::ResourceActorProperty( *this, dtCore::DataType::PARTICLE_SYSTEM,
             "Fly Effect", "Fly Effect",
-            dtDAL::ResourceActorProperty::SetFuncType( &actor, &MunitionEffectsInfoActor::SetFlyEffect ),
+            dtCore::ResourceActorProperty::SetFuncType( &actor, &MunitionEffectsInfoActor::SetFlyEffect ),
             "The file path of the flying visual effect", groupFly));
 
-         AddProperty(new dtDAL::ResourceActorProperty( *this, dtDAL::DataType::SOUND,
+         AddProperty(new dtCore::ResourceActorProperty( *this, dtCore::DataType::SOUND,
             "Fly Sound", "Fly Sound",
-            dtDAL::ResourceActorProperty::SetFuncType( &actor, &MunitionEffectsInfoActor::SetFlySound ),
+            dtCore::ResourceActorProperty::SetFuncType( &actor, &MunitionEffectsInfoActor::SetFlySound ),
             "The file path of the flying sound effect", groupFly));
 
-         AddProperty(new dtDAL::FloatActorProperty("Fly Sound Max Distance", "Fly Sound Max Distance",
-            dtDAL::FloatActorProperty::SetFuncType( &actor, &MunitionEffectsInfoActor::SetFlySoundMaxDistance ),
-            dtDAL::FloatActorProperty::GetFuncType( &actor, &MunitionEffectsInfoActor::GetFlySoundMaxDistance ),
+         AddProperty(new dtCore::FloatActorProperty("Fly Sound Max Distance", "Fly Sound Max Distance",
+            dtCore::FloatActorProperty::SetFuncType( &actor, &MunitionEffectsInfoActor::SetFlySoundMaxDistance ),
+            dtCore::FloatActorProperty::GetFuncType( &actor, &MunitionEffectsInfoActor::GetFlySoundMaxDistance ),
             "The maximum range in meters for munition flight sounds", groupFly));
 
          // SHOT FIRED PROPERTIES
-         AddProperty(new dtDAL::ResourceActorProperty( *this, dtDAL::DataType::PARTICLE_SYSTEM,
+         AddProperty(new dtCore::ResourceActorProperty( *this, dtCore::DataType::PARTICLE_SYSTEM,
             "Fire Effect", "Fire Effect",
-            dtDAL::ResourceActorProperty::SetFuncType( &actor, &MunitionEffectsInfoActor::SetFireEffect ),
+            dtCore::ResourceActorProperty::SetFuncType( &actor, &MunitionEffectsInfoActor::SetFireEffect ),
             "The file path of the firing visual effect", groupFire));
 
-         AddProperty(new dtDAL::ResourceActorProperty( *this, dtDAL::DataType::SOUND,
+         AddProperty(new dtCore::ResourceActorProperty( *this, dtCore::DataType::SOUND,
             "Fire Sound", "Fire Sound",
-            dtDAL::ResourceActorProperty::SetFuncType( &actor, &MunitionEffectsInfoActor::SetFireSound ),
+            dtCore::ResourceActorProperty::SetFuncType( &actor, &MunitionEffectsInfoActor::SetFireSound ),
             "The file path of the firing sound effect", groupFire));
 
-         AddProperty(new dtDAL::FloatActorProperty("Fire Sound Max Distance", "Fire Sound Max Distance",
-            dtDAL::FloatActorProperty::SetFuncType( &actor, &MunitionEffectsInfoActor::SetFireSoundMaxDistance ),
-            dtDAL::FloatActorProperty::GetFuncType( &actor, &MunitionEffectsInfoActor::GetFireSoundMaxDistance ),
+         AddProperty(new dtCore::FloatActorProperty("Fire Sound Max Distance", "Fire Sound Max Distance",
+            dtCore::FloatActorProperty::SetFuncType( &actor, &MunitionEffectsInfoActor::SetFireSoundMaxDistance ),
+            dtCore::FloatActorProperty::GetFuncType( &actor, &MunitionEffectsInfoActor::GetFireSoundMaxDistance ),
             "The maximum range in meters for shot fired sounds", groupFire));
 
-         AddProperty(new dtDAL::FloatActorProperty( "Fire Flash Probability", "Fire Flash Probability",
-            dtDAL::FloatActorProperty::SetFuncType( &actor, &MunitionEffectsInfoActor::SetFireFlashProbability ),
-            dtDAL::FloatActorProperty::GetFuncType( &actor, &MunitionEffectsInfoActor::GetFireFlashProbability ),
+         AddProperty(new dtCore::FloatActorProperty( "Fire Flash Probability", "Fire Flash Probability",
+            dtCore::FloatActorProperty::SetFuncType( &actor, &MunitionEffectsInfoActor::SetFireFlashProbability ),
+            dtCore::FloatActorProperty::GetFuncType( &actor, &MunitionEffectsInfoActor::GetFireFlashProbability ),
             "The probability (0.0 to 1.0) that a visible flash will occur", groupFire));
 
-         AddProperty(new dtDAL::FloatActorProperty( "Fire Flash Time", "Fire Flash Time",
-            dtDAL::FloatActorProperty::SetFuncType( &actor, &MunitionEffectsInfoActor::SetFireFlashTime ),
-            dtDAL::FloatActorProperty::GetFuncType( &actor, &MunitionEffectsInfoActor::GetFireFlashTime ),
+         AddProperty(new dtCore::FloatActorProperty( "Fire Flash Time", "Fire Flash Time",
+            dtCore::FloatActorProperty::SetFuncType( &actor, &MunitionEffectsInfoActor::SetFireFlashTime ),
+            dtCore::FloatActorProperty::GetFuncType( &actor, &MunitionEffectsInfoActor::GetFireFlashTime ),
             "The length of time that a flash effect shall remain visible", groupFire));
 
-         AddProperty(new dtDAL::StringActorProperty("Fire Light", "Fire Light",
-            dtDAL::StringActorProperty::SetFuncType( &actor, &MunitionEffectsInfoActor::SetFireLight ),
-            dtDAL::StringActorProperty::GetFuncType( &actor, &MunitionEffectsInfoActor::GetFireLight ),
+         AddProperty(new dtCore::StringActorProperty("Fire Light", "Fire Light",
+            dtCore::StringActorProperty::SetFuncType( &actor, &MunitionEffectsInfoActor::SetFireLight ),
+            dtCore::StringActorProperty::GetFuncType( &actor, &MunitionEffectsInfoActor::GetFireLight ),
             "The name of light effect for the weapon fire effect", groupFire));
 
          // GROUND IMPACT PROPERTIES
-         AddProperty(new dtDAL::ResourceActorProperty( *this, dtDAL::DataType::PARTICLE_SYSTEM,
+         AddProperty(new dtCore::ResourceActorProperty( *this, dtCore::DataType::PARTICLE_SYSTEM,
             "Ground Impact Effect", "Ground Impact Effect",
-            dtDAL::ResourceActorProperty::SetFuncType( &actor, &MunitionEffectsInfoActor::SetGroundImpactEffect ),
+            dtCore::ResourceActorProperty::SetFuncType( &actor, &MunitionEffectsInfoActor::SetGroundImpactEffect ),
             "The file path of the ground impact visual effect", groupGroundImpact));
 
-         AddProperty(new dtDAL::ResourceActorProperty( *this, dtDAL::DataType::SOUND,
+         AddProperty(new dtCore::ResourceActorProperty( *this, dtCore::DataType::SOUND,
             "Ground Impact Sound", "Ground Impact Sound",
-            dtDAL::ResourceActorProperty::SetFuncType( &actor, &MunitionEffectsInfoActor::SetGroundImpactSound ),
+            dtCore::ResourceActorProperty::SetFuncType( &actor, &MunitionEffectsInfoActor::SetGroundImpactSound ),
             "The file path of the ground impact sound effect", groupGroundImpact));
 
-         AddProperty(new dtDAL::FloatActorProperty("Ground Impact Sound Max Distance", "Ground Impact Sound Max Distance",
-            dtDAL::FloatActorProperty::SetFuncType( &actor, &MunitionEffectsInfoActor::SetGroundImpactSoundMaxDistance ),
-            dtDAL::FloatActorProperty::GetFuncType( &actor, &MunitionEffectsInfoActor::GetGroundImpactSoundMaxDistance),
+         AddProperty(new dtCore::FloatActorProperty("Ground Impact Sound Max Distance", "Ground Impact Sound Max Distance",
+            dtCore::FloatActorProperty::SetFuncType( &actor, &MunitionEffectsInfoActor::SetGroundImpactSoundMaxDistance ),
+            dtCore::FloatActorProperty::GetFuncType( &actor, &MunitionEffectsInfoActor::GetGroundImpactSoundMaxDistance),
             "The maximum range in meters for ground impact sounds", groupGroundImpact));
 
-         AddProperty(new dtDAL::StringActorProperty("Ground Impact Light", "Ground Impact Light",
-            dtDAL::StringActorProperty::SetFuncType( &actor, &MunitionEffectsInfoActor::SetGroundImpactLight ),
-            dtDAL::StringActorProperty::GetFuncType( &actor, &MunitionEffectsInfoActor::GetGroundImpactLight ),
+         AddProperty(new dtCore::StringActorProperty("Ground Impact Light", "Ground Impact Light",
+            dtCore::StringActorProperty::SetFuncType( &actor, &MunitionEffectsInfoActor::SetGroundImpactLight ),
+            dtCore::StringActorProperty::GetFuncType( &actor, &MunitionEffectsInfoActor::GetGroundImpactLight ),
             "The name of light effect for the ground impact effect", groupGroundImpact));
 
          // ENTITY IMPACT PROPERTIES
-         AddProperty(new dtDAL::ResourceActorProperty( *this, dtDAL::DataType::PARTICLE_SYSTEM,
+         AddProperty(new dtCore::ResourceActorProperty( *this, dtCore::DataType::PARTICLE_SYSTEM,
             "Entity Impact Effect", "Entity Impact Effect",
-            dtDAL::ResourceActorProperty::SetFuncType( &actor, &MunitionEffectsInfoActor::SetEntityImpactEffect ),
+            dtCore::ResourceActorProperty::SetFuncType( &actor, &MunitionEffectsInfoActor::SetEntityImpactEffect ),
             "The file path of the entity impact visual effect", groupEntityImpact));
 
-         AddProperty(new dtDAL::ResourceActorProperty( *this, dtDAL::DataType::SOUND,
+         AddProperty(new dtCore::ResourceActorProperty( *this, dtCore::DataType::SOUND,
             "Entity Impact Sound", "Entity Impact Sound",
-            dtDAL::ResourceActorProperty::SetFuncType( &actor, &MunitionEffectsInfoActor::SetEntityImpactSound ),
+            dtCore::ResourceActorProperty::SetFuncType( &actor, &MunitionEffectsInfoActor::SetEntityImpactSound ),
             "The file path of the entity impact sound effect", groupEntityImpact));
 
-         AddProperty(new dtDAL::FloatActorProperty("Entity Impact Sound Max Distance", "Entity Impact Sound Max Distance",
-            dtDAL::FloatActorProperty::SetFuncType( &actor, &MunitionEffectsInfoActor::SetEntityImpactSoundMaxDistance ),
-            dtDAL::FloatActorProperty::GetFuncType( &actor, &MunitionEffectsInfoActor::GetEntityImpactSoundMaxDistance),
+         AddProperty(new dtCore::FloatActorProperty("Entity Impact Sound Max Distance", "Entity Impact Sound Max Distance",
+            dtCore::FloatActorProperty::SetFuncType( &actor, &MunitionEffectsInfoActor::SetEntityImpactSoundMaxDistance ),
+            dtCore::FloatActorProperty::GetFuncType( &actor, &MunitionEffectsInfoActor::GetEntityImpactSoundMaxDistance),
             "The maximum range in meters for entity impact sounds", groupEntityImpact));
 
-         AddProperty(new dtDAL::StringActorProperty("Entity Impact Light", "Entity Impact Light",
-            dtDAL::StringActorProperty::SetFuncType( &actor, &MunitionEffectsInfoActor::SetEntityImpactLight ),
-            dtDAL::StringActorProperty::GetFuncType( &actor, &MunitionEffectsInfoActor::GetEntityImpactLight ),
+         AddProperty(new dtCore::StringActorProperty("Entity Impact Light", "Entity Impact Light",
+            dtCore::StringActorProperty::SetFuncType( &actor, &MunitionEffectsInfoActor::SetEntityImpactLight ),
+            dtCore::StringActorProperty::GetFuncType( &actor, &MunitionEffectsInfoActor::GetEntityImpactLight ),
             "The name of light effect for the entity impact effect", groupEntityImpact));
 
          // SMOKE PROPERTIES
-         AddProperty(new dtDAL::ResourceActorProperty( *this, dtDAL::DataType::PARTICLE_SYSTEM,
+         AddProperty(new dtCore::ResourceActorProperty( *this, dtCore::DataType::PARTICLE_SYSTEM,
             "Smoke Effect", "Smoke Effect",
-            dtDAL::ResourceActorProperty::SetFuncType( &actor, &MunitionEffectsInfoActor::SetSmokeEffect ),
+            dtCore::ResourceActorProperty::SetFuncType( &actor, &MunitionEffectsInfoActor::SetSmokeEffect ),
             "The file path of the post-detonation smoke visual effect", groupSmoke));
 
-         AddProperty(new dtDAL::FloatActorProperty("Smoke Life Time", "Smoke Life Time",
-                  dtDAL::FloatActorProperty::SetFuncType( &actor, &MunitionEffectsInfoActor::SetSmokeLifeTime ),
-                  dtDAL::FloatActorProperty::GetFuncType( &actor, &MunitionEffectsInfoActor::GetSmokeLifeTime ),
+         AddProperty(new dtCore::FloatActorProperty("Smoke Life Time", "Smoke Life Time",
+                  dtCore::FloatActorProperty::SetFuncType( &actor, &MunitionEffectsInfoActor::SetSmokeLifeTime ),
+                  dtCore::FloatActorProperty::GetFuncType( &actor, &MunitionEffectsInfoActor::GetSmokeLifeTime ),
             "The time in seconds for the smoke effect to remain active", groupSmoke));
 
          // TRACER PROPERTIES
-         AddProperty(new dtDAL::StringActorProperty("Tracer Shader Name", "Tracer Shader Name",
-            dtDAL::StringActorProperty::SetFuncType( &actor, &MunitionEffectsInfoActor::SetTracerShaderName ),
-            dtDAL::StringActorProperty::GetFuncType( &actor, &MunitionEffectsInfoActor::GetTracerShaderName ),
+         AddProperty(new dtCore::StringActorProperty("Tracer Shader Name", "Tracer Shader Name",
+            dtCore::StringActorProperty::SetFuncType( &actor, &MunitionEffectsInfoActor::SetTracerShaderName ),
+            dtCore::StringActorProperty::GetFuncType( &actor, &MunitionEffectsInfoActor::GetTracerShaderName ),
             "The name of the shader responsible for rendering the tracer", groupTracer));
 
-         AddProperty(new dtDAL::StringActorProperty("Tracer Shader Group", "Tracer Shader Group",
-            dtDAL::StringActorProperty::SetFuncType( &actor, &MunitionEffectsInfoActor::SetTracerShaderGroup ),
-            dtDAL::StringActorProperty::GetFuncType( &actor, &MunitionEffectsInfoActor::GetTracerShaderGroup ),
+         AddProperty(new dtCore::StringActorProperty("Tracer Shader Group", "Tracer Shader Group",
+            dtCore::StringActorProperty::SetFuncType( &actor, &MunitionEffectsInfoActor::SetTracerShaderGroup ),
+            dtCore::StringActorProperty::GetFuncType( &actor, &MunitionEffectsInfoActor::GetTracerShaderGroup ),
             "The shader group in which the tracer shader can be found", groupTracer));
 
-         AddProperty(new dtDAL::FloatActorProperty("Tracer Life Time", "Tracer Life Time",
-            dtDAL::FloatActorProperty::SetFuncType( &actor, &MunitionEffectsInfoActor::SetTracerLifeTime ),
-            dtDAL::FloatActorProperty::GetFuncType( &actor, &MunitionEffectsInfoActor::GetTracerLifeTime ),
+         AddProperty(new dtCore::FloatActorProperty("Tracer Life Time", "Tracer Life Time",
+            dtCore::FloatActorProperty::SetFuncType( &actor, &MunitionEffectsInfoActor::SetTracerLifeTime ),
+            dtCore::FloatActorProperty::GetFuncType( &actor, &MunitionEffectsInfoActor::GetTracerLifeTime ),
             "The maximum time that a tracer will remain visible", groupTracer));
 
-         AddProperty(new dtDAL::FloatActorProperty("Tracer Length", "Tracer Length",
-            dtDAL::FloatActorProperty::SetFuncType( &actor, &MunitionEffectsInfoActor::SetTracerLength ),
-            dtDAL::FloatActorProperty::GetFuncType( &actor, &MunitionEffectsInfoActor::GetTracerLength ),
+         AddProperty(new dtCore::FloatActorProperty("Tracer Length", "Tracer Length",
+            dtCore::FloatActorProperty::SetFuncType( &actor, &MunitionEffectsInfoActor::SetTracerLength ),
+            dtCore::FloatActorProperty::GetFuncType( &actor, &MunitionEffectsInfoActor::GetTracerLength ),
             "The visual length of the tracer in meters", groupTracer));
 
-         AddProperty(new dtDAL::FloatActorProperty("Tracer Thickness", "Tracer Thickness",
-            dtDAL::FloatActorProperty::SetFuncType( &actor, &MunitionEffectsInfoActor::SetTracerThickness ),
-            dtDAL::FloatActorProperty::GetFuncType( &actor, &MunitionEffectsInfoActor::GetTracerThickness ),
+         AddProperty(new dtCore::FloatActorProperty("Tracer Thickness", "Tracer Thickness",
+            dtCore::FloatActorProperty::SetFuncType( &actor, &MunitionEffectsInfoActor::SetTracerThickness ),
+            dtCore::FloatActorProperty::GetFuncType( &actor, &MunitionEffectsInfoActor::GetTracerThickness ),
             "The visual thickness of the tracer in meters", groupTracer));
 
-         AddProperty(new dtDAL::StringActorProperty("Tracer Light", "Tracer Light",
-            dtDAL::StringActorProperty::SetFuncType( &actor, &MunitionEffectsInfoActor::SetTracerLight ),
-            dtDAL::StringActorProperty::GetFuncType( &actor, &MunitionEffectsInfoActor::GetTracerLight ),
+         AddProperty(new dtCore::StringActorProperty("Tracer Light", "Tracer Light",
+            dtCore::StringActorProperty::SetFuncType( &actor, &MunitionEffectsInfoActor::SetTracerLight ),
+            dtCore::StringActorProperty::GetFuncType( &actor, &MunitionEffectsInfoActor::GetTracerLight ),
             "The name of light effect for the tracer effect", groupTracer));
       }
 
@@ -418,13 +418,9 @@ namespace SimCore
       MunitionEffectsInfoActor::MunitionEffectsInfoActor( MunitionEffectsInfoActorProxy& proxy )
          : dtCore::DeltaDrawable("MunitionEffectsInfoActor")
          , mProbabilityFireFlash(1.0f)
-         , mSoundFire_Min(10.0f)
          , mSoundFire_Max(500.0f)
-         , mSoundImpactGround_Min(10.0f)
          , mSoundImpactGround_Max(500.0f)
-         , mSoundImpactEntity_Min(10.0f)
          , mSoundImpactEntity_Max(500.0f)
-         , mSoundFly_Min(10.0f)
          , mSoundFly_Max(500.0f)
          , mTimeSmoke(10.0f)
          , mFireFlashTime(0.1f)
@@ -572,13 +568,13 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void MunitionTypeActorProxy::CreateActor()
+      void MunitionTypeActorProxy::CreateDrawable()
       {
          SetDrawable( *new MunitionTypeActor(*this) );
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void MunitionTypeActorProxy::SetEffectsInfoActor( dtDAL::ActorProxy* proxy )
+      void MunitionTypeActorProxy::SetEffectsInfoActor( dtCore::ActorProxy* proxy )
       {
          MunitionTypeActor* actor = static_cast<MunitionTypeActor*>(GetDrawable());
          actor->SetEffectsInfoActor( proxy );
@@ -589,50 +585,50 @@ namespace SimCore
       {
          MunitionTypeActor& actor = static_cast<MunitionTypeActor&>(*GetDrawable());
 
-         typedef dtDAL::PropertyRegHelper<MunitionTypeActorProxy&, MunitionTypeActor> RegHelperType;
+         typedef dtCore::PropertyRegHelper<MunitionTypeActorProxy&, MunitionTypeActor> RegHelperType;
          RegHelperType propReg(*this, &actor, "Detonation");
 
          DT_REGISTER_ACTOR_ID_PROPERTY(DetonationActorProxy::CLASS_NAME, DetonationActor, "Detonation Prototype",
                                        "This is the class that will be spawned to handle the detonation for this munition type", RegHelperType, propReg);
 
-         AddProperty(new dtDAL::StringActorProperty("DIS Identifier", "DIS Identifier",
-            dtDAL::StringActorProperty::SetFuncType( &actor, &MunitionTypeActor::SetDISIdentifierByString ),
-            dtDAL::StringActorProperty::GetFuncType( &actor, &MunitionTypeActor::GetDISIdentifierString ),
+         AddProperty(new dtCore::StringActorProperty("DIS Identifier", "DIS Identifier",
+            dtCore::StringActorProperty::SetFuncType( &actor, &MunitionTypeActor::SetDISIdentifierByString ),
+            dtCore::StringActorProperty::GetFuncType( &actor, &MunitionTypeActor::GetDISIdentifierString ),
             "The DIS identifier used by the munition on the network"));
 
-         AddProperty(new dtDAL::ResourceActorProperty( *this, dtDAL::DataType::STATIC_MESH,
+         AddProperty(new dtCore::ResourceActorProperty( *this, dtCore::DataType::STATIC_MESH,
             "Model", "Model",
-            dtDAL::ResourceActorProperty::SetFuncType( &actor, &MunitionTypeActor::SetModel ),
+            dtCore::ResourceActorProperty::SetFuncType( &actor, &MunitionTypeActor::SetModel ),
             "The file path of the model that should represent this munition"));
 
-         AddProperty(new dtDAL::StringActorProperty("Damage Type", "Damage Type",
-            dtDAL::StringActorProperty::SetFuncType( &actor, &MunitionTypeActor::SetDamageType ),
-            dtDAL::StringActorProperty::GetFuncType( &actor, &MunitionTypeActor::GetDamageTypeString ),
+         AddProperty(new dtCore::StringActorProperty("Damage Type", "Damage Type",
+            dtCore::StringActorProperty::SetFuncType( &actor, &MunitionTypeActor::SetDamageType ),
+            dtCore::StringActorProperty::GetFuncType( &actor, &MunitionTypeActor::GetDamageTypeString ),
             "The munition name as found in the MunitionsConfig.xml for damage probabilities"));
 
-         AddProperty(new dtDAL::IntActorProperty("Fuse Type", "Fuse Type",
-            dtDAL::IntActorProperty::SetFuncType( &actor, &MunitionTypeActor::SetFuseType ),
-            dtDAL::IntActorProperty::GetFuncType( &actor, &MunitionTypeActor::GetFuseType ),
+         AddProperty(new dtCore::IntActorProperty("Fuse Type", "Fuse Type",
+            dtCore::IntActorProperty::SetFuncType( &actor, &MunitionTypeActor::SetFuseType ),
+            dtCore::IntActorProperty::GetFuncType( &actor, &MunitionTypeActor::GetFuseType ),
             "The fuse type code as found in a fed file."));
 
-         AddProperty(new dtDAL::IntActorProperty("Warhead Type", "Warhead Type",
-            dtDAL::IntActorProperty::SetFuncType( &actor, &MunitionTypeActor::SetWarheadType ),
-            dtDAL::IntActorProperty::GetFuncType( &actor, &MunitionTypeActor::GetWarheadType ),
+         AddProperty(new dtCore::IntActorProperty("Warhead Type", "Warhead Type",
+            dtCore::IntActorProperty::SetFuncType( &actor, &MunitionTypeActor::SetWarheadType ),
+            dtCore::IntActorProperty::GetFuncType( &actor, &MunitionTypeActor::GetWarheadType ),
             "The warhead type code as found in a fed file."));
 
-         AddProperty(new dtDAL::IntActorProperty("Tracer Frequency", "Tracer Frequency",
-            dtDAL::IntActorProperty::SetFuncType( &actor, &MunitionTypeActor::SetTracerFrequency ),
-            dtDAL::IntActorProperty::GetFuncType( &actor, &MunitionTypeActor::GetTracerFrequency ),
+         AddProperty(new dtCore::IntActorProperty("Tracer Frequency", "Tracer Frequency",
+            dtCore::IntActorProperty::SetFuncType( &actor, &MunitionTypeActor::SetTracerFrequency ),
+            dtCore::IntActorProperty::GetFuncType( &actor, &MunitionTypeActor::GetTracerFrequency ),
             "Every nth round fired that will be a tracer (intended for bullet type munitions)"));
 
-         AddProperty(new dtDAL::EnumActorProperty<MunitionFamily>("Family", "Family",
-            dtDAL::EnumActorProperty<MunitionFamily>::SetFuncType( &actor, &MunitionTypeActor::SetFamily ),
-            dtDAL::EnumActorProperty<MunitionFamily>::GetFuncType( &actor, &MunitionTypeActor::GetFamily ),
+         AddProperty(new dtCore::EnumActorProperty<MunitionFamily>("Family", "Family",
+            dtCore::EnumActorProperty<MunitionFamily>::SetFuncType( &actor, &MunitionTypeActor::SetFamily ),
+            dtCore::EnumActorProperty<MunitionFamily>::GetFuncType( &actor, &MunitionTypeActor::GetFamily ),
             "Generalized munition type grouping based on the munition's overall functionality."));
 
-         AddProperty(new dtDAL::ActorActorProperty( *this, "Effects Info", "Effects Info",
-            dtDAL::ActorActorProperty::SetFuncType( this, &MunitionTypeActorProxy::SetEffectsInfoActor ),
-            dtDAL::ActorActorProperty::GetFuncType( ),
+         AddProperty(new dtCore::ActorActorProperty( *this, "Effects Info", "Effects Info",
+            dtCore::ActorActorProperty::SetFuncType( this, &MunitionTypeActorProxy::SetEffectsInfoActor ),
+            dtCore::ActorActorProperty::GetFuncType( ),
             MunitionEffectsInfoActorProxy::CLASS_NAME,
             "A reference to the collection of effect resource file paths, for sound, models and particle systems",
             "Munition Effects"
@@ -683,7 +679,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void MunitionTypeActor::SetEffectsInfoActor( dtDAL::ActorProxy* proxy )
+      void MunitionTypeActor::SetEffectsInfoActor( dtCore::ActorProxy* proxy )
       {
          mEffects = proxy != NULL ?
             dynamic_cast<MunitionEffectsInfoActor*> (proxy->GetDrawable()) : NULL;
@@ -696,7 +692,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void MunitionTypeActor::SetDetonationActorPrototype(dtDAL::ActorProxy* proxy)
+      void MunitionTypeActor::SetDetonationActorPrototype(dtCore::ActorProxy* proxy)
       {
          if(proxy != NULL)
          {

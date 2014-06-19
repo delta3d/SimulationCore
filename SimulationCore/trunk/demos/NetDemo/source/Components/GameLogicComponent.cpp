@@ -21,7 +21,7 @@
 #include <dtGame/gmsettings.h>
 #include <dtGame/basemessages.h>
 #include <dtNetGM/clientnetworkcomponent.h>
-#include <Components/ForwardingServerNetComponent.h>
+#include <dtNetGM/servernetworkcomponent.h>
 
 #include <dtActors/engineactorregistry.h>
 
@@ -113,7 +113,7 @@ namespace NetDemo
       // We can't add components while in a tick message, so we add both components up front.
       // SERVER COMPONENT
       dtCore::RefPtr<dtNetGM::ServerNetworkComponent> serverComp =
-         new ForwardingServerNetComponent(gameName, gameVersion);
+         new dtNetGM::ServerNetworkComponent(gameName, gameVersion);
       GetGameManager()->AddComponent(*serverComp, dtGame::GameManager::ComponentPriority::NORMAL);
       // CLIENT COMPONENT
       dtCore::RefPtr<dtNetGM::ClientNetworkComponent> clientComp =
@@ -290,7 +290,7 @@ namespace NetDemo
       else if (mIsServer && mServerGameStatusProxy.valid())
       {
          // get the count of player status actors in gm.
-         std::vector<dtDAL::ActorProxy*> playerActors;
+         std::vector<dtCore::ActorProxy*> playerActors;
          GetGameManager()->FindActorsByType(*NetDemoActorRegistry::PLAYER_STATUS_ACTOR_TYPE, playerActors);
          mServerGameStatusProxy->GetActorAsGameStatus().SetNumPlayers(playerActors.size());
 
@@ -539,13 +539,13 @@ namespace NetDemo
    }
 
    //////////////////////////////////////////////////////////////////////////
-   void GameLogicComponent::CreatePrototypes(const dtDAL::ActorType& type)
+   void GameLogicComponent::CreatePrototypes(const dtCore::ActorType& type)
    {
-      std::vector<dtDAL::ActorProxy*> actors;
+      std::vector<dtCore::ActorProxy*> actors;
       GetGameManager()->FindPrototypesByActorType(type, actors);
       for (unsigned i = 0; i < actors.size(); ++i)
       {
-         dtDAL::ActorProxy* curProto  = actors[i];
+         dtCore::ActorProxy* curProto  = actors[i];
          dtCore::RefPtr<dtGame::GameActorProxy> newActor;
          GetGameManager()->CreateActorFromPrototype(curProto->GetId(), newActor);
          if (newActor == NULL)

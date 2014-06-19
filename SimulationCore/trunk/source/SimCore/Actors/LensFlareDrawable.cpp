@@ -26,7 +26,7 @@
 #include <dtUtil/exception.h>
 #include <dtUtil/mathdefines.h>
 #include <dtUtil/matrixutil.h>
-#include <dtDAL/project.h>
+#include <dtCore/project.h>
 #include <dtCore/scene.h>
 #include <dtCore/system.h>
 #include <dtCore/camera.h>
@@ -91,12 +91,16 @@ namespace SimCore
             }
 
             osg::Uniform* texUniform = new osg::Uniform(osg::Uniform::SAMPLER_2D, "lastDepthTexture");
+            texUniform->setDataVariance(osg::Object::DYNAMIC);
             texUniform->set(3);
+
             osg::StateSet* ss = lensFlareReference->getOrCreateStateSet();
             ss->addUniform(texUniform);
             ss->setTextureAttributeAndModes(3, params.mDepthTexture .get(), osg::StateAttribute::ON);
+            ss->setDataVariance(osg::Object::DYNAMIC);
 
             params.mDepthTexCoordUniform = new osg::Uniform(osg::Uniform::FLOAT_VEC2, "depthTexCoords");
+            params.mDepthTexCoordUniform->setDataVariance(osg::Object::DYNAMIC);
             cam->getOrCreateStateSet()->addUniform(params.mDepthTexCoordUniform);
         
          }
@@ -170,7 +174,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       LensFlareDrawable::LensFlareDrawable()
          : dtCore::DeltaDrawable("LensFlareDrawable")
-         , mTraversalMask(0xFFFFFFFF)
+         //, mTraversalMask(0xFFFFFFFF)
          , mLensFlareDrawable(new LensFlareOSGDrawable())
       {
          AddSender(&dtCore::System::GetInstance());
@@ -478,28 +482,33 @@ namespace SimCore
 
          LoadTextures();         
 
-         osg::StateSet* ss = getOrCreateStateSet();         
+         osg::StateSet* ss = getOrCreateStateSet();
+#if OSG_VERSION_LESS_THAN(3,1,5)
          mLightPosUniform = ss->getOrCreateUniform("sunPosition", osg::Uniform::DOUBLE_VEC3);
-         //mEffectRadiusUniform = ss->getOrCreateUniform("effectRadius", osg::Uniform::FLOAT);
+#else
+         mLightPosUniform = ss->getOrCreateUniform("sunPosition", osg::Uniform::DOUBLE_VEC3);
+#endif
+         
+         mLightPosUniform->setDataVariance(osg::Object::DYNAMIC);
 
       }
 
       //////////////////////////////////////////////////////////////////////////
       void LensFlareDrawable::LensFlareOSGDrawable::LoadTextures()
       {
-         dtDAL::Project& project = dtDAL::Project::GetInstance();
+         dtCore::Project& project = dtCore::Project::GetInstance();
 
          try
          {
-            std::string softGlowFile = project.GetResourcePath(dtDAL::ResourceDescriptor(TEXTURE_LENSFLARE_SOFT_GLOW));
+            std::string softGlowFile = project.GetResourcePath(dtCore::ResourceDescriptor(TEXTURE_LENSFLARE_SOFT_GLOW));
             mSoftGlow = new osg::Texture2D();
             InitTexture(softGlowFile, mSoftGlow.get(), "softGlow", 0);
 
-            std::string hardGlowFile = project.GetResourcePath(dtDAL::ResourceDescriptor(TEXTURE_LENSFLARE_HARD_GLOW));
+            std::string hardGlowFile = project.GetResourcePath(dtCore::ResourceDescriptor(TEXTURE_LENSFLARE_HARD_GLOW));
             mHardGlow = new osg::Texture2D();
             InitTexture(hardGlowFile, mHardGlow.get(), "hardGlow", 1);
 
-            std::string streaksFile = project.GetResourcePath(dtDAL::ResourceDescriptor(TEXTURE_LENSFLARE_STREAKS));
+            std::string streaksFile = project.GetResourcePath(dtCore::ResourceDescriptor(TEXTURE_LENSFLARE_STREAKS));
             mStreaks = new osg::Texture2D();
             InitTexture(streaksFile, mStreaks.get(), "streaks", 2);
 

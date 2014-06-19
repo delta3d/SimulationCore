@@ -180,7 +180,7 @@ namespace SimCore
       const int WaterGridActor::MAX_TEXTURE_WAVES(32);
       const dtUtil::RefString WaterGridActor::UNIFORM_ELAPSED_TIME("elapsedTime");
       const dtUtil::RefString WaterGridActor::UNIFORM_MAX_COMPUTED_DISTANCE("maxComputedDistance");
-#ifdef __APPLE__
+#if defined (__APPLE__) && OSG_VERSION_LESS_THAN(3,2,0)
       const dtUtil::RefString WaterGridActor::UNIFORM_WAVE_ARRAY("waveArray[0]");
 #else
       const dtUtil::RefString WaterGridActor::UNIFORM_WAVE_ARRAY("waveArray");
@@ -530,6 +530,13 @@ namespace SimCore
             //   std::cout << "Direction mod changed to [" << mModForDirectionInDegrees << "]." << std::endl;
             //}
 
+
+            //if (kb->GetKeyState('j'))
+            //{
+            //   std::cout << "mModForDirectionInDegrees: " << mModForDirectionInDegrees << std::endl;
+            //}
+
+
             //if (kb->GetKeyState('1'))
             //{
             //   mModForFOV *= 0.96f; // 10% less
@@ -628,12 +635,15 @@ namespace SimCore
       void WaterGridActor::CreateGeometry()
       {
          mGeode = new osg::Geode();
+         mGeode->setDataVariance(osg::Object::DYNAMIC);
+
          mGeometry = BuildRadialGrid();
          mGeometry->setCullCallback(new WaterCullCallback());
 
          mGeode->addDrawable(mGeometry.get());
 
          osg::StateSet* ss = mGeode->getOrCreateStateSet();
+         ss->setDataVariance(osg::Object::DYNAMIC);
          ss->setMode(GL_BLEND, osg::StateAttribute::ON);
          osg::BlendFunc* bf = new osg::BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
          ss->setAttribute(bf);
@@ -740,6 +750,7 @@ namespace SimCore
 
          //set the elapsed time
          osg::Uniform* elapsedTime = ss->getOrCreateUniform(UNIFORM_ELAPSED_TIME, osg::Uniform::FLOAT);
+         elapsedTime->setDataVariance(osg::Object::DYNAMIC);
          elapsedTime->set(mElapsedTime);
 
          //set the wave direction modifier
@@ -756,6 +767,7 @@ namespace SimCore
 
          //update vertex wave uniforms
          osg::Uniform* waveArray = ss->getOrCreateUniform(UNIFORM_WAVE_ARRAY, osg::Uniform::FLOAT_VEC4, MAX_WAVES * 2);
+         waveArray->setDataVariance(osg::Object::DYNAMIC);
 
          // Update the
          osg::Uniform* centerOffset = ss->getOrCreateUniform(UNIFORM_CENTER_OFFSET, osg::Uniform::FLOAT_VEC3);
@@ -966,18 +978,8 @@ namespace SimCore
 
          //lets make the geometry
          dtCore::RefPtr<osg::Vec4Array> pVerts = new osg::Vec4Array(numVerts);
-         dtCore::RefPtr<osg::IntArray> pIndices = new osg::IntArray(numIndices);
-
-         //float a0 = 0.01f;
-         //float a1 = 1.0f; // 5.0f;
-         //float outerMostRingDistance = 5000.0; // the furthest rings get an extra reach.
-         //float middleRingDistance = 20.0; // Middle rings get a minor boost too.
-         //int numOuterRings = 15;
-         //int numMiddleRings = 20;
-         //float innerExpBase = 1.02f;
-         //float middleExpBase = 1.2;
-         //float outerExpBase = 1.19f;
-         ////float exponent = 3;
+         dtCore::RefPtr<osg::DrawElementsUInt> pIndices = new osg::DrawElementsUInt(osg::PrimitiveSet::TRIANGLES);
+         pIndices->reserve(numIndices);
 
          float a0 = 0.05f;
          float a1 = 1.205f; // 5.0f;
@@ -1028,31 +1030,26 @@ namespace SimCore
             }
          }
          mComputedRadialDistance = r;
-
-         int counter = 0;
-
+         
          for(int i = 0; i < N - 1; ++i)
          {
             for(int j = 0; j < K - 1; ++j)
             {
                int JPlusOne = (j + 1);// % K;
 
-               (*pIndices)[counter] = (i * K) + j;
-               (*pIndices)[counter + 1] = ((i + 1) * K) + j;
-               (*pIndices)[counter + 2] = ((i + 1) * K) + (JPlusOne);
+               pIndices->addElement( (i * K) + j );
+               pIndices->addElement( ((i + 1) * K) + j );
+               pIndices->addElement( ((i + 1) * K) + (JPlusOne) );
 
-               (*pIndices)[counter + 3] = ((i + 1) * K) + (JPlusOne);
-               (*pIndices)[counter + 4] = (i * K) + (JPlusOne);
-               (*pIndices)[counter + 5] = (i * K) + j;
-
-               counter += 6;
+               pIndices->addElement( ((i + 1) * K) + (JPlusOne) );
+               pIndices->addElement( (i * K) + (JPlusOne) );
+               pIndices->addElement( (i * K) + j );
             }
          }
 
 
          geometry->setVertexArray(pVerts.get());
-         geometry->setVertexIndices(pIndices.get());
-         geometry->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::TRIANGLES, 0, numIndices));
+         geometry->addPrimitiveSet(pIndices.get());
 
          return geometry;
       }
@@ -1420,6 +1417,7 @@ namespace SimCore
       {
          osg::StateSet* ss = pCamera.GetOSGCamera()->getOrCreateStateSet();
          osg::Uniform* waterFOVUniform = ss->getOrCreateUniform("waterPlaneFOV", osg::Uniform::FLOAT);
+         waterFOVUniform->setDataVariance(osg::Object::DYNAMIC);
 
          dtCore::Transform xform;
          osg::Vec3d waterCenter, screenPosOut, camPos;
@@ -1546,6 +1544,7 @@ namespace SimCore
       {
          osg::StateSet* ss = pCamera.GetOSGCamera()->getOrCreateStateSet();
          osg::Uniform* waterHeightScreenSpace = ss->getOrCreateUniform("waterHeightScreenSpace", osg::Uniform::FLOAT_VEC3);
+         waterHeightScreenSpace->setDataVariance(osg::Object::DYNAMIC);
 
          dtCore::Transform xform;
          osg::Vec3d waterCenter, screenPosOut, camPos;
@@ -1827,6 +1826,10 @@ namespace SimCore
        const dtUtil::RefString WaterGridActorProxy::INVOKABLE_ACTOR_UPDATE("Actor Updated");
 
       WaterGridActorProxy::WaterGridActorProxy()
+         : mWaveDirection(0.0f)
+         , mAmplitudeModifier(1.0f)
+         , mWavelengthModifier(1.0f)
+         , mSpeedModifier(1.0f)
       {
          SetClassName(WaterGridActorProxy::CLASSNAME);
       }
@@ -1887,6 +1890,14 @@ namespace SimCore
          WaterGridActor* actor = NULL;
          GetActor(actor);
 
+         typedef dtCore::PropertyRegHelper<dtCore::PropertyContainer&, WaterGridActorProxy> RegHelperType;
+         RegHelperType propReg(*this, this, GROUPNAME);
+
+         DT_REGISTER_PROPERTY(WaveDirection, "The direction the waves are moving.", RegHelperType, propReg);
+         DT_REGISTER_PROPERTY(AmplitudeModifier, "A percentage multiplied times the amplitude.", RegHelperType, propReg);
+         DT_REGISTER_PROPERTY(WavelengthModifier, "A percentage multiplied with the wave length.", RegHelperType, propReg);
+         DT_REGISTER_PROPERTY(SpeedModifier, "A percentage multiplied with the speed.", RegHelperType, propReg);
+
          AddProperty(new dtCore::ColorRgbaActorProperty(PROPERTY_WATER_COLOR, PROPERTY_WATER_COLOR,
             dtCore::ColorRgbaActorProperty::SetFuncType(actor,&WaterGridActor::SetWaterColor),
             dtCore::ColorRgbaActorProperty::GetFuncType(actor,&WaterGridActor::GetWaterColor),
@@ -1902,6 +1913,52 @@ namespace SimCore
             dtCore::EnumActorProperty<WaterGridActor::SeaState>::GetFuncType(actor, &WaterGridActor::GetSeaState),
             "The Sea State number based on the Beaufort wind force scale.", GROUPNAME));
 
+      }
+
+      /////////////////////////////////////////////////////////////////////////////
+      DT_IMPLEMENT_ACCESSOR_GETTER(WaterGridActorProxy, float, WaveDirection);
+      DT_IMPLEMENT_ACCESSOR_GETTER(WaterGridActorProxy, float, AmplitudeModifier);
+      DT_IMPLEMENT_ACCESSOR_GETTER(WaterGridActorProxy, float, WavelengthModifier);
+      DT_IMPLEMENT_ACCESSOR_GETTER(WaterGridActorProxy, float, SpeedModifier);
+
+      /////////////////////////////////////////////////////////////////////////////
+      void WaterGridActorProxy::SetWaveDirection(float f)
+      {
+         WaterGridActor* wga = NULL;
+         GetActor(wga);
+
+         mWaveDirection = f;
+         wga->SetModForDirectionInDegrees(mWaveDirection);
+      }
+
+      /////////////////////////////////////////////////////////////////////////////
+      void WaterGridActorProxy::SetWavelengthModifier(float f)
+      {
+         WaterGridActor* wga = NULL;
+         GetActor(wga);
+
+         mWavelengthModifier = f;
+         wga->SetModForWaveLength(mWavelengthModifier);
+      }
+
+      /////////////////////////////////////////////////////////////////////////////
+      void WaterGridActorProxy::SetAmplitudeModifier(float f)
+      {
+         WaterGridActor* wga = NULL;
+         GetActor(wga);
+
+         mAmplitudeModifier = f;
+         wga->SetAmplitudeMultiplier(mAmplitudeModifier);
+      }
+
+      /////////////////////////////////////////////////////////////////////////////
+      void WaterGridActorProxy::SetSpeedModifier(float f)
+      {
+         WaterGridActor* wga = NULL;
+         GetActor(wga);
+
+         mSpeedModifier = f;
+         wga->SetSpeedMultiplier(f);
       }
 
       /////////////////////////////////////////////////////////////////////////////

@@ -26,7 +26,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include <prefix/SimCorePrefix.h>
 #include <SimCore/Actors/LatLongDataActor.h>
-#include <dtDAL/enginepropertytypes.h>
+#include <dtCore/enginepropertytypes.h>
 
 
 
@@ -103,22 +103,22 @@ namespace SimCore
          const std::string GROUP("Lat Long Data");
 
          LatLongDataActor* actor = NULL;
-         GetActor( actor );
+         GetDrawable( actor );
 
          // DOUBLE PROPERTIES
-         AddProperty(new dtDAL::DoubleActorProperty(
+         AddProperty(new dtCore::DoubleActorProperty(
             LatLongDataActorProxy::PROPERTY_LATITUDE,
             LatLongDataActorProxy::PROPERTY_LATITUDE, 
-            dtDAL::DoubleActorProperty::SetFuncType(actor, &LatLongDataActor::SetLatitude),
-            dtDAL::DoubleActorProperty::GetFuncType(actor, &LatLongDataActor::GetLatitude),
+            dtCore::DoubleActorProperty::SetFuncType(actor, &LatLongDataActor::SetLatitude),
+            dtCore::DoubleActorProperty::GetFuncType(actor, &LatLongDataActor::GetLatitude),
             "Latitude location relevant to the data.",
             GROUP));
 
-         AddProperty(new dtDAL::DoubleActorProperty(
+         AddProperty(new dtCore::DoubleActorProperty(
             LatLongDataActorProxy::PROPERTY_LONGITUDE,
             LatLongDataActorProxy::PROPERTY_LONGITUDE, 
-            dtDAL::DoubleActorProperty::SetFuncType(actor, &LatLongDataActor::SetLongitude),
-            dtDAL::DoubleActorProperty::GetFuncType(actor, &LatLongDataActor::GetLongitude),
+            dtCore::DoubleActorProperty::SetFuncType(actor, &LatLongDataActor::SetLongitude),
+            dtCore::DoubleActorProperty::GetFuncType(actor, &LatLongDataActor::GetLongitude),
             "Longitude location relevant to the data.",
             GROUP));
       }

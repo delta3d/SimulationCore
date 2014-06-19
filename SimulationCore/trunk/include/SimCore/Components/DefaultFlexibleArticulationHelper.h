@@ -44,7 +44,7 @@ namespace dtCore
    class NodeCollector;
 }
 
-namespace dtDAL
+namespace dtCore
 {
    class NamedGroupParameter;
 }
@@ -107,7 +107,7 @@ namespace SimCore
              */
             void AddArticulation(const std::string &dofName, ARTICULATION_TYPE articType, const std::string &parentDOFName="");
 
-            virtual dtCore::RefPtr<dtDAL::NamedGroupParameter> BuildGroupProperty();
+            virtual dtCore::RefPtr<dtCore::NamedGroupParameter> BuildGroupProperty();
             virtual void UpdateDOFReferences( dtUtil::NodeCollector* nodeCollector );
             virtual bool HasDOF( osgSim::DOFTransform& dof ) const;
             virtual bool HasDOFMetric( const osgSim::DOFTransform& dof, const std::string& metricName ) const;

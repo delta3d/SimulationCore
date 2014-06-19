@@ -24,7 +24,7 @@
 #include <SimCore/Actors/PlayerActor.h>
 #include <SimCore/Messages.h>
 #include <SimCore/MessageType.h>
-#include <dtDAL/enginepropertytypes.h>
+#include <dtCore/enginepropertytypes.h>
 #include <dtGame/invokable.h>
 #include <dtGame/deadreckoninghelper.h>
 
@@ -54,9 +54,9 @@ namespace SimCore
          PlayerActor* playerActor = NULL;
          GetActor(playerActor);
 
-         AddProperty(new dtDAL::EnumActorProperty<SimCore::MessageType>("Enabled Tool", "Enabled Tool",
-                  dtDAL::EnumActorProperty<SimCore::MessageType>::SetFuncType(playerActor, &PlayerActor::SetEnabledTool),
-                  dtDAL::EnumActorProperty<SimCore::MessageType>::GetFuncType(playerActor, &PlayerActor::GetEnabledTool),
+         AddProperty(new dtCore::EnumActorProperty<SimCore::MessageType>("Enabled Tool", "Enabled Tool",
+                  dtCore::EnumActorProperty<SimCore::MessageType>::SetFuncType(playerActor, &PlayerActor::SetEnabledTool),
+                  dtCore::EnumActorProperty<SimCore::MessageType>::GetFuncType(playerActor, &PlayerActor::GetEnabledTool),
             "Sets the currently enabled tool on the player"));
       }
 
@@ -102,8 +102,8 @@ namespace SimCore
       //////////////////////////////////////////////////////////
       // Actor code
       //////////////////////////////////////////////////////////
-      PlayerActor::PlayerActor(dtGame::GameActorProxy &proxy) :
-         StealthActor(proxy),
+      PlayerActor::PlayerActor(dtGame::GameActorProxy& owner) :
+         StealthActor(owner),
          mActiveTool(&SimCore::MessageType::NO_TOOL)
       {
          SetAttachAsThirdPerson(false);

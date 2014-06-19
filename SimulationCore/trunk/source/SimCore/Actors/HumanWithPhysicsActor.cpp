@@ -26,7 +26,7 @@
 #include <SimCore/Messages.h>
 #include <SimCore/MessageType.h>
 
-#include <dtDAL/enginepropertytypes.h>
+#include <dtCore/enginepropertytypes.h>
 
 #include <dtGame/invokable.h>
 #include <dtGame/basemessages.h>
@@ -52,13 +52,13 @@ namespace SimCore
       //////////////////////////////////////////////////////////
       // Actor code
       //////////////////////////////////////////////////////////
-      HumanWithPhysicsActor::HumanWithPhysicsActor(dtGame::GameActorProxy& proxy) :
-         Human(proxy)
+      HumanWithPhysicsActor::HumanWithPhysicsActor(dtGame::GameActorProxy& owner) :
+         Human(owner)
       // With 30, this is about 12.66 MPH, which is a decently fast sustainable run. The fastest human sprint
       , mMoveRateConstant(30.0f, 30.0f, 0.0f)
-      , mSecsSinceLastUpdateSent(0.0f)
-      , mMaxUpdateSendRate(3.0f)
-      , mAcceptInput(false)
+//      , mSecsSinceLastUpdateSent(0.0f)
+//      , mMaxUpdateSendRate(3.0f)
+//      , mAcceptInput(false)
       , mNotifyChangePosition(false)
       , mNotifyChangeOrient(false)
       , mNotifyChangeVelocity(false)
@@ -262,13 +262,13 @@ namespace SimCore
          {
             dtCore::RefPtr<dtPhysics::PhysicsActComp> physAC = new dtPhysics::PhysicsActComp();
 
-			   dtCore::RefPtr<dtPhysics::PhysicsObject> physicsObject = new dtPhysics::PhysicsObject("Body");
-			   physicsObject->SetPrimitiveType(dtPhysics::PrimitiveType::CYLINDER);
-			   physicsObject->SetMechanicsType(dtPhysics::MechanicsType::KINEMATIC);
-			   physicsObject->SetCollisionGroup(SimCore::CollisionGroup::GROUP_HUMAN_LOCAL);
-			   physicsObject->SetMass(100.0f);
-			   physicsObject->SetExtents(osg::Vec3(1.8f, 0.5f, 0.0f));
-			   physAC->AddPhysicsObject(*physicsObject);
+            dtCore::RefPtr<dtPhysics::PhysicsObject> physicsObject = new dtPhysics::PhysicsObject("Body");
+            physicsObject->SetPrimitiveType(dtPhysics::PrimitiveType::CYLINDER);
+            physicsObject->SetMechanicsType(dtPhysics::MechanicsType::KINEMATIC);
+            physicsObject->SetCollisionGroup(SimCore::CollisionGroup::GROUP_HUMAN_LOCAL);
+            physicsObject->SetMass(100.0f);
+            physicsObject->SetExtents(osg::Vec3(1.8f, 0.5f, 0.0f));
+            physAC->AddPhysicsObject(*physicsObject);
 
             AddComponent(*physAC);
          }

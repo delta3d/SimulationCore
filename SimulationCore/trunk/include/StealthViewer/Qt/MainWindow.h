@@ -118,7 +118,7 @@ namespace StealthQt
           * Starts a new wait cursor.  You MUST call endWaitCursor() for each
           * startWaitCursor().
           *
-          * @Note - This behavior is extremely trivial, but is pulled to mainWindow for
+          * @note - This behavior is extremely trivial, but is pulled to mainWindow for
           * future expansion
           */
          void StartWaitCursor();
@@ -126,7 +126,7 @@ namespace StealthQt
          /**
           * Ends a previously started wait cursor.  You must call this for each startWaitCursor().
           *
-          * @Note - This behavior is extremely trivial, but is pulled to mainWindow for
+          * @note - This behavior is extremely trivial, but is pulled to mainWindow for
           * future expansion
           */
          void EndWaitCursor();
@@ -447,7 +447,7 @@ namespace StealthQt
          /**
           * Updates the data fields of the Entity Info window. Made into a method cause it's called from several places
           */
-         void UpdateEntityInfoData(dtGame::GameActorProxy& proxy);
+         void UpdateEntityInfoData(dtGame::GameActorProxy& parent);
 
          /**
           * There is only one of 3 coordinate systems active at any one time. Therefore, hide 2 of the 3 possible

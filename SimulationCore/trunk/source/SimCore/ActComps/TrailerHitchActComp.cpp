@@ -38,7 +38,7 @@
 
 #include <dtUtil/nodecollector.h>
 #include <dtUtil/matrixutil.h>
-#include <dtDAL/propertymacros.h>
+#include <dtCore/propertymacros.h>
 
 #include <dtGame/gamemanager.h>
 
@@ -62,7 +62,8 @@ namespace SimCore
          AddInstance(this);
       }
 
-      const dtUtil::RefString TrailerHitchActComp::TYPE("TrailerHitch");
+      const dtGame::ActorComponent::ACType TrailerHitchActComp::TYPE( new dtCore::ActorType("TrailerHitch", "ActorComponents",
+            "An actorcomponent that will hitch two actors together in physics like a truck to a trailer.", dtGame::ActorComponent::BaseActorComponentType));
 
       const dtUtil::RefString TrailerHitchActComp::FRONT_HITCH_DOF_NAME_DEFAULT = "dof_hitch_front";
       const dtUtil::RefString TrailerHitchActComp::REAR_HITCH_DOF_NAME_DEFAULT = "dof_hitch_rear";
@@ -88,7 +89,7 @@ namespace SimCore
 
       void TrailerHitchActComp::BuildPropertyMap()
       {
-         typedef dtDAL::PropertyRegHelper<TrailerHitchActComp&, TrailerHitchActComp> PropRegType;
+         typedef dtCore::PropertyRegHelper<TrailerHitchActComp&, TrailerHitchActComp> PropRegType;
          PropRegType propRegHelper(*this, this, "Trailer Hitch");
 
          DT_REGISTER_PROPERTY(
@@ -132,22 +133,20 @@ namespace SimCore
       void TrailerHitchActComp::OnEnteredWorld()
       {
          // This will do nothing unless everything is set.
-         dtGame::GameActor* ga = NULL;
-         GetOwner(ga);
          Attach();
       }
 
       //////////////////////////////////////////////////
       void TrailerHitchActComp::OnRemovedFromWorld()
       {
-         dtGame::GameActor* ga = NULL;
+         dtGame::GameActorProxy* ga = NULL;
          GetOwner(ga);
 
          if (mCascadeDeletes && mTrailerActor.valid())
          {
             if (ga != NULL)
             {
-               ga->GetGameActorProxy().GetGameManager()->DeleteActor(mTrailerActor->GetGameActorProxy());
+               ga->GetGameManager()->DeleteActor(mTrailerActor->GetGameActorProxy());
             }
          }
 
@@ -186,12 +185,12 @@ namespace SimCore
 
             if (!mTrailerActor->IsRemote())
             {
-               dtGame::GameActor* ga = NULL;
+               dtGame::GameActorProxy* ga = NULL;
                GetOwner(ga);
                if (ga->IsPublished() && !mTrailerActor->IsPublished())
                {
                   // TODO make this listen for the publish message from the tractor.
-                  ga->GetGameActorProxy().GetGameManager()->PublishActor(mTrailerActor->GetGameActorProxy());
+                  ga->GetGameManager()->PublishActor(mTrailerActor->GetGameActorProxy());
                }
 
                osg::Vec3d hitchWorldPos = WarpTrailerToTractor();
@@ -279,27 +278,32 @@ namespace SimCore
          result.first = NULL;
          result.second = NULL;
 
-         SimCore::Actors::IGActor* igDraw = NULL;
-         GetOwner(igDraw);
-
-         dtUtil::NodeCollector* nc = NULL;
-         dtUtil::NodeCollector* ncTrailer = NULL;
-
-         if (igDraw != NULL)
+         dtGame::GameActorProxy* actor = NULL;
+         GetOwner(actor);
+         if (actor != NULL)
          {
-            nc = igDraw->GetNodeCollector();
-         }
 
-         if (mTrailerActor.valid())
-         {
-            ncTrailer = mTrailerActor->GetNodeCollector();
-         }
+            dtUtil::NodeCollector* nc = NULL;
+            dtUtil::NodeCollector* ncTrailer = NULL;
 
-         if (nc != NULL && ncTrailer != NULL)
-         {
-            osgSim::DOFTransform* dofTractor = nc->GetDOFTransform(mHitchNodeNameTractor);
-            osgSim::DOFTransform* dofTrailer = ncTrailer->GetDOFTransform(mHitchNodeNameTrailer);
-            return std::pair<osg::Group*, osg::Group* >(dofTractor, dofTrailer);
+            SimCore::Actors::IGActor* igDraw;
+            actor->GetDrawable(igDraw);
+            if (igDraw != NULL)
+            {
+               nc = igDraw->GetNodeCollector();
+            }
+
+            if (mTrailerActor.valid())
+            {
+               ncTrailer = mTrailerActor->GetNodeCollector();
+            }
+
+            if (nc != NULL && ncTrailer != NULL)
+            {
+               osgSim::DOFTransform* dofTractor = nc->GetDOFTransform(mHitchNodeNameTractor);
+               osgSim::DOFTransform* dofTrailer = ncTrailer->GetDOFTransform(mHitchNodeNameTrailer);
+               return std::pair<osg::Group*, osg::Group* >(dofTractor, dofTrailer);
+            }
          }
          return result;
       }
@@ -311,26 +315,29 @@ namespace SimCore
          result.first = NULL;
          result.second = NULL;
 
-         SimCore::Actors::IGActor* igDraw = NULL;
-         GetOwner(igDraw);
-
-         dtPhysics::PhysicsActComp* physAC;
-         igDraw->GetComponent(physAC);
-
-         if (physAC != NULL)
+         dtGame::GameActorProxy* actor = NULL;
+         GetOwner(actor);
+         if (actor != NULL)
          {
-            result.first = physAC->GetMainPhysicsObject();
-         }
 
-         physAC = NULL;
-         if (mTrailerActor.valid())
-         {
-            mTrailerActor->GetComponent(physAC);
-         }
+            dtPhysics::PhysicsActComp* physAC;
+            actor->GetComponent(physAC);
 
-         if (physAC != NULL)
-         {
-            result.second = physAC->GetMainPhysicsObject();
+            if (physAC != NULL)
+            {
+               result.first = physAC->GetMainPhysicsObject();
+            }
+
+            physAC = NULL;
+            if (mTrailerActor.valid())
+            {
+               mTrailerActor->GetComponent(physAC);
+            }
+
+            if (physAC != NULL)
+            {
+               result.second = physAC->GetMainPhysicsObject();
+            }
          }
 
          return result;
@@ -344,9 +351,9 @@ namespace SimCore
             return NULL;
          }
 
-         SimCore::Actors::IGActor* igDraw = NULL;
-         GetOwner(igDraw);
-         dtDAL::BaseActorObject* actor = igDraw->GetGameActorProxy().GetGameManager()->FindActorById(mTrailerActorId);
+         dtGame::GameActorProxy* owner= NULL;
+         GetOwner(owner);
+         dtCore::BaseActorObject* actor = owner->GetGameManager()->FindActorById(mTrailerActorId);
          if (actor != NULL)
          {
             return dynamic_cast<SimCore::Actors::IGActor*>(actor->GetDrawable());
@@ -387,10 +394,10 @@ namespace SimCore
             return;
          }
 
-         dtGame::GameActor* ga = NULL;
+         dtGame::GameActorProxy* ga = NULL;
          GetOwner(ga);
 
-         bool needDetach = mTrailerActor->GetParent() == ga;
+         bool needDetach = mTrailerActor->GetParent() == ga->GetDrawable();
 
          if (needDetach)
          {
@@ -399,7 +406,7 @@ namespace SimCore
 
          if ( mTrailerActor->GetParent() == NULL)
          {
-            dtGame::GameManager* gm = ga->GetGameActorProxy().GetGameManager();
+            dtGame::GameManager* gm = ga->GetGameManager();
             if (gm->GetEnvironmentActor() != NULL)
             {
                dtGame::IEnvGameActor* ienv = NULL;
@@ -436,10 +443,10 @@ namespace SimCore
             dtGame::DeadReckoningHelper* drHelper = NULL;
             mTrailerActor->GetComponent(drHelper);
 
-            dtGame::GameActor* ga = NULL;
+            dtGame::GameActorProxy* ga = NULL;
             GetOwner(ga);
 
-            bool parentIsTractor = mTrailerActor->GetParent() == ga;
+            bool parentIsTractor = mTrailerActor->GetParent() == ga->GetDrawable();
 
             // really an xor.  if you want it to be a child and the parent is not the tractor
             // or you don't want it to be a child and the parent IS the tractor.
@@ -452,7 +459,7 @@ namespace SimCore
             {
                // adding as a child so it will stay in the right place
                // between updates to the hitch rotation.
-               ga->AddChild(mTrailerActor.get());
+               ga->GetDrawable()->AddChild(mTrailerActor.get());
                drHelper->SetDeadReckoningAlgorithm(dtGame::DeadReckoningAlgorithm::NONE);
             }
             else if (mTrailerActor->GetParent() == NULL)

@@ -22,8 +22,8 @@
 */
 #include <prefix/SimCorePrefix.h>
 #include <SimCore/Actors/PortalActor.h>
-#include <dtDAL/enginepropertytypes.h>
-#include <dtDAL/exceptionenum.h>
+#include <dtCore/enginepropertytypes.h>
+#include <dtCore/exceptionenum.h>
 #include <dtGame/messagetype.h>
 #include <dtGame/basemessages.h>
 #include <dtUtil/log.h>
@@ -52,20 +52,20 @@ namespace SimCore
          Portal* actor = NULL;
          GetActor(actor);
 
-         AddProperty(new dtDAL::StringActorProperty("Portal Name", "Portal Name",
-            dtDAL::StringActorProperty::SetFuncType(actor, &Portal::SetPortalName),
-            dtDAL::StringActorProperty::GetFuncType(actor, &Portal::GetPortalName),
+         AddProperty(new dtCore::StringActorProperty("Portal Name", "Portal Name",
+            dtCore::StringActorProperty::SetFuncType(actor, &Portal::SetPortalName),
+            dtCore::StringActorProperty::GetFuncType(actor, &Portal::GetPortalName),
             "Portal Send over name",GROUP ));
 
-         AddProperty(new dtDAL::ActorActorProperty(*this, "ActorLink", "ActorLink",
-            dtDAL::ActorActorProperty::SetFuncType(actor, &Portal::SetActorLink),
-            dtDAL::ActorActorProperty::GetFuncType(),
+         AddProperty(new dtCore::ActorActorProperty(*this, "ActorLink", "ActorLink",
+            dtCore::ActorActorProperty::SetFuncType(actor, &Portal::SetActorLink),
+            dtCore::ActorActorProperty::GetFuncType(),
             "SimCore::Actors::Platform",
             "Portal Attached", GROUP));
 
-         AddProperty(new dtDAL::BooleanActorProperty("DoorOpen", "DoorOpen",
-            dtDAL::BooleanActorProperty::SetFuncType(actor, &Portal::SetIsOpen),
-            dtDAL::BooleanActorProperty::GetFuncType(actor, &Portal::GetIsOpen),
+         AddProperty(new dtCore::BooleanActorProperty("DoorOpen", "DoorOpen",
+            dtCore::BooleanActorProperty::SetFuncType(actor, &Portal::SetIsOpen),
+            dtCore::BooleanActorProperty::GetFuncType(actor, &Portal::GetIsOpen),
             "Is the door open?",GROUP ));
       }
 
@@ -112,8 +112,8 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////
-      Portal::Portal(dtGame::GameActorProxy &proxy) :
-         dtGame::GameActor(proxy),
+      Portal::Portal(dtGame::GameActorProxy& owner) :
+         dtGame::GameActor(owner),
          mIsOpen(false)
       {
          mTimeToSendOut = 10.0f;

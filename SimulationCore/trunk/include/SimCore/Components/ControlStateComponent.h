@@ -32,7 +32,7 @@
 #include <SimCore/Actors/Platform.h>
 #include <SimCore/Actors/ControlStateActor.h>
 
-#include <dtDAL/resourcedescriptor.h>
+#include <dtCore/resourcedescriptor.h>
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -130,8 +130,8 @@ namespace SimCore
              * @return List of file names for weapon models that this component will
              * be responsible for loading..
              */
-            const std::vector<dtDAL::ResourceDescriptor>& GetWeaponModelResourceList() const;
-            void SetWeaponModelResourceList(const std::vector<dtDAL::ResourceDescriptor>& newList);
+            const std::vector<dtCore::ResourceDescriptor>& GetWeaponModelResourceList() const;
+            void SetWeaponModelResourceList(const std::vector<dtCore::ResourceDescriptor>& newList);
 
             /**
              * Get the name of the weapon reasource assigned to the specified weapon number.
@@ -139,7 +139,7 @@ namespace SimCore
              *        map to the index of the file name in the contained file name list.
              * @return file name of the weapon with the specified index; empty string if not found.
              */
-            const dtDAL::ResourceDescriptor& GetWeaponModelResource( unsigned weaponIndex );
+            const dtCore::ResourceDescriptor& GetWeaponModelResource( unsigned weaponIndex );
 
             void SetSelectedWeapon( unsigned weaponIndex );
             unsigned GetSelectedWeapon() const;
@@ -196,7 +196,7 @@ namespace SimCore
             RemoteControlStateMap mRemoteGunnerMap;
             RemoteControlStateMap mRemoteVehicleMap;
             // Weapon Model File List
-            std::vector<dtDAL::ResourceDescriptor> mWeaponModelFileList;
+            std::vector<dtCore::ResourceDescriptor> mWeaponModelFileList;
 
             ControlStateInfo* GetControlStateInfo( RemoteControlStateMap& infoMap, const dtCore::UniqueId& vehicleID );
             bool AddControlStateInfo( RemoteControlStateMap& infoMap, const dtCore::UniqueId& vehicleID, ControlStateInfo& info );

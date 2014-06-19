@@ -100,10 +100,10 @@ namespace SimCore
             return DamageType::DAMAGE_KILL;
          }
 
-         if( *mCurrentDamageState == DamageType::DAMAGE_MOBILITY 
-            && damageToCompare == DamageType::DAMAGE_FIREPOWER 
-            || *mCurrentDamageState == DamageType::DAMAGE_FIREPOWER 
-            && damageToCompare == DamageType::DAMAGE_MOBILITY )
+         if( (*mCurrentDamageState == DamageType::DAMAGE_MOBILITY
+            && damageToCompare == DamageType::DAMAGE_FIREPOWER )
+            || (*mCurrentDamageState == DamageType::DAMAGE_FIREPOWER
+            && damageToCompare == DamageType::DAMAGE_MOBILITY) )
          {
             return DamageType::DAMAGE_MOBILITY_FIREPOWER;
          }

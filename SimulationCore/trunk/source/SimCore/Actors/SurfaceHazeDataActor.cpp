@@ -26,7 +26,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include <prefix/SimCorePrefix.h>
 #include <SimCore/Actors/SurfaceHazeDataActor.h>
-#include <dtDAL/enginepropertytypes.h>
+#include <dtCore/enginepropertytypes.h>
 
 
 
@@ -94,11 +94,11 @@ namespace SimCore
          GetActor( actor );
 
          // FLOAT PROPERTIES
-         AddProperty(new dtDAL::FloatActorProperty(
+         AddProperty(new dtCore::FloatActorProperty(
             SurfaceHazeDataActorProxy::PROPERTY_EXTINCTION_COEFFICIENT,
             SurfaceHazeDataActorProxy::PROPERTY_EXTINCTION_COEFFICIENT, 
-            dtDAL::FloatActorProperty::SetFuncType(actor, &SurfaceHazeDataActor::SetExtinctionCoefficient),
-            dtDAL::FloatActorProperty::GetFuncType(actor, &SurfaceHazeDataActor::GetExtinctionCoefficient),
+            dtCore::FloatActorProperty::SetFuncType(actor, &SurfaceHazeDataActor::SetExtinctionCoefficient),
+            dtCore::FloatActorProperty::GetFuncType(actor, &SurfaceHazeDataActor::GetExtinctionCoefficient),
             "Visibility extinction coefficient for cell[0] at the specified latitude and longitude; this is originally a 2D array property will any number of cells.",
             GROUP));
       }

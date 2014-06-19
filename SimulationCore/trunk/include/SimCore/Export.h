@@ -44,8 +44,5 @@
 #   endif 
 #endif
 
-#ifdef __clang__
-
-#endif
-
+#include <dtUtil/warningdisable.h>
 #endif

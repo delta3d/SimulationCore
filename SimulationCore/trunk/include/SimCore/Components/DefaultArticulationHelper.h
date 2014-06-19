@@ -41,7 +41,7 @@ namespace dtCore
    class NodeCollector;
 }
 
-namespace dtDAL
+namespace dtCore
 {
    class NamedGroupParameter;
 }
@@ -60,7 +60,7 @@ namespace SimCore
          public:
             DefaultArticulationHelper();
 
-            virtual dtCore::RefPtr<dtDAL::NamedGroupParameter> BuildGroupProperty();
+            virtual dtCore::RefPtr<dtCore::NamedGroupParameter> BuildGroupProperty();
 
             virtual void UpdateDOFReferences( dtUtil::NodeCollector* nodeCollector );
 

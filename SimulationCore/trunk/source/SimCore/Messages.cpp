@@ -200,7 +200,7 @@ namespace SimCore
    {
       mSenderName = new dtGame::StringMessageParameter(SENDER_NAME);
       AddParameter(mSenderName);
-      mQueryTransmitRealTime = new dtGame::UnsignedLongIntMessageParameter(QUERY_TRANSMIT_REAL_TIME);
+      mQueryTransmitRealTime = new dtGame::UnsignedIntMessageParameter(QUERY_TRANSMIT_REAL_TIME);
       AddParameter(mQueryTransmitRealTime);
    }
 
@@ -214,12 +214,12 @@ namespace SimCore
       mSenderName->SetValue(newName);
    }
 
-   unsigned long TimeQueryMessage::GetQueryTransmitRealTime() const
+   unsigned int TimeQueryMessage::GetQueryTransmitRealTime() const
    {
       return mQueryTransmitRealTime->GetValue();
    }
 
-   void TimeQueryMessage::SetQueryTransmitRealTime(unsigned long newTime)
+   void TimeQueryMessage::SetQueryTransmitRealTime(unsigned int newTime)
    {
       mQueryTransmitRealTime->SetValue(newTime);
    }
@@ -235,13 +235,13 @@ namespace SimCore
 
    TimeValueMessage::TimeValueMessage()
    {
-      mQueryReceivedRealTime = new dtGame::UnsignedLongIntMessageParameter(QUERY_RECEIVED_REAL_TIME);
+      mQueryReceivedRealTime = new dtGame::UnsignedIntMessageParameter(QUERY_RECEIVED_REAL_TIME);
       AddParameter(mQueryReceivedRealTime);
 
-      mValueTransmitRealTime = new dtGame::UnsignedLongIntMessageParameter(VALUE_TRANSMIT_REAL_TIME);
+      mValueTransmitRealTime = new dtGame::UnsignedIntMessageParameter(VALUE_TRANSMIT_REAL_TIME);
       AddParameter(mValueTransmitRealTime);
 
-      mSynchronizedTime = new dtGame::UnsignedLongIntMessageParameter(SYNCHRONIZED_TIME);
+      mSynchronizedTime = new dtGame::UnsignedIntMessageParameter(SYNCHRONIZED_TIME);
       AddParameter(mSynchronizedTime);
 
       mTimeScale = new dtGame::FloatMessageParameter(TIME_SCALE, DEFAULT_TIME_SCALE);
@@ -254,32 +254,32 @@ namespace SimCore
       AddParameter(mTimeMaster);
    }
 
-   unsigned long TimeValueMessage::GetQueryReceivedRealTime() const
+   unsigned int TimeValueMessage::GetQueryReceivedRealTime() const
    {
       return mQueryReceivedRealTime->GetValue();
    }
 
-   void TimeValueMessage::SetQueryReceivedRealTime(unsigned long newTime)
+   void TimeValueMessage::SetQueryReceivedRealTime(unsigned int newTime)
    {
       mQueryReceivedRealTime->SetValue(newTime);
    }
 
-   unsigned long TimeValueMessage::GetValueTransmitRealTime() const
+   unsigned int TimeValueMessage::GetValueTransmitRealTime() const
    {
       return mValueTransmitRealTime->GetValue();
    }
 
-   void TimeValueMessage::SetValueTransmitRealTime(unsigned long newTime)
+   void TimeValueMessage::SetValueTransmitRealTime(unsigned int newTime)
    {
       mValueTransmitRealTime->SetValue(newTime);
    }
 
-   unsigned long TimeValueMessage::GetSynchronizedTime() const
+   unsigned int TimeValueMessage::GetSynchronizedTime() const
    {
       return mSynchronizedTime->GetValue();
    }
 
-   void TimeValueMessage::SetSynchronizedTime(unsigned long newTime)
+   void TimeValueMessage::SetSynchronizedTime(unsigned int newTime)
    {
       mSynchronizedTime->SetValue(newTime);
    }

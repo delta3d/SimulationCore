@@ -43,7 +43,7 @@ namespace SimCore
          public:
 
             /// Constructor
-            StealthActor(dtGame::GameActorProxy& proxy);
+            StealthActor(dtGame::GameActorProxy& parent);
 
             /**
              * Sets the on the Stealth Actor

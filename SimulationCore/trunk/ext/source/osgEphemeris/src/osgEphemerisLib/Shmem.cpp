@@ -33,15 +33,6 @@
 #include <osgEphemeris/Shmem.h>
 
 
-void Shmem::operator delete( void *data )
-{
-    Shmem *shm = (Shmem *)data;
-#ifdef _WIN32
-    UnmapViewOfFile( shm->start );
-#else
-    munmap( shm->start, shm->length );
-#endif
-}
 
 
 void *Shmem::operator new( size_t size, const std::string &file)
@@ -79,7 +70,10 @@ void *Shmem::operator new( size_t size, const std::string &file)
             throw 3;
 	    }
 	    lseek( fd, size, 0 ); 
-	    write( fd, &pid, sizeof( pid ) );
+	    if( write( fd, &pid, sizeof( pid ) ) < 0 )
+        {
+            perror("write");
+        }
 	    close( fd );
     }
 
@@ -109,8 +103,22 @@ void *Shmem::operator new( size_t size, const std::string &file)
     return shm;
 }
 
+void Shmem::operator delete( void *data )
+{
+    Shmem *shm = (Shmem *)data;
+#ifdef _WIN32
+    UnmapViewOfFile( shm->start );
+#else
+    munmap( shm->start, shm->length );
+#endif
+}
+
+#ifdef WIN32
 void Shmem::operator delete( void* data, const std::string &file)
 {
-    // VS.NET 2003 complains if new() doesn't have a matching delete()
-    ::delete data ;   // correct? 
+    Shmem *shm = (Shmem *)data;
+    UnmapViewOfFile( shm->start );
+    // !WIN32
+    //munmap( shm->start, shm->length );
 }
+#endif

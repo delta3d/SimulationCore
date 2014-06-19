@@ -27,7 +27,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include <prefix/SimCorePrefix.h>
 #include <SimCore/Export.h>
-#include <dtDAL/enginepropertytypes.h>
+#include <dtCore/enginepropertytypes.h>
 #include <SimCore/Actors/BaseWaterActor.h>
 
 
@@ -107,11 +107,11 @@ namespace SimCore
          static const std::string GROUP_WATER("Water");
 
          // FLOAT PROPERTIES
-         AddProperty(new dtDAL::FloatActorProperty(
+         AddProperty(new dtCore::FloatActorProperty(
             BaseWaterActorProxy::PROPERTY_WATER_HEIGHT,
             BaseWaterActorProxy::PROPERTY_WATER_HEIGHT,
-            dtDAL::FloatActorProperty::SetFuncType(actor, &BaseWaterActor::SetWaterHeight ),
-            dtDAL::FloatActorProperty::GetFuncType(actor, &BaseWaterActor::GetWaterHeight ),
+            dtCore::FloatActorProperty::SetFuncType(actor, &BaseWaterActor::SetWaterHeight ),
+            dtCore::FloatActorProperty::GetFuncType(actor, &BaseWaterActor::GetWaterHeight ),
             "Sets the offset for the water height (often, this is 0.0, but it depends on the terrain).",
             GROUP_WATER));
       }

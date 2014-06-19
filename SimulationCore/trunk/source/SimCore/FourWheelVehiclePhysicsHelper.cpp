@@ -36,9 +36,9 @@
 #include <osg/Matrix>
 #include <osgSim/DOFTransform>
 #include <osg/MatrixTransform>
-#include <dtDAL/enginepropertytypes.h>
+#include <dtCore/enginepropertytypes.h>
 #include <dtUtil/mathdefines.h>
-#include <dtDAL/propertymacros.h>
+#include <dtCore/propertymacros.h>
 
 namespace SimCore
 {
@@ -75,12 +75,10 @@ namespace SimCore
    , mRearTireStiffness(100000.0f)
    , mRearTireRestitution(0.1f)
    , mCurrentNormalizedSteering(0.0f)
-   , mCurrentEngineTorque(0.0f)
    , mCurrentNormalizedBrakes(0.0f)
    , mAccelerator(0.0f)
    , mFrontMaxJounce(0.0f)
    , mRearMaxJounce(0.0f)
-   , mFourWheelDrive(false)
    {
       mAxleRotation[0] = 0.0f;
       mAxleRotation[1] = 0.0f;
@@ -188,7 +186,7 @@ namespace SimCore
    bool FourWheelVehiclePhysicsActComp::CreateVehicle(const dtCore::Transform& transformForRot,
             osg::Node& bodyNode, const osg::Vec3& scale)
    {
-      dtGame::GameActor* ga = NULL;
+      dtGame::GameActorProxy* ga = NULL;
       GetOwner(ga);
 
       if (ga == NULL)
@@ -298,7 +296,7 @@ namespace SimCore
          rearLeverArm = frontLeverArm;
       }
 
-      if (!ga->GetGameActorProxy().IsRemote())
+      if (!ga->IsRemote())
       {
 
          float wheelbase  = frontLeverArm + rearLeverArm;
@@ -465,34 +463,34 @@ namespace SimCore
 
    /// Builds the property map for this vehicle.
    ///
-   /// @param toFillIn    vector of dtDAL::ActorProperty for this vehicle
+   /// @param toFillIn    vector of dtCore::ActorProperty for this vehicle
 
    void FourWheelVehiclePhysicsActComp::BuildPropertyMap()
    {
 
       static const dtUtil::RefString FOUR_WHEEL_GROUP("Four Wheel Vehicle");
 
-      AddProperty(new dtDAL::BooleanActorProperty("Four Wheel Drive", "Four Wheel Drive",
-               dtDAL::BooleanActorProperty::SetFuncType(this, &FourWheelVehiclePhysicsActComp::SetIsVehicleFourWheelDrive),
-               dtDAL::BooleanActorProperty::GetFuncType(this, &FourWheelVehiclePhysicsActComp::GetIsVehicleFourWheelDrive),
+      AddProperty(new dtCore::BooleanActorProperty("Four Wheel Drive", "Four Wheel Drive",
+               dtCore::BooleanActorProperty::SetFuncType(this, &FourWheelVehiclePhysicsActComp::SetIsVehicleFourWheelDrive),
+               dtCore::BooleanActorProperty::GetFuncType(this, &FourWheelVehiclePhysicsActComp::GetIsVehicleFourWheelDrive),
                "", FOUR_WHEEL_GROUP));
 
-      AddProperty(new dtDAL::FloatActorProperty("FrontTrackAdjustment", "Front Wheel Track Adjustment",
-               dtDAL::FloatActorProperty::SetFuncType(this, &FourWheelVehiclePhysicsActComp::SetFrontTrackAdjustment),
-               dtDAL::FloatActorProperty::GetFuncType(this, &FourWheelVehiclePhysicsActComp::GetFrontTrackAdjustment),
+      AddProperty(new dtCore::FloatActorProperty("FrontTrackAdjustment", "Front Wheel Track Adjustment",
+               dtCore::FloatActorProperty::SetFuncType(this, &FourWheelVehiclePhysicsActComp::SetFrontTrackAdjustment),
+               dtCore::FloatActorProperty::GetFuncType(this, &FourWheelVehiclePhysicsActComp::GetFrontTrackAdjustment),
                "Track is the distance along the axle of a wheel from the centerline of a vehicle."
                "Setting this moves the front wheels closer or farther from the centerline.",
                FOUR_WHEEL_GROUP));
 
-      AddProperty(new dtDAL::FloatActorProperty("RearTrackAdjustment", "Rear Wheel Track Adjustment",
-               dtDAL::FloatActorProperty::SetFuncType(this, &FourWheelVehiclePhysicsActComp::SetRearTrackAdjustment),
-               dtDAL::FloatActorProperty::GetFuncType(this, &FourWheelVehiclePhysicsActComp::GetRearTrackAdjustment),
+      AddProperty(new dtCore::FloatActorProperty("RearTrackAdjustment", "Rear Wheel Track Adjustment",
+               dtCore::FloatActorProperty::SetFuncType(this, &FourWheelVehiclePhysicsActComp::SetRearTrackAdjustment),
+               dtCore::FloatActorProperty::GetFuncType(this, &FourWheelVehiclePhysicsActComp::GetRearTrackAdjustment),
                "Track is the distance along the axle of a wheel from the centerline of a vehicle."
                "Setting this moves the rear wheels closer or farther from the centerline.",
                FOUR_WHEEL_GROUP));
 
       static const dtUtil::RefString WHEELGROUP("Wheel Physics");
-      typedef dtDAL::PropertyRegHelper<FourWheelVehiclePhysicsActComp&, FourWheelVehiclePhysicsActComp> PropRegType;
+      typedef dtCore::PropertyRegHelper<FourWheelVehiclePhysicsActComp&, FourWheelVehiclePhysicsActComp> PropRegType;
       PropRegType propRegHelper(*this, this, WHEELGROUP);
 
       DT_REGISTER_PROPERTY_WITH_LABEL(FrontWheelMass, "Front Wheel Mass","This is not used for dtPhysics."
@@ -604,21 +602,24 @@ namespace SimCore
    {
       BaseClass::OnEnteredWorld();
 
-      SimCore::Actors::IGActor* igActor = NULL;
-      GetOwner(igActor);
-      if (igActor == NULL)
+      dtGame::GameActorProxy* actor;
+      SimCore::Actors::IGActor* igDrawable = NULL;
+      GetOwner(actor);
+      if (actor != NULL)
+         actor->GetDrawable(igDrawable);
+      if (igDrawable == NULL)
       {
          LOG_ERROR("The four wheel vehicle physics helper only support IG Actors as owners currently.");
          return;
       }
 
       dtCore::Transform ourTransform;
-      igActor->GetTransform(ourTransform);
+      igDrawable->GetTransform(ourTransform);
 
-      dtUtil::NodeCollector* nodeCollector = igActor->GetNodeCollector();
+      dtUtil::NodeCollector* nodeCollector = igDrawable->GetNodeCollector();
 
       dtCore::Vec3ActorProperty* scaleProp = NULL;
-      igActor->GetGameActorProxy().GetProperty(SimCore::Actors::BaseEntityActorProxy::PROPERTY_DEFAULT_SCALE, scaleProp);
+      actor->GetProperty(SimCore::Actors::BaseEntityActorProxy::PROPERTY_DEFAULT_SCALE, scaleProp);
 
       osg::Node* chassis = NULL;
       if (nodeCollector != NULL)

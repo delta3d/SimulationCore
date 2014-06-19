@@ -35,8 +35,8 @@
 #include <dtUtil/datapathutils.h>
 #include <dtCore/system.h>
 #include <dtAudio/audiomanager.h>
-#include <dtDAL/project.h>
-#include <dtDAL/librarymanager.h>
+#include <dtCore/project.h>
+#include <dtCore/librarymanager.h>
 
 #include <sstream>
 

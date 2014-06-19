@@ -41,8 +41,8 @@
 #include <dtGame/actorupdatemessage.h>
 #include <dtGame/deadreckoningcomponent.h>
 
-#include <dtDAL/project.h>
-#include <dtDAL/enginepropertytypes.h>
+#include <dtCore/project.h>
+#include <dtCore/enginepropertytypes.h>
 
 #include <dtAudio/audiomanager.h>
 
@@ -167,7 +167,7 @@ namespace SimCore
 
          osg::Vec3 newPosition(0, 100, 0);
          dtGame::ActorUpdateMessage &aumsg = static_cast<dtGame::ActorUpdateMessage&>(*msg);
-         dtGame::MessageParameter *param = aumsg.AddUpdateParameter("Last Known Translation", dtDAL::DataType::VEC3);
+         dtGame::MessageParameter *param = aumsg.AddUpdateParameter("Last Known Translation", dtCore::DataType::VEC3);
          CPPUNIT_ASSERT(param != NULL);
          static_cast<dtGame::Vec3MessageParameter*>(param)->SetValue(newPosition);
          aumsg.SetSource(*mMachineInfo);
@@ -177,13 +177,13 @@ namespace SimCore
          dtCore::AppSleep(10);
          dtCore::System::GetInstance().Step();
 
-         osg::Vec3 position = static_cast<dtDAL::Vec3ActorProperty*>(proxy->GetProperty("Last Known Translation"))->GetValue();
+         osg::Vec3 position = static_cast<dtCore::Vec3ActorProperty*>(proxy->GetProperty("Last Known Translation"))->GetValue();
          CPPUNIT_ASSERT_MESSAGE("The property should have been set correctly on the proxy.", position == newPosition);
       }
 
       void ViewerMessageProcessorTests::TestPlayerEnteredWorldMessage()
       {
-         dtGame::DeadReckoningComponent* drComp;
+         dtGame::DeadReckoningComponent* drComp = NULL;
          mGM->GetComponentByName(dtGame::DeadReckoningComponent::DEFAULT_NAME, drComp);
 
          RefPtr<dtGame::GameActorProxy> proxy;
@@ -241,7 +241,7 @@ namespace SimCore
          mGM->SendMessage(*timeValue);
          dtCore::System::GetInstance().Step();
 
-         // The math is seems mystical here, but 47 should be the value in seconds because the
+         // The math seems mystical here, but 47 should be the value in seconds because the
          // the average latencey based on the send and receive times should say we should add 2 seconds
          // to the clock to make it sync up.
          CPPUNIT_ASSERT_EQUAL(dtCore::Timer_t(47), dtCore::Timer_t(mGM->GetSimulationTime()));

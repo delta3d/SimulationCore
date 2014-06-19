@@ -25,7 +25,7 @@
 
 #include <SimCore/Actors/LocalEffectActor.h>
 #include <dtCore/particlesystem.h>
-#include <dtDAL/actorproxyicon.h>
+#include <dtCore/actorproxyicon.h>
 
 namespace SimCore
 {
@@ -36,7 +36,7 @@ namespace SimCore
          public:
 
             /// Constructor
-            FireActor(dtGame::GameActorProxy &proxy);
+            FireActor(dtGame::GameActorProxy& parent);
 
             /**
              * Sets the light range on this actor
@@ -81,7 +81,7 @@ namespace SimCore
              * Gets the billboard used to represent particle systems.
              * @return
              */
-            virtual dtDAL::ActorProxyIcon* GetBillBoardIcon();
+            virtual dtCore::ActorProxyIcon* GetBillBoardIcon();
 
             /// Creates the actor
             void CreateDrawable() { SetDrawable(*new FireActor(*this)); }
@@ -91,11 +91,11 @@ namespace SimCore
 
             /**
              * Gets the method by which a particle system is rendered.
-             * @return dtDAL::BaseActorObject::RenderMode::DRAW_BILLBOARD_ICON.
+             * @return dtCore::BaseActorObject::RenderMode::DRAW_BILLBOARD_ICON.
              */
-            virtual const dtDAL::BaseActorObject::RenderMode& GetRenderMode() 
+            virtual const dtCore::BaseActorObject::RenderMode& GetRenderMode() 
             {
-                return dtDAL::BaseActorObject::RenderMode::DRAW_BILLBOARD_ICON;
+                return dtCore::BaseActorObject::RenderMode::DRAW_BILLBOARD_ICON;
             }
 
          protected:
@@ -103,10 +103,6 @@ namespace SimCore
             /// Destructor
             virtual ~FireActorProxy();
 
-
-         private:
-
-            dtCore::RefPtr<dtDAL::ActorProxyIcon> mBillBoardIcon;
 
       };
    }

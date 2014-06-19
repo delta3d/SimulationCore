@@ -24,13 +24,13 @@
 #ifndef BOOSTER_H_
 #define BOOSTER_H_
 
-#include <dtDAL/propertycontainer.h>
-#include <dtDAL/propertymacros.h>
+#include <dtCore/propertycontainer.h>
+#include <dtCore/propertymacros.h>
 
 namespace NetDemo
 {
 
-   class Booster: public dtDAL::PropertyContainer
+   class Booster: public dtCore::PropertyContainer
    {
    public:
       Booster();

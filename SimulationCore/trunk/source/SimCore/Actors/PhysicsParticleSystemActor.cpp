@@ -34,8 +34,8 @@
 #include <dtCore/uniqueid.h>
 #include <dtCore/transform.h>
 
-#include <dtDAL/enginepropertytypes.h>
-#include <dtDAL/functor.h>
+#include <dtCore/enginepropertytypes.h>
+#include <dtCore/functor.h>
 
 #include <dtGame/basemessages.h>
 #include <dtGame/environmentactor.h>
@@ -64,7 +64,7 @@ namespace SimCore
       // could be done, not done - angular velocity over time...... wouldn't be hard.
 
       ////////////////////////////////////////////////////////////////////
-      PhysicsParticleSystemActor::PhysicsParticleSystemActor(dtGame::GameActorProxy& proxy) : dtGame::GameActor(proxy)
+      PhysicsParticleSystemActor::PhysicsParticleSystemActor(dtGame::GameActorProxy& owner) : dtGame::GameActor(owner)
       , mParticleEnumForObjectType(&PhysicsParticleSystemActor::TwoDOrThreeDTypeEnum::THREE_D)
       , mSpawnerParticleTimer(0.0f)
       , mParticleEmitterRateMin(0.05f) // NI
@@ -488,144 +488,144 @@ namespace SimCore
          PhysicsParticleSystemActor* actor = NULL;
          GetActor(actor);
 
-         AddProperty(new dtDAL::EnumActorProperty<PhysicsParticleSystemActor::TwoDOrThreeDTypeEnum>("TwoDOrThreeDTypeEnum", "TwoDOrThreeDTypeEnum",
-                  dtDAL::EnumActorProperty<PhysicsParticleSystemActor::TwoDOrThreeDTypeEnum>::SetFuncType(actor, &PhysicsParticleSystemActor::SetTwoDOrThreeDTypeEnum),
-                  dtDAL::EnumActorProperty<PhysicsParticleSystemActor::TwoDOrThreeDTypeEnum>::GetFuncType(actor, &PhysicsParticleSystemActor::GetTwoDOrThreeDTypeEnum),
+         AddProperty(new dtCore::EnumActorProperty<PhysicsParticleSystemActor::TwoDOrThreeDTypeEnum>("TwoDOrThreeDTypeEnum", "TwoDOrThreeDTypeEnum",
+                  dtCore::EnumActorProperty<PhysicsParticleSystemActor::TwoDOrThreeDTypeEnum>::SetFuncType(actor, &PhysicsParticleSystemActor::SetTwoDOrThreeDTypeEnum),
+                  dtCore::EnumActorProperty<PhysicsParticleSystemActor::TwoDOrThreeDTypeEnum>::GetFuncType(actor, &PhysicsParticleSystemActor::GetTwoDOrThreeDTypeEnum),
                   "Holds a Type Enum property", EMMITER_GROUP));
 
-         AddProperty(new dtDAL::FloatActorProperty("ParticleEmitterRateMax", "ParticleEmitterRateMax",
-                  dtDAL::FloatActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetParticleEmitterRateMax),
-                  dtDAL::FloatActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetParticleEmitterRateMax),
+         AddProperty(new dtCore::FloatActorProperty("ParticleEmitterRateMax", "ParticleEmitterRateMax",
+                  dtCore::FloatActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetParticleEmitterRateMax),
+                  dtCore::FloatActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetParticleEmitterRateMax),
                   "", EMMITER_GROUP));
 
-         AddProperty(new dtDAL::FloatActorProperty("ParticleEmitterRateMin", "ParticleEmitterRateMin",
-                  dtDAL::FloatActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetParticleEmitterRateMin),
-                  dtDAL::FloatActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetParticleEmitterRateMin),
+         AddProperty(new dtCore::FloatActorProperty("ParticleEmitterRateMin", "ParticleEmitterRateMin",
+                  dtCore::FloatActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetParticleEmitterRateMin),
+                  dtCore::FloatActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetParticleEmitterRateMin),
                   "", EMMITER_GROUP));
 
-         AddProperty(new dtDAL::FloatActorProperty("ParticleLengthofStay", "ParticleLengthofStay",
-                  dtDAL::FloatActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetParticleLengthofStay),
-                  dtDAL::FloatActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetParticleLengthofStay),
+         AddProperty(new dtCore::FloatActorProperty("ParticleLengthofStay", "ParticleLengthofStay",
+                  dtCore::FloatActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetParticleLengthofStay),
+                  dtCore::FloatActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetParticleLengthofStay),
                   "", PARTICLE_GROUP));
 
-         AddProperty(new dtDAL::FloatActorProperty("EmitterTimeUntilDeletion", "EmitterTimeUntilDeletion",
-                  dtDAL::FloatActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetStaticObjectsLifeTime),
-                  dtDAL::FloatActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetStaticObjectsLifeTime),
+         AddProperty(new dtCore::FloatActorProperty("EmitterTimeUntilDeletion", "EmitterTimeUntilDeletion",
+                  dtCore::FloatActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetStaticObjectsLifeTime),
+                  dtCore::FloatActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetStaticObjectsLifeTime),
                   "", PARTICLE_GROUP));
 
-         AddProperty(new dtDAL::FloatActorProperty("ParticleFadeInTime", "ParticleFadeInTime",
-                  dtDAL::FloatActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetParticleFadeInTime),
-                  dtDAL::FloatActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetParticleFadeInTime),
+         AddProperty(new dtCore::FloatActorProperty("ParticleFadeInTime", "ParticleFadeInTime",
+                  dtCore::FloatActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetParticleFadeInTime),
+                  dtCore::FloatActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetParticleFadeInTime),
                   "", PARTICLE_GROUP));
 
-         AddProperty(new dtDAL::BooleanActorProperty("ObjectsStayStaticWhenHit", "ObjectsStayStaticWhenHit",
-                  dtDAL::BooleanActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetObjectsStayStaticWhenHit),
-                  dtDAL::BooleanActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetObjectsStayStaticWhenHit),
+         AddProperty(new dtCore::BooleanActorProperty("ObjectsStayStaticWhenHit", "ObjectsStayStaticWhenHit",
+                  dtCore::BooleanActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetObjectsStayStaticWhenHit),
+                  dtCore::BooleanActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetObjectsStayStaticWhenHit),
                   "", PARTICLE_GROUP));
 
-         AddProperty(new dtDAL::FloatActorProperty("ParticleFadeOutInverseDeletion", "ParticleFadeOutInverseDeletion",
-                  dtDAL::FloatActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetParticleFadeOutInverseDeletion),
-                  dtDAL::FloatActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetParticleFadeOutInverseDeletion),
+         AddProperty(new dtCore::FloatActorProperty("ParticleFadeOutInverseDeletion", "ParticleFadeOutInverseDeletion",
+                  dtCore::FloatActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetParticleFadeOutInverseDeletion),
+                  dtCore::FloatActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetParticleFadeOutInverseDeletion),
                   "", PARTICLE_GROUP));
 
-         AddProperty(new dtDAL::IntActorProperty("NumberOfParticlesWeWantSpawned", "NumberOfParticlesWeWantSpawned",
-                  dtDAL::IntActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetNumberOfParticlesWeWantSpawned),
-                  dtDAL::IntActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetNumberOfParticlesWeWantSpawned),
+         AddProperty(new dtCore::IntActorProperty("NumberOfParticlesWeWantSpawned", "NumberOfParticlesWeWantSpawned",
+                  dtCore::IntActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetNumberOfParticlesWeWantSpawned),
+                  dtCore::IntActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetNumberOfParticlesWeWantSpawned),
                   "", EMMITER_GROUP));
 
-         AddProperty(new dtDAL::BooleanActorProperty("ThisAsAnInfiniteParticleSystem", "ThisAsAnInfiniteParticleSystem",
-                  dtDAL::BooleanActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetThisAsAnInfiniteParticleSystem),
-                  dtDAL::BooleanActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetThisAsAnInfiniteParticleSystem),
+         AddProperty(new dtCore::BooleanActorProperty("ThisAsAnInfiniteParticleSystem", "ThisAsAnInfiniteParticleSystem",
+                  dtCore::BooleanActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetThisAsAnInfiniteParticleSystem),
+                  dtCore::BooleanActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetThisAsAnInfiniteParticleSystem),
                   "", EMMITER_GROUP));
 
-         AddProperty(new dtDAL::BooleanActorProperty("Does Particle System Delete Itself", "Does Particle System Delete Itself",
-                  dtDAL::BooleanActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetObjectToStatic),
-                  dtDAL::BooleanActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetObjectToStatic),
+         AddProperty(new dtCore::BooleanActorProperty("Does Particle System Delete Itself", "Does Particle System Delete Itself",
+                  dtCore::BooleanActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetObjectToStatic),
+                  dtCore::BooleanActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetObjectToStatic),
                   "Does Particle System Delete Itself", PARTICLE_GROUP));
 
-         AddProperty(new dtDAL::BooleanActorProperty("GravityEnabledOnParticleSystem", "GravityEnabledOnParticleSystem",
-                  dtDAL::BooleanActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetGravityEnabledOnParticleSystem),
-                  dtDAL::BooleanActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetGravityEnabledOnParticleSystem),
+         AddProperty(new dtCore::BooleanActorProperty("GravityEnabledOnParticleSystem", "GravityEnabledOnParticleSystem",
+                  dtCore::BooleanActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetGravityEnabledOnParticleSystem),
+                  dtCore::BooleanActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetGravityEnabledOnParticleSystem),
                   "", EMMITER_GROUP));
 
-         AddProperty(new dtDAL::BooleanActorProperty("ToApplyForcesToParticlesEveryFrame", "ToApplyForcesToParticlesEveryFrame",
-                  dtDAL::BooleanActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetToApplyForcesToParticlesEveryFrame),
-                  dtDAL::BooleanActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetToApplyForcesToParticlesEveryFrame),
+         AddProperty(new dtCore::BooleanActorProperty("ToApplyForcesToParticlesEveryFrame", "ToApplyForcesToParticlesEveryFrame",
+                  dtCore::BooleanActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetToApplyForcesToParticlesEveryFrame),
+                  dtCore::BooleanActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetToApplyForcesToParticlesEveryFrame),
                   "", EMMITER_GROUP));
 
-         AddProperty(new dtDAL::BooleanActorProperty("CollideWithSelf", "CollideWithSelf",
-                  dtDAL::BooleanActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetCollideWithSelf),
-                  dtDAL::BooleanActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetCollideWithSelf),
+         AddProperty(new dtCore::BooleanActorProperty("CollideWithSelf", "CollideWithSelf",
+                  dtCore::BooleanActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetCollideWithSelf),
+                  dtCore::BooleanActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetCollideWithSelf),
                   "", EMMITER_GROUP));
 
-         /* AddProperty(new dtDAL::IntActorProperty("ParticleCollisionGroup", "ParticleCollisionGroup",
-      dtDAL::IntActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetParticleCollisionGroup),
-      dtDAL::IntActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetParticleCollisionGroup),
+         /* AddProperty(new dtCore::IntActorProperty("ParticleCollisionGroup", "ParticleCollisionGroup",
+      dtCore::IntActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetParticleCollisionGroup),
+      dtCore::IntActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetParticleCollisionGroup),
       "", EMMITER_GROUP));*/
 
-         AddProperty(new dtDAL::Vec3ActorProperty("StartingPositionMin", "StartingPositionMin",
-                  dtDAL::Vec3ActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetStartingPositionMin),
-                  dtDAL::Vec3ActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetStartingPositionMin),
+         AddProperty(new dtCore::Vec3ActorProperty("StartingPositionMin", "StartingPositionMin",
+                  dtCore::Vec3ActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetStartingPositionMin),
+                  dtCore::Vec3ActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetStartingPositionMin),
                   "", PARTICLE_GROUP ));
 
-         AddProperty(new dtDAL::Vec3ActorProperty("StartingPositionMax", "StartingPositionMax",
-                  dtDAL::Vec3ActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetStartingPositionMax),
-                  dtDAL::Vec3ActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetStartingPositionMax),
+         AddProperty(new dtCore::Vec3ActorProperty("StartingPositionMax", "StartingPositionMax",
+                  dtCore::Vec3ActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetStartingPositionMax),
+                  dtCore::Vec3ActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetStartingPositionMax),
                   "", PARTICLE_GROUP));
 
-         AddProperty(new dtDAL::Vec3ActorProperty("LinearVelocityStartMin", "LinearVelocityStartMin",
-                  dtDAL::Vec3ActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetLinearVelocityStartMin),
-                  dtDAL::Vec3ActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetLinearVelocityStartMin),
+         AddProperty(new dtCore::Vec3ActorProperty("LinearVelocityStartMin", "LinearVelocityStartMin",
+                  dtCore::Vec3ActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetLinearVelocityStartMin),
+                  dtCore::Vec3ActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetLinearVelocityStartMin),
                   "", PARTICLE_GROUP));
 
-         AddProperty(new dtDAL::Vec3ActorProperty("LinearVelocityStartMax", "LinearVelocityStartMax",
-                  dtDAL::Vec3ActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetLinearVelocityStartMax),
-                  dtDAL::Vec3ActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetLinearVelocityStartMax),
+         AddProperty(new dtCore::Vec3ActorProperty("LinearVelocityStartMax", "LinearVelocityStartMax",
+                  dtCore::Vec3ActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetLinearVelocityStartMax),
+                  dtCore::Vec3ActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetLinearVelocityStartMax),
                   "", PARTICLE_GROUP));
 
-         AddProperty(new dtDAL::Vec3ActorProperty("EmitterNoZoneEmitterCone", "EmitterNoZoneEmitterCone",
-                  dtDAL::Vec3ActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetEmitterNoZoneEmitteerCone),
-                  dtDAL::Vec3ActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetEmitterNoZoneEmitteerCone),
+         AddProperty(new dtCore::Vec3ActorProperty("EmitterNoZoneEmitterCone", "EmitterNoZoneEmitterCone",
+                  dtCore::Vec3ActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetEmitterNoZoneEmitteerCone),
+                  dtCore::Vec3ActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetEmitterNoZoneEmitteerCone),
                   "", PARTICLE_GROUP));
 
-         AddProperty(new dtDAL::Vec3ActorProperty("AngularVelocityStartMin", "AngularVelocityStartMin",
-                  dtDAL::Vec3ActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetAngularVelocityStartMin),
-                  dtDAL::Vec3ActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetAngularVelocityStartMin),
+         AddProperty(new dtCore::Vec3ActorProperty("AngularVelocityStartMin", "AngularVelocityStartMin",
+                  dtCore::Vec3ActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetAngularVelocityStartMin),
+                  dtCore::Vec3ActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetAngularVelocityStartMin),
                   "", PARTICLE_GROUP));
 
-         AddProperty(new dtDAL::Vec3ActorProperty("AngularVelocityStartMax", "AngularVelocityStartMax",
-                  dtDAL::Vec3ActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetAngularVelocityStartMax),
-                  dtDAL::Vec3ActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetAngularVelocityStartMax),
+         AddProperty(new dtCore::Vec3ActorProperty("AngularVelocityStartMax", "AngularVelocityStartMax",
+                  dtCore::Vec3ActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetAngularVelocityStartMax),
+                  dtCore::Vec3ActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetAngularVelocityStartMax),
                   "", PARTICLE_GROUP));
 
-         AddProperty(new dtDAL::Vec3ActorProperty("OverTimeForceVecMin", "OverTimeForceVecMin",
-                  dtDAL::Vec3ActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetOverTimeForceVecMin),
-                  dtDAL::Vec3ActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetOverTimeForceVecMin),
+         AddProperty(new dtCore::Vec3ActorProperty("OverTimeForceVecMin", "OverTimeForceVecMin",
+                  dtCore::Vec3ActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetOverTimeForceVecMin),
+                  dtCore::Vec3ActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetOverTimeForceVecMin),
                   "", PARTICLE_GROUP));
 
-         AddProperty(new dtDAL::Vec3ActorProperty("OverTimeForceVecMax", "OverTimeForceVecMax",
-                  dtDAL::Vec3ActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetOverTimeForceVecMax),
-                  dtDAL::Vec3ActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetOverTimeForceVecMax),
+         AddProperty(new dtCore::Vec3ActorProperty("OverTimeForceVecMax", "OverTimeForceVecMax",
+                  dtCore::Vec3ActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetOverTimeForceVecMax),
+                  dtCore::Vec3ActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetOverTimeForceVecMax),
                   "", PARTICLE_GROUP));
 
-         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::STATIC_MESH,
-                  "ObjectToUse1", "ObjectToUse1", dtDAL::ResourceActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetFileToLoadOne),
+         AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::STATIC_MESH,
+                  "ObjectToUse1", "ObjectToUse1", dtCore::ResourceActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetFileToLoadOne),
                   "The static mesh resource that defines the geometry", GROUP));
 
-         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::STATIC_MESH,
-                  "ObjectToUse2", "ObjectToUse2", dtDAL::ResourceActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetFileToLoadTwo),
+         AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::STATIC_MESH,
+                  "ObjectToUse2", "ObjectToUse2", dtCore::ResourceActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetFileToLoadTwo),
                   "The static mesh resource that defines the geometry", GROUP));
 
-         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::STATIC_MESH,
-                  "ObjectToUse3", "ObjectToUse3", dtDAL::ResourceActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetFileToLoadThree),
+         AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::STATIC_MESH,
+                  "ObjectToUse3", "ObjectToUse3", dtCore::ResourceActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetFileToLoadThree),
                   "The static mesh resource that defines the geometry", GROUP));
 
-         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::STATIC_MESH,
-                  "ObjectToUse4", "ObjectToUse4", dtDAL::ResourceActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetFileToLoadFour),
+         AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::STATIC_MESH,
+                  "ObjectToUse4", "ObjectToUse4", dtCore::ResourceActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetFileToLoadFour),
                   "The static mesh resource that defines the geometry", GROUP));
 
-         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::STATIC_MESH,
-                  "ObjectToUse5", "ObjectToUse5", dtDAL::ResourceActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetFileToLoadFive),
+         AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::STATIC_MESH,
+                  "ObjectToUse5", "ObjectToUse5", dtCore::ResourceActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetFileToLoadFive),
                   "The static mesh resource that defines the geometry", GROUP));
       }
 
@@ -678,9 +678,9 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      dtCore::RefPtr<dtDAL::ActorProperty> PhysicsParticleSystemActorProxy::GetDeprecatedProperty(const std::string& name)
+      dtCore::RefPtr<dtCore::ActorProperty> PhysicsParticleSystemActorProxy::GetDeprecatedProperty(const std::string& name)
       {
-         dtCore::RefPtr<dtDAL::ActorProperty> depProp = BaseClass::GetDeprecatedProperty(name);
+         dtCore::RefPtr<dtCore::ActorProperty> depProp = BaseClass::GetDeprecatedProperty(name);
 
          if (!depProp.valid())
          {

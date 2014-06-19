@@ -136,7 +136,7 @@ std::string StarField::_fragmentShaderProgram =
 class UPCB : public osg::NodeCallback
 {
     public:
-        UPCB( osg::Uniform *MVi ): _MVi(MVi), a(0.0) {}
+        UPCB( osg::Uniform *MVi ): _MVi(MVi) {}
 
         virtual void operator()(osg::Node* node, osg::NodeVisitor* nv)
         {
@@ -163,7 +163,7 @@ class UPCB : public osg::NodeCallback
         }
     private:
         osg::ref_ptr<osg::Uniform>_MVi;
-        double a;
+        //double a;
 };
 
 void StarField::_buildGeometry()

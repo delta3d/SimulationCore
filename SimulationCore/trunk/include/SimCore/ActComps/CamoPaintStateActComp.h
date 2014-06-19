@@ -90,7 +90,7 @@ namespace SimCore
             DT_DECLARE_ACCESSOR(int, CamoId);
             DT_DECLARE_ACCESSOR(bool, ConcealedState);
             DT_DECLARE_ACCESSOR(osg::Vec4, ConcealMeshDims);
-            DT_DECLARE_ACCESSOR(dtDAL::ResourceDescriptor, ConcealMesh);
+            DT_DECLARE_ACCESSOR(dtCore::ResourceDescriptor, ConcealMesh);
             DT_DECLARE_ACCESSOR(std::string, ConcealShaderGroup);
 
             ////////////////////////////////////////////////////////////////////

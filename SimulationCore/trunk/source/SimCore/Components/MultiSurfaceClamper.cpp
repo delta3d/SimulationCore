@@ -31,8 +31,8 @@
 #include <dtCore/scene.h>
 #include <dtCore/transform.h>
 #include <dtCore/transformable.h>
-#include <dtDAL/actortype.h>
-#include <dtDAL/transformableactorproxy.h>
+#include <dtCore/actortype.h>
+#include <dtCore/transformableactorproxy.h>
 #include <dtUtil/mathdefines.h>
 #include <dtUtil/log.h>
 #include <osg/Geometry>
@@ -381,7 +381,7 @@ namespace SimCore
       /////////////////////////////////////////////////////////////////////////////
       dtGame::BaseGroundClamper::GroundClampRangeType& MultiSurfaceClamper::GetBestClampType(
          dtGame::BaseGroundClamper::GroundClampRangeType& suggestedClampType,
-         const dtDAL::TransformableActorProxy& proxy,
+         const dtCore::TransformableActorProxy& proxy,
          const dtGame::GroundClampingData& data,
          bool transformChanged, const osg::Vec3& velocity) const
       {
@@ -410,7 +410,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void MultiSurfaceClamper::ClampToGround(GroundClampRangeType& type,
          double currentTime, dtCore::Transform& xform,
-         dtDAL::TransformableActorProxy& proxy, dtGame::GroundClampingData& data,
+         dtCore::TransformableActorProxy& proxy, dtGame::GroundClampingData& data,
          bool transformChanged, const osg::Vec3& velocity)
       {
          // Maintain the current simulation time across subsequent methods.
@@ -458,7 +458,7 @@ namespace SimCore
 
       //////////////////////////////////////////////////////////////////////////
       void MultiSurfaceClamper::GetSurfacePoints(
-         const dtDAL::TransformableActorProxy& proxy,
+         const dtCore::TransformableActorProxy& proxy,
          dtGame::GroundClampingData& data,
          const dtCore::Transform& xform,
          osg::Vec3 inOutPoints[3] )
@@ -487,7 +487,7 @@ namespace SimCore
 
       //////////////////////////////////////////////////////////////////////////
       bool MultiSurfaceClamper::GetClosestHit(
-         const dtDAL::TransformableActorProxy& proxy,
+         const dtCore::TransformableActorProxy& proxy,
          dtGame::GroundClampingData& data,
          dtCore::BatchIsector::SingleISector& single, float pointZ,
          osg::Vec3& inOutHit, osg::Vec3& outNormal )
@@ -571,7 +571,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void MultiSurfaceClamper::FinalizeSurfacePoints( dtDAL::TransformableActorProxy& proxy,
+      void MultiSurfaceClamper::FinalizeSurfacePoints( dtCore::TransformableActorProxy& proxy,
          dtGame::GroundClampingData& data, osg::Vec3 inOutPoints[3] )
       {
          // Get the runtime data to be updated.

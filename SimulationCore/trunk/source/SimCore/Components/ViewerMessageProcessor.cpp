@@ -49,8 +49,8 @@
 
 #include <dtUtil/mathdefines.h>
 
-#include <dtDAL/project.h>
-#include <dtDAL/map.h>
+#include <dtCore/project.h>
+#include <dtCore/map.h>
 
 using dtCore::RefPtr;
 using SimCore::Actors::BaseEntityActorProxy;
@@ -82,13 +82,13 @@ namespace SimCore
          if (msg.GetMessageType() == dtGame::MessageType::INFO_MAP_LOADED)
          {
             dtGame::GameManager& gameManager = *GetGameManager();
-            std::vector<dtDAL::ActorProxy*> actors;
+            std::vector<dtCore::BaseActorObject*> actors;
 
             //dtAnim::AnimationComponent* animComp = NULL;
             //gameManager.GetComponentByName(dtAnim::AnimationComponent::DEFAULT_NAME, animComp);
 
             // SET THE TERRAIN
-            dtDAL::BaseActorObject* terrainAO = NULL;
+            dtCore::BaseActorObject* terrainAO = NULL;
             gameManager.FindActorByName("Terrain", terrainAO);
             if (!HandleTerrainActor(terrainAO))
             {
@@ -114,7 +114,7 @@ namespace SimCore
 
             const dtGame::ActorUpdateMessage& updateMessage = static_cast<const dtGame::ActorUpdateMessage&> (msg);
             // SET THE TERRAIN
-            dtDAL::BaseActorObject* terrainAO = GetGameManager()->FindActorById(msg.GetAboutActorId());
+            dtCore::BaseActorObject* terrainAO = GetGameManager()->FindActorById(msg.GetAboutActorId());
             if (terrainAO != NULL && terrainAO->GetName() == "Terrain")
             {
                HandleTerrainActor(terrainAO);
@@ -129,7 +129,7 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////////
-      bool ViewerMessageProcessor::HandleTerrainActor(dtDAL::ActorProxy* terrainProxy)
+      bool ViewerMessageProcessor::HandleTerrainActor(dtCore::BaseActorObject* terrainProxy)
       {
          bool result = false;
 
@@ -139,7 +139,7 @@ namespace SimCore
             GetGameManager()->GetComponentByName(dtGame::DeadReckoningComponent::DEFAULT_NAME, drComp);
 
             dtCore::Transformable* terrain;
-            terrainProxy->GetActor(terrain);
+            terrainProxy->GetDrawable(terrain);
             if(terrain == NULL)
             {
                LOG_ERROR("The terrain actor is not a transformable. Ignoring.");
@@ -156,7 +156,7 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////////
-      void ViewerMessageProcessor::HandleWaterActor(dtDAL::ActorProxy* waterProxy)
+      void ViewerMessageProcessor::HandleWaterActor(dtCore::BaseActorObject* waterProxy)
       {
          if (waterProxy != NULL)
          {
@@ -166,7 +166,7 @@ namespace SimCore
             if (drComp != NULL)
             {
                SimCore::Actors::BaseWaterActor* water = NULL;
-               waterProxy->GetActor(water);
+               waterProxy->GetDrawable(water);
 
                // Assign the water surface to the clamper for water based entities to clamp to.
                SimCore::Components::MultiSurfaceClamper* clamper
@@ -213,8 +213,8 @@ namespace SimCore
             return;
          }
 
-         //Must dynamic cast here because the GetActor template does a static cast.
-         SimCore::Actors::IGActor* ig = dynamic_cast<SimCore::Actors::IGActor*>(ap->GetDrawable());
+         SimCore::Actors::IGActor* ig = NULL;
+         ap->GetDrawable(ig);
          if (ig != NULL)
          {
             // The happens every time we get an update, but it must happen after the properties
@@ -228,7 +228,7 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////
       void ViewerMessageProcessor::ProcessLocalUpdateActor(const dtGame::ActorUpdateMessage& msg)
       {
-         dtGame::GameActorProxy *ap = GetGameManager()->FindGameActorById(msg.GetAboutActorId());
+         dtGame::GameActorProxy* ap = GetGameManager()->FindGameActorById(msg.GetAboutActorId());
          if (ap == NULL)
          {
             LOG_ERROR("The about actor id is invalid");
@@ -239,12 +239,15 @@ namespace SimCore
          {
             if(dynamic_cast<SimCore::Actors:: StealthActorProxy*>(ap) == NULL)
             {
-               BaseEntityActorProxy *eap = dynamic_cast<BaseEntityActorProxy*>(ap);
+               BaseEntityActorProxy* eap = dynamic_cast<BaseEntityActorProxy*>(ap);
                if(eap != NULL)
-                  static_cast<BaseEntity&>(eap->GetGameActor()).SetScaleMagnification(osg::Vec3(mMagnification, mMagnification, mMagnification));
+               {
+                  eap->GetDrawable<BaseEntity>()->SetScaleMagnification(osg::Vec3(mMagnification, mMagnification, mMagnification));
+               }
             }
             //Must dynamic cast here because the GetActor template does a static cast.
-            SimCore::Actors::IGActor* ig = dynamic_cast<SimCore::Actors::IGActor*>(ap->GetDrawable());
+            SimCore::Actors::IGActor* ig = NULL;
+            ap->GetDrawable(ig);
             if (ig != NULL)
             {
                ig->SetVisible(ig->ShouldBeVisible(*mVisibilityOptions));
@@ -301,8 +304,8 @@ namespace SimCore
 
             if (tvMsg.GetSenderName() == mTimeSyncSenderName.ToString())
             {
-               long transmitLatency = tvMsg.GetQueryReceivedRealTime() - tvMsg.GetQueryTransmitRealTime();
-               long receiveLatency  = (long)(GetGameManager()->GetRealClockTime()/MILLISECONDS_TO_USECONDS) - tvMsg.GetValueTransmitRealTime();
+               int transmitLatency = tvMsg.GetQueryReceivedRealTime() - tvMsg.GetQueryTransmitRealTime();
+               int receiveLatency  = int(GetGameManager()->GetRealClockTime()/MILLISECONDS_TO_USECONDS) - int(tvMsg.GetValueTransmitRealTime());
 
                mTimeSyncLatency = (unsigned long)(abs((transmitLatency + receiveLatency) / 2));
             }
@@ -441,13 +444,13 @@ namespace SimCore
          {
          }
 
-         void operator()(dtDAL::ActorProxy& ap)
+         void operator()(dtCore::ActorProxy& ap)
          {
             SimCore::Actors::BaseEntityActorProxy* eap = dynamic_cast<SimCore::Actors::BaseEntityActorProxy*>(&ap);
             if (eap != NULL && dynamic_cast<SimCore::Actors::StealthActorProxy*>(eap) == NULL)
             {
                SimCore::Actors::BaseEntity* entity = NULL;
-               eap->GetActor(entity);
+               eap->GetDrawable(entity);
                entity->SetScaleMagnification(osg::Vec3(mMagnification, mMagnification, mMagnification));
             }
 

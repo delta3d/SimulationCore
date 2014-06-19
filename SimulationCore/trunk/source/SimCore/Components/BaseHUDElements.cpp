@@ -27,7 +27,7 @@
 #include <prefix/SimCorePrefix.h>
 #include <SimCore/Components/BaseHUDElements.h>
 
-#include <dtDAL/project.h>
+#include <dtCore/project.h>
 #include <dtUtil/exception.h>
 #include <dtUtil/fileutils.h>
 #include <dtUtil/log.h>
@@ -1442,7 +1442,7 @@ namespace SimCore
             std::string filePath("Textures:");
             filePath += imageFileName;
             try{
-               filePath = dtDAL::Project::GetInstance().GetResourcePath(dtDAL::ResourceDescriptor(filePath));
+               filePath = dtCore::Project::GetInstance().GetResourcePath(dtCore::ResourceDescriptor(filePath));
                image = osgDB::readImageFile(filePath);
                texture->setImage(image);
                states->setTextureAttributeAndModes(0,texture.get(),osg::StateAttribute::ON);

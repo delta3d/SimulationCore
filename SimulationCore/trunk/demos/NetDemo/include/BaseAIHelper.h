@@ -87,7 +87,7 @@ namespace NetDemo
       /*virtual*/ void UpdateState(float dt, const BaseClass::AIControlState& steerData);
       /*virtual*/ void OutputControl(const BaseClass::AIPath& pathToFollow, const BaseClass::AIState& current_state, BaseClass::AIControlState& result) const;
 
-      /*virtual*/ void RegisterProperties(dtDAL::PropertyContainer& pc, const std::string& group);
+      /*virtual*/ void RegisterProperties(dtCore::PropertyContainer& pc, const std::string& group);
 
       /**
       * A function to add transitions to the finite state machine using the AIStateType

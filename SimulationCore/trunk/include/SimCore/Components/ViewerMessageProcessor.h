@@ -142,10 +142,10 @@ namespace SimCore
             void UpdateSyncTime(const SimCore::TimeValueMessage& tvMsg);
 
             /// Called when map loaded or actor update/create for a terrain. Passes to DR comp
-            bool HandleTerrainActor(dtDAL::ActorProxy* terrainProxy);
+            bool HandleTerrainActor(dtCore::BaseActorObject* terrainProxy);
 
             /// Called when map laoded or actor update/create for the water actor. Passes to DR comp water clamper
-            void HandleWaterActor(dtDAL::ActorProxy* waterProxy);
+            void HandleWaterActor(dtCore::BaseActorObject* waterProxy);
 
          private:
 
@@ -161,7 +161,7 @@ namespace SimCore
 
             std::string mTimeMasterName;
             dtCore::UniqueId mTimeSyncSenderName;
-            unsigned long mTimeSyncLatency;
+            unsigned int mTimeSyncLatency;
       };
    }
 }

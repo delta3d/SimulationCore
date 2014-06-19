@@ -52,7 +52,7 @@ namespace dtCore
    class Transformable;
 }
 
-namespace dtDAL
+namespace dtCore
 {
    class BaseActorObject;
 }
@@ -156,7 +156,7 @@ namespace SimCore
             bool operator != (const LabelOptions& toCompare) const { return !(*this == toCompare); }
 
             /// Used for the game manager find to see if the actor matches the options.
-            bool operator() (dtDAL::BaseActorObject& actor);
+            bool operator() (dtCore::BaseActorObject& actor);
          private:
             float mMaxLabelDistance;
             float mMaxLabelDistance2;
@@ -195,14 +195,14 @@ namespace SimCore
             SimCore::Components::HUDElement* GetGUILayer();
             const SimCore::Components::HUDElement* GetGUILayer() const;
 
-            dtCore::RefPtr<HUDLabel> GetOrCreateLabel(dtDAL::BaseActorObject& actor);
+            dtCore::RefPtr<HUDLabel> GetOrCreateLabel(dtCore::BaseActorObject& actor);
 
             void AddLabel(SimCore::Components::HUDLabel& label);
 
             void Update(float dt);
 
 
-            const std::string AssignLabelColor(const dtDAL::BaseActorObject& actor, HUDLabel& label);
+            const std::string AssignLabelColor(const dtCore::BaseActorObject& actor, HUDLabel& label);
 
             const osg::Vec2 CalculateLabelScreenPosition(float boundRadius, const osg::Vec3& boundCenter,
                      dtCore::Camera& deltaCam, const osg::Vec3& screenPos, const osg::Vec2& labelSize);
@@ -217,7 +217,7 @@ namespace SimCore
             // TEMP:
 
             /// Called to update a single label on a single actor.
-            void ApplyLabelToActor(dtDAL::BaseActorObject& proxy, dtCore::Camera& deltaCamera, LabelMap& newLabels, std::string& nameBuffer);
+            void ApplyLabelToActor(dtCore::BaseActorObject& proxy, dtCore::Camera& deltaCamera, LabelMap& newLabels, std::string& nameBuffer);
 
          protected:
             virtual ~LabelManager();

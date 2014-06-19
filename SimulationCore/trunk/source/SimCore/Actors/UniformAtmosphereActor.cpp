@@ -23,7 +23,7 @@
 
 #include <prefix/SimCorePrefix.h>
 #include <SimCore/Actors/UniformAtmosphereActor.h>
-#include <dtDAL/enginepropertytypes.h>
+#include <dtCore/enginepropertytypes.h>
 
 namespace SimCore
 {
@@ -52,77 +52,77 @@ namespace SimCore
          UniformAtmosphereActor* actor = NULL;
          GetActor(actor);
 
-         AddProperty(new dtDAL::FloatActorProperty("Visibility Distance", "Visibility Distance", 
-            dtDAL::FloatActorProperty::SetFuncType(actor, &UniformAtmosphereActor::SetVisibilityDistance),
-            dtDAL::FloatActorProperty::GetFuncType(actor, &UniformAtmosphereActor::GetVisibilityDistance),
+         AddProperty(new dtCore::FloatActorProperty("Visibility Distance", "Visibility Distance", 
+            dtCore::FloatActorProperty::SetFuncType(actor, &UniformAtmosphereActor::SetVisibilityDistance),
+            dtCore::FloatActorProperty::GetFuncType(actor, &UniformAtmosphereActor::GetVisibilityDistance),
             "Maximum distance one can see into atmospheric haze, measured in kilometers"));
 
-         AddProperty(new dtDAL::FloatActorProperty("Cloud Base Height", "Cloud Base Height", 
-            dtDAL::FloatActorProperty::SetFuncType(actor, &UniformAtmosphereActor::SetCloudBaseHeight),
-            dtDAL::FloatActorProperty::GetFuncType(actor, &UniformAtmosphereActor::GetCloudBaseHeight),
+         AddProperty(new dtCore::FloatActorProperty("Cloud Base Height", "Cloud Base Height", 
+            dtCore::FloatActorProperty::SetFuncType(actor, &UniformAtmosphereActor::SetCloudBaseHeight),
+            dtCore::FloatActorProperty::GetFuncType(actor, &UniformAtmosphereActor::GetCloudBaseHeight),
             "Lowest elevation of the primary cloud layer in meters"));
 
-         AddProperty(new dtDAL::FloatActorProperty("Cloud Top Height", "Cloud Top Height", 
-            dtDAL::FloatActorProperty::SetFuncType(actor, &UniformAtmosphereActor::SetCloudTopHeight),
-            dtDAL::FloatActorProperty::GetFuncType(actor, &UniformAtmosphereActor::GetCloudTopHeight),
+         AddProperty(new dtCore::FloatActorProperty("Cloud Top Height", "Cloud Top Height", 
+            dtCore::FloatActorProperty::SetFuncType(actor, &UniformAtmosphereActor::SetCloudTopHeight),
+            dtCore::FloatActorProperty::GetFuncType(actor, &UniformAtmosphereActor::GetCloudTopHeight),
             "Highest elevation of the primary cloud layer in meters"));
 
-         AddProperty(new dtDAL::FloatActorProperty("Cloud Thickness", "Cloud Thickness", 
-            dtDAL::FloatActorProperty::SetFuncType(actor, &UniformAtmosphereActor::SetCloudThickness),
-            dtDAL::FloatActorProperty::GetFuncType(actor, &UniformAtmosphereActor::GetCloudThickness),
+         AddProperty(new dtCore::FloatActorProperty("Cloud Thickness", "Cloud Thickness", 
+            dtCore::FloatActorProperty::SetFuncType(actor, &UniformAtmosphereActor::SetCloudThickness),
+            dtCore::FloatActorProperty::GetFuncType(actor, &UniformAtmosphereActor::GetCloudThickness),
             "Visible distance into the primary cloud layer, measured in meters"));
 
-         AddProperty(new dtDAL::FloatActorProperty("Fog Cover", "Fog Cover", 
-            dtDAL::FloatActorProperty::SetFuncType(actor, &UniformAtmosphereActor::SetFogCover),
-            dtDAL::FloatActorProperty::GetFuncType(actor, &UniformAtmosphereActor::GetFogCover),
+         AddProperty(new dtCore::FloatActorProperty("Fog Cover", "Fog Cover", 
+            dtCore::FloatActorProperty::SetFuncType(actor, &UniformAtmosphereActor::SetFogCover),
+            dtCore::FloatActorProperty::GetFuncType(actor, &UniformAtmosphereActor::GetFogCover),
             "Percentage of fog density"));
 
-         AddProperty(new dtDAL::EnumActorProperty<CloudType>("Cloud Type", "Cloud Type", 
-            dtDAL::EnumActorProperty<CloudType>::SetFuncType(actor, &UniformAtmosphereActor::SetCloudType),
-            dtDAL::EnumActorProperty<CloudType>::GetFuncType(actor, &UniformAtmosphereActor::GetCloudType),
+         AddProperty(new dtCore::EnumActorProperty<CloudType>("Cloud Type", "Cloud Type", 
+            dtCore::EnumActorProperty<CloudType>::SetFuncType(actor, &UniformAtmosphereActor::SetCloudType),
+            dtCore::EnumActorProperty<CloudType>::GetFuncType(actor, &UniformAtmosphereActor::GetCloudType),
             "The cloud pattern being simulated","Environment"));
 
-         AddProperty(new dtDAL::FloatActorProperty("Fog Thickness", "Fog Thickness", 
-            dtDAL::FloatActorProperty::SetFuncType(actor, &UniformAtmosphereActor::SetFogThickness),
-            dtDAL::FloatActorProperty::GetFuncType(actor, &UniformAtmosphereActor::GetFogThickness),
+         AddProperty(new dtCore::FloatActorProperty("Fog Thickness", "Fog Thickness", 
+            dtCore::FloatActorProperty::SetFuncType(actor, &UniformAtmosphereActor::SetFogThickness),
+            dtCore::FloatActorProperty::GetFuncType(actor, &UniformAtmosphereActor::GetFogThickness),
             "Visible distance into the fog layer, measured in meters"));
 
-         AddProperty(new dtDAL::FloatActorProperty("Precipitation Rate", "Precipitation Rate", 
-            dtDAL::FloatActorProperty::SetFuncType(actor, &UniformAtmosphereActor::SetPrecipitationRate),
-            dtDAL::FloatActorProperty::GetFuncType(actor, &UniformAtmosphereActor::GetPrecipitationRate),
+         AddProperty(new dtCore::FloatActorProperty("Precipitation Rate", "Precipitation Rate", 
+            dtCore::FloatActorProperty::SetFuncType(actor, &UniformAtmosphereActor::SetPrecipitationRate),
+            dtCore::FloatActorProperty::GetFuncType(actor, &UniformAtmosphereActor::GetPrecipitationRate),
             "Rate at which precipitation falls, measured in millimeters per hour"));
 
-         AddProperty(new dtDAL::FloatActorProperty("Wind Speed X", "Wind Speed X", 
-            dtDAL::FloatActorProperty::SetFuncType(actor, &UniformAtmosphereActor::SetWindSpeedX),
-            dtDAL::FloatActorProperty::GetFuncType(actor, &UniformAtmosphereActor::GetWindSpeedX),
+         AddProperty(new dtCore::FloatActorProperty("Wind Speed X", "Wind Speed X", 
+            dtCore::FloatActorProperty::SetFuncType(actor, &UniformAtmosphereActor::SetWindSpeedX),
+            dtCore::FloatActorProperty::GetFuncType(actor, &UniformAtmosphereActor::GetWindSpeedX),
             "Wind velocity in the world X axis"));
 
-         AddProperty(new dtDAL::FloatActorProperty("Wind Speed Y", "Wind Speed Y", 
-            dtDAL::FloatActorProperty::SetFuncType(actor, &UniformAtmosphereActor::SetWindSpeedY),
-            dtDAL::FloatActorProperty::GetFuncType(actor, &UniformAtmosphereActor::GetWindSpeedY),
+         AddProperty(new dtCore::FloatActorProperty("Wind Speed Y", "Wind Speed Y", 
+            dtCore::FloatActorProperty::SetFuncType(actor, &UniformAtmosphereActor::SetWindSpeedY),
+            dtCore::FloatActorProperty::GetFuncType(actor, &UniformAtmosphereActor::GetWindSpeedY),
             "Wind velocity in the world Y axis"));
 
-         AddProperty(new dtDAL::EnumActorProperty<PrecipitationType>("Precipitation Type", "Precipitation Type", 
-            dtDAL::EnumActorProperty<PrecipitationType>::SetFuncType(actor, &UniformAtmosphereActor::SetPrecipitationType),
-            dtDAL::EnumActorProperty<PrecipitationType>::GetFuncType(actor, &UniformAtmosphereActor::GetPrecipitationType),
+         AddProperty(new dtCore::EnumActorProperty<PrecipitationType>("Precipitation Type", "Precipitation Type", 
+            dtCore::EnumActorProperty<PrecipitationType>::SetFuncType(actor, &UniformAtmosphereActor::SetPrecipitationType),
+            dtCore::EnumActorProperty<PrecipitationType>::GetFuncType(actor, &UniformAtmosphereActor::GetPrecipitationType),
             "The precipitation pattern being simulated","Environment"));
          
-         AddProperty(new dtDAL::FloatActorProperty("Extinction Coefficient", "Extinction Coefficient", 
-            dtDAL::FloatActorProperty::SetFuncType(actor, &UniformAtmosphereActor::SetExtinctionCoefficient),
-            dtDAL::FloatActorProperty::GetFuncType(actor, &UniformAtmosphereActor::GetExtinctionCoefficient),
+         AddProperty(new dtCore::FloatActorProperty("Extinction Coefficient", "Extinction Coefficient", 
+            dtCore::FloatActorProperty::SetFuncType(actor, &UniformAtmosphereActor::SetExtinctionCoefficient),
+            dtCore::FloatActorProperty::GetFuncType(actor, &UniformAtmosphereActor::GetExtinctionCoefficient),
             "A rate for measuring the loss of clarity in the air"));
         
-         AddProperty(new dtDAL::FloatActorProperty("Cloud Coverage", "Cloud Coverage", 
-            dtDAL::FloatActorProperty::SetFuncType(actor, &UniformAtmosphereActor::SetCloudCoverage),
-            dtDAL::FloatActorProperty::GetFuncType(actor, &UniformAtmosphereActor::GetCloudCoverage),
+         AddProperty(new dtCore::FloatActorProperty("Cloud Coverage", "Cloud Coverage", 
+            dtCore::FloatActorProperty::SetFuncType(actor, &UniformAtmosphereActor::SetCloudCoverage),
+            dtCore::FloatActorProperty::GetFuncType(actor, &UniformAtmosphereActor::GetCloudCoverage),
             "A relative amount of cloud coverage in the sky"));
       }
 
       //////////////////////////////////////////////////////////
       // Actor code
       //////////////////////////////////////////////////////////
-      UniformAtmosphereActor::UniformAtmosphereActor( dtGame::GameActorProxy &proxy )
-         : AtmosphereActor(proxy),
+      UniformAtmosphereActor::UniformAtmosphereActor( dtGame::GameActorProxy& owner )
+         : AtmosphereActor(owner),
          mVisibility(100.0f), // km
          mCloudBaseHeight(0.0f), // m
          mCloudTopHeight(0.0f), // m

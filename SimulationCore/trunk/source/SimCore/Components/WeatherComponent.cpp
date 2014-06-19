@@ -38,8 +38,8 @@
 #include <dtCore/system.h>
 #include <dtCore/transform.h>
 
-#include <dtDAL/actorproperty.h>
-#include <dtDAL/enginepropertytypes.h>
+#include <dtCore/actorproperty.h>
+#include <dtCore/enginepropertytypes.h>
 
 #include <dtGame/actorupdatemessage.h>
 #include <dtGame/basemessages.h>
@@ -100,14 +100,14 @@ namespace SimCore
 
          const std::string GROUPNAME = "Weather Component Values";
 
-         AddProperty(new dtDAL::DoubleActorProperty("Base Elevation","Base Elevation",
-            dtDAL::MakeFunctor(*this,&WeatherComponent::SetBaseElevation),
-            dtDAL::MakeFunctorRet(*this,&WeatherComponent::GetBaseElevation),
+         AddProperty(new dtCore::DoubleActorProperty("Base Elevation","Base Elevation",
+            dtCore::MakeFunctor(*this,&WeatherComponent::SetBaseElevation),
+            dtCore::MakeFunctorRet(*this,&WeatherComponent::GetBaseElevation),
             "", GROUPNAME));
 
-         AddProperty(new dtDAL::DoubleActorProperty("Max Visibility","Max Visibility",
-            dtDAL::MakeFunctor(*this,&WeatherComponent::SetMaxVisibility),
-            dtDAL::MakeFunctorRet(*this,&WeatherComponent::GetMaxVisibility),
+         AddProperty(new dtCore::DoubleActorProperty("Max Visibility","Max Visibility",
+            dtCore::MakeFunctor(*this,&WeatherComponent::SetMaxVisibility),
+            dtCore::MakeFunctorRet(*this,&WeatherComponent::GetMaxVisibility),
             "", GROUPNAME));
       }*/
 
@@ -363,14 +363,14 @@ namespace SimCore
             //enable lens flare
             //std::cout << std::endl << "Enabling lens flare" << std::endl << std::endl;
 
-            mEnvironmentActor->SetEnableLensFlare(true);
+            //mEnvironmentActor->SetEnableLensFlare(true);
 
          }
 
          // Check for the environment object to see if it was loaded in the map file
          else if (type == dtGame::MessageType::INFO_ENVIRONMENT_CHANGED)
          {
-            dtDAL::ActorProxy *proxy = GetGameManager()->FindActorById(msg.GetAboutActorId());
+            dtCore::ActorProxy *proxy = GetGameManager()->FindActorById(msg.GetAboutActorId());
             SimCore::Actors::IGEnvironmentActorProxy* igproxy =
                dynamic_cast<SimCore::Actors::IGEnvironmentActorProxy*>(proxy);
             if(igproxy == NULL)
@@ -662,13 +662,13 @@ namespace SimCore
       //////////////////////////////////////////////////////////
       void WeatherComponent::AssignNewProxy(const dtCore::UniqueId& id)
       {
-         dtDAL::ActorProxy* actor = GetGameManager()->FindActorById(id);
+         dtCore::ActorProxy* actor = GetGameManager()->FindActorById(id);
          if (actor == NULL)
          {
             return;
          }
 
-         const dtDAL::ActorType& type = actor->GetActorType();
+         const dtCore::ActorType& type = actor->GetActorType();
 
          if (type == *SimCore::Actors::EntityActorRegistry::UNIFORM_ATMOSPHERE_ACTOR_TYPE)
          {

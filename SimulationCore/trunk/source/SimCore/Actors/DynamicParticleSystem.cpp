@@ -16,8 +16,8 @@
 // INCLUDE DIRECTIVES
 ////////////////////////////////////////////////////////////////////////////////
 #include <prefix/SimCorePrefix.h>
-#include <dtDAL/enginepropertytypes.h>
-#include <dtDAL/actorproxyicon.h>
+#include <dtCore/enginepropertytypes.h>
+#include <dtCore/actorproxyicon.h>
 #include <dtGame/basemessages.h>
 #include <dtGame/messagetype.h>
 #include <dtUtil/mathdefines.h>
@@ -412,32 +412,32 @@ namespace SimCore
          const std::string &GROUPNAME = "Particle System";
 
          DynamicParticleSystemActor* actor = NULL;
-         GetActor( actor );
+         GetDrawable( actor );
 
          // BOOLEAN PROPERTIES
-         AddProperty(new dtDAL::BooleanActorProperty(
+         AddProperty(new dtCore::BooleanActorProperty(
             DynamicParticleSystemActorProxy::PROPERTY_ENABLED.Get(),
             DynamicParticleSystemActorProxy::PROPERTY_ENABLED.Get(),
-            dtDAL::BooleanActorProperty::SetFuncType(actor, &DynamicParticleSystemActor::SetEnabled),
-            dtDAL::BooleanActorProperty::GetFuncType(actor, &DynamicParticleSystemActor::IsEnabled),
+            dtCore::BooleanActorProperty::SetFuncType(actor, &DynamicParticleSystemActor::SetEnabled),
+            dtCore::BooleanActorProperty::GetFuncType(actor, &DynamicParticleSystemActor::IsEnabled),
             "Sets whether the particle system should be enabled or disabled when it enters the scene.",
             GROUPNAME));
 
          // FLOAT PROPERTIES
-         AddProperty(new dtDAL::FloatActorProperty(
+         AddProperty(new dtCore::FloatActorProperty(
             DynamicParticleSystemActorProxy::PROPERTY_START_INTERPOLATION.Get(),
             DynamicParticleSystemActorProxy::PROPERTY_START_INTERPOLATION.Get(),
-            dtDAL::FloatActorProperty::SetFuncType(actor, &DynamicParticleSystemActor::SetInterpolation),
-            dtDAL::FloatActorProperty::GetFuncType(actor, &DynamicParticleSystemActor::GetInterpolation),
+            dtCore::FloatActorProperty::SetFuncType(actor, &DynamicParticleSystemActor::SetInterpolation),
+            dtCore::FloatActorProperty::GetFuncType(actor, &DynamicParticleSystemActor::GetInterpolation),
             "Sets the initial interpolation for the particle system between it start and end interpolation settings.",
             GROUPNAME));
 
          // RESOURCE PROPERTIES
-         AddProperty(new dtDAL::ResourceActorProperty(*this,
-            dtDAL::DataType::PARTICLE_SYSTEM,
+         AddProperty(new dtCore::ResourceActorProperty(*this,
+            dtCore::DataType::PARTICLE_SYSTEM,
             DynamicParticleSystemActorProxy::PROPERTY_PARTICLE_FILE.Get(),
             DynamicParticleSystemActorProxy::PROPERTY_PARTICLE_FILE.Get(),
-            dtDAL::ResourceActorProperty::SetFuncType(actor, &DynamicParticleSystemActor::SetParticleSystemFile),
+            dtCore::ResourceActorProperty::SetFuncType(actor, &DynamicParticleSystemActor::SetParticleSystemFile),
             "Sets the particle system file to be loaded",
             GROUPNAME));
       }
@@ -456,7 +456,7 @@ namespace SimCore
       DynamicParticleSystemActor& DynamicParticleSystemActorProxy::GetDynamicParticleSystemActor()
       {
          DynamicParticleSystemActor* actor = NULL;
-         GetActor( actor );
+         GetDrawable( actor );
          return *actor;
       }
 
@@ -464,22 +464,22 @@ namespace SimCore
       const DynamicParticleSystemActor& DynamicParticleSystemActorProxy::GetDynamicParticleSystemActor() const
       {
          const DynamicParticleSystemActor* actor = NULL;
-         GetActor( actor );
+         GetDrawable( actor );
          return *actor;
       }
 
 
       //////////////////////////////////////////////////////////////////////////
-      dtDAL::ActorProxyIcon* DynamicParticleSystemActorProxy::GetBillBoardIcon()
+      dtCore::ActorProxyIcon* DynamicParticleSystemActorProxy::GetBillBoardIcon()
       {
          if(!mBillBoardIcon.valid())
          {
-            dtDAL::ActorProxyIcon::ActorProxyIconConfig config;
+            dtCore::ActorProxyIcon::ActorProxyIconConfig config;
             config.mForwardVector = true;
             config.mUpVector = true;
             config.mScale = 0.1;
 
-            mBillBoardIcon = new dtDAL::ActorProxyIcon(dtDAL::ActorProxyIcon::IMAGE_BILLBOARD_STATICMESH, config);
+            mBillBoardIcon = new dtCore::ActorProxyIcon(dtCore::ActorProxyIcon::IMAGE_BILLBOARD_STATICMESH, config);
          }
 
          return mBillBoardIcon.get();

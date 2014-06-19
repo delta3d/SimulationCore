@@ -1,13 +1,6 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6.1 FATAL_ERROR)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8.1 FATAL_ERROR)
 
-if(COMMAND cmake_policy)
-   cmake_policy(SET CMP0003 NEW) 
-endif(COMMAND cmake_policy)
-
-if(COMMAND cmake_policy)
-   cmake_policy(SET CMP0005 OLD)
-endif(COMMAND cmake_policy)
-
+cmake_policy(VERSION 2.8.1)
 
 OPTION(SUPER_BUILD "Enables the build to download and build delta3d" OFF)
 MARK_AS_ADVANCED(SUPER_BUILD)
@@ -23,6 +16,7 @@ endif ()
 OPTION(BUILD_DIS "Enables the linking of dtDIS for StealthViewer" OFF)
 OPTION(BUILD_HLA "Enables the building of HLA related projects (e.g., # SimCoreHLA)" ON)
 OPTION(BUILD_DEMOS "Enables building SimCore Demos in the demos directory" ON)
+OPTION(BUILD_UTILITIES "Enables building SimCore utility programs in the in the utilities directory" ON)
 OPTION(AUTO_RUN_TESTS "Automatically runs the unit tests upon successful compile and link" ON)
 OPTION(BUILD_WITH_PCH      "Enables use of precomplied headers, experimental" OFF)
 MARK_AS_ADVANCED(BUILD_WITH_PCH)
@@ -64,10 +58,27 @@ set (SIMULATIONCORE_IGNORE_CONFIG_FILE ON)
 set (SIMULATIONCORE_LIB_DIR ${CMAKE_BINARY_DIR}/lib CACHE FORCE "Path to the simulation core libraries" )
 FIND_PACKAGE(SimulationCore REQUIRED)
 
-FIND_PACKAGE(Delta3D REQUIRED)
+FIND_PACKAGE(Delta3D COMPONENTS dtUtil dtCore dtAI dtAudio dtAnim dtPhysics dtABC dtGame dtGUI dtActors REQUIRED)
+if (BUILD_HLA)
+   FIND_PACKAGE(Delta3D COMPONENTS dtHLAGM REQUIRED )
+endif()
+if (BUILD_DIS)
+   FIND_PACKAGE(Delta3D COMPONENTS dtDIS REQUIRED )
+endif()
+if (BUILD_STEALTH_VIEWER)
+   FIND_PACKAGE(Delta3D COMPONENTS dtQt REQUIRED )
+   if (NOT BUILD_HLA)
+      MESSAGE(FATAL_ERROR "You must enable BUILD_HLA to build the stealth viewer")
+   endif()
+endif()
+if (BUILD_DEMOS)
+   FIND_PACKAGE(Delta3D COMPONENTS dtInputPLIB dtNetGM REQUIRED )
+   if (NOT BUILD_HLA)
+      MESSAGE(FATAL_ERROR "You must enable BUILD_HLA to build the demos")
+   endif()
+endif()
+
 IF (DELTA3D_FOUND)
-   #look for module loaders in delta3d CMakeModules
-   SET(CMAKE_MODULE_PATH "${DELTA_DIR}/CMakeModules;${CMAKE_MODULE_PATH}")
 
    include(PlatformConfiguration)
 
@@ -81,34 +92,13 @@ IF (DELTA3D_FOUND)
       FIND_PACKAGE(Curses REQUIRED)
    ENDIF(NOT WIN32)
 
-   FIND_PACKAGE(OpenAL REQUIRED)
-
-   FIND_PACKAGE(OpenThreads REQUIRED)
-   FIND_PACKAGE(OSG REQUIRED)
-
-   FIND_PACKAGE(Cal3d REQUIRED)
-   FIND_PACKAGE(CEGUI REQUIRED)
    FIND_PACKAGE(CPPUNIT REQUIRED)
-   FIND_PACKAGE(ODE REQUIRED)
-   FIND_PACKAGE(XercesC REQUIRED)
-   FIND_PACKAGE(HAWKNL REQUIRED)
-   FIND_PACKAGE(GNE REQUIRED)
-   FIND_PACKAGE(Pal REQUIRED)
+
    INCLUDE_DIRECTORIES( ${PAL_INCLUDE_DIR} )
-   
-   FIND_PACKAGE(Boost)
-   
 
    IF (NOT WIN32 AND NOT APPLE)
      FIND_PACKAGE(UUID REQUIRED) 
    ENDIF (NOT WIN32 AND NOT APPLE)
-
-   #FIND_PACKAGE(GDAL)
-   #FIND_PACKAGE(DIS)
-
-   IF (BUILD_DIS)
-     FIND_PACKAGE(dtDIS REQUIRED)
-   ENDIF (BUILD_DIS)
 
    if (BUILD_STEALTH_VIEWER)
       SET(QT_USE_QTOPENGL "true")
@@ -137,6 +127,7 @@ INCLUDE_DIRECTORIES(
     ${Boost_INCLUDE_DIR}
     ${PYTHON_INCLUDE_PATH}
     ${PAL_INCLUDE_DIR}
+    ${OPENAL_INCLUDE_DIR}
 )
 
 IF (APPLE)
@@ -145,6 +136,13 @@ ENDIF (APPLE)
 
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
+
+if (APPLE)
+   SET(OUTPUT_FRAMEWORK_DIR ${PROJECT_BINARY_DIR}/Frameworks)
+   MAKE_DIRECTORY(${OUTPUT_FRAMEWORK_DIR})
+   SET(CMAKE_FRAMEWORK_OUTPUT_DIRECTORY ${OUTPUT_FRAMEWORK_DIR} CACHE PATH "Framework Build Directory")
+   message("FRAMEWORK OUTPUT " ${CMAKE_FRAMEWORK_OUTPUT_DIRECTORY})
+endif()
 
 LINK_DIRECTORIES( ${DELTA3D_LIB_DIR} )
 
@@ -236,11 +234,14 @@ SET(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} CACHE STRING "(EXPERIMENTAL) You may 
 ADD_SUBDIRECTORY(ext/source)
 ADD_SUBDIRECTORY(source)
 ADD_SUBDIRECTORY(tests)
-ADD_SUBDIRECTORY(utilities)
+
+if (BUILD_UTILITIES)	
+   ADD_SUBDIRECTORY(utilities)
+endif()
 
 if (BUILD_DEMOS)
    ADD_SUBDIRECTORY(demos)
-endif (BUILD_DEMOS)
+endif ()
 
 CONFIGURE_FILE(
   "${CMAKE_CURRENT_SOURCE_DIR}/SimCoreConfig.cmake.in"

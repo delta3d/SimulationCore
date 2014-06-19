@@ -46,19 +46,21 @@ class OSGEPHEMERIS_EXPORT SkyDome:  public Sphere
         /**
           Default Constructor
           */
-        SkyDome();
+        SkyDome( bool useBothHemispheres=true, bool MirrorInBothHemispheres=true );
 
         void setSunPos( double azimuth, double altitude );
         void setTurbidity( float t );
         virtual void traverse(osg::NodeVisitor&);
         static double getMeanDistanceToMoon() { return _meanDistanceToMoon; }
         
+        void setSunFudgeScale( double sunFudgeScale ){ _sunFudgeScale = sunFudgeScale; }
+        double getSunFudgeScale( ){ return _sunFudgeScale; }
 		/** RSC modifications for sensor simulation.
 		  */
 		osg::Image* getSkyImage(void);
 		void setSkyImage(osg::Image*);
 
-    private:
+    protected:
     
 		/** RSC modifications for sensor simulation.
 		  */
@@ -68,7 +70,7 @@ class OSGEPHEMERIS_EXPORT SkyDome:  public Sphere
 
         double _sunAzimuth;
         double _sunAltitude;
-        //double _aSunAzimuth;
+        double _sunFudgeScale;
 
         unsigned int _skyTextureUnit;
         osg::ref_ptr<osg::Texture2D> _skyTexture;
@@ -87,7 +89,8 @@ class OSGEPHEMERIS_EXPORT SkyDome:  public Sphere
                 SectorUpdateCallback( double &sunAz, double min, double max, unsigned int sunTextureUnit );
                 //virtual bool cull(osg::NodeVisitor* nv, osg::Drawable *dbl, osg::State*) const ;
                 virtual void update(osg::NodeVisitor* nv, osg::Drawable* dbl);
-            private:
+
+            protected:
                 double &_sunAz;
                 double _min, _max;
                 unsigned int _sunTextureUnit;
@@ -158,24 +161,25 @@ class OSGEPHEMERIS_EXPORT SkyDome:  public Sphere
         float _Ar, _Br, _Cr, _Dr, _Er;
         float _Ag, _Bg, _Cg, _Dg, _Eg;
         float _Ab, _Bb, _Cb, _Db, _Eb;
+        float _horiz_atten_r, _solar_atten_r;
         float _horiz_atten_g, _solar_atten_g;
         float _horiz_atten_b, _solar_atten_b;
 
         int _current_tex_row;
 
-        void _updateDistributionCoefficients();
+        virtual void _updateDistributionCoefficients();
         void _updateZenithxyY();
-        inline const float _xDistributionFunction(const float theta, const float cos_theta,
+        inline float _xDistributionFunction(const float theta, const float cos_theta,
                                            const float gamma, const float cos_gamma_sq);
-        inline const float _yDistributionFunction(const float theta, const float cos_theta,
+        inline float _yDistributionFunction(const float theta, const float cos_theta,
                                            const float gamma, const float cos_gamma_sq);
-        inline const float _YDistributionFunction(const float theta, const float cos_theta,
+        inline float _YDistributionFunction(const float theta, const float cos_theta,
                                            const float gamma, const float cos_gamma_sq);
-        inline const float   _RedFunction(const float theta, const float theta_0_1,
+        inline float   _RedFunction(const float theta, const float theta_0_1,
                                           const float gamma, const float gamma_1_0);
-        inline const float _GreenFunction(const float theta, const float theta_0_1,
+        inline float _GreenFunction(const float theta, const float theta_0_1,
                                           const float gamma, const float gamma_1_0);
-        inline const float  _BlueFunction(const float theta, const float theta_0_1,
+        inline float  _BlueFunction(const float theta, const float theta_0_1,
                                           const float gamma, const float gamma_1_0);
         void _computeSkyTexture();
 };

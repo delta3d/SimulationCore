@@ -25,7 +25,7 @@
 #ifdef None
 #undef None
 #endif
-#include <CEGUI.h>
+#include <CEGUI/CEGUI.h>
 
 // DEBUG:
 #include <sstream>
@@ -264,13 +264,6 @@ namespace NetDemo
                tempValue = "DR Ground Clamp: " + mLogicComp->GetDebugInfo().mDRGroundClampStatus;
                SetDebugInfoTextLine(4, tempValue, 
                   (mLogicComp->GetDebugInfo().mCurDebugVar == "DR Ground Clamp" 
-                     ? highlightColor : normalColor));
-
-               // Ground Clamp
-               tempValue = "DR Blending Type: " + (mLogicComp->GetDebugInfo().mDRUseSplines 
-                  ? std::string("Splines") : std::string("Projective"));
-               SetDebugInfoTextLine(5, tempValue,
-                  (mLogicComp->GetDebugInfo().mCurDebugVar == "DR Blending Type" 
                      ? highlightColor : normalColor));
 
                // DR Ghost Mode

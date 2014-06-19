@@ -25,9 +25,9 @@
 
 #include <dtCore/particlesystem.h>
 
-#include <dtDAL/enginepropertytypes.h>
-#include <dtDAL/actorproxyicon.h>
-#include <dtDAL/exceptionenum.h>
+#include <dtCore/enginepropertytypes.h>
+#include <dtCore/actorproxyicon.h>
+#include <dtCore/exceptionenum.h>
 
 namespace SimCore
 {
@@ -46,12 +46,12 @@ namespace SimCore
 
       }
 
-      dtDAL::ActorProxyIcon* LocalEffectActorProxy::GetBillBoardIcon()
+      dtCore::ActorProxyIcon* LocalEffectActorProxy::GetBillBoardIcon()
       {
          if(!mBillBoardIcon.valid())
          {
             mBillBoardIcon =
-               new dtDAL::ActorProxyIcon(dtDAL::ActorProxyIcon::IMAGE_BILLBOARD_PARTICLESYSTEM);
+               new dtCore::ActorProxyIcon(dtCore::ActorProxyIcon::IMAGE_BILLBOARD_PARTICLESYSTEM);
          }
 
          return mBillBoardIcon.get();
@@ -64,33 +64,33 @@ namespace SimCore
 
          dtGame::GameActorProxy::BuildPropertyMap();
 
-         AddProperty(new dtDAL::FloatActorProperty("Bounding Sphere Radius", "Bounding Sphere Radius", 
-            dtDAL::FloatActorProperty::SetFuncType(sa, &LocalEffectActor::SetBoundingSphereRadius),
-            dtDAL::FloatActorProperty::GetFuncType(sa, &LocalEffectActor::GetBoundingSphereRadius),
+         AddProperty(new dtCore::FloatActorProperty("Bounding Sphere Radius", "Bounding Sphere Radius", 
+            dtCore::FloatActorProperty::SetFuncType(sa, &LocalEffectActor::SetBoundingSphereRadius),
+            dtCore::FloatActorProperty::GetFuncType(sa, &LocalEffectActor::GetBoundingSphereRadius),
             "Sets the bounding sphere radius", "Smoke"));
 
-         AddProperty(new dtDAL::FloatActorProperty("Smoke Plume Length", "Smoke Plume Length", 
-            dtDAL::FloatActorProperty::SetFuncType(sa, &LocalEffectActor::SetSmokePlumeLength),
-            dtDAL::FloatActorProperty::GetFuncType(sa, &LocalEffectActor::GetSmokePlumeLength),
+         AddProperty(new dtCore::FloatActorProperty("Smoke Plume Length", "Smoke Plume Length", 
+            dtCore::FloatActorProperty::SetFuncType(sa, &LocalEffectActor::SetSmokePlumeLength),
+            dtCore::FloatActorProperty::GetFuncType(sa, &LocalEffectActor::GetSmokePlumeLength),
             "Length of the smoke plume"));
 
-         AddProperty(new dtDAL::FloatActorProperty("Horizontal Velocity", "Horizontal Velocity", 
-            dtDAL::FloatActorProperty::SetFuncType(sa, &LocalEffectActor::SetHorizontalVelocity),
-            dtDAL::FloatActorProperty::GetFuncType(sa, &LocalEffectActor::GetHorizontalVelocity),
+         AddProperty(new dtCore::FloatActorProperty("Horizontal Velocity", "Horizontal Velocity", 
+            dtCore::FloatActorProperty::SetFuncType(sa, &LocalEffectActor::SetHorizontalVelocity),
+            dtCore::FloatActorProperty::GetFuncType(sa, &LocalEffectActor::GetHorizontalVelocity),
             "Horizontal velocity of this smoke"));
 
-         AddProperty(new dtDAL::FloatActorProperty("Vertical Velocity", "Vertical Velocity", 
-            dtDAL::FloatActorProperty::SetFuncType(sa, &LocalEffectActor::SetVerticalVelocity),
-            dtDAL::FloatActorProperty::GetFuncType(sa, &LocalEffectActor::GetVerticalVelocity),
+         AddProperty(new dtCore::FloatActorProperty("Vertical Velocity", "Vertical Velocity", 
+            dtCore::FloatActorProperty::SetFuncType(sa, &LocalEffectActor::SetVerticalVelocity),
+            dtCore::FloatActorProperty::GetFuncType(sa, &LocalEffectActor::GetVerticalVelocity),
             "Vertical velocity of this smoke"));
 
-         AddProperty(new dtDAL::BooleanActorProperty("Enable", "Enable", 
-            dtDAL::BooleanActorProperty::SetFuncType(sa, &LocalEffectActor::SetEnabled),
-            dtDAL::BooleanActorProperty::GetFuncType(sa, &LocalEffectActor::GetEnabled),
+         AddProperty(new dtCore::BooleanActorProperty("Enable", "Enable", 
+            dtCore::BooleanActorProperty::SetFuncType(sa, &LocalEffectActor::SetEnabled),
+            dtCore::BooleanActorProperty::GetFuncType(sa, &LocalEffectActor::GetEnabled),
             "Toggles the state of the particle system", "Smoke"));
 
-         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::PARTICLE_SYSTEM, 
-            "Smoke File", "Smoke File", dtDAL::ResourceActorProperty::SetFuncType(this, &LocalEffectActorProxy::LoadFile),
+         AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::PARTICLE_SYSTEM, 
+            "Smoke File", "Smoke File", dtCore::ResourceActorProperty::SetFuncType(this, &LocalEffectActorProxy::LoadFile),
             "Loads the smoke file for the particle system", "Smoke"));
       }
 
@@ -104,8 +104,8 @@ namespace SimCore
       //////////////////////////////////////////////////////////
       // Actor code
       //////////////////////////////////////////////////////////
-      LocalEffectActor::LocalEffectActor(dtGame::GameActorProxy &proxy) : 
-         IGActor(proxy), 
+      LocalEffectActor::LocalEffectActor(dtGame::GameActorProxy& owner) :
+         IGActor(owner),
          mParticleSystem(new dtCore::ParticleSystem),
          mBoundingSphereRadius(0),
          mSmokePlumeLength(0), 

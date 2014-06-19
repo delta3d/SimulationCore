@@ -37,9 +37,9 @@
 #include <dtCore/camera.h>
 #include <dtCore/transform.h>
 
-#include <dtDAL/enginepropertytypes.h>
-#include <dtDAL/project.h>
-#include <dtDAL/propertymacros.h>
+#include <dtCore/enginepropertytypes.h>
+#include <dtCore/project.h>
+#include <dtCore/propertymacros.h>
 
 #include <dtABC/application.h>
 
@@ -99,68 +99,68 @@ namespace SimCore
          dtGame::GameActorProxy::BuildPropertyMap();
 
          DetonationActor* da = NULL;
-         GetActor(da);
+         GetDrawable(da);
 
          static const dtUtil::RefString groupImpactEffects("Impact Effects");
 
-         AddProperty(new dtDAL::BooleanActorProperty("Enable Physics","Enable Physics",
-            dtDAL::BooleanActorProperty::SetFuncType(da, &DetonationActor::SetPhysicsEnabled),
-            dtDAL::BooleanActorProperty::GetFuncType(da, &DetonationActor::IsPhysicsEnabled),
+         AddProperty(new dtCore::BooleanActorProperty("Enable Physics","Enable Physics",
+            dtCore::BooleanActorProperty::SetFuncType(da, &DetonationActor::SetPhysicsEnabled),
+            dtCore::BooleanActorProperty::GetFuncType(da, &DetonationActor::IsPhysicsEnabled),
             "Sets whether the detonation actor should have physics particles."));
 
-         AddProperty(new dtDAL::FloatActorProperty("Explosion Timer Seconds", "Explosion Timer Seconds",
-            dtDAL::FloatActorProperty::SetFuncType(da, &DetonationActor::SetExplosionTimerSecs),
-            dtDAL::FloatActorProperty::GetFuncType(da, &DetonationActor::GetExplosionTimerSecs),
+         AddProperty(new dtCore::FloatActorProperty("Explosion Timer Seconds", "Explosion Timer Seconds",
+            dtCore::FloatActorProperty::SetFuncType(da, &DetonationActor::SetExplosionTimerSecs),
+            dtCore::FloatActorProperty::GetFuncType(da, &DetonationActor::GetExplosionTimerSecs),
             "Sets the number of seconds an explosion will render"));
 
-         AddProperty(new dtDAL::FloatActorProperty("Delete Actor Timer Seconds", "Delete Actor Timer Seconds",
-            dtDAL::FloatActorProperty::SetFuncType(da, &DetonationActor::SetDeleteActorTimerSecs),
-            dtDAL::FloatActorProperty::GetFuncType(da, &DetonationActor::GetDeleteActorTimerSecs),
+         AddProperty(new dtCore::FloatActorProperty("Delete Actor Timer Seconds", "Delete Actor Timer Seconds",
+            dtCore::FloatActorProperty::SetFuncType(da, &DetonationActor::SetDeleteActorTimerSecs),
+            dtCore::FloatActorProperty::GetFuncType(da, &DetonationActor::GetDeleteActorTimerSecs),
             "Sets the number of seconds after smoke is rendered for an actor to be deleted"));
 
-         typedef dtDAL::PropertyRegHelper<DetonationActorProxy&, DetonationActor> RegHelperType;
+         typedef dtCore::PropertyRegHelper<DetonationActorProxy&, DetonationActor> RegHelperType;
          RegHelperType propReg(*this, da, groupImpactEffects);
 
          // GROUND IMPACT PROPERTIES
-         DT_REGISTER_RESOURCE_PROPERTY(dtDAL::DataType::PARTICLE_SYSTEM, GroundImpactEffect, "Ground Impact Effect", 
+         DT_REGISTER_RESOURCE_PROPERTY(dtCore::DataType::PARTICLE_SYSTEM, GroundImpactEffect, "Ground Impact Effect", 
                                           "The particle system to spawn on ground impact.", RegHelperType, propReg);
 
-         DT_REGISTER_RESOURCE_PROPERTY(dtDAL::DataType::SOUND, GroundImpactSound, "Ground Impact Sound", 
+         DT_REGISTER_RESOURCE_PROPERTY(dtCore::DataType::SOUND, GroundImpactSound, "Ground Impact Sound", 
                                           "The sound to play on ground impact.", RegHelperType, propReg);
 
-         AddProperty(new dtDAL::StringActorProperty("Ground Impact Light", "Ground Impact Light",
-            dtDAL::StringActorProperty::SetFuncType(da, &DetonationActor::SetGroundImpactLight ),
-            dtDAL::StringActorProperty::GetFuncType(da, &DetonationActor::GetGroundImpactLight ),
+         AddProperty(new dtCore::StringActorProperty("Ground Impact Light", "Ground Impact Light",
+            dtCore::StringActorProperty::SetFuncType(da, &DetonationActor::SetGroundImpactLight ),
+            dtCore::StringActorProperty::GetFuncType(da, &DetonationActor::GetGroundImpactLight ),
             "The name of light effect for the ground impact effect", groupImpactEffects));
 
          // ENTITY IMPACT PROPERTIES
 
-         DT_REGISTER_RESOURCE_PROPERTY(dtDAL::DataType::PARTICLE_SYSTEM, EntityImpactEffect, "Entity Impact Effect", 
+         DT_REGISTER_RESOURCE_PROPERTY(dtCore::DataType::PARTICLE_SYSTEM, EntityImpactEffect, "Entity Impact Effect", 
             "The particle system to spawn on entity impact.", RegHelperType, propReg);
 
-         DT_REGISTER_RESOURCE_PROPERTY(dtDAL::DataType::SOUND, EntityImpactSound, "Entity Impact Sound", 
+         DT_REGISTER_RESOURCE_PROPERTY(dtCore::DataType::SOUND, EntityImpactSound, "Entity Impact Sound", 
             "The sound to play on entity impact.", RegHelperType, propReg);
 
-         AddProperty(new dtDAL::StringActorProperty("Entity Impact Light", "Entity Impact Light",
-            dtDAL::StringActorProperty::SetFuncType(da, &DetonationActor::SetEntityImpactLight ),
-            dtDAL::StringActorProperty::GetFuncType(da, &DetonationActor::GetEntityImpactLight ),
+         AddProperty(new dtCore::StringActorProperty("Entity Impact Light", "Entity Impact Light",
+            dtCore::StringActorProperty::SetFuncType(da, &DetonationActor::SetEntityImpactLight ),
+            dtCore::StringActorProperty::GetFuncType(da, &DetonationActor::GetEntityImpactLight ),
             "The name of light effect for the entity impact effect", groupImpactEffects));
 
          // HUMAN IMPACT PROPERTIES
 
-         DT_REGISTER_RESOURCE_PROPERTY(dtDAL::DataType::PARTICLE_SYSTEM, HumanImpactEffect, "Human Impact Effect", 
+         DT_REGISTER_RESOURCE_PROPERTY(dtCore::DataType::PARTICLE_SYSTEM, HumanImpactEffect, "Human Impact Effect", 
             "The particle system to spawn on human impact.", RegHelperType, propReg);
 
-         DT_REGISTER_RESOURCE_PROPERTY(dtDAL::DataType::SOUND, HumanImpactSound, "Human Impact Sound", 
+         DT_REGISTER_RESOURCE_PROPERTY(dtCore::DataType::SOUND, HumanImpactSound, "Human Impact Sound", 
             "The sound to play on human impact.", RegHelperType, propReg);
 
-         AddProperty(new dtDAL::StringActorProperty("Human Impact Light", "Human Impact Light",
-            dtDAL::StringActorProperty::SetFuncType(da, &DetonationActor::SetHumanImpactLight ),
-            dtDAL::StringActorProperty::GetFuncType(da, &DetonationActor::GetHumanImpactLight ),
+         AddProperty(new dtCore::StringActorProperty("Human Impact Light", "Human Impact Light",
+            dtCore::StringActorProperty::SetFuncType(da, &DetonationActor::SetHumanImpactLight ),
+            dtCore::StringActorProperty::GetFuncType(da, &DetonationActor::GetHumanImpactLight ),
             "The name of light effect for the human impact effect", groupImpactEffects));
 
          //smoke effect
-         DT_REGISTER_RESOURCE_PROPERTY(dtDAL::DataType::PARTICLE_SYSTEM, SmokeEffect, "Smoke Effect", 
+         DT_REGISTER_RESOURCE_PROPERTY(dtCore::DataType::PARTICLE_SYSTEM, SmokeEffect, "Smoke Effect", 
             "The particle system used for the detonation smoke effect.", RegHelperType, propReg);
 
          DT_REGISTER_PROPERTY(SmokeLifeTime, "The lifetime in seconds of the smoke effect.", RegHelperType, propReg);
@@ -170,8 +170,8 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////
       void DetonationActorProxy::OnEnteredWorld()
       {
-         DetonationActor &da = static_cast<DetonationActor&>(GetGameActor());
-         float time = da.GetDelayTime();
+         DetonationActor* da = GetDrawable<DetonationActor>();
+         float time = da->GetDelayTime();
          GetGameManager()->SetTimer("PlayDetonationSoundTimer", this, time);
 
       }
@@ -181,18 +181,18 @@ namespace SimCore
       {
          if(timeMsg.GetTimerName() == "PlayDetonationSoundTimer")
          {
-             static_cast<DetonationActor&>(GetGameActor()).PlaySound();
+            GetDrawable<DetonationActor>()->PlaySound();
          }
          else if(timeMsg.GetTimerName() == "ExplosionRendered")
          {
             DetonationActor* detonation = NULL;
-            GetActor(detonation);
+            GetDrawable(detonation);
             detonation->RenderSmoke();
             GetGameManager()->SetTimer("SmokeRendered", this, detonation->GetSmokeLifeTime());
          }
          else if(timeMsg.GetTimerName() == "SmokeRendered")
          {
-            static_cast<DetonationActor&>(GetGameActor()).StopRenderingSmoke();
+            GetDrawable<DetonationActor>()->StopRenderingSmoke();
          }
          else
             LOG_ERROR("Received a timer message of the correct type, but wrong name");
@@ -211,8 +211,8 @@ namespace SimCore
       // Actor code
       //////////////////////////////////////////////////////////////
 
-      DetonationActor::DetonationActor(dtGame::GameActorProxy &proxy)
-      : IGActor(proxy)
+      DetonationActor::DetonationActor(dtGame::GameActorProxy& owner)
+      : IGActor(owner)
       , mSmokeLifeTime(0.0f)
       , mCurrentImpact(IMPACT_TERRAIN)
       , mDelayTime(3.0f)
@@ -297,11 +297,11 @@ namespace SimCore
             {
                if(!particleSystems[i].empty())
                {
-                  std::vector<dtDAL::ActorProxy*> toFill;
+                  std::vector<dtCore::ActorProxy*> toFill;
                   GetGameActorProxy().GetGameManager()->FindPrototypesByName( particleSystems[i] ,toFill);
                   if(toFill.size())
                   {
-                     dtCore::RefPtr<dtDAL::ActorProxy> ourActualActorProxy = GetGameActorProxy().GetGameManager()->CreateActorFromPrototype(toFill.front()->GetId());
+                     dtCore::RefPtr<dtCore::ActorProxy> ourActualActorProxy = GetGameActorProxy().GetGameManager()->CreateActorFromPrototype(toFill.front()->GetId());
                      if( ourActualActorProxy != NULL )
                      {
                         dtCore::Transform detonationTransform;
@@ -388,13 +388,13 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////
-      void DetonationActor::LoadSoundFile( const dtDAL::ResourceDescriptor& resource, dtCore::RefPtr<dtAudio::Sound>& soundIn)
+      void DetonationActor::LoadSoundFile( const dtCore::ResourceDescriptor& resource, dtCore::RefPtr<dtAudio::Sound>& soundIn)
       {
          if(!resource.IsEmpty())
          {
             try 
             {
-               dtDAL::Project& proj = dtDAL::Project::GetInstance();
+               dtCore::Project& proj = dtCore::Project::GetInstance();
                std::string filename = proj.GetResourcePath(resource);
 
                if(soundIn != NULL)
@@ -426,13 +426,13 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////
-      void DetonationActor::LoadParticleSystem(const dtDAL::ResourceDescriptor& resource, dtCore::RefPtr<dtCore::ParticleSystem>& particleSysIn)
+      void DetonationActor::LoadParticleSystem(const dtCore::ResourceDescriptor& resource, dtCore::RefPtr<dtCore::ParticleSystem>& particleSysIn)
       {
          if(!resource.IsEmpty())
          {
             try 
             {
-               dtDAL::Project& proj = dtDAL::Project::GetInstance();
+               dtCore::Project& proj = dtCore::Project::GetInstance();
                std::string filename = proj.GetResourcePath(resource);
                particleSysIn->LoadFile(filename);
             }
@@ -448,7 +448,7 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////
-      void DetonationActor::LoadSmokeFile(const dtDAL::ResourceDescriptor& resource)
+      void DetonationActor::LoadSmokeFile(const dtCore::ResourceDescriptor& resource)
       {
          LoadParticleSystem(resource, mSmokeSystem);
       }

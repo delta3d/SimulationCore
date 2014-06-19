@@ -78,8 +78,6 @@ class OSGEPHEMERIS_EXPORT Sphere : public osg::Group
 
         static const double _defaultRadius;
         
-    private:
-        
         osg::Vec2 makeTexCoord(osg::Vec3 &normal, unsigned int sector);
 };
 
@@ -89,7 +87,7 @@ class OSGEPHEMERIS_EXPORT Sphere : public osg::Group
 
     */
 
-class SphereLOD : public osg::LOD
+class OSGEPHEMERIS_EXPORT SphereLOD : public osg::LOD
 {
     public:
         SphereLOD( double radius=Sphere::getDefaultRadius(), 

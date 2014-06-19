@@ -54,9 +54,9 @@ namespace SimCore
       //////////////////////////////////////////////////////////
       // Actor code
       //////////////////////////////////////////////////////////
-      InteriorActor::InteriorActor(dtGame::GameActorProxy& proxy)
-         : Platform(proxy),
-         mVisible(true)
+      InteriorActor::InteriorActor(dtGame::GameActorProxy& owner)
+         : Platform(owner)
+         , mVisible(true)
          , mLoadedDamageFiles(false)
       {
          SetAutoRegisterWithMunitionsComponent(false);

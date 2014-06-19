@@ -26,7 +26,7 @@
 #include <SimCore/Export.h>
 #include <dtGame/gameactor.h>
 #include <dtUtil/getsetmacros.h>
-#include <dtDAL/resourcedescriptor.h>
+#include <dtCore/resourcedescriptor.h>
 
 namespace SimCore
 {
@@ -38,7 +38,7 @@ namespace SimCore
          public:
 
             /// Constructor
-            VehicleAttachingConfigActor(dtGame::GameActorProxy &proxy);
+            VehicleAttachingConfigActor(dtGame::GameActorProxy& parent);
 
             //////////////////////////////////////////////////////////////////////////////////
             osg::Vec3 GetSeatPosition() {return mSeatPosition;}
@@ -48,9 +48,9 @@ namespace SimCore
             bool GetUsesInsideModel() {return mUseInsideModel;}
             void SetUsesInsideModel(bool value) {mUseInsideModel = value;}
 
-            DT_DECLARE_ACCESSOR(dtDAL::ResourceDescriptor, InsideModelResourceGood);
-            DT_DECLARE_ACCESSOR(dtDAL::ResourceDescriptor, InsideModelResourceDamaged);
-            DT_DECLARE_ACCESSOR(dtDAL::ResourceDescriptor, InsideModelResourceDestroyed);
+            DT_DECLARE_ACCESSOR(dtCore::ResourceDescriptor, InsideModelResourceGood);
+            DT_DECLARE_ACCESSOR(dtCore::ResourceDescriptor, InsideModelResourceDamaged);
+            DT_DECLARE_ACCESSOR(dtCore::ResourceDescriptor, InsideModelResourceDestroyed);
 
             //////////////////////////////////////////////////////////////////////////////////
             osg::Vec3 GetRotationOffSet() {return mRotationOffSet;}

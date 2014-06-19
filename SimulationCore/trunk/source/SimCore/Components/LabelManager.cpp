@@ -25,7 +25,7 @@
 // INCLUDE DIRECTIVES
 ////////////////////////////////////////////////////////////////////////////////
 #include <prefix/SimCorePrefix.h>
-#include <CEGUIcolour.h>
+#include <CEGUI/CEGUIcolour.h>
 #include <dtABC/application.h>
 #include <dtUtil/stringutils.h>
 #include <dtCore/camera.h>
@@ -39,7 +39,7 @@
 // TEMP:
 #include <dtCore/system.h>
 #include <dtCore/transform.h>
-#include <dtDAL/enginepropertytypes.h>
+#include <dtCore/enginepropertytypes.h>
 
 #include <dtUtil/boundingshapeutils.h>
 #include <dtUtil/exception.h>
@@ -335,7 +335,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      bool LabelOptions::operator() (dtDAL::BaseActorObject& proxy)
+      bool LabelOptions::operator() (dtCore::BaseActorObject& proxy)
       {
          if (!mShowLabels)
          {
@@ -444,7 +444,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      dtCore::RefPtr<SimCore::Components::HUDLabel> LabelManager::GetOrCreateLabel(dtDAL::BaseActorObject& actor)
+      dtCore::RefPtr<SimCore::Components::HUDLabel> LabelManager::GetOrCreateLabel(dtCore::BaseActorObject& actor)
       {
          // safely push all the received messages onto the GameManager message queue
          dtCore::RefPtr<SimCore::Components::HUDLabel> label;
@@ -499,7 +499,7 @@ namespace SimCore
       class ApplyLabelTask : public dtUtil::ThreadPoolTask
       {
       public:
-         ApplyLabelTask(LabelManager& labelManager, std::vector<dtDAL::BaseActorObject*>& actors, dtCore::Camera& camera, LabelManager::LabelMap& newLabels,
+         ApplyLabelTask(LabelManager& labelManager, std::vector<dtCore::BaseActorObject*>& actors, dtCore::Camera& camera, LabelManager::LabelMap& newLabels,
                   unsigned low, unsigned high)
          : mLabelManager(labelManager)
          , mActors(actors)
@@ -519,7 +519,7 @@ namespace SimCore
          }
 
          LabelManager& mLabelManager;
-         std::vector<dtDAL::BaseActorObject*>& mActors;
+         std::vector<dtCore::BaseActorObject*>& mActors;
          dtCore::RefPtr<dtCore::Camera> mCamera;
          LabelManager::LabelMap& mNewLabels;
          std::string nameBuffer;
@@ -530,7 +530,7 @@ namespace SimCore
       void LabelManager::Update(float dt)
       {
          // Get all entities from the game manager.
-         typedef std::vector<dtDAL::BaseActorObject*> ProxyList;
+         typedef std::vector<dtCore::BaseActorObject*> ProxyList;
          ProxyList proxies;
 
          // No need to do a find if when labels are off.
@@ -598,7 +598,7 @@ namespace SimCore
          }
       }
 
-      void LabelManager::ApplyLabelToActor(dtDAL::BaseActorObject& proxy, dtCore::Camera& deltaCamera,
+      void LabelManager::ApplyLabelToActor(dtCore::BaseActorObject& proxy, dtCore::Camera& deltaCamera,
                LabelMap& newLabels, std::string& nameBuffer)
       {
          // Declare variables to be used for each loop iteration.
@@ -648,7 +648,7 @@ namespace SimCore
          // Find a label that is not being used.
          label = GetOrCreateLabel(proxy);
 
-         dtDAL::StringActorProperty* mappingTypeProp = NULL;
+         dtCore::StringActorProperty* mappingTypeProp = NULL;
          proxy.GetProperty(SimCore::Actors::BaseEntityActorProxy::PROPERTY_MAPPING_NAME, mappingTypeProp);
          if (mappingTypeProp != NULL)
          {
@@ -667,14 +667,14 @@ namespace SimCore
          osg::Vec2 labelSize;
          label->GetSize(labelSize);
 
-//            dtDAL::Vec3ActorProperty* velProp = NULL;
+//            dtCore::Vec3ActorProperty* velProp = NULL;
 //            proxy.GetProperty(SimCore::Actors::BaseEntityActorProxy::PROPERTY_VELOCITY_VECTOR, velProp);
 //            if (velProp != NULL)
 //            {
 //               label->SetVelocity(velProp->GetValue());
 //            }
 
-         dtDAL::ActorProperty* damProp = NULL;
+         dtCore::ActorProperty* damProp = NULL;
          proxy.GetProperty(SimCore::Actors::BaseEntityActorProxy::PROPERTY_DAMAGE_STATE, damProp);
          if (damProp != NULL)
          {
@@ -700,7 +700,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      const std::string LabelManager::AssignLabelColor( const dtDAL::BaseActorObject& actor, HUDLabel& label)
+      const std::string LabelManager::AssignLabelColor( const dtCore::BaseActorObject& actor, HUDLabel& label)
       {
          const SimCore::Actors::BaseEntityActorProxy::ForceEnum* force =
             &SimCore::Actors::BaseEntityActorProxy::ForceEnum::OTHER;

@@ -25,7 +25,7 @@
 #ifndef _DRIVER_ACTOR_REGISTRY_H_
 #define _DRIVER_ACTOR_REGISTRY_H_
 
-#include <dtDAL/actorpluginregistry.h>
+#include <dtCore/actorpluginregistry.h>
 #include <DriverExport.h>
 
 
@@ -34,16 +34,16 @@ namespace DriverDemo
    /**
     * Class that exports the applicable actor proxies to a library
     */
-   class DRIVER_DEMO_EXPORT DriverActorRegistry : public dtDAL::ActorPluginRegistry
+   class DRIVER_DEMO_EXPORT DriverActorRegistry : public dtCore::ActorPluginRegistry
    {
       public:
 
-         //static dtCore::RefPtr<dtDAL::ActorType> TEST_ACTOR_TYPE;
+         //static dtCore::RefPtr<dtCore::ActorType> TEST_ACTOR_TYPE;
 
 //#ifdef AGEIA_PHYSICS
-         static dtCore::RefPtr<dtDAL::ActorType> HOVER_VEHICLE_ACTOR_TYPE;
-         static dtCore::RefPtr<dtDAL::ActorType> HOVER_TARGET_ACTOR_TYPE;
-         static dtCore::RefPtr<dtDAL::ActorType> HOVER_EXPLODING_TARGET_ACTOR_TYPE;
+         static dtCore::RefPtr<dtCore::ActorType> HOVER_VEHICLE_ACTOR_TYPE;
+         static dtCore::RefPtr<dtCore::ActorType> HOVER_TARGET_ACTOR_TYPE;
+         static dtCore::RefPtr<dtCore::ActorType> HOVER_EXPLODING_TARGET_ACTOR_TYPE;
 //#endif
 
          /// Constructor
