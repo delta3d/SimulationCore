@@ -63,8 +63,8 @@ namespace NetDemo
    const dtUtil::RefString InputComponent::DOF_TOPDOWN_VIEW_02("dof_topdown_view_02");
 
    //////////////////////////////////////////////////////////////
-   InputComponent::InputComponent(const std::string& name)
-      : SimCore::Components::BaseInputComponent(name)
+   InputComponent::InputComponent()
+      : SimCore::Components::BaseInputComponent(*TYPE)
       , mDRGhostMode(NONE)
       , mDebugToggleMode(DEBUG_TOGGLE_DR_ALGORITHM)
       , mCurrentViewPointIndex(0)
@@ -103,7 +103,7 @@ namespace NetDemo
          else if (!stealthProxy->IsRemote()) // Somebody else's player.
          {
             SimCore::Actors::StealthActor* stealthActor = NULL;
-            stealthProxy->GetActor(stealthActor);
+            stealthProxy->GetDrawable(stealthActor);
             SetStealthActor(stealthActor);
 
             // We start with observer motion model. When we detach from vehicles, we go back to this.
@@ -236,7 +236,7 @@ namespace NetDemo
             if (vehicleProxy != NULL)
             {
                SimCore::Actors::Platform* vehicle = NULL;
-               vehicleProxy->GetActor(vehicle);
+               vehicleProxy->GetDrawable(vehicle);
                AttachToVehicle(vehicle);
 
                //turn the headlights on by default
@@ -296,7 +296,7 @@ namespace NetDemo
                if (mDRGhostActorProxy.valid())
                {
                   SimCore::Actors::DRGhostActor* ghost = NULL;
-                  mDRGhostActorProxy->GetActor(ghost);
+                  mDRGhostActorProxy->GetDrawable(ghost);
                   ghost->ClearLinesAndParticles();
 
                   // toggle the visible arrows
@@ -724,9 +724,9 @@ namespace NetDemo
          if (mDRGhostActorProxy.valid())
          {
             mOriginalPublishTimesPerSecond = mPhysVehicle->GetComponent<dtGame::DRPublishingActComp>()->GetMaxUpdateSendRate();
-            SimCore::Actors::DRGhostActor* actor = NULL;
-            mDRGhostActorProxy->GetActor(actor);
-            actor->SetSlavedEntity(mVehicle);
+            SimCore::Actors::DRGhostActor* drawable = NULL;
+            mDRGhostActorProxy->GetDrawable(drawable);
+            drawable->SetSlavedEntity(mVehicle);
             GetGameManager()->AddActor(*mDRGhostActorProxy, false, false);
          }
          mDRGhostMode = GHOST_ON;
@@ -738,7 +738,7 @@ namespace NetDemo
          LOG_ALWAYS(" --- Attaching Camera to DR Ghost.");
          if (mDRGhostActorProxy.valid())
          {
-            SendAttachOrDetachMessage(mDRGhostActorProxy->GetGameActor().GetUniqueId(), "");
+            SendAttachOrDetachMessage(mDRGhostActorProxy->GetId(), "");
          }
          mDRGhostMode = ATTACH_TO_GHOST;
       }

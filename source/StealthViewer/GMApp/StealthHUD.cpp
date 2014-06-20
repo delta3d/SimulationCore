@@ -67,10 +67,6 @@
 
 #include <ctime>
 
-#ifdef AGEIA_PHYSICS
-   #include <SimCore/Actors/NxAgeiaFourWheelVehicleActor.h>
-#endif
-
 namespace StealthGM
 {
    IMPLEMENT_ENUM(CoordSystem);
@@ -79,14 +75,16 @@ namespace StealthGM
    const CoordSystem CoordSystem::RAW_XYZ("RAW_XYZ");
    const CoordSystem CoordSystem::LAT_LON("LAT_LON");
 
+   const dtCore::RefPtr<dtCore::SystemComponentType> StealthHUD::TYPE(new dtCore::SystemComponentType("StealthUD", "GMComponent.SimCore.StealthGM",
+         "", dtGame::GMComponent::BaseGMComponentType));
+
    const std::string StealthHUD::DEFAULT_NAME("StealthHUD");
 
    //////////////////////////////////////////////////////////////////////////
-   StealthHUD::StealthHUD(dtCore::DeltaWin* win,
-                          dtGame::LogController* logController,
-                          const std::string &name,
+   StealthHUD::StealthHUD(dtGame::LogController* logController,
+                          dtCore::SystemComponentType& type,
                           bool hasUI)
-      : SimCore::Components::BaseHUD(win, name)
+      : SimCore::Components::BaseHUD(type)
       , mLastHUDStateBeforeHelp(&SimCore::Components::HUDState::MINIMAL)
       , mLogController(logController)
       , mRightTextXOffset(225.0f)
@@ -131,27 +129,6 @@ namespace StealthGM
       }
       else if( type == dtGame::MessageType::INFO_MAP_LOADED )
       {
-#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
-         //Is this a problem now?
-         SimCore::Components::RenderingSupportComponent* renderComp = NULL;
-         dtGame::GMComponent* comp = GetGameManager()->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME);
-
-         if(comp != NULL)
-         {
-            renderComp = dynamic_cast<SimCore::Components::RenderingSupportComponent*>(comp);
-         }
-
-         if(comp == NULL || renderComp == NULL)
-         {
-            GetGameManager()->GetScene().AddDrawable( GetGUIDrawable().get() );
-            LOG_WARNING("Unable to add GUI to the RenderSupportComponent, adding GUI to the Scene instead.");
-         }
-         else
-         {
-            renderComp->SetGUI(GetGUIDrawable().get());
-         }
-#endif
-
          std::vector<dtCore::ActorProxy*> proxies;
          GetGameManager()->FindActorsByType(*dtActors::EngineActorRegistry::COORDINATE_CONFIG_ACTOR_TYPE, proxies);
 

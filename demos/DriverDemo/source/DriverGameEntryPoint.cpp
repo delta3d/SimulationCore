@@ -182,7 +182,7 @@ namespace DriverDemo
 
       ////////////////////////////////////////////////////////////////////////
       // init the input component with what it needs
-      dtCore::RefPtr<DriverInputComponent> mInputComponent = new DriverInputComponent("Input Component");
+      dtCore::RefPtr<DriverInputComponent> mInputComponent = new DriverInputComponent();
       gm.AddComponent(*mInputComponent, dtGame::GameManager::ComponentPriority::NORMAL);
       //mInputComponent->SetListeners();
       dtCore::Camera* camera = gm.GetApplication().GetCamera();
@@ -198,7 +198,7 @@ namespace DriverDemo
       //const dtCore::NamedStringParameter* callsignName =
       //   dynamic_cast<const dtCore::NamedStringParameter*>(commandLineObject->GetParameter(GameAppComponent::CMD_LINE_VEHICLE_CALLSIGN));
 
-      dtCore::RefPtr<DriverHUD> mHudGUI = new DriverHUD(gm.GetApplication().GetWindow());
+      dtCore::RefPtr<DriverHUD> mHudGUI = new DriverHUD();
       gm.AddComponent(*mHudGUI, dtGame::GameManager::ComponentPriority::NORMAL);
       mHudGUI->Initialize();
       mHudGUI->SetCallSign( "NoCallSignSet" );

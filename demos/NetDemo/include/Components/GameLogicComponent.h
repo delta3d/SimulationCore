@@ -101,9 +101,10 @@ namespace NetDemo
          static const std::string WHEELED_VEHICLE_TRAILER_PROTOTYPE;
 
          typedef SimCore::Components::GameStateComponent BaseClass;
+         static const dtCore::RefPtr<dtCore::SystemComponentType> TYPE;
 
          /// Constructor
-         GameLogicComponent(const std::string& name = SimCore::Components::GameStateComponent::DEFAULT_NAME);
+         GameLogicComponent(dtCore::SystemComponentType& type = *TYPE);
 
          virtual void ProcessMessage(const dtGame::Message& msg);
 
@@ -142,7 +143,7 @@ namespace NetDemo
           * @return TRUE if the actor was found.
           */
          template<typename T_Actor>
-         bool FindActor(const dtCore::UniqueId& actorId, T_Actor*& outActor);
+         bool FindDrawable(const dtCore::UniqueId& actorId, T_Actor*& outActor);
 
          void SetVehicleType(PlayerStatusActor::VehicleTypeEnum& vehicleType);
          const PlayerStatusActor::VehicleTypeEnum& GetVehicleType() const;
@@ -218,18 +219,18 @@ namespace NetDemo
    // TEMPLATE METHOD DEFINITIONS
    /////////////////////////////////////////////////////////////////////////////
    template<typename T_Actor>
-   bool GameLogicComponent::FindActor(const dtCore::UniqueId& actorId, T_Actor*& outActor)
+   bool GameLogicComponent::FindDrawable(const dtCore::UniqueId& actorId, T_Actor*& outDrawable)
    {
       // Get the actor to which the message refers.
-      dtCore::ActorProxy* proxy = NULL;
-      GetGameManager()->FindActorById(actorId, proxy);
+      dtCore::BaseActorObject* actor = NULL;
+      GetGameManager()->FindActorById(actorId, actor);
 
-      if(proxy != NULL)
+      if(actor != NULL)
       {
-         proxy->GetActor(outActor);
+         actor->GetDrawable(outDrawable);
       }
 
-      return outActor != NULL;
+      return outDrawable != NULL;
    }
 
 }

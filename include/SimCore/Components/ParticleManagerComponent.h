@@ -164,20 +164,18 @@ namespace SimCore
       //////////////////////////////////////////////////////////
       /**
       * @class ParticleManagerComponent
-      * @brief subclassed component used primarily to track local actors
-      * spawned by remote actors. Example: particle systems from missiles
-      * need to linger but need a timed delete.
-      * All objects are referenced by unique ID.
+      * @brief subclassed Manages shaders and wind on particle systems.
       */
       class SIMCORE_EXPORT ParticleManagerComponent : public dtGame::GMComponent
       {
       public:
+         static const dtCore::RefPtr<dtCore::SystemComponentType> TYPE;
          // The default component name, used when looking it up on the GM.
          static const std::string DEFAULT_NAME;
 
          // Constructor
          // @param name The name by which this component is called from the GameManager
-         ParticleManagerComponent( const std::string& name = DEFAULT_NAME );
+         ParticleManagerComponent( dtCore::SystemComponentType& type = *TYPE );
 
          // Clean all allocated memory
          void Clear();

@@ -290,7 +290,7 @@ namespace SimCore
             std::string particleSystems[5];
             particleSystems[0] = mCollidedMaterial->GetPhysicsParticleLookupStringOne();
             particleSystems[1] = mCollidedMaterial->GetPhysicsParticleLookupStringTwo();
-            particleSystems[2] = mCollidedMaterial->GetPhysicsParticleLookupStringThr();
+            particleSystems[2] = mCollidedMaterial->GetPhysicsParticleLookupStringThree();
             particleSystems[3] = mCollidedMaterial->GetPhysicsParticleLookupStringFour();
             particleSystems[4] = mCollidedMaterial->GetPhysicsParticleLookupStringFive();
             for(int i = 0 ; i < 5 ; ++i)

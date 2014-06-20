@@ -407,9 +407,9 @@ namespace NetDemo
    {
       BaseClass::OnRemovedFromWorld();
 
-      TowerActor* actor = NULL;
-      GetActor(actor);      
-      actor->OnRemovedFromWorld();
+      TowerActor* drawable = NULL;
+      GetDrawable(drawable);
+      drawable->OnRemovedFromWorld();
    }
 
    ///////////////////////////////////////////////////////////////////////////////////

@@ -41,65 +41,66 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       class SIMCORE_EXPORT GameStateComponent : public dtGame::GMComponent
       {
-         public:
-            typedef dtGame::GMComponent BaseClass;
+      public:
+         typedef dtGame::GMComponent BaseClass;
 
-            static const dtUtil::RefString DEFAULT_NAME;
+         static const dtCore::RefPtr<dtCore::SystemComponentType> TYPE;
+         static const dtUtil::RefString DEFAULT_NAME;
 
-            typedef dtCore::RefPtr<GameState> GameStatePtr;
-            typedef std::map<const StateType*, GameStatePtr> GameStateSet;         
-            typedef std::pair<const EventType*, GameStatePtr> EventStatePtrPair;
-            typedef std::map<EventStatePtrPair, GameStatePtr> TransitionMap;
+         typedef dtCore::RefPtr<GameState> GameStatePtr;
+         typedef std::map<const StateType*, GameStatePtr> GameStateSet;
+         typedef std::pair<const EventType*, GameStatePtr> EventStatePtrPair;
+         typedef std::map<EventStatePtrPair, GameStatePtr> TransitionMap;
 
-            GameStateComponent(const std::string& name = DEFAULT_NAME.Get() );
+         GameStateComponent(dtCore::SystemComponentType& type = *TYPE);
 
-            /**
-             * Handles incoming messages
-             */
-            virtual void ProcessMessage(const dtGame::Message& message);
+         /**
+          * Handles incoming messages
+          */
+         virtual void ProcessMessage(const dtGame::Message& message);
 
-            /**
-             * Handles logic dependent on certain states.
-             */
-            virtual void ProcessStateChange( const GameStateChangedMessage& stateChange );
+         /**
+          * Handles logic dependent on certain states.
+          */
+         virtual void ProcessStateChange( const GameStateChangedMessage& stateChange );
 
-            bool LoadTransitions(const std::string& filePath);
+         bool LoadTransitions(const std::string& filePath);
 
-            void SetInitialState(const StateType* stateType);
+         void SetInitialState(const StateType* stateType);
 
-            const StateType* GetCurrentState() const;
-            GameState* GetState(const StateType* stateType);
+         const StateType* GetCurrentState() const;
+         GameState* GetState(const StateType* stateType);
 
-            /** Forces the given State to now be the 'current' State.*/
-            void MakeCurrent(const StateType* stateType);
+         /** Forces the given State to now be the 'current' State.*/
+         void MakeCurrent(const StateType* stateType);
 
-            /**
-             * Pass all events through this function
-             * @return whether or not the event caused a transition
-             */
-            bool DoStateTransition(const EventType* eventType);
-            bool DoStateTransition(const std::string& eventName);
+         /**
+          * Pass all events through this function
+          * @return whether or not the event caused a transition
+          */
+         bool DoStateTransition(const EventType* eventType);
+         bool DoStateTransition(const std::string& eventName);
 
-            GameState* AddState(const StateType* stateType);
-            void AddTransition(const EventType* transitionEvent, const StateType* fromState, const StateType* toState);
-            bool RemoveTransition(const EventType* eventType, const StateType* from, const StateType* to);
+         GameState* AddState(const StateType* stateType);
+         void AddTransition(const EventType* transitionEvent, const StateType* fromState, const StateType* toState);
+         bool RemoveTransition(const EventType* eventType, const StateType* from, const StateType* to);
 
-            typedef SimCore::Components::StateType GameStateType;
-            bool IsInState(const GameStateType& state) const;
+         typedef SimCore::Components::StateType GameStateType;
+         bool IsInState(const GameStateType& state) const;
 
-         protected:
-            virtual ~GameStateComponent();
+      protected:
+         virtual ~GameStateComponent();
 
-            void Update(float);
-            void OnStateChange(GameState*);
-            void SendGameStateChangedMessage(const GameState::Type& oldState, const GameState::Type& newState);
+         void Update(float);
+         void OnStateChange(GameState*);
+         void SendGameStateChangedMessage(const GameState::Type& oldState, const GameState::Type& newState);
 
-         private:
-            dtCore::RefPtr<GameState> mCurrentState;
-            GameStateSet mStates;
-            TransitionMap mTransitions;
+      private:
+         dtCore::RefPtr<GameState> mCurrentState;
+         GameStateSet mStates;
+         TransitionMap mTransitions;
 
-       };
+      };
 
    }
 }

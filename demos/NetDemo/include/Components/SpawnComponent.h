@@ -39,10 +39,11 @@ namespace NetDemo
    public:
 
       typedef dtGame::GMComponent BaseClass;
+      static const dtCore::RefPtr<dtCore::SystemComponentType> TYPE;
       static const std::string DEFAULT_NAME;
 
       /// Constructor
-      SpawnComponent(const std::string& name = DEFAULT_NAME);
+      SpawnComponent(dtCore::SystemComponentType& type = *TYPE);
 
       /**
       * Handles incoming messages

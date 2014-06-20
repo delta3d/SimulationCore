@@ -87,15 +87,16 @@ namespace StealthGM
    class STEALTH_GAME_EXPORT StealthHUD : public SimCore::Components::BaseHUD
    {
    public:
+      typedef dtGame::GMComponent BaseClass;
+      static const dtCore::RefPtr<dtCore::SystemComponentType> TYPE;
       //default component name.
       static const std::string DEFAULT_NAME;
 
       /**
        * Constructs the class.
        */
-      StealthHUD(dtCore::DeltaWin* win,
-                 dtGame::LogController* logController = NULL,
-                 const std::string &name = DEFAULT_NAME,
+      StealthHUD(dtGame::LogController* logController = NULL,
+                 dtCore::SystemComponentType& type = *TYPE,
                  bool hasUI = false);
 
       /**

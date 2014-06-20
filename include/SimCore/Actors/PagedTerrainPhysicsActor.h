@@ -53,126 +53,126 @@ namespace SimCore
       // by external libraries
       class TerrainNode : public osg::Referenced
       {
-         public:
-            TerrainNode(osg::Geode* toSet);
+      public:
+         TerrainNode(osg::Geode* toSet);
 
-         protected:
-            ~TerrainNode();
+      protected:
+         ~TerrainNode();
 
-         public:
-            ///////////////////////////////////
-            enum TILE_TODO
-            {
-               TILE_TODO_DISABLE = 0,
-               TILE_TODO_KEEP,
-               TILE_TODO_LOAD
-            };
+      public:
+         ///////////////////////////////////
+         enum TILE_TODO
+         {
+            TILE_TODO_DISABLE = 0,
+            TILE_TODO_KEEP,
+            TILE_TODO_LOAD
+         };
 
-            /////////////////////////////////////////////////////////////////////////
-            bool  IsFilled() const {return mFilledBL;}
-            void  SetFilled(bool value) {mFilledBL = value;}
+         /////////////////////////////////////////////////////////////////////////
+         bool  IsFilled() const {return mFilledBL;}
+         void  SetFilled(bool value) {mFilledBL = value;}
 
-            /////////////////////////////////////////////////////////////////////////
-            osg::Geode* GetGeodePointer();
+         /////////////////////////////////////////////////////////////////////////
+         osg::Geode* GetGeodePointer();
 
-            /////////////////////////////////////////////////////////////////////////
-            void SetFlags(char value);
-            char GetFlags() const;
+         /////////////////////////////////////////////////////////////////////////
+         void SetFlags(char value);
+         char GetFlags() const;
 
-            /////////////////////////////////////////////////////////////////////////
-            void SetFlagsToKeep();
-            void SetFlagsToLoad();
-            void SetFlagsToDisable();
+         /////////////////////////////////////////////////////////////////////////
+         void SetFlagsToKeep();
+         void SetFlagsToLoad();
+         void SetFlagsToDisable();
 
-            void SaveCurrentToLastFlags();
+         void SaveCurrentToLastFlags();
 
-            bool FlagsChanged() const { return mLastFlags != mFlags; }
+         bool FlagsChanged() const { return mLastFlags != mFlags; }
 
-            /////////////////////////////////////////////////////////////////////////
-            const dtCore::UniqueId& GetUniqueID() const;
+         /////////////////////////////////////////////////////////////////////////
+         const dtCore::UniqueId& GetUniqueID() const;
 
-            /////////////////////////////////////////////////////////////////////////
-            void SetPhysicsObject(dtPhysics::PhysicsObject* object);
+         /////////////////////////////////////////////////////////////////////////
+         void SetPhysicsObject(dtPhysics::PhysicsObject* object);
 
-            dtPhysics::PhysicsObject* GetPhysicsObject() { return mPhysicsObject; }
-         private:
-            dtCore::RefPtr<dtPhysics::PhysicsObject> mPhysicsObject;
+         dtPhysics::PhysicsObject* GetPhysicsObject() { return mPhysicsObject; }
+      private:
+         dtCore::RefPtr<dtPhysics::PhysicsObject> mPhysicsObject;
 
-            osg::observer_ptr<osg::Geode>    mGeodePTR;
-            bool                             mFilledBL;
-            char                             mFlags;
-            char                             mLastFlags;
-            dtCore::UniqueId                 mUniqueID;
+         osg::observer_ptr<osg::Geode>    mGeodePTR;
+         bool                             mFilledBL;
+         char                             mFlags;
+         char                             mLastFlags;
+         dtCore::UniqueId                 mUniqueID;
       };
 
       ////////////////////////////////////////////////////////////////////
       //class NxAgeiaTerraPageListener;
       class SIMCORE_EXPORT PagedTerrainPhysicsActor : public dtGame::GameActor
       {
-         public:
-            static const std::string DEFAULT_NAME;
-            /// Constructor
-            PagedTerrainPhysicsActor(dtGame::GameActorProxy& parent);
+      public:
+         static const std::string DEFAULT_NAME;
+         /// Constructor
+         PagedTerrainPhysicsActor(dtGame::GameActorProxy& parent);
 
-         protected:
-            /// Destructor
-            virtual ~PagedTerrainPhysicsActor(void);
+      protected:
+         /// Destructor
+         virtual ~PagedTerrainPhysicsActor(void);
 
 
-         public:
+      public:
 
-            // internally called functions when a terrain tile is loaded into the system
-            // Used to be called ParseTerrainNode
-            dtPhysics::PhysicsObject* BuildTerrainAsStaticMesh(osg::Node* nodeToParse, const std::string& nameOfNode, bool buildGeodesSeparately);
-            // Add a single node, as opposed to a soup. Usually done at the geode level.
-            dtPhysics::PhysicsObject* AddTerrainNode(osg::Node* node, const std::string& nameOfNode);
+         // internally called functions when a terrain tile is loaded into the system
+         // Used to be called ParseTerrainNode
+         dtPhysics::PhysicsObject* BuildTerrainAsStaticMesh(osg::Node* nodeToParse, const std::string& nameOfNode, bool buildGeodesSeparately);
+         // Add a single node, as opposed to a soup. Usually done at the geode level.
+         dtPhysics::PhysicsObject* AddTerrainNode(osg::Node* node, const std::string& nameOfNode);
 
-            // Called when the actor has been added to the game manager.
-            // You can respond to OnEnteredWorld on either the proxy or actor or both.
-            virtual void OnEnteredWorld();
+         // Called when the actor has been added to the game manager.
+         // You can respond to OnEnteredWorld on either the proxy or actor or both.
+         virtual void OnEnteredWorld();
 
-            /// determine if we want to use these hard coded materials and load to physics
-            bool PassThisGeometry(int fid, int smc, int soilTemperatureAndPressure,
-                     int soilWaterContent);
+         /// determine if we want to use these hard coded materials and load to physics
+         bool PassThisGeometry(int fid, int smc, int soilTemperatureAndPressure,
+               int soilWaterContent);
 
-            /// should this be a group or just heightfield.
-            void DetermineHowToLoadGeometry(int fid, int smc,
-                     int soilTemperatureAndPressure, int soilWaterContent, osg::Node* nodeToLoad);
+         /// should this be a group or just heightfield.
+         void DetermineHowToLoadGeometry(int fid, int smc,
+               int soilTemperatureAndPressure, int soilWaterContent, osg::Node* nodeToLoad);
 
-            /// should we load the geom as a group (buildings)
-            bool LoadGeomAsGroup(int fid);
+         /// should we load the geom as a group (buildings)
+         bool LoadGeomAsGroup(int fid);
 
-            /// for the Hmmwv ground sim actor
-            bool HasSomethingBeenLoaded() {return mLoadedTerrainYet;}
+         /// for the Hmmwv ground sim actor
+         bool HasSomethingBeenLoaded() {return mLoadedTerrainYet;}
 
-            /// geode - loads a single geode into the physics engine. Usually called from the Cull Visitor when it decides to physics something
-            void CheckGeode(osg::Geode& node, bool loadNow, const osg::Matrix& matrixForTransform);
+         /// geode - loads a single geode into the physics engine. Usually called from the Cull Visitor when it decides to physics something
+         void CheckGeode(osg::Geode& node, bool loadNow, const osg::Matrix& matrixForTransform);
 
-            /// Clears all of the geodes and/or the static meshes physics objects - call on map reload or similar
-            void ClearAllTerrainPhysics();
+         /// Clears all of the geodes and/or the static meshes physics objects - call on map reload or similar
+         void ClearAllTerrainPhysics();
 
-            // reset terrain iterator so we can start at the beginning
-            // and subdivide the work being done.
-            void ResetTerrainIterator();
+         // reset terrain iterator so we can start at the beginning
+         // and subdivide the work being done.
+         void ResetTerrainIterator();
 
-            /// called to act on the flags.
-            bool FinalizeTerrain(int numberOfFrames);
+         /// called to act on the flags.
+         bool FinalizeTerrain(int numberOfFrames);
 
-         private:
-            // shouldnt be called, only for debugging purposes.
-            // reloads all terrain to physics during runtimne
-            void ReloadTerrainPhysics();
+      private:
+         // shouldnt be called, only for debugging purposes.
+         // reloads all terrain to physics during runtimne
+         void ReloadTerrainPhysics();
 
-            // for the hmmwv sim
-            bool mLoadedTerrainYet;
+         // for the hmmwv sim
+         bool mLoadedTerrainYet;
 
-            int mNumNodesLoaded;
-            int mNumVertsLoaded;
+         int mNumNodesLoaded;
+         int mNumVertsLoaded;
 
-            // our map nodes
-            std::map<osg::Geode*, dtCore::RefPtr<TerrainNode> > mTerrainMap;
+         // our map nodes
+         std::map<osg::Geode*, dtCore::RefPtr<TerrainNode> > mTerrainMap;
 
-            std::map<osg::Geode*, dtCore::RefPtr<TerrainNode> >::iterator mFinalizeTerrainIter;
+         std::map<osg::Geode*, dtCore::RefPtr<TerrainNode> >::iterator mFinalizeTerrainIter;
       };
 
 
@@ -181,17 +181,17 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////
       class SIMCORE_EXPORT PagedTerrainPhysicsActorProxy : public dtGame::GameActorProxy
       {
-         public:
-            typedef dtGame::GameActorProxy BaseClass;
+      public:
+         typedef dtGame::GameActorProxy BaseClass;
 
-            PagedTerrainPhysicsActorProxy();
-            virtual void BuildPropertyMap();
-            virtual void BuildActorComponents();
+         PagedTerrainPhysicsActorProxy();
+         virtual void BuildPropertyMap();
+         virtual void BuildActorComponents();
 
-         protected:
-            virtual ~PagedTerrainPhysicsActorProxy();
-            void CreateDrawable();
-            virtual void OnEnteredWorld();
+      protected:
+         virtual ~PagedTerrainPhysicsActorProxy();
+         void CreateDrawable();
+         virtual void OnEnteredWorld();
       };
 
    } // namespace

@@ -79,6 +79,7 @@ namespace SimCore
       public:
 
          typedef dtGame::GMComponent BaseClass;
+         static const dtCore::RefPtr<dtCore::SystemComponentType> TYPE;
          //the name of the component used to look up by name on the game manager
          static const std::string DEFAULT_NAME;
 
@@ -273,7 +274,7 @@ namespace SimCore
          public:
 
          /// Constructor
-         VolumeRenderingComponent(const std::string& name = DEFAULT_NAME);
+         VolumeRenderingComponent(dtCore::SystemComponentType& type = *TYPE);
 
          void Init();
 
@@ -347,7 +348,6 @@ namespace SimCore
          void CreateNoiseTexture();
 
          bool mInitialized;
-         unsigned mMaxParticlesPerDrawable;
          dtCore::RefPtr<osg::Group> mRootNode;
 
          dtCore::RefPtr<dtCore::Camera> mDepthCamera;

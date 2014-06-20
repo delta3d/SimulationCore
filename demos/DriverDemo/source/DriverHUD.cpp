@@ -74,15 +74,13 @@ namespace DriverDemo
    const DriverHUD::CoordSystem DriverHUD::CoordSystem::LAT_LON("LAT_LON");
 
    ////////////////////////////////////////////////////////////////////////////////
-   DriverHUD::DriverHUD(dtCore::DeltaWin *win,
-                          const std::string& ceguiScheme, bool usePhysicsDemoMode)
-   : BaseClass(win, DEFAULT_NAME, ceguiScheme),
-      mLastHUDStateBeforeHelp(&SimCore::Components::HUDState::MINIMAL),
-      mUsePhysicsDemoMode(usePhysicsDemoMode),
-      mFlashToggleTime(0.0f),
-      mCoordSystem(&CoordSystem::LAT_LON),
-      mTimeTillNextHUDUpdate(REDRAW_TIME)
+   DriverHUD::DriverHUD()
+   : BaseClass(*TYPE)
+   , mLastHUDStateBeforeHelp(&SimCore::Components::HUDState::MINIMAL)
+   , mCoordSystem(&CoordSystem::LAT_LON)
+   , mTimeTillNextHUDUpdate(REDRAW_TIME)
    {
+      SetSchemeFile("CEGUI/schemes/DriverDemo.scheme");
    }
 
    ////////////////////////////////////////////////////////////////////////////////
@@ -91,7 +89,7 @@ namespace DriverDemo
    }
 
    ////////////////////////////////////////////////////////////////////////////////
-   DriverHUD::CoordSystem::CoordSystem( const std::string &name ) : dtUtil::Enumeration(name)
+   DriverHUD::CoordSystem::CoordSystem( const std::string& name ) : dtUtil::Enumeration(name)
    {
       AddInstance(this);
    }

@@ -528,7 +528,7 @@ namespace SimCore
          CPPUNIT_ASSERT_MESSAGE( "GameManager should be able to create a Platform",
             proxy.valid() );
          SimCore::Actors::BaseEntity* target = NULL;
-         proxy->GetActor(target);
+         proxy->GetDrawable(target);
          CPPUNIT_ASSERT_MESSAGE( "BaseEntityActorProxy should contain a valid Entity",
             target != NULL );
 

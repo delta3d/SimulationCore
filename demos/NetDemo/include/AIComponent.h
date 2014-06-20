@@ -32,10 +32,11 @@ namespace NetDemo
    public:
 
       typedef dtAI::BaseAIComponent BaseClass;
+      static const dtCore::RefPtr<dtCore::SystemComponentType> TYPE;
       static const std::string DEFAULT_NAME;
 
       /// Constructor
-      AIComponent(const std::string& name = DEFAULT_NAME);
+      AIComponent(dtCore::SystemComponentType& type = *TYPE);
 
       /**
       * Handles incoming messages

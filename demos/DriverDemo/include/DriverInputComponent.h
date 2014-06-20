@@ -94,10 +94,10 @@ namespace DriverDemo
          typedef SimCore::Components::BaseInputComponent BaseClass;
 
       public:
-
+         static const dtCore::RefPtr<dtCore::SystemComponentType> TYPE;
 
          /// Constructor
-         DriverInputComponent(const std::string& name = BaseClass::DEFAULT_NAME);
+         DriverInputComponent(dtCore::SystemComponentType& type = *TYPE);
 
          void ProcessMessage(const dtGame::Message &message);
 

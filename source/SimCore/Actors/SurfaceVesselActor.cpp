@@ -79,55 +79,56 @@ namespace SimCore
 
          dtUtil::RefString group = "SurfaceVessel";
 
-         SurfaceVesselActor& actor = static_cast<SurfaceVesselActor&>(GetGameActor());
+         SurfaceVesselActor* drawable = NULL;
+         GetDrawable(drawable);
 
 
          AddProperty(new dtCore::BooleanActorProperty("WaterSpray Enabled", "WaterSpray Enabled",
-            dtCore::BooleanActorProperty::SetFuncType(&actor, &SurfaceVesselActor::SetWaterSprayEnabled),
-            dtCore::BooleanActorProperty::GetFuncType(&actor, &SurfaceVesselActor::GetWaterSprayEnabled),
+            dtCore::BooleanActorProperty::SetFuncType(drawable, &SurfaceVesselActor::SetWaterSprayEnabled),
+            dtCore::BooleanActorProperty::GetFuncType(drawable, &SurfaceVesselActor::GetWaterSprayEnabled),
             "Turns the WaterSpray particle system on or off", group));
 
          AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::PARTICLE_SYSTEM,
-            "WaterSprayFrontFile", "Water Spray Front File", dtCore::ResourceActorProperty::SetFuncType(&actor, &SurfaceVesselActor::LoadWaterSprayFrontFile),
+            "WaterSprayFrontFile", "Water Spray Front File", dtCore::ResourceActorProperty::SetFuncType(drawable, &SurfaceVesselActor::LoadWaterSprayFrontFile),
             "Loads the particle system for the water spray effect on the front of the ship", group));
 
          AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::PARTICLE_SYSTEM,
-            "WaterSpraySideFile", "Water Spray Side File", dtCore::ResourceActorProperty::SetFuncType(&actor, &SurfaceVesselActor::LoadWaterSpraySideFile),
+            "WaterSpraySideFile", "Water Spray Side File", dtCore::ResourceActorProperty::SetFuncType(drawable, &SurfaceVesselActor::LoadWaterSpraySideFile),
             "Loads the particle system for the water spray effect on the side of the ship", group));
 
          AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::PARTICLE_SYSTEM,
-            "WaterSprayBackFile", "Water Spray Back File", dtCore::ResourceActorProperty::SetFuncType(&actor, &SurfaceVesselActor::LoadWaterSprayBackFile),
+            "WaterSprayBackFile", "Water Spray Back File", dtCore::ResourceActorProperty::SetFuncType(drawable, &SurfaceVesselActor::LoadWaterSprayBackFile),
             "Loads the particle system for the water spray effect on the back of the ship", group));
 
          
          AddProperty(new dtCore::Vec3ActorProperty("WaterSprayFrontOffset", "Water Spray Front Offset", 
-            dtCore::Vec3ActorProperty::SetFuncType(&actor, &SurfaceVesselActor::SetWaterSprayFrontOffset),
-            dtCore::Vec3ActorProperty::GetFuncType(&actor, &SurfaceVesselActor::GetWaterSprayFrontOffset),
+            dtCore::Vec3ActorProperty::SetFuncType(drawable, &SurfaceVesselActor::SetWaterSprayFrontOffset),
+            dtCore::Vec3ActorProperty::GetFuncType(drawable, &SurfaceVesselActor::GetWaterSprayFrontOffset),
             "The local offset on the starboard side to apply the water spray particle effect on the front of the ship.", group));
 
          AddProperty(new dtCore::Vec3ActorProperty("WaterSpraySideOffsetStarboard", "Water Spray Side Offset Starboard", 
-            dtCore::Vec3ActorProperty::SetFuncType(&actor, &SurfaceVesselActor::SetWaterSpraySideOffsetStarboard),
-            dtCore::Vec3ActorProperty::GetFuncType(&actor, &SurfaceVesselActor::GetWaterSpraySideOffsetStarboard),
+            dtCore::Vec3ActorProperty::SetFuncType(drawable, &SurfaceVesselActor::SetWaterSpraySideOffsetStarboard),
+            dtCore::Vec3ActorProperty::GetFuncType(drawable, &SurfaceVesselActor::GetWaterSpraySideOffsetStarboard),
             "The local offset on the starboard side to apply the water spray particle effect on the side of the ship.", group));
 
          AddProperty(new dtCore::Vec3ActorProperty("WaterSpraySideOffsetPort", "Water Spray Side Offset Port", 
-            dtCore::Vec3ActorProperty::SetFuncType(&actor, &SurfaceVesselActor::SetWaterSpraySideOffsetPort),
-            dtCore::Vec3ActorProperty::GetFuncType(&actor, &SurfaceVesselActor::GetWaterSpraySideOffsetPort),
+            dtCore::Vec3ActorProperty::SetFuncType(drawable, &SurfaceVesselActor::SetWaterSpraySideOffsetPort),
+            dtCore::Vec3ActorProperty::GetFuncType(drawable, &SurfaceVesselActor::GetWaterSpraySideOffsetPort),
             "The local offset on the port side to apply the water spray particle effect on the side of the ship.", group));
 
          AddProperty(new dtCore::Vec3ActorProperty("WaterSprayBackOffset", "Water Spray Back Offset", 
-            dtCore::Vec3ActorProperty::SetFuncType(&actor, &SurfaceVesselActor::SetWaterSprayBackOffset),
-            dtCore::Vec3ActorProperty::GetFuncType(&actor, &SurfaceVesselActor::GetWaterSprayBackOffset),
+            dtCore::Vec3ActorProperty::SetFuncType(drawable, &SurfaceVesselActor::SetWaterSprayBackOffset),
+            dtCore::Vec3ActorProperty::GetFuncType(drawable, &SurfaceVesselActor::GetWaterSprayBackOffset),
             "The local offset on the back side to apply the water spray particle effect on the back of the ship.", group));
 
          AddProperty(new dtCore::FloatActorProperty(PROPERTY_SPRAY_VELOCITY_MIN, PROPERTY_SPRAY_VELOCITY_MIN, 
-            dtCore::FloatActorProperty::SetFuncType(&actor, &SurfaceVesselActor::SetSprayVelocityMin),
-            dtCore::FloatActorProperty::GetFuncType(&actor, &SurfaceVesselActor::GetSprayVelocityMin),
+            dtCore::FloatActorProperty::SetFuncType(drawable, &SurfaceVesselActor::SetSprayVelocityMin),
+            dtCore::FloatActorProperty::GetFuncType(drawable, &SurfaceVesselActor::GetSprayVelocityMin),
             "The speed at which to start the water spray particle effect.", group));
 
          AddProperty(new dtCore::FloatActorProperty(PROPERTY_SPRAY_VELOCITY_MAX, PROPERTY_SPRAY_VELOCITY_MAX, 
-            dtCore::FloatActorProperty::SetFuncType(&actor, &SurfaceVesselActor::SetSprayVelocityMax),
-            dtCore::FloatActorProperty::GetFuncType(&actor, &SurfaceVesselActor::GetSprayVelocityMax),
+            dtCore::FloatActorProperty::SetFuncType(drawable, &SurfaceVesselActor::SetSprayVelocityMax),
+            dtCore::FloatActorProperty::GetFuncType(drawable, &SurfaceVesselActor::GetSprayVelocityMax),
             "The speed at which to clamp the water spray particle systems' maximum effect.", group));
 
       }

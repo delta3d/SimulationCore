@@ -24,178 +24,160 @@
 #include <prefix/SimCorePrefix.h>
 #include <SimCore/Actors/ViewerMaterialActor.h>
 #include <dtCore/enginepropertytypes.h>
-#include <dtCore/functor.h>
 #include <SimCore/Components/ViewerMaterialComponent.h>
+
+#include <dtCore/propertymacros.h>
 
 namespace SimCore
 {
    namespace Actors
    {
       //////////////////////////////////////////////////////////
-      // Proxy code
-      //////////////////////////////////////////////////////////
-
-      //////////////////////////////////////////////////////////
-      ViewerMaterialActorProxy::ViewerMaterialActorProxy()
-      {
-         SetClassName("ViewerMaterialActor");
-
-      }
-
-      //////////////////////////////////////////////////////////
-      ViewerMaterialActorProxy::~ViewerMaterialActorProxy()
-      {
-
-      }
-
-      //////////////////////////////////////////////////////////
-      void ViewerMaterialActorProxy::BuildPropertyMap()
-      {
-         const std::string GROUP       = "Not Categorized Material Types";
-         const std::string PHYSGROUP   = "Physics Material Types";
-         const std::string SHADGROUP   = "Shader Material Types";
-         const std::string PARTGROUP   = "Particle Systems Material Types";
-         const std::string SFXGROUP    = "Sound Effects Material Types";
-         const std::string MUSCGROUP   = "Music Material Types";
-         const std::string NETGROUP    = "Networked Material Types";
-         const std::string VISLGROUP   = "Visual Material Types";
-         const std::string OTHRGROUP   = "Other Types or Multiple Material Types";
-
-         ViewerMaterialActor *actor = dynamic_cast<ViewerMaterialActor*>(GetDrawable());
-
-         AddProperty(new dtCore::ColorRgbaActorProperty("Base Color Value", "Base Color Value",
-            dtCore::MakeFunctor(*actor, &ViewerMaterialActor::SetBaseColorvalue),
-            dtCore::MakeFunctorRet(*actor, &ViewerMaterialActor::GetBaseColorvalue),
-            "", VISLGROUP));
-
-         AddProperty(new dtCore::ColorRgbaActorProperty("Highlight Color Value", "Highlight Color Value",
-            dtCore::MakeFunctor(*actor, &ViewerMaterialActor::SetHighlighteColorvalue),
-            dtCore::MakeFunctorRet(*actor, &ViewerMaterialActor::GetHighlighteColorvalue),
-            "", VISLGROUP));
-
-         AddProperty(new dtCore::FloatActorProperty("DynamicFriction", "DynamicFriction",
-            dtCore::MakeFunctor(*actor, &ViewerMaterialActor::SetDynamicFriction),
-            dtCore::MakeFunctorRet(*actor, &ViewerMaterialActor::GetDynamicFriction),
-            "Ageia Material Setting - coefficient of dynamic friction -- should be in [0, +inf]. If set to greater than staticFriction, the effective value of staticFriction will be increased to match. if flags & NX_MF_ANISOTROPIC is set, then this value is used for the primary direction of anisotropy (U axis)", PHYSGROUP));
-
-         AddProperty(new dtCore::FloatActorProperty("StaticFriction", "StaticFriction",
-            dtCore::MakeFunctor(*actor, &ViewerMaterialActor::SetStaticFriction),
-            dtCore::MakeFunctorRet(*actor, &ViewerMaterialActor::GetStaticFriction),
-            "Ageia Material Setting - coefficient of static friction -- should be in [0, +inf] if flags & NX_MF_ANISOTROPIC is set, then this value is used for the primary direction of anisotropy (U axis)", PHYSGROUP));
-
-         AddProperty(new dtCore::FloatActorProperty("Restitution", "Restitution",
-            dtCore::MakeFunctor(*actor, &ViewerMaterialActor::SetRestitution),
-            dtCore::MakeFunctorRet(*actor, &ViewerMaterialActor::GetRestitution),
-            "Ageia Material Setting - coefficient of restitution -- 0 makes the object bounce as little as possible, higher values up to 1.0 result in more bounce. Note that values close to or above 1 may cause stability problems and/or increasing energy. Range: [0,1]", PHYSGROUP));
-
-
-         AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::SOUND,
-            "SmallHitSoundEffect", "SmallHitSoundEffect",  dtCore::MakeFunctor(*actor, &ViewerMaterialActor::SetSmallHitSoundEffect),
-            "", SFXGROUP));
-
-         AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::SOUND, "MediumHitSoundEffect", "MediumHitSoundEffect",
-            dtCore::MakeFunctor(*actor, &ViewerMaterialActor::SetMediumHitSoundEffect),
-            "", SFXGROUP));
-
-         AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::SOUND, "LargeHitSoundEffect", "LargeHitSoundEffect",
-            dtCore::MakeFunctor(*actor, &ViewerMaterialActor::SetLargeHitSoundEffect),
-            "", SFXGROUP));
-
-         AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::SOUND, "AmbientSoundEffect", "AmbientSoundEffect",
-            dtCore::MakeFunctor(*actor, &ViewerMaterialActor::SetAmbientSoundEffect),
-            "", SFXGROUP));
-
-         AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::SOUND, "AmbientMusicEffect", "AmbientMusicEffect",
-            dtCore::MakeFunctor(*actor, &ViewerMaterialActor::SetAmbientMusicEffect),
-            "", MUSCGROUP));
-
-         AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::TEXTURE, "DecalSmallHit", "DecalSmallHit",
-            dtCore::MakeFunctor(*actor, &ViewerMaterialActor::SetDecalSmallHit),
-            "", VISLGROUP));
-
-         AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::TEXTURE, "DecalMediumHit", "DecalMediumHit",
-            dtCore::MakeFunctor(*actor, &ViewerMaterialActor::SetDecalMediumHit),
-            "", VISLGROUP));
-
-         AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::TEXTURE, "DecalLargeHit", "DecalLargeHit",
-            dtCore::MakeFunctor(*actor, &ViewerMaterialActor::SetDecalLargeHit),
-            "", VISLGROUP));
-
-         AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::PARTICLE_SYSTEM, "DustTrailEffect", "DustTrailEffect",
-            dtCore::MakeFunctor(*actor, &ViewerMaterialActor::SetDustTrailEffect),
-            "", PARTGROUP));
-
-         AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::PARTICLE_SYSTEM, "SmallHitEffect", "SmallHitEffect",
-            dtCore::MakeFunctor(*actor, &ViewerMaterialActor::SetSmallHitEffect),
-            "", PARTGROUP));
-
-         AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::PARTICLE_SYSTEM, "MediumHitEffect", "MediumHitEffect",
-            dtCore::MakeFunctor(*actor, &ViewerMaterialActor::SetMediumHitEffect),
-            "", PARTGROUP));
-
-         AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::PARTICLE_SYSTEM, "LargeHitEffect", "LargeHitEffect",
-            dtCore::MakeFunctor(*actor, &ViewerMaterialActor::SetLargeHitEffect),
-            "", PARTGROUP));
-
-         AddProperty(new dtCore::StringActorProperty("PhysicsParticleLookupStringOne", "PhysicsParticleLookupStringOne",
-            dtCore::MakeFunctor(*actor, &ViewerMaterialActor::SetPhysicsParticleLookupStringOne),
-            dtCore::MakeFunctorRet(*actor, &ViewerMaterialActor::GetPhysicsParticleLookupStringOne),
-            "", VISLGROUP));
-
-         AddProperty(new dtCore::StringActorProperty("PhysicsParticleLookupStringTwo", "PhysicsParticleLookupStringTwo",
-            dtCore::MakeFunctor(*actor, &ViewerMaterialActor::SetPhysicsParticleLookupStringTwo),
-            dtCore::MakeFunctorRet(*actor, &ViewerMaterialActor::GetPhysicsParticleLookupStringTwo),
-            "", VISLGROUP));
-
-         AddProperty(new dtCore::StringActorProperty("PhysicsParticleLookupStringThr", "PhysicsParticleLookupStringThr",
-            dtCore::MakeFunctor(*actor, &ViewerMaterialActor::SetPhysicsParticleLookupStringThr),
-            dtCore::MakeFunctorRet(*actor, &ViewerMaterialActor::GetPhysicsParticleLookupStringThr),
-            "", VISLGROUP));
-
-         AddProperty(new dtCore::StringActorProperty("PhysicsParticleLookupStringFour", "PhysicsParticleLookupStringFour",
-            dtCore::MakeFunctor(*actor, &ViewerMaterialActor::SetPhysicsParticleLookupStringFour),
-            dtCore::MakeFunctorRet(*actor, &ViewerMaterialActor::GetPhysicsParticleLookupStringFour),
-            "", VISLGROUP));
-
-         AddProperty(new dtCore::StringActorProperty("PhysicsParticleLookupStringFive", "PhysicsParticleLookupStringFive",
-            dtCore::MakeFunctor(*actor, &ViewerMaterialActor::SetPhysicsParticleLookupStringFive),
-            dtCore::MakeFunctorRet(*actor, &ViewerMaterialActor::GetPhysicsParticleLookupStringFive),
-            "", VISLGROUP));
-
-      }
-
-      // Creates the actor
-      void ViewerMaterialActorProxy::CreateDrawable()
-      {
-         SetDrawable(*new ViewerMaterialActor(*this));
-      }
-
-      //////////////////////////////////////////////////////////
       // Actor code
       //////////////////////////////////////////////////////////
 
       //////////////////////////////////////////////////////////
-      ViewerMaterialActor::ViewerMaterialActor(dtGame::GameActorProxy& owner) : dtGame::GameActor(owner)
-         , m_PHYS_DynamicFriction(0.5f)
-         , m_PHYS_StaticFriction(0.5f)
-         , m_PHYS_Restitution(0.2f)
+      ViewerMaterialActor::ViewerMaterialActor()
+      : m_PHYS_DynamicFriction(0.5f)
+      , m_PHYS_StaticFriction(0.5f)
+      , m_PHYS_Restitution(0.2f)
       {
+         SetClassName("ViewerMaterialActor");
          SetPhysicsParticleLookupStringOne("");
          SetPhysicsParticleLookupStringTwo("");
-         SetPhysicsParticleLookupStringThr("");
+         SetPhysicsParticleLookupStringThree("");
          SetPhysicsParticleLookupStringFour("");
          SetPhysicsParticleLookupStringFive("");
       }
 
-      void ViewerMaterialActor::OnEnteredWorld()
+      //////////////////////////////////////////////////////////
+      ViewerMaterialActor::~ViewerMaterialActor()
       {
-         SimCore::Components::ViewerMaterialComponent* materialComponent = dynamic_cast<SimCore::Components::ViewerMaterialComponent*>(GetGameActorProxy().GetGameManager()->GetComponentByName("ViewerMaterialComponent"));
-         if(materialComponent == NULL)
-         {
-            LOG_ERROR("materialComponent Is not initialized, make sure a new one was made before loading a map in");
-         }
-         else
-            materialComponent->RegisterAMaterialWithComponent(this);
+
       }
+
+      //////////////////////////////////////////////////////////
+      void ViewerMaterialActor::BuildPropertyMap()
+      {
+         static const dtUtil::RefString GROUP       = "Not Categorized Material Types";
+         static const dtUtil::RefString PHYSGROUP   = "Physics Material Types";
+         static const dtUtil::RefString SHADGROUP   = "Shader Material Types";
+         static const dtUtil::RefString PARTGROUP   = "Particle Systems Material Types";
+         static const dtUtil::RefString SFXGROUP    = "Sound Effects Material Types";
+         static const dtUtil::RefString MUSCGROUP   = "Music Material Types";
+         static const dtUtil::RefString NETGROUP    = "Networked Material Types";
+         static const dtUtil::RefString VISLGROUP   = "Visual Material Types";
+         static const dtUtil::RefString OTHERGROUP   = "Other Types or Multiple Material Types";
+
+         typedef dtCore::PropertyRegHelper<ViewerMaterialActor&, ViewerMaterialActor> RegHelperType;
+         RegHelperType physReg(*this, this, PHYSGROUP);
+         RegHelperType shadReg(*this, this, SHADGROUP);
+         RegHelperType partReg(*this, this, PARTGROUP);
+         RegHelperType sfxReg(*this, this, SFXGROUP);
+         RegHelperType musReg(*this, this, MUSCGROUP);
+         RegHelperType netReg(*this, this, NETGROUP);
+         RegHelperType vislReg(*this, this, VISLGROUP);
+         RegHelperType otherReg(*this, this, OTHERGROUP);
+
+
+
+         AddProperty(new dtCore::ColorRgbaActorProperty("Base Color Value", "Base Color Value",
+               dtCore::ColorRgbaActorProperty::SetFuncType(this, &ViewerMaterialActor::SetBaseColorvalue),
+               dtCore::ColorRgbaActorProperty::GetFuncType(this, &ViewerMaterialActor::GetBaseColorvalue),
+               "", VISLGROUP));
+
+         AddProperty(new dtCore::ColorRgbaActorProperty("Highlight Color Value", "Highlight Color Value",
+               dtCore::ColorRgbaActorProperty::SetFuncType(this, &ViewerMaterialActor::SetHighlighteColorvalue),
+               dtCore::ColorRgbaActorProperty::GetFuncType(this, &ViewerMaterialActor::GetHighlighteColorvalue),
+            "", VISLGROUP));
+
+         DT_REGISTER_PROPERTY(DynamicFriction,
+               "Coefficient of dynamic friction -- should be in [0, +inf].",
+               RegHelperType, physReg);
+
+         DT_REGISTER_PROPERTY(StaticFriction,
+               "Coefficient of static friction -- should be in [0, +inf].",
+               RegHelperType, physReg);
+
+         DT_REGISTER_PROPERTY(Restitution,
+               "Coefficient of restitution -- 0 to 1 where 1 means 100% of bouncing energy is conserved.",
+               RegHelperType, physReg);
+
+
+         AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::SOUND,
+            "SmallHitSoundEffect", "SmallHitSoundEffect",  dtCore::ResourceActorProperty::SetFuncType(this, &ViewerMaterialActor::SetSmallHitSoundEffect),
+            "", SFXGROUP));
+
+         AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::SOUND, "MediumHitSoundEffect", "MediumHitSoundEffect",
+            dtCore::ResourceActorProperty::SetFuncType(this, &ViewerMaterialActor::SetMediumHitSoundEffect),
+            "", SFXGROUP));
+
+         AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::SOUND, "LargeHitSoundEffect", "LargeHitSoundEffect",
+            dtCore::ResourceActorProperty::SetFuncType(this, &ViewerMaterialActor::SetLargeHitSoundEffect),
+            "", SFXGROUP));
+
+         AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::SOUND, "AmbientSoundEffect", "AmbientSoundEffect",
+            dtCore::ResourceActorProperty::SetFuncType(this, &ViewerMaterialActor::SetAmbientSoundEffect),
+            "", SFXGROUP));
+
+         AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::SOUND, "AmbientMusicEffect", "AmbientMusicEffect",
+            dtCore::ResourceActorProperty::SetFuncType(this, &ViewerMaterialActor::SetAmbientMusicEffect),
+            "", MUSCGROUP));
+
+         AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::TEXTURE, "DecalSmallHit", "DecalSmallHit",
+            dtCore::ResourceActorProperty::SetFuncType(this, &ViewerMaterialActor::SetDecalSmallHit),
+            "", VISLGROUP));
+
+         AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::TEXTURE, "DecalMediumHit", "DecalMediumHit",
+            dtCore::ResourceActorProperty::SetFuncType(this, &ViewerMaterialActor::SetDecalMediumHit),
+            "", VISLGROUP));
+
+         AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::TEXTURE, "DecalLargeHit", "DecalLargeHit",
+            dtCore::ResourceActorProperty::SetFuncType(this, &ViewerMaterialActor::SetDecalLargeHit),
+            "", VISLGROUP));
+
+         AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::PARTICLE_SYSTEM, "DustTrailEffect", "DustTrailEffect",
+            dtCore::ResourceActorProperty::SetFuncType(this, &ViewerMaterialActor::SetDustTrailEffect),
+            "", PARTGROUP));
+
+         AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::PARTICLE_SYSTEM, "SmallHitEffect", "SmallHitEffect",
+            dtCore::ResourceActorProperty::SetFuncType(this, &ViewerMaterialActor::SetSmallHitEffect),
+            "", PARTGROUP));
+
+         AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::PARTICLE_SYSTEM, "MediumHitEffect", "MediumHitEffect",
+            dtCore::ResourceActorProperty::SetFuncType(this, &ViewerMaterialActor::SetMediumHitEffect),
+            "", PARTGROUP));
+
+         AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::PARTICLE_SYSTEM, "LargeHitEffect", "LargeHitEffect",
+            dtCore::ResourceActorProperty::SetFuncType(this, &ViewerMaterialActor::SetLargeHitEffect),
+            "", PARTGROUP));
+
+         DT_REGISTER_PROPERTY(PhysicsParticleLookupStringOne, "Random physics particle system prototype name", RegHelperType, vislReg);
+         DT_REGISTER_PROPERTY(PhysicsParticleLookupStringTwo, "Random physics particle system prototype name", RegHelperType, vislReg);
+         DT_REGISTER_PROPERTY(PhysicsParticleLookupStringThree, "Random physics particle system prototype name", RegHelperType, vislReg);
+         DT_REGISTER_PROPERTY(PhysicsParticleLookupStringFour, "Random physics particle system prototype name", RegHelperType, vislReg);
+         DT_REGISTER_PROPERTY(PhysicsParticleLookupStringFive, "Random physics particle system prototype name", RegHelperType, vislReg);
+
+      }
+
+      // Creates the actor
+      void ViewerMaterialActor::CreateDrawable()
+      {
+         SetDrawable(*new dtGame::GameActor(*this));
+      }
+
+      void ViewerMaterialActor::OnEnteredWorld()
+       {
+          SimCore::Components::ViewerMaterialComponent* materialComponent = NULL;
+          GetGameManager()->GetComponentByName("ViewerMaterialComponent", materialComponent);
+          if(materialComponent == NULL)
+          {
+             LOG_ERROR("materialComponent Is not initialized, make sure a new one was made before loading a map in");
+          }
+          else
+             materialComponent->RegisterAMaterialWithComponent(this);
+       }
+
+
    }
 }

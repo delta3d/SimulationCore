@@ -102,8 +102,8 @@ namespace NetDemo
    const dtUtil::RefString GUIComponent::DEFAULT_NAME("GUIComponent");
 
    /////////////////////////////////////////////////////////////////////////////
-   GUIComponent::GUIComponent( const std::string& name )
-      : BaseClass(name)
+   GUIComponent::GUIComponent( dtCore::SystemComponentType& type )
+      : BaseClass(type)
       , mScriptModule(new dtGUI::ScriptModule)
       , mCurrentHoveredWidget(NULL)
       , mInputServerPort(NULL)
@@ -267,12 +267,12 @@ namespace NetDemo
       else if(messageType == dtGame::MessageType::INFO_MAP_LOADED)
       {
          // Get the reference to the player.
-         dtGame::GameActorProxy* proxy = NULL;
-         GetGameManager()->FindActorByType(*NetDemoActorRegistry::PLAYER_STATUS_ACTOR_TYPE, proxy);
-         if(proxy != NULL)
+         dtGame::GameActorProxy* actor = NULL;
+         GetGameManager()->FindActorByType(*NetDemoActorRegistry::PLAYER_STATUS_ACTOR_TYPE, actor);
+         if(actor != NULL)
          {
             PlayerStatusActor* player = NULL;
-            proxy->GetActor(player);
+            actor->GetDrawable(player);
             mPlayer = player;
          }
       }
@@ -416,7 +416,7 @@ namespace NetDemo
       {
          // Get the actor to which the message refers.
          NetDemo::PlayerStatusActor* playerStats = NULL;
-         if(mAppComp->FindActor(actorId, playerStats))
+         if(mAppComp->FindDrawable(actorId, playerStats))
          {
             // Process the actor.
             ProcessPlayerStatusUpdate(*playerStats);
@@ -509,7 +509,7 @@ namespace NetDemo
 
       if( ! mAppComp.valid() )
       {
-         LOG_ERROR( "GUI Component cannot access the Game App Component." );
+         LOG_ERROR( "GUI Component cannot access the Game  Component." );
       }
 
       return mAppComp.get();

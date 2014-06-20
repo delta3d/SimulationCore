@@ -154,9 +154,6 @@ namespace SimCore
    const std::string VolumeRenderingComponent::VOLUME_PARTICLE_NOISE_SCALE_UNIFORM = "volumeParticleNoiseScale";
    //const std::string VolumeRenderingComponent::CAMERA_LINEAR_DEPTH_UNIFORM = "writeLinearDepth";
 
-   const std::string VolumeRenderingComponent::DEFAULT_NAME = "VolumeRenderingComponent";
-
-
    //////////////////////////////////////////////////////////////////////////
    //Draw Callbacks
    //////////////////////////////////////////////////////////////////////////
@@ -283,10 +280,9 @@ namespace SimCore
    }
 
    /////////////////////////////////////////////////////////////
-   VolumeRenderingComponent::VolumeRenderingComponent(const std::string& name)
-   : BaseClass(name) 
+   VolumeRenderingComponent::VolumeRenderingComponent(dtCore::SystemComponentType& type)
+   : BaseClass(type)
    , mInitialized(false)
-   , mMaxParticlesPerDrawable(150)
    , mRootNode(new osg::Group())
    , mVolumes()
    {

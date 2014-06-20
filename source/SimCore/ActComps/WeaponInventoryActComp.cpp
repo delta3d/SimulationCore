@@ -208,7 +208,7 @@ namespace SimCore
          }
 
          SimCore::Actors::WeaponActor* outWeapon = NULL;
-         weaponActor->GetActor(outWeapon);
+         weaponActor->GetDrawable(outWeapon);
 
          // Place the weapon into the world
          gm->AddActor(*weaponActor, false, false);
@@ -230,7 +230,7 @@ namespace SimCore
             }
 
             SimCore::Actors::MunitionParticlesActor* shooter = NULL;
-            shooterActor->GetActor(shooter);
+            shooterActor->GetDrawable(shooter);
 
             // Place the shooter into the world
             gm->AddActor(*shooterActor, false, false);

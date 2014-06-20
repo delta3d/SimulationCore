@@ -37,15 +37,14 @@ namespace SimCore
 {
    namespace Components
    {
-      const std::string PortalComponent::DEFAULT_NAME("PortalComponent");
-
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      PortalComponent::PortalComponent(const std::string &name) : dtGame::GMComponent(name)
+      PortalComponent::PortalComponent(dtCore::SystemComponentType& type)
+      : BaseClass(type)
       {
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      PortalComponent::~PortalComponent(void)
+      PortalComponent::~PortalComponent()
       {
       }
 
@@ -141,7 +140,8 @@ namespace SimCore
             dtGame::GameActor* actor = dynamic_cast<dtGame::GameActor*>(mOurPortals[i]->GetActorLink());
             if(actor != NULL)
             {
-               /*static_cast<dtGame::GameActor*>(proxy->GetActor())->*/actor->GetTransform(transformForTempDrawable);
+
+               actor->GetTransform(transformForTempDrawable);
                osg::Vec3 relPos;
                transformForTempDrawable.GetTranslation(relPos);
                relPos = position - relPos;

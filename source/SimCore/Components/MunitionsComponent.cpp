@@ -70,14 +70,12 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       // Munitions Component Code
       //////////////////////////////////////////////////////////////////////////
-      const dtUtil::RefString MunitionsComponent::DEFAULT_NAME("MunitionsComponent");
-
       const std::string MunitionsComponent::CONFIG_PROP_MUNITION_DEFAULT("DefaultMunition");
       const std::string MunitionsComponent::CONFIG_PROP_MUNITION_KINETIC_ROUND_DEFAULT("DefaultKineticRoundMunition");
 
       //////////////////////////////////////////////////////////////////////////
-      MunitionsComponent::MunitionsComponent( const std::string& name )
-         : dtGame::GMComponent(name)
+      MunitionsComponent::MunitionsComponent( dtCore::SystemComponentType& type )
+         : dtGame::GMComponent(type)
          , mMunitionConfigFileName("Configs:MunitionsConfig.xml")
          , mMaximumActiveMunitions(200U)
          , mMunitionTypeTable(new MunitionTypeTable())

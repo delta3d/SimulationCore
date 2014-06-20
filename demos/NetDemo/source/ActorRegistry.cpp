@@ -34,6 +34,11 @@
 #include <dtCore/shadermanager.h>
 #include <dtCore/scene.h>
 
+#include <Components/GUIComponent.h>
+#include <Components/InputComponent.h>
+#include <Components/SpawnComponent.h>
+#include <Components/GameLogicComponent.h>
+
 using dtCore::RefPtr;
 
 namespace NetDemo
@@ -89,6 +94,15 @@ namespace NetDemo
    RefPtr<dtCore::ActorType> NetDemoActorRegistry::FIREBALL_ACTOR_TYPE(
       new dtCore::ActorType("FireBall", "NetDemo", "A blazing fireball shot through the fireball tower.",
       SimCore::Actors::EntityActorRegistry::MILITARY_AIR_PLATFORM_ACTOR_TYPE.get()));
+
+
+
+   const dtCore::RefPtr<dtCore::SystemComponentType> InputComponent::TYPE(new dtCore::SystemComponentType("InputComponent","GMComponents.SimCore.NetDemo", "", dtGame::BaseInputComponent::DEFAULT_TYPE));
+   const dtCore::RefPtr<dtCore::SystemComponentType> SpawnComponent::TYPE(new dtCore::SystemComponentType("SpawnComponent","GMComponents.SimCore.NetDemo", "", dtGame::GMComponent::BaseGMComponentType));
+   const dtCore::RefPtr<dtCore::SystemComponentType> GameLogicComponent::TYPE(new dtCore::SystemComponentType("GameLogicComponent","GMComponents.SimCore.NetDemo", "", BaseClass::TYPE));
+   const dtCore::RefPtr<dtCore::SystemComponentType> GUIComponent::TYPE(new dtCore::SystemComponentType("GUIComponent","GMComponents.SimCore.NetDemo", "", dtGame::GMComponent::BaseGMComponentType));
+   const std::string SpawnComponent::DEFAULT_NAME = "SpawnComponent";
+
 
    ///////////////////////////////////////////////////////////////////////////
    extern "C" NETDEMO_EXPORT dtCore::ActorPluginRegistry* CreatePluginRegistry()

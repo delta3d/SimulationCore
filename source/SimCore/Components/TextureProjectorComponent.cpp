@@ -38,11 +38,10 @@ namespace SimCore
 {
    namespace Components
    {
-      const std::string TextureProjectorComponent::DEFAULT_NAME = "TextureProjectorComponent";
-
       ////////////////////////////////////////////////////////////////////
-      TextureProjectorComponent::TextureProjectorComponent(const std::string &name) :
-         dtGame::GMComponent(name) , mMaxNumberOfProjectedTextures(100)
+      TextureProjectorComponent::TextureProjectorComponent(dtCore::SystemComponentType& type)
+      : dtGame::GMComponent(type)
+      , mMaxNumberOfProjectedTextures(100)
       {
       }
 

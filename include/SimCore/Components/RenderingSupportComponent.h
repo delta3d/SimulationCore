@@ -207,11 +207,12 @@ namespace SimCore
 
             };
 
+            static const dtCore::RefPtr<dtCore::SystemComponentType> TYPE;
             static const std::string DEFAULT_NAME;
             static const std::string DEFAULT_LIGHT_NAME;
 
             /// Constructor
-            RenderingSupportComponent(const std::string& name = DEFAULT_NAME);
+            RenderingSupportComponent(dtCore::SystemComponentType& type = *TYPE);
 
             // Convenience method to add a new dynamic light by looking it up from the prototypes. Returns the unique dynamic light instance
             DynamicLight* AddDynamicLightByPrototypeName(const std::string& prototypeName);

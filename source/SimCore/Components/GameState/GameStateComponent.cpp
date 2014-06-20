@@ -42,13 +42,14 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       // COMPONENT CODE
       //////////////////////////////////////////////////////////////////////////
-      const dtUtil::RefString GameStateComponent::DEFAULT_NAME("GameStateComponent");
 
       //////////////////////////////////////////////////////////////////////////
-      GameStateComponent::GameStateComponent(const std::string& name)
-         : BaseClass(name)
+      GameStateComponent::GameStateComponent(dtCore::SystemComponentType& type)
+         : BaseClass(type)
          , mCurrentState(NULL)
       {
+         // Makes the naming system work still.
+         SetName(DEFAULT_NAME);
       }
 
       //////////////////////////////////////////////////////////////////////////

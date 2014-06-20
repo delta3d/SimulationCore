@@ -71,6 +71,23 @@
 #include <SimCore/Actors/LogicOnEventActor.h>
 #include <SimCore/Actors/CamoConfigActor.h>
 
+#include <SimCore/Components/GameState/GameStateComponent.h>
+#include <SimCore/Components/BaseGameAppComponent.h>
+#include <SimCore/Components/ControlStateComponent.h>
+#include <SimCore/Components/MunitionsComponent.h>
+#include <SimCore/Components/ParticleManagerComponent.h>
+#include <SimCore/Components/RenderingSupportComponent.h>
+#include <SimCore/Components/ParticleManagerComponent.h>
+#include <SimCore/Components/ParticleManagerComponent.h>
+#include <SimCore/Components/ViewerMaterialComponent.h>
+#include <SimCore/Components/PortalComponent.h>
+#include <SimCore/Components/TextureProjectorComponent.h>
+#include <SimCore/Components/WeatherComponent.h>
+#include <SimCore/Components/Conversations/ConversationComponent.h>
+#include <SimCore/Components/TimedDeleterComponent.h>
+#include <SimCore/Components/BaseInputComponent.h>
+
+
 #include <dtActors/engineactorregistry.h>
 
 #include <dtCore/shadermanager.h>
@@ -80,6 +97,79 @@ using dtCore::RefPtr;
 
 namespace SimCore
 {
+   namespace Components
+   {
+      //////////////////////////////
+      //Components
+      //////////////////////////////
+      const dtCore::RefPtr<dtCore::SystemComponentType> GameStateComponent::TYPE(new dtCore::SystemComponentType("GameStateComponent","GMComponent.SimCore",
+            "State Machine for flow of the game logic.", dtGame::GMComponent::BaseGMComponentType));
+      const dtUtil::RefString GameStateComponent::DEFAULT_NAME(GameStateComponent::TYPE->GetName());
+
+      const dtCore::RefPtr<dtCore::SystemComponentType> BaseGameAppComponent::TYPE(new dtCore::SystemComponentType("BaseGameAppComponent","GMComponent.SimCore",
+            "Deprecated.  This component has some simple functions used in legacy apps.", dtGame::GMComponent::BaseGMComponentType));
+      const std::string BaseGameAppComponent::DEFAULT_NAME(BaseGameAppComponent::TYPE->GetName());
+
+      const dtCore::RefPtr<dtCore::SystemComponentType> ControlStateComponent::TYPE(new dtCore::SystemComponentType("ControlStateComponent","GMComponent.SimCore",
+            "This is a custom component for dealing with attaching a detaching networked players to points in vehicle or other actor.", dtGame::GMComponent::BaseGMComponentType));
+      const dtUtil::RefString ControlStateComponent::DEFAULT_NAME(ControlStateComponent::TYPE->GetName());
+
+      const dtCore::RefPtr<dtCore::SystemComponentType> MunitionsComponent::TYPE(new dtCore::SystemComponentType("MunitionsComponent","GMComponent.SimCore",
+            "Munition mapping for effects and damage.", dtGame::GMComponent::BaseGMComponentType));
+      const dtUtil::RefString MunitionsComponent::DEFAULT_NAME(MunitionsComponent::TYPE->GetName());
+
+      const dtCore::RefPtr<dtCore::SystemComponentType> RenderingSupportComponent::TYPE(new dtCore::SystemComponentType("RenderingSupportComponent","GMComponent.SimCore",
+            "A grab-bag of rendering effects.  The main is dynamic lighting.", dtGame::GMComponent::BaseGMComponentType));
+      const std::string RenderingSupportComponent::DEFAULT_NAME(RenderingSupportComponent::TYPE->GetName());
+
+      const dtCore::RefPtr<dtCore::SystemComponentType> ParticleManagerComponent::TYPE(new dtCore::SystemComponentType("ParticleManagerComponent","GMComponent.SimCore",
+            "Manages shaders and wind on particle systems.",
+            dtGame::GMComponent::BaseGMComponentType));
+      const std::string ParticleManagerComponent::DEFAULT_NAME("ParticleManagerComponent");
+
+      const dtCore::RefPtr<dtCore::SystemComponentType> ViewerMaterialComponent::TYPE(new dtCore::SystemComponentType("ViewerMaterialComponent","GMComponent.SimCore",
+            "Loads a map of materials and keeps track of them.",
+            dtGame::GMComponent::BaseGMComponentType));
+      const dtUtil::RefString ViewerMaterialComponent::DEFAULT_NAME(ViewerMaterialComponent::TYPE->GetName());
+
+      const dtCore::RefPtr<dtCore::SystemComponentType> PortalComponent::TYPE(new dtCore::SystemComponentType("PortalComponent","GMComponent.SimCore",
+            "Finds portals, tracks them, and can be queried for ones nearby.",
+            dtGame::GMComponent::BaseGMComponentType));
+      const dtUtil::RefString PortalComponent::DEFAULT_NAME(PortalComponent::TYPE->GetName());
+
+      const dtCore::RefPtr<dtCore::SystemComponentType> TextureProjectorComponent::TYPE(new dtCore::SystemComponentType("TextureProjectorComponent","GMComponent.SimCore",
+            "Manages texture projectors.",
+            dtGame::GMComponent::BaseGMComponentType));
+      const dtUtil::RefString TextureProjectorComponent::DEFAULT_NAME(TextureProjectorComponent::TYPE->GetName());
+
+      const dtCore::RefPtr<dtCore::SystemComponentType> WeatherComponent::TYPE(new dtCore::SystemComponentType("WeatherComponent","GMComponents.SimCore",
+            "Managers weather effects",
+            dtGame::GMComponent::BaseGMComponentType));
+      const std::string WeatherComponent::DEFAULT_NAME(WeatherComponent::TYPE->GetName());
+
+      const dtCore::RefPtr<dtCore::SystemComponentType> ConversationComponent::TYPE(new dtCore::SystemComponentType("ConversationComponent","GMComponents.SimCore",
+            "Manages configurable complex conversations.",
+            dtGame::GMComponent::BaseGMComponentType));
+      const std::string ConversationComponent::DEFAULT_NAME(ConversationComponent::TYPE->GetName());
+
+      const dtCore::RefPtr<dtCore::SystemComponentType> TimedDeleterComponent::TYPE(new dtCore::SystemComponentType("TimedDeleterComponent","GMComponents.SimCore",
+            "Deletes things after a certain period of time.",
+            dtGame::GMComponent::BaseGMComponentType));
+      const std::string TimedDeleterComponent::DEFAULT_NAME(TimedDeleterComponent::TYPE->GetName());
+
+
+      const dtCore::RefPtr<dtCore::SystemComponentType> VolumeRenderingComponent::TYPE(new dtCore::SystemComponentType("VolumeRenderingComponent","GMComponents.SimCore",
+            "Rendering volumetric effects.",
+            dtGame::GMComponent::BaseGMComponentType));
+      const std::string VolumeRenderingComponent::DEFAULT_NAME(VolumeRenderingComponent::TYPE->GetName());
+
+      const dtCore::RefPtr<dtCore::SystemComponentType> BaseInputComponent::TYPE(new dtCore::SystemComponentType("BaseInputComponent","GMComponents.SimCore",
+            "Base Input component subclass in Simcore.  It handles quitting and going to full screen.",
+            dtGame::BaseInputComponent::DEFAULT_TYPE));
+      const std::string BaseInputComponent::DEFAULT_NAME(BaseInputComponent::TYPE->GetName());
+
+   }
+
    namespace Actors
    {
       RefPtr<dtCore::ActorType> EntityActorRegistry::PLATFORM_ACTOR_TYPE(new dtCore::ActorType("Platform", "Entity", "Represents a entity in the game world"));
@@ -238,7 +328,6 @@ namespace SimCore
 
       RefPtr<dtCore::ActorType> EntityActorRegistry::BATTLEFIELD_GRAPHICS_ACTOR_TYPE( new dtCore::ActorType("BattlefieldGraphics", "SimCore", "Represents a shape or area that is extruded in 2D."));
 
-
       ///////////////////////////////////////////////////////////////////////////
       extern "C" SIMCORE_EXPORT dtCore::ActorPluginRegistry* CreatePluginRegistry()
       {
@@ -296,7 +385,7 @@ namespace SimCore
          mActorFactory->RegisterType<EphemerisEnvironmentActorProxy>(ENVIRONMENT_ACTOR_TYPE.get());
          mActorFactory->RegisterType<DayTimeActorProxy>(DAYTIME_ACTOR_TYPE.get());
          mActorFactory->RegisterType<UniformAtmosphereActorProxy>(UNIFORM_ATMOSPHERE_ACTOR_TYPE.get());
-         mActorFactory->RegisterType<ViewerMaterialActorProxy>(MATERIAL_ACTOR_TYPE.get());
+         mActorFactory->RegisterType<ViewerMaterialActor>(MATERIAL_ACTOR_TYPE.get());
          mActorFactory->RegisterType<MunitionTypeActorProxy>(MUNITION_TYPE_ACTOR_TYPE.get());
          mActorFactory->RegisterType<MunitionEffectsInfoActorProxy>(MUNITION_EFFECTS_INFO_ACTOR_TYPE.get());
          mActorFactory->RegisterType<WeaponActorProxy>(WEAPON_ACTOR_TYPE.get());
@@ -361,6 +450,8 @@ namespace SimCore
          mActorFactory->RegisterType<CamoConfigActorProxy>(CAMO_CONFIG_ACTOR_TYPE.get());
 
          mActorFactory->RegisterType<BattlefieldGraphicsActorProxy>(BATTLEFIELD_GRAPHICS_ACTOR_TYPE.get());
+
+         mActorFactory->RegisterType<SimCore::Components::GameStateComponent>();
 
       }
    }

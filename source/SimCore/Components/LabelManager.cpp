@@ -598,11 +598,11 @@ namespace SimCore
          }
       }
 
-      void LabelManager::ApplyLabelToActor(dtCore::BaseActorObject& proxy, dtCore::Camera& deltaCamera,
+      void LabelManager::ApplyLabelToActor(dtCore::BaseActorObject& actor, dtCore::Camera& deltaCamera,
                LabelMap& newLabels, std::string& nameBuffer)
       {
          // Declare variables to be used for each loop iteration.
-         dtCore::Transformable* actor = NULL;
+         dtCore::Transformable* xformable = NULL;
          dtCore::RefPtr<SimCore::Components::HUDLabel> label;
          dtCore::Transform xform;
          osg::Vec3d worldPos;
@@ -610,11 +610,11 @@ namespace SimCore
 
 
          // Get the current entity actor.
-         proxy.GetActor(actor);
+         actor.GetDrawable(xformable);
 
          osg::Vec3 center;
          float radius = 0.0f;
-         actor->GetBoundingSphere(center, radius);
+         xformable->GetBoundingSphere(center, radius);
 
          // if we have a valid bounding sphere, use the center point.
          if (radius > 0.0)
@@ -624,7 +624,7 @@ namespace SimCore
          else
          {
             dtCore::Transform xform;
-            actor->GetTransform(xform);
+            xformable->GetTransform(xform);
             xform.GetTranslation(worldPos);
          }
 
@@ -646,17 +646,17 @@ namespace SimCore
          }
 
          // Find a label that is not being used.
-         label = GetOrCreateLabel(proxy);
+         label = GetOrCreateLabel(actor);
 
          dtCore::StringActorProperty* mappingTypeProp = NULL;
-         proxy.GetProperty(SimCore::Actors::BaseEntityActorProxy::PROPERTY_MAPPING_NAME, mappingTypeProp);
+         actor.GetProperty(SimCore::Actors::BaseEntityActorProxy::PROPERTY_MAPPING_NAME, mappingTypeProp);
          if (mappingTypeProp != NULL)
          {
-            nameBuffer = proxy.GetName() + "  /  " + mappingTypeProp->GetValue();
+            nameBuffer = actor.GetName() + "  /  " + mappingTypeProp->GetValue();
          }
          else
          {
-            nameBuffer = proxy.GetName();
+            nameBuffer = actor.GetName();
          }
 
          if (nameBuffer != label->GetText())
@@ -675,13 +675,13 @@ namespace SimCore
 //            }
 
          dtCore::ActorProperty* damProp = NULL;
-         proxy.GetProperty(SimCore::Actors::BaseEntityActorProxy::PROPERTY_DAMAGE_STATE, damProp);
+         actor.GetProperty(SimCore::Actors::BaseEntityActorProxy::PROPERTY_DAMAGE_STATE, damProp);
          if (damProp != NULL)
          {
             label->SetLine2(damProp->ToString());
          }
 
-         AssignLabelColor(proxy, *label);
+         AssignLabelColor(actor, *label);
 
          osg::Vec2 pos = CalculateLabelScreenPosition(radius, center, deltaCamera, screenPos, labelSize);
 
@@ -694,7 +694,7 @@ namespace SimCore
          {
             OpenThreads::ScopedLock<OpenThreads::Mutex> lock(mTaskMutex);
             mCEGUISortList.push_back(label.get());
-            newLabels.insert(std::make_pair(actor->GetUniqueId(), label));
+            newLabels.insert(std::make_pair(xformable->GetUniqueId(), label));
          }
 
       }
@@ -705,7 +705,8 @@ namespace SimCore
          const SimCore::Actors::BaseEntityActorProxy::ForceEnum* force =
             &SimCore::Actors::BaseEntityActorProxy::ForceEnum::OTHER;
 
-         const SimCore::Actors::BaseEntity* entity = dynamic_cast<const SimCore::Actors::BaseEntity*>(actor.GetActor());
+         const SimCore::Actors::BaseEntity* entity = NULL;
+         actor.GetDrawable(entity);
 
          if (entity != NULL)
          {

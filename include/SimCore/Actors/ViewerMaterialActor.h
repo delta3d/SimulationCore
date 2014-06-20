@@ -48,18 +48,27 @@ namespace SimCore
 {
    namespace Actors
    {
-      class ViewerMaterialComponent;
-      class ViewerMaterialActorProxy;
+
       /**
-       * This is a simple data actor.  It holds the physics properties for Ageia materials.
-       * You should create a few of these in your map and then link to them with your Ageia Actor.
-       * It holds the restitution, static friction, and dynamic friction coefficients (see
-       * the properties for more information).
+       * Proxy for the ViewerMaterialActor.
        */
-      class SIMCORE_EXPORT ViewerMaterialActor : public dtGame::GameActor
+      class SIMCORE_EXPORT ViewerMaterialActor : public dtGame::GameActorProxy
       {
-         friend class ViewerMaterialComponent;
-         friend class ViewerMaterialActorProxy;
+         public:
+            ViewerMaterialActor();
+
+            // Adds the properties associated with this actor
+            virtual void BuildPropertyMap();
+
+            /*override*/ void OnEnteredWorld();
+
+            /**
+            * The Material actor is global.
+            */
+            virtual bool IsPlaceable() const { return false;}
+
+            // Creates the actor
+            void CreateDrawable();
          public:
 
             ///@return The value of m_SFX_SmallHit
@@ -101,7 +110,7 @@ namespace SimCore
             /// @return The physics particle system to use
             std::string GetPhysicsParticleLookupStringTwo() {return m_VISL_PhysicsParticleTwo;}
             /// @return The physics particle system to use
-            std::string GetPhysicsParticleLookupStringThr() {return m_VISL_PhysicsParticleThr;}
+            std::string GetPhysicsParticleLookupStringThree() {return m_VISL_PhysicsParticleThree;}
             /// @return The physics particle system to use
             std::string GetPhysicsParticleLookupStringFour(){return m_VISL_PhysicsParticleFour;}
             /// @return The physics particle system to use
@@ -147,24 +156,15 @@ namespace SimCore
             /// @param value The name of the physics particle system prototype to look up in the map
             void SetPhysicsParticleLookupStringTwo(const std::string& name) {m_VISL_PhysicsParticleTwo = name;}
             /// @param value The name of the physics particle system prototype to look up in the map
-            void SetPhysicsParticleLookupStringThr(const std::string& name) {m_VISL_PhysicsParticleThr = name;}
+            void SetPhysicsParticleLookupStringThree(const std::string& name) {m_VISL_PhysicsParticleThree = name;}
             /// @param value The name of the physics particle system prototype to look up in the map
             void SetPhysicsParticleLookupStringFour(const std::string& name) {m_VISL_PhysicsParticleFour = name;}
             /// @param value The name of the physics particle system prototype to look up in the map
             void SetPhysicsParticleLookupStringFive(const std::string& name) {m_VISL_PhysicsParticleFive = name;}
 
-            virtual void OnEnteredWorld();
-
          protected:
-
-            // Constructor
-            ViewerMaterialActor(dtGame::GameActorProxy& parent);
-
-            // Destructor
-            virtual ~ViewerMaterialActor() {};
-
+            virtual ~ViewerMaterialActor();
          private:
-
             //////////////////////////////////////////////////////////////////////////////////////////////
             //                                  Physics Values                                          //
             //////////////////////////////////////////////////////////////////////////////////////////////
@@ -194,27 +194,6 @@ namespace SimCore
             std::string m_PHYS_SceneName;
 
             //////////////////////////////////////////////////////////////////////////////////////////////
-            //                               Other & Multi Values                                       //
-            //////////////////////////////////////////////////////////////////////////////////////////////
-            float m_OTHR_Wetness;            /*  Water / moisture amount on an object, his can be read in
-                                                   through FID/SMC/STP/SWC codes. */
-            float m_OTHR_Softness;           /// How soft the model is, could be used for physics, + w/e
-            float m_OTHR_Stretchiness;       /*  Mostly for physics use, but have found post processing
-                                                   Effect that looks cool and stretches objects. */
-            float m_OTHR_Flammability;       /// The amount it can catch on fire... burn baby burn
-            float m_OTHR_Temperature;        /// The temperature of an object.
-            float m_OTHR_WindResistance;     /*  Wind resistance of an object, physics mostly, but i could
-                                                   see visual or sound effects taking use of this. */
-            float m_OTHR_Inflatableness;     /*  Mostly for physics use, but have found post processing
-                                                   Effect that looks cool and inflates objects. */
-            float m_OTHR_Pressurization;     /// This can be read in through FID/SMC/STP/SWC codes.
-
-            //////////////////////////////////////////////////////////////////////////////////////////////
-            //                                  Shader Values                                           //
-            //////////////////////////////////////////////////////////////////////////////////////////////
-            float m_SHAD_Bumpiness;          /// A value you could use to apply for bumpmapping.
-
-            //////////////////////////////////////////////////////////////////////////////////////////////
             //                                  SND/MUSC Values                                         //
             //////////////////////////////////////////////////////////////////////////////////////////////
             std::string m_SFX_SmallHit;      /// SFX to be used for a hit with the object.
@@ -227,11 +206,6 @@ namespace SimCore
             //////////////////////////////////////////////////////////////////////////////////////////////
             //                                  Visual Values                                           //
             //////////////////////////////////////////////////////////////////////////////////////////////
-            float m_VISL_Shininess;                               /// Shininess of an object.
-            float m_VISL_Reflectivity;                            /// Reflection amount... I see you
-            float m_VISL_Refraction;                              /// refraction amount.
-            float m_VISL_SelfIlluminating;                        /*  Does light come from this object,
-                                                                        like from the inside? */
             std::string m_VISL_DecalSmallHit;                     /// Decal Texture for use for hit with obj.
             std::string m_VISL_DecalMediumHit;                    /// Decal Texture for use for hit with obj.
             std::string m_VISL_DecalLargeHit;                     /// Decal Texture for use for hit with obj.
@@ -241,7 +215,7 @@ namespace SimCore
                                                                      loaded from a template in the map    */
             std::string m_VISL_PhysicsParticleTwo;                /* name of the physics model that could be
                                                                      loaded from a template in the map    */
-            std::string m_VISL_PhysicsParticleThr;                /* name of the physics model that could be
+            std::string m_VISL_PhysicsParticleThree;                /* name of the physics model that could be
                                                                      loaded from a template in the map    */
             std::string m_VISL_PhysicsParticleFour;               /* name of the physics model that could be
                                                                      loaded from a template in the map    */
@@ -251,34 +225,11 @@ namespace SimCore
             //////////////////////////////////////////////////////////////////////////////////////////////
             //                                  PARTICLE Values                                         //
             //////////////////////////////////////////////////////////////////////////////////////////////
-            float m_PART_SpoutAmount;        /// Flow output of a particle system
             std::string m_PART_DustTrail;    /// DustTrail like particle system
             std::string m_PART_SmallHit;     /// Particle System for small hit.
             std::string m_PART_MediumHit;    /// Particle System for medium hit.
             std::string m_PART_LargeHit;     /// Particle System for large hit.
-      };
 
-      /**
-       * Proxy for the ViewerMaterialActor.
-       */
-      class SIMCORE_EXPORT ViewerMaterialActorProxy : public dtGame::GameActorProxy
-      {
-         public:
-            ViewerMaterialActorProxy();
-
-            // Adds the properties associated with this actor
-            virtual void BuildPropertyMap();
-
-            /**
-            * The Material actor is global.
-            */
-            virtual bool IsPlaceable() const { return false;}
-
-            // Creates the actor
-            void CreateDrawable();
-
-         protected:
-            virtual ~ViewerMaterialActorProxy();
       };
    }
 }

@@ -81,24 +81,24 @@ class StealthActorTests : public CPPUNIT_NS::TestFixture
 
          mGM = new dtGame::GameManager(*mApp->GetScene());
          mGM->SetApplication( *mApp );
-         mDeadReckoningComponent = new dtGame::DeadReckoningComponent("DeadReckoningComponent");
+         mDeadReckoningComponent = new dtGame::DeadReckoningComponent();
          mTestComponent = new dtGame::TestComponent();
          mGM->AddComponent(*mDeadReckoningComponent, dtGame::GameManager::ComponentPriority::NORMAL);
          mGM->AddComponent(*mTestComponent, dtGame::GameManager::ComponentPriority::NORMAL);
 
-         mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::STEALTH_ACTOR_TYPE, mStealthProxy);
+         mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::STEALTH_ACTOR_TYPE, mStealthActor);
 
 
-         mStealthActor = dynamic_cast<SimCore::Actors::StealthActor*>(&mStealthProxy->GetGameActor());
+         mStealth = mStealthActor->GetDrawable<SimCore::Actors::StealthActor>();
 
-         CPPUNIT_ASSERT(mStealthProxy.valid());
          CPPUNIT_ASSERT(mStealthActor.valid());
+         CPPUNIT_ASSERT(mStealth.valid());
       }
 
       void tearDown()
       {
-         mStealthProxy = NULL;
          mStealthActor = NULL;
+         mStealth = NULL;
          mDeadReckoningComponent = NULL;
          mTestComponent = NULL;
          mApp = NULL;
@@ -113,17 +113,17 @@ class StealthActorTests : public CPPUNIT_NS::TestFixture
       void TestStealthActorProperties()
       {
          CPPUNIT_ASSERT_MESSAGE("Attaching as third person should default to true.",
-            mStealthActor->GetAttachAsThirdPerson());
+            mStealth->GetAttachAsThirdPerson());
 
-         mStealthActor->SetAttachAsThirdPerson(false);
+         mStealth->SetAttachAsThirdPerson(false);
 
          CPPUNIT_ASSERT_MESSAGE("Attaching as third person should be false.",
-            !mStealthActor->GetAttachAsThirdPerson());
+            !mStealth->GetAttachAsThirdPerson());
 
-         dtGame::Invokable *invoke = mStealthActor->GetGameActorProxy().GetInvokable("AttachToActor");
+         dtGame::Invokable *invoke = mStealth->GetGameActorProxy().GetInvokable("AttachToActor");
          CPPUNIT_ASSERT_MESSAGE("The AttachToActor invokable should not be NULL", invoke != NULL);
 
-         invoke = mStealthActor->GetGameActorProxy().GetInvokable("WarpToPosition");
+         invoke = mStealth->GetGameActorProxy().GetInvokable("WarpToPosition");
          CPPUNIT_ASSERT_MESSAGE("The WarpToPosition invokable should not be NULL", invoke != NULL);
 
       }
@@ -136,8 +136,8 @@ class StealthActorTests : public CPPUNIT_NS::TestFixture
       RefPtr<dtGame::GameManager> mGM;
       RefPtr<dtGame::DeadReckoningComponent> mDeadReckoningComponent;
       RefPtr<dtGame::TestComponent> mTestComponent;
-      RefPtr<SimCore::Actors::StealthActorProxy> mStealthProxy;
-      RefPtr<SimCore::Actors::StealthActor> mStealthActor;
+      RefPtr<SimCore::Actors::StealthActorProxy> mStealthActor;
+      RefPtr<SimCore::Actors::StealthActor> mStealth;
       RefPtr<dtABC::Application> mApp;
 };
 

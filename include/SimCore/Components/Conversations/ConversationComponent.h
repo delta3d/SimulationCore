@@ -55,10 +55,11 @@ namespace SimCore
             typedef dtCore::RefPtr<Conversation> ConversationPtr;
             typedef std::map<const dtCore::GameEvent*, ConversationPtr> ConversationMap;
 
+            static const dtCore::RefPtr<dtCore::SystemComponentType> TYPE;
             static const std::string DEFAULT_NAME;
 
             /// Constructor
-            ConversationComponent(const std::string &name = DEFAULT_NAME);
+            ConversationComponent(dtCore::SystemComponentType& type = *TYPE);
 
             /*virtual*/ void ProcessMessage(const dtGame::Message &message);
 
