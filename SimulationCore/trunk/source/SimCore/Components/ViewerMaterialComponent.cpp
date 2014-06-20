@@ -35,10 +35,9 @@ namespace SimCore
 {
    namespace Components
    {
-      const std::string ViewerMaterialComponent::DEFAULT_NAME = "ViewerMaterialComponent";
-
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      ViewerMaterialComponent::ViewerMaterialComponent(const std::string &name) : dtGame::GMComponent(name)
+      ViewerMaterialComponent::ViewerMaterialComponent(dtCore::SystemComponentType& type)
+      : BaseClass(type)
       {
          mClearMaterialsOnMapChange = false;
       }
@@ -152,9 +151,8 @@ namespace SimCore
          }
 
          // Couldnt find material... make a new one.
-         dtCore::RefPtr<SimCore::Actors::ViewerMaterialActorProxy> materialToMakeProxy;
-         GetGameManager()->CreateActor(*SimCore::Actors::EntityActorRegistry::MATERIAL_ACTOR_TYPE, materialToMakeProxy);
-         SimCore::Actors::ViewerMaterialActor* materialToMake = dynamic_cast<SimCore::Actors::ViewerMaterialActor*>(materialToMakeProxy->GetDrawable());
+         dtCore::RefPtr<SimCore::Actors::ViewerMaterialActor> materialToMake;
+         GetGameManager()->CreateActor(*SimCore::Actors::EntityActorRegistry::MATERIAL_ACTOR_TYPE, materialToMake);
          materialToMake->SetName(materialName);
          mOurMaterials.push_back(materialToMake);
          return *materialToMake;

@@ -88,14 +88,17 @@ using dtCore::RefPtr;
 
 namespace StealthGM
 {
-   const std::string StealthInputComponent::DEFAULT_NAME = "Input Component";
+   const dtCore::RefPtr<dtCore::SystemComponentType> StealthInputComponent::TYPE(new dtCore::SystemComponentType("StealthInputComponent", "GMComponents.StealthGM",
+         "",
+         BaseClass::TYPE));
+   const std::string StealthInputComponent::DEFAULT_NAME(TYPE->GetName());
 
    /////////////////////////////////////////////////////////////////////////////////
    StealthInputComponent::StealthInputComponent(bool enableLogging,
                                                 bool enablePlayback,
-                                                const std::string& name,
+                                                dtCore::SystemComponentType& type,
                                                 bool hasUI)
-      : SimCore::Components::BaseInputComponent(name)
+      : SimCore::Components::BaseInputComponent(type)
       , mCycleIndex(0)
       , mEnableLogging(enableLogging)
       , mEnablePlayback(enablePlayback)
@@ -202,8 +205,7 @@ namespace StealthGM
             return;
          }
 
-         RefPtr<SimCore::Actors::StealthActor> stealthActor
-            = static_cast<SimCore::Actors::StealthActor*>(&stealthProxy->GetGameActor());
+         RefPtr<SimCore::Actors::StealthActor> stealthActor = stealthProxy->GetDrawable<SimCore::Actors::StealthActor>();
          if (!stealthActor.valid())
          {
             GetLogger().LogMessage(dtUtil::Log::LOG_ERROR, __FUNCTION__, __LINE__,

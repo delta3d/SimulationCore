@@ -58,6 +58,12 @@ namespace SimCore
 {
    namespace HLA
    {
+
+      const dtCore::RefPtr<dtCore::SystemComponentType> HLAConnectionComponent::TYPE(new dtCore::SystemComponentType("HLAConnectionComponent","GMComponents.SimCore",
+            "Deletes things after a certain period of time.",
+            dtGame::GMComponent::BaseGMComponentType));
+      const std::string HLAConnectionComponent::DEFAULT_NAME(HLAConnectionComponent::TYPE->GetName());
+
       IMPLEMENT_ENUM(HLAConnectionComponent::ConnectionState);
       const HLAConnectionComponent::ConnectionState HLAConnectionComponent::ConnectionState::STATE_NOT_CONNECTED("NOT_CONNECTED");
       const HLAConnectionComponent::ConnectionState HLAConnectionComponent::ConnectionState::STATE_CONNECTING("CONNECTING");
@@ -71,11 +77,9 @@ namespace SimCore
       HLAConnectionComponent::ConnectionType HLAConnectionComponent::ConnectionType::TYPE_DIS("TYPE_DIS");
       HLAConnectionComponent::ConnectionType HLAConnectionComponent::ConnectionType::TYPE_OTHER("TYPE_OTHER");
 
-      const std::string HLAConnectionComponent::DEFAULT_NAME("HLAConnectionComponent");
-
       ///////////////////////////////////////////////////////////////////////
-      HLAConnectionComponent::HLAConnectionComponent(const std::string& name)
-         : dtGame::GMComponent(name)
+      HLAConnectionComponent::HLAConnectionComponent(dtCore::SystemComponentType& type)
+         : dtGame::GMComponent(type)
          , mRTIStandard(dtHLAGM::RTIAmbassador::RTI13_IMPLEMENTATION)
          , mRidFile()
          , mConnectionType(&ConnectionType::TYPE_NONE)
@@ -139,7 +143,7 @@ namespace SimCore
          }
          else
          {
-            proxies[0]->GetActor(ccActor);
+            proxies[0]->GetDrawable(ccActor);
          }
 
          // HLA

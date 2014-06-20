@@ -43,10 +43,12 @@ namespace SimCore
 {
    namespace Components
    {
+      const dtCore::RefPtr<dtCore::SystemComponentType> ViewerNetworkPublishingComponent::TYPE(new dtCore::SystemComponentType("ViewerNetworkPublishingComponent","GMComponents.SimCore",
+            "Takes messages from published actors and other configurable messages and pushes them to the network queue.", BaseClass::TYPE));
 
       ///////////////////////////////////////////////////////////////////////////
-      ViewerNetworkPublishingComponent::ViewerNetworkPublishingComponent(const std::string& name):
-         dtGame::DefaultNetworkPublishingComponent(name)
+      ViewerNetworkPublishingComponent::ViewerNetworkPublishingComponent(dtCore::SystemComponentType& type)
+      : BaseClass(type)
       {
       }
 

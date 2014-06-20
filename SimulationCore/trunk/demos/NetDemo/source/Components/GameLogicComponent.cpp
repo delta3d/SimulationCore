@@ -55,8 +55,8 @@ namespace NetDemo
    const std::string GameLogicComponent::WHEELED_VEHICLE_TRAILER_PROTOTYPE("NetDemo.DefaultWheeledVehicleTrailerPrototype");
 
    //////////////////////////////////////////////////////////////////////////
-   GameLogicComponent::GameLogicComponent(const std::string& name)
-      : BaseClass(name)
+   GameLogicComponent::GameLogicComponent(dtCore::SystemComponentType& type)
+      : BaseClass(type)
       , mLogger(dtUtil::Log::GetInstance("GameLogicComponent.cpp"))
       , mIsServer(false)
       , mIsConnectedToNetwork(false)

@@ -299,7 +299,7 @@ namespace StealthGM
       dtCore::RefPtr<StealthInputComponent> mInputComponent
          = new StealthInputComponent(mEnableLogging,
                                              mEnablePlayback,
-                                             StealthInputComponent::DEFAULT_NAME,
+                                             *StealthInputComponent::TYPE,
                                              IsUIRunning());
 
       gameManager.AddComponent(*mInputComponent, dtGame::GameManager::ComponentPriority::NORMAL);
@@ -336,9 +336,8 @@ namespace StealthGM
       }
 
       // HUD GUI COMPONENT
-      mHudGUI = new StealthHUD(gameManager.GetApplication().GetWindow(),
-                               mLogController.get(),
-                               StealthHUD::DEFAULT_NAME,
+      mHudGUI = new StealthHUD(mLogController.get(),
+                               *StealthHUD::TYPE,
                                IsUIRunning());
 
       gameManager.AddComponent(*mHudGUI, dtGame::GameManager::ComponentPriority::NORMAL);

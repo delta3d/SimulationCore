@@ -133,8 +133,6 @@ namespace SimCore
       RenderingSupportComponent::LightType RenderingSupportComponent::LightType::SPOT_LIGHT("SPOT_LIGHT");
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      const std::string RenderingSupportComponent::DEFAULT_NAME = "RenderingSupportComponent";
-
       const std::string RenderingSupportComponent::DEFAULT_LIGHT_NAME = "DefaultLight";
 
       OpenThreads::Atomic RenderingSupportComponent::DynamicLight::mLightCounter(1U);
@@ -204,8 +202,8 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      RenderingSupportComponent::RenderingSupportComponent(const std::string& name)
-         : dtGame::GMComponent(name)
+      RenderingSupportComponent::RenderingSupportComponent(dtCore::SystemComponentType& type)
+         : dtGame::GMComponent(type)
          , mEnableDynamicLights(true)
          , mEnableCullVisitor(false)
          , mEnableStaticTerrainPhysics(false)

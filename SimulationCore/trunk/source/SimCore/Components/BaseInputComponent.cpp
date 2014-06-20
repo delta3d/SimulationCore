@@ -51,17 +51,16 @@ namespace SimCore
    namespace Components
    {
 
-      const std::string BaseInputComponent::DEFAULT_NAME = "Input Component";
-
       ////////////////////////////////////////////////////////////////////
-      BaseInputComponent::BaseInputComponent(const std::string& name)
-         : dtGame::BaseInputComponent(name)
+      BaseInputComponent::BaseInputComponent(dtCore::SystemComponentType& type)
+         : dtGame::BaseInputComponent(type)
          , mEntityMagnification(1.0f)
          , mTestWeatherMode(TEST_WEATHER_CLEAR)
       {
          mLogger = &dtUtil::Log::GetInstance("BaseInputComponent.cpp");
          //mMouseListener = new BaseMouseListener(*this);
          //mKeyboardListener = new BaseKeyboardListener(*this);
+         SetName(DEFAULT_NAME);
       }
 
       ////////////////////////////////////////////////////////////////////

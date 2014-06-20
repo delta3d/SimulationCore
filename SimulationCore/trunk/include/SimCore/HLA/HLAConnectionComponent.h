@@ -84,10 +84,12 @@ namespace SimCore
             };
 
 
+            typedef dtGame::GMComponent BaseClass;
+            static const dtCore::RefPtr<dtCore::SystemComponentType> TYPE;
             static const std::string DEFAULT_NAME;
             
             /// Constructor
-            HLAConnectionComponent(const std::string &name = DEFAULT_NAME);
+            HLAConnectionComponent(dtCore::SystemComponentType& type = *TYPE);
 
             /**
              * Sets the map name to load

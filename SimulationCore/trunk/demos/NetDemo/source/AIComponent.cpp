@@ -25,11 +25,9 @@
 namespace NetDemo
 {
 
-   const std::string AIComponent::DEFAULT_NAME = "AIComponent";
-
    /////////////////////////////////////////////////////////////
-   AIComponent::AIComponent(const std::string& name)
-   : BaseClass(name)
+   AIComponent::AIComponent(dtCore::SystemComponentType& type)
+   : BaseClass(type)
    {
 
    }

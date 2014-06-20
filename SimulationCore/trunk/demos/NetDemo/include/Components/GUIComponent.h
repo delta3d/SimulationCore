@@ -114,9 +114,10 @@ namespace NetDemo
       public:
          typedef dtGame::GMComponent BaseClass;
 
+         static const dtCore::RefPtr<dtCore::SystemComponentType> TYPE;
          static const dtUtil::RefString DEFAULT_NAME;
 
-         GUIComponent( const std::string& name = DEFAULT_NAME.Get() );
+         GUIComponent( dtCore::SystemComponentType& type = *TYPE );
 
          void Initialize();
 
@@ -181,11 +182,7 @@ namespace NetDemo
          // High Order Objects
          dtCore::ObserverPtr<PlayerStatusActor> mPlayer;
          dtCore::ObserverPtr<GameLogicComponent> mAppComp;
-#if CEGUI_VERSION_MAJOR == 0 && CEGUI_VERSION_MINOR < 7
-         dtCore::RefPtr<dtGUI::CEUIDrawable> mGUI;
-#else
          dtCore::RefPtr<dtGUI::GUI> mGUI;
-#endif
          dtCore::RefPtr<SimCore::Components::HUDGroup> mMainWindow;
          dtGUI::ScriptModule* mScriptModule;
          dtCore::RefPtr<NetDemo::GUI::ScoreLabelManager> mScoreLabelManager;

@@ -428,7 +428,7 @@ namespace SimCore
             if( entityProxy != NULL )
             {
                SimCore::Actors::BaseEntity* entity = NULL;
-               entityProxy->GetActor( entity );
+               entityProxy->GetDrawable( entity );
                runtimeData.SetEntity( entity );
 
                // DEBUG: Use drawables to show the clamp points.

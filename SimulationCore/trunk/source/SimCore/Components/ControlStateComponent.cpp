@@ -52,7 +52,6 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////
       // CONTROL STATE COMPONENT
       ////////////////////////////////////////////////////////////////////////////////
-      const std::string ControlStateComponent::DEFAULT_NAME("ControlStateComponent");
       const std::string ControlStateComponent::STATION_NAME_PREFIX("Station:");
 
       // Control can be used by gunner and vehicle control states.
@@ -70,8 +69,8 @@ namespace SimCore
       const int ControlStateComponent::VEHICLE_STATION_TYPE = -1;
 
       ////////////////////////////////////////////////////////////////////////////////
-      ControlStateComponent::ControlStateComponent( const std::string& name )
-      : dtGame::GMComponent(name)
+      ControlStateComponent::ControlStateComponent( dtCore::SystemComponentType& type )
+      : dtGame::GMComponent(type)
       , mDisableRemoteWeaponModelSwap(false)
       {
       }
@@ -181,7 +180,7 @@ namespace SimCore
             if( proxy != NULL
                && proxy->GetActorType() == *SimCore::Actors::EntityActorRegistry::CONTROL_STATE_ACTOR_TYPE )
             {
-               return static_cast<const SimCore::Actors::ControlStateActor*>(proxy->GetActor());
+               return static_cast<const SimCore::Actors::ControlStateActor*>(proxy->GetDrawable());
             }
          }
 

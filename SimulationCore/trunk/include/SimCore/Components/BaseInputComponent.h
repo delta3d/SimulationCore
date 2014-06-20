@@ -52,6 +52,8 @@ namespace SimCore
          public:
             typedef dtGame::BaseInputComponent BaseClass;
 
+            static const dtCore::RefPtr<dtCore::SystemComponentType> TYPE;
+
             static const std::string DEFAULT_NAME;
 
             enum TestWeatherMode { TEST_WEATHER_CLEAR = 0, TEST_WEATHER_CLOUDY, 
@@ -59,7 +61,7 @@ namespace SimCore
                TEST_WEATHER_SNOW_LIGHT, TEST_WEATHER_SNOW_HEAVY };
 
             /// Constructor
-            BaseInputComponent(const std::string &name = DEFAULT_NAME);
+            BaseInputComponent(dtCore::SystemComponentType& type = *TYPE);
 
             /**
              * KeyboardListener override

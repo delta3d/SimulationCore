@@ -124,9 +124,8 @@ namespace DriverDemo
    const dtUtil::RefString DriverInputComponent::DOF_NAME_VIEW_DEFAULT(DriverInputComponent::DOF_NAME_VIEW_02.Get());
 
    ////////////////////////////////////////////////////////////////////////////////
-   DriverInputComponent::DriverInputComponent(const std::string& name) :
-      BaseClass(name),
-      mUsePhysicsDemoMode(false),
+   DriverInputComponent::DriverInputComponent(dtCore::SystemComponentType& type)
+   : BaseClass(type),
       mHorizontalFOV(60.0f),
       mVerticalFOV(60.0f),
       mNearClip(SimCore::BaseGameEntryPoint::PLAYER_NEAR_CLIP_PLANE),
@@ -205,7 +204,7 @@ namespace DriverDemo
          }
 
          SimCore::Actors::StealthActor* stealthActor
-            = dynamic_cast<SimCore::Actors::StealthActor*>(&stealthProxy->GetGameActor());
+            = stealthProxy->GetDrawable<SimCore::Actors::StealthActor>();
          if(stealthActor == NULL)
          {
             GetLogger().LogMessage(dtUtil::Log::LOG_ERROR, __FUNCTION__, __LINE__,
@@ -1476,7 +1475,7 @@ namespace DriverDemo
          if (mDRGhostActorProxy.valid())
          {
             SimCore::Actors::DRGhostActor* actor = NULL;
-            mDRGhostActorProxy->GetActor(actor);
+            mDRGhostActorProxy->GetDrawable(actor);
             actor->SetSlavedEntity(mVehicle);
             GetGameManager()->AddActor(*mDRGhostActorProxy, false, false);
          }

@@ -29,7 +29,6 @@
 #include <dtGame/message.h>
 #include <dtGame/messagetype.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
-//#include <SimCore/Actors/NxAgeiaParticleSystemActor.h>
 #include <SimCore/Actors/PhysicsParticleSystemActor.h>
 #include <SimCore/Actors/IGEnvironmentActor.h>
 #include <SimCore/Components/ParticleManagerComponent.h>
@@ -257,15 +256,14 @@ namespace SimCore
       //////////////////////////////////////////////////////////
       // Particle Manager Component code
       //////////////////////////////////////////////////////////
-      const std::string ParticleManagerComponent::DEFAULT_NAME("ParticleManagerComponent");
 
       //////////////////////////////////////////////////////////
-      ParticleManagerComponent::ParticleManagerComponent( const std::string& name )
-         : dtGame::GMComponent(name)
+      ParticleManagerComponent::ParticleManagerComponent( dtCore::SystemComponentType& type )
+         : dtGame::GMComponent(type)
          , mGlobalParticleCount(0)
          , mUpdateEnabled(true)
          , mUpdateInterval(3.0)
-         , mUpdateTimerName("ParticleMgrComp("+name+"):UpdateTimer")
+         , mUpdateTimerName("ParticleMgrComp("+type.GetName()+"):UpdateTimer")
          , mWindWasUpdated(false)
       {
 
@@ -354,7 +352,7 @@ namespace SimCore
                dynamic_cast<Actors::IGEnvironmentActorProxy*> (env);
 
             SimCore::Actors::IGEnvironmentActor* envActor;
-            envProxy->GetActor(envActor);
+            envProxy->GetDrawable(envActor);
 
             // Capture the wind force that must be applied to new
             // particle systems registered to this component.
@@ -370,7 +368,7 @@ namespace SimCore
                for (; toFillInIter != toFill.end(); ++toFillInIter)
                {
                    SimCore::Actors::PhysicsParticleSystemActor* currentParticleSystem = NULL;
-                   (*toFillInIter)->GetActor(currentParticleSystem);
+                   (*toFillInIter)->GetDrawable(currentParticleSystem);
                    currentParticleSystem->SetOverTimeForceVecMin(mWind);
                    currentParticleSystem->SetOverTimeForceVecMax(mWind);
                }

@@ -31,11 +31,13 @@
 
 namespace StealthGM
 {
-   const std::string ViewerConfigComponent::DEFAULT_NAME = "ViewerConfigComponent";
+   const dtCore::RefPtr<dtCore::SystemComponentType> ViewerConfigComponent::TYPE(new dtCore::SystemComponentType("StealthViewerConfigComponent", "GMComponents.SimCore.StealthGM",
+         "", BaseClass::BaseGMComponentType));
+   const std::string ViewerConfigComponent::DEFAULT_NAME(ViewerConfigComponent::TYPE->GetName());
 
    /////////////////////////////////////////////////////////////////////////
-   ViewerConfigComponent::ViewerConfigComponent(const std::string& name)
-      : dtGame::GMComponent(name)
+   ViewerConfigComponent::ViewerConfigComponent(dtCore::SystemComponentType& type)
+      : dtGame::GMComponent(type)
    {
 
    }
@@ -47,7 +49,7 @@ namespace StealthGM
    }
 
    /////////////////////////////////////////////////////////////////////////
-   void ViewerConfigComponent::ProcessMessage(const dtGame::Message &msg)
+   void ViewerConfigComponent::ProcessMessage(const dtGame::Message& msg)
    {
       if(msg.GetMessageType() == dtGame::MessageType::INFO_MAP_LOADED)
       {

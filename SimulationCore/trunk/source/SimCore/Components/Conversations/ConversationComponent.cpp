@@ -43,11 +43,10 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       // CLASS CODE
       //////////////////////////////////////////////////////////////////////////
-      const std::string ConversationComponent::DEFAULT_NAME = "ConversationComponent";
 
       //////////////////////////////////////////////////////////////////////////
-      ConversationComponent::ConversationComponent(const std::string &name)
-         : dtGame::GMComponent(name)
+      ConversationComponent::ConversationComponent(dtCore::SystemComponentType& type)
+         : dtGame::GMComponent(type)
       {
 
       }

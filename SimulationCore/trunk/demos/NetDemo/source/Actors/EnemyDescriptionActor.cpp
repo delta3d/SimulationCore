@@ -102,7 +102,7 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////////////
    //EnemyDescriptionActor
    ///////////////////////////////////////////////////////////////////////////////////
-   EnemyDescriptionActor::EnemyDescriptionActor(EnemyDescriptionActorProxy &proxy)
+   EnemyDescriptionActor::EnemyDescriptionActor(EnemyDescriptionActorProxy& proxy)
       : BaseClass(proxy)
       , mType(&EnemyDescriptionActor::EnemyType::ENEMY_DEFAULT)
    {

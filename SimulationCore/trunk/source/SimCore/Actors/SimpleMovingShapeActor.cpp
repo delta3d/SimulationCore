@@ -273,7 +273,7 @@ namespace SimCore
                   mShapeVolume->mVelocity = 0.05f;
                   //if there are fewer particles they should be more dense
                   mShapeVolume->mDensity = ComputeDensity();
-                  mShapeVolume->mTarget = GetGameActor().GetOSGNode();
+                  mShapeVolume->mTarget = GetDrawable()->GetOSGNode();
                   mShapeVolume->mAutoDeleteOnTargetNull = true;
                   mShapeVolume->mRenderMode = SimCore::Components::VolumeRenderingComponent::PARTICLE_VOLUME;
 
@@ -294,7 +294,7 @@ namespace SimCore
                   mShapeVolume->mRadius = mDimensions;
                   mShapeVolume->mNumParticles = numParticles;
                   mShapeVolume->mDensity = ComputeDensity();
-                  mShapeVolume->mTarget = GetGameActor().GetOSGNode();
+                  mShapeVolume->mTarget = GetDrawable()->GetOSGNode();
                   mShapeVolume->mAutoDeleteOnTargetNull = true;
 
                   vrc->CreateShapeVolume(mShapeVolume);

@@ -14,16 +14,17 @@
 #include <DriverActorRegistry.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
 
-//#ifdef AGEIA_PHYSICS
 #include <HoverVehicleActor.h>
 #include <HoverTargetActor.h>
 #include <HoverExplodingTargetActor.h>
 #include <dtPhysics/physicsactcomp.h>
-//#include <NxAgeiaWorldComponent.h>
-//#endif
 
 #include <dtCore/shadermanager.h>
 #include <dtCore/scene.h>
+
+#include <DriverHUD.h>
+#include <GameAppComponent.h>
+#include <DriverInputComponent.h>
 
 using dtCore::RefPtr;
 
@@ -39,6 +40,17 @@ namespace DriverDemo
    RefPtr<dtCore::ActorType> DriverActorRegistry::HOVER_EXPLODING_TARGET_ACTOR_TYPE(
       new dtCore::ActorType("HoverExplodingTargetActor", "DriverDemo", "A floaty shootable target that explodes for Driver Demo",
       SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE.get()));
+
+
+   const dtCore::RefPtr<dtCore::SystemComponentType> DriverHUD::TYPE(new dtCore::SystemComponentType("DriverHUD", "GMComponents.SimCore.DriveDemo",
+         "Driver Demo HUD component", dtGame::GMComponent::BaseGMComponentType));
+
+   const dtCore::RefPtr<dtCore::SystemComponentType> DriverInputComponent::TYPE(new dtCore::SystemComponentType("DriverInputComponent", "GMComponents.SimCore.DriverDemo",
+         "Driver Demo InputComponent", BaseClass::TYPE));
+
+   const dtCore::RefPtr<dtCore::SystemComponentType> GameAppComponent::TYPE(new dtCore::SystemComponentType("DriverGameAppComponent", "GMComponents.SimCore.DriveDemo",
+         "Driver Demo Game Application control component", BaseClass::TYPE));
+
 
    ///////////////////////////////////////////////////////////////////////////
    extern "C" DRIVER_DEMO_EXPORT dtCore::ActorPluginRegistry* CreatePluginRegistry()
@@ -64,5 +76,8 @@ namespace DriverDemo
       mActorFactory->RegisterType<HoverVehicleActorProxy>(HOVER_VEHICLE_ACTOR_TYPE.get());
       mActorFactory->RegisterType<HoverTargetActorProxy>(HOVER_TARGET_ACTOR_TYPE.get());
       mActorFactory->RegisterType<HoverExplodingTargetActorProxy>(HOVER_EXPLODING_TARGET_ACTOR_TYPE.get());
+      //mActorFactory->RegisterType<DriverHUD>();
+      mActorFactory->RegisterType<GameAppComponent>();
+      mActorFactory->RegisterType<DriverInputComponent>();
    }
 }

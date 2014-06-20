@@ -63,11 +63,9 @@ namespace SimCore
       //////////////////////////////////////////////////////////
       // Weather Component Code
       //////////////////////////////////////////////////////////
-      const std::string WeatherComponent::DEFAULT_NAME = "WeatherComponent";
-
       //////////////////////////////////////////////////////////
-      WeatherComponent::WeatherComponent( const std::string& name )
-         : dtGame::GMComponent(name),
+      WeatherComponent::WeatherComponent( dtCore::SystemComponentType& type )
+         : dtGame::GMComponent(type),
          mAllowClipAjust(true),
          mPrecipStart(0.0f),
          mNearClipPlane(SimCore::Tools::Binoculars::NEAR_CLIPPING_PLANE),
@@ -441,7 +439,7 @@ namespace SimCore
          if(coordConfigActorProxy != NULL)
          {
             dtActors::CoordinateConfigActor* coordConfigActor = NULL;
-            coordConfigActorProxy->GetActor(coordConfigActor);
+            coordConfigActorProxy->GetDrawable(coordConfigActor);
 
             // Compensate for the time zone
             osg::Vec3d geoOffset;

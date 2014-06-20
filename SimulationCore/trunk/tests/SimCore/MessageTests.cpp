@@ -477,14 +477,14 @@ class MessageTests : public CPPUNIT_NS::TestFixture
             mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE, t80Proxy);
             CPPUNIT_ASSERT(t80Proxy.valid());
             SimCore::Actors::BaseEntity* t80Actor;
-            t80Proxy->GetActor(t80Actor);
+            t80Proxy->GetDrawable(t80Actor);
             CPPUNIT_ASSERT(t80Actor != NULL);
 
             RefPtr<SimCore::Actors::StealthActorProxy> stealthProxy;
             mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::STEALTH_ACTOR_TYPE, stealthProxy);
             CPPUNIT_ASSERT(stealthProxy.valid());
             SimCore::Actors::StealthActor* stealthActor;
-            stealthProxy->GetActor(stealthActor);
+            stealthProxy->GetDrawable(stealthActor);
             CPPUNIT_ASSERT(stealthActor != NULL);
 
             mGM->AddActor(*t80Proxy, true, false);
@@ -572,10 +572,10 @@ class MessageTests : public CPPUNIT_NS::TestFixture
             dtCore::System::GetInstance().Step();
 
             osg::Vec3 defaultScale(1.0f, 1.0f, 1.0f), magScale(mag, mag, mag);
-            osg::Vec3 scale = static_cast<SimCore::Actors::StealthActor&>(stealthProxy->GetGameActor()).GetScaleMagnification();
+            osg::Vec3 scale = stealthProxy->GetDrawable<SimCore::Actors::StealthActor>()->GetScaleMagnification();
             CPPUNIT_ASSERT_MESSAGE("The stealth actor should NOT have had its scale set with the other actors", dtUtil::Equivalent(scale, defaultScale, 0.001f));
 
-            scale = static_cast<SimCore::Actors::BaseEntity&>(proxy->GetGameActor()).GetScaleMagnification();
+            scale = stealthProxy->GetDrawable<SimCore::Actors::BaseEntity>()->GetScaleMagnification();
             CPPUNIT_ASSERT_MESSAGE("The proxy should have had its scale set",
                dtUtil::Equivalent(scale, magScale, 0.001f));
 
@@ -585,11 +585,11 @@ class MessageTests : public CPPUNIT_NS::TestFixture
             dtCore::AppSleep(5);
             dtCore::System::GetInstance().Step();
 
-            scale = static_cast<SimCore::Actors::BaseEntity&>(proxy->GetGameActor()).GetScaleMagnification();
+            scale = proxy->GetDrawable<SimCore::Actors::BaseEntity>()->GetScaleMagnification();
             CPPUNIT_ASSERT(dtUtil::Equivalent(scale, defaultScale, 0.001f));
 
             // All changes backed out now, can test with input component
-            RefPtr<SimCore::Components::BaseInputComponent> bic = new SimCore::Components::BaseInputComponent("TestInputComponent");
+            RefPtr<SimCore::Components::BaseInputComponent> bic = new SimCore::Components::BaseInputComponent();
             CPPUNIT_ASSERT(bic.valid());
 
             mGM->AddComponent(*bic, dtGame::GameManager::ComponentPriority::NORMAL);
@@ -606,11 +606,11 @@ class MessageTests : public CPPUNIT_NS::TestFixture
             dtCore::AppSleep(5);
             dtCore::System::GetInstance().Step();
 
-            scale = static_cast<SimCore::Actors::StealthActor&>(stealthProxy->GetGameActor()).GetScaleMagnification();
+            scale = stealthProxy->GetDrawable<SimCore::Actors::StealthActor>()->GetScaleMagnification();
             CPPUNIT_ASSERT_MESSAGE("Again, the stealth actor should NOT have scaled",
                dtUtil::Equivalent(scale, defaultScale, 0.001f));
 
-            scale = static_cast<SimCore::Actors::BaseEntity&>(proxy->GetGameActor()).GetScaleMagnification();
+            scale = proxy->GetDrawable<SimCore::Actors::BaseEntity>()->GetScaleMagnification();
             CPPUNIT_ASSERT_MESSAGE("The entity should have scaled to twice the BIC scale",
                dtUtil::Equivalent(scale, osg::Vec3(BICscale, BICscale, BICscale), 0.001f));
 
@@ -632,7 +632,7 @@ class MessageTests : public CPPUNIT_NS::TestFixture
 
             for(unsigned int i = 0; i < size; i++)
             {
-               scale = static_cast<SimCore::Actors::BaseEntity&>(proxies[i]->GetGameActor()).GetScaleMagnification();
+               scale = proxies[i]->GetDrawable<SimCore::Actors::BaseEntity>()->GetScaleMagnification();
                CPPUNIT_ASSERT_MESSAGE("Each entity should have been scaled",
                   dtUtil::Equivalent(scale, magScale, 0.001f));
                mGM->DeleteActor(*proxies[i]);

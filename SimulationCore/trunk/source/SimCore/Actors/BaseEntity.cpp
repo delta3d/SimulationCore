@@ -167,7 +167,7 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////
       void BaseEntityActorProxy::BuildPropertyMap()
       {
-         BaseEntity& e = static_cast<BaseEntity&>(GetGameActor());
+         BaseEntity& e = *GetDrawable<BaseEntity>();
 
          BaseClass::BuildPropertyMap();
 
@@ -369,7 +369,7 @@ namespace SimCore
       {
          // TODO: !!! Call both the actor and proxy functions with InvokeRemovedFromWorld on Game Actor.
          // Game Actor currently does not have this function nor is it being called by the game manager.
-         static_cast<SimCore::Actors::BaseEntity*>(&GetGameActor())->OnRemovedFromWorld();
+         GetDrawable<SimCore::Actors::BaseEntity>()->OnRemovedFromWorld();
       }
 
       ////////////////////////////////////////////////////////////////////////////////////

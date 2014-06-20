@@ -36,11 +36,9 @@
 namespace NetDemo
 {
 
-   const std::string SpawnComponent::DEFAULT_NAME = "SpawnComponent";
-
    /////////////////////////////////////////////////////////////
-   SpawnComponent::SpawnComponent(const std::string& name)
-   : BaseClass(name)
+   SpawnComponent::SpawnComponent(dtCore::SystemComponentType& type)
+   : BaseClass(type)
    , mNumEnemiesStart(2)
    , mNumEnemiesCurrent(0)
    , mMaxEnemies(150)
@@ -118,8 +116,8 @@ namespace NetDemo
          GetGameManager()->FindActorByType(*NetDemoActorRegistry::SERVER_GAME_STATUS_ACTOR_TYPE, proxy);
          if(proxy != NULL)
          {
-            ServerGameStatusActor& actor = static_cast<ServerGameStatusActor&>(proxy->GetGameActor());
-            InitGameState(actor.GetGameStatus(), actor.GetGameDifficulty(), actor.GetNumPlayers(), actor.GetMaxNumWaves());
+            ServerGameStatusActor* actor = proxy->GetDrawable<ServerGameStatusActor>();
+            InitGameState(actor->GetGameStatus(), actor->GetGameDifficulty(), actor->GetNumPlayers(), actor->GetMaxNumWaves());
          }
          else
          {
@@ -127,11 +125,11 @@ namespace NetDemo
          }
 
          //collect all enemy motherships
-         std::vector<dtCore::ActorProxy*> proxies;
+         std::vector<dtCore::BaseActorObject*> proxies;
          GetGameManager()->FindActorsByType(*NetDemoActorRegistry::ENEMY_MOTHERSHIP_ACTOR_TYPE, proxies);
 
-         std::vector<dtCore::ActorProxy*>::iterator iter = proxies.begin();
-         std::vector<dtCore::ActorProxy*>::iterator iterEnd = proxies.end();
+         std::vector<dtCore::BaseActorObject*>::iterator iter = proxies.begin();
+         std::vector<dtCore::BaseActorObject*>::iterator iterEnd = proxies.end();
 
          for(; iter != iterEnd; ++iter)
          {
@@ -164,7 +162,7 @@ namespace NetDemo
 
    void SpawnComponent::SpawnEnemy( const EnemyDescriptionActor* desc )
    {
-      std::string errorMessage("Error attempting to spawn enemy, cannot find prototype by the name '" + desc->GetPrototypeName() + ".'");
+      std::string errorMessage("Error attempting to spawn enemy, cannot find prototype by the name '" + desc->GetSpawnInfo().GetEnemyPrototypeName() + ".'");
 
       dtCore::RefPtr<BaseEnemyActorProxy> enemyProxy = NULL;
       SimCore::Utils::CreateActorFromPrototypeWithException(*GetGameManager(),

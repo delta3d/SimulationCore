@@ -47,15 +47,13 @@ namespace SimCore
 {
    namespace Components
    {
-      ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      const std::string BaseGameAppComponent::DEFAULT_NAME = "BaseGameAppComponent";
       const std::string BaseGameAppComponent::CMD_LINE_PROJECTPATH            = "ProjectPath";
       const std::string BaseGameAppComponent::CMD_LINE_STATISTICS_INTERVAL    = "StatisticsInterval";
       const std::string BaseGameAppComponent::CMD_LINE_MAP_NAME               = "MapName";
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      BaseGameAppComponent::BaseGameAppComponent(const std::string& name)
-         : dtGame::GMComponent(name)
+      BaseGameAppComponent::BaseGameAppComponent(dtCore::SystemComponentType& type)
+         : dtGame::GMComponent(type)
       {
          mCommandLineObject = new SimCore::CommandLineObject();
       }

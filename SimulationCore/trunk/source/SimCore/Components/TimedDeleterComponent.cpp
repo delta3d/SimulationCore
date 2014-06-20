@@ -35,10 +35,8 @@ namespace SimCore
 {
    namespace Components
    {
-      const std::string TimedDeleterComponent::DEFAULT_NAME = "TimedDeleterComponent";
-
-      TimedDeleterComponent::TimedDeleterComponent( const std::string& name )
-         : dtGame::GMComponent(name)
+      TimedDeleterComponent::TimedDeleterComponent( dtCore::SystemComponentType& type )
+         : dtGame::GMComponent(type)
       {
       }
 

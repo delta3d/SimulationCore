@@ -56,8 +56,8 @@ namespace SimCore
          , mName()
          , mInteractionText()
          , mSoundHandle()
-         , mResponses()
          , mRepeatText()
+         , mResponses()
       {
 
       }

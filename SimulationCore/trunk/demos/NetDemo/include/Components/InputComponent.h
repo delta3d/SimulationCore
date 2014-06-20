@@ -72,6 +72,8 @@ namespace NetDemo
       public:
          typedef SimCore::Components::BaseInputComponent BaseClass;
 
+         static const dtCore::RefPtr<dtCore::SystemComponentType> TYPE;
+
          // The common DOF names found on most vehicle models
          static const dtUtil::RefString DOF_NAME_WEAPON_PIVOT;
          static const dtUtil::RefString DOF_NAME_WEAPON_FIRE_POINT;
@@ -82,7 +84,7 @@ namespace NetDemo
          static const dtUtil::RefString DOF_TOPDOWN_VIEW_02;
 
          /// Constructor
-         InputComponent(const std::string& name = dtGame::BaseInputComponent::DEFAULT_NAME);
+         InputComponent();
 
          virtual void ProcessMessage(const dtGame::Message& message);
 
