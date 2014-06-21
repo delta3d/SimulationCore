@@ -27,14 +27,12 @@
 #include <SimCore/Actors/EntityActorRegistry.h>
 #include <SimCore/ActComps/WeaponInventoryActComp.h>
 
-#include <dtAnim/cal3ddatabase.h>
 #include <dtAnim/animnodebuilder.h>
 #include <dtAnim/animationcomponent.h>
 #include <dtAnim/animationsequence.h>
 #include <dtAnim/animationchannel.h>
-#include <dtAnim/animationwrapper.h>
+#include <dtAnim/basemodelwrapper.h>
 #include <dtAnim/sequencemixer.h>
-#include <dtAnim/cal3dmodelwrapper.h>
 #include <dtAnim/walkrunblend.h>
 
 #include <dtAI/worldstate.h>
@@ -62,8 +60,6 @@ DT_DISABLE_WARNING_ALL_START
 #include <osg/MatrixTransform>
 #include <osg/io_utils>
 #include <sstream>
-
-#include <cal3d/cal3d.h>
 DT_DISABLE_WARNING_END
 
 #ifdef DELTA_WIN32
@@ -341,7 +337,7 @@ namespace SimCore
       }
 
       /////////////////////////////////////////////////////////////////
-      void SearchAndRegisterAnimationOptions(dtAnim::SequenceMixer& seqMixer, const dtUtil::RefString& name, const std::vector<dtUtil::RefString>& options, dtAnim::Cal3DModelWrapper& wrapper)
+      void SearchAndRegisterAnimationOptions(dtAnim::SequenceMixer& seqMixer, const dtUtil::RefString& name, const std::vector<dtUtil::RefString>& options, dtAnim::BaseModelWrapper& wrapper)
       {
          dtCore::RefPtr<const dtAnim::Animatable> anim = seqMixer.GetRegisteredAnimation(name);
          if (anim != NULL) return;
@@ -380,7 +376,7 @@ namespace SimCore
          newWRBlend->SetName(OpName);
 
          dtAnim::SequenceMixer& seqMixer = helper->GetSequenceMixer();
-         dtAnim::Cal3DModelWrapper* wrapper = helper->GetModelWrapper();
+         dtAnim::BaseModelWrapper* wrapper = helper->GetModelWrapper();
 
          SearchAndRegisterAnimationOptions(seqMixer, newWalkAnimName, nameWalkOptions, *wrapper);
          SearchAndRegisterAnimationOptions(seqMixer, newRunAnimName, nameRunOptions, *wrapper);
@@ -508,10 +504,17 @@ namespace SimCore
                optionsStand, "Kneel Deployed",
                GetWalkAnimationSpeed(), GetWalkAnimationSpeed() * 2.0f);
 
-         dtAnim::AttachmentController& atcl = helper->GetAttachmentController();
-         for (unsigned i = 0; i < atcl.GetNumAttachments(); ++i)
+         dtAnim::AttachmentController* atcl = helper->GetAttachmentController();
+         if (atcl == NULL)
          {
-            AddChild(atcl.GetAttachment(i)->first, GetScaleMatrixTransform().getName());
+            LOG_ERROR("Human \"" + GetName() + "\" does not have an attachement controller for character model.");
+         }
+         else
+         {
+            for (unsigned i = 0; i < atcl->GetNumAttachments(); ++i)
+            {
+               AddChild(atcl->GetAttachment(i)->first, GetScaleMatrixTransform().getName());
+            }
          }
 
          //initialize helper
@@ -647,7 +650,7 @@ namespace SimCore
             return;
          }
 
-         dtAnim::Cal3DModelWrapper* wrapper = GetComponent<dtAnim::AnimationHelper>()->GetModelWrapper();
+         dtAnim::BaseModelWrapper* wrapper = GetComponent<dtAnim::AnimationHelper>()->GetModelWrapper();
 
          //Can't update if the wrapper is NULL.
          if (wrapper == NULL)
@@ -660,9 +663,15 @@ namespace SimCore
          dtUtil::StringTokenizer<dtUtil::IsDelimeter>::tokenize(tokens, GetWeaponMeshName(), del);
 
          //get all data for the meshes and emit
-         for (int meshID=0; meshID < wrapper->GetCoreMeshCount(); meshID++)
+         dtAnim::MeshInterface* mesh = NULL;
+         dtAnim::MeshArray meshes;
+         wrapper->GetMeshes(meshes);
+         dtAnim::MeshArray::iterator curIter = meshes.begin();
+         dtAnim::MeshArray::iterator endIter = meshes.end();
+         for (; curIter != endIter; ++curIter)
          {
-            const std::string& nameToSend = wrapper->GetCoreMeshName(meshID);
+            mesh = curIter->get();
+            const std::string& nameToSend = mesh->GetName();
             if (GetContainsWeaponName(tokens, nameToSend))
             {
                //in the editor environment there may be no game manager
@@ -677,14 +686,8 @@ namespace SimCore
                bool visibleWeapon = alwaysShowWeapon || (*mPrimaryWeaponStateEnum == HumanActorProxy::WeaponStateEnum::FIRING_POSITION)
                   || (*mPrimaryWeaponStateEnum == HumanActorProxy::WeaponStateEnum::DEPLOYED);
 
-               if (visibleWeapon)
-               {
-                  wrapper->ShowMesh(meshID);
-               }
-               else
-               {
-                  wrapper->HideMesh(meshID);
-               }
+               mesh->SetVisible(visibleWeapon);
+
                break;
             }
          }
