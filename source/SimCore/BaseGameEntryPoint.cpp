@@ -40,6 +40,7 @@
 #include <SimCore/Tools/Binoculars.h>
 
 #include <dtUtil/fileutils.h>
+#include <dtUtil/log.h>
 #include <dtUtil/stringutils.h>
 
 #include <dtCore/camera.h>
@@ -65,8 +66,8 @@
 #include <dtUtil/datapathutils.h>
 
 #include <dtAnim/animationcomponent.h>
-#include <dtAnim/cal3ddatabase.h>
 #include <dtAnim/animnodebuilder.h>
+#include <dtAnim/modeldatabase.h>
 #include <dtABC/application.h>
 
 #include <osg/ArgumentParser>
@@ -400,17 +401,24 @@ namespace SimCore
                CONFIG_PROP_USE_GPU_CHARACTER_SKINNING, "1");
 
 
-      dtAnim::AnimNodeBuilder& nodeBuilder = dtAnim::Cal3DDatabase::GetInstance().GetNodeBuilder();
+      dtAnim::AnimNodeBuilder* nodeBuilder = dtAnim::ModelDatabase::GetInstance().GetNodeBuilder();
 
-      if (useGPUSkinning == "1" || useGPUSkinning == "true")
+      if (nodeBuilder == NULL)
       {
-         nodeBuilder.SetCreate(dtAnim::AnimNodeBuilder::CreateFunc(&nodeBuilder, &dtAnim::AnimNodeBuilder::CreateHardware));
-         LOG_INFO("Using GPU Character Skinning");
+         LOG_ERROR("Failed to acquire an AnimNodeBuilder from the ModelDatabase.");
       }
-      else
+      else 
       {
-         nodeBuilder.SetCreate(dtAnim::AnimNodeBuilder::CreateFunc(&nodeBuilder, &dtAnim::AnimNodeBuilder::CreateSoftware));
-         LOG_INFO("Using CPU Character Skinning");
+         if (useGPUSkinning == "1" || useGPUSkinning == "true")
+         {
+            nodeBuilder->SetCreate(dtAnim::AnimNodeBuilder::CreateFunc(nodeBuilder, &dtAnim::AnimNodeBuilder::CreateHardware));
+            LOG_INFO("Using GPU Character Skinning");
+         }
+         else
+         {
+            nodeBuilder->SetCreate(dtAnim::AnimNodeBuilder::CreateFunc(nodeBuilder, &dtAnim::AnimNodeBuilder::CreateSoftware));
+            LOG_INFO("Using CPU Character Skinning");
+         }
       }
 
       std::string highResGroundClampingRange = gameManager.GetConfiguration().GetConfigPropertyValue(
