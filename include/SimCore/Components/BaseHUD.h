@@ -64,8 +64,8 @@ namespace SimCore
       };
 
       /**
-      * HUD State enumeration - what info is the HUD showing.
-      */
+       * HUD State enumeration - what info is the HUD showing.
+       */
       class SIMCORE_EXPORT HUDState : public dtUtil::Enumeration
       {
          DECLARE_ENUM(HUDState);
@@ -75,7 +75,7 @@ namespace SimCore
          static HUDState NONE;
          static HUDState HELP;
       private:
-         HUDState(const std::string &name) : dtUtil::Enumeration(name)
+         HUDState(const std::string& name) : dtUtil::Enumeration(name)
          {
             AddInstance(this);
          }
@@ -85,6 +85,10 @@ namespace SimCore
       class SIMCORE_EXPORT BaseHUD : public dtGame::GMComponent
       {
       public:
+         typedef dtGame::GMComponent BaseClass;
+         
+         BaseHUD(const std::string& name = "BaseHUD");
+   
          BaseHUD( dtCore::DeltaWin* win, const std::string& name = "BaseHUD",
             const std::string& ceguiScheme = "CEGUI/schemes/WindowsLook.scheme" );
 
@@ -95,18 +99,13 @@ namespace SimCore
          // The parameters passed in represent the resolution at which the
          // HUD elements and layout were designed, and aid in setup of
          // elements in relative position and relative size modes.
-         void Initialize( unsigned int designedResWidth = 1920, unsigned int designedResHeight = 1200);
+         void Initialize( unsigned int designedResWidth = 0, unsigned int designedResHeight = 0);
 
          CEGUI::Window* GetMainCEGUIWindow();
          const CEGUI::Window* GetMainCEGUIWindow() const;
 
-#if CEGUI_VERSION_MAJOR == 0 && CEGUI_VERSION_MINOR < 7
-         dtCore::RefPtr<dtGUI::CEUIDrawable> GetGUIDrawable() { return mGUI; }
-         const dtCore::RefPtr<dtGUI::CEUIDrawable> GetGUIDrawable() const { return mGUI; }
-#else
          osg::Group& GetRootNode();
          const osg::Group& GetRootNode() const;
-#endif
 
          virtual void SetHUDState(HUDState& newState) { mHUDState = &newState;  UpdateState(); }
          HUDState& GetHUDState() { return *mHUDState; }
@@ -121,13 +120,16 @@ namespace SimCore
 
          virtual void TickHUD();
 
-         dtCore::DeltaWin* GetMainDeltaWindow() { return mWin; }
-         const dtCore::DeltaWin* GetMainDeltaWindow() const { return mWin; }
+         dtCore::DeltaWin* GetMainDeltaWindow();
+         const dtCore::DeltaWin* GetMainDeltaWindow() const;
+         void SetMainDeltaWindow(dtCore::DeltaWin* win);
 
-#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR >= 7
          dtGUI::GUI* GetGUI();
          const dtGUI::GUI* GetGUI() const;
-#endif
+
+         DT_DECLARE_ACCESSOR(int, DesignedResWidth);
+         DT_DECLARE_ACCESSOR(int, DesignedResHeight);
+         DT_DECLARE_ACCESSOR(std::string, SchemeFile);
 
       protected:
 
@@ -145,16 +147,10 @@ namespace SimCore
       private:
          dtCore::DeltaWin* mWin;
          dtCore::RefPtr<HUDGroup> mMainWindow;
-#if CEGUI_VERSION_MAJOR == 0 && CEGUI_VERSION_MINOR < 7
-         dtCore::RefPtr<dtGUI::CEUIDrawable> mGUI;
-#else
          dtCore::RefPtr<dtGUI::GUI> mGUI;
-#endif
          dtGUI::ScriptModule* mScriptModule;
 
          HUDState* mHUDState;
-
-         std::string mSchemeFile;
       };
 
    }
