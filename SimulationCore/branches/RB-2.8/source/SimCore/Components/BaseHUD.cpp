@@ -1,23 +1,23 @@
 /* -*-c++-*-
-* Simulation Core
-* Copyright 2007-2008, Alion Science and Technology
-*
-* This library is free software; you can redistribute it and/or modify it under
-* the terms of the GNU Lesser General Public License as published by the Free
-* Software Foundation; either version 2.1 of the License, or (at your option)
-* any later version.
-*
-* This library is distributed in the hope that it will be useful, but WITHOUT
-* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-* FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
-* details.
-*
-* You should have received a copy of the GNU Lesser General Public License
-* along with this library; if not, write to the Free Software Foundation, Inc.,
-* 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-*
-* This software was developed by Alion Science and Technology Corporation under
-* circumstances in which the U. S. Government may have rights in the software.
+ * Simulation Core
+ * Copyright 2007-2008, Alion Science and Technology
+ *
+ * This library is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 2.1 of the License, or (at your option)
+ * any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this library; if not, write to the Free Software Foundation, Inc.,
+ * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ *
+ * This software was developed by Alion Science and Technology Corporation under
+ * circumstances in which the U. S. Government may have rights in the software.
  * @author Chris Rodgers
  */
 
@@ -33,13 +33,8 @@
 
 #include <dtGame/gamemanager.h>
 
-#if CEGUI_VERSION_MAJOR == 0 && CEGUI_VERSION_MINOR < 7
-#include <dtGUI/ceuidrawable.h>
-#include <dtGUI/basescriptmodule.h>
-#else
 #include <dtGUI/gui.h>
 #include <dtGUI/scriptmodule.h>
-#endif
 
 #include <dtUtil/fileutils.h>
 
@@ -50,26 +45,19 @@
 #include <osg/MatrixTransform>
 #include <osg/Matrix>
 
-#if CEGUI_VERSION_MAJOR == 0 && CEGUI_VERSION_MINOR < 7
-#include <dtABC/applicationconfigschema.h>
-//these are to realize a window if we do not have a valid context to initialize
-#include <osg/GraphicsContext>
-#include <osgViewer/GraphicsWindow>
-#endif
-
 namespace SimCore
 {
    namespace Components
    {
 
       BaseHUDInitException::BaseHUDInitException(const std::string& message,
-               const std::string& filename, unsigned int linenum)
+            const std::string& filename, unsigned int linenum)
       : dtUtil::Exception(message, filename, linenum)
       {
       }
 
       BaseHUDRuntimeException::BaseHUDRuntimeException(const std::string& message,
-               const std::string& filename, unsigned int linenum)
+            const std::string& filename, unsigned int linenum)
       : dtUtil::Exception(message, filename, linenum)
       {
       }
@@ -89,13 +77,28 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       // Base HUD Code
       //////////////////////////////////////////////////////////////////////////
+      BaseHUD::BaseHUD(const std::string& name)
+      : dtGame::GMComponent(name)
+      , mDesignedResWidth(1920)
+      , mDesignedResHeight(1200)
+      , mSchemeFile("CEGUI/schemes/WindowsLook.scheme")
+      , mWin(NULL)
+      , mScriptModule(new dtGUI::ScriptModule())
+      , mHUDState(&HUDState::MINIMAL)
+      {
+
+      }
+
+      //////////////////////////////////////////////////////////////////////////
       BaseHUD::BaseHUD(dtCore::DeltaWin *win, const std::string& name,
-         const std::string& ceguiScheme )
-         : dtGame::GMComponent(name)
-         , mWin(win)
-         , mScriptModule(new dtGUI::ScriptModule())
-         , mHUDState(&HUDState::MINIMAL)
-         , mSchemeFile(ceguiScheme)
+            const std::string& ceguiScheme )
+      : dtGame::GMComponent(name)
+      , mDesignedResWidth(1920)
+      , mDesignedResHeight(1200)
+      , mSchemeFile(ceguiScheme.empty()? std::string("CEGUI/schemes/WindowsLook.scheme") : ceguiScheme)
+      , mWin(win)
+      , mScriptModule(new dtGUI::ScriptModule())
+      , mHUDState(&HUDState::MINIMAL)
       {
       }
 
@@ -108,38 +111,27 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
+      DT_IMPLEMENT_ACCESSOR(BaseHUD, int, DesignedResWidth)
+      DT_IMPLEMENT_ACCESSOR(BaseHUD, int, DesignedResHeight)
+      DT_IMPLEMENT_ACCESSOR(BaseHUD, std::string, SchemeFile)
+
+      //////////////////////////////////////////////////////////////////////////
       void BaseHUD::Initialize( unsigned int designedResWidth, unsigned int designedResHeight )
       {
-#if CEGUI_VERSION_MAJOR == 0 && CEGUI_VERSION_MINOR < 7
-         bool realized = GetGameManager()->GetApplication().GetWindow()->GetOsgViewerGraphicsWindow()->isRealized();
-         //this code will create an opengl context to initialize CEGUI with
-         //we only need to do this if OSG does not realize on creation
-         dtCore::RefPtr<osg::GraphicsContext> gc;
-         if(!realized)
+         if (mWin == NULL && GetGameManager() != NULL)
          {
-            osg::ref_ptr<osg::GraphicsContext::Traits> traits = new osg::GraphicsContext::Traits;
-            traits->x = 0;
-            traits->y = 0;
-            traits->width = 1;
-            traits->height = 1;
-            traits->windowDecoration = false;
-            traits->doubleBuffer = false;
-            traits->sharedContext = 0;
-            traits->pbuffer = false;
-
-            gc = osg::GraphicsContext::createGraphicsContext(traits.get());
-
-            if (gc.valid())
-            {
-               gc->realize();
-               gc->makeCurrent();
-               if (!dynamic_cast<osgViewer::GraphicsWindow*>(gc.get()))
-               {
-                  LOG_ERROR("Unable to create graphics context to initialize CEGUI.");
-               }
-            }
+            mWin = GetGameManager()->GetApplication().GetWindow();
          }
-#endif
+
+         if (designedResWidth > 0)
+         {
+            mDesignedResWidth = designedResWidth;
+         }
+
+         if (designedResHeight > 0)
+         {
+            mDesignedResHeight = designedResHeight;
+         }
 
          InitializeCEGUI();
 
@@ -151,7 +143,7 @@ namespace SimCore
          // Do the GUI specific setup
          try
          {
-            SetupGUI( *hudOverlay, designedResWidth, designedResHeight );
+            SetupGUI( *hudOverlay, unsigned(mDesignedResWidth), unsigned(mDesignedResHeight) );
 
             // finally, update the state - disable/hide to make it match current state
             UpdateState();
@@ -212,6 +204,19 @@ namespace SimCore
       void BaseHUD::OnAddedToGM()
       {
          //InitializeCEGUI();
+      }
+
+      dtCore::DeltaWin* BaseHUD::GetMainDeltaWindow()
+      {
+         return mWin;
+      }
+      const dtCore::DeltaWin* BaseHUD::GetMainDeltaWindow() const
+      {
+         return mWin;
+      }
+      void BaseHUD::SetMainDeltaWindow(dtCore::DeltaWin* win)
+      {
+         mWin = win;
       }
 
       //////////////////////////////////////////////////////////////////////////

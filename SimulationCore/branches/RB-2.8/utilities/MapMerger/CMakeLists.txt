@@ -1,4 +1,4 @@
-SET(PROG_NAME   MapMerger)
+SET(APP_NAME   MapMerger)
 
 SET(HEADER_PATH ${CMAKE_CURRENT_SOURCE_DIR})
 SET(SOURCE_PATH ${CMAKE_CURRENT_SOURCE_DIR})
@@ -11,12 +11,12 @@ file(GLOB PROG_SOURCES
    "${SOURCE_PATH}/*.cpp"
    )
 
-ADD_EXECUTABLE(${PROG_NAME}
+ADD_EXECUTABLE(${APP_NAME}
     ${PROG_PUBLIC_HEADERS}
     ${PROG_SOURCES}
 )
 
-LINK_WITH_VARIABLES(${PROG_NAME}
+LINK_WITH_VARIABLES(${APP_NAME}
                                    DTUTIL_LIBRARY
                                    DTCORE_LIBRARY
                                    DTAUDIO_LIBRARY
@@ -28,8 +28,9 @@ LINK_WITH_VARIABLES(${PROG_NAME}
                                    OSGDB_LIBRARY
                                    OPENTHREADS_LIBRARY)
 
-TARGET_LINK_LIBRARIES(${PROG_NAME} 
+TARGET_LINK_LIBRARIES(${APP_NAME} 
    ${OPENGL_LIBRARY}
    ${AGL_LIBRARY}
 )
 
+INCLUDE(ProgramInstall OPTIONAL)
