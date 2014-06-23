@@ -13,7 +13,7 @@ ADD_EXECUTABLE(${APP_NAME}
     ${PROG_SOURCES}
 )
 
-LINK_WITH_VARIABLES(${PROG_NAME}
+LINK_WITH_VARIABLES(${APP_NAME}
                                    QT_QTCORE_LIBRARY
                                    QT_QTGUI_LIBRARY
                                    QT_QTOPENGL_LIBRARY
