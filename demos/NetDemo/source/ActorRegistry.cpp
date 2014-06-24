@@ -34,6 +34,7 @@
 #include <dtCore/shadermanager.h>
 #include <dtCore/scene.h>
 
+#include <AIComponent.h>
 #include <Components/GUIComponent.h>
 #include <Components/InputComponent.h>
 #include <Components/SpawnComponent.h>
@@ -97,6 +98,7 @@ namespace NetDemo
 
 
 
+   const dtCore::RefPtr<dtCore::SystemComponentType> AIComponent::TYPE(new dtCore::SystemComponentType("AIComponent","GMComponents.SimCore.NetDemo", "", dtGame::BaseInputComponent::DEFAULT_TYPE));
    const dtCore::RefPtr<dtCore::SystemComponentType> InputComponent::TYPE(new dtCore::SystemComponentType("InputComponent","GMComponents.SimCore.NetDemo", "", dtGame::BaseInputComponent::DEFAULT_TYPE));
    const dtCore::RefPtr<dtCore::SystemComponentType> SpawnComponent::TYPE(new dtCore::SystemComponentType("SpawnComponent","GMComponents.SimCore.NetDemo", "", dtGame::GMComponent::BaseGMComponentType));
    const dtCore::RefPtr<dtCore::SystemComponentType> GameLogicComponent::TYPE(new dtCore::SystemComponentType("GameLogicComponent","GMComponents.SimCore.NetDemo", "", BaseClass::TYPE));
