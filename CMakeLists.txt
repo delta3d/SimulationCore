@@ -81,8 +81,8 @@ endif()
 IF (DELTA3D_FOUND)
 
    include(PlatformConfiguration)
-
-   INCLUDE(PCHMacros)
+   INCLUDE(PCHMacros)   
+   INCLUDE(SimCoreDataInstall)
 
    IF (BUILD_WITH_PCH)
      ADD_DEFINITIONS(-DSIMCORE_USE_PCH)
