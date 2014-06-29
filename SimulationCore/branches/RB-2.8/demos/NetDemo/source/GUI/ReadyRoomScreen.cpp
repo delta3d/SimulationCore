@@ -86,7 +86,7 @@ namespace NetDemo
             curProxy = *proxyIter;
             if(curProxy != NULL)
             {
-               curProxy->GetActor(curPlayerStats);
+               curProxy->GetDrawable(curPlayerStats);
                if(curPlayerStats != NULL)
                {
                   // Create the new list item.

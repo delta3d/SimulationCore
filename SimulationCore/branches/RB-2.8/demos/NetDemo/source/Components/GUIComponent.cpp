@@ -272,7 +272,7 @@ namespace NetDemo
          if(proxy != NULL)
          {
             PlayerStatusActor* player = NULL;
-            proxy->GetActor(player);
+            proxy->GetDrawable(player);
             mPlayer = player;
          }
       }
