@@ -725,7 +725,7 @@ namespace NetDemo
          {
             mOriginalPublishTimesPerSecond = mPhysVehicle->GetComponent<dtGame::DRPublishingActComp>()->GetMaxUpdateSendRate();
             SimCore::Actors::DRGhostActor* actor = NULL;
-            mDRGhostActorProxy->GetActor(actor);
+            mDRGhostActorProxy->GetDrawable(actor);
             actor->SetSlavedEntity(mVehicle);
             GetGameManager()->AddActor(*mDRGhostActorProxy, false, false);
          }
@@ -738,7 +738,7 @@ namespace NetDemo
          LOG_ALWAYS(" --- Attaching Camera to DR Ghost.");
          if (mDRGhostActorProxy.valid())
          {
-            SendAttachOrDetachMessage(mDRGhostActorProxy->GetGameActor().GetUniqueId(), "");
+            SendAttachOrDetachMessage(mDRGhostActorProxy->GetId(), "");
          }
          mDRGhostMode = ATTACH_TO_GHOST;
       }
