@@ -532,7 +532,7 @@ namespace SimCore
          static const dtUtil::RefString POSITION_MARKER_GROUP("Position Marker");
 
          PositionMarker* pm = NULL;
-         GetActor(pm);
+         GetDrawable(pm);
 
          static const dtUtil::RefString PROPERTY_SOURCE_FORCE_DESC("The force of the entity that reported this.");
          AddProperty(new dtCore::EnumActorProperty<BaseEntityActorProxy::ForceEnum>(
@@ -656,7 +656,7 @@ namespace SimCore
          BaseClass::BuildInvokables();
 
          PositionMarker* pm = NULL;
-         GetActor(pm);
+         GetDrawable(pm);
 
          AddInvokable(*new dtGame::Invokable(INVOKABLE_TIME_ELAPSED,
                   dtUtil::MakeFunctor(&PositionMarker::OnTimer, *pm)));

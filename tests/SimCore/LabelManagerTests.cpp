@@ -236,13 +236,13 @@ class LabelManagerTests : public CPPUNIT_NS::TestFixture
 
          //In front of the camera
          osg::Vec3 plat1Pos(0.0, 5.0, 0.0);
-         mPlatform1->GetActor(platActor);
+         mPlatform1->GetDrawable(platActor);
          xform.SetTranslation(plat1Pos);
          platActor->SetTransform(xform);
 
          //behind the camera
          osg::Vec3 plat2Pos(0.0, -10.0, 0.0);
-         mPlatform2->GetActor(platActor);
+         mPlatform2->GetDrawable(platActor);
          xform.SetTranslation(plat2Pos);
          platActor->SetTransform(xform);
 
@@ -270,7 +270,7 @@ class LabelManagerTests : public CPPUNIT_NS::TestFixture
 
          //Now put the label out of range, but in front of the camera
          plat1Pos.set(0.0, mLabelManager->GetOptions().GetMaxLabelDistance() + 50.0, 0.0);
-         mPlatform1->GetActor(platActor);
+         mPlatform1->GetDrawable(platActor);
          xform.SetTranslation(plat1Pos);
          platActor->SetTransform(xform);
 
@@ -337,7 +337,7 @@ class LabelManagerTests : public CPPUNIT_NS::TestFixture
       {
          dtCore::RefPtr<SimCore::Components::HUDLabel> label = mLabelManager->GetOrCreateLabel(*mPlatform1);
          SimCore::Actors::Platform* platform;
-         mPlatform1->GetActor(platform);
+         mPlatform1->GetDrawable(platform);
 
          platform->SetForceAffiliation(force);
          mLabelManager->AssignLabelColor(*mPlatform1, *label);

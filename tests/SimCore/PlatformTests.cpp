@@ -97,7 +97,7 @@ namespace SimCore
 
                mGM->CreateActor(*EntityActorRegistry::PLATFORM_WITH_PHYSICS_ACTOR_TYPE, mPlatformWithPhysicsActorProxy);
                PlatformWithPhysics* temp;
-               mPlatformWithPhysicsActorProxy->GetActor(temp);
+               mPlatformWithPhysicsActorProxy->GetDrawable(temp);
                mPlatformWithPhysics = temp;
                dtCore::ResourceActorProperty* res = NULL;
                mPlatformWithPhysicsActorProxy->GetProperty(PlatformActorProxy::PROPERTY_MESH_NON_DAMAGED_ACTOR, res);
@@ -256,7 +256,7 @@ namespace SimCore
                CPPUNIT_ASSERT_EQUAL(trailEffects, platform.GetComponent<SimCore::ActComps::TrailEffectActComp>() != NULL);
 
                BaseEntity* be = NULL;
-               platform.GetActor(be);
+               platform.GetDrawable(be);
                CPPUNIT_ASSERT(be != NULL);
                CPPUNIT_ASSERT_EQUAL(munitions, be->GetAutoRegisterWithMunitionsComponent());
 

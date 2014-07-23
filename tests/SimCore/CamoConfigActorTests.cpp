@@ -90,7 +90,7 @@ namespace SimCore
             mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::CAMO_CONFIG_ACTOR_TYPE, mProxy);
 
             // Get the actor that was created.
-            mProxy->GetActor(mActor);
+            mProxy->GetDrawable(mActor);
          }
          catch (const dtUtil::Exception& ex)
          {
@@ -415,7 +415,7 @@ namespace SimCore
             // Get the actor that was created.
             SimCore::Actors::Platform* actor = NULL;
             CPPUNIT_ASSERT(proxy.valid());
-            proxy->GetActor(actor);
+            proxy->GetDrawable(actor);
 
             // Get the actor's Camo Paint Actor Component
             CamoPaintStateActComp* actComp = NULL;

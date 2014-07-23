@@ -307,7 +307,7 @@ namespace SimCore
          BaseEntityActorProxy::BuildPropertyMap();
 
          FlareActor* actor = NULL;
-         GetActor(actor);
+         GetDrawable(actor);
 
          AddProperty(new dtCore::IntActorProperty(
             PROPERTY_CELL,

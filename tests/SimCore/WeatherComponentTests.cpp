@@ -736,7 +736,7 @@ namespace SimCore
          // TODO: Test the changes in the weather component's environment actor,
          // that have occurred during an atmosphere update.
          //dtActors::BasicEnvironmentActorProxy* envProxy = mWeatherComp->GetEnvironment();
-         //dtABC::Weather& weather = dynamic_cast<dtActors::BasicEnvironmentActor*>(envProxy->GetActor())->GetWeather();
+         //dtABC::Weather& weather = dynamic_cast<dtActors::BasicEnvironmentActor*>(envProxy->GetDrawable())->GetWeather();
          //dtCore::Environment* env = weather.GetEnvironment();
 
          //// Test the resulting visibility

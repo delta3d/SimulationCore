@@ -290,7 +290,7 @@ namespace DriverDemo
             // Clear out the shooter's bullets, otherwise a crash
             // may occur asynchronously.
             SimCore::MunitionParticlesActor* particles;
-            proxy->GetActor(particles);
+            proxy->GetDrawable(particles);
             if( particles != NULL )
             {
                particles->ResetParticleSystem();
@@ -1476,7 +1476,7 @@ namespace DriverDemo
          if (mDRGhostActorProxy.valid())
          {
             SimCore::Actors::DRGhostActor* actor = NULL;
-            mDRGhostActorProxy->GetActor(actor);
+            mDRGhostActorProxy->GetDrawable(actor);
             actor->SetSlavedEntity(mVehicle);
             GetGameManager()->AddActor(*mDRGhostActorProxy, false, false);
          }

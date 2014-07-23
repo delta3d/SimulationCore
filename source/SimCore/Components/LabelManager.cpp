@@ -610,7 +610,7 @@ namespace SimCore
 
 
          // Get the current entity actor.
-         proxy.GetActor(actor);
+         proxy.GetDrawable(actor);
 
          osg::Vec3 center;
          float radius = 0.0f;
@@ -705,7 +705,7 @@ namespace SimCore
          const SimCore::Actors::BaseEntityActorProxy::ForceEnum* force =
             &SimCore::Actors::BaseEntityActorProxy::ForceEnum::OTHER;
 
-         const SimCore::Actors::BaseEntity* entity = dynamic_cast<const SimCore::Actors::BaseEntity*>(actor.GetActor());
+         const SimCore::Actors::BaseEntity* entity = dynamic_cast<const SimCore::Actors::BaseEntity*>(actor.GetDrawable());
 
          if (entity != NULL)
          {

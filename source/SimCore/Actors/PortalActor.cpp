@@ -50,7 +50,7 @@ namespace SimCore
          dtGame::GameActorProxy::BuildPropertyMap();
 
          Portal* actor = NULL;
-         GetActor(actor);
+         GetDrawable(actor);
 
          AddProperty(new dtCore::StringActorProperty("Portal Name", "Portal Name",
             dtCore::StringActorProperty::SetFuncType(actor, &Portal::SetPortalName),

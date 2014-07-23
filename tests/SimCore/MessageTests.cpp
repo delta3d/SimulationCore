@@ -477,14 +477,14 @@ class MessageTests : public CPPUNIT_NS::TestFixture
             mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE, t80Proxy);
             CPPUNIT_ASSERT(t80Proxy.valid());
             SimCore::Actors::BaseEntity* t80Actor;
-            t80Proxy->GetActor(t80Actor);
+            t80Proxy->GetDrawable(t80Actor);
             CPPUNIT_ASSERT(t80Actor != NULL);
 
             RefPtr<SimCore::Actors::StealthActorProxy> stealthProxy;
             mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::STEALTH_ACTOR_TYPE, stealthProxy);
             CPPUNIT_ASSERT(stealthProxy.valid());
             SimCore::Actors::StealthActor* stealthActor;
-            stealthProxy->GetActor(stealthActor);
+            stealthProxy->GetDrawable(stealthActor);
             CPPUNIT_ASSERT(stealthActor != NULL);
 
             mGM->AddActor(*t80Proxy, true, false);

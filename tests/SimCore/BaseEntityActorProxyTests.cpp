@@ -192,7 +192,7 @@ void BaseEntityActorProxyTests::TestPlatformDelayedLoading()
    CPPUNIT_ASSERT(!eap->GetHasLoadedResources());
 
    SimCore::Actors::Platform* platform = NULL;
-   eap->GetActor(platform);
+   eap->GetDrawable(platform);
 
    dtCore::ResourceDescriptor happySphere("StaticMeshes:physics_happy_sphere.ive");
 
@@ -248,7 +248,7 @@ void BaseEntityActorProxyTests::TestPlatformOnEnteredWorldLoading()
    CPPUNIT_ASSERT(!eap->GetHasLoadedResources());
 
    SimCore::Actors::Platform* platform = NULL;
-   eap->GetActor(platform);
+   eap->GetDrawable(platform);
 
    eap->SetNonDamagedResource(happySphere);
    CPPUNIT_ASSERT(platform->GetNonDamagedFileNode() == NULL);
@@ -278,7 +278,7 @@ void BaseEntityActorProxyTests::TestPlatform()
 
 
    SimCore::Actors::Platform* platform = NULL;
-   eap->GetActor(platform);
+   eap->GetDrawable(platform);
 
    TestPlatformLoadMesh(platform, SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::NO_DAMAGE);
    TestPlatformLoadMesh(platform, SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::SLIGHT_DAMAGE);
@@ -533,7 +533,7 @@ void BaseEntityActorProxyTests::TestHuman()
    TestBaseEntityActorProxy(*hap);
 
    SimCore::Actors::Human* human;
-   hap->GetActor(human);
+   hap->GetDrawable(human);
 
    CPPUNIT_ASSERT(human->GetNodeCollector() == NULL);
    human->LoadNodeCollector();
@@ -604,7 +604,7 @@ void BaseEntityActorProxyTests::TestHumanSwitchToRemote()
 void BaseEntityActorProxyTests::TestBaseEntityVisOpts(SimCore::Actors::BaseEntityActorProxy& eap)
 {
    SimCore::Actors::BaseEntity* entity;
-   eap.GetActor(entity);
+   eap.GetDrawable(entity);
 
    entity->SetDomain(SimCore::Actors::BaseEntityActorProxy::DomainEnum::GROUND);
    entity->SetForceAffiliation(SimCore::Actors::BaseEntityActorProxy::ForceEnum::FRIENDLY);
@@ -694,7 +694,7 @@ void BaseEntityActorProxyTests::TestBaseEntityActorProxy(SimCore::Actors::BaseEn
 
    dtCore::ActorProperty *prop = NULL;
    BaseEntity* entity = NULL;
-   eap.GetActor( entity );
+   eap.GetDrawable( entity );
    CPPUNIT_ASSERT_MESSAGE("BaseEntity should be valid when being accessed from its proxy.",
          entity != NULL);
 
@@ -1386,7 +1386,7 @@ void BaseEntityActorProxyTests::TestDetonationActorProxy()
    for (unsigned i = 0; i < detList.size(); ++i)
    {
       SimCore::Actors::DetonationActor* detActor = NULL;
-      detList[i]->GetActor(detActor);
+      detList[i]->GetDrawable(detActor);
       CPPUNIT_ASSERT(detActor != NULL);
       // The sound should have been set the NULL.
       CPPUNIT_ASSERT(detActor->GetSound() == NULL);
@@ -1443,7 +1443,7 @@ void BaseEntityActorProxyTests::TestBaseWaterActorProxy()
 
    CPPUNIT_ASSERT(waterProxy.valid());
    SimCore::Actors::BaseWaterActor* waterActor = NULL;
-   waterProxy->GetActor( waterActor );
+   waterProxy->GetDrawable( waterActor );
    const SimCore::Actors::BaseWaterActor* constWaterActor = waterActor;
 
    float testValue = 1234.56789f;
@@ -1474,7 +1474,7 @@ void BaseEntityActorProxyTests::TestFindMuzzleNodes()
    CPPUNIT_ASSERT(!eap->GetHasLoadedResources());
 
    SimCore::Actors::Platform* platform = NULL;
-   eap->GetActor(platform);
+   eap->GetDrawable(platform);
 
    dtCore::ResourceDescriptor happySphere("StaticMeshes:physics_happy_sphere.ive");
    dtCore::ResourceDescriptor tank("StaticMeshes:T80:t80u_good.ive");

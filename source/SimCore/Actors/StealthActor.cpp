@@ -60,7 +60,7 @@ namespace SimCore
          PlatformActorProxy::BuildInvokables();
 
          StealthActor* sa = NULL;
-         GetActor(sa);
+         GetDrawable(sa);
 
          AddInvokable(*new dtGame::Invokable("AttachToActor",
             dtUtil::MakeFunctor(&StealthActor::AttachToActor, *sa)));
@@ -82,7 +82,7 @@ namespace SimCore
 	   	PlatformActorProxy::BuildPropertyMap();
 
          StealthActor* sa = NULL;
-         GetActor(sa);
+         GetDrawable(sa);
 
          AddProperty(new dtCore::Vec3ActorProperty("Attach Offset", "Attach Offset",
              dtCore::Vec3ActorProperty::SetFuncType(sa, &StealthActor::SetAttachOffset),

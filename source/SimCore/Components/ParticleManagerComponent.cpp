@@ -354,7 +354,7 @@ namespace SimCore
                dynamic_cast<Actors::IGEnvironmentActorProxy*> (env);
 
             SimCore::Actors::IGEnvironmentActor* envActor;
-            envProxy->GetActor(envActor);
+            envProxy->GetDrawable(envActor);
 
             // Capture the wind force that must be applied to new
             // particle systems registered to this component.
@@ -370,7 +370,7 @@ namespace SimCore
                for (; toFillInIter != toFill.end(); ++toFillInIter)
                {
                    SimCore::Actors::PhysicsParticleSystemActor* currentParticleSystem = NULL;
-                   (*toFillInIter)->GetActor(currentParticleSystem);
+                   (*toFillInIter)->GetDrawable(currentParticleSystem);
                    currentParticleSystem->SetOverTimeForceVecMin(mWind);
                    currentParticleSystem->SetOverTimeForceVecMax(mWind);
                }
@@ -858,7 +858,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////
-      const dtGame::GameActorProxy* ActorInfo::GetActor() const
+      const dtGame::GameActorProxy* ActorInfo::GetDrawable() const
       {
          return mRef.get();
       }

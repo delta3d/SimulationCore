@@ -154,7 +154,7 @@ namespace NetDemo
 
       dtCore::RefPtr<SimCore::Actors::WeaponActor> weapon;
 
-      weaponInv->CreateAndAddWeapon(*wd, true)->mWeapon->GetActor(weapon);
+      weaponInv->CreateAndAddWeapon(*wd, true)->mWeapon->GetDrawable(weapon);
 
       //slow down the rate of fire
       weapon->SetFireRate(0.65f);
@@ -253,7 +253,7 @@ namespace NetDemo
             if(proxy.valid())
             {
                FireBallActor* fireball = NULL;
-               proxy->GetActor(fireball);
+               proxy->GetDrawable(fireball);
                if(fireball != NULL)
                {
 

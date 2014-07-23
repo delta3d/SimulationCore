@@ -60,7 +60,7 @@ namespace SimCore
          static const dtUtil::RefString GROUP = "VehicleConfig";
          dtGame::GameActorProxy::BuildPropertyMap();
          VehicleAttachingConfigActor* actor = NULL;
-         GetActor(actor);
+         GetDrawable(actor);
 
          AddProperty(new dtCore::ResourceActorProperty(dtCore::DataType::STATIC_MESH,
             "VEHICLE_INSIDE_MODEL_GOOD", "VEHICLE_INSIDE_MODEL_PATH_GOOD",

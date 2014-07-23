@@ -335,7 +335,7 @@ namespace SimCore
          }
 
          SimCore::Actors::Platform* p = NULL;
-         GetActor(p);
+         GetDrawable(p);
 
          if (at.InstanceOf(*EntityActorRegistry::AIR_PLATFORM_ACTOR_TYPE))
          {

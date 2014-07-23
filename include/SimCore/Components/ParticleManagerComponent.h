@@ -148,7 +148,7 @@ namespace SimCore
 
             void Set( dtGame::GameActorProxy& parent );
 
-            const dtGame::GameActorProxy* GetActor() const;
+            const dtGame::GameActorProxy* GetDrawable() const;
 
          protected:
 

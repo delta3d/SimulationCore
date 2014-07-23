@@ -181,7 +181,7 @@ namespace SimCore
             if( proxy != NULL
                && proxy->GetActorType() == *SimCore::Actors::EntityActorRegistry::CONTROL_STATE_ACTOR_TYPE )
             {
-               return static_cast<const SimCore::Actors::ControlStateActor*>(proxy->GetActor());
+               return static_cast<const SimCore::Actors::ControlStateActor*>(proxy->GetDrawable());
             }
          }
 

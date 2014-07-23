@@ -167,7 +167,7 @@ namespace NetDemo
       BaseClass::BuildPropertyMap();
 
       PropelledVehicleActor* pEntity = NULL;
-      GetActor(pEntity);
+      GetDrawable(pEntity);
 
       std::string group("Propelled Vehicle");
       //pEntity->RegisterProperties(*this, group);
@@ -179,7 +179,7 @@ namespace NetDemo
       BaseClass::BuildInvokables();
 
       PropelledVehicleActor* pEntity = NULL;
-      GetActor(pEntity);
+      GetDrawable(pEntity);
 
       AddInvokable(*new dtGame::Invokable("TickRemoteTest",
                dtUtil::MakeFunctor(&PropelledVehicleActor::OnTickRemoteTest, pEntity)));
@@ -196,7 +196,7 @@ namespace NetDemo
       BaseClass::OnEnteredWorld();
 
       PropelledVehicleActor* propelledActor = NULL;
-      GetActor(propelledActor);
+      GetDrawable(propelledActor);
 
       // Add a dynamic light to match the propulsion color
       ////TODO- take in user specified color

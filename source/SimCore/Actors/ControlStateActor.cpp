@@ -783,7 +783,7 @@ namespace SimCore
          dtGame::GameActorProxy::BuildPropertyMap();
 
          ControlStateActor* actor = NULL;
-         GetActor(actor);
+         GetDrawable(actor);
 
          AddProperty(new dtCore::ActorActorProperty( *this, "EntityID", "EntityID",
             dtCore::ActorActorProperty::SetFuncType( actor, &ControlStateActor::SetEntity ),
