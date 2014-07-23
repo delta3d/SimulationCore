@@ -310,7 +310,7 @@ namespace NetDemo
       static const dtUtil::RefString GROUP = "Enemy Props";
 
 //      EnemyMotherShip* actor = NULL;
-//      GetActor(actor);
+//      GetDrawable(actor);
 
    }
 
@@ -331,6 +331,6 @@ namespace NetDemo
    void EnemyMothershipActorProxy::OnRemovedFromWorld()
    {
 //      EnemyMotherShip* actor = NULL;
-//      GetActor(actor);
+//      GetDrawable(actor);
    }
 } // namespace

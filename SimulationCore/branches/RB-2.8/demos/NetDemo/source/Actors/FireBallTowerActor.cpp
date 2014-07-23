@@ -263,7 +263,7 @@ namespace NetDemo
          if(proxy.valid())
          {
             FireBallActor* fireball = NULL;
-            proxy->GetActor(fireball);
+            proxy->GetDrawable(fireball);
             if(fireball != NULL)
             {
 
@@ -401,7 +401,7 @@ namespace NetDemo
       BaseClass::OnRemovedFromWorld();
 
       FireBallTowerActor* actor = NULL;
-      GetActor(actor);      
+      GetDrawable(actor);      
       actor->OnRemovedFromWorld();
    }
 

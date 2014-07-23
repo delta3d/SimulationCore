@@ -103,7 +103,7 @@ namespace NetDemo
 
       if(proxy != NULL)
       {
-         proxy->GetActor(outActor);
+         proxy->GetDrawable(outActor);
       }
       else
       {

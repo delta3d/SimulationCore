@@ -97,7 +97,7 @@ namespace StealthGM
          if (atmosphereProxy != NULL)
          {
             SimCore::Actors::UniformAtmosphereActor* atmosphereActor = NULL;
-            atmosphereProxy->GetActor(atmosphereActor);
+            atmosphereProxy->GetDrawable(atmosphereActor);
 
             mVisibilityDistance = atmosphereActor->GetVisibilityDistance();
 

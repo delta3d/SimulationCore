@@ -428,7 +428,7 @@ namespace SimCore
             if( entityProxy != NULL )
             {
                SimCore::Actors::BaseEntity* entity = NULL;
-               entityProxy->GetActor( entity );
+               entityProxy->GetDrawable( entity );
                runtimeData.SetEntity( entity );
 
                // DEBUG: Use drawables to show the clamp points.
@@ -544,7 +544,7 @@ namespace SimCore
             // Set the X & Y of the detection point.
             /*dtCore::Transform xform;
             const dtGame::GameActor* actor = NULL;
-            proxy.GetActor( actor );
+            proxy.GetDrawable( actor );
             actor->GetTransform( xform, dtCore::Transformable::REL_CS );
             xform.GetTranslation( outHit );*/ // This does not seem to have a valid position at this point in the process.
 

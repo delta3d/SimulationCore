@@ -266,7 +266,7 @@ namespace NetDemo
       BaseClass::BuildPropertyMap();
 
 //      FortActor* actor = NULL;
-//      GetActor(actor);
+//      GetDrawable(actor);
 
       // Add properties
    }

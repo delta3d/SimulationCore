@@ -52,7 +52,7 @@ namespace SimCore
          StealthActorProxy::BuildPropertyMap();
 
          PlayerActor* playerActor = NULL;
-         GetActor(playerActor);
+         GetDrawable(playerActor);
 
          AddProperty(new dtCore::EnumActorProperty<SimCore::MessageType>("Enabled Tool", "Enabled Tool",
                   dtCore::EnumActorProperty<SimCore::MessageType>::SetFuncType(playerActor, &PlayerActor::SetEnabledTool),
@@ -64,7 +64,7 @@ namespace SimCore
       void PlayerActorProxy::BuildInvokables()
       {
          PlayerActor* pa = NULL;
-         GetActor(pa);
+         GetDrawable(pa);
 
          StealthActorProxy::BuildInvokables();
 

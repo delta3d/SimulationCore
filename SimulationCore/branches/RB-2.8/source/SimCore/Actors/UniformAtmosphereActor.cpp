@@ -50,7 +50,7 @@ namespace SimCore
          AtmosphereActorProxy::BuildPropertyMap();
 
          UniformAtmosphereActor* actor = NULL;
-         GetActor(actor);
+         GetDrawable(actor);
 
          AddProperty(new dtCore::FloatActorProperty("Visibility Distance", "Visibility Distance", 
             dtCore::FloatActorProperty::SetFuncType(actor, &UniformAtmosphereActor::SetVisibilityDistance),

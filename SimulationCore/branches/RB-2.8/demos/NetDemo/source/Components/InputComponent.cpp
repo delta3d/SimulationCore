@@ -103,7 +103,7 @@ namespace NetDemo
          else if (!stealthProxy->IsRemote()) // Somebody else's player.
          {
             SimCore::Actors::StealthActor* stealthActor = NULL;
-            stealthProxy->GetActor(stealthActor);
+            stealthProxy->GetDrawable(stealthActor);
             SetStealthActor(stealthActor);
 
             // We start with observer motion model. When we detach from vehicles, we go back to this.
@@ -236,7 +236,7 @@ namespace NetDemo
             if (vehicleProxy != NULL)
             {
                SimCore::Actors::Platform* vehicle = NULL;
-               vehicleProxy->GetActor(vehicle);
+               vehicleProxy->GetDrawable(vehicle);
                AttachToVehicle(vehicle);
 
                //turn the headlights on by default
@@ -296,7 +296,7 @@ namespace NetDemo
                if (mDRGhostActorProxy.valid())
                {
                   SimCore::Actors::DRGhostActor* ghost = NULL;
-                  mDRGhostActorProxy->GetActor(ghost);
+                  mDRGhostActorProxy->GetDrawable(ghost);
                   ghost->ClearLinesAndParticles();
 
                   // toggle the visible arrows

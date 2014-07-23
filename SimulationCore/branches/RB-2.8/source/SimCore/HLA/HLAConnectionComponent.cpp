@@ -139,7 +139,7 @@ namespace SimCore
          }
          else
          {
-            proxies[0]->GetActor(ccActor);
+            proxies[0]->GetDrawable(ccActor);
          }
 
          // HLA

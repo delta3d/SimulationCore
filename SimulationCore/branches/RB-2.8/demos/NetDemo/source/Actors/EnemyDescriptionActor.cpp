@@ -143,7 +143,7 @@ namespace NetDemo
       BaseClass::BuildPropertyMap();
 
       EnemyDescriptionActor* actor = NULL;
-      GetActor(actor);
+      GetDrawable(actor);
 
       static const dtUtil::RefString PROP_ENEMY_TYPE_DESC("Indicates the enemy type.");
       AddProperty(new dtCore::EnumActorProperty<EnemyDescriptionActor::EnemyType>(PROP_ENEMY_TYPE, PROP_ENEMY_TYPE,

@@ -144,7 +144,7 @@ namespace SimCore
             mGM->AddActor(*movingShapeAct, false, false);
 
             dtGame::GameActor* drawable;
-            movingShapeAct->GetActor(drawable);
+            movingShapeAct->GetDrawable(drawable);
 
 
          }

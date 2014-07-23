@@ -102,7 +102,7 @@ namespace SimCore
 
          // Get the actor's interface.
          BaseWaterActor* actor = NULL;
-         GetActor( actor );
+         GetDrawable( actor );
 
          static const std::string GROUP_WATER("Water");
 

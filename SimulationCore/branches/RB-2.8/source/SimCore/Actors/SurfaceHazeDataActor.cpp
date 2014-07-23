@@ -91,7 +91,7 @@ namespace SimCore
          const std::string GROUP("Surface Haze Data");
 
          SurfaceHazeDataActor* actor = NULL;
-         GetActor( actor );
+         GetDrawable( actor );
 
          // FLOAT PROPERTIES
          AddProperty(new dtCore::FloatActorProperty(

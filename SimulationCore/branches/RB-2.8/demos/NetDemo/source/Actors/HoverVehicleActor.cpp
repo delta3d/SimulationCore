@@ -269,7 +269,7 @@ namespace NetDemo
       SimCore::Actors::BasePhysicsVehicleActorProxy::BuildPropertyMap();
 
       HoverVehicleActor* actor = NULL;
-      GetActor(actor);
+      GetDrawable(actor);
 
       AddProperty(new dtCore::BooleanActorProperty("VehicleIsTheTurret", "Vehicle Is The Turret",
                dtCore::BooleanActorProperty::SetFuncType(actor, &HoverVehicleActor::SetVehicleIsTurret),

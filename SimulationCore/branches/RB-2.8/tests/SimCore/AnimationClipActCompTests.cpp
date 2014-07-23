@@ -182,7 +182,7 @@ namespace SimCore
 
             // Get the actor that was created.
             SimCore::Actors::Platform* actor = NULL;
-            proxy->GetActor(actor);
+            proxy->GetDrawable(actor);
 
             // Ensure the component exists
             mActComp = NULL;

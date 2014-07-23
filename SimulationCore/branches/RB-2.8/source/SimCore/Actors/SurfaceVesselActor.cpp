@@ -336,7 +336,7 @@ namespace SimCore
             // Create the actor.
             DynamicParticlesActor* actor = NULL;
             gm->CreateActor(*SimCore::Actors::EntityActorRegistry::DYNAMIC_PARTICLE_SYSTEM_ACTOR_TYPE, proxy);
-            proxy->GetActor(actor);
+            proxy->GetDrawable(actor);
             actor->SetName(actorName);
             actor->SetParticleSystemFile(filename);
 
@@ -364,7 +364,7 @@ namespace SimCore
          DynamicParticlesActor* actor = NULL;
          if(proxy != NULL)
          {
-            proxy->GetActor(actor);
+            proxy->GetDrawable(actor);
          }
          return actor;
       }

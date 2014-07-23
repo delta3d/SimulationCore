@@ -191,7 +191,7 @@ namespace NetDemo
 
       dtCore::RefPtr<SimCore::Actors::WeaponActor> weapon;
 
-      weaponInv->CreateAndAddWeapon(*wd, true)->mWeapon->GetActor(weapon);
+      weaponInv->CreateAndAddWeapon(*wd, true)->mWeapon->GetDrawable(weapon);
 
       //slow down the rate of fire
       weapon->SetFireRate(0.65f);
@@ -408,7 +408,7 @@ namespace NetDemo
       BaseClass::OnRemovedFromWorld();
 
       TowerActor* actor = NULL;
-      GetActor(actor);      
+      GetDrawable(actor);      
       actor->OnRemovedFromWorld();
    }
 

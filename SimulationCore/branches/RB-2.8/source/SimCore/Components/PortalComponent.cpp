@@ -77,7 +77,7 @@ namespace SimCore
                PortalProxy* portal = dynamic_cast<PortalProxy*>(ga);
                if(portal != NULL)
                {
-                  RegisterPortal(dynamic_cast<Portal*>(portal->GetActor()));
+                  RegisterPortal(dynamic_cast<Portal*>(portal->GetDrawable()));
                }
             }*/
          }
@@ -141,7 +141,7 @@ namespace SimCore
             dtGame::GameActor* actor = dynamic_cast<dtGame::GameActor*>(mOurPortals[i]->GetActorLink());
             if(actor != NULL)
             {
-               /*static_cast<dtGame::GameActor*>(proxy->GetActor())->*/actor->GetTransform(transformForTempDrawable);
+               /*static_cast<dtGame::GameActor*>(proxy->GetDrawable())->*/actor->GetTransform(transformForTempDrawable);
                osg::Vec3 relPos;
                transformForTempDrawable.GetTranslation(relPos);
                relPos = position - relPos;

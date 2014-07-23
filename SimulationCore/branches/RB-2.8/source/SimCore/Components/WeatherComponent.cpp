@@ -441,7 +441,7 @@ namespace SimCore
          if(coordConfigActorProxy != NULL)
          {
             dtActors::CoordinateConfigActor* coordConfigActor = NULL;
-            coordConfigActorProxy->GetActor(coordConfigActor);
+            coordConfigActorProxy->GetDrawable(coordConfigActor);
 
             // Compensate for the time zone
             osg::Vec3d geoOffset;

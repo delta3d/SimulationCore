@@ -218,7 +218,7 @@ namespace SimCore
          const std::string TERRAIN_GROUP_NAME = "LM_Terrain_Properties";
          BaseClass::BuildPropertyMap();
          OpenFlightToIVETerrainActor* ta = NULL;
-         GetActor(ta);
+         GetDrawable(ta);
 
          AddProperty(new dtCore::FloatActorProperty("mPaging_Min_X", "mPaging_Min_X",
             dtCore::FloatActorProperty::SetFuncType(ta, &OpenFlightToIVETerrainActor::SetPagingMinX),

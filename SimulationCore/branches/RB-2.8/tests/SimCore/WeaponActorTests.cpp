@@ -218,7 +218,7 @@ namespace SimCore
 
             // Create the weapon actor
             mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::WEAPON_ACTOR_TYPE, mWeaponProxy);
-            mWeapon = dynamic_cast<SimCore::Actors::WeaponActor*>(&mWeaponProxy->GetGameActor());
+            mWeapon = mWeaponProxy->GetDrawable<SimCore::Actors::WeaponActor>();
 
          }
          catch (const dtUtil::Exception& ex)
@@ -528,7 +528,7 @@ namespace SimCore
          CPPUNIT_ASSERT_MESSAGE( "GameManager should be able to create a Platform",
             proxy.valid() );
          SimCore::Actors::BaseEntity* target = NULL;
-         proxy->GetActor(target);
+         proxy->GetDrawable(target);
          CPPUNIT_ASSERT_MESSAGE( "BaseEntityActorProxy should contain a valid Entity",
             target != NULL );
 

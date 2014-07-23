@@ -98,7 +98,7 @@ namespace SimCore
       void DayTimeActorProxy::BuildPropertyMap()
       {
          DayTimeActor* actor = NULL;
-         GetActor(actor);
+         GetDrawable(actor);
 
          AddProperty(new dtCore::IntActorProperty("Time Of Day", "Time Of Day", 
             dtCore::IntActorProperty::SetFuncType(actor, &DayTimeActor::SetTime),
