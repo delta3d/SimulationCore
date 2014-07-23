@@ -259,8 +259,8 @@ namespace SimCore
             if (GetGameActorProxy().GetGameManager()->GetEnvironmentActor() != NULL &&
                 GetGameActorProxy().GetGameManager()->GetEnvironmentActor()->GetId() == id)
             {
-               dtGame::IEnvGameActor& ea = static_cast<dtGame::IEnvGameActor&>(GetGameActorProxy().GetGameManager()->GetEnvironmentActor()->GetGameActor());
-               ea.AddActor(*this);
+               dtGame::IEnvGameActor* ea = GetGameActorProxy().GetGameManager()->GetEnvironmentActor()->GetDrawable<dtGame::IEnvGameActor>();
+               ea->AddActor(*this);
                SetTransform(originalTransform, dtCore::Transformable::ABS_CS);
             }
             else
@@ -274,8 +274,8 @@ namespace SimCore
             //Attach back to the parent scene.
             if (GetGameActorProxy().GetGameManager()->GetEnvironmentActor() != NULL)
             {
-               dtGame::IEnvGameActor &ea = static_cast<dtGame::IEnvGameActor&>(GetGameActorProxy().GetGameManager()->GetEnvironmentActor()->GetGameActor());
-               ea.AddActor(*this);
+               dtGame::IEnvGameActor* ea = GetGameActorProxy().GetGameManager()->GetEnvironmentActor()->GetDrawable<dtGame::IEnvGameActor>();
+               ea->AddActor(*this);
             }
             else
             {

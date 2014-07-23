@@ -204,8 +204,8 @@ namespace DriverDemo
             return;
          }
 
-         SimCore::Actors::StealthActor* stealthActor
-            = dynamic_cast<SimCore::Actors::StealthActor*>(&stealthProxy->GetGameActor());
+         SimCore::Actors::StealthActor* stealthActor = NULL;
+         stealthProxy->GetDrawable(stealthActor);
          if(stealthActor == NULL)
          {
             GetLogger().LogMessage(dtUtil::Log::LOG_ERROR, __FUNCTION__, __LINE__,

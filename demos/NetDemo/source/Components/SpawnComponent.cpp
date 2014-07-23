@@ -114,12 +114,12 @@ namespace NetDemo
       else if(message.GetMessageType() == dtGame::MessageType::INFO_MAP_LOADED)
       {
          //first look for a server status actor
-         ServerGameStatusActorProxy* proxy = NULL;
-         GetGameManager()->FindActorByType(*NetDemoActorRegistry::SERVER_GAME_STATUS_ACTOR_TYPE, proxy);
-         if(proxy != NULL)
+         ServerGameStatusActorProxy* statusActor = NULL;
+         GetGameManager()->FindActorByType(*NetDemoActorRegistry::SERVER_GAME_STATUS_ACTOR_TYPE, statusActor);
+         if(statusActor != NULL)
          {
-            ServerGameStatusActor& actor = static_cast<ServerGameStatusActor&>(proxy->GetGameActor());
-            InitGameState(actor.GetGameStatus(), actor.GetGameDifficulty(), actor.GetNumPlayers(), actor.GetMaxNumWaves());
+            ServerGameStatusActor* drawable = statusActor->GetDrawable<ServerGameStatusActor>();
+            InitGameState(drawable->GetGameStatus(), drawable->GetGameDifficulty(), drawable->GetNumPlayers(), drawable->GetMaxNumWaves());
          }
          else
          {

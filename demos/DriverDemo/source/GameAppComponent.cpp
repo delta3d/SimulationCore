@@ -206,7 +206,7 @@ namespace DriverDemo
                //                             //it is the more light it will take to get rid of it
                //      dl->mColor.set(osg::Vec3(1.0f, 1.0f, 1.0f));
                //      dl->mAttenuation.set(2.0, 0.5, 0.2);
-               //      dl->mTarget = &(platform->GetGameActorProxy().GetGameActor());
+               //      dl->mTarget = &(platform);
                //      dl->mAutoDeleteLightOnTargetNull = true;
 
                //      rsComp->AddDynamicLight(dl);

@@ -351,8 +351,6 @@ namespace NetDemo
 
       const std::string GROUP = "Enemy Props";
 
-      //EnemyHelixActor& actor = static_cast<EnemyHelixActor &>(GetGameActor());
-
    }
 
    ///////////////////////////////////////////////////////////////////////////////////

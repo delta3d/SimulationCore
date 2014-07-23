@@ -202,8 +202,8 @@ namespace StealthGM
             return;
          }
 
-         RefPtr<SimCore::Actors::StealthActor> stealthActor
-            = static_cast<SimCore::Actors::StealthActor*>(&stealthProxy->GetGameActor());
+         RefPtr<SimCore::Actors::StealthActor> stealthActor;
+         stealthProxy->GetDrawable(stealthActor);
          if (!stealthActor.valid())
          {
             GetLogger().LogMessage(dtUtil::Log::LOG_ERROR, __FUNCTION__, __LINE__,

@@ -410,22 +410,22 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void ControlStateTests::TestControlStateActorProperties()
       {
-         dtCore::RefPtr<SimCore::Actors::ControlStateProxy> proxy;
-         mGM->CreateActor( *SimCore::Actors::EntityActorRegistry::CONTROL_STATE_ACTOR_TYPE, proxy );
+         dtCore::RefPtr<SimCore::Actors::ControlStateProxy> controlStateActor;
+         mGM->CreateActor( *SimCore::Actors::EntityActorRegistry::CONTROL_STATE_ACTOR_TYPE, controlStateActor );
          CPPUNIT_ASSERT_MESSAGE("Game manager should be able to create a ControlActorProxy",
-            proxy.valid() );
+            controlStateActor.valid() );
 
-         dtCore::RefPtr<SimCore::Actors::ControlStateActor> controlState
-            = static_cast<SimCore::Actors::ControlStateActor*>(&proxy->GetGameActor());
+         dtCore::RefPtr<SimCore::Actors::ControlStateActor> controlState;
+         controlStateActor->GetDrawable(controlState);
 
 
          dtCore::RefPtr<SimCore::Actors::PlatformActorProxy> testEntityProxy;
          mGM->CreateActor( *SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE, testEntityProxy );
          CPPUNIT_ASSERT_MESSAGE("Game manager should be able to create an Entity",
-            proxy.valid() );
+            controlStateActor.valid() );
 
-         dtCore::RefPtr<SimCore::Actors::Platform> testEntity
-            = static_cast<SimCore::Actors::Platform*>(&testEntityProxy->GetGameActor());
+         dtCore::RefPtr<SimCore::Actors::Platform> testEntity;
+         testEntityProxy->GetDrawable(testEntity);
 
          // Test setting an entity
          CPPUNIT_ASSERT( controlState->GetEntityID().ToString().empty() );
@@ -532,11 +532,11 @@ namespace SimCore
 
 
          // Test encode & decode of the control arrays
-         mGM->CreateActor( *SimCore::Actors::EntityActorRegistry::CONTROL_STATE_ACTOR_TYPE, proxy );
+         mGM->CreateActor( *SimCore::Actors::EntityActorRegistry::CONTROL_STATE_ACTOR_TYPE, controlStateActor );
          CPPUNIT_ASSERT_MESSAGE("Game manager should be able to create a ControlActorProxy",
-            proxy.valid() );
-         dtCore::RefPtr<SimCore::Actors::ControlStateActor> decodedControlState
-            = static_cast<SimCore::Actors::ControlStateActor*>(&proxy->GetGameActor());
+            controlStateActor.valid() );
+         dtCore::RefPtr<SimCore::Actors::ControlStateActor> decodedControlState;
+         controlStateActor->GetDrawable(decodedControlState);
          CPPUNIT_ASSERT( decodedControlState->GetEntityID().ToString().empty() );
          CPPUNIT_ASSERT( decodedControlState->GetStationType() == 0 );
          CPPUNIT_ASSERT( decodedControlState->GetDiscreteControlCount() == 0 );
