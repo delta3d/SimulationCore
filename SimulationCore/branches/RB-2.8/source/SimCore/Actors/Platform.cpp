@@ -198,10 +198,11 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////
       void PlatformActorProxy::BuildPropertyMap()
       {
-         Platform& plat = static_cast<Platform&>(GetGameActor());
+         Platform* plat = NULL;
+         GetDrawable(plat);
 
          typedef dtCore::PropertyRegHelper<PlatformActorProxy&, Platform> PropRegType;
-         PropRegType propRegHelper(*this, &plat, "Platform");
+         PropRegType propRegHelper(*this, plat, "Platform");
 
          BaseClass::BuildPropertyMap();
 
@@ -229,47 +230,47 @@ namespace SimCore
          static const dtUtil::RefString PROPERTY_MUZZLE_FLASH_POSITION("Muzzle Flash Position");
          AddProperty(new dtCore::Vec3ActorProperty(PROPERTY_MUZZLE_FLASH_POSITION,
             PROPERTY_MUZZLE_FLASH_POSITION,
-            dtCore::Vec3ActorProperty::SetFuncType(&plat, &Platform::SetMuzzleFlashPosition),
-            dtCore::Vec3ActorProperty::GetFuncType(&plat, &Platform::GetMuzzleFlashPosition),
+            dtCore::Vec3ActorProperty::SetFuncType(plat, &Platform::SetMuzzleFlashPosition),
+            dtCore::Vec3ActorProperty::GetFuncType(plat, &Platform::GetMuzzleFlashPosition),
             "Sets the muzzle flash position on an entity"));
 
          static const dtUtil::RefString PROPERTY_ARTICULATION_PARAM_ARRAY("Articulated Parameters Array");
          AddProperty(new dtCore::GroupActorProperty(PROPERTY_ARTICULATION_PARAM_ARRAY,
             PROPERTY_ARTICULATION_PARAM_ARRAY,
-            dtCore::GroupActorProperty::SetFuncType(&plat, &Platform::SetArticulatedParametersArray),
-            dtCore::GroupActorProperty::GetFuncType(&plat, &Platform::GetArticulatedParametersArray),
+            dtCore::GroupActorProperty::SetFuncType(plat, &Platform::SetArticulatedParametersArray),
+            dtCore::GroupActorProperty::GetFuncType(plat, &Platform::GetArticulatedParametersArray),
             "The list of articulated parameters for modifying DOF's", ""));
 
          AddProperty(new dtCore::BooleanActorProperty(PROPERTY_HEAD_LIGHTS_ENABLED,
             PROPERTY_HEAD_LIGHTS_ENABLED,
-            dtCore::BooleanActorProperty::SetFuncType(&plat, &Platform::SetHeadLightsEnabled),
-            dtCore::BooleanActorProperty::GetFuncType(&plat, &Platform::IsHeadLightsEnabled),
+            dtCore::BooleanActorProperty::SetFuncType(plat, &Platform::SetHeadLightsEnabled),
+            dtCore::BooleanActorProperty::GetFuncType(plat, &Platform::IsHeadLightsEnabled),
             "Determines if the entity has it head lights on or not."));
 
          static const dtUtil::RefString PROPERTY_SEAT_CONFIG_TABLE_NAME("VehiclesSeatConfigActorNameTable");
          AddProperty(new dtCore::StringActorProperty(PROPERTY_SEAT_CONFIG_TABLE_NAME,
             PROPERTY_SEAT_CONFIG_TABLE_NAME,
-            dtCore::StringActorProperty::SetFuncType(&plat, &Platform::SetVehiclesSeatConfigActorName),
-            dtCore::StringActorProperty::GetFuncType(&plat, &Platform::GetVehiclesSeatConfigActorName),
+            dtCore::StringActorProperty::SetFuncType(plat, &Platform::SetVehiclesSeatConfigActorName),
+            dtCore::StringActorProperty::GetFuncType(plat, &Platform::GetVehiclesSeatConfigActorName),
             "The Vehicle seat config option to coincide with the use of portals.",""));
 
          static const dtUtil::RefString PROPERTY_ENTITY_TYPE("EntityType");
          AddProperty(new dtCore::StringActorProperty(PROPERTY_ENTITY_TYPE,
             PROPERTY_ENTITY_TYPE,
-            dtCore::StringActorProperty::SetFuncType(&plat, &Platform::SetEntityType),
-            dtCore::StringActorProperty::GetFuncType(&plat, &Platform::GetEntityType),
+            dtCore::StringActorProperty::SetFuncType(plat, &Platform::SetEntityType),
+            dtCore::StringActorProperty::GetFuncType(plat, &Platform::GetEntityType),
             "The type of the entity, such as HMMWVDrivingSim. Used to determine what behaviors this entity can have at runtime, such as embark, gunner, commander, ...", ""));
 
          static const dtUtil::RefString SOUND_PROPERTY_TYPE("Sounds");
 
          AddProperty(new dtCore::FloatActorProperty("MaxDistanceIdleSound", "MaxDistanceIdleSound",
-            dtCore::FloatActorProperty::SetFuncType(&plat, &Platform::SetMaxDistanceIdleSound),
-            dtCore::FloatActorProperty::GetFuncType(&plat, &Platform::GetMaxDistanceIdleSound),
+            dtCore::FloatActorProperty::SetFuncType(plat, &Platform::SetMaxDistanceIdleSound),
+            dtCore::FloatActorProperty::GetFuncType(plat, &Platform::GetMaxDistanceIdleSound),
             "Distance for the sound", SOUND_PROPERTY_TYPE));
 
          AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::SOUND,
             "mSFXSoundIdleEffect", "mSFXSoundIdleEffect",
-            dtCore::ResourceActorProperty::SetFuncType(&plat, &Platform::SetSFXEngineIdleLoop),
+            dtCore::ResourceActorProperty::SetFuncType(plat, &Platform::SetSFXEngineIdleLoop),
             "What is the filepath / string of the sound effect", SOUND_PROPERTY_TYPE));
 
          DT_REGISTER_PROPERTY_WITH_NAME_AND_LABEL(EngineSmokePos, PROPERTY_ENGINE_SMOKE_POSITION, "Engine Smoke Position",
@@ -280,7 +281,7 @@ namespace SimCore
          static const dtUtil::RefString PROPERTY_ENGINE_POSITION_DESC("Position of the engine in the vehicle");
          dtCore::Vec3ActorProperty *prop = new dtCore::Vec3ActorProperty(PROPERTY_ENGINE_POSITION, PROPERTY_ENGINE_POSITION,
                   dtCore::Vec3ActorProperty::SetFuncType(),
-                  dtCore::Vec3ActorProperty::GetFuncType(&plat, &Platform::GetEngineSmokePos),
+                  dtCore::Vec3ActorProperty::GetFuncType(plat, &Platform::GetEngineSmokePos),
                   PROPERTY_ENGINE_POSITION_DESC, "Platform");
 
          prop->SetReadOnly(true);
@@ -288,7 +289,7 @@ namespace SimCore
 
          dtCore::RefPtr<dtCore::ResourceActorProperty> rp = new dtCore::ResourceActorProperty(*this, dtCore::DataType::PARTICLE_SYSTEM,
             "Engine smoke particles", "Engine smoke particles",
-            dtCore::ResourceActorProperty::SetFuncType(&plat, &Platform::SetEngineSmokeFile),
+            dtCore::ResourceActorProperty::SetFuncType(plat, &Platform::SetEngineSmokeFile),
             "This is the file for engine smoke particles", "Platform");
 
          dtCore::ResourceDescriptor rdEngine("Particles:smoke.osg");

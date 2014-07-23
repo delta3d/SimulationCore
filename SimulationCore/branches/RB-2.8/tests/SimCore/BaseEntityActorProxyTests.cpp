@@ -952,7 +952,8 @@ void BaseEntityActorProxyTests::TestBaseEntityActorUpdates(SimCore::Actors::Base
    dtGame::DRPublishingActComp* drPubAC = NULL;
    eap.GetComponent(drPubAC);
 
-   SimCore::Actors::BaseEntity& entityActor = static_cast<SimCore::Actors::BaseEntity&>(eap.GetGameActor());
+   SimCore::Actors::BaseEntity* entityDrawable = NULL;
+   eap.GetDrawable(entityDrawable);
    // we now need a DR algorithm other than none, or it will skip updates.
    drHelper->SetDeadReckoningAlgorithm(dtGame::DeadReckoningAlgorithm::STATIC);//VELOCITY_ONLY);
    // Eliminating smoothing causes the entity movements and DR movements to be fully in sync. This
@@ -978,7 +979,7 @@ void BaseEntityActorProxyTests::TestBaseEntityActorUpdates(SimCore::Actors::Base
    //CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(
    //      "The time until next update should be seeded to the time between complete updates.",
    //      dtGame::DRPublishingActComp::TIME_BETWEEN_UPDATES,
-   //      entityActor.GetDRPublishingActComp()->GetTimeUntilNextFullUpdate(), 1e-3f);
+   //      entityActor->GetDRPublishingActComp()->GetTimeUntilNextFullUpdate(), 1e-3f);
 
    dtCore::System::GetInstance().Step();
 
@@ -990,11 +991,11 @@ void BaseEntityActorProxyTests::TestBaseEntityActorUpdates(SimCore::Actors::Base
 
    dtCore::Transform xform;
    osg::Vec3 pos;
-   entityActor.GetTransform(xform, dtCore::Transformable::REL_CS);
+   entityDrawable->GetTransform(xform, dtCore::Transformable::REL_CS);
 
    xform.GetTranslation(pos);
    xform.SetTranslation(pos + smallMovement);
-   entityActor.SetTransform(xform, dtCore::Transformable::REL_CS);
+   entityDrawable->SetTransform(xform, dtCore::Transformable::REL_CS);
 
    dtCore::AppSleep(20);// Give the DR Publisher time to do the actor update. At 60 hz, we technically only need 16.6 ms
 
@@ -1016,7 +1017,7 @@ void BaseEntityActorProxyTests::TestBaseEntityActorUpdates(SimCore::Actors::Base
 
    osg::Vec3 largeMovement(200.0f, 345.0f, 657.0f);
    xform.SetTranslation(pos + largeMovement);
-   entityActor.SetTransform(xform, dtCore::Transformable::REL_CS);
+   entityDrawable->SetTransform(xform, dtCore::Transformable::REL_CS);
 
    dtCore::AppSleep(20);// Give the DR Publisher time to do the actor update. At 60 hz, we technically only need 16.6 ms
 
@@ -1026,7 +1027,7 @@ void BaseEntityActorProxyTests::TestBaseEntityActorUpdates(SimCore::Actors::Base
          static_cast<const dtGame::ActorUpdateMessage*>(tc->FindProcessMessageOfType(
                dtGame::MessageType::INFO_ACTOR_UPDATED).get());
 
-   entityActor.GetTransform(xform, dtCore::Transformable::REL_CS);
+   entityDrawable->GetTransform(xform, dtCore::Transformable::REL_CS);
 
    std::ostringstream ss;
    ss << "The translation was large. It should have sent an update.  New position is: "
@@ -1044,7 +1045,7 @@ void BaseEntityActorProxyTests::TestBaseEntityActorUpdates(SimCore::Actors::Base
    tc->reset();
 
    xform.SetRotation(smallMovement);
-   entityActor.SetTransform(xform, dtCore::Transformable::REL_CS);
+   entityDrawable->SetTransform(xform, dtCore::Transformable::REL_CS);
 
    dtCore::AppSleep(20);// Give the DR Publisher time to do the actor update. At 60 hz, we technically only need 16.6 ms
 
@@ -1056,7 +1057,7 @@ void BaseEntityActorProxyTests::TestBaseEntityActorUpdates(SimCore::Actors::Base
    tc->reset();
 
    xform.SetRotation(largeMovement);
-   entityActor.SetTransform(xform, dtCore::Transformable::REL_CS);
+   entityDrawable->SetTransform(xform, dtCore::Transformable::REL_CS);
 
    dtCore::AppSleep(20);// Give the DR Publisher time to do the actor update. At 60 hz, we technically only need 16.6 ms
 
