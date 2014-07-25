@@ -587,7 +587,7 @@ namespace SimCore
 
          PhysicsParticleSystemActorProxy::BuildPropertyMap();
          MunitionParticlesActor* actor = NULL;
-         GetActor(actor);
+         GetDrawable(actor);
 
          AddProperty(new dtCore::IntActorProperty("FrequencyOfTracers", "FrequencyOfTracers",
                   dtCore::IntActorProperty::SetFuncType(actor, &MunitionParticlesActor::SetFrequencyOfTracers),
