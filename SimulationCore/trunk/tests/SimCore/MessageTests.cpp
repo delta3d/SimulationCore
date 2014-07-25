@@ -413,21 +413,21 @@ class MessageTests : public CPPUNIT_NS::TestFixture
             RefPtr<SimCore::Actors::PlatformActorProxy> t80Proxy;
             mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE, t80Proxy);
             CPPUNIT_ASSERT(t80Proxy.valid());
-            RefPtr<SimCore::Actors::BaseEntity> t80Actor = dynamic_cast<SimCore::Actors::BaseEntity*>(t80Proxy->GetDrawable());
+            RefPtr<SimCore::Actors::BaseEntity> t80Actor = t80Proxy->GetDrawable<SimCore::Actors::BaseEntity>();
             CPPUNIT_ASSERT(t80Actor.valid());
             RefPtr<SimCore::Actors::StealthActorProxy> playerProxy;
             mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::STEALTH_ACTOR_TYPE, playerProxy);
             CPPUNIT_ASSERT(playerProxy.valid());
-            RefPtr<SimCore::Actors::StealthActor> playerActor = dynamic_cast<SimCore::Actors::StealthActor*>(playerProxy->GetDrawable());
+            RefPtr<SimCore::Actors::StealthActor> playerActor = playerProxy->GetDrawable<SimCore::Actors::StealthActor>();
             CPPUNIT_ASSERT(playerActor.valid());
 
-            osg::Vec3 tankPos(0, 100, 0);
+            osg::Vec3 tankPos(0.0f, 100.0f, 0.0f);
             t80Actor->GetComponent<dtGame::DeadReckoningHelper>()->SetLastKnownTranslation(tankPos);
 
             mGM->AddActor(*t80Proxy, true, false);
             mGM->AddActor(*playerProxy, false, false);
 
-            static_cast<SimCore::Actors::StealthActor&>(playerProxy->GetGameActor()).SetAttachOffset(osg::Vec3(0, 0, 0));
+            playerProxy->GetDrawable<SimCore::Actors::StealthActor>()->SetAttachOffset(osg::Vec3(0.0f, 0.0f, 0.0f));
 
             RefPtr<dtGame::Message> msg = mGM->GetMessageFactory().CreateMessage(SimCore::MessageType::ATTACH_TO_ACTOR);
             CPPUNIT_ASSERT(msg.valid());
@@ -437,8 +437,7 @@ class MessageTests : public CPPUNIT_NS::TestFixture
             aam.SetAboutActorId(playerProxy->GetId());
 
             mGM->SendMessage(aam);
-            dtCore::AppSleep(10);
-            dtCore::System::GetInstance().Step();
+            dtCore::System::GetInstance().Step(10);
 
             dtGame::Invokable* invoke = playerActor->GetGameActorProxy().GetInvokable("AttachToActor");
             CPPUNIT_ASSERT_MESSAGE("The AttachToActor invokable should not be NULL", invoke != NULL);
@@ -451,8 +450,7 @@ class MessageTests : public CPPUNIT_NS::TestFixture
             msg->SetAboutActorId(t80Proxy->GetId());
             mGM->SendMessage(*msg);
 
-            dtCore::AppSleep(10);
-            dtCore::System::GetInstance().Step();
+            dtCore::System::GetInstance().Step(10);
 
             CPPUNIT_ASSERT_MESSAGE("The player should no longer be attached to the T80", playerActor->GetParent() == &mGM->GetScene());
             dtCore::Transform xform;
@@ -568,25 +566,31 @@ class MessageTests : public CPPUNIT_NS::TestFixture
 
             mGM->SendMessage(magMsg);
 
-            dtCore::AppSleep(5);
-            dtCore::System::GetInstance().Step();
+            dtCore::System::GetInstance().Step(5.0f/1000.0f);
 
             osg::Vec3 defaultScale(1.0f, 1.0f, 1.0f), magScale(mag, mag, mag);
             osg::Vec3 scale = stealthProxy->GetDrawable<SimCore::Actors::StealthActor>()->GetScaleMagnification();
-            CPPUNIT_ASSERT_MESSAGE("The stealth actor should NOT have had its scale set with the other actors", dtUtil::Equivalent(scale, defaultScale, 0.001f));
+            for (unsigned i = 0; i < 3; ++i)
+            {
+               CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("The stealth actor should NOT have had its scale set with the other actors", scale[i], defaultScale[i], 0.001f);
+            }
 
-            scale = stealthProxy->GetDrawable<SimCore::Actors::BaseEntity>()->GetScaleMagnification();
-            CPPUNIT_ASSERT_MESSAGE("The proxy should have had its scale set",
-               dtUtil::Equivalent(scale, magScale, 0.001f));
+            scale = proxy->GetDrawable<SimCore::Actors::BaseEntity>()->GetScaleMagnification();
+            for (unsigned i = 0; i < 3; ++i)
+            {
+               CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("The proxy should have had its scale set", scale[i], magScale[i], 0.001f);
+            }
 
             magMsg.SetMagnification(defaultScale.x());
             mGM->SendMessage(magMsg);
 
-            dtCore::AppSleep(5);
-            dtCore::System::GetInstance().Step();
+            dtCore::System::GetInstance().Step(5.0f/1000.0f);
 
             scale = proxy->GetDrawable<SimCore::Actors::BaseEntity>()->GetScaleMagnification();
-            CPPUNIT_ASSERT(dtUtil::Equivalent(scale, defaultScale, 0.001f));
+            for (unsigned i = 0; i < 3; ++i)
+            {
+               CPPUNIT_ASSERT_DOUBLES_EQUAL(scale[i], defaultScale[i], 0.001f);
+            }
 
             // All changes backed out now, can test with input component
             RefPtr<SimCore::Components::BaseInputComponent> bic = new SimCore::Components::BaseInputComponent();
@@ -595,16 +599,15 @@ class MessageTests : public CPPUNIT_NS::TestFixture
             mGM->AddComponent(*bic, dtGame::GameManager::ComponentPriority::NORMAL);
             float BICscale = bic->GetEntityMagnification();
 
-            CPPUNIT_ASSERT(BICscale == 1.0f);
+            CPPUNIT_ASSERT_DOUBLES_EQUAL(BICscale, 1.0f, 0.001f);
 
             bic->HandleKeyPressed(NULL, osgGA::GUIEventAdapter::KEY_Page_Up);
 
             BICscale = bic->GetEntityMagnification();
 
-            CPPUNIT_ASSERT(BICscale == 2.0f);
+            CPPUNIT_ASSERT_DOUBLES_EQUAL(BICscale, 2.0f, 0.001f);
 
-            dtCore::AppSleep(5);
-            dtCore::System::GetInstance().Step();
+            dtCore::System::GetInstance().Step(5.0f/1000.0f);
 
             scale = stealthProxy->GetDrawable<SimCore::Actors::StealthActor>()->GetScaleMagnification();
             CPPUNIT_ASSERT_MESSAGE("Again, the stealth actor should NOT have scaled",
@@ -627,8 +630,7 @@ class MessageTests : public CPPUNIT_NS::TestFixture
             magMsg.SetMagnification(mag);
             mGM->SendMessage(magMsg);
 
-            dtCore::AppSleep(5);
-            dtCore::System::GetInstance().Step();
+            dtCore::System::GetInstance().Step(5.0f/1000.0f);
 
             for(unsigned int i = 0; i < size; i++)
             {
@@ -646,8 +648,7 @@ class MessageTests : public CPPUNIT_NS::TestFixture
             static_cast<dtGame::ActorUpdateMessage&>(*rmtMsg).SetActorType(*SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE);
             mGM->SendMessage(*rmtMsg);
 
-            dtCore::AppSleep(5);
-            dtCore::System::GetInstance().Step();
+            dtCore::System::GetInstance().Step(5.0f/1000.0f);
 
             scale = dynamic_cast<SimCore::Actors::BaseEntity&>(*mGM->FindGameActorById(id)->GetDrawable()).GetScaleMagnification();
             CPPUNIT_ASSERT_MESSAGE("The new entity added should have been scaled automatically",
