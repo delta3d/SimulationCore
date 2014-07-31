@@ -85,7 +85,7 @@ SkyDome::SkyDome( bool useBothHemispheres, bool mirrorInSouthernHemisphere ):
             true ),
     _sunFudgeScale(1.0),
     _skyTextureUnit(0),
-    _sunTextureUnit(1),
+    _sunTextureUnit(4),
     _mirrorInSouthernHemisphere( mirrorInSouthernHemisphere ),
     _T(2.0f),
     _current_tex_row(0)
