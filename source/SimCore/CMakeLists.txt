@@ -59,7 +59,7 @@ set(LIB_SOURCES_1
    )
 
 set(LIB_SOURCES_2 
-   "${SOURCE_PATH}/Actors/AtmosphereActor.cpp"
+   "${SOURCE_PATH}/Actors/AtmosphereData.cpp"
    "${SOURCE_PATH}/Actors/BaseEntity.cpp"
    "${SOURCE_PATH}/Actors/BasePhysicsVehicleActor.cpp"
    "${SOURCE_PATH}/Actors/BaseTerrainActor.cpp"
@@ -92,7 +92,6 @@ set(LIB_SOURCES_2
    "${SOURCE_PATH}/Actors/MultipleDetonationActor.cpp"
    "${SOURCE_PATH}/Actors/MunitionParticlesActor.cpp"
    "${SOURCE_PATH}/Actors/MunitionTypeActor.cpp"
-   "${SOURCE_PATH}/Actors/NxAgeiaFourWheelVehicleActor.cpp"
    "${SOURCE_PATH}/Actors/OceanDataActor.cpp"
    "${SOURCE_PATH}/Actors/OpenFlightToIVETerrain.cpp"
    "${SOURCE_PATH}/Actors/PagedTerrainPhysicsActor.cpp"

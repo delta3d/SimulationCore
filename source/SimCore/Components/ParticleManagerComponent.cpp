@@ -856,7 +856,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////
-      const dtGame::GameActorProxy* ActorInfo::GetActor() const
+      const dtGame::GameActorProxy* ActorInfo::GetDrawable() const
       {
          return mRef.get();
       }

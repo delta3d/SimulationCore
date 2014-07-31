@@ -79,7 +79,7 @@ namespace StealthGM
       if (coordConfigActorProxy != NULL)
       {
          dtActors::CoordinateConfigActor* coordConfigActor = NULL;
-         coordConfigActorProxy->GetActor(coordConfigActor);
+         coordConfigActorProxy->GetDrawable(coordConfigActor);
          coord = coordConfigActor->GetCoordinates();
       }
 

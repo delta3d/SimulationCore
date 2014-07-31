@@ -23,7 +23,7 @@
 
 #include <prefix/SimCorePrefix.h>
 #include <dtGame/gameactor.h>
-#include <SimCore/Actors/AtmosphereActor.h>
+#include <SimCore/Actors/AtmosphereData.h>
 
 namespace SimCore
 {
@@ -54,42 +54,6 @@ namespace SimCore
       PrecipitationType PrecipitationType::HAIL("HAIL");
       PrecipitationType PrecipitationType::GRAUPEL("GRAUPEL");
       PrecipitationType PrecipitationType::OTHER("OTHER");
-
-      //////////////////////////////////////////////////////////
-      // Proxy code
-      //////////////////////////////////////////////////////////
-      AtmosphereActorProxy::AtmosphereActorProxy()
-      {
-         SetClassName("SimCore::Actors::AtmosphereActor");
-         SetHideDTCorePhysicsProps(true);
-      }
-
-      //////////////////////////////////////////////////////////
-      AtmosphereActorProxy::~AtmosphereActorProxy()
-      {
-
-      }
-
-      //////////////////////////////////////////////////////////
-      void AtmosphereActorProxy::BuildPropertyMap()
-      {
-         dtGame::GameActorProxy::BuildPropertyMap();
-      }
-
-      //////////////////////////////////////////////////////////
-      // Actor code
-      //////////////////////////////////////////////////////////
-      AtmosphereActor::AtmosphereActor( dtGame::GameActorProxy& owner )
-         : IGActor(owner)
-      {
-
-      }
-
-      //////////////////////////////////////////////////////////
-      AtmosphereActor::~AtmosphereActor()
-      {
-
-      }
 
    }
 

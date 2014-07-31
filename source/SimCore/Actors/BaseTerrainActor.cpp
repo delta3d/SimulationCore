@@ -103,11 +103,12 @@ namespace SimCore
       void BaseTerrainActorProxy::BuildPropertyMap()
       {
          dtGame::GameActorProxy::BuildPropertyMap();
-         BaseTerrainActor &ta = static_cast<BaseTerrainActor&>(GetGameActor());
+         BaseTerrainActor* ta = NULL;
+         GetDrawable(ta);
 
          AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::TERRAIN, 
             "TerrainMesh", "TerrainMesh", 
-            dtCore::ResourceActorProperty::SetFuncType(&ta, &BaseTerrainActor::LoadFile),
+            dtCore::ResourceActorProperty::SetFuncType(ta, &BaseTerrainActor::LoadFile),
             "Loads in a terrain mesh for this object", "Terrain"));
       }
    }

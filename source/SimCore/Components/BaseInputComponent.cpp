@@ -222,19 +222,17 @@ namespace SimCore
          }
 
          // look to find an actor already existing atmosphere
-         dtCore::RefPtr<dtGame::GameActorProxy> newProxy;
-         Actors::UniformAtmosphereActorProxy* weatherProxy = NULL;
-         GetGameManager()->FindActorByType(*SimCore::Actors::EntityActorRegistry::UNIFORM_ATMOSPHERE_ACTOR_TYPE, weatherProxy);
+         dtCore::RefPtr<Actors::UniformAtmosphereActor> weatherActor;
+         Actors::UniformAtmosphereActor* weatherTemp = NULL;
+         GetGameManager()->FindActorByType(*SimCore::Actors::EntityActorRegistry::UNIFORM_ATMOSPHERE_ACTOR_TYPE, weatherTemp);
+         weatherActor = weatherTemp;
 
          // if one doesn't already exist, then we create it.
-         if (weatherProxy == NULL)
+         if (weatherActor == NULL)
          {
             GetGameManager()->CreateActor
-               (*SimCore::Actors::EntityActorRegistry::UNIFORM_ATMOSPHERE_ACTOR_TYPE, newProxy);
-            weatherProxy = dynamic_cast<Actors::UniformAtmosphereActorProxy*>(newProxy.get());
+               (*SimCore::Actors::EntityActorRegistry::UNIFORM_ATMOSPHERE_ACTOR_TYPE, weatherActor);
          }
-         Actors::UniformAtmosphereActor* weatherActor =
-            static_cast<Actors::UniformAtmosphereActor*>(weatherProxy->GetDrawable());
 
          // Advance Weather State. 
          // CLEAR
@@ -317,14 +315,14 @@ namespace SimCore
 
 
          // If we created a new actor, add it to the GM, with publish true and local
-         if (newProxy.valid())
+         if (weatherTemp == NULL)
          {
-            GetGameManager()->AddActor(*newProxy, false, true);
+            GetGameManager()->AddActor(*weatherActor, false, true);
          }
          // else, do a full actor update
          else
          {
-            weatherProxy->NotifyFullActorUpdate();
+            weatherActor->NotifyFullActorUpdate();
          }
       }
 

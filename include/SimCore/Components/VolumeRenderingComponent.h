@@ -66,7 +66,7 @@ namespace SimCore
        *     svr->mParticleRadius = 15.0f;
        *     svr->mVelocity = 0.5f;
        *     svr->mDensity = 0.08f;
-       *     svr->mTarget = GetActor();
+       *     svr->mTarget = GetDrawable();
        *     svr->mAutoDeleteOnTargetNull = true;
        *
        *     vrc->CreateShapeVolume(svr);

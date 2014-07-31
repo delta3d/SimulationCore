@@ -586,17 +586,17 @@ namespace SimCore
          const std::string GROUP = "MunitionParticlesActor";
 
          PhysicsParticleSystemActorProxy::BuildPropertyMap();
-         MunitionParticlesActor* actor = NULL;
-         GetDrawable(actor);
+         MunitionParticlesActor* drawable = NULL;
+         GetDrawable(drawable);
 
          AddProperty(new dtCore::IntActorProperty("FrequencyOfTracers", "FrequencyOfTracers",
-                  dtCore::IntActorProperty::SetFuncType(actor, &MunitionParticlesActor::SetFrequencyOfTracers),
-                  dtCore::IntActorProperty::GetFuncType(actor, &MunitionParticlesActor::GetFrequencyOfTracers),
+                  dtCore::IntActorProperty::SetFuncType(drawable, &MunitionParticlesActor::SetFrequencyOfTracers),
+                  dtCore::IntActorProperty::GetFuncType(drawable, &MunitionParticlesActor::GetFrequencyOfTracers),
                   "", GROUP));
 
          AddProperty(new dtCore::BooleanActorProperty("UseTracers", "UseTracers",
-                  dtCore::BooleanActorProperty::SetFuncType(actor, &MunitionParticlesActor::SetSystemToUseTracers),
-                  dtCore::BooleanActorProperty::GetFuncType(actor, &MunitionParticlesActor::GetSystemToUseTracers),
+                  dtCore::BooleanActorProperty::SetFuncType(drawable, &MunitionParticlesActor::SetSystemToUseTracers),
+                  dtCore::BooleanActorProperty::GetFuncType(drawable, &MunitionParticlesActor::GetSystemToUseTracers),
                   "", GROUP));
       }
 

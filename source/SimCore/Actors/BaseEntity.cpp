@@ -167,7 +167,8 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////
       void BaseEntityActorProxy::BuildPropertyMap()
       {
-         BaseEntity& e = *GetDrawable<BaseEntity>();
+         BaseEntity* e = NULL;
+         GetDrawable(e);
 
          BaseClass::BuildPropertyMap();
 
@@ -175,7 +176,7 @@ namespace SimCore
          static const dtUtil::RefString DEAD_RECKONING_GROUP("Dead Reckoning");
 
          typedef dtCore::PropertyRegHelper<BaseEntityActorProxy&, BaseEntity> PropRegType;
-         PropRegType propRegHelper(*this, &e, "Base Entity");
+         PropRegType propRegHelper(*this, e, "Base Entity");
 
 
          DT_REGISTER_PROPERTY_WITH_NAME(Frozen, PROPERTY_FROZEN, "Whether or not the simulation of the entity is frozen.", PropRegType, propRegHelper);
@@ -188,7 +189,7 @@ namespace SimCore
 
          dtCore::RefPtr<dtCore::ResourceActorProperty>  rp = new dtCore::ResourceActorProperty(*this, dtCore::DataType::PARTICLE_SYSTEM,
             "Smoke plume particles", "Smoke plume particles",
-            dtCore::ResourceActorProperty::SetFuncType(&e, &BaseEntity::SetSmokePlumesFile),
+            dtCore::ResourceActorProperty::SetFuncType(e, &BaseEntity::SetSmokePlumesFile),
             "This is the file for the smoke particles", BASE_ENTITY_GROUP);
 
          dtCore::ResourceDescriptor rdSmoke("Particles:smoke.osg");
@@ -197,7 +198,7 @@ namespace SimCore
 
          rp = new dtCore::ResourceActorProperty(*this, dtCore::DataType::PARTICLE_SYSTEM,
             "Fire particles", "Fire particles",
-            dtCore::ResourceActorProperty::SetFuncType(&e, &BaseEntity::SetFlamesPresentFile),
+            dtCore::ResourceActorProperty::SetFuncType(e, &BaseEntity::SetFlamesPresentFile),
             "This is the file for vehicle fire particles", BASE_ENTITY_GROUP);
 
          dtCore::ResourceDescriptor rdFire("Particles:fire.osg");
@@ -207,48 +208,48 @@ namespace SimCore
          static const dtUtil::RefString PROPERTY_DRAWING_MODEL_DESC
             ("Flags if this entity should draw it's model.  This is typically turned off if the entity has the player attached to it.");
          AddProperty(new dtCore::BooleanActorProperty("DrawingModel", "Draw Model",
-            dtCore::BooleanActorProperty::SetFuncType(&e, &BaseEntity::SetDrawingModel),
-            dtCore::BooleanActorProperty::GetFuncType(&e, &BaseEntity::GetDrawingModel),
+            dtCore::BooleanActorProperty::SetFuncType(e, &BaseEntity::SetDrawingModel),
+            dtCore::BooleanActorProperty::GetFuncType(e, &BaseEntity::GetDrawingModel),
             PROPERTY_DRAWING_MODEL_DESC, DEAD_RECKONING_GROUP));
 
          static const dtUtil::RefString PROPERTY_DAMAGE_STATE_DESC
             ("Changes which model to show based on the level of damage.");
          AddProperty(new dtCore::EnumActorProperty<BaseEntityActorProxy::DamageStateEnum>(PROPERTY_DAMAGE_STATE, PROPERTY_DAMAGE_STATE,
-            dtCore::EnumActorProperty<BaseEntityActorProxy::DamageStateEnum>::SetFuncType(&e, &BaseEntity::SetDamageState),
-            dtCore::EnumActorProperty<BaseEntityActorProxy::DamageStateEnum>::GetFuncType(&e, &BaseEntity::GetDamageState),
+            dtCore::EnumActorProperty<BaseEntityActorProxy::DamageStateEnum>::SetFuncType(e, &BaseEntity::SetDamageState),
+            dtCore::EnumActorProperty<BaseEntityActorProxy::DamageStateEnum>::GetFuncType(e, &BaseEntity::GetDamageState),
             PROPERTY_DAMAGE_STATE_DESC, BASE_ENTITY_GROUP));
 
 
          static const dtUtil::RefString PROPERTY_MAX_DAMAGE_AMOUNT_DESC
             ("The max damage a local entity can take before dying. Default is 1.0, but is based on damage in the munition config tables. ");
          AddProperty(new dtCore::FloatActorProperty(PROPERTY_MAX_DAMAGE_AMOUNT, PROPERTY_MAX_DAMAGE_AMOUNT,
-            dtCore::FloatActorProperty::SetFuncType(&e, &BaseEntity::SetMaxDamageAmount),
-            dtCore::FloatActorProperty::GetFuncType(&e, &BaseEntity::GetMaxDamageAmount),
+            dtCore::FloatActorProperty::SetFuncType(e, &BaseEntity::SetMaxDamageAmount),
+            dtCore::FloatActorProperty::GetFuncType(e, &BaseEntity::GetMaxDamageAmount),
             PROPERTY_MAX_DAMAGE_AMOUNT_DESC, BASE_ENTITY_GROUP));
 
          static const dtUtil::RefString PROPERTY_CUR_DAMAGE_RATIO_DESC
             ("The current damage ratio - used for display purposes. Setting this manually has no effect - it is controlled by the MunitionsComponent.");
          AddProperty(new dtCore::FloatActorProperty(PROPERTY_CUR_DAMAGE_RATIO, PROPERTY_CUR_DAMAGE_RATIO,
-            dtCore::FloatActorProperty::SetFuncType(&e, &BaseEntity::SetCurDamageRatio),
-            dtCore::FloatActorProperty::GetFuncType(&e, &BaseEntity::GetCurDamageRatio),
+            dtCore::FloatActorProperty::SetFuncType(e, &BaseEntity::SetCurDamageRatio),
+            dtCore::FloatActorProperty::GetFuncType(e, &BaseEntity::GetCurDamageRatio),
             PROPERTY_CUR_DAMAGE_RATIO_DESC, BASE_ENTITY_GROUP));
 
          AddProperty(new dtCore::EnumActorProperty<BaseEntityActorProxy::DomainEnum>(
             PROPERTY_DOMAIN, PROPERTY_DOMAIN,
-            dtCore::EnumActorProperty<BaseEntityActorProxy::DomainEnum>::SetFuncType(&e, &BaseEntity::SetDomain),
-            dtCore::EnumActorProperty<BaseEntityActorProxy::DomainEnum>::GetFuncType(&e, &BaseEntity::GetDomain),
+            dtCore::EnumActorProperty<BaseEntityActorProxy::DomainEnum>::SetFuncType(e, &BaseEntity::SetDomain),
+            dtCore::EnumActorProperty<BaseEntityActorProxy::DomainEnum>::GetFuncType(e, &BaseEntity::GetDomain),
             "Specifies the type of environment an entity is specialized in navigating.",
             BASE_ENTITY_GROUP));
 
          static const dtUtil::RefString PROPERTY_FORCE_DESC("The force for which the entity is fighting.");
          AddProperty(new dtCore::EnumActorProperty<BaseEntityActorProxy::ForceEnum>(PROPERTY_FORCE, PROPERTY_FORCE,
-            dtCore::EnumActorProperty<BaseEntityActorProxy::ForceEnum>::SetFuncType(&e, &BaseEntity::SetForceAffiliation),
-            dtCore::EnumActorProperty<BaseEntityActorProxy::ForceEnum>::GetFuncType(&e, &BaseEntity::GetForceAffiliation),
+            dtCore::EnumActorProperty<BaseEntityActorProxy::ForceEnum>::SetFuncType(e, &BaseEntity::SetForceAffiliation),
+            dtCore::EnumActorProperty<BaseEntityActorProxy::ForceEnum>::GetFuncType(e, &BaseEntity::GetForceAffiliation),
             PROPERTY_FORCE_DESC, BASE_ENTITY_GROUP));
 
          AddProperty(new dtCore::EnumActorProperty<BaseEntityActorProxy::ServiceEnum>("Service", "Service",
-            dtCore::EnumActorProperty<BaseEntityActorProxy::ServiceEnum>::SetFuncType(&e, &BaseEntity::SetService),
-            dtCore::EnumActorProperty<BaseEntityActorProxy::ServiceEnum>::GetFuncType(&e, &BaseEntity::GetService),
+            dtCore::EnumActorProperty<BaseEntityActorProxy::ServiceEnum>::SetFuncType(e, &BaseEntity::SetService),
+            dtCore::EnumActorProperty<BaseEntityActorProxy::ServiceEnum>::GetFuncType(e, &BaseEntity::GetService),
             "Sets the service of this entity", BASE_ENTITY_GROUP));
 
 
@@ -261,16 +262,16 @@ namespace SimCore
             ("Changes the desired base scale to make the model/geometry "
                   "of this model correct for the rendering.  Model Scale = Default * Magnification");
          AddProperty(new dtCore::Vec3ActorProperty(PROPERTY_DEFAULT_SCALE, PROPERTY_DEFAULT_SCALE,
-                  dtCore::Vec3ActorProperty::SetFuncType(&e, &BaseEntity::SetDefaultScale),
-                  dtCore::Vec3ActorProperty::GetFuncType(&e, &BaseEntity::GetDefaultScale),
+                  dtCore::Vec3ActorProperty::SetFuncType(e, &BaseEntity::SetDefaultScale),
+                  dtCore::Vec3ActorProperty::GetFuncType(e, &BaseEntity::GetDefaultScale),
                   PROPERTY_DEFAULT_SCALE_DESC,
                   BASE_ENTITY_GROUP));
 
          static const dtUtil::RefString PROPERTY_SCALE_MAGNIFICATION_FACTOR_DESC
             ("Changes the amount the geometry of the entity is magnified.  Model Scale = Default * Magnification");
          AddProperty(new dtCore::Vec3ActorProperty(PROPERTY_SCALE_MAGNIFICATION_FACTOR, PROPERTY_SCALE_MAGNIFICATION_FACTOR,
-                  dtCore::Vec3ActorProperty::SetFuncType(&e, &BaseEntity::SetScaleMagnification),
-                  dtCore::Vec3ActorProperty::GetFuncType(&e, &BaseEntity::GetScaleMagnification),
+                  dtCore::Vec3ActorProperty::SetFuncType(e, &BaseEntity::SetScaleMagnification),
+                  dtCore::Vec3ActorProperty::GetFuncType(e, &BaseEntity::GetScaleMagnification),
                   PROPERTY_SCALE_MAGNIFICATION_FACTOR_DESC,
                   BASE_ENTITY_GROUP));
 
@@ -279,7 +280,7 @@ namespace SimCore
          dtCore::Vec3ActorProperty* modelScaleProp = new dtCore::Vec3ActorProperty(
             PROPERTY_MODEL_SCALE, PROPERTY_MODEL_SCALE,
             dtCore::Vec3ActorProperty::SetFuncType(),
-            dtCore::Vec3ActorProperty::GetFuncType(&e, &BaseEntity::GetModelScale),
+            dtCore::Vec3ActorProperty::GetFuncType(e, &BaseEntity::GetModelScale),
             PROPERTY_MODEL_SCALE_DESC,
             BASE_ENTITY_GROUP);
 
@@ -291,37 +292,37 @@ namespace SimCore
             ("Model offset rotation HPR");
          AddProperty(new dtCore::Vec3ActorProperty(
             PROPERTY_MODEL_ROTATION, PROPERTY_MODEL_ROTATION,
-            dtCore::Vec3ActorProperty::SetFuncType(&e, &BaseEntity::SetModelRotation),
-            dtCore::Vec3ActorProperty::GetFuncType(&e, &BaseEntity::GetModelRotation),
+            dtCore::Vec3ActorProperty::SetFuncType(e, &BaseEntity::SetModelRotation),
+            dtCore::Vec3ActorProperty::GetFuncType(e, &BaseEntity::GetModelRotation),
             PROPERTY_MODEL_ROTATION_DESC,
             BASE_ENTITY_GROUP));
 
          static const dtUtil::RefString PROPERTY_FIREPOWER_DISABLED("Firepower Disabled");
          AddProperty(new dtCore::BooleanActorProperty(PROPERTY_FIREPOWER_DISABLED,
             PROPERTY_FIREPOWER_DISABLED,
-            dtCore::BooleanActorProperty::SetFuncType(&e, &BaseEntity::SetFirepowerDisabled),
-            dtCore::BooleanActorProperty::GetFuncType(&e, &BaseEntity::GetFirepowerDisabled),
+            dtCore::BooleanActorProperty::SetFuncType(e, &BaseEntity::SetFirepowerDisabled),
+            dtCore::BooleanActorProperty::GetFuncType(e, &BaseEntity::GetFirepowerDisabled),
             "Determines if this entity has had its fire power disabled.", BASE_ENTITY_GROUP));
 
          static const dtUtil::RefString PROPERTY_MOBILITY_DISABLED("Mobility Disabled");
          AddProperty(new dtCore::BooleanActorProperty(PROPERTY_MOBILITY_DISABLED,
             PROPERTY_MOBILITY_DISABLED,
-            dtCore::BooleanActorProperty::SetFuncType(&e, &BaseEntity::SetMobilityDisabled),
-            dtCore::BooleanActorProperty::GetFuncType(&e, &BaseEntity::GetMobilityDisabled),
+            dtCore::BooleanActorProperty::SetFuncType(e, &BaseEntity::SetMobilityDisabled),
+            dtCore::BooleanActorProperty::GetFuncType(e, &BaseEntity::GetMobilityDisabled),
             "Determines if this entity has had its mobility disabled.", BASE_ENTITY_GROUP));
 
          AddProperty(new dtCore::StringActorProperty(
             PROPERTY_ENTITY_TYPE_ID,
             PROPERTY_ENTITY_TYPE_ID,
-            dtCore::StringActorProperty::SetFuncType(&e, &BaseEntity::SetEntityTypeId),
-            dtCore::StringActorProperty::GetFuncType(&e, &BaseEntity::GetEntityTypeId),
+            dtCore::StringActorProperty::SetFuncType(e, &BaseEntity::SetEntityTypeId),
+            dtCore::StringActorProperty::GetFuncType(e, &BaseEntity::GetEntityTypeId),
             "String property into which the Entity Type is captured", BASE_ENTITY_GROUP));
 
          AddProperty(new dtCore::StringActorProperty(
             PROPERTY_MAPPING_NAME,
             PROPERTY_MAPPING_NAME,
-            dtCore::StringActorProperty::SetFuncType(&e, &BaseEntity::SetMappingName),
-            dtCore::StringActorProperty::GetFuncType(&e, &BaseEntity::GetMappingName),
+            dtCore::StringActorProperty::SetFuncType(e, &BaseEntity::SetMappingName),
+            dtCore::StringActorProperty::GetFuncType(e, &BaseEntity::GetMappingName),
             "String property into which the Object Mapping Name is captured", BASE_ENTITY_GROUP));
       }
 
@@ -367,8 +368,6 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////
       void BaseEntityActorProxy::OnRemovedFromWorld()
       {
-         // TODO: !!! Call both the actor and proxy functions with InvokeRemovedFromWorld on Game Actor.
-         // Game Actor currently does not have this function nor is it being called by the game manager.
          GetDrawable<SimCore::Actors::BaseEntity>()->OnRemovedFromWorld();
       }
 

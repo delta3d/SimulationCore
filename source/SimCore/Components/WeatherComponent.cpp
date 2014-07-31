@@ -228,8 +228,7 @@ namespace SimCore
 
          if(mAtmosphere.valid())
          {
-            Actors::UniformAtmosphereActor* atmosActor =
-               static_cast<Actors::UniformAtmosphereActor*>(mAtmosphere->GetDrawable());
+            Actors::UniformAtmosphereActor* atmosActor = mAtmosphere;
 
             if(atmosActor != NULL)
             {
@@ -473,8 +472,7 @@ namespace SimCore
          // Update the weather conditions
          if (mAtmosphere.valid())
          {
-            Actors::UniformAtmosphereActor* atmosActor =
-               static_cast<Actors::UniformAtmosphereActor*>(mAtmosphere->GetDrawable());
+            Actors::UniformAtmosphereActor* atmosActor = mAtmosphere;
 
             // Change Clouds
             // TODO
@@ -660,7 +658,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////
       void WeatherComponent::AssignNewProxy(const dtCore::UniqueId& id)
       {
-         dtCore::ActorProxy* actor = GetGameManager()->FindActorById(id);
+         dtCore::BaseActorObject* actor = GetGameManager()->FindActorById(id);
          if (actor == NULL)
          {
             return;
@@ -670,10 +668,10 @@ namespace SimCore
 
          if (type == *SimCore::Actors::EntityActorRegistry::UNIFORM_ATMOSPHERE_ACTOR_TYPE)
          {
-            Actors::UniformAtmosphereActorProxy* proxy =
-               static_cast<Actors::UniformAtmosphereActorProxy*>(actor);
+            Actors::UniformAtmosphereActor* uaa =
+               dynamic_cast<Actors::UniformAtmosphereActor*>(actor);
 
-            if (mAtmosphere.valid() && mAtmosphere->GetId() != proxy->GetId())
+            if (mAtmosphere.valid() && mAtmosphere->GetId() != uaa->GetId())
             {
                LOG_WARNING("WARNING! WeatherComponent.mAtmosphere points to another AtmosphereActor"
                            "The old AtmosphereActor may not have been removed.");
@@ -682,7 +680,7 @@ namespace SimCore
 
             if (!mAtmosphere.valid())
             {
-               mAtmosphere = proxy;
+               mAtmosphere = uaa;
             }
 
             UpdateWeather();

@@ -440,7 +440,7 @@ namespace NetDemo
       BaseClass::OnRemovedFromWorld();
 
       LightTower* actor = NULL;
-      GetActor(actor);      
+      GetDrawable(actor);      
       actor->OnRemovedFromWorld();
    }
 

@@ -353,7 +353,7 @@ namespace SimCore
             if( mShooter.valid() )
             {
                MunitionParticlesActor* particleSystem = NULL;
-               mShooter->GetActor(particleSystem);
+               mShooter->GetDrawable(particleSystem);
 
                // Add the vehicles current velocity to the weapon.
                osg::Vec3 vehicleVelocity;
@@ -575,7 +575,7 @@ namespace SimCore
          mLastHitLocation = report.mPosition;
 
          // Get the target ID
-         mLastTargetObject = target != NULL ? &target->GetGameActor() : NULL;
+         mLastTargetObject = target != NULL ? target->GetDrawable<dtGame::GameActor>() : NULL;
          std::string targetID( mLastTargetObject.valid() ?
             mLastTargetObject->GetUniqueId().ToString() : "" );
 
@@ -854,7 +854,7 @@ namespace SimCore
          PlatformActorProxy::BuildPropertyMap();
 
          WeaponActor* actor = NULL;
-         GetActor(actor);
+         GetDrawable(actor);
 
          static const dtUtil::RefString groupResources("Resources");
          static const dtUtil::RefString groupMunitions("Munitions");

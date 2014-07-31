@@ -55,7 +55,7 @@ namespace StealthQt
          if(eap == NULL)
             continue;
 
-         SimCore::Actors::BaseEntity& entity = static_cast<SimCore::Actors::BaseEntity&>(eap->GetGameActor());
+         SimCore::Actors::BaseEntity& entity = *eap->GetDrawable<SimCore::Actors::BaseEntity>();
 
          if (!entity.IsVisible())
             continue;
@@ -96,7 +96,7 @@ namespace StealthQt
    double EntitySearch::GetLastUpdateTime(const dtGame::GameActorProxy& actor)
    {
       const SimCore::Actors::BaseEntity* entity =
-         dynamic_cast<const SimCore::Actors::BaseEntity*>(&actor.GetGameActor());
+         actor.GetDrawable<SimCore::Actors::BaseEntity>();
 
          if (entity == NULL)
             return 0.0;

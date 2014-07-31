@@ -71,7 +71,7 @@ namespace SimCore
          static const dtUtil::RefString GROUPNAME_PARTICLES("Particles");
 
          MissileActor* drawable = NULL;
-         GetActor(drawable);
+         GetDrawable(drawable);
 
          typedef dtCore::PropertyRegHelper<MissileActorProxy&, MissileActor> PropRegHelperType;
          PropRegHelperType propRegHelper(*this, drawable, GROUPNAME);
@@ -118,7 +118,7 @@ namespace SimCore
       void MissileActorProxy::OnRemovedFromWorld()
       {
          MissileActor* missile = NULL;
-         GetActor(missile);
+         GetDrawable(missile);
          missile->ScheduleSmokeTrailDelete();
       }
 
@@ -191,7 +191,7 @@ namespace SimCore
                *dtActors::EngineActorRegistry::PARTICLE_SYSTEM_ACTOR_TYPE,
                mSmokeTrail);
 
-            mSmokeTrail->GetActor(ps);
+            mSmokeTrail->GetDrawable(ps);
             ps->LoadFile(fileName);
          }
 
@@ -316,7 +316,7 @@ namespace SimCore
          if( deleterComp != NULL )
          {
             dtCore::ParticleSystem* ps = NULL;
-            mSmokeTrail->GetActor(ps);
+            mSmokeTrail->GetDrawable(ps);
             dtCore::ParticleLayer* smokeLayer = ps->GetSingleLayer("Smoke");
             float deleteTime = 0.0f;
             if( smokeLayer != NULL )

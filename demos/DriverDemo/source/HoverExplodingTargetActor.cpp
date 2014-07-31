@@ -362,8 +362,6 @@ namespace DriverDemo
 
       SimCore::Actors::BasePhysicsVehicleActorProxy::BuildPropertyMap();
 
-      //HoverExplodingTargetActor& actor = static_cast<HoverExplodingTargetActor&>(GetGameActor());
-
    }
 
    ///////////////////////////////////////////////////////////////////////////////////

@@ -76,7 +76,7 @@ namespace SimCore
                PortalProxy* portal = dynamic_cast<PortalProxy*>(ga);
                if(portal != NULL)
                {
-                  RegisterPortal(dynamic_cast<Portal*>(portal->GetActor()));
+                  RegisterPortal(dynamic_cast<Portal*>(portal->GetDrawable()));
                }
             }*/
          }

@@ -372,7 +372,7 @@ namespace NetDemo
       BaseClass::BuildPropertyMap();
 
       BaseEnemyActor* actor = NULL;
-      GetActor(actor);
+      GetDrawable(actor);
 
       using namespace dtCore;
       const std::string GROUP = "Enemy Props";
