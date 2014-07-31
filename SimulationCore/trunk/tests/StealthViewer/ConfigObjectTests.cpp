@@ -690,14 +690,14 @@ void ConfigObjectTests::TestPreferencesEnvironmentApplyChanges()
    dtCore::RefPtr<SimCore::Actors::DayTimeActorProxy> dayTimeProxy;
    gm->CreateActor(*SimCore::Actors::EntityActorRegistry::DAYTIME_ACTOR_TYPE, dayTimeProxy);
 
-   dtCore::RefPtr<SimCore::Actors::UniformAtmosphereActorProxy> atmosphereProxy;
-   gm->CreateActor(*SimCore::Actors::EntityActorRegistry::UNIFORM_ATMOSPHERE_ACTOR_TYPE, atmosphereProxy);
+   dtCore::RefPtr<SimCore::Actors::UniformAtmosphereActor> atmosphere;
+   gm->CreateActor(*SimCore::Actors::EntityActorRegistry::UNIFORM_ATMOSPHERE_ACTOR_TYPE, atmosphere);
 
    dtCore::RefPtr<SimCore::Actors::EphemerisEnvironmentActorProxy> envProxy;
    gm->CreateActor(*SimCore::Actors::EntityActorRegistry::ENVIRONMENT_ACTOR_TYPE, envProxy);
 
    gm->AddActor(*dayTimeProxy, false, false);
-   gm->AddActor(*atmosphereProxy, false, false);
+   gm->AddActor(*atmosphere, false, false);
 
    try
    {

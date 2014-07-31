@@ -188,7 +188,7 @@ namespace NetDemo
       // we use it anyway, for consistency. It allows tools, position, ability to have an avatar, walk, run, jump, etc.
       //GetGameManager()->CreateActor(*SimCore::Actors::EntityActorRegistry::PLAYER_ACTOR_TYPE, ap);
       GetGameManager()->CreateActor(*NetDemo::NetDemoActorRegistry::PLAYER_STATUS_ACTOR_TYPE, ap);
-      //mPlayerStatus = static_cast<SimCore::Actors::PlayerActor*>(ap->GetActor());
+      //mPlayerStatus = static_cast<SimCore::Actors::PlayerActor*>(ap->GetDrawable());
       mPlayerStatus = static_cast<NetDemo::PlayerStatusActor*>(ap->GetDrawable());
       // make the camera a child
       dtCore::Camera* cam = GetGameManager()->GetApplication().GetCamera();
@@ -214,7 +214,7 @@ namespace NetDemo
       //if (startPosProxy != NULL)
       //{
       //   dtCore::Transformable* actor = NULL;
-      //   startPosProxy->GetActor(actor);
+      //   startPosProxy->GetDrawable(actor);
       //   dtCore::Transform xform;
       //   actor->GetTransform(xform);
       //   mPlayerStatus->SetTransform(xform);
@@ -240,7 +240,7 @@ namespace NetDemo
          }
 
          PlayerStatusActor* statusActor = NULL;
-         statusActorProxy->GetActor(statusActor);
+         statusActorProxy->GetDrawable(statusActor);
 
          HandlePlayerStatusUpdated(statusActor);
 
@@ -256,7 +256,7 @@ namespace NetDemo
             return;
          }
          ServerGameStatusActor* serverStatus = NULL;
-         gap->GetActor(serverStatus);
+         gap->GetDrawable(serverStatus);
 
          // If not the server, do a print out...
          std::ostringstream oss;
@@ -690,7 +690,7 @@ namespace NetDemo
             }
 
             SimCore::Actors::BasePhysicsVehicleActor* vehicleActor = NULL;
-            mPlayerOwnedVehicle->GetActor(vehicleActor);
+            mPlayerOwnedVehicle->GetDrawable(vehicleActor);
             vehicleActor->SetHasDriver(true);
             GetGameManager()->AddActor(*mPlayerOwnedVehicle, false, true);
 

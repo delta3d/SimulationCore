@@ -214,7 +214,7 @@ namespace SimCore
          dtGame::GameActorProxy::BuildPropertyMap();
 
          WeaponFlashActor* actor = NULL;
-         GetActor(actor);
+         GetDrawable(actor);
 
          AddProperty(new dtCore::BooleanActorProperty("Visible", "Visible",
             dtCore::BooleanActorProperty::SetFuncType( actor, &WeaponFlashActor::SetVisible),

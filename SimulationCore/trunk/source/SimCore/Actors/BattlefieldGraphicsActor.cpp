@@ -145,7 +145,7 @@ namespace SimCore
       {
          if(mGeode.valid())
          {
-            GetGameActor().GetOSGNode()->asGroup()->removeChild(mGeode.get());
+            GetDrawable()->GetOSGNode()->asGroup()->removeChild(mGeode.get());
             mGeode = NULL;
          }
       }
@@ -209,16 +209,16 @@ namespace SimCore
             SetEnableTopGeometry(mEnableTopGeometryGlobal);
 
 
-            GetGameActor().GetOSGNode()->asGroup()->addChild(mGeode.get());
-            GetGameActor().GetOSGNode()->asGroup()->addChild(mTopGeode.get());
+            GetDrawable()->GetOSGNode()->asGroup()->addChild(mGeode.get());
+            GetDrawable()->GetOSGNode()->asGroup()->addChild(mTopGeode.get());
 
          }
          else if(mPoints.size() > 1 && mRadius > 0.0001f)
          {
             CreateClosedGeometry(mPoints);
 
-            GetGameActor().GetOSGNode()->asGroup()->addChild(mGeode.get());
-            GetGameActor().GetOSGNode()->asGroup()->addChild(mTopGeode.get());
+            GetDrawable()->GetOSGNode()->asGroup()->addChild(mGeode.get());
+            GetDrawable()->GetOSGNode()->asGroup()->addChild(mTopGeode.get());
 
          }
          else if(mPoints.size() > 1)
@@ -263,10 +263,10 @@ namespace SimCore
 
             mGeode->addDrawable(geom.get());
 
-			GetGameActor().GetOSGNode()->setNodeMask(SimCore::Components::RenderingSupportComponent::DISABLE_SHADOW_NODE_MASK);
+			GetDrawable()->GetOSGNode()->setNodeMask(SimCore::Components::RenderingSupportComponent::DISABLE_SHADOW_NODE_MASK);
 
-            GetGameActor().GetOSGNode()->asGroup()->addChild(mGeode.get());
-            GetGameActor().GetOSGNode()->asGroup()->addChild(mTopGeode.get());
+            GetDrawable()->GetOSGNode()->asGroup()->addChild(mGeode.get());
+            GetDrawable()->GetOSGNode()->asGroup()->addChild(mTopGeode.get());
          }
 
       }
@@ -333,7 +333,7 @@ namespace SimCore
             dtCore::RefPtr<osg::ShapeDrawable> shapeDrawable = new osg::ShapeDrawable(shape);
             shapeDrawable->setColor(color);
             mGeode->addDrawable(shapeDrawable);
-            GetGameActor().GetOSGNode()->asGroup()->addChild(mGeode.get());
+            GetDrawable()->GetOSGNode()->asGroup()->addChild(mGeode.get());
 
          }
          else if(mPoints.size() > 1)
@@ -364,7 +364,7 @@ namespace SimCore
             }
 
 
-            GetGameActor().GetOSGNode()->asGroup()->addChild(mGeode.get());
+            GetDrawable()->GetOSGNode()->asGroup()->addChild(mGeode.get());
          }
 
       }

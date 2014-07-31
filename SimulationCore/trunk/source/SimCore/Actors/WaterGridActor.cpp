@@ -1315,7 +1315,7 @@ namespace SimCore
         }
 
         OceanDataActor* oceanDataActor = NULL;
-        proxy->GetActor(oceanDataActor);
+        proxy->GetDrawable(oceanDataActor);
 
         if(oceanDataActor != NULL)
         {
@@ -1853,7 +1853,7 @@ namespace SimCore
          BaseClass::BuildInvokables();
 
          WaterGridActor* wga = NULL;
-         GetActor(wga);
+         GetDrawable(wga);
 
          AddInvokable(*new dtGame::Invokable(INVOKABLE_MAP_LOADED,
             dtUtil::MakeFunctor(&WaterGridActor::Init, *wga)));
@@ -1888,7 +1888,7 @@ namespace SimCore
          BaseClass::BuildPropertyMap();
 
          WaterGridActor* actor = NULL;
-         GetActor(actor);
+         GetDrawable(actor);
 
          typedef dtCore::PropertyRegHelper<dtCore::PropertyContainer&, WaterGridActorProxy> RegHelperType;
          RegHelperType propReg(*this, this, GROUPNAME);
@@ -1925,7 +1925,7 @@ namespace SimCore
       void WaterGridActorProxy::SetWaveDirection(float f)
       {
          WaterGridActor* wga = NULL;
-         GetActor(wga);
+         GetDrawable(wga);
 
          mWaveDirection = f;
          wga->SetModForDirectionInDegrees(mWaveDirection);
@@ -1935,7 +1935,7 @@ namespace SimCore
       void WaterGridActorProxy::SetWavelengthModifier(float f)
       {
          WaterGridActor* wga = NULL;
-         GetActor(wga);
+         GetDrawable(wga);
 
          mWavelengthModifier = f;
          wga->SetModForWaveLength(mWavelengthModifier);
@@ -1945,7 +1945,7 @@ namespace SimCore
       void WaterGridActorProxy::SetAmplitudeModifier(float f)
       {
          WaterGridActor* wga = NULL;
-         GetActor(wga);
+         GetDrawable(wga);
 
          mAmplitudeModifier = f;
          wga->SetAmplitudeMultiplier(mAmplitudeModifier);
@@ -1955,7 +1955,7 @@ namespace SimCore
       void WaterGridActorProxy::SetSpeedModifier(float f)
       {
          WaterGridActor* wga = NULL;
-         GetActor(wga);
+         GetDrawable(wga);
 
          mSpeedModifier = f;
          wga->SetSpeedMultiplier(f);

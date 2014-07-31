@@ -485,7 +485,7 @@ namespace SimCore
       {
          //static const dtUtil::RefString GROUP("DRGhost Props");
          BaseClass::BuildPropertyMap();
-         //DRGhostActor& actor = *static_cast<DRGhostActor*>(GetActor());
+         //DRGhostActor& actor = *static_cast<DRGhostActor*>(GetDrawable());
 
          // Add properties
       }

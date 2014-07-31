@@ -133,7 +133,7 @@ namespace SimCore
          const std::string GROUP("Ocean Data");
 
          OceanDataActor* actor = NULL;
-         GetActor( actor );
+         GetDrawable( actor );
 
          // INTEGER PEORPERTIES
          AddProperty(new dtCore::IntActorProperty(

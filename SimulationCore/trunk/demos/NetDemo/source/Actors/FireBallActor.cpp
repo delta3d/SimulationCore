@@ -320,7 +320,7 @@ namespace NetDemo
    void FireBallActorProxy::BuildPropertyMap()
    {
       FireBallActor* fa = NULL;
-      GetActor(fa);
+      GetDrawable(fa);
 
       SimCore::Actors::BasePhysicsVehicleActorProxy::BuildPropertyMap();
    }

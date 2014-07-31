@@ -60,7 +60,7 @@ namespace SimCore
       void LocalEffectActorProxy::BuildPropertyMap()
       {
          LocalEffectActor *sa = NULL;
-         GetActor(sa);
+         GetDrawable(sa);
 
          dtGame::GameActorProxy::BuildPropertyMap();
 

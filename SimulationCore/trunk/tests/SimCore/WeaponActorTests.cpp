@@ -218,7 +218,7 @@ namespace SimCore
 
             // Create the weapon actor
             mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::WEAPON_ACTOR_TYPE, mWeaponProxy);
-            mWeapon = dynamic_cast<SimCore::Actors::WeaponActor*>(&mWeaponProxy->GetGameActor());
+            mWeapon = mWeaponProxy->GetDrawable<SimCore::Actors::WeaponActor>();
 
          }
          catch (const dtUtil::Exception& ex)

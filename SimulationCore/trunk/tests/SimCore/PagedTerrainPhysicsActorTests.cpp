@@ -139,7 +139,7 @@ void PagedTerrainPhysicsActorTests::TestFunction()
    dtCore::RefPtr<dtGame::GameActorProxy> obj;
    mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::PAGED_TERRAIN_PHYSICS_ACTOR_TYPE, obj);
    SimCore::Actors::PagedTerrainPhysicsActor* ourActor;
-   obj->GetActor(ourActor);
+   obj->GetDrawable(ourActor);
 
    CPPUNIT_ASSERT(obj->GetHideDTCorePhysicsProps());
    CPPUNIT_ASSERT_MESSAGE("dtCore physics properties should be hidden.", obj->GetProperty("Show Collision Geometry") == NULL);

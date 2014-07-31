@@ -304,7 +304,7 @@ namespace NetDemo
       BaseClass::BuildPropertyMap();
 
       ServerGameStatusActor* actor = NULL;
-      GetActor(actor);
+      GetDrawable(actor);
 
       static const dtUtil::RefString PROP_GAME_STATUS_DESC("Indicates the game status - server perspective.");
       AddProperty(new dtCore::EnumActorProperty<ServerGameStatusActor::ServerGameStatusEnum>(PROP_GAME_STATUS, PROP_GAME_STATUS,

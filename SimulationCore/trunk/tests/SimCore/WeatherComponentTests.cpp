@@ -83,7 +83,7 @@ namespace SimCore
                return WeatherComponent::GetDayTimeActor();
             }
 
-            Actors::UniformAtmosphereActorProxy* GetAtmosphereActor()
+            Actors::UniformAtmosphereActor* GetAtmosphereActor()
             {
                return WeatherComponent::GetAtmosphereActor();
             }
@@ -189,7 +189,7 @@ namespace SimCore
             void tearDown();
 
             void CreateEnvironmentActor( dtCore::RefPtr<Actors::IGEnvironmentActorProxy>& ptr );
-            void CreateAtmosphereActor( dtCore::RefPtr<Actors::UniformAtmosphereActorProxy>& ptr );
+            void CreateAtmosphereActor( dtCore::RefPtr<Actors::UniformAtmosphereActor>& ptr );
             void CreateDayTimeActor( dtCore::RefPtr<Actors::DayTimeActorProxy>& ptr );
 
             // Returns the total IDs registered to the component
@@ -221,7 +221,7 @@ namespace SimCore
             dtCore::RefPtr<dtABC::Application> mApp;
 
             dtCore::RefPtr<Actors::IGEnvironmentActorProxy> mEnv;
-            dtCore::RefPtr<Actors::UniformAtmosphereActorProxy> mAtmos;
+            dtCore::RefPtr<Actors::UniformAtmosphereActor> mAtmos;
             dtCore::RefPtr<Actors::DayTimeActorProxy> mDayTime;
       };
 
@@ -281,7 +281,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////
-      void WeatherComponentTests::CreateAtmosphereActor( dtCore::RefPtr<Actors::UniformAtmosphereActorProxy>& ptr )
+      void WeatherComponentTests::CreateAtmosphereActor( dtCore::RefPtr<Actors::UniformAtmosphereActor>& ptr )
       {
          mGM->CreateActor( *Actors::EntityActorRegistry::UNIFORM_ATMOSPHERE_ACTOR_TYPE, ptr );
          CPPUNIT_ASSERT_MESSAGE("UniformAtmosphereActor must be obtainable from the EntityActorRegistry", ptr.valid() );
@@ -375,7 +375,7 @@ namespace SimCore
       void WeatherComponentTests::TestAtmosphereActor()
       {
          CPPUNIT_ASSERT(mAtmos != NULL);
-         Actors::UniformAtmosphereActor* actor = static_cast<Actors::UniformAtmosphereActor*> (mAtmos->GetDrawable());
+         Actors::UniformAtmosphereActor* actor = mAtmos;
 
          CPPUNIT_ASSERT_MESSAGE("UniformAtmosphereActor should be valid", actor != NULL );
 
@@ -668,8 +668,7 @@ namespace SimCore
          CPPUNIT_ASSERT_MESSAGE("WeatherComponent SHOULD have the ORIGINAL AtmosphereActor",
             mAtmos.get() == mWeatherComp->GetAtmosphereActor() );
 
-         SimCore::Actors::UniformAtmosphereActor* atmos =
-            dynamic_cast<SimCore::Actors::UniformAtmosphereActor*> (mAtmos->GetDrawable());
+         SimCore::Actors::UniformAtmosphereActor* atmos = mAtmos;
 
          // Test update changes to the original atmosphere actor
          AtmosphereParams params = {5.0f,5000.0f,10000.0f,10.0f,20.0f,500.0f,15.0f,
@@ -682,15 +681,12 @@ namespace SimCore
 
          // Create a new atmosphere actor that will replace the original
          // atmosphere actor.
-         dtCore::RefPtr<SimCore::Actors::UniformAtmosphereActorProxy> atmosProxy;
-         CreateAtmosphereActor( atmosProxy );
+         dtCore::RefPtr<SimCore::Actors::UniformAtmosphereActor> atmosNew;
+         CreateAtmosphereActor( atmosNew );
 
          // Validate new atmosphere actor proxy
-         CPPUNIT_ASSERT_MESSAGE("A NEW AtmosphereActor SHOULD have been created", atmosProxy.valid() );
-         mGM->AddActor(*atmosProxy,false,false);
-
-         // Get the new proxy's actor
-         atmos = dynamic_cast<SimCore::Actors::UniformAtmosphereActor*> (atmosProxy->GetDrawable());
+         CPPUNIT_ASSERT_MESSAGE("A NEW AtmosphereActor SHOULD have been created", atmosNew.valid() );
+         mGM->AddActor(*atmosNew,false,false);
 
          // Assign values to the new atmosphere actor
          AtmosphereParams params2 = {10.0f,10000.0f,20000.0f,20.0f,40.0f,1000.0f,30.0f,
@@ -700,14 +696,14 @@ namespace SimCore
          // Ensure that the values exist
          std::cout << "NOTE: warning will follow as expected: testing replacement of old atmosphere actor with a newly discovered one"
             << std::endl;
-         TestEnvironmentValues( params2, *atmos );
+         TestEnvironmentValues( params2, *atmosNew );
 
 
 
          // Make sure the original atmosphere actor has been replaced
          CPPUNIT_ASSERT_MESSAGE("WeatherComponent SHOULD have the NEW AtmosphereActor",
             mAtmos.get() != mWeatherComp->GetAtmosphereActor()
-            && atmosProxy == mWeatherComp->GetAtmosphereActor());
+            && atmosNew == mWeatherComp->GetAtmosphereActor());
       }
 
       //////////////////////////////////////////////////////////////
@@ -723,7 +719,7 @@ namespace SimCore
             msg.valid() );
 
          // Fill the message with the updated data
-         msg->SetAboutActorId( atmos.GetGameActorProxy().GetId() );
+         msg->SetAboutActorId( atmos.GetId() );
          msg->SetActorType(*SimCore::Actors::EntityActorRegistry::UNIFORM_ATMOSPHERE_ACTOR_TYPE);
          AssignAtmosphereValues(params, atmos);
 
@@ -736,7 +732,7 @@ namespace SimCore
          // TODO: Test the changes in the weather component's environment actor,
          // that have occurred during an atmosphere update.
          //dtActors::BasicEnvironmentActorProxy* envProxy = mWeatherComp->GetEnvironment();
-         //dtABC::Weather& weather = dynamic_cast<dtActors::BasicEnvironmentActor*>(envProxy->GetActor())->GetWeather();
+         //dtABC::Weather& weather = dynamic_cast<dtActors::BasicEnvironmentActor*>(envProxy->GetDrawable())->GetWeather();
          //dtCore::Environment* env = weather.GetEnvironment();
 
          //// Test the resulting visibility
@@ -802,8 +798,7 @@ namespace SimCore
          CPPUNIT_ASSERT_MESSAGE("WeatherComponent SHOULD have the ORIGINAL AtmosphereActor",
             mAtmos.get() == weatherComp.GetAtmosphereActor());
 
-         SimCore::Actors::UniformAtmosphereActor& atmos =
-            *mAtmos->GetDrawable<SimCore::Actors::UniformAtmosphereActor>();
+         SimCore::Actors::UniformAtmosphereActor& atmos = *mAtmos;
 
          // Test update changes to the original atmosphere actor
          AtmosphereParams params = {5.0f,5000.0f,10000.0f,10.0f,20.0f,500.0f,15.0f,
@@ -820,7 +815,7 @@ namespace SimCore
             msg.valid());
 
          // Fill the message with the updated data
-         msg->SetAboutActorId(atmos.GetUniqueId());
+         msg->SetAboutActorId(atmos.GetId());
 
          // Send the message
          mGM->SendMessage(*msg);

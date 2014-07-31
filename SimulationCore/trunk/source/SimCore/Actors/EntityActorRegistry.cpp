@@ -384,7 +384,7 @@ namespace SimCore
          mActorFactory->RegisterType<TextureProjectorActorProxy>(TEXTURE_PROJECTION_ACTOR_TYPE.get());
          mActorFactory->RegisterType<EphemerisEnvironmentActorProxy>(ENVIRONMENT_ACTOR_TYPE.get());
          mActorFactory->RegisterType<DayTimeActorProxy>(DAYTIME_ACTOR_TYPE.get());
-         mActorFactory->RegisterType<UniformAtmosphereActorProxy>(UNIFORM_ATMOSPHERE_ACTOR_TYPE.get());
+         mActorFactory->RegisterType<UniformAtmosphereActor>(UNIFORM_ATMOSPHERE_ACTOR_TYPE.get());
          mActorFactory->RegisterType<ViewerMaterialActor>(MATERIAL_ACTOR_TYPE.get());
          mActorFactory->RegisterType<MunitionTypeActorProxy>(MUNITION_TYPE_ACTOR_TYPE.get());
          mActorFactory->RegisterType<MunitionEffectsInfoActorProxy>(MUNITION_EFFECTS_INFO_ACTOR_TYPE.get());

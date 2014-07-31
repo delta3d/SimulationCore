@@ -22,10 +22,7 @@
 */
 #include <prefix/SimCorePrefix.h>
 #include <SimCore/Actors/TerrainActorProxy.h>
-#include <SimCore/Components/RenderingSupportComponent.h>
 #include <SimCore/CollisionGroupEnum.h>
-#include <SimCore/Actors/PagedTerrainPhysicsActor.h>
-#include <SimCore/Actors/EntityActorRegistry.h>
 #include <SimCore/MessageType.h>
 #include <dtCore/enginepropertytypes.h>
 #include <dtCore/actorproxyicon.h>
@@ -165,7 +162,7 @@ namespace SimCore
       {
          dtGame::GameActorProxy::BuildPropertyMap();
          TerrainActor* ta = NULL;
-         GetActor(ta);
+         GetDrawable(ta);
 
          static const dtUtil::RefString GROUP_("Terrain");
 
@@ -251,7 +248,7 @@ namespace SimCore
       void TerrainActorProxy::HandleNodeLoaded(const dtGame::TimerElapsedMessage& timerElapsed)
       {
          TerrainActor* ta = NULL;
-         GetActor(ta);
+         GetDrawable(ta);
          if (ta != NULL)
          {
             if (ta->CheckForTerrainLoaded())
@@ -402,7 +399,7 @@ namespace SimCore
                            const std::string& curFile = *iter;
                            std::string fileWithPath = fullDirPath + "/" + curFile;
 
-                           //double check this isnt the same one we loaded above
+                           //double check this isn't the same one we loaded above
                            if(!mCollisionResourceString.empty() && dtUtil::FileUtils::GetInstance().IsSameFile(mCollisionResourceString, fileWithPath))
                            {
                               //don't load file
@@ -608,7 +605,7 @@ namespace SimCore
             mTerrainNode = mLoadNodeTask->GetLoadedNode();
 
             osg::StateSet* ss = mTerrainNode->getOrCreateStateSet();
-            ss->setRenderBinDetails(SimCore::Components::RenderingSupportComponent::RENDER_BIN_TERRAIN, "TerrainBin");
+            //ss->setRenderBinDetails(SimCore::Components::RenderingSupportComponent::RENDER_BIN_TERRAIN, "TerrainBin");
 
             // Run a visitor to switch to VBO's instead of DrawArrays (the OSG default)
             // Turning this on had a catastrophic impact on performance. OFF is better for now.

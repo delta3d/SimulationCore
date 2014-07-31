@@ -332,8 +332,6 @@ namespace SimCore
 
             mGM->AddComponent(*mDamageComp, dtGame::GameManager::ComponentPriority::NORMAL);
 
-            //std::string context = dtUtil::GetDeltaRootPath() + "/examples/data/demoMap";
-            //dtCore::Project::GetInstance().SetContext(context, true);
             mGM->ChangeMap("UnitTestMunitionTypesMap");
 
             //step a few times to ensure the map loaded
@@ -1401,14 +1399,14 @@ namespace SimCore
          dtCore::RefPtr<SimCore::Actors::MunitionTypeActorProxy> newType;
          mGM->CreateActor( *SimCore::Actors::EntityActorRegistry::MUNITION_TYPE_ACTOR_TYPE, newType );
          SimCore::Actors::MunitionTypeActor* munitionType;
-         newType->GetActor(munitionType);
+         newType->GetDrawable(munitionType);
          std::string testMunitionName( "Test Munition" );
 
          // --- Create an effects damage actor that will be used by the munition type
          dtCore::RefPtr<SimCore::Actors::MunitionEffectsInfoActorProxy> newEffectsInfo;
          mGM->CreateActor( *SimCore::Actors::EntityActorRegistry::MUNITION_EFFECTS_INFO_ACTOR_TYPE, newEffectsInfo );
          SimCore::Actors::MunitionEffectsInfoActor* effectsInfo = NULL;
-         newEffectsInfo->GetActor(effectsInfo);
+         newEffectsInfo->GetDrawable(effectsInfo);
          effectsInfo->SetSmokeLifeTime( 0.0f );
 
          CPPUNIT_ASSERT_MESSAGE( "A new MunitionTypeActor should have been created", munitionType);
@@ -1520,7 +1518,7 @@ namespace SimCore
          dtCore::RefPtr<dtCore::ActorProxy> proxy;
          mGM->CreateActor( *SimCore::Actors::EntityActorRegistry::MUNITION_TYPE_ACTOR_TYPE, proxy );
          SimCore::Actors::MunitionTypeActor* emptyMunition = NULL;
-         proxy->GetActor( emptyMunition );
+         proxy->GetDrawable( emptyMunition );
          CPPUNIT_ASSERT( emptyMunition != NULL );
          CPPUNIT_ASSERT( emptyMunition->GetEffectsInfoActor() == NULL );
 
@@ -1620,7 +1618,7 @@ namespace SimCore
          mGM->CreateActor( *SimCore::Actors::EntityActorRegistry::MUNITION_TYPE_ACTOR_TYPE, munitionTypeProxy );
          munitionTypeProxy->SetName( munitionName1 );
          SimCore::Actors::MunitionTypeActor* munitionType1 = NULL;
-         munitionTypeProxy->GetActor( munitionType1 );
+         munitionTypeProxy->GetDrawable( munitionType1 );
          munitionType1->SetDamageType( damageName1 );
          munitionType1->SetFamily(SimCore::Actors::MunitionFamily::FAMILY_ROUND);
          CPPUNIT_ASSERT( typeTable->AddMunitionType( munitionTypeProxy ) );
@@ -1628,7 +1626,7 @@ namespace SimCore
          mGM->CreateActor( *SimCore::Actors::EntityActorRegistry::MUNITION_TYPE_ACTOR_TYPE, munitionTypeProxy );
          munitionTypeProxy->SetName( munitionName2 );
          SimCore::Actors::MunitionTypeActor* munitionType2 = NULL;
-         munitionTypeProxy->GetActor( munitionType2 );
+         munitionTypeProxy->GetDrawable( munitionType2 );
          munitionType2->SetDamageType( damageName2 );
          munitionType2->SetFamily(SimCore::Actors::MunitionFamily::FAMILY_GENERIC_EXPLOSIVE);
          CPPUNIT_ASSERT( typeTable->AddMunitionType( munitionTypeProxy ) );

@@ -560,12 +560,12 @@ namespace SimCore
 
          PlatformActorProxy::BuildPropertyMap();
 
-         BasePhysicsVehicleActor& actor = static_cast<BasePhysicsVehicleActor &>(GetGameActor());
+         BasePhysicsVehicleActor* actor = GetDrawable<BasePhysicsVehicleActor>();
 
          AddProperty(new dtCore::BooleanActorProperty("Perform_Above_Ground_Safety_Check",
             "Perform above ground safety check",
-            dtCore::BooleanActorProperty::SetFuncType(&actor, &BasePhysicsVehicleActor::SetPerformAboveGroundSafetyCheck),
-            dtCore::BooleanActorProperty::GetFuncType(&actor, &BasePhysicsVehicleActor::GetPerformAboveGroundSafetyCheck),
+            dtCore::BooleanActorProperty::SetFuncType(actor, &BasePhysicsVehicleActor::SetPerformAboveGroundSafetyCheck),
+            dtCore::BooleanActorProperty::GetFuncType(actor, &BasePhysicsVehicleActor::GetPerformAboveGroundSafetyCheck),
             "Use an Isector as a safety check to keep the vehicle above ground if the collision detection fails.",
             VEH_GROUP));
 

@@ -486,7 +486,7 @@ namespace SimCore
          //RemoveProperty("Scale");
 
          PhysicsParticleSystemActor* actor = NULL;
-         GetActor(actor);
+         GetDrawable(actor);
 
          AddProperty(new dtCore::EnumActorProperty<PhysicsParticleSystemActor::TwoDOrThreeDTypeEnum>("TwoDOrThreeDTypeEnum", "TwoDOrThreeDTypeEnum",
                   dtCore::EnumActorProperty<PhysicsParticleSystemActor::TwoDOrThreeDTypeEnum>::SetFuncType(actor, &PhysicsParticleSystemActor::SetTwoDOrThreeDTypeEnum),
@@ -668,7 +668,7 @@ namespace SimCore
       {
          dtGame::GameActorProxy::OnRemovedFromWorld();
          PhysicsParticleSystemActor* actor = NULL;
-         GetActor(actor);
+         GetDrawable(actor);
 
          // Clear all existing particles
          if( actor != NULL )
@@ -685,7 +685,7 @@ namespace SimCore
          if (!depProp.valid())
          {
             PhysicsParticleSystemActor* actor = NULL;
-            GetActor(actor);
+            GetDrawable(actor);
             depProp = actor->GetPhysicsActComp().GetDeprecatedProperty(name);
          }
          return depProp;

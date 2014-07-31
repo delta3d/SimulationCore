@@ -544,7 +544,7 @@ namespace SimCore
             // Set the X & Y of the detection point.
             /*dtCore::Transform xform;
             const dtGame::GameActor* actor = NULL;
-            proxy.GetActor( actor );
+            proxy.GetDrawable( actor );
             actor->GetTransform( xform, dtCore::Transformable::REL_CS );
             xform.GetTranslation( outHit );*/ // This does not seem to have a valid position at this point in the process.
 

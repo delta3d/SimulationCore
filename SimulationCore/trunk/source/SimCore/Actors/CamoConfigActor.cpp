@@ -354,7 +354,7 @@ namespace SimCore
       {
          // NOTE: Not calling BaseClass::BuildPropertyMap since has unwanted properties.
          CamoConfigActor* actor = NULL;
-         GetActor(actor);
+         GetDrawable(actor);
 
          typedef dtCore::PropertyRegHelper<CamoConfigActorProxy&, CamoConfigActor> PropRegType;
          PropRegType propRegHelper(*this, actor, "Camo Config");

@@ -342,7 +342,7 @@ namespace SimCore
             {
                mGM->CreateActor(*EntityActorRegistry::POSITION_MARKER_ACTOR_TYPE, pmap);
                CPPUNIT_ASSERT(pmap.valid());
-               pmap->GetActor(pm);
+               pmap->GetDrawable(pm);
                CPPUNIT_ASSERT(pm != NULL);
             }
 

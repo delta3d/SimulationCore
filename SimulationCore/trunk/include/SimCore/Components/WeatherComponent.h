@@ -60,7 +60,6 @@ namespace SimCore
 {
    namespace Actors
    {
-      class UniformAtmosphereActorProxy;
       class UniformAtmosphereActor;
       class DayTimeActorProxy;
    }
@@ -158,8 +157,8 @@ namespace SimCore
          Actors::DayTimeActorProxy* GetDayTimeActor() { return mDayTime.get(); }
          const Actors::DayTimeActorProxy* GetDayTimeActor() const { return mDayTime.get(); }
 
-         Actors::UniformAtmosphereActorProxy* GetAtmosphereActor() { return mAtmosphere.get(); }
-         const Actors::UniformAtmosphereActorProxy* GetAtmosphereActor() const { return mAtmosphere.get(); }
+         Actors::UniformAtmosphereActor* GetAtmosphereActor() { return mAtmosphere.get(); }
+         const Actors::UniformAtmosphereActor* GetAtmosphereActor() const { return mAtmosphere.get(); }
 
          void SetUpdatesEnabled(bool enable) { mUpdatesEnabled = enable; }
          bool GetUpdatesEnabled() const      { return mUpdatesEnabled;   }
@@ -221,7 +220,7 @@ namespace SimCore
          dtABC::Weather::TimePeriod mLastTimePeriod;
          dtABC::Weather::Season mLastSeason;
 
-         dtCore::RefPtr<Actors::UniformAtmosphereActorProxy> mAtmosphere;
+         dtCore::RefPtr<Actors::UniformAtmosphereActor> mAtmosphere;
          dtCore::ObserverPtr<Actors::DayTimeActorProxy> mDayTime;
 
          // The Weather object is being referenced to gain access

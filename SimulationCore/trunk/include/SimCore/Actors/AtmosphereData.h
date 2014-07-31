@@ -82,43 +82,6 @@ namespace SimCore
       };
 
 
-      class SIMCORE_EXPORT AtmosphereActor : public IGActor
-      {
-      public:
-
-         /// Constructor
-         AtmosphereActor(dtGame::GameActorProxy& parent);
-
-      protected:
-
-         /// Destructor
-         virtual ~AtmosphereActor();
-
-      private:
-
-      };
-
-      class SIMCORE_EXPORT AtmosphereActorProxy : public dtGame::GameActorProxy
-      {
-      public:
-
-         /// Constructor
-         AtmosphereActorProxy();
-
-         /// Creates the actor
-         void CreateDrawable() { SetDrawable(*new AtmosphereActor(*this)); }
-
-         /// Adds the properties associated with this actor
-         virtual void BuildPropertyMap();
-
-      protected:
-
-         /// Destructor
-         virtual ~AtmosphereActorProxy();
-
-      private:
-
-      };
    }
 }
 

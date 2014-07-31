@@ -203,8 +203,8 @@ namespace DriverDemo
             return;
          }
 
-         SimCore::Actors::StealthActor* stealthActor
-            = stealthProxy->GetDrawable<SimCore::Actors::StealthActor>();
+         SimCore::Actors::StealthActor* stealthActor = NULL;
+         stealthProxy->GetDrawable(stealthActor);
          if(stealthActor == NULL)
          {
             GetLogger().LogMessage(dtUtil::Log::LOG_ERROR, __FUNCTION__, __LINE__,
@@ -289,7 +289,7 @@ namespace DriverDemo
             // Clear out the shooter's bullets, otherwise a crash
             // may occur asynchronously.
             SimCore::MunitionParticlesActor* particles;
-            proxy->GetActor(particles);
+            proxy->GetDrawable(particles);
             if( particles != NULL )
             {
                particles->ResetParticleSystem();

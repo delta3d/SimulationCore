@@ -29,28 +29,35 @@ namespace SimCore
 {
    namespace Actors
    {
+      UniformAtmosphereActor::UniformAtmosphereActor()
+      :         mVisibility(100.0f), // km
+                mCloudBaseHeight(0.0f), // m
+                mCloudTopHeight(0.0f), // m
+                mCloudThickness(0.0f), // m
+                mFogCover(0.0f), // %
+                mFogThickness(0.0f), // m
+                mPrecipRate(0.0f), // mm/h
+                mExtinctionCoefficient(0.0f),
+                mCloudCoverage(0.0f),
+                mCloudType(&CloudType::CLEAR),
+                mPrecipType(&PrecipitationType::NONE)
 
-      //////////////////////////////////////////////////////////
-      // Proxy code
-      //////////////////////////////////////////////////////////
-      UniformAtmosphereActorProxy::UniformAtmosphereActorProxy()
       {
          SetClassName("SimCore::Actors::UniformAtmosphereActor");
       }
 
       //////////////////////////////////////////////////////////
-      UniformAtmosphereActorProxy::~UniformAtmosphereActorProxy()
+      UniformAtmosphereActor::~UniformAtmosphereActor()
       {
 
       }
 
       //////////////////////////////////////////////////////////
-      void UniformAtmosphereActorProxy::BuildPropertyMap()
+      void UniformAtmosphereActor::BuildPropertyMap()
       {
-         AtmosphereActorProxy::BuildPropertyMap();
+         GameActorProxy::BuildPropertyMap();
 
-         UniformAtmosphereActor* actor = NULL;
-         GetActor(actor);
+         UniformAtmosphereActor* actor = this;
 
          AddProperty(new dtCore::FloatActorProperty("Visibility Distance", "Visibility Distance", 
             dtCore::FloatActorProperty::SetFuncType(actor, &UniformAtmosphereActor::SetVisibilityDistance),
@@ -118,31 +125,9 @@ namespace SimCore
             "A relative amount of cloud coverage in the sky"));
       }
 
-      //////////////////////////////////////////////////////////
-      // Actor code
-      //////////////////////////////////////////////////////////
-      UniformAtmosphereActor::UniformAtmosphereActor( dtGame::GameActorProxy& owner )
-         : AtmosphereActor(owner),
-         mVisibility(100.0f), // km
-         mCloudBaseHeight(0.0f), // m
-         mCloudTopHeight(0.0f), // m
-         mCloudThickness(0.0f), // m
-         mFogCover(0.0f), // %
-         mFogThickness(0.0f), // m
-         mPrecipRate(0.0f), // mm/h
-         mExtinctionCoefficient(0.0f),
-         mCloudCoverage(0.0f),
-         mCloudType(&CloudType::CLEAR),
-         mPrecipType(&PrecipitationType::NONE)
-
+      void UniformAtmosphereActor::CreateDrawable()
       {
-
-      }
-
-      //////////////////////////////////////////////////////////
-      UniformAtmosphereActor::~UniformAtmosphereActor()
-      {
-
+         SetDrawable(*new dtCore::Transformable);
       }
 
    }

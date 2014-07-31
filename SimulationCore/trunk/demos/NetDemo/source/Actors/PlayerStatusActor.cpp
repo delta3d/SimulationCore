@@ -247,7 +247,7 @@ namespace NetDemo
 
       BaseClass::BuildPropertyMap();
 
-      PlayerStatusActor &actor = static_cast<PlayerStatusActor &>(GetGameActor());
+      PlayerStatusActor* drawable = GetDrawable<PlayerStatusActor>();
 
 
       // OTHER POSSIBLE PROPERTIES
@@ -256,56 +256,56 @@ namespace NetDemo
 
       static const dtUtil::RefString PROP_PLAYER_STATUS_DESC("Indicates the current status of this network player.");
       AddProperty(new dtCore::EnumActorProperty<PlayerStatusActor::PlayerStatusEnum>(PROP_PLAYER_STATUS, PROP_PLAYER_STATUS,
-         dtCore::EnumActorProperty<PlayerStatusActor::PlayerStatusEnum>::SetFuncType(&actor, &PlayerStatusActor::SetPlayerStatus),
-         dtCore::EnumActorProperty<PlayerStatusActor::PlayerStatusEnum>::GetFuncType(&actor, &PlayerStatusActor::GetPlayerStatus),
+         dtCore::EnumActorProperty<PlayerStatusActor::PlayerStatusEnum>::SetFuncType(drawable, &PlayerStatusActor::SetPlayerStatus),
+         dtCore::EnumActorProperty<PlayerStatusActor::PlayerStatusEnum>::GetFuncType(drawable, &PlayerStatusActor::GetPlayerStatus),
          PROP_PLAYER_STATUS_DESC, GROUP));
 
       static const dtUtil::RefString PROP_TEAM_NUM_DESC("The player's Team number (1 or 2).");
       AddProperty(new dtCore::IntActorProperty(PROP_TEAM_NUM, PROP_TEAM_NUM,
-         dtCore::IntActorProperty::SetFuncType(&actor, &PlayerStatusActor::SetTeamNumber),
-         dtCore::IntActorProperty::GetFuncType(&actor, &PlayerStatusActor::GetTeamNumber),
+         dtCore::IntActorProperty::SetFuncType(drawable, &PlayerStatusActor::SetTeamNumber),
+         dtCore::IntActorProperty::GetFuncType(drawable, &PlayerStatusActor::GetTeamNumber),
          PROP_TEAM_NUM_DESC, GROUP));
 
       static const dtUtil::RefString PROP_IS_SERVER_DESC("Only the server may publish true here. Everyone else is 0.");
       AddProperty(new dtCore::BooleanActorProperty(PROP_IS_SERVER, PROP_IS_SERVER,
-         dtCore::BooleanActorProperty::SetFuncType(&actor, &PlayerStatusActor::SetIsServer),
-         dtCore::BooleanActorProperty::GetFuncType(&actor, &PlayerStatusActor::GetIsServer),
+         dtCore::BooleanActorProperty::SetFuncType(drawable, &PlayerStatusActor::SetIsServer),
+         dtCore::BooleanActorProperty::GetFuncType(drawable, &PlayerStatusActor::GetIsServer),
          PROP_IS_SERVER_DESC, GROUP));
 
       static const dtUtil::RefString PROP_IS_READY_DESC("Simple communication flag to allow clients to know if other clients are ready to start a game.");
       AddProperty(new dtCore::BooleanActorProperty(PROP_IS_READY, PROP_IS_READY,
-         dtCore::BooleanActorProperty::SetFuncType(&actor, &PlayerStatusActor::SetReady),
-         dtCore::BooleanActorProperty::GetFuncType(&actor, &PlayerStatusActor::IsReady),
+         dtCore::BooleanActorProperty::SetFuncType(drawable, &PlayerStatusActor::SetReady),
+         dtCore::BooleanActorProperty::GetFuncType(drawable, &PlayerStatusActor::IsReady),
          PROP_IS_READY_DESC, GROUP));
 
       static const dtUtil::RefString PROP_TERRAIN_PREFERENCE_DESC("The desired terrain to load. The server's value will be the actual terrain people load.");
       AddProperty(new dtCore::StringActorProperty(PROP_TERRAIN_PREFERENCE, PROP_TERRAIN_PREFERENCE,
-         dtCore::StringActorProperty::SetFuncType(&actor, &PlayerStatusActor::SetTerrainPreference),
-         dtCore::StringActorProperty::GetFuncType(&actor, &PlayerStatusActor::GetTerrainPreference),
+         dtCore::StringActorProperty::SetFuncType(drawable, &PlayerStatusActor::SetTerrainPreference),
+         dtCore::StringActorProperty::GetFuncType(drawable, &PlayerStatusActor::GetTerrainPreference),
          PROP_TERRAIN_PREFERENCE_DESC, GROUP));
 
       static const dtUtil::RefString PROP_VEHICLE_PREFERENCE_DESC("The desired startup vehicle type for this player. Not necessarily the current vehicle type for the player.");
       AddProperty(new dtCore::EnumActorProperty<PlayerStatusActor::VehicleTypeEnum>(PROP_VEHICLE_PREFERENCE, PROP_VEHICLE_PREFERENCE,
-         dtCore::EnumActorProperty<PlayerStatusActor::VehicleTypeEnum>::SetFuncType(&actor, &PlayerStatusActor::SetVehiclePreference),
-         dtCore::EnumActorProperty<PlayerStatusActor::VehicleTypeEnum>::GetFuncType(&actor, &PlayerStatusActor::GetVehiclePreference),
+         dtCore::EnumActorProperty<PlayerStatusActor::VehicleTypeEnum>::SetFuncType(drawable, &PlayerStatusActor::SetVehiclePreference),
+         dtCore::EnumActorProperty<PlayerStatusActor::VehicleTypeEnum>::GetFuncType(drawable, &PlayerStatusActor::GetVehiclePreference),
          PROP_VEHICLE_PREFERENCE_DESC, GROUP));
 
       static const dtUtil::RefString PROP_ATTACHED_VEHICLE_ID_DESC("The ID of the vehicle the player is driving, if any. This property is controlled by the GameLogicComponent, do not set.");
       AddProperty(new dtCore::ActorIDActorProperty(*this, PROP_ATTACHED_VEHICLE_ID, PROP_ATTACHED_VEHICLE_ID,
-         dtCore::ActorIDActorProperty::SetFuncType(&actor, &PlayerStatusActor::SetAttachedVehicleID),
-         dtCore::ActorIDActorProperty::GetFuncType(&actor, &PlayerStatusActor::GetAttachedVehicleID),
+         dtCore::ActorIDActorProperty::SetFuncType(drawable, &PlayerStatusActor::SetAttachedVehicleID),
+         dtCore::ActorIDActorProperty::GetFuncType(drawable, &PlayerStatusActor::GetAttachedVehicleID),
          PROP_ATTACHED_VEHICLE_ID_DESC, GROUP));
 
       static const dtUtil::RefString PROP_IP_ADDRESS_DESC("The IP Address for this player.");
       AddProperty(new dtCore::StringActorProperty(PROP_IP_ADDRESS, PROP_IP_ADDRESS,
-         dtCore::StringActorProperty::SetFuncType(&actor, &PlayerStatusActor::SetIPAddress),
-         dtCore::StringActorProperty::GetFuncType(&actor, &PlayerStatusActor::GetIPAddress),
+         dtCore::StringActorProperty::SetFuncType(drawable, &PlayerStatusActor::SetIPAddress),
+         dtCore::StringActorProperty::GetFuncType(drawable, &PlayerStatusActor::GetIPAddress),
          PROP_IP_ADDRESS_DESC, GROUP));
 
       static const dtUtil::RefString PROP_SCORE_DESC("Total points accumulated from destroying enemies.");
       AddProperty(new dtCore::IntActorProperty(PROP_SCORE, PROP_SCORE,
-         dtCore::IntActorProperty::SetFuncType(&actor, &PlayerStatusActor::SetScore),
-         dtCore::IntActorProperty::GetFuncType(&actor, &PlayerStatusActor::GetScore),
+         dtCore::IntActorProperty::SetFuncType(drawable, &PlayerStatusActor::SetScore),
+         dtCore::IntActorProperty::GetFuncType(drawable, &PlayerStatusActor::GetScore),
          PROP_SCORE_DESC, GROUP));
    }
 
