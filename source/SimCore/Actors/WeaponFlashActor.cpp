@@ -24,6 +24,7 @@
 #include <prefix/SimCorePrefix.h>
 #include <SimCore/Actors/WeaponFlashActor.h>
 #include <dtActors/engineactorregistry.h>
+#include <dtUtil/nodemask.h>
 #include <dtCore/particlesystem.h>
 #include <dtCore/enginepropertytypes.h>
 #include <dtGame/gamemanager.h>
@@ -50,7 +51,7 @@ namespace SimCore
       void WeaponFlash::SetVisible( bool visible )
       {
          mVisible = visible;
-         GetOSGNode()->setNodeMask( visible ? 0xFFFFFFFF : 0 );
+         GetOSGNode()->setNodeMask( visible ? dtUtil::NodeMask::TRANSPARENT_EFFECTS : dtUtil::NodeMask::NOTHING );
       }
 
 
@@ -86,7 +87,7 @@ namespace SimCore
          mParticles->SetParentRelative( true );
          mParticles->LoadFile( mParticleFile );
 
-         GetOSGNode()->setNodeMask(SimCore::Components::RenderingSupportComponent::DISABLE_SHADOW_NODE_MASK);
+         GetOSGNode()->setNodeMask(dtUtil::NodeMask::TRANSPARENT_EFFECTS);
          AddChild( mParticles.get() );
 
          return true;
@@ -170,7 +171,7 @@ namespace SimCore
       void WeaponFlashActor::SetVisible( bool visible )
       {
          mVisible = visible;
-         GetOSGNode()->setNodeMask( visible ? 0xFFFFFFFF : 0 );
+         GetOSGNode()->setNodeMask( visible ? dtUtil::NodeMask::TRANSPARENT_EFFECTS : dtUtil::NodeMask::NOTHING );
 
          if( mVisible ) { mCurTime = 0.0f; }
       }

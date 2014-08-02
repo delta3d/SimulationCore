@@ -30,18 +30,21 @@
 #include <SimCore/Actors/LensFlareDrawable.h>
 #include <SimCore/BaseGameEntryPoint.h>
 
-#include <dtABC/application.h>
+#include <dtUtil/log.h>
+#include <dtUtil/stringutils.h>
+#include <dtUtil/nodemask.h>
+#include <dtUtil/nodecollector.h>
+
 #include <dtCore/cloudplane.h>
 #include <dtCore/ephemeris.h>
 #include <dtCore/shadermanager.h>
 #include <dtCore/environment.h>
 #include <dtCore/camera.h>
 #include <dtCore/system.h>
-#include <dtUtil/nodecollector.h>
 #include <dtCore/enginepropertytypes.h>
-#include <dtUtil/log.h>
-#include <dtUtil/stringutils.h>
 #include <dtCore/project.h>
+
+#include <dtABC/application.h>
 
 #include <osg/Drawable>
 #include <osg/Matrix>
@@ -470,7 +473,7 @@ namespace SimCore
             InitLensFlare();
          }
 
-         mLensFlare->GetOSGNode()->setNodeMask(b ? 0xFFFFFFFF : 0x0);
+         mLensFlare->GetOSGNode()->setNodeMask(b ? dtUtil::NodeMask::BACKGROUND : dtUtil::NodeMask::NOTHING);
       }
 
       void IGEnvironmentActor::InitLensFlare()

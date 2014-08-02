@@ -22,6 +22,7 @@
  */
 
 #include <prefix/SimCorePrefix.h>
+#include <dtUtil/nodemask.h>
 #include <dtCore/particlesystem.h>
 #include <dtCore/shadermanager.h>
 #include <dtGame/basemessages.h>
@@ -410,7 +411,7 @@ namespace SimCore
             return false;
          }
 
-         particles.GetOSGNode()->setNodeMask(SimCore::Components::RenderingSupportComponent::DISABLE_SHADOW_NODE_MASK);
+         particles.GetOSGNode()->setNodeMask(dtUtil::NodeMask::TRANSPARENT_EFFECTS);
 
          bool success = mIdToInfoMap.insert(
             std::make_pair( particles.GetUniqueId(), new ParticleInfo( particles, attrFlags, priority ) )

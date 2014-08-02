@@ -35,6 +35,8 @@
 
 #include <dtUtil/mathdefines.h>
 #include <dtUtil/matrixutil.h>
+#include <dtUtil/nodemask.h>
+
 #include <SimCore/Actors/BaseEntity.h>
 #include <SimCore/Actors/MunitionTypeActor.h>
 #include <SimCore/Components/RenderingSupportComponent.h>
@@ -199,7 +201,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void MunitionEffect::SetVisible( bool visible )
       {
-         GetOSGNode()->setNodeMask(visible?0xFFFFFFFF:0);
+         GetOSGNode()->setNodeMask(visible?dtUtil::NodeMask::TRANSPARENT_EFFECTS : dtUtil::NodeMask::NOTHING);
          if( visible && ! mTracerLightName.Get().empty() )
          {
             // TODO: Make tracer colors dynamic.
@@ -709,7 +711,7 @@ namespace SimCore
          mVisible = visible;
          if( mFlash.valid() )
          {
-            mFlash->GetOSGNode()->setNodeMask( mVisible ? 0xFFFFFFFF : 0 );
+            mFlash->GetOSGNode()->setNodeMask( mVisible ? dtUtil::NodeMask::TRANSPARENT_EFFECTS : dtUtil::NodeMask::NOTHING );
 
             if( mVisible )
             {

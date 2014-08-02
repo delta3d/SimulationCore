@@ -48,6 +48,7 @@
 #include <dtUtil/mathdefines.h>
 #include <dtUtil/noisetexture.h>
 #include <dtUtil/matrixutil.h>
+#include <dtUtil/nodemask.h>
 
 #include <osg/MatrixTransform>
 #include <osg/BlendFunc>
@@ -636,6 +637,7 @@ namespace SimCore
       {
          mGeode = new osg::Geode();
          mGeode->setDataVariance(osg::Object::DYNAMIC);
+         mGeode->setNodeMask(dtUtil::NodeMask::WATER);
 
          mGeometry = BuildRadialGrid();
          mGeometry->setCullCallback(new WaterCullCallback());
@@ -1099,7 +1101,7 @@ namespace SimCore
 
                mWaveTexture = CreateTexture(width, height, false);
                InitAndBindToTarget(mWaveCamera.get(), mWaveTexture.get(), width, height);
-               //mWaveCamera->setNodeMask(SimCore::Components::RenderingSupportComponent::MAIN_CAMERA_ONLY_FEATURE_NODE_MASK);
+               
                AddOrthoQuad(mWaveCamera.get(), NULL, "TextureWave", "");
 
                comp->AddCamera(mWaveCamera.get());
@@ -1113,7 +1115,7 @@ namespace SimCore
                mWaveCameraScreen->setViewport(0, 0, width, height);
                mWaveCameraScreen->setGraphicsContext(new osgViewer::GraphicsWindowEmbedded());
                AddOrthoQuad(mWaveCameraScreen.get(), mWaveTexture.get(), "WaveTest", "waveTexture");
-               mWaveCameraScreen->setNodeMask(0x0);
+               mWaveCameraScreen->setNodeMask(dtUtil::NodeMask::NOTHING);
                comp->AddCamera(mWaveCameraScreen.get());
             }
 
@@ -1193,11 +1195,11 @@ namespace SimCore
       {
          if(b)
          {
-            mWaveCameraScreen->setNodeMask(0xFFFFFFFF);
+            mWaveCameraScreen->setNodeMask(dtUtil::NodeMask::FOREGROUND);
          }
          else
          {
-            mWaveCameraScreen->setNodeMask(0x0);
+            mWaveCameraScreen->setNodeMask(dtUtil::NodeMask::NOTHING);
          }
       }
 
@@ -1256,11 +1258,11 @@ namespace SimCore
       {
          if(b)
          {
-            mGeode->setNodeMask(0xFFFFFFFF);
+            mGeode->setNodeMask(dtUtil::NodeMask::WATER);
          }
          else
          {
-            mGeode->setNodeMask(0x0);
+            mGeode->setNodeMask(dtUtil::NodeMask::NOTHING);
          }
       }
 
