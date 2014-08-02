@@ -146,7 +146,7 @@ namespace SimCore
       {
          if(mGeode.valid())
          {
-            GetDrawable().GetOSGNode()->asGroup()->removeChild(mGeode.get());
+            GetDrawable()->GetOSGNode()->asGroup()->removeChild(mGeode.get());
             mGeode = NULL;
          }
       }
@@ -210,16 +210,16 @@ namespace SimCore
             SetEnableTopGeometry(mEnableTopGeometryGlobal);
 
 
-            GetDrawable().GetOSGNode()->asGroup()->addChild(mGeode.get());
-            GetDrawable().GetOSGNode()->asGroup()->addChild(mTopGeode.get());
+            GetDrawable()->GetOSGNode()->asGroup()->addChild(mGeode.get());
+            GetDrawable()->GetOSGNode()->asGroup()->addChild(mTopGeode.get());
 
          }
          else if(mPoints.size() > 1 && mRadius > 0.0001f)
          {
             CreateClosedGeometry(mPoints);
 
-            GetDrawable().GetOSGNode()->asGroup()->addChild(mGeode.get());
-            GetDrawable().GetOSGNode()->asGroup()->addChild(mTopGeode.get());
+            GetDrawable()->GetOSGNode()->asGroup()->addChild(mGeode.get());
+            GetDrawable()->GetOSGNode()->asGroup()->addChild(mTopGeode.get());
 
          }
          else if(mPoints.size() > 1)
@@ -264,10 +264,10 @@ namespace SimCore
 
             mGeode->addDrawable(geom.get());
 
-            GetDrawable().GetOSGNode()->setNodeMask(dtUtil::NodeMask::TRANSPARENT_EFFECTS);
+            GetDrawable()->GetOSGNode()->setNodeMask(dtUtil::NodeMask::TRANSPARENT_EFFECTS);
 
-            GetDrawable().GetOSGNode()->asGroup()->addChild(mGeode.get());
-            GetDrawable().GetOSGNode()->asGroup()->addChild(mTopGeode.get());
+            GetDrawable()->GetOSGNode()->asGroup()->addChild(mGeode.get());
+            GetDrawable()->GetOSGNode()->asGroup()->addChild(mTopGeode.get());
          }
 
       }
@@ -334,7 +334,7 @@ namespace SimCore
             dtCore::RefPtr<osg::ShapeDrawable> shapeDrawable = new osg::ShapeDrawable(shape);
             shapeDrawable->setColor(color);
             mGeode->addDrawable(shapeDrawable);
-            GetDrawable().GetOSGNode()->asGroup()->addChild(mGeode.get());
+            GetDrawable()->GetOSGNode()->asGroup()->addChild(mGeode.get());
 
          }
          else if(mPoints.size() > 1)
@@ -365,7 +365,7 @@ namespace SimCore
             }
 
 
-            GetDrawable().GetOSGNode()->asGroup()->addChild(mGeode.get());
+            GetDrawable()->GetOSGNode()->asGroup()->addChild(mGeode.get());
          }
 
       }
