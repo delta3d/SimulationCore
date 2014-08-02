@@ -25,7 +25,6 @@
 #include <osg/StateSet>
 #include <osg/Texture1D>
 #include <osg/Point>
-#include <osg/ClipPlane>
 #include <osgUtil/CullVisitor>
 
 #include <osgEphemeris/StarField.h>

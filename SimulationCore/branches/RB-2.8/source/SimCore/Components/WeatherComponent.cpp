@@ -46,6 +46,7 @@
 #include <dtGame/messagetype.h>
 
 #include <dtUtil/mathdefines.h>
+#include <dtUtil/nodemask.h>
 
 #include <SimCore/Actors/UniformAtmosphereActor.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
@@ -539,7 +540,7 @@ namespace SimCore
                   if(!mPrecipEffect.valid())
                   {
                      mPrecipEffect = new osgParticle::PrecipitationEffect;
-                     mPrecipEffect->setNodeMask(0x00000010);
+                     mPrecipEffect->setNodeMask(dtUtil::NodeMask::TRANSPARENT_EFFECTS);//prior value- (0x00000010);
 
                      SetStateSet(mPrecipEffect.get());
 

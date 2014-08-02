@@ -26,6 +26,7 @@
 #include <SimCore/Actors/StealthActor.h>
 #include <dtUtil/datapathutils.h>
 #include <dtUtil/log.h>
+#include <dtUtil/nodemask.h>
 #include <dtCore/camera.h>
 #include <dtCore/deltawin.h>
 #include <dtCore/transform.h>
@@ -79,7 +80,7 @@ namespace SimCore
 
          if( mCompassOverlay.valid() )
          {
-            mCompassOverlay->setNodeMask(enable?0xFFFFFFFF:0);
+            mCompassOverlay->setNodeMask(enable ? dtUtil::NodeMask::FOREGROUND : dtUtil::NodeMask::NOTHING);
          }
       }
 
@@ -259,7 +260,7 @@ namespace SimCore
          trans.setTrans(0.5*dAspect, 0.17/dAspect, -1.0);
 
          mCompassOverlay->setMatrix(trans);
-         mCompassOverlay->setNodeMask(0);
+         mCompassOverlay->setNodeMask(dtUtil::NodeMask::NOTHING);
 
          mLensFocus = new osg::Uniform(osg::Uniform::FLOAT_VEC2, "lensFocus");
          mLensFocus->setDataVariance(osg::Object::DYNAMIC);
@@ -315,9 +316,9 @@ namespace SimCore
          hudLayer.addChild(projection);
 
          // Ensure all node levels are renderable.
-         mCompassOverlay->setNodeMask(IsEnabled()?0xFFFFFFFF:0);
-         viewABS->setNodeMask(0xFFFFFFFF);
-         projection->setNodeMask(0xFFFFFFFF);
+         mCompassOverlay->setNodeMask(IsEnabled() ? dtUtil::NodeMask::FOREGROUND : dtUtil::NodeMask::NOTHING);
+         viewABS->setNodeMask(dtUtil::NodeMask::FOREGROUND);
+         projection->setNodeMask(dtUtil::NodeMask::FOREGROUND);
       }
    }
 }
