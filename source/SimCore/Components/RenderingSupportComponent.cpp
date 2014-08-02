@@ -225,10 +225,6 @@ namespace SimCore
          InitializeCSM();
          InitializeFrameBuffer();
 
-         dtCore::Camera* cam = GetGameManager()->GetApplication().GetCamera();
-         osg::Camera* osgCam = cam->GetOSGCamera();
-         osgCam->setCullMask(dtUtil::NodeMask::MAIN_CAMERA_CULL_MASK);
-
          ///Added a callback to the camera this can set uniforms on each camera.
          dtCore::Camera::AddCameraSyncCallback(*this,
                   dtCore::Camera::CameraSyncCallback(this, &RenderingSupportComponent::UpdateViewMatrix));
