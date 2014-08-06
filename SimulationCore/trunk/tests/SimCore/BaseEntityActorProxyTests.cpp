@@ -1291,8 +1291,8 @@ void BaseEntityActorProxyTests::TestDetonationActorProxy()
    RefPtr<SimCore::Actors::DetonationActorProxy> dap;
    mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::DETONATION_ACTOR_TYPE, dap);
    CPPUNIT_ASSERT(dap.valid());
-   SimCore::Actors::DetonationActor *da =
-         static_cast<SimCore::Actors::DetonationActor*>(&dap->GetGameActor());
+   SimCore::Actors::DetonationActor* da = NULL;
+   dap->GetDrawable(da);
 
    da->SetSmokeLifeTime(0.000001);
    da->SetDeleteActorTimerSecs(0.0001);
@@ -1328,19 +1328,20 @@ void BaseEntityActorProxyTests::TestDetonationActorProxy()
    {
       RefPtr<SimCore::Actors::DetonationActorProxy> d;
       mGM->CreateActor("Effects", "Detonation Actor", d);
-      SimCore::Actors::DetonationActor& detActor = static_cast<SimCore::Actors::DetonationActor&>(d->GetGameActor());
-      detActor.SetSmokeLifeTime(0.001);
-      detActor.SetExplosionTimerSecs(0.001);
-      detActor.SetDeleteActorTimerSecs(0.001);
+      SimCore::Actors::DetonationActor* detActor;
+      d->GetDrawable(detActor);
+      detActor->SetSmokeLifeTime(0.001);
+      detActor->SetExplosionTimerSecs(0.001);
+      detActor->SetDeleteActorTimerSecs(0.001);
 
-      detActor.SetGroundImpactSound(dtCore::ResourceDescriptor("Sounds:silence.wav"));
-      detActor.SetHumanImpactSound(dtCore::ResourceDescriptor("Sounds:tank_fire.wav"));
-      detActor.SetEntityImpactSound(dtCore::ResourceDescriptor::NULL_RESOURCE);
-      detActor.SetGroundImpactEffect(dtCore::ResourceDescriptor("Particles:DirtHit.osg"));
-      detActor.SetHumanImpactEffect(dtCore::ResourceDescriptor("Particles:weapon_flash.osg"));
-      detActor.SetEntityImpactEffect(dtCore::ResourceDescriptor::NULL_RESOURCE);
+      detActor->SetGroundImpactSound(dtCore::ResourceDescriptor("Sounds:silence.wav"));
+      detActor->SetHumanImpactSound(dtCore::ResourceDescriptor("Sounds:tank_fire.wav"));
+      detActor->SetEntityImpactSound(dtCore::ResourceDescriptor::NULL_RESOURCE);
+      detActor->SetGroundImpactEffect(dtCore::ResourceDescriptor("Particles:DirtHit.osg"));
+      detActor->SetHumanImpactEffect(dtCore::ResourceDescriptor("Particles:weapon_flash.osg"));
+      detActor->SetEntityImpactEffect(dtCore::ResourceDescriptor::NULL_RESOURCE);
 
-      detActor.SetImpactType(curType);
+      detActor->SetImpactType(curType);
 
       mGM->AddActor(*d, false, false);
 
@@ -1349,21 +1350,21 @@ void BaseEntityActorProxyTests::TestDetonationActorProxy()
       case SimCore::Actors::DetonationActor::IMPACT_ENTITY:
          // The sound isn't null even though the entity dosen't have one because the ground impact version
          // will take over if it doesn't
-         CPPUNIT_ASSERT(detActor.GetSound() != NULL);
-         soundList.push_back(detActor.GetSound());
-         CPPUNIT_ASSERT(std::string(detActor.GetSound()->GetFilename()).find("silence.wav") != std::string::npos);
+         CPPUNIT_ASSERT(detActor->GetSound() != NULL);
+         soundList.push_back(detActor->GetSound());
+         CPPUNIT_ASSERT(std::string(detActor->GetSound()->GetFilename()).find("silence.wav") != std::string::npos);
          curType = SimCore::Actors::DetonationActor::IMPACT_HUMAN;
          break;
       case SimCore::Actors::DetonationActor::IMPACT_HUMAN:
-         CPPUNIT_ASSERT(detActor.GetSound() != NULL);
-         soundList.push_back(detActor.GetSound());
-         CPPUNIT_ASSERT(std::string(detActor.GetSound()->GetFilename()).find("tank_fire.wav") != std::string::npos);
+         CPPUNIT_ASSERT(detActor->GetSound() != NULL);
+         soundList.push_back(detActor->GetSound());
+         CPPUNIT_ASSERT(std::string(detActor->GetSound()->GetFilename()).find("tank_fire.wav") != std::string::npos);
          curType = SimCore::Actors::DetonationActor::IMPACT_TERRAIN;
          break;
       case SimCore::Actors::DetonationActor::IMPACT_TERRAIN:
-         CPPUNIT_ASSERT(detActor.GetSound() != NULL);
-         CPPUNIT_ASSERT(std::string(detActor.GetSound()->GetFilename()).find("silence.wav") != std::string::npos);
-         soundList.push_back(detActor.GetSound());
+         CPPUNIT_ASSERT(detActor->GetSound() != NULL);
+         CPPUNIT_ASSERT(std::string(detActor->GetSound()->GetFilename()).find("silence.wav") != std::string::npos);
+         soundList.push_back(detActor->GetSound());
          curType = SimCore::Actors::DetonationActor::IMPACT_ENTITY;
          break;
       }
@@ -1410,31 +1411,32 @@ void BaseEntityActorProxyTests::TestDetonationSoundDelay()
    RefPtr<SimCore::Actors::DetonationActorProxy> dap;
    mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::DETONATION_ACTOR_TYPE, dap);
    CPPUNIT_ASSERT(dap.valid());
-   SimCore::Actors::DetonationActor &da = static_cast<SimCore::Actors::DetonationActor&>(dap->GetGameActor());
+   SimCore::Actors::DetonationActor* da;
+   dap->GetDrawable(da);
 
    // The detonation is at 0, 0, 0 and the position is at 0, 350, 0.
    // This should produce somewhere near a 1 second delay
    osg::Vec3 pos(0, 350, 0);
-   da.CalculateDelayTime(pos);
-   CPPUNIT_ASSERT_MESSAGE("The delay time should be reasonably close to 1 second", osg::equivalent(da.GetDelayTime(), 1.0f, 0.01f));
+   da->CalculateDelayTime(pos);
+   CPPUNIT_ASSERT_MESSAGE("The delay time should be reasonably close to 1 second", osg::equivalent(da->GetDelayTime(), 1.0f, 0.01f));
 
-   da.SetTransform(dtCore::Transform(350, 0, 350));
+   da->SetTransform(dtCore::Transform(350, 0, 350));
    pos.set(350, -700, 350);
-   da.CalculateDelayTime(pos);
-   CPPUNIT_ASSERT_MESSAGE("The delay time should be reasonably close to 2 seconds", osg::equivalent(da.GetDelayTime(), 2.0f, 0.01f));
+   da->CalculateDelayTime(pos);
+   CPPUNIT_ASSERT_MESSAGE("The delay time should be reasonably close to 2 seconds", osg::equivalent(da->GetDelayTime(), 2.0f, 0.01f));
 
    pos.set(350, 700, 350);
-   da.CalculateDelayTime(pos);
-   CPPUNIT_ASSERT_MESSAGE("The delay time should be reasonably close to 2 seconds", osg::equivalent(da.GetDelayTime(), 2.0f, 0.01f));
+   da->CalculateDelayTime(pos);
+   CPPUNIT_ASSERT_MESSAGE("The delay time should be reasonably close to 2 seconds", osg::equivalent(da->GetDelayTime(), 2.0f, 0.01f));
 
-   da.SetTransform(dtCore::Transform(350, 350, 350));
+   da->SetTransform(dtCore::Transform(350, 350, 350));
    pos.set(350, 350, 700);
-   da.CalculateDelayTime(pos);
-   CPPUNIT_ASSERT_MESSAGE("The delay time should be reasonably close to 1 seconds", osg::equivalent(da.GetDelayTime(), 1.0f, 0.01f));
+   da->CalculateDelayTime(pos);
+   CPPUNIT_ASSERT_MESSAGE("The delay time should be reasonably close to 1 seconds", osg::equivalent(da->GetDelayTime(), 1.0f, 0.01f));
 
    pos.set(1050, 350, 350);
-   da.CalculateDelayTime(pos);
-   CPPUNIT_ASSERT_MESSAGE("The delay time should be reasonably close to 2 seconds", osg::equivalent(da.GetDelayTime(), 2.0f, 0.01f));
+   da->CalculateDelayTime(pos);
+   CPPUNIT_ASSERT_MESSAGE("The delay time should be reasonably close to 2 seconds", osg::equivalent(da->GetDelayTime(), 2.0f, 0.01f));
 }
 
 void BaseEntityActorProxyTests::TestBaseWaterActorProxy()
