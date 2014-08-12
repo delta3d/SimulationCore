@@ -75,10 +75,10 @@ namespace StealthGM
    const CoordSystem CoordSystem::RAW_XYZ("RAW_XYZ");
    const CoordSystem CoordSystem::LAT_LON("LAT_LON");
 
-   const dtCore::RefPtr<dtCore::SystemComponentType> StealthHUD::TYPE(new dtCore::SystemComponentType("StealthUD", "GMComponent.SimCore.StealthGM",
+   const dtCore::RefPtr<dtCore::SystemComponentType> StealthHUD::TYPE(new dtCore::SystemComponentType("StealthHUD", "GMComponent.SimCore.StealthGM",
          "", dtGame::GMComponent::BaseGMComponentType));
 
-   const std::string StealthHUD::DEFAULT_NAME("StealthHUD");
+   const std::string StealthHUD::DEFAULT_NAME(StealthHUD::TYPE->GetName());
 
    //////////////////////////////////////////////////////////////////////////
    StealthHUD::StealthHUD(dtGame::LogController* logController,

@@ -3,6 +3,23 @@ SET(LIB_NAME   ${SIMCORE_LIBRARY})
 SET(HEADER_PATH ${SimulationCore_SOURCE_DIR}/include/${LIB_NAME})
 SET(SOURCE_PATH ${SimulationCore_SOURCE_DIR}/source/${LIB_NAME})
 
+# for generate version
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
+
+# a custom target that is always built
+add_custom_target(VersionHeader ALL
+    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/SimCoreGeneratedVersion.h)
+
+# creates svnheader.h using cmake script
+add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/SimCoreGeneratedVersion.h
+    COMMAND ${CMAKE_COMMAND} -DSOURCE_DIR=${CMAKE_CURRENT_SOURCE_DIR}
+                         -P ${CMAKE_SOURCE_DIR}/CMakeModules/GenerateVersionHeader.cmake)
+
+# svnversion.h is a generated file
+set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/SimCoreVersion.h
+    PROPERTIES GENERATED TRUE
+    HEADER_FILE_ONLY TRUE)
+
 file(GLOB LIB_PUBLIC_HEADERS_1 
    "${HEADER_PATH}/*.h"
    )
@@ -48,6 +65,7 @@ set(LIB_SOURCES_1
    "${SOURCE_PATH}/precomp.cpp"
    "${SOURCE_PATH}/Projector.cpp"
    "${SOURCE_PATH}/SimCoreCullVisitor.cpp"
+   "${SOURCE_PATH}/SimCoreVersion.cpp"
    "${SOURCE_PATH}/StealthMotionModel.cpp"
    "${SOURCE_PATH}/TerrainPhysicsMode.cpp"
    "${SOURCE_PATH}/TrailEffect.cpp"
@@ -255,3 +273,5 @@ SET(LIB_DEPS ${LIB_NAME}
 )
 
 DELTA3D_ADD_LIBRARY(${LIB_NAME} SIMCORE_LIBRARY SHARED)
+
+add_dependencies(${LIB_NAME} VersionHeader)
