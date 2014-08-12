@@ -113,6 +113,7 @@ namespace StealthGM
       , mCollideWithGround(true)
       , mCountDownToPeriodicProcessing(1.0)
    {
+      SetName(DEFAULT_NAME);
       mMachineInfo = new dtGame::MachineInfo;
    }
 

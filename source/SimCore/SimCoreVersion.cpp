@@ -16,19 +16,30 @@
 * along with this library; if not, write to the Free Software Foundation, Inc.,
 * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 */
-#ifndef SIMCORE_VERSION
-#define SIMCORE_VERSION
 
 #include <SimCore/Export.h>
+#include <SimCoreGeneratedVersion.h>
 #include <string>
 
-extern SIMCORE_EXPORT const char* GetSimCoreRevision();
+SIMCORE_EXPORT const char* GetSimCoreRevision()
+{
+   return SIMCORE_SVN_REVISION;
+}
 
 namespace SimCore
 {
-   extern SIMCORE_EXPORT std::string GetSimCoreRevision();
-   extern SIMCORE_EXPORT std::string GetSimCoreBuildDate();
-   extern SIMCORE_EXPORT std::string GetSimCoreCommitDate();
-}
+   SIMCORE_EXPORT std::string GetSimCoreRevision()
+   {
+      return SIMCORE_SVN_REVISION;
+   }
 
-#endif // SIMCORE_VERSION
+   SIMCORE_EXPORT std::string GetSimCoreBuildDate()
+   {
+      return SIMCORE_BUILD_DATE;
+   }
+
+   SIMCORE_EXPORT std::string GetSimCoreCommitDate()
+   {
+      return SIMCORE_SVN_DATE;
+   }
+}
