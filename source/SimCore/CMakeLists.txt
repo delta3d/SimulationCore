@@ -4,19 +4,19 @@ SET(HEADER_PATH ${SimulationCore_SOURCE_DIR}/include/${LIB_NAME})
 SET(SOURCE_PATH ${SimulationCore_SOURCE_DIR}/source/${LIB_NAME})
 
 # for generate version
-include_directories(${CMAKE_CURRENT_BINARY_DIR})
+#include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 # a custom target that is always built
 add_custom_target(VersionHeader ALL
-    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/SimCoreGeneratedVersion.h)
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/SimCoreGeneratedVersion.h)
 
 # creates svnheader.h using cmake script
-add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/SimCoreGeneratedVersion.h
+add_custom_command(OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/SimCoreGeneratedVersion.h
     COMMAND ${CMAKE_COMMAND} -DSOURCE_DIR=${CMAKE_CURRENT_SOURCE_DIR}
                          -P ${CMAKE_SOURCE_DIR}/CMakeModules/GenerateVersionHeader.cmake)
 
 # svnversion.h is a generated file
-set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/SimCoreVersion.h
+set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/SimCoreGeneratedVersion.h
     PROPERTIES GENERATED TRUE
     HEADER_FILE_ONLY TRUE)
 
