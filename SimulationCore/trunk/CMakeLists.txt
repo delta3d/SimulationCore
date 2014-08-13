@@ -33,6 +33,9 @@ SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMakeModules;/usr/local/share/cmake/M
 # Find OpenGL
 FIND_PACKAGE(OpenGL REQUIRED)
 
+# For SimCore version.
+FIND_PACKAGE(Subversion REQUIRED)
+
 # Add macro functions 
 include(UtilityMacros)
 
