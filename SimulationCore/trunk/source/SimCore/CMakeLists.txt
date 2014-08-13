@@ -3,22 +3,23 @@ SET(LIB_NAME   ${SIMCORE_LIBRARY})
 SET(HEADER_PATH ${SimulationCore_SOURCE_DIR}/include/${LIB_NAME})
 SET(SOURCE_PATH ${SimulationCore_SOURCE_DIR}/source/${LIB_NAME})
 
-# for generate version
-#include_directories(${CMAKE_CURRENT_BINARY_DIR})
+if (REGENERATE_VERSION_HEADER)
+   FIND_PACKAGE(Subversion REQUIRED)
 
-# a custom target that is always built
-add_custom_target(VersionHeader ALL
-    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/SimCoreGeneratedVersion.h)
+   # a custom target that is always built
+   add_custom_target(VersionHeader ALL
+       DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/SimCoreGeneratedVersion.h)
 
-# creates svnheader.h using cmake script
-add_custom_command(OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/SimCoreGeneratedVersion.h
-    COMMAND ${CMAKE_COMMAND} -DSOURCE_DIR=${CMAKE_CURRENT_SOURCE_DIR}
+   # creates svnheader.h using cmake script
+   add_custom_command(OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/SimCoreGeneratedVersion.h
+       COMMAND ${CMAKE_COMMAND} -DSOURCE_DIR=${CMAKE_CURRENT_SOURCE_DIR}
                          -P ${CMAKE_SOURCE_DIR}/CMakeModules/GenerateVersionHeader.cmake)
 
-# svnversion.h is a generated file
-set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/SimCoreGeneratedVersion.h
-    PROPERTIES GENERATED TRUE
-    HEADER_FILE_ONLY TRUE)
+   # svnversion.h is a generated file
+   set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/SimCoreGeneratedVersion.h
+       PROPERTIES GENERATED TRUE
+       HEADER_FILE_ONLY TRUE)
+endif()
 
 file(GLOB LIB_PUBLIC_HEADERS_1 
    "${HEADER_PATH}/*.h"
@@ -274,4 +275,6 @@ SET(LIB_DEPS ${LIB_NAME}
 
 DELTA3D_ADD_LIBRARY(${LIB_NAME} SIMCORE_LIBRARY SHARED)
 
-add_dependencies(${LIB_NAME} VersionHeader)
+if (REGENERATE_VERSION_HEADER)
+   add_dependencies(${LIB_NAME} VersionHeader)
+endif()
