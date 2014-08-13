@@ -42,7 +42,7 @@
 #include <dtCore/transform.h>
 #include <dtCore/system.h>
 #include <dtCore/mouse.h>
-//#include <dtTerrain/terrain.h>
+
 #include <SimCore/Actors/StealthActor.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
 #include <SimCore/AttachedMotionModel.h>
@@ -69,6 +69,7 @@
 #include <dtGame/serverloggercomponent.h>
 #include <dtGame/gameapplication.h>
 #include <dtGame/basemessages.h>
+#include <dtGame/actorupdatemessage.h>
 
 #include <dtUtil/fileutils.h>
 
@@ -143,9 +144,56 @@ namespace StealthGM
       SimCore::Components::BaseInputComponent::OnAddedToGM();
    }
 
-   // TEST --- START
-   dtCore::ObserverPtr<SimCore::Actors::BaseEntity> mCurEntity;
-   // TEST --- END
+   void StealthInputComponent::OnActorUpdate(const dtGame::ActorUpdateMessage& aum)
+   {
+      if (aum.GetName() == "Terrain" || aum.GetName().empty())
+      {
+         const dtCore::UniqueId& id = aum.GetAboutActorId();
+         if (!mTerrainActor.valid())
+         {
+            dtCore::BaseActorObject* actorTemp = GetGameManager()->FindGameActorById(id);
+            ValidateAndSetTerrainActor(actorTemp);
+         }
+      }
+   }
+
+   //////////////////////////////////////////////////////////////////////////////////
+   void StealthInputComponent::ValidateAndSetTerrainActor(dtCore::BaseActorObject* actor)
+   {
+      if (actor != NULL && actor->GetName() == "Terrain")
+      {
+         mTerrainActor = actor;
+      }
+      else
+      {
+         return;
+      }
+
+      dtGame::GameActorProxy* terrainGameActor = dynamic_cast<dtGame::GameActorProxy*>(mTerrainActor.get());
+      if (terrainGameActor == NULL)
+      {
+         LOG_ERROR("The terrain actor is not a game actor. Ignoring.");
+      }
+      else
+      {
+         // Ignore the terrain and the environment from recording
+         if (mEnableLogging)
+         {
+            if (mLogController.valid() )
+            {
+               if (mTerrainActor.valid())
+                  mLogController->RequestAddIgnoredActor(mTerrainActor->GetId());
+
+               if (GetGameManager()->GetEnvironmentActor() != NULL)
+                  mLogController->RequestAddIgnoredActor(GetGameManager()->GetEnvironmentActor()->GetId());
+            }
+            else
+            {
+               LOG_ERROR("LogController NOT found. Terrain actor CANNOT be ignored from logging.");
+            }
+         }
+      }
+   }
 
    ///////////////////////////////////////////////////////////////////////////
    void StealthInputComponent::ProcessMessage(const dtGame::Message& message)
@@ -155,16 +203,6 @@ namespace StealthGM
       // TICK LOCAL
       if (msgType == dtGame::MessageType::TICK_LOCAL)
       {
-         // TEST --- START
-         if (mCurEntity.valid() )
-         {
-            osg::Vec3 entityPos;
-            dtCore::Transform xform;
-            mCurEntity->GetTransform( xform );
-            xform.GetTranslation( entityPos );
-            //mHUDComponent->SetEntityLabelPosition( entityPos );
-         }
-         // TEST --- END
 
          const dtGame::TickMessage& tick = static_cast<const dtGame::TickMessage&>(message);
          UpdateTools( tick.GetDeltaSimTime() );
@@ -198,133 +236,7 @@ namespace StealthGM
       else if (msgType == dtGame::MessageType::INFO_TIMER_ELAPSED && mTerrainActor.valid() &&
          message.GetAboutActorId() == mTerrainActor->GetId())
       {
-         RefPtr<dtGame::GameActorProxy> stealthProxy = GetGameManager()->FindGameActorById(message.GetAboutActorId());
-         if (!stealthProxy.valid())
-         {
-            GetLogger().LogMessage(dtUtil::Log::LOG_ERROR, __FUNCTION__, __LINE__,
-               "A player entered world message was received, but the about actor id does not refer to a Game Actor in the Game Manager.");
-            return;
-         }
-
-         RefPtr<SimCore::Actors::StealthActor> stealthActor;
-         stealthProxy->GetDrawable(stealthActor);
-         if (!stealthActor.valid())
-         {
-            GetLogger().LogMessage(dtUtil::Log::LOG_ERROR, __FUNCTION__, __LINE__,
-               "A player entered world message was received, but the actor is not the right type.");
-         }
-         else if (!stealthProxy->IsRemote())
-         {
-            if (GetStealthActor() == NULL)
-            {
-               SetStealthActor(stealthActor.get());
-            }
-            osg::Vec3 attachOffset = GetStealthActor()->GetAttachOffset();
-            attachOffset.y() = -4.0f;
-            GetStealthActor()->SetAttachOffset( attachOffset );
-            GetStealthActor()->SetAttachAsThirdPerson(!mFirstPersonAttachMode);
-
-            // Ensure that the compass tool has reference to the stealth actor
-            SimCore::Tools::Compass* compass
-               = dynamic_cast<SimCore::Tools::Compass*>(GetTool(SimCore::MessageType::COMPASS));
-            if (compass != NULL)
-               compass->SetPlayerActor( GetStealthActor() );
-
-            std::vector<dtCore::ActorProxy*> actors;
-
-            const dtCore::ActorType *type = GetGameManager()->FindActorType("dtcore", "Player Start");
-            GetGameManager()->FindActorsByType(*type, actors);
-            if (actors.empty())
-            {
-               if (mTerrainActor.valid() && message.GetAboutActorId() == mTerrainActor->GetId())
-               {
-                  SimCore::Actors::TerrainActor* tdraw;
-                  mTerrainActor->GetDrawable(tdraw);
-                  if (tdraw == NULL || tdraw->CheckForTerrainLoaded())
-                  {
-                     osg::Node* node = tdraw->GetOSGNode();
-                     dtCore::Transform stealthStart;
-                     node->computeBound();
-                     osg::Vec3 startPos = node->getBound().center();
-                     stealthStart.SetTranslation(startPos);
-                     SimCore::Utils::KeepTransformOnGround(stealthStart, *tdraw, 100.0f, 5000.0f, 5000.0f);
-                     GetStealthActor()->SetTransform(stealthStart);
-                  }
-               }
-               else
-               {
-                  LOG_WARNING("Failed to find a player start proxy in the map. Defaulting to [0, 0, 0]");
-               }
-            }
-            else
-            {
-               RefPtr<dtCore::TransformableActorProxy> proxy = dynamic_cast<dtCore::TransformableActorProxy*>(actors[0]);
-               osg::Vec3 startPos = proxy->GetTranslation();
-               dtCore::Transform stealthStart;
-               stealthStart.SetTranslation(startPos);
-               GetStealthActor()->SetTransform(stealthStart);
-            }
-
-            if (mLogController.valid())
-            {
-               mLogController->RequestAddIgnoredActor(GetStealthActor()->GetUniqueId());
-            }
-
-            dtABC::Application& app = GetGameManager()->GetApplication();
-            dtCore::Camera& cam = *app.GetCamera();
-            if (cam.GetParent() != NULL)
-            {
-               cam.Emancipate();
-            }
-
-            GetStealthActor()->AddChild(app.GetCamera());
-
-            // create the fly motion model
-            if (!mStealthMM.valid())
-            {
-               mStealthMM = new SimCore::StealthMotionModel(app.GetKeyboard(), app.GetMouse(), dtCore::FlyMotionModel::OPTION_DEFAULT);
-               mStealthMM->SetCollideWithGround(mCollideWithGround);
-               mStealthMM->SetUseSimTimeForSpeed(false);
-            }
-            mStealthMM->SetTarget(GetStealthActor());
-            mStealthMM->SetScene(GetGameManager()->GetScene());
-
-            std::vector<dtCore::ActorProxy*> toFill;
-            GetGameManager()->FindActorsByName(SimCore::Actors::TerrainActor::DEFAULT_NAME, toFill);
-            if (!toFill.empty())
-            {
-               // Update the stealth actor with a reference to the terrain
-               // with which it will collide.
-               mStealthMM->SetCollidableGeometry(toFill[0]->GetDrawable());
-            }
-            mStealthMM->SetEnabled(GetStealthActor()->GetAttachAsThirdPerson());
-
-            // create the attached motion model
-            if (!mAttachedMM.valid())
-            {
-               mAttachedMM = new SimCore::AttachedMotionModel(app.GetKeyboard(), app.GetMouse());
-               mAttachedMM->SetCenterMouse(false);
-            }
-            mAttachedMM->SetTarget(GetStealthActor());
-            mAttachedMM->SetEnabled(!GetStealthActor()->GetAttachAsThirdPerson());
-
-            // The HUD will need to access data from the motion model
-            // so it can be displayed.
-            StealthHUD *hud = GetHUDComponent();
-            if (hud != NULL)
-            {
-               // Data should not be sent by messages because they
-               // may be recorded during record mode.
-               if (GetStealthActor()->GetAttachAsThirdPerson())
-               {
-                  hud->SetMotionModel(mStealthMM.get());
-               }
-               else
-               {
-                  hud->SetMotionModel(mAttachedMM.get());
-               }
-            }
-         }
+         SetupInitialAttachmentAndMotionModels();
       }
       else if (dynamic_cast<const SimCore::ToolMessage*>(&message) != NULL)
       {
@@ -340,6 +252,10 @@ namespace StealthGM
                   toolMsg.GetEnabled());
             }
          }
+      }
+      else if (msgType == dtGame::MessageType::INFO_ACTOR_CREATED || msgType == dtGame::MessageType::INFO_ACTOR_UPDATED)
+      {
+         OnActorUpdate(static_cast<const dtGame::ActorUpdateMessage&>(message));
       }
       else if (msgType == dtGame::MessageType::INFO_ACTOR_DELETED)
       {
@@ -381,40 +297,9 @@ namespace StealthGM
          std::vector<dtCore::ActorProxy*> actors;
          // TODO make a constant for this.
          gameManager.FindActorsByName("Terrain", actors);
-         if (actors.empty())
+         if (!actors.empty())
          {
-            LOG_ERROR("No terrain actor was found in the map: " + mapNames[0]);
-         }
-         else
-         {
-            mTerrainActor = actors[0];
-            //inputComp->SetTerrainActor(*terrainActor);
-            //std::string name = terrainActor->GetName();
-            //inputComp->SetTerrainActorName(name);
-            dtGame::GameActorProxy *gap = dynamic_cast<dtGame::GameActorProxy*>(mTerrainActor.get());
-            if (gap == NULL)
-            {
-               LOG_ERROR("The terrain actor is not a game actor. Ignoring.");
-            }
-            else
-            {
-               // Ignore the terrain and the environment from recording
-               if (mEnableLogging)
-               {
-                  if (mLogController.valid() )
-                  {
-                     if (mTerrainActor.valid())
-                        mLogController->RequestAddIgnoredActor(mTerrainActor->GetId());
-
-                     if (gameManager.GetEnvironmentActor() != NULL)
-                        mLogController->RequestAddIgnoredActor(gameManager.GetEnvironmentActor()->GetId());
-                  }
-                  else
-                  {
-                     LOG_ERROR("LogController NOT found. Terrain actor CANNOT be ignored from logging.");
-                  }
-               }
-            }
+            ValidateAndSetTerrainActor(actors[0]);
          }
 
          // Avoid deleting the Coordinate Config Actor
@@ -471,7 +356,7 @@ namespace StealthGM
       else if(msgType == SimCore::MessageType::REQUEST_WARP_TO_POSITION || 
                msgType == SimCore::MessageType::ATTACH_TO_ACTOR)
       {
-         mStealthMM->ResetOffset();
+         if (mStealthMM.valid()) mStealthMM->ResetOffset();
       }
    }
 
@@ -501,6 +386,121 @@ namespace StealthGM
 
          // Reset count down
          mCountDownToPeriodicProcessing = 1.0f;
+      }
+
+   }
+
+   //////////////////////////////////////////////////////////////////////
+   void StealthInputComponent::SetupInitialAttachmentAndMotionModels()
+   {
+      if (GetStealthActor() == NULL)
+      {
+         LOG_ERROR("No stealth actor has been.  Unable to create motion models and attach camera view.");
+      }
+      osg::Vec3 attachOffset = GetStealthActor()->GetAttachOffset();
+      attachOffset.y() = -4.0f;
+      GetStealthActor()->SetAttachOffset( attachOffset );
+      GetStealthActor()->SetAttachAsThirdPerson(!mFirstPersonAttachMode);
+
+      // Ensure that the compass tool has reference to the stealth actor
+      SimCore::Tools::Compass* compass
+         = dynamic_cast<SimCore::Tools::Compass*>(GetTool(SimCore::MessageType::COMPASS));
+      if (compass != NULL)
+         compass->SetPlayerActor( GetStealthActor() );
+
+      std::vector<dtCore::ActorProxy*> actors;
+
+      const dtCore::ActorType *type = GetGameManager()->FindActorType("dtcore", "Player Start");
+      GetGameManager()->FindActorsByType(*type, actors);
+      if (actors.empty())
+      {
+         if (mTerrainActor.valid())
+         {
+            SimCore::Actors::TerrainActor* tdraw;
+            mTerrainActor->GetDrawable(tdraw);
+            if (tdraw != NULL && tdraw->CheckForTerrainLoaded())
+            {
+               osg::Node* node = tdraw->GetOSGNode();
+               dtCore::Transform stealthStart;
+               node->computeBound();
+               osg::Vec3 startPos = node->getBound().center();
+               stealthStart.SetTranslation(startPos);
+               SimCore::Utils::KeepTransformOnGround(stealthStart, *tdraw, 100.0f, 5000.0f, 5000.0f);
+               GetStealthActor()->SetTransform(stealthStart);
+            }
+         }
+         else
+         {
+            LOG_WARNING("Failed to find a player start proxy in the map. Defaulting to [0, 0, 0]");
+         }
+      }
+      else
+      {
+         RefPtr<dtCore::TransformableActorProxy> proxy = dynamic_cast<dtCore::TransformableActorProxy*>(actors[0]);
+         osg::Vec3 startPos = proxy->GetTranslation();
+         dtCore::Transform stealthStart;
+         stealthStart.SetTranslation(startPos);
+         GetStealthActor()->SetTransform(stealthStart);
+      }
+
+      if (mLogController.valid())
+      {
+         mLogController->RequestAddIgnoredActor(GetStealthActor()->GetUniqueId());
+      }
+
+      dtABC::Application& app = GetGameManager()->GetApplication();
+      dtCore::Camera& cam = *app.GetCamera();
+      if (cam.GetParent() != NULL)
+      {
+         cam.Emancipate();
+      }
+
+      GetStealthActor()->AddChild(app.GetCamera());
+
+      // create the fly motion model
+      if (!mStealthMM.valid())
+      {
+         mStealthMM = new SimCore::StealthMotionModel(app.GetKeyboard(), app.GetMouse(), dtCore::FlyMotionModel::OPTION_DEFAULT);
+         mStealthMM->SetCollideWithGround(mCollideWithGround);
+         mStealthMM->SetUseSimTimeForSpeed(false);
+      }
+      mStealthMM->SetTarget(GetStealthActor());
+      mStealthMM->SetScene(GetGameManager()->GetScene());
+
+      std::vector<dtCore::ActorProxy*> toFill;
+      GetGameManager()->FindActorsByName(SimCore::Actors::TerrainActor::DEFAULT_NAME, toFill);
+      if (!toFill.empty())
+      {
+         // Update the stealth actor with a reference to the terrain
+         // with which it will collide.
+         mStealthMM->SetCollidableGeometry(toFill[0]->GetDrawable());
+      }
+      mStealthMM->SetEnabled(GetStealthActor()->GetAttachAsThirdPerson());
+
+      // create the attached motion model
+      if (!mAttachedMM.valid())
+      {
+         mAttachedMM = new SimCore::AttachedMotionModel(app.GetKeyboard(), app.GetMouse());
+         mAttachedMM->SetCenterMouse(false);
+      }
+      mAttachedMM->SetTarget(GetStealthActor());
+      mAttachedMM->SetEnabled(!GetStealthActor()->GetAttachAsThirdPerson());
+
+      // The HUD will need to access data from the motion model
+      // so it can be displayed.
+      StealthHUD *hud = GetHUDComponent();
+      if (hud != NULL)
+      {
+         // Data should not be sent by messages because they
+         // may be recorded during record mode.
+         if (GetStealthActor()->GetAttachAsThirdPerson())
+         {
+            hud->SetMotionModel(mStealthMM.get());
+         }
+         else
+         {
+            hud->SetMotionModel(mAttachedMM.get());
+         }
       }
 
    }
@@ -540,14 +540,6 @@ namespace StealthGM
          SimCore::Actors::BaseEntity* entity = dynamic_cast<SimCore::Actors::BaseEntity*>(dd);
          if (entity != NULL )
          {
-            //std::cout << "\n\tEntity found!!!\n" << std::endl;
-            mCurEntity = entity;
-
-            /*osg::Vec3 entityPos;
-            dtCore::Transform xform;
-            entity->GetTransform( xform );
-            xform.GetTranslation( entityPos );
-            mHUDComponent->SetEntityLabelPosition( entityPos );*/
          }
       }
 

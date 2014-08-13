@@ -145,6 +145,9 @@ namespace StealthGM
       void Cycle(bool forward, bool attach);
       void ToggleEntityShaders();
       void ChangeAARState( const dtGame::LogStateEnumeration& targetState );
+      void ValidateAndSetTerrainActor(dtCore::BaseActorObject* actor);
+      void OnActorUpdate(const dtGame::ActorUpdateMessage& aum);
+      void SetupInitialAttachmentAndMotionModels();
 
    private:
       void HandleHelpPressed();

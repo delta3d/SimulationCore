@@ -41,6 +41,23 @@ namespace SimCore
 {
    namespace HLA
    {
+      // Have to copy this because DIS is an optional dependency.
+      class DISConnectionData
+      {
+      public:
+         DISConnectionData();
+         DT_DECLARE_ACCESSOR(std::string, IPAddress);
+         DT_DECLARE_ACCESSOR(unsigned, Port);
+         DT_DECLARE_ACCESSOR(bool, BroadcastPort);
+
+         DT_DECLARE_ACCESSOR(unsigned char, ExerciseId);
+         DT_DECLARE_ACCESSOR(unsigned short, SiteId);
+         DT_DECLARE_ACCESSOR(unsigned short, ApplicationId);
+         DT_DECLARE_ACCESSOR(unsigned, MTU);
+         DT_DECLARE_ACCESSOR(dtCore::ResourceDescriptor, ActorXMLFile);
+
+      };
+
       ///////////////////////////////////////////////////////////////////////////////
       /// This component manages connecting and disconnecting from the network. It is used by the StealthViewer
       class SIMCORE_HLA_EXPORT HLAConnectionComponent : public dtGame::GMComponent
@@ -101,7 +118,7 @@ namespace SimCore
              * Sets the config file to use
              * @param file The file
              */
-            void SetConfigFile(const std::string &file) { mConfigFile = file; }
+            void SetConfigFile(const std::string& file) { mConfigFile = file; }
 
             /**
              * Sets the fed ex to connect to
@@ -113,19 +130,19 @@ namespace SimCore
              * Sets the fed name
              * @param name The name of the federation
              */
-            void SetFedName(const std::string &name) { mFedName = name; }
+            void SetFedName(const std::string& name) { mFedName = name; }
 
             /**
              * Sets the fed file
              * @param file The name of the federation file
              */
-            void SetFedFile(const std::string &file) { mFedFile = file; }
+            void SetFedFile(const std::string& file) { mFedFile = file; }
 
             /**
              * Sets the rid file to use
              * @param file The name of the rid file
              */
-            void SetRidFile(const std::string &file) { mRidFile = file; }
+            void SetRidFile(const std::string& file) { mRidFile = file; }
 
             /**
              * Returns the config file
@@ -192,45 +209,8 @@ namespace SimCore
             /// Game Version (ex 1) is only used with type ClientServer
             int GetServerGameVersion() const { return mServerGameVersion; }
 
-            /// IP Address used with type DIS Connections
-            void SetDISIPAddress(const std::string &newValue) { mDISIPAddress = newValue; }
-            /// IP Address used with type DIS Connections
-            const std::string& GetDISIPAddress() const { return mDISIPAddress; }
-
-            /// Port used with type DIS Connections
-            void SetDISPort(unsigned int newValue) { mDISPort = newValue; }
-            /// Port used with type DIS Connections
-            unsigned int GetDISPort() const { return mDISPort; }
-
-            /// Setup the DIS connection as a broadcast
-            void SetDISBroadcast(bool newValue) { mDISIsBroadcastPort = newValue; }
-            /// Is the DIS connection a broadcast Port?
-            unsigned int GetDISBroadcast() const { return mDISIsBroadcastPort; }
-
-            /// Exercise ID used with type DIS Connections
-            void SetDISExerciseID(unsigned char newValue) { mDISExerciseID = newValue; }
-            /// Exercise ID used with type DIS Connections
-            unsigned char GetDISExerciseID() const { return mDISExerciseID; }
-
-            /// Site ID used with type DIS Connections
-            void SetDISSiteID(unsigned short newValue) { mDISSiteID = newValue; }
-            /// Site ID used with type DIS Connections
-            unsigned short GetDISSiteID() const { return mDISSiteID; }
-
-            /// Application ID used with type DIS Connections
-            void SetDISApplicationID(unsigned short newValue) { mDISApplicationID = newValue; }
-            /// Application ID used with type DIS Connections
-            unsigned short GetDISApplicationID() const { return mDISApplicationID; }
-
-            /// MTU used with type DIS Connections
-            void SetDISMTU(unsigned int newValue) { mDISMTU = newValue; }
-            /// MTU used with type DIS Connections
-            unsigned int GetDISMTU() const { return mDISMTU; }
-
-            /// Actor XML File used with type DIS Connections
-            void SetDISActorXMLFile(const std::string &newValue) { mDISActorXMLFile = newValue; }
-            /// Actor XML File used with type DIS Connections
-            const std::string& GetDISActorXMLFile() const { return mDISActorXMLFile; }
+            // Gets and sets the whole struct by copy.
+            DT_DECLARE_ACCESSOR(DISConnectionData, DISConnectionData);
 
             /**
              * Tells this component to start the initial connection to a network. First 
@@ -267,6 +247,8 @@ namespace SimCore
             /// Connect to the client server network. Called internally - after map is loaded based on mConnectionType
             void DoConnectToClientServer(dtActors::CoordinateConfigActor* ccActor);
 
+            void AddComponentsForConnectionType();
+
             /**
              * Returns a reference to the HLAGMComponent we use
              * @return The component
@@ -290,14 +272,6 @@ namespace SimCore
             std::string mServerPort;
             std::string mServerGameName;
             int mServerGameVersion;
-            std::string mDISIPAddress;
-            unsigned int mDISPort;
-            bool mDISIsBroadcastPort;
-            unsigned char mDISExerciseID;
-            unsigned short mDISSiteID;
-            unsigned short mDISApplicationID;
-            unsigned int mDISMTU;
-            std::string mDISActorXMLFile;
 
             bool mPausedDuringConnectionFrame;
 
