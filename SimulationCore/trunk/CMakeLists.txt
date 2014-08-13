@@ -21,6 +21,9 @@ OPTION(AUTO_RUN_TESTS "Automatically runs the unit tests upon successful compile
 OPTION(BUILD_WITH_PCH      "Enables use of precomplied headers, experimental" OFF)
 MARK_AS_ADVANCED(BUILD_WITH_PCH)
 
+OPTION(REGENERATE_VERSION_HEADER      "Uses the SVN version to update the version header.  This can only be used for direct check-outs." OFF)
+MARK_AS_ADVANCED(REGENERATE_VERSION_HEADER)
+
 OPTION(BUILD_STEALTH_VIEWER "Build the Stealth Viewer" ON)
 
 # We want to build SONAMES shared librariess
@@ -33,8 +36,9 @@ SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMakeModules;/usr/local/share/cmake/M
 # Find OpenGL
 FIND_PACKAGE(OpenGL REQUIRED)
 
-# For SimCore version.
-FIND_PACKAGE(Subversion REQUIRED)
+if (REGENERATE_VERSION_HEADER)
+   FIND_PACKAGE(Subversion REQUIRED)
+endif()
 
 # Add macro functions 
 include(UtilityMacros)
