@@ -18,7 +18,7 @@
 */
 
 #include <SimCore/Export.h>
-#include <SimCoreGeneratedVersion.h>
+#include "SimCoreGeneratedVersion.h"
 #include <string>
 
 SIMCORE_EXPORT const char* GetSimCoreRevision()
