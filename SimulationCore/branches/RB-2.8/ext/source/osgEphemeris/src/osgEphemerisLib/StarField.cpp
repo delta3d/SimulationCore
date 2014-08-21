@@ -127,9 +127,13 @@ std::string StarField::_vertexShaderProgram =
 
 std::string StarField::_fragmentShaderProgram =
     "varying vec4 starColor;"
+    "uniform float d3d_SceneLuminance = 1.0;"
+
     "void main( void )"
     "{"
-    "    gl_FragColor = starColor;"
+    "    vec4 color = 3.5 * pow(starColor, 3.0);   "
+    "    color = d3d_SceneLuminance * (starColor + color);"
+    "    gl_FragColor = color;"
     "}";
 
 class UPCB : public osg::NodeCallback

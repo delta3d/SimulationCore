@@ -29,7 +29,7 @@
 
 using namespace osgEphemeris;
 
-const double MoonModel::_moonRadius = 3476000.0 * 0.5; // Diameter of moon * 0.5 = moon radius;
+const double MoonModel::_moonRadius = 3476000.0 * 3.5; // Diameter of moon * 0.5 = moon radius;
 
 MoonModel::MoonModel():
     Sphere( _moonRadius,
@@ -72,24 +72,22 @@ std::string MoonModel::_vertexShaderProgram =
 std::string MoonModel::_fragmentShaderProgram = 
     "uniform sampler2D baseMap;"
     "uniform sampler2D normalMap;"
+    "uniform float d3d_SceneLuminance = 1.0;"
+
     "varying vec2 uv;"
     "varying vec3 lightVec;"
     "const float diffuseCoeff = 2.5;"
     "void main( void )"
     "{"
     "    vec2 texUV = uv;"
+    "    vec3 normal = 2.0 * (texture2D(normalMap, texUV).rgb - 0.5);"
 
-// Commented out the use of the normal map.
-//    "    vec3 normal = 2.0 * (texture2D(normalMap, texUV).rgb - 0.5);"
-
-    "    vec3 normal = 2.0 * (vec3(0.5, 0.5, 1.0) - 0.5);"
+    //"    vec3 normal = 2.0 * (vec3(0.5, 0.5, 1.0) - 0.5);"
     "    normal = normalize(normal);"
     "    float diffuse = max(dot(lightVec, normal), 0.0) * diffuseCoeff;"
     "    vec3 decalColor = texture2D(baseMap, texUV).rgb;"
 
-// Moon is only rendered to red for now to support NVG
-    "    gl_FragColor = vec4(vec3(diffuse) * decalColor, 1.0);"
-    //"    gl_FragColor = vec4(diffuse * decalColor.r * 3000.0, 0.0, 0.0, 1.0);"
+    "    gl_FragColor = vec4(d3d_SceneLuminance * vec3(diffuse) * decalColor, 1.0);"
     "}";
 
 void MoonModel::_buildStateSet()
