@@ -361,7 +361,7 @@ void SkyDome::_buildStateSet()
         ssn->setTextureMode( _sunTextureUnit, GL_TEXTURE_GEN_T, osg::StateAttribute::ON );
         ssn->setTextureMode( _sunTextureUnit, GL_TEXTURE_GEN_R, osg::StateAttribute::ON );
         ssn->setTextureMode( _sunTextureUnit, GL_TEXTURE_GEN_Q, osg::StateAttribute::ON );
-        ssn->setTextureAttributeAndModes( _sunTextureUnit, _sunTexGenNorth.get(), osg::StateAttribute::ON );
+        ssn->setTextureAttributeAndModes( _sunTextureUnit, _sunTexGenNorth.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED | osg::StateAttribute::OVERRIDE);
 
         if( _southernHemisphere.valid() )
         {
@@ -372,7 +372,7 @@ void SkyDome::_buildStateSet()
             sss->setTextureMode( _sunTextureUnit, GL_TEXTURE_GEN_T, osg::StateAttribute::ON );
             sss->setTextureMode( _sunTextureUnit, GL_TEXTURE_GEN_R, osg::StateAttribute::ON );
             sss->setTextureMode( _sunTextureUnit, GL_TEXTURE_GEN_Q, osg::StateAttribute::ON );
-            sss->setTextureAttributeAndModes( _sunTextureUnit, _sunTexGenSouth.get(), osg::StateAttribute::ON );
+            sss->setTextureAttributeAndModes( _sunTextureUnit, _sunTexGenSouth.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED | osg::StateAttribute::OVERRIDE);
         }
 
         sset->setTextureAttributeAndModes( _sunTextureUnit, new osg::TexEnv( osg::TexEnv::DECAL ));
@@ -561,7 +561,7 @@ void SkyDome::_computeSkyTexture()
     _sin_theta_sun = sinf(_theta_sun);
 
     // part of Preetham model
-    //_updateZenithxyY();
+    _updateZenithxyY();
 
     _sunset_atten = powf(_sin_theta_sun, 20.0f);
 
@@ -620,7 +620,7 @@ void SkyDome::_computeSkyTexture()
                 // Convert XYZ color space to sRGB color space
                 float R( X *  3.2405 + -1.5371 * Y + -0.4985 * Z );
                 float G( X * -0.9693 +  1.8760 * Y +  0.0416 * Z );
-                float B( X *  0.0556 + -0.2040 * Y +  1.0572 * Z );*/
+               float B( X *  0.0556 + -0.2040 * Y +  1.0572 * Z );*/
 
                 // Our home grown sky color math model
                 float R( _RedFunction(theta, theta_0_1, gamma, weighted_gamma_1_0) );
@@ -628,19 +628,19 @@ void SkyDome::_computeSkyTexture()
                 float B( _BlueFunction(theta, theta_0_1, gamma, weighted_gamma_1_0) );
 
                 // tone mapping
-                const float exposure( 5.0f );
-                const float luminance( R * 0.299f + G * 0.587f + B * 0.114f );
-                const float brightness( 1.0f - expf(-luminance * exposure) );
-                const float scale( brightness / (luminance + 0.001f) );
-                R *= scale;
-                G *= scale;
-                B *= scale;
+                //const float exposure( 5.0f );
+                //const float luminance( R * 0.299f + G * 0.587f + B * 0.114f );
+                //const float brightness( 1.0f - expf(-luminance * exposure) );
+                //const float scale( brightness / (luminance + 0.001f) );
+                //R *= scale;
+                //G *= scale;
+                //B *= scale;
 
                 // Clamp upper bound to 1.0
                 // No need to clamp lower bound to 0.0 because our lighting is purely additive
-                R = (R > 1.0f) ? 1.0f : R;
-                G = (G > 1.0f) ? 1.0f : G;
-                B = (B > 1.0f) ? 1.0f : B;
+                //R = (R > 1.0f) ? 1.0f : R;
+                //G = (G > 1.0f) ? 1.0f : G;
+                //B = (B > 1.0f) ? 1.0f : B;
 
                 *(ptr++) = (unsigned char)(R * 255.0f);
                 *(ptr++) = (unsigned char)(G * 255.0f);
