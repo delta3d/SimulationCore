@@ -27,7 +27,7 @@
 
 #include <SimCore/Components/BaseGameAppComponent.h>
 #include <SimCore/Actors/StealthActor.h>
-#include <SimCore/Components/GameState/GameStateComponent.h>
+#include <dtGame/gamestatecomponent.h>
 
 #include <dtNetGM/networkcomponent.h>
 
@@ -65,7 +65,7 @@ namespace NetDemo
     * states and responding to major messages from the server. It also listens for server
     * players and manages/creates the PlayerStatusActor.
     */
-   class GameLogicComponent : public SimCore::Components::GameStateComponent
+   class GameLogicComponent : public dtGame::GameStateComponent
    {
       /// Internal data struct/class for debug specific data. Member vars are public to act like a struct. Accessed by InputComponent and HUDScreen
       class DebugInformation 
@@ -100,7 +100,7 @@ namespace NetDemo
          static const std::string WHEELED_VEHICLE_PROTOTYPE;
          static const std::string WHEELED_VEHICLE_TRAILER_PROTOTYPE;
 
-         typedef SimCore::Components::GameStateComponent BaseClass;
+         typedef dtGame::GameStateComponent BaseClass;
          static const dtCore::RefPtr<dtCore::SystemComponentType> TYPE;
 
          /// Constructor
@@ -133,7 +133,7 @@ namespace NetDemo
 
          void CreateServerSideActors();
 
-         typedef SimCore::Components::StateType GameStateType;
+         typedef dtGame::StateType GameStateType;
          bool IsRunningState(const GameStateType& state) const;
 
          /**
@@ -168,7 +168,7 @@ namespace NetDemo
          void HandleMapLoaded();
          void DisconnectFromNetwork();
          void HandleStateChangeMessage(
-            const SimCore::Components::GameStateChangedMessage& stateChange);
+            const dtGame::GameStateChangedMessage& stateChange);
          void LoadNewTerrain();
          void UnloadCurrentTerrain();
          void ClearPreviousGameStuff();

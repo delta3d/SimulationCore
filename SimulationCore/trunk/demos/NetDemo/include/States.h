@@ -25,7 +25,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 // INCLUDE DIRECTIVES
 ////////////////////////////////////////////////////////////////////////////////
-#include <SimCore/Components/GameState/GameState.h>
+#include <dtGame/gamestate.h>
 
 
 
@@ -34,10 +34,10 @@ namespace NetDemo
    //////////////////////////////////////////////////////////////////////////
    // STATE TYPE CODE
    //////////////////////////////////////////////////////////////////////////
-   class NetDemoState : public SimCore::Components::StateType
+   class NetDemoState : public dtGame::StateType
    {
       public:
-         typedef SimCore::Components::StateType BaseClass;
+         typedef dtGame::StateType BaseClass;
 
          /* Base States
          static StateType STATE_UNKNOWN;
@@ -79,10 +79,10 @@ namespace NetDemo
    //////////////////////////////////////////////////////////////////////////
    // TRANSITION CODE
    //////////////////////////////////////////////////////////////////////////
-   class Transition : public SimCore::Components::EventType
+   class Transition : public dtGame::EventType
    {
       public:
-         typedef SimCore::Components::EventType BaseClass;
+         typedef dtGame::EventType BaseClass;
 
          /* Base Transition Types
          static EventType TRANSITION_OCCURRED; //used for testing

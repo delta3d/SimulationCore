@@ -32,7 +32,7 @@
 #include <dtGame/drpublishingactcomp.h>
 #include <SimCore/Actors/FourWheelVehicleActor.h>
 #include <SimCore/ActComps/TrailerHitchActComp.h>
-#include <SimCore/Components/GameState/GameStateChangeMessage.h>
+#include <dtGame/gamestatemessages.h>
 #include <SimCore/MessageType.h>
 #include <SimCore/Messages.h>
 #include <SimCore/Utilities.h>
@@ -141,9 +141,9 @@ namespace NetDemo
       {
          LOG_ALWAYS("The server accepted the connection request message.");
       }
-      else if (messageType == SimCore::MessageType::GAME_STATE_CHANGED)
+      else if (messageType == dtGame::MessageType::INFO_GAME_STATE_CHANGED)
       {
-         HandleStateChangeMessage(static_cast<const SimCore::Components::GameStateChangedMessage&>(msg));
+         HandleStateChangeMessage(static_cast<const dtGame::GameStateChangedMessage&>(msg));
       }
       else if (dtGame::MessageType::INFO_MAP_LOADED == messageType)
       {
@@ -459,17 +459,17 @@ namespace NetDemo
    }
 
    //////////////////////////////////////////////////////////////////////////
-   void GameLogicComponent::HandleStateChangeMessage( const SimCore::Components::GameStateChangedMessage& stateChange )
+   void GameLogicComponent::HandleStateChangeMessage( const dtGame::GameStateChangedMessage& stateChange )
    {
-      const SimCore::Components::StateType& state = stateChange.GetNewState();
+      const dtGame::StateType& state = stateChange.GetNewState();
       LOG_WARNING("Changing to stage[" + state.GetName() + "].");
 
       // Note - when we change the player status, it gets published when the actor is ticked.
 
-      if (state == SimCore::Components::StateType::STATE_MENU)
+      if (state == dtGame::StateType::STATE_MENU)
       {
       }
-      else if (state == SimCore::Components::StateType::STATE_LOADING)
+      else if (state == dtGame::StateType::STATE_LOADING)
       {
          if (mPlayerStatus != NULL)
             mPlayerStatus->SetPlayerStatus(PlayerStatusActor::PlayerStatusEnum::LOADING);
@@ -499,7 +499,7 @@ namespace NetDemo
          // curt - hack - replace this with the GUI COMPONENT
          //DoStateTransition(&Transition::TRANSITION_FORWARD);
       }
-      else if (state == SimCore::Components::StateType::STATE_SHUTDOWN )
+      else if (state == dtGame::StateType::STATE_SHUTDOWN )
       {
          GetGameManager()->GetApplication().Quit();
       }

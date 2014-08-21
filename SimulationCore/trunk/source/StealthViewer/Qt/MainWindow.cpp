@@ -51,6 +51,7 @@
 #include <StealthViewer/Qt/StealthViewerSettings.h>
 #include <StealthViewer/Qt/ViewDockWidget.h>
 #include <StealthViewer/Qt/AdditionalViewDockWidget.h>
+#include <StealthViewer/Qt/MapSelectDialog.h>
 
 #include <StealthViewer/GMApp/StealthHUD.h>
 
@@ -67,6 +68,7 @@
 #include <SimCore/HLA/HLAConnectionComponent.h>
 #include <SimCore/UnitEnums.h>
 #include <SimCore/SimCoreVersion.h>
+#include <SimCore/Utilities.h>
 
 #include <dtUtil/stringutils.h>
 #include <dtUtil/fileutils.h>
@@ -437,16 +439,34 @@ namespace StealthQt
    }
 
    ///////////////////////////////////////////////////////////////////////////////
-   void MainWindow::OnHLAWindowActionTriggered()
+   void MainWindow::OnMapWindowActionTriggered()
+   {
+      if (mIsConnectedToANetwork)
+      {
+         QMessageBox::warning(this, "Currently connected", QString("Changing maps while a network connection is active is not supported.  Disconnect first."));
+         return;
+      }
+
+      MapSelectDialog dlg(this);
+      if(dlg.exec() == QDialog::Accepted)
+      {
+         QListWidgetItem* item = dlg.GetSelectedItem();
+         std::string mapName = item->text().toStdString();
+         SimCore::Utils::LoadMaps(*mGM, mapName);
+         EnableGeneralUIAndTick();
+      }
+
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////
+   void MainWindow::OnConnectionWindowActionTriggered()
    {
       SimCore::HLA::HLAConnectionComponent* comp = NULL;
       mGM->GetComponentByName(SimCore::HLA::HLAConnectionComponent::DEFAULT_NAME, comp);
 
       if (comp == NULL)
       {
-         throw dtGame::InvalidParameterException(
-                  "Failed to locate the HLAConnectionComponent on the Game Manager. Aborting application.",
-                  __FILE__, __LINE__);
+         QMessageBox::critical(this, "Error", QString("Network connection subsystem failed to initialized.  The internal ConnectionComponent does not exist."));
       }
 
       // Even error states should be considered connected so that the UI will make you disconnect first.
@@ -456,7 +476,8 @@ namespace StealthQt
       HLAWindow window(*mGM, this, NULL, mIsConnectedToANetwork, mCurrentConnectionName);
 
       connect(&window, SIGNAL(ConnectedToNetwork(QString)), this, SLOT(OnConnectToNetwork(QString)));
-      connect(&window, SIGNAL(DisconnectedFromNetwork()), this, SLOT(OnDisconnectFromNetwork()));
+      connect(&window, SIGNAL(ConnectedToNetworkFailed(QString)), this, SLOT(EndWaitCursor()));
+      connect(&window, SIGNAL(DisconnectedFromNetwork(bool)), this, SLOT(OnDisconnectFromNetwork(bool)));
 
       if (window.exec() == QDialog::Accepted)
       {
@@ -521,7 +542,8 @@ namespace StealthQt
       /////////////////////////////////////////////////////////
       // Window Actions
       /////////////////////////////////////////////////////////
-      connect(mUi->mActionHLAConnections,  SIGNAL(triggered()), this, SLOT(OnHLAWindowActionTriggered()));
+      connect(mUi->mActionMaps,            SIGNAL(triggered()), this, SLOT(OnMapWindowActionTriggered()));
+      connect(mUi->mActionConnections,     SIGNAL(triggered()), this, SLOT(OnConnectionWindowActionTriggered()));
       connect(mUi->mActionFullScreen,      SIGNAL(triggered()), this, SLOT(OnFullScreenActionTriggered()));
       connect(mUi->mActionShowControls,    SIGNAL(triggered()), this, SLOT(OnShowControlsActionTriggered()));
       connect(mUi->mActionShowEntityInfo,  SIGNAL(triggered()), this, SLOT(OnShowEntityInfoActionTriggered()));
@@ -952,7 +974,7 @@ namespace StealthQt
       mUi->mRecordAutomaticTimeMarkersSpinBox->setEnabled(mIsRecording);
 
       // Prevent network connection changes if in record mode.
-      mUi->mMenuNetwork->setEnabled( ! mIsRecording );
+      mUi->mMenuSetup->setEnabled( ! mIsRecording );
 
       // Prevent changing files when in record mode.
       mUi->mRecordFilePushButton->setEnabled( ! mIsRecording );
@@ -1106,7 +1128,7 @@ namespace StealthQt
          OnPlaybackPlayButtonClicked();
 
       // Prevent network connection changes if in playback mode.
-      mUi->mMenuNetwork->setEnabled( ! mIsPlaybackMode );
+      mUi->mMenuSetup->setEnabled( ! mIsPlaybackMode );
 
       // Change the window title to indicate playback mode.
       const std::string& title = mIsPlaybackMode
@@ -2078,6 +2100,7 @@ namespace StealthQt
       }
    }
 
+   ///////////////////////////////////////////////////////////////////
    void MainWindow::EnablePlaybackButtons(bool enable)
    {
       mUi->mPlaybackStartOverPushButton->setEnabled(enable);
@@ -2088,6 +2111,7 @@ namespace StealthQt
       mUi->mPlaybackJumpToTimeMarkerPushButton->setEnabled(enable);
    }
 
+   ///////////////////////////////////////////////////////////////////
    void MainWindow::ConnectSigSlots()
    {
       dtGame::GMComponent* gmComp =
@@ -2101,36 +2125,58 @@ namespace StealthQt
       logController.SignalReceivedKeyframes().connect_slot(this, &MainWindow::PlaybackKeyFrameSlot);
    }
 
+   ///////////////////////////////////////////////////////////////////
    void MainWindow::OnConnectToNetwork(QString connectionName)
    {
       mIsConnectedToANetwork = true;
       mCurrentConnectionName = connectionName;
 
+      EnableGeneralUIAndTick();
+      mHLAErrorTimer.start();
+      mUi->mActionMaps->setEnabled(false);
+
+      EndWaitCursor();
+   }
+
+   ///////////////////////////////////////////////////////////////////
+   void MainWindow::OnDisconnectFromNetwork(bool disableUI)
+   {
+      mIsConnectedToANetwork = false;
+      mCurrentConnectionName = tr("");
+
+      if (disableUI)
+      {
+         DisableGeneralUIAndTick();
+      }
+      mUi->mActionMaps->setEnabled(true);
+   }
+
+   ///////////////////////////////////////////////////////////////////
+   void MainWindow::EnableGeneralUIAndTick()
+   {
       mUi->mPreferencesDockWidget->setEnabled(true);
       mUi->mControlsDockWidget->setEnabled(true);
       mUi->mEntityInfoDockWidget->setEnabled(true);
       mViewDockWidget->setEnabled(true);
 
       mGenericTickTimer.start();
-      mHLAErrorTimer.start();
-
-      EndWaitCursor();
    }
 
-   void MainWindow::OnDisconnectFromNetwork()
+   ///////////////////////////////////////////////////////////////////
+   void MainWindow::DisableGeneralUIAndTick()
    {
-      mIsConnectedToANetwork = false;
-      mCurrentConnectionName = tr("");
+      mGenericTickTimer.stop();
 
       mUi->mPreferencesDockWidget->setEnabled(false);
       mUi->mControlsDockWidget->setEnabled(false);
       mUi->mEntityInfoDockWidget->setEnabled(false);
-
-      mGenericTickTimer.stop();
+      mViewDockWidget->setEnabled(false);
 
       ClearData();
    }
 
+
+   ///////////////////////////////////////////////////////////////////
    void MainWindow::OnSecondTimerElapsed()
    {
       StealthGM::PreferencesEnvironmentConfigObject& envConfig =
@@ -2155,6 +2201,7 @@ namespace StealthQt
       }
    }
 
+   ///////////////////////////////////////////////////////////////////
    void MainWindow::OnDurationTimerElapsed()
    {
       dtGame::GameManager& gm = *mGM;
@@ -2203,7 +2250,7 @@ namespace StealthQt
                   tr("and ensure they are correct."),
                   QMessageBox::Ok);
 
-         OnHLAWindowActionTriggered();
+         OnConnectionWindowActionTriggered();
       }
       else if (comp->GetConnectionState() == SimCore::HLA::HLAConnectionComponent::ConnectionState::STATE_CONNECTING)
       {
@@ -2324,7 +2371,8 @@ namespace StealthQt
       HLAWindow window(*mGM, this, NULL, mIsConnectedToANetwork, mCurrentConnectionName);
 
       connect(&window, SIGNAL(ConnectedToNetwork(QString)), this, SLOT(OnConnectToNetwork(QString)));
-      connect(&window, SIGNAL(DisconnectedFromNetwork()), this, SLOT(OnDisconnectFromNetwork()));
+      connect(&window, SIGNAL(ConnectedToNetworkFailed(QString)), this, SLOT(EndWaitCursor()));
+      connect(&window, SIGNAL(DisconnectedFromNetwork(bool)), this, SLOT(OnDisconnectFromNetwork(bool)));
 
       // Begin wait cursor
       StartWaitCursor();
@@ -2512,19 +2560,13 @@ namespace StealthQt
       mUi->mEntityInfoPositionLabel_MGRS->hide();
       // Hide the XYZ fields
       mUi->mEntityInfoPositionLabel_XYZ->hide();
-      mUi->mEntityInfoPos_XLabel->hide();
       mUi->mEntityInfoPosXEdit->hide();
-      mUi->mEntityInfoPos_YLabel->hide();
       mUi->mEntityInfoPosYEdit->hide();
-      mUi->mEntityInfoPos_ZLabel->hide();
       mUi->mEntityInfoPosZEdit->hide();
       // Hide the Lat Lon fields
       mUi->mEntityInfoPositionLabel_LatLon->hide();
-      mUi->mEntityInfoPos_LatLabel->hide();
       mUi->mEntityInfoPosLatEdit->hide();
-      mUi->mEntityInfoPos_LonLabel->hide();
       mUi->mEntityInfoPosLonEdit->hide();
-      mUi->mEntityInfoPos_ElevLLLabel->hide();
       mUi->mEntityInfoPosElevLL->hide();
 
       if (system == StealthGM::PreferencesToolsConfigObject::CoordinateSystem::MGRS)
@@ -2537,22 +2579,16 @@ namespace StealthQt
       {
          // Hide the Lat Lon fields
          mUi->mEntityInfoPositionLabel_LatLon->show();
-         mUi->mEntityInfoPos_LatLabel->show();
          mUi->mEntityInfoPosLatEdit->show();
-         mUi->mEntityInfoPos_LonLabel->show();
          mUi->mEntityInfoPosLonEdit->show();
-         mUi->mEntityInfoPos_ElevLLLabel->show();
          mUi->mEntityInfoPosElevLL->show();
       }
       else // if (system == StealthGM::PreferencesToolsConfigObject::CoordinateSystem::RAW_XYZ
       {
          // Show the XYZ fields
          mUi->mEntityInfoPositionLabel_XYZ->show();
-         mUi->mEntityInfoPos_XLabel->show();
          mUi->mEntityInfoPosXEdit->show();
-         mUi->mEntityInfoPos_YLabel->show();
          mUi->mEntityInfoPosYEdit->show();
-         mUi->mEntityInfoPos_ZLabel->show();
          mUi->mEntityInfoPosZEdit->show();
       }
    }
@@ -2588,7 +2624,7 @@ namespace StealthQt
    }
 
    ///////////////////////////////////////////////////////////////////
-   void MainWindow::OnTimeMarkerDoubleClicked(QListWidgetItem *item)
+   void MainWindow::OnTimeMarkerDoubleClicked(QListWidgetItem* item)
    {
       if (item != NULL)
       {

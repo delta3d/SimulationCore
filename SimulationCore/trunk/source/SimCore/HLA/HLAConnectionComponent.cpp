@@ -144,7 +144,8 @@ namespace SimCore
       {
          // The connect process starts by loading a map. Once that is done, THEN we
          // can connect to the network.
-         if(msg.GetMessageType() == dtGame::MessageType::INFO_MAP_LOADED)
+         if(msg.GetMessageType() == dtGame::MessageType::INFO_MAP_LOADED &&
+               mState == &HLAConnectionComponent::ConnectionState::STATE_CONNECTING)
          {
             DoReconnectToNetwork();
          }
@@ -395,7 +396,7 @@ namespace SimCore
             // Next 2 lines taken from StealthInputComponent.cpp
             // Clear any munitions or particle effects that may have been around BEFORE we joined.
             // This is necessary to stop problems with lingering effects during and after playback
-            SimCore::Components::TimedDeleterComponent *deleterComp =
+            SimCore::Components::TimedDeleterComponent* deleterComp =
                dynamic_cast<SimCore::Components::TimedDeleterComponent*> (GetGameManager()->
                GetComponentByName(SimCore::Components::TimedDeleterComponent::DEFAULT_NAME));
             if (deleterComp != NULL)

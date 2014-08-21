@@ -112,7 +112,7 @@ namespace SimCore
              * Sets the map name to load
              * @param mapName The name of the map
              */
-            void AddMap(const std::string &mapName) { mMapNames.push_back(mapName); }
+            void AddMap(const std::string& mapName) { mMapNames.push_back(mapName); }
 
             /**
              * Sets the config file to use
@@ -124,7 +124,7 @@ namespace SimCore
              * Sets the fed ex to connect to
              * @param fedex The name of the federation execution
              */
-            void SetFedEx(const std::string &fedex) { mFedEx = fedex; }
+            void SetFedEx(const std::string& fedex) { mFedEx = fedex; }
 
             /**
              * Sets the fed name
@@ -185,12 +185,12 @@ namespace SimCore
 
 
             /// Server IP Address is only used with type ClientServer
-            void SetServerIPAddress(const std::string &newValue) { mServerIPAddress = newValue; }
+            void SetServerIPAddress(const std::string& newValue) { mServerIPAddress = newValue; }
             /// Server IP Address is only used with type ClientServer
             const std::string& GetServerIPAddress() const { return mServerIPAddress; }
 
             /// Server Port is only used with type ClientServer
-            void SetServerPort(const std::string &newValue) { mServerPort = newValue; }
+            void SetServerPort(const std::string& newValue) { mServerPort = newValue; }
             /// Server Port is only used with type ClientServer
             const std::string& GetServerPort() const { return mServerPort; }
 
@@ -200,7 +200,7 @@ namespace SimCore
             const ConnectionType& GetConnectionType() const { return *mConnectionType; }
 
             /// Game Name (ex NetDemo) is only used with type ClientServer
-            void SetServerGameName(const std::string &newValue) { mServerGameName = newValue; }
+            void SetServerGameName(const std::string& newValue) { mServerGameName = newValue; }
             /// Game Name (ex NetDemo) is only used with type ClientServer
             const std::string& GetServerGameName() const { return mServerGameName; }
 

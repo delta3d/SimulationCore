@@ -220,8 +220,11 @@ namespace StealthQt
          // PREFERENCES WINDOW
          ///////////////////////////////////////////////////////////////////////
 
-         /// Called when the HLAWindow action is triggered
-         void OnHLAWindowActionTriggered();
+         /// Called when the Map Window action is triggered
+         void OnMapWindowActionTriggered();
+
+         /// Called when the ConnectionWindow action is triggered
+         void OnConnectionWindowActionTriggered();
 
          /// Called when the Full Screen action is triggered
          void OnFullScreenActionTriggered();
@@ -330,7 +333,7 @@ namespace StealthQt
          void OnConnectToNetwork(QString connectionName);
 
          /// Called when we disconnect from HLA
-         void OnDisconnectFromNetwork();
+         void OnDisconnectFromNetwork(bool disableUI);
 
          /// Called when the seconds timer elapses
          void OnSecondTimerElapsed();
@@ -395,8 +398,15 @@ namespace StealthQt
           */
          virtual void UpdateUIFromPreferences();
 
+         /**
+          * Enables all the runtime UI controls and starts ticking the sim.
+          */
+         void EnableGeneralUIAndTick();
 
-         Ui::MainWindow* mUi;
+         /**
+          * Disables all the runtime UI controls and stops ticking the sim.
+          */
+         void DisableGeneralUIAndTick();
 
       private:
 
@@ -516,6 +526,8 @@ namespace StealthQt
          ViewDockWidget* mViewDockWidget;
 
          std::vector<QCheckBox*> mVisibilityCheckBoxes;
+
+         Ui::MainWindow* mUi;
    };
 }
 

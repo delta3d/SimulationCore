@@ -71,7 +71,6 @@
 #include <SimCore/Actors/LogicOnEventActor.h>
 #include <SimCore/Actors/CamoConfigActor.h>
 
-#include <SimCore/Components/GameState/GameStateComponent.h>
 #include <SimCore/Components/BaseGameAppComponent.h>
 #include <SimCore/Components/ControlStateComponent.h>
 #include <SimCore/Components/MunitionsComponent.h>
@@ -102,10 +101,6 @@ namespace SimCore
       //////////////////////////////
       //Components
       //////////////////////////////
-      const dtCore::RefPtr<dtCore::SystemComponentType> GameStateComponent::TYPE(new dtCore::SystemComponentType("GameStateComponent","GMComponent.SimCore",
-            "State Machine for flow of the game logic.", dtGame::GMComponent::BaseGMComponentType));
-      const dtUtil::RefString GameStateComponent::DEFAULT_NAME(GameStateComponent::TYPE->GetName());
-
       const dtCore::RefPtr<dtCore::SystemComponentType> BaseGameAppComponent::TYPE(new dtCore::SystemComponentType("BaseGameAppComponent","GMComponent.SimCore",
             "Deprecated.  This component has some simple functions used in legacy apps.", dtGame::GMComponent::BaseGMComponentType));
       const std::string BaseGameAppComponent::DEFAULT_NAME(BaseGameAppComponent::TYPE->GetName());
@@ -450,8 +445,6 @@ namespace SimCore
          mActorFactory->RegisterType<CamoConfigActorProxy>(CAMO_CONFIG_ACTOR_TYPE.get());
 
          mActorFactory->RegisterType<BattlefieldGraphicsActorProxy>(BATTLEFIELD_GRAPHICS_ACTOR_TYPE.get());
-
-         mActorFactory->RegisterType<SimCore::Components::GameStateComponent>();
 
       }
    }

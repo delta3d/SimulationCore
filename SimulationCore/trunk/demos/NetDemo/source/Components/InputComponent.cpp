@@ -27,7 +27,7 @@
 #include <SimCore/ClampedMotionModel.h>
 #include <SimCore/Messages.h>
 #include <SimCore/MessageType.h>
-#include <SimCore/Components/GameState/GameStateChangeMessage.h>
+#include <dtGame/gamestatemessages.h>
 #include <SimCore/Components/MunitionsComponent.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
 #include <SimCore/Actors/BaseEntity.h>
@@ -116,9 +116,9 @@ namespace NetDemo
       {
          HandleActorUpdateMessage(static_cast<const dtGame::ActorUpdateMessage&>(message));
       }
-      else if (SimCore::MessageType::GAME_STATE_CHANGED == msgType)
+      else if (dtGame::MessageType::INFO_GAME_STATE_CHANGED == msgType)
       {
-         HandleStateChangeMessage(static_cast<const SimCore::Components::GameStateChangedMessage&>(message));
+         HandleStateChangeMessage(static_cast<const dtGame::GameStateChangedMessage&>(message));
       }
       else if (dtGame::MessageType::INFO_MAP_LOADED == msgType)
       {
@@ -152,9 +152,9 @@ namespace NetDemo
    }
 
    //////////////////////////////////////////////////////////////////////////
-   void InputComponent::HandleStateChangeMessage( const SimCore::Components::GameStateChangedMessage& stateChange )
+   void InputComponent::HandleStateChangeMessage( const dtGame::GameStateChangedMessage& stateChange )
    {
-      const SimCore::Components::StateType& state = stateChange.GetNewState();
+      const dtGame::StateType& state = stateChange.GetNewState();
 
       if (state == NetDemoState::STATE_GAME_RUNNING)
       {

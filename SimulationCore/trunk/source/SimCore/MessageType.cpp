@@ -25,7 +25,6 @@
 #include <SimCore/MessageType.h>
 #include <SimCore/Messages.h>
 #include <SimCore/Components/Conversations/ConversationMessages.h>
-#include <SimCore/Components/GameState/GameStateChangeMessage.h>
 #include <dtGame/messagefactory.h>
 
 namespace SimCore
@@ -77,14 +76,11 @@ namespace SimCore
    const MessageType MessageType::INTERACTION_CHANGED("INTERACTION_CHANGED", "INFO", "Sent when the conversation component has received a new interaction.", USER_DEFINED_MESSAGE_TYPE + 23, DT_MSG_CLASS(InteractionChangedMessage));
    const MessageType MessageType::CONVERSATION_RESPONSE("CONVERSATION_RESPONSE", "INFO", "Sent when the player responds to an interaction.", USER_DEFINED_MESSAGE_TYPE + 24, DT_MSG_CLASS(ConversationResponseMessage));
 
-   // Game state-related messages
-   const MessageType MessageType::GAME_STATE_CHANGED("GAME_STATE_CHANGED", "INFO", "Sent when the game state changes.", USER_DEFINED_MESSAGE_TYPE + 25, DT_MSG_CLASS(GameStateChangedMessage));
-
    // Tool message continued...
    MessageType MessageType::COMPASS_360("Compass360", "Tools", "Compass360", USER_DEFINED_MESSAGE_TYPE + 26, DT_MSG_CLASS(ToolMessage));
 
    ///////////////////////////////////////////////////////////////////////
-   bool MessageType::IsValidToolType(const dtGame::MessageType &type)
+   bool MessageType::IsValidToolType(const dtGame::MessageType& type)
    {
       return type == MessageType::BINOCULARS
          || type == MessageType::COMPASS

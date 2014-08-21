@@ -44,6 +44,7 @@
 namespace dtGame
 {
    class ActorUpdateMessage;
+   class GameStateChangedMessage;
 }
 namespace SimCore
 {
@@ -52,10 +53,6 @@ namespace SimCore
    namespace Actors
    {
       class Platform;
-   }
-   namespace Components
-   {
-      class GameStateChangedMessage;
    }
 }
 
@@ -132,7 +129,7 @@ namespace NetDemo
          void AddTopDownNode(float height, const dtUtil::RefString& nodeName);
 
          void HandleStateChangeMessage(
-            const SimCore::Components::GameStateChangedMessage& stateChange);
+            const dtGame::GameStateChangedMessage& stateChange);
 
          /// Sending in a vehicle will cause an attach, sending NULL will detach
          void SendAttachOrDetachMessage(const dtCore::UniqueId& vehicleId, const std::string& dofName);

@@ -101,7 +101,7 @@ namespace NetDemo
    /////////////////////////////////////////////////////////////////////////////
    typedef SimCore::GUI::SimpleScreen SimpleScreen;
    typedef SimCore::GUI::Screen Screen;
-   typedef SimCore::Components::StateType GameStateType;
+   typedef dtGame::StateType GameStateType;
    typedef NetDemo::GUI::Effects::ButtonHighlight ButtonHighlight;
 
 
@@ -137,7 +137,7 @@ namespace NetDemo
 
          void ProcessActorUpdate(const dtGame::ActorUpdateMessage& updateMessage);
 
-         void ProcessStateChangeMessage(const SimCore::Components::GameStateChangedMessage& stateChange);
+         void ProcessStateChangeMessage(const dtGame::GameStateChangedMessage& stateChange);
 
          void ProcessPlayerStatusUpdate(const PlayerStatusActor& playerStats);
 

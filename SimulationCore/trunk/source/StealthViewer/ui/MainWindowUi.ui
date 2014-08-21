@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1440</width>
-    <height>919</height>
+    <width>1680</width>
+    <height>1002</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,13 +16,16 @@
   <property name="dockNestingEnabled">
    <bool>true</bool>
   </property>
+  <property name="unifiedTitleAndToolBarOnMac">
+   <bool>false</bool>
+  </property>
   <widget class="QWidget" name="centralwidget"/>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1440</width>
+     <width>1680</width>
      <height>22</height>
     </rect>
    </property>
@@ -38,14 +41,15 @@
     <addaction name="separator"/>
     <addaction name="mActionExit"/>
    </widget>
-   <widget class="QMenu" name="mMenuNetwork">
+   <widget class="QMenu" name="mMenuSetup">
     <property name="title">
-     <string>&amp;Network</string>
+     <string>&amp;Setup</string>
     </property>
-    <addaction name="mActionHLAConnections"/>
+    <addaction name="mActionMaps"/>
+    <addaction name="mActionConnections"/>
    </widget>
    <addaction name="mMenuWindow"/>
-   <addaction name="mMenuNetwork"/>
+   <addaction name="mMenuSetup"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QDockWidget" name="mPreferencesDockWidget">
@@ -84,7 +88,7 @@
         <enum>QTabWidget::Rounded</enum>
        </property>
        <property name="currentIndex">
-        <number>3</number>
+        <number>1</number>
        </property>
        <property name="elideMode">
         <enum>Qt::ElideRight</enum>
@@ -119,8 +123,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>388</width>
-              <height>806</height>
+              <width>389</width>
+              <height>891</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -564,8 +568,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>388</width>
-                 <height>806</height>
+                 <width>389</width>
+                 <height>891</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -768,18 +772,18 @@
                      <property name="correctionMode">
                       <enum>QAbstractSpinBox::CorrectToNearestValue</enum>
                      </property>
-                     <property name="displayFormat">
-                      <string>hh:mm:ss</string>
-                     </property>
-                     <property name="calendarPopup">
-                      <bool>true</bool>
-                     </property>
                      <property name="time">
                       <time>
                        <hour>9</hour>
                        <minute>0</minute>
                        <second>0</second>
                       </time>
+                     </property>
+                     <property name="displayFormat">
+                      <string>hh:mm:ss</string>
+                     </property>
+                     <property name="calendarPopup">
+                      <bool>true</bool>
                      </property>
                     </widget>
                    </item>
@@ -855,8 +859,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>394</width>
-              <height>812</height>
+              <width>395</width>
+              <height>897</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -1008,8 +1012,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>394</width>
-              <height>812</height>
+              <width>395</width>
+              <height>897</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout">
@@ -1287,7 +1291,7 @@
         <enum>QTabWidget::Rounded</enum>
        </property>
        <property name="currentIndex">
-        <number>0</number>
+        <number>2</number>
        </property>
        <widget class="QWidget" name="mControlsSearchTab">
         <attribute name="title">
@@ -2263,7 +2267,7 @@
                     <string/>
                    </property>
                    <property name="text">
-                    <string>Loop Continuously</string>
+                    <string>Loop</string>
                    </property>
                   </widget>
                  </item>
@@ -2772,7 +2776,7 @@
            <item row="3" column="0">
             <widget class="QLabel" name="mEntityInfoPositionLabel_MGRS">
              <property name="text">
-              <string>Position</string>
+              <string>PositionMGRS</string>
              </property>
              <property name="buddy">
               <cstring>mEntityInfoPositionMGRS</cstring>
@@ -2792,7 +2796,7 @@
            <item row="4" column="0">
             <widget class="QLabel" name="mEntityInfoPositionLabel_LatLon">
              <property name="text">
-              <string>Position</string>
+              <string>Lat/Lon/Elev</string>
              </property>
              <property name="buddy">
               <cstring>mEntityInfoPositionMGRS</cstring>
@@ -2801,13 +2805,6 @@
            </item>
            <item row="4" column="1">
             <layout class="QHBoxLayout">
-             <item>
-              <widget class="QLabel" name="mEntityInfoPos_LatLabel">
-               <property name="text">
-                <string>Lat</string>
-               </property>
-              </widget>
-             </item>
              <item>
               <widget class="QLineEdit" name="mEntityInfoPosLatEdit">
                <property name="toolTip">
@@ -2819,26 +2816,12 @@
               </widget>
              </item>
              <item>
-              <widget class="QLabel" name="mEntityInfoPos_LonLabel">
-               <property name="text">
-                <string>Lon</string>
-               </property>
-              </widget>
-             </item>
-             <item>
               <widget class="QLineEdit" name="mEntityInfoPosLonEdit">
                <property name="toolTip">
                 <string>The longitude of the entity (East-West)</string>
                </property>
                <property name="readOnly">
                 <bool>true</bool>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="mEntityInfoPos_ElevLLLabel">
-               <property name="text">
-                <string>Elev</string>
                </property>
               </widget>
              </item>
@@ -2857,7 +2840,7 @@
            <item row="5" column="0">
             <widget class="QLabel" name="mEntityInfoPositionLabel_XYZ">
              <property name="text">
-              <string>Position</string>
+              <string>Position XYZ</string>
              </property>
              <property name="buddy">
               <cstring>mEntityInfoPositionMGRS</cstring>
@@ -2866,13 +2849,6 @@
            </item>
            <item row="5" column="1">
             <layout class="QHBoxLayout">
-             <item>
-              <widget class="QLabel" name="mEntityInfoPos_XLabel">
-               <property name="text">
-                <string>X</string>
-               </property>
-              </widget>
-             </item>
              <item>
               <widget class="QLineEdit" name="mEntityInfoPosXEdit">
                <property name="toolTip">
@@ -2884,26 +2860,12 @@
               </widget>
              </item>
              <item>
-              <widget class="QLabel" name="mEntityInfoPos_YLabel">
-               <property name="text">
-                <string>Y</string>
-               </property>
-              </widget>
-             </item>
-             <item>
               <widget class="QLineEdit" name="mEntityInfoPosYEdit">
                <property name="toolTip">
                 <string>The Y position of the entity (meters in world coordinates)</string>
                </property>
                <property name="readOnly">
                 <bool>true</bool>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="mEntityInfoPos_ZLabel">
-               <property name="text">
-                <string>Z</string>
                </property>
               </widget>
              </item>
@@ -2922,19 +2884,12 @@
            <item row="6" column="0">
             <widget class="QLabel" name="mEntityInfoRotationLabel">
              <property name="text">
-              <string>Rotation</string>
+              <string>Rotation HPR</string>
              </property>
             </widget>
            </item>
            <item row="6" column="1">
             <layout class="QHBoxLayout">
-             <item>
-              <widget class="QLabel" name="mEntityInfoRot_HeadLabel">
-               <property name="text">
-                <string>H</string>
-               </property>
-              </widget>
-             </item>
              <item>
               <widget class="QLineEdit" name="mEntityInfoRotHeadEdit">
                <property name="toolTip">
@@ -2946,26 +2901,12 @@
               </widget>
              </item>
              <item>
-              <widget class="QLabel" name="mEntityInfoRot_PitchLabel">
-               <property name="text">
-                <string>P</string>
-               </property>
-              </widget>
-             </item>
-             <item>
               <widget class="QLineEdit" name="mEntityInfoRotPitchEdit">
                <property name="toolTip">
                 <string>The pitch of the entity (in degrees)</string>
                </property>
                <property name="readOnly">
                 <bool>true</bool>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="mEntityInfoRot_RollLabel">
-               <property name="text">
-                <string>R</string>
                </property>
               </widget>
              </item>
@@ -3179,12 +3120,12 @@
     <string>Window</string>
    </property>
   </action>
-  <action name="mActionHLAConnections">
+  <action name="mActionConnections">
    <property name="text">
-    <string>Connection ...</string>
+    <string>Connections...</string>
    </property>
    <property name="toolTip">
-    <string>Connect to, Disconnect from, or Edit Network Connections</string>
+    <string>Connect, Disconnect, or Edit Network Configuration</string>
    </property>
   </action>
   <action name="mActionFullScreen">
@@ -3242,6 +3183,11 @@
   <action name="mActionExit">
    <property name="text">
     <string>E&amp;xit</string>
+   </property>
+  </action>
+  <action name="mActionMaps">
+   <property name="text">
+    <string>Maps...</string>
    </property>
   </action>
  </widget>
