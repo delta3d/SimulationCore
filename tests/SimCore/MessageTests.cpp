@@ -287,6 +287,11 @@ class MessageTests : public CPPUNIT_NS::TestFixture
          }
       }
 
+      void TestAttachToActorMessageNAN()
+      {
+
+      }
+
       void TestAttachToActorMessageNoSubNode()
       {
          TestAttachToActorMessage(false);
@@ -304,7 +309,7 @@ class MessageTests : public CPPUNIT_NS::TestFixture
             RefPtr<dtGame::Message> msg = mGM->GetMessageFactory().CreateMessage(SimCore::MessageType::ATTACH_TO_ACTOR);
             CPPUNIT_ASSERT(msg.valid());
 
-            SimCore::AttachToActorMessage *aam = static_cast<SimCore::AttachToActorMessage*>(msg.get());
+            SimCore::AttachToActorMessage* aam = static_cast<SimCore::AttachToActorMessage*>(msg.get());
 
             dtCore::UniqueId id;
 
@@ -314,11 +319,11 @@ class MessageTests : public CPPUNIT_NS::TestFixture
             aam->SetAttachToActor(dtCore::UniqueId(""));
             CPPUNIT_ASSERT(aam->GetAttachToActor().ToString().empty());
 
-            RefPtr<SimCore::Actors::PlatformActorProxy> t80Proxy;
-            mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE, t80Proxy);
-            CPPUNIT_ASSERT(t80Proxy.valid());
-            RefPtr<SimCore::Actors::BaseEntity> t80Actor = dynamic_cast<SimCore::Actors::BaseEntity*>(t80Proxy->GetDrawable());
+            RefPtr<SimCore::Actors::PlatformActorProxy> t80Actor;
+            mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE, t80Actor);
             CPPUNIT_ASSERT(t80Actor.valid());
+            RefPtr<SimCore::Actors::BaseEntity> t80 = dynamic_cast<SimCore::Actors::BaseEntity*>(t80Actor->GetDrawable());
+            CPPUNIT_ASSERT(t80.valid());
 
             if (useSubNode)
             {
@@ -326,7 +331,7 @@ class MessageTests : public CPPUNIT_NS::TestFixture
 
                CPPUNIT_ASSERT_NO_THROW_MESSAGE("The T80 Model does not exist", dtCore::Project::GetInstance().GetResourcePath(modelFile));
 
-               t80Proxy->SetNonDamagedResource(modelFile);
+               t80Actor->SetNonDamagedResource(modelFile);
             }
 
             RefPtr<SimCore::Actors::StealthActorProxy> playerProxy;
@@ -335,11 +340,11 @@ class MessageTests : public CPPUNIT_NS::TestFixture
             RefPtr<SimCore::Actors::StealthActor> playerActor = dynamic_cast<SimCore::Actors::StealthActor*>(playerProxy->GetDrawable());
             CPPUNIT_ASSERT(playerActor.valid());
 
-            mGM->AddActor(*t80Proxy, true, false);
+            mGM->AddActor(*t80Actor, true, false);
             mGM->AddActor(*playerProxy, false, false);
 
             dtCore::Transform someOtherPosition(1888.8, 1776, 1134.4311);
-            t80Actor->SetTransform(someOtherPosition, dtCore::Transformable::REL_CS);
+            t80->SetTransform(someOtherPosition, dtCore::Transformable::REL_CS);
 
             dtCore::Transform originalTransform;
             playerActor->GetTransform(originalTransform);
@@ -348,7 +353,7 @@ class MessageTests : public CPPUNIT_NS::TestFixture
             mGM->GetMessageFactory().CreateMessage(SimCore::MessageType::ATTACH_TO_ACTOR, atamsg);
             CPPUNIT_ASSERT(atamsg.valid());
             atamsg->SetAboutActorId(playerActor->GetUniqueId());
-            atamsg->SetAttachToActor(t80Actor->GetUniqueId());
+            atamsg->SetAttachToActor(t80->GetUniqueId());
 
             const std::string parentSubNodeName("dof_gun_01");
             if (useSubNode)
@@ -367,7 +372,7 @@ class MessageTests : public CPPUNIT_NS::TestFixture
 
             dtCore::Transform newTransform, tankTransform;
             playerActor->GetTransform(newTransform);
-            t80Actor->GetTransform(tankTransform);
+            t80->GetTransform(tankTransform);
 
             osg::Vec3 playerPos, newPos, tankPos, tankRot;
             originalTransform.GetTranslation(playerPos);
@@ -378,7 +383,7 @@ class MessageTests : public CPPUNIT_NS::TestFixture
 
             if (useSubNode)
             {
-               dtCore::RefPtr<dtUtil::NodeCollector> nc = new dtUtil::NodeCollector(t80Actor->GetOSGNode(), dtUtil::NodeCollector::DOFTransformFlag);
+               dtCore::RefPtr<dtUtil::NodeCollector> nc = new dtUtil::NodeCollector(t80->GetOSGNode(), dtUtil::NodeCollector::DOFTransformFlag);
                osg::Group* group = nc->GetDOFTransform(parentSubNodeName);
                CPPUNIT_ASSERT_MESSAGE("The dof node \"" + parentSubNodeName +
                         "\" should exist on the model, or the test won't work..", group != NULL);
