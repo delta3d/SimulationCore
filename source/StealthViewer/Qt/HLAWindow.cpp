@@ -53,7 +53,7 @@ namespace StealthQt
       mUi(new Ui::HLAWindow),
       mIsConnected(isConnected),
       mHLAComp(NULL),
-      mCurrentConnectionName(currentConnectionName),
+      mCurrentConnectionName(isConnected ? currentConnectionName : QString()),
       mCancelConnectProcess(false)
    {
       mUi->setupUi(this);
@@ -85,7 +85,12 @@ namespace StealthQt
       mUi->mReconnectOnStartupCheckBox->setChecked(connect);
 
       //automatically select the first item in the network list, if there is one
-      if (mUi->mNetworkListWidget->item(0))
+      QList<QListWidgetItem *> connectionMatches = mUi->mNetworkListWidget->findItems(currentConnectionName, Qt::MatchFixedString);
+      if (!connectionMatches.isEmpty())
+      {
+         mUi->mNetworkListWidget->setCurrentItem(connectionMatches.first());
+      }
+      else if (mUi->mNetworkListWidget->item(0))
       {
          mUi->mNetworkListWidget->setCurrentItem(mUi->mNetworkListWidget->item(0));
       }
@@ -165,20 +170,21 @@ namespace StealthQt
       mUi->mCurrentConnectionLineEdit->setText(currentItem->text());
       mCurrentConnectionName = currentItem->text();
 
-      QString fedEx = currentItem->text();
+      QString connectionName = currentItem->text();
 
       QStringList props =
-         StealthViewerData::GetInstance().GetSettings().GetConnectionProperties(fedEx);
+         StealthViewerData::GetInstance().GetSettings().GetConnectionProperties(connectionName);
 
-      SetConnectionValues(props);
-
-      mIsConnected = true;
+      mIsConnected = SetConnectionValues(props);
 
       mUi->mDisconnectPushButton->setEnabled( mIsConnected );
       mUi->mConnectPushButton->setEnabled( ! mIsConnected );
 
-      // connect to network
-      OnClose();
+      if (mIsConnected)
+      {
+         // connect to network
+         OnClose();
+      }
 
       accept();
    }
@@ -191,7 +197,7 @@ namespace StealthQt
       int result = QMessageBox::question(this, tr("Confirm Disconnection"),
          tr("Are you sure you want to disconnect?"), QMessageBox::Yes, QMessageBox::No);
 
-      if(result == QMessageBox::Yes)
+      if (result == QMessageBox::Yes)
       {
          // Disconnect from network
          if(mHLAComp != NULL)
@@ -200,8 +206,6 @@ namespace StealthQt
          }
 
          // Disable applicable buttons
-         mUi->mCurrentConnectionLineEdit->setText("None");
-         mCurrentConnectionName = mUi->mCurrentConnectionLineEdit->text();
          mUi->mDisconnectPushButton->setEnabled(false);
          mUi->mConnectPushButton->setEnabled(true);
 
@@ -213,7 +217,20 @@ namespace StealthQt
 
          mIsConnected = false;
 
-         emit DisconnectedFromNetwork();
+         bool mapsUnloaded = true;
+         if (!mCurrentConnectionName.isEmpty())
+         {
+            QStringList props = StealthViewerData::GetInstance().GetSettings().GetConnectionProperties(mCurrentConnectionName);
+            QString map;
+            if (props.length() > 1)
+                map = props[1];
+            mapsUnloaded = !map.isEmpty();
+         }
+
+         mUi->mCurrentConnectionLineEdit->setText("None");
+         mCurrentConnectionName = mUi->mCurrentConnectionLineEdit->text();
+
+         emit DisconnectedFromNetwork(mapsUnloaded);
       }
       else
       {
@@ -227,7 +244,7 @@ namespace StealthQt
    {
       // Write the reconnect property to the settings file
       // This way it is updated whenever a new HLAWindow was closed
-      StealthGM::PreferencesGeneralConfigObject &genConfig =
+      StealthGM::PreferencesGeneralConfigObject& genConfig =
          StealthViewerData::GetInstance().GetGeneralConfigObject();
 
       genConfig.SetReconnectOnStartup(mUi->mReconnectOnStartupCheckBox->isChecked(),
@@ -293,7 +310,7 @@ namespace StealthQt
          return;
       }
 
-      StealthViewerSettings &settings = StealthViewerData::GetInstance().GetSettings();
+      StealthViewerSettings& settings = StealthViewerData::GetInstance().GetSettings();
       settings.RemoveConnection(currentItem->text());
    }
 
@@ -301,13 +318,14 @@ namespace StealthQt
    void HLAWindow::OnListItemDeleted(QString name)
    {
       mUi->mNetworkListWidget->clear();
-      StealthViewerSettings &settings = StealthViewerData::GetInstance().GetSettings();
+      StealthViewerSettings& settings = StealthViewerData::GetInstance().GetSettings();
       mUi->mNetworkListWidget->addItems(settings.GetConnectionNames());
    }
 
    //////////////////////////////////////////////////////////////
-   void HLAWindow::SetConnectionValues(QStringList& properties)
+   bool HLAWindow::SetConnectionValues(QStringList& properties)
    {
+      bool result = false;
       try
       {
          dtCore::Project& project = dtCore::Project::GetInstance();
@@ -316,7 +334,7 @@ namespace StealthQt
 
          std::string connectionType = properties[8].toStdString();
 
-         if(mHLAComp != NULL)
+         if (mHLAComp != NULL)
          {
             std::string map = properties[1].toStdString();
             if (!map.empty())
@@ -382,27 +400,36 @@ namespace StealthQt
             {
                mHLAComp->StartNetworkConnection();
             }
-            catch(const dtUtil::Exception &e)
+            catch(const dtUtil::Exception& e)
             {
                QMessageBox::warning(this, tr("Error"),
                   tr("An error occurred while trying to connect to the network: ") +
                   tr(e.What().c_str()), QMessageBox::Ok);
             }
 
-            emit ConnectedToNetwork(properties[0]);
+            if (mHLAComp->GetConnectionState() != SimCore::HLA::HLAConnectionComponent::ConnectionState::STATE_NOT_CONNECTED)
+            {
+               result = true;
+               emit ConnectedToNetwork(properties[0]);
+            }
+            else
+            {
+               result = false;
+               emit ConnectedToNetworkFailed(properties[0]);
+            }
          }
       }
-      catch(const dtUtil::Exception &ex)
+      catch(const dtUtil::Exception& ex)
       {
          QMessageBox::warning(this, tr("Error"),
                tr("Error searching for network resource files. Unable to connect to the network: ") + tr(ex.ToString().c_str()),
                QMessageBox::Ok);
-         return;
       }
+      return result;
    }
 
    //////////////////////////////////////////////////////////////
-   void HLAWindow::OnCurrentTextChanged(const QString &str)
+   void HLAWindow::OnCurrentTextChanged(const QString& str)
    {
       mUi->mConnectPushButton->setEnabled(!str.isEmpty() && !mIsConnected);
       //mUi->mDisconnectPushButton->setEnabled(mIsConnected);
@@ -411,7 +438,7 @@ namespace StealthQt
    }
 
    //////////////////////////////////////////////////////////////
-   void HLAWindow::OnListItemActivated(QListWidgetItem *item)
+   void HLAWindow::OnListItemActivated(QListWidgetItem* item)
    {
       if(item != NULL)
       {

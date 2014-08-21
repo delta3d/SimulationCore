@@ -231,9 +231,9 @@ namespace NetDemo
       {
          Update(static_cast<const dtGame::TickMessage&>(message).GetDeltaRealTime());
       }
-      else if(messageType == SimCore::MessageType::GAME_STATE_CHANGED)
+      else if(messageType == dtGame::MessageType::INFO_GAME_STATE_CHANGED)
       {
-         ProcessStateChangeMessage(static_cast<const SimCore::Components::GameStateChangedMessage&>(message));
+         ProcessStateChangeMessage(static_cast<const dtGame::GameStateChangedMessage&>(message));
       }
       else if(messageType == NetDemo::MessageType::UI_OPTION_NEXT)
       {
@@ -449,7 +449,7 @@ namespace NetDemo
    }
 
    /////////////////////////////////////////////////////////////////////////////
-   void GUIComponent::ProcessStateChangeMessage(const SimCore::Components::GameStateChangedMessage& stateChange)
+   void GUIComponent::ProcessStateChangeMessage(const dtGame::GameStateChangedMessage& stateChange)
    {
       const GameStateType& state = stateChange.GetNewState();
 
@@ -858,8 +858,7 @@ namespace NetDemo
 
       if(success)
       {
-         using namespace SimCore::Components;
-         GameState* gameState = GetAppComponent()->GetState(&state);
+         dtGame::GameState* gameState = GetAppComponent()->GetState(&state);
          if(gameState != NULL)
          {
             typedef dtUtil::Functor<void,TYPELIST_0()> VoidFunc;

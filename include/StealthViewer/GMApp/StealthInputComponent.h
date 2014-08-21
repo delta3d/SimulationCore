@@ -152,6 +152,11 @@ namespace StealthGM
    private:
       void HandleHelpPressed();
       StealthHUD* GetHUDComponent();
+      void FindTerrain();
+      void FindCoordConfig();
+      void ResetStealthActor();
+      void OnTickLocal(const dtGame::TickMessage& tick);
+
 
       dtCore::RefPtr<SimCore::StealthMotionModel> mStealthMM;
 

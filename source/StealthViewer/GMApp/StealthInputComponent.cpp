@@ -196,6 +196,36 @@ namespace StealthGM
    }
 
    ///////////////////////////////////////////////////////////////////////////
+   void StealthInputComponent::OnTickLocal(const dtGame::TickMessage& tick)
+   {
+      UpdateTools( tick.GetDeltaSimTime() );
+      HandlePeriodicProcessing(tick.GetDeltaSimTime());
+
+      if (mTicksToLogStateChange > 0 )
+      {
+         mTicksToLogStateChange--;
+         if (mTicksToLogStateChange == 0 )
+         {
+            ChangeAARState( *mTargetLogState );
+         }
+      }
+
+      // A playback ended a few ticks ago, and we are in looping mode, so we are going to start over.
+      if (mTicksToRestartPlayback > 0)
+      {
+         mTicksToRestartPlayback--;
+
+         // If still in playback, then jump to first keyframe and start over.
+         if (mTicksToRestartPlayback == 0 && mLoopContinuouslyInPlayback &&
+            mLogController->GetLastKnownStatus().GetStateEnum() == dtGame::LogStateEnumeration::LOGGER_STATE_PLAYBACK)
+         {
+            GotoFirstKeyframe();
+         }
+      }
+
+   }
+
+   ///////////////////////////////////////////////////////////////////////////
    void StealthInputComponent::ProcessMessage(const dtGame::Message& message)
    {
       const dtGame::MessageType& msgType = message.GetMessageType();
@@ -203,32 +233,7 @@ namespace StealthGM
       // TICK LOCAL
       if (msgType == dtGame::MessageType::TICK_LOCAL)
       {
-
-         const dtGame::TickMessage& tick = static_cast<const dtGame::TickMessage&>(message);
-         UpdateTools( tick.GetDeltaSimTime() );
-         HandlePeriodicProcessing(tick.GetDeltaSimTime());
-
-         if (mTicksToLogStateChange > 0 )
-         {
-            mTicksToLogStateChange--;
-            if (mTicksToLogStateChange == 0 )
-            {
-               ChangeAARState( *mTargetLogState );
-            }
-         }
-
-         // A playback ended a few ticks ago, and we are in looping mode, so we are going to start over.  
-         if (mTicksToRestartPlayback > 0)
-         {
-            mTicksToRestartPlayback--;
-
-            // If still in playback, then jump to first keyframe and start over.
-            if (mTicksToRestartPlayback == 0 && mLoopContinuouslyInPlayback && 
-               mLogController->GetLastKnownStatus().GetStateEnum() == dtGame::LogStateEnumeration::LOGGER_STATE_PLAYBACK)
-            {
-               GotoFirstKeyframe();
-            }
-         }
+         OnTickLocal(static_cast<const dtGame::TickMessage&>(message));
       }
       // A Local Player entered world, so create our motion models
 //      else if (msgType == dtGame::MessageType::INFO_PLAYER_ENTERED_WORLD &&
@@ -276,77 +281,15 @@ namespace StealthGM
                GetComponentByName("LogController")); // "ServerLoggerComponent"
          }
       }
-      // Logging server rejected a message request - print it.
-      else if (mEnableLogging && msgType == dtGame::MessageType::SERVER_REQUEST_REJECTED)
-      {
-         std::string messageError;
-         message.ToString(messageError);
-         LOG_ALWAYS("   Reject Message[" + messageError + "].");
-      }
       else if (msgType == dtGame::MessageType::INFO_MAP_UNLOADED)
       {
          mTerrainActor = NULL;
       }
       else if (msgType == dtGame::MessageType::INFO_MAP_LOADED)
       {
-         dtGame::GameManager& gameManager = *GetGameManager();
-         const dtGame::MapMessage& mlm = static_cast<const dtGame::MapMessage&>(message);
-         dtGame::GameManager::NameVector mapNames;
-         mlm.GetMapNames(mapNames);
-
-         std::vector<dtCore::ActorProxy*> actors;
-         // TODO make a constant for this.
-         gameManager.FindActorsByName("Terrain", actors);
-         if (!actors.empty())
-         {
-            ValidateAndSetTerrainActor(actors[0]);
-         }
-
-         // Avoid deleting the Coordinate Config Actor
-         actors.clear();
-         const dtCore::ActorType *type = gameManager.FindActorType("dtutil", "Coordinate Config");
-         gameManager.FindActorsByType(*type, actors);
-         if (!actors.empty() && mLogController.valid())
-         {
-            RefPtr<dtCore::ActorProxy> proxy = actors[0];
-            mLogController->RequestAddIgnoredActor(proxy->GetId());
-         }
-
-         if (GetStealthActor() == NULL || !mStealthActorProxy.valid())
-         {
-            dtCore::RefPtr<dtCore::BaseActorObject> proxy;
-            std::vector<dtCore::ActorProxy*> proxies;
-
-            gameManager.FindPrototypesByActorType(*SimCore::Actors::EntityActorRegistry::STEALTH_ACTOR_TYPE, proxies);
-            if (proxies.empty())
-            {
-               //create one by default
-               proxy = gameManager.CreateActor(*SimCore::Actors::EntityActorRegistry::STEALTH_ACTOR_TYPE);
-            }
-            else
-            {
-               proxy = gameManager.CreateActorFromPrototype(proxies[0]->GetId());
-            }
-
-            mStealthActorProxy = static_cast<SimCore::Actors::StealthActorProxy*> (proxy.get());
-
-            SetStealthActor(static_cast<SimCore::Actors::StealthActor*>(mStealthActorProxy->GetDrawable()));
-         
-         }
-
-         // Re-add the stealth actor to the game manager since a map unload
-         // will have already removed it from the game manager. This assumes
-         // load map has been called after an unload map procedure.
-         if (mStealthActorProxy.valid() )
-         {
-            gameManager.AddActor( *mStealthActorProxy, false, false);
-         }
-
-         // After map is loaded, we could set the base elevation - default is 0, which is fine.
-         //SimCore::Components::WeatherComponent* weatherComp = static_cast<SimCore::Components::WeatherComponent*>
-         //   (GetGameManager()->GetComponentByName(SimCore::WeatherComponent::DEFAULT_NAME));
-         //if (weatherComp != NULL)
-         //   weatherComp->SetBaseElevation(600.0f);
+         FindTerrain();
+         FindCoordConfig();
+         ResetStealthActor();
       }
 
       else if (msgType == dtGame::MessageType::LOG_INFO_PLAYBACK_END_OF_MESSAGES)
@@ -358,6 +301,83 @@ namespace StealthGM
       {
          if (mStealthMM.valid()) mStealthMM->ResetOffset();
       }
+      // Logging server rejected a message request - print it.
+      else if (mEnableLogging && msgType == dtGame::MessageType::SERVER_REQUEST_REJECTED)
+      {
+         std::string messageError;
+         message.ToString(messageError);
+         LOG_ALWAYS("   Reject Message[" + messageError + "].");
+      }
+   }
+
+   ////////////////////////////////////////////////////////////////////////
+   void StealthInputComponent::FindTerrain()
+   {
+      dtGame::GameManager& gameManager = *GetGameManager();
+      std::vector<dtCore::ActorProxy*> actors;
+      // TODO make a constant for this.
+      gameManager.FindActorsByName("Terrain", actors);
+      if (!actors.empty())
+      {
+         ValidateAndSetTerrainActor(actors[0]);
+      }
+   }
+
+   ////////////////////////////////////////////////////////////////////////
+   void StealthInputComponent::FindCoordConfig()
+   {
+      dtGame::GameManager& gameManager = *GetGameManager();
+      // Avoid deleting the Coordinate Config Actor
+      std::vector<dtCore::ActorProxy*> actors;
+      const dtCore::ActorType *type = gameManager.FindActorType("dtutil", "Coordinate Config");
+      gameManager.FindActorsByType(*type, actors);
+      if (!actors.empty() && mLogController.valid())
+      {
+         RefPtr<dtCore::ActorProxy> proxy = actors[0];
+         mLogController->RequestAddIgnoredActor(proxy->GetId());
+      }
+   }
+
+   ////////////////////////////////////////////////////////////////////////
+   void StealthInputComponent::ResetStealthActor()
+   {
+      dtGame::GameManager& gameManager = *GetGameManager();
+
+      if (GetStealthActor() == NULL || !mStealthActorProxy.valid())
+      {
+         dtCore::RefPtr<dtCore::BaseActorObject> proxy;
+         std::vector<dtCore::ActorProxy*> proxies;
+
+         gameManager.FindPrototypesByActorType(*SimCore::Actors::EntityActorRegistry::STEALTH_ACTOR_TYPE, proxies);
+         if (proxies.empty())
+         {
+            //create one by default
+            proxy = gameManager.CreateActor(*SimCore::Actors::EntityActorRegistry::STEALTH_ACTOR_TYPE);
+         }
+         else
+         {
+            proxy = gameManager.CreateActorFromPrototype(proxies[0]->GetId());
+         }
+
+         mStealthActorProxy = static_cast<SimCore::Actors::StealthActorProxy*> (proxy.get());
+
+         SetStealthActor(static_cast<SimCore::Actors::StealthActor*>(mStealthActorProxy->GetDrawable()));
+
+      }
+
+      // Re-add the stealth actor to the game manager since a map unload
+      // will have already removed it from the game manager. This assumes
+      // load map has been called after an unload map procedure.
+      if (mStealthActorProxy.valid() )
+      {
+         gameManager.AddActor( *mStealthActorProxy, false, false);
+      }
+
+      // After map is loaded, we could set the base elevation - default is 0, which is fine.
+      //SimCore::Components::WeatherComponent* weatherComp = static_cast<SimCore::Components::WeatherComponent*>
+      //   (GetGameManager()->GetComponentByName(SimCore::WeatherComponent::DEFAULT_NAME));
+      //if (weatherComp != NULL)
+      //   weatherComp->SetBaseElevation(600.0f);
    }
 
    ////////////////////////////////////////////////////////////////////////

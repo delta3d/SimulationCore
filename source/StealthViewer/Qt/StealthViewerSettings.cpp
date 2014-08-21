@@ -199,7 +199,7 @@ namespace StealthQt
       const QString& actorXMLFile, bool isEditMode)
    {
       // CONNECTION values
-      if (name.isEmpty() || mapResource.isEmpty() || connectionType.isEmpty()) 
+      if (name.isEmpty() || connectionType.isEmpty())
       {
          std::string error = "Could not add the current connection [" + name.toStdString() + "] because it contained empty data.";
          LOG_ERROR(error);

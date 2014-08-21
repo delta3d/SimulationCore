@@ -39,9 +39,6 @@ file(GLOB LIB_PUBLIC_HEADERS_5
 file(GLOB LIB_PUBLIC_HEADERS_6 
    "${HEADER_PATH}/Components/Conversations/*.h"
    )
-file(GLOB LIB_PUBLIC_HEADERS_7 
-   "${HEADER_PATH}/Components/GameState/*.h"
-   )
 file(GLOB LIB_PUBLIC_HEADERS_8 
    "${HEADER_PATH}/ActComps/*.h"
    )
@@ -189,12 +186,6 @@ set( LIB_SOURCES_6
    "${SOURCE_PATH}/Components/Conversations/ConversationMessages.cpp"
    "${SOURCE_PATH}/Components/Conversations/Interaction.cpp"
    "${SOURCE_PATH}/Components/Conversations/Response.cpp"
-   )
-set( LIB_SOURCES_7 
-   "${SOURCE_PATH}/Components/GameState/GameState.cpp"
-   "${SOURCE_PATH}/Components/GameState/GameStateChangeMessage.cpp"
-   "${SOURCE_PATH}/Components/GameState/GameStateComponent.cpp"
-   "${SOURCE_PATH}/Components/GameState/TransitionXMLHandler.cpp"
    )
 set( LIB_SOURCES_8 
    "${SOURCE_PATH}/ActComps/AbstractWheeledVehicleInputActComp.cpp"

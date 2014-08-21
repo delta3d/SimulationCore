@@ -69,7 +69,7 @@ namespace StealthQt
          virtual ~HLAWindow();
 
          /// Connects to HLA
-         void SetConnectionValues(QStringList &properties);
+         bool SetConnectionValues(QStringList& properties);
 
          /// This exists mainly for the unit tests;
          QListWidget* GetNetworkListWidget();
@@ -77,8 +77,9 @@ namespace StealthQt
       signals:
 
          void ConnectedToNetwork(QString connectionName);
+         void ConnectedToNetworkFailed(QString connectionName);
 
-         void DisconnectedFromNetwork();
+         void DisconnectedFromNetwork(bool mapsUnloaded);
 
       protected slots:
 
