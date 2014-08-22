@@ -168,16 +168,22 @@ namespace SimCore
          BBVisitor bbv;
          mEphemerisModel->traverse(bbv);
 
+         BindShader("EphemerisGroup", mEphemerisModel.get());
+         BindShader("EphemerisFogGroup", mFogSphere.get());
 
-         dtCore::ShaderManager::GetInstance().UnassignShaderFromNode(*mFogSphere.get());
+      }
+
+      void EphemerisEnvironmentActor::BindShader(const std::string& shader, osg::Node* g)
+      {
+
+         dtCore::ShaderManager::GetInstance().UnassignShaderFromNode(*g);
 
          //First get the shader group assigned to this actor.
-         const dtCore::ShaderGroup *shaderGroup =
-         dtCore::ShaderManager::GetInstance().FindShaderGroupPrototype("EphemerisFogGroup");
+         const dtCore::ShaderGroup *shaderGroup = dtCore::ShaderManager::GetInstance().FindShaderGroupPrototype(shader);
 
          if (shaderGroup == NULL)
          {
-            LOG_INFO("Could not find shader group EphemerisFogGroup");
+            LOG_INFO("Could not find shader group");
             return;
          }
 
@@ -187,7 +193,7 @@ namespace SimCore
          {
             if (defaultShader != NULL)
             {
-               dtCore::ShaderManager::GetInstance().AssignShaderFromPrototype(*defaultShader, *mFogSphere.get());
+               dtCore::ShaderManager::GetInstance().AssignShaderFromPrototype(*defaultShader, *g);
             }
             else
             {
@@ -199,6 +205,7 @@ namespace SimCore
             LOG_WARNING("Caught Exception while assigning shader: " + e.ToString());
          }
       }
+
 
       /////////////////////////////////////////////////////////////
       void EphemerisEnvironmentActor::SetEphemerisFog(bool fog_toggle)

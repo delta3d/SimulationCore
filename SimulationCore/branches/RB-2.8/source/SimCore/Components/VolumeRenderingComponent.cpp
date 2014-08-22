@@ -31,6 +31,7 @@
 #include <dtUtil/mathdefines.h>
 #include <dtUtil/noisetexture.h>
 #include <dtUtil/nodemask.h>
+#include <dtUtil/cullmask.h>
 
 #include <dtABC/application.h>
 //#include <dtCore/deltawin.h>
@@ -336,7 +337,7 @@ namespace SimCore
       //CreateDepthPrePass("sceneDepth", 16, 16);
       GetGameManager()->GetScene().GetSceneNode()->addChild(mRootNode.get());
 
-      mRootNode->setNodeMask(dtUtil::NodeMask::TRANSPARENT_EFFECTS);
+      mRootNode->setNodeMask(dtUtil::NodeMask::VOLUMETRIC_EFFECTS );
 
       CreateNoiseTexture();
 
@@ -1221,7 +1222,7 @@ namespace SimCore
 
       mDepthCamera->GetOSGCamera()->setRenderOrder(osg::Camera::PRE_RENDER);
       mDepthCamera->GetOSGCamera()->setClearMask(GL_DEPTH_BUFFER_BIT);
-      mDepthCamera->GetOSGCamera()->setCullMask(dtUtil::NodeMask::ADDITIONAL_CAMERA_CULL_MASK);
+      mDepthCamera->GetOSGCamera()->setCullMask(dtUtil::CullMask::ADDITIONAL_CAMERA_MASK);
       mDepthCamera->GetOSGCamera()->setClearColor(osg::Vec4(0.0, 0.0, 1.0, 1.0));
 
       mDepthTextureUniform = new osg::Uniform(osg::Uniform::SAMPLER_2D, "depthTexture");
