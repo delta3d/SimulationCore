@@ -70,6 +70,7 @@ std::string MoonModel::_vertexShaderProgram =
     //"const float diffuseCoeff = 0.7;"
 
 std::string MoonModel::_fragmentShaderProgram = 
+    "#version 120\n"
     "uniform sampler2D baseMap;"
     "uniform sampler2D normalMap;"
     "uniform float d3d_SceneLuminance = 1.0;"
