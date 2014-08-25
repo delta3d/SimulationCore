@@ -24,7 +24,8 @@
 #define _UNIFORM_ATMOSPHERE_ACTOR_H_
 
 #include <SimCore/Export.h>
-#include <SimCore/Actors/AtmosphereActor.h>
+#include <SimCore/Actors/AtmosphereData.h>
+#include <dtGame/gameactorproxy.h>
 #include <osg/Vec2>
 
 namespace SimCore
@@ -34,12 +35,15 @@ namespace SimCore
       //////////////////////////////////////////////////////////
       // Actor code
       //////////////////////////////////////////////////////////
-      class SIMCORE_EXPORT UniformAtmosphereActor : public AtmosphereActor
+      class SIMCORE_EXPORT UniformAtmosphereActor : public dtGame::GameActorProxy
       {
       public:
 
          /// Constructor
-         UniformAtmosphereActor(dtGame::GameActorProxy& parent);
+         UniformAtmosphereActor();
+
+         /*override*/ void BuildPropertyMap();
+
 
          void SetVisibilityDistance( float distance ) { mVisibility = distance; }
          float GetVisibilityDistance() const { return mVisibility; }
@@ -88,6 +92,8 @@ namespace SimCore
          /// Destructor
          virtual ~UniformAtmosphereActor();
 
+         virtual void CreateDrawable();
+
       private:
 
          // Note: All numeric values are assumed to be metric
@@ -106,31 +112,6 @@ namespace SimCore
          PrecipitationType* mPrecipType;
 
          osg::Vec2 mWindSpeed;   // m/s
-
-      };
-
-      //////////////////////////////////////////////////////////
-      // Proxy code
-      //////////////////////////////////////////////////////////
-      class SIMCORE_EXPORT UniformAtmosphereActorProxy : public AtmosphereActorProxy
-      {
-      public:
-
-         /// Constructor
-         UniformAtmosphereActorProxy();
-
-         /// Adds the properties associated with this actor
-         virtual void BuildPropertyMap();
-
-         /// Creates the actor
-         void CreateDrawable() { SetDrawable(*new UniformAtmosphereActor(*this)); }
-
-      protected:
-
-         /// Destructor
-         virtual ~UniformAtmosphereActorProxy();
-
-      private:
 
       };
    }

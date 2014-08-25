@@ -70,7 +70,7 @@ namespace StealthGM
          return;
 
       SimCore::Components::WeatherComponent& weatherComp = static_cast<SimCore::Components::WeatherComponent&>(*component);
-      SimCore::Actors::UniformAtmosphereActorProxy* atmosphereProxy = weatherComp.GetAtmosphereActor();
+      SimCore::Actors::UniformAtmosphereActor* atmosphere = weatherComp.GetAtmosphereActor();
       SimCore::Actors::DayTimeActorProxy* dayTimeProxy = weatherComp.GetDayTimeActor();
       SimCore::Actors::IGEnvironmentActor* igEnv = weatherComp.GetEphemerisEnvironment();
 
@@ -94,14 +94,12 @@ namespace StealthGM
          }
 
          // Visibility and weather (precipitation)
-         if (atmosphereProxy != NULL)
+         if (atmosphere != NULL)
          {
-            SimCore::Actors::UniformAtmosphereActor* atmosphereActor = NULL;
-            atmosphereProxy->GetDrawable(atmosphereActor);
 
-            mVisibilityDistance = atmosphereActor->GetVisibilityDistance();
+            mVisibilityDistance = atmosphere->GetVisibilityDistance();
 
-            mPrecipitation = &atmosphereActor->GetPrecipitationType();
+            mPrecipitation = &atmosphere->GetPrecipitationType();
          }
       }
 

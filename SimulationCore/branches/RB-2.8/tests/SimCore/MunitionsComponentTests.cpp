@@ -332,8 +332,6 @@ namespace SimCore
 
             mGM->AddComponent(*mDamageComp, dtGame::GameManager::ComponentPriority::NORMAL);
 
-            //std::string context = dtUtil::GetDeltaRootPath() + "/examples/data/demoMap";
-            //dtCore::Project::GetInstance().SetContext(context, true);
             mGM->ChangeMap("UnitTestMunitionTypesMap");
 
             //step a few times to ensure the map loaded
