@@ -59,7 +59,7 @@ set(LIB_SOURCES_1
    )
 
 set(LIB_SOURCES_2 
-   "${SOURCE_PATH}/Actors/AtmosphereActor.cpp"
+   "${SOURCE_PATH}/Actors/AtmosphereData.cpp"
    "${SOURCE_PATH}/Actors/BaseEntity.cpp"
    "${SOURCE_PATH}/Actors/BasePhysicsVehicleActor.cpp"
    "${SOURCE_PATH}/Actors/BaseTerrainActor.cpp"
