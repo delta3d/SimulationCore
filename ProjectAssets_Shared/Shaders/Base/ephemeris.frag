@@ -1,3 +1,4 @@
+#version 120
 uniform sampler2D diffuseTexture;
 uniform float d3d_SceneLuminance = 1.0;
 

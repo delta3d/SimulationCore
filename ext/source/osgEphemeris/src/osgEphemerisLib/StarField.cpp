@@ -126,12 +126,13 @@ std::string StarField::_vertexShaderProgram =
     ;
 
 std::string StarField::_fragmentShaderProgram =
+    "#version 120\n"
     "varying vec4 starColor;"
     "uniform float d3d_SceneLuminance = 1.0;"
 
     "void main( void )"
     "{"
-    "    vec4 color = 3.5 * pow(starColor, 3.0);   "
+    "    vec4 color = 3.5 * pow(starColor, vec4(3.0));   "
     "    color = d3d_SceneLuminance * (starColor + color);"
     "    gl_FragColor = color;"
     "}";
