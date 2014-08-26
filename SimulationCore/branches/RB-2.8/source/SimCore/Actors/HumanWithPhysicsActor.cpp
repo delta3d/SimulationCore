@@ -52,19 +52,16 @@ namespace SimCore
       //////////////////////////////////////////////////////////
       // Actor code
       //////////////////////////////////////////////////////////
-      HumanWithPhysicsActor::HumanWithPhysicsActor(dtGame::GameActorProxy& owner) :
-         Human(owner)
+      HumanWithPhysicsActor::HumanWithPhysicsActor(dtGame::GameActorProxy& owner)
+      : Human(owner)
       // With 30, this is about 12.66 MPH, which is a decently fast sustainable run. The fastest human sprint
-      , mMoveRateConstant(30.0f, 30.0f, 0.0f)
-//      , mSecsSinceLastUpdateSent(0.0f)
-//      , mMaxUpdateSendRate(3.0f)
-//      , mAcceptInput(false)
-      , mNotifyChangePosition(false)
-      , mNotifyChangeOrient(false)
-      , mNotifyChangeVelocity(false)
       // speed is like 27 MPH. Typically slow walk speed is like 3 MPH. A marathoner can sustain 12.55 MPH
       // for 2 hours. Note, this multiplies times the frame speed using the motion model, but it should be
       // irrelevant of FPS.
+      , mMoveRateConstant(30.0f, 30.0f, 0.0f)
+      , mNotifyChangePosition(false)
+      , mNotifyChangeOrient(false)
+      , mNotifyChangeVelocity(false)
       {
       }
 
@@ -86,66 +83,6 @@ namespace SimCore
          Human::OnTickLocal(tickMessage);
       }
 
-      ////////////////////////////////////////////////////////////////////////////////////
-      //void HumanWithPhysicsActor::SetLastKnownRotation(const osg::Vec3 &vec)
-      //{
-      //   Human::SetLastKnownRotation( osg::Vec3( vec.x(), 0.0f, 0.0f) );
-      //}
-
-
-/*      ////////////////////////////////////////////////////////////////////////////////////
-      void HumanWithPhysicsActor::SetLastKnownTranslation(const osg::Vec3 &vec)
-      {
-#ifdef AGEIA_PHYSICS
-         if(mPhysicsActComp != NULL)
-         {
-            float zValue = mPhysicsActComp->GetCharacterExtents()[2];
-
-            // Note this should really be zValue /= 2. However, jsaf doesnt use
-            // the float value for w/e reason. so it has to round the number,
-            // this being that the number is 1.5 which turns out to move the character down
-            // correctly (well reporting it down correctly). Without subtracting,
-            // 0.75 the altitude is 1 meter, you subtract 0.75 (the correct amount)
-            // and the alt is still 1 meter. You subtract 20 and its 19. Subtract
-            // 1.5 and its 1.
-            Human::SetLastKnownTranslation(osg::Vec3(vec[0], vec[1], vec[2] - zValue));
-         }
-         else
-#endif
-            Human::SetLastKnownTranslation(osg::Vec3(vec[0], vec[1], vec[2]));
-      }
-
-      */
-      /*
-      ////////////////////////////////////////////////////////////////////////////////////
-      bool HumanWithPhysicsActor::ShouldForceUpdate(const osg::Vec3& pos, const osg::Vec3& rot, bool& fullUpdate)
-      {
-         osg::Vec3 position = pos;
-#ifdef AGEIA_PHYSICS
-         if(mPhysicsActComp != NULL)
-            position[2] -= (mPhysicsActComp->GetCharacterExtents()[2]);
-#endif
-         osg::Vec3 distanceMoved = pos - GetLastKnownTranslation();
-
-         float distanceTurned = rot.x() - GetLastKnownRotation().x();
-
-         if (distanceMoved.length2() > GetMaxTranslationError())
-         {
-            // DEBUG: std::cout << "\n\tUpdate Translation:\t" << GetMaxTranslationError() << std::endl;
-            mNotifyChangePosition = true;
-         }
-
-         if (distanceTurned * distanceTurned > GetMaxRotationError())
-         {
-            // DEBUG: std::cout << "\n\tUpdate Orientation\n" << std::endl;
-            mNotifyChangeOrient = true;
-         }
-
-         // Do full updates for now until partial updates are required.
-         return mNotifyChangeVelocity ||
-            mNotifyChangeOrient || mNotifyChangePosition;
-      }
-*/
       ////////////////////////////////////////////////////////////
       void HumanWithPhysicsActor::OnTickRemote(const dtGame::TickMessage& tickMessage)
       {
@@ -155,9 +92,6 @@ namespace SimCore
          GetTransform(transform);
 
          transform.GetTranslation(mPreviousTransform);
-         
-         osg::Vec3 xyz;
-         transform.GetTranslation(xyz);
       }
 
       ////////////////////////////////////////////////////////////

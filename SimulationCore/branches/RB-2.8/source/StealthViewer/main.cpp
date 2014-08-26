@@ -39,9 +39,10 @@
 #include <dtCore/librarymanager.h>
 
 #include <sstream>
+#include <cstring>
 
 const int appArgc = 9;
-static char* appArgv[appArgc] =
+static const char* appArgv[appArgc] =
 {
    "GameStart",
    "--UI", "1",
@@ -62,18 +63,26 @@ int main(int argc, char* argv[])
 
    dtAudio::AudioManager::Instantiate();
 
-   //dtCore::SetDataFilePathList(".:" + dtCore::GetDeltaDataPathList());
    int result;
    QApplication app(argc, argv);
 
    try
    {
+   
+      char* appArgvCopy[appArgc];
+      
+      // Copy the values because string constants aren't allowed to be char * now.
+      for (unsigned i = 0; i < appArgc; ++i)
+      {
+         appArgvCopy[i] = new char[std::strlen(appArgv[i]) + 1];
+         std::strcpy(appArgvCopy[i], appArgv[i]);
+      }   
       //dtUtil::Log::GetInstance().SetLogLevel(dtUtil::Log::LOG_INFO);
 
       //Now that everything is initialized, show the main window.
       //Construct the application...
       const std::string appLibName("StealthGMApp");
-      StealthQt::MainWindow mainWindow(appArgc, appArgv, appLibName);
+      StealthQt::MainWindow mainWindow(appArgc, appArgvCopy, appLibName);
 
       dtCore::System::GetInstance().SetShutdownOnWindowClose(false);
       dtCore::System::GetInstance().Start();

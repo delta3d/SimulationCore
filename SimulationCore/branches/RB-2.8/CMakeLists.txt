@@ -21,6 +21,9 @@ OPTION(AUTO_RUN_TESTS "Automatically runs the unit tests upon successful compile
 OPTION(BUILD_WITH_PCH      "Enables use of precomplied headers, experimental" OFF)
 MARK_AS_ADVANCED(BUILD_WITH_PCH)
 
+OPTION(REGENERATE_VERSION_HEADER      "Uses the SVN version to update the version header.  This can only be used for direct check-outs." OFF)
+MARK_AS_ADVANCED(REGENERATE_VERSION_HEADER)
+
 OPTION(BUILD_STEALTH_VIEWER "Build the Stealth Viewer" ON)
 
 # We want to build SONAMES shared librariess
@@ -32,6 +35,10 @@ SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMakeModules;/usr/local/share/cmake/M
 
 # Find OpenGL
 FIND_PACKAGE(OpenGL REQUIRED)
+
+if (REGENERATE_VERSION_HEADER)
+   FIND_PACKAGE(Subversion REQUIRED)
+endif()
 
 # Add macro functions 
 include(UtilityMacros)
@@ -114,7 +121,6 @@ ENDIF ()
 INCLUDE_DIRECTORIES(
     ${DELTA3D_INCLUDE_DIR}
     ${SIMULATIONCORE_INCLUDE_DIR}
-    ${OSGEPHEMERIS_INCLUDE_DIR}
     ${OPENGL_INCLUDE_DIR}
     ${OPENTHREADS_INCLUDE_DIR}
     ${OSG_INCLUDE_DIR}
@@ -160,16 +166,6 @@ ENDIF("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
 ################################################################################
 # Installation stuff
 
-IF(UNIX AND NOT WIN32 AND NOT APPLE)
-  IF(CMAKE_SIZEOF_VOID_P MATCHES "8")
-      SET(LIB_POSTFIX "64" CACHE STRING "suffix for 32/64 dir placement")
-      MARK_AS_ADVANCED(LIB_POSTFIX)
-  ENDIF(CMAKE_SIZEOF_VOID_P MATCHES "8")
-ENDIF(UNIX AND NOT WIN32 AND NOT APPLE)
-IF(NOT DEFINED LIB_POSTFIX)
-    SET(LIB_POSTFIX "")
-ENDIF(NOT DEFINED LIB_POSTFIX)
-    
 SET(OUTPUT_BINDIR ${PROJECT_BINARY_DIR}/bin)
 MAKE_DIRECTORY(${OUTPUT_BINDIR})
 SET(EXECUTABLE_OUTPUT_PATH ${OUTPUT_BINDIR})
@@ -231,7 +227,6 @@ SET(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} CACHE STRING "You may add additiona
 SET(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} CACHE STRING "(EXPERIMENTAL) You may add additional search paths here. Use ; to separate multiple paths.")
 
 
-ADD_SUBDIRECTORY(ext/source)
 ADD_SUBDIRECTORY(source)
 ADD_SUBDIRECTORY(tests)
 
