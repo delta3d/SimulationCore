@@ -135,11 +135,11 @@ namespace SimCore
       bool DamageProbability::operator== ( const DamageProbability& probabilities ) const
       {
          return &probabilities == this
-            || mNoDamage == probabilities.mNoDamage
+            || (mNoDamage == probabilities.mNoDamage
             && mMobilityDamage == probabilities.mMobilityDamage
             && mFirepowerDamage == probabilities.mFirepowerDamage
             && mMobilityFirepowerDamage == probabilities.mMobilityFirepowerDamage
-            && mKillDamage == probabilities.mKillDamage;
+            && mKillDamage == probabilities.mKillDamage);
       }
 
       //////////////////////////////////////////////////////////

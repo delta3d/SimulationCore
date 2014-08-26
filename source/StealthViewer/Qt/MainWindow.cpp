@@ -338,9 +338,9 @@ namespace StealthQt
       // Cannot start up in playback mode either
       EnablePlaybackButtons(false);
 
-      WINDOW_TITLE_VERSION = " - [Rev " + SimCore::SIMCORE_SVN_REVISION;
-      if (!SimCore::SIMCORE_SVN_DATE.empty())
-         WINDOW_TITLE_VERSION += ", " + SimCore::SIMCORE_SVN_DATE.substr(0, 10);
+      WINDOW_TITLE_VERSION = " - [Rev " + SimCore::GetSimCoreRevision();
+      if (!SimCore::GetSimCoreBuildDate().empty())
+         WINDOW_TITLE_VERSION += ", " + SimCore::GetSimCoreBuildDate().substr(0, 10);
       WINDOW_TITLE_VERSION += "] ";
       std::string WinTitle(StealthQt::WINDOW_TITLE + WINDOW_TITLE_VERSION);
       setWindowTitle(tr(WinTitle.c_str()));

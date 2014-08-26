@@ -24,7 +24,6 @@
 #include <prefix/SimCorePrefix.h>
 #include <StealthViewer/GMApp/ViewWindowConfigObject.h>
 #include <SimCore/Components/WeatherComponent.h>
-#include <SimCore/Components/RenderingSupportComponent.h>
 #include <SimCore/Tools/Binoculars.h>
 #include <dtABC/application.h>
 #include <dtCore/view.h>
