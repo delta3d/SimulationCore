@@ -54,11 +54,13 @@ namespace SimCore
             if (physObj != NULL)
             {
                dtCore::Transform xform;
-               dtCore::Transformable* drawable = NULL;
-               GetOwner(drawable);
-               if (drawable != NULL)
+               dtGame::GameActorProxy* owner = NULL;
+               GetOwner(owner);
+               dtCore::Transformable* xformable;
+               owner->GetDrawable(xformable);
+               if (xformable != NULL)
                {
-                  drawable->GetTransform(xform);
+                  xformable->GetTransform(xform);
                }
 
                physObj->SetTransformAsVisual(xform);
