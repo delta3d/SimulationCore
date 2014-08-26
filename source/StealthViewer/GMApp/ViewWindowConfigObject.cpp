@@ -34,6 +34,7 @@
 #include <dtCore/deltawin.h>
 #include <dtGame/gamemanager.h>
 #include <dtUtil/exception.h>
+#include <dtUtil/cullmask.h>
 
 #include <osgViewer/GraphicsWindow>
 #include <osgViewer/CompositeViewer>
@@ -374,7 +375,7 @@ namespace StealthGM
             cam = new dtCore::Camera(mView->GetName());
             cam->SetupBackwardCompatibleStateset();
             osg::Camera* osgCam = cam->GetOSGCamera();
-            osgCam->setCullMask(SimCore::Components::RenderingSupportComponent::ADDITIONAL_CAMERA_CULL_MASK);
+            osgCam->setCullMask(dtUtil::CullMask::ADDITIONAL_CAMERA_MASK);
             mView->SetCamera(cam.get());
          }
 

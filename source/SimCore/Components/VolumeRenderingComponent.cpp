@@ -1204,7 +1204,6 @@ namespace SimCore
       mDepthView->SetScene(&GetGameManager()->GetScene());
       GetGameManager()->GetApplication().AddView(*mDepthView);
 
-      //the rear view texture is used as the render target for the rear view mirror
       mDepthTexture = CreateDepthTexture(width, height);
 
       mDepthCamera->GetOSGCamera()->setReferenceFrame(osg::Transform::RELATIVE_RF);
