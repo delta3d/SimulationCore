@@ -42,7 +42,7 @@ namespace SimCore
    namespace HLA
    {
       // Have to copy this because DIS is an optional dependency.
-      class DISConnectionData
+      class SIMCORE_HLA_EXPORT DISConnectionData
       {
       public:
          DISConnectionData();
