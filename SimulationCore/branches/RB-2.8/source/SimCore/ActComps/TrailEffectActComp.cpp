@@ -511,7 +511,7 @@ namespace SimCore
          // Register tick handlers only if the particle effect is valid.
          if(LoadParticles() && IsTickable())
          {
-            RegisterTickHandlers();
+            RegisterForTick();
          }
 
          AttachParticles();
@@ -538,7 +538,7 @@ namespace SimCore
       {
          BaseClass::OnRemovedFromWorld();
 
-         UnregisterTickHandlers();
+         UnregisterForTick();
 
          DetachParticles();
       }
@@ -594,67 +594,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       // SPECIAL METHODS
       //////////////////////////////////////////////////////////////////////////
-      void TrailEffectActComp::RegisterForRemoteTicks()
-      {
-         dtGame::GameActorProxy* owner = NULL;
-         GetOwner(owner);
-         std::string tickInvokable = "Tick Remote " + GetType()->GetFullName();
-         if(!owner->GetInvokable(tickInvokable))
-         {
-            owner->AddInvokable(*new dtGame::Invokable(tickInvokable, dtUtil::MakeFunctor(&TrailEffectActComp::OnTickRemote, this)));
-         }
-         owner->RegisterForMessages(dtGame::MessageType::TICK_REMOTE, tickInvokable);
-      }
 
-      //////////////////////////////////////////////////////////////////////////
-      void TrailEffectActComp::UnregisterForRemoteTicks()
-      {
-         dtGame::GameActorProxy* owner = NULL;
-         GetOwner(owner);
-         std::string tickInvokable = "Tick Remote " + GetType()->GetFullName();
-         owner->UnregisterForMessages(dtGame::MessageType::TICK_REMOTE, tickInvokable);
-         owner->RemoveInvokable(tickInvokable);
-      }
-
-      //////////////////////////////////////////////////////////////////////////
-      void TrailEffectActComp::RegisterTickHandlers()
-      {
-         dtGame::GameActorProxy* actor = NULL;
-         GetOwner(actor);
-
-         if(actor != NULL)
-         {
-            if(actor->IsRemote())
-            {
-               RegisterForRemoteTicks();
-            }
-            else
-            {
-               RegisterForTicks();
-            }
-         }
-      }
-
-      //////////////////////////////////////////////////////////////////////////
-      void TrailEffectActComp::UnregisterTickHandlers()
-      {
-         dtGame::GameActorProxy* actor = NULL;
-         GetOwner(actor);
-
-         if(actor != NULL)
-         {
-            if(actor->IsRemote())
-            {
-               UnregisterForRemoteTicks();
-            }
-            else
-            {
-               UnregisterForTicks();
-            }
-         }
-      }
-
-      //////////////////////////////////////////////////////////////////////////
       void TrailEffectActComp::SetParticlePosition(const osg::Vec3& pos)
       {
          if(mParticles.valid())
