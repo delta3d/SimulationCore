@@ -234,7 +234,7 @@ namespace DriverDemo
       osgSim::DOFTransform* bodyNode)
    {
       dtPhysics::PhysicsObject *physObj = GetMainPhysicsObject();
-      physObj->CreateFromProperties(bodyNode);
+      physObj->Create(bodyNode);
       physObj->SetTransform(transformForRot);
       physObj->SetActive(true);
 

@@ -117,14 +117,11 @@ namespace SimCore
       /////////////////////////////////////////////////////////////
       void IGEnvironmentActor::OnEnteredWorld()
       {
-         BaseClass::OnEnteredWorld();
          mEnvironment->Update(999.99f); //passing a large number will force an update
 
          osg::Vec3 fogColor;
          mEnvironment->GetModFogColor(fogColor);
          SetFogColor(fogColor);         // Seems wierd, but we have to set the clear color to black on the camera or
-         // the ephemeris shows stars in the daytime and at night, they are sort of gray instead of white.
-         GetGameActorProxy().GetGameManager()->GetApplication().GetCamera()->SetClearColor(osg::Vec4(0, 0, 0, 0));
 
          if(mEnableLensFlare && !mLensFlare.valid())
          {
@@ -480,7 +477,7 @@ namespace SimCore
       {
          //this drawable creates a nice halo/glare effect from the sun
          mLensFlare = new LensFlareDrawable();
-         mLensFlare->Init(*GetGameActorProxy().GetGameManager());
+         mLensFlare->Init(*GetOwner()->GetGameManager());
 
          AddChild(mLensFlare.get());
       }
@@ -564,6 +561,10 @@ namespace SimCore
       /////////////////////////////////////////////////////////////
       void IGEnvironmentActorProxy::OnEnteredWorld()
       {
+         // For backward compatibility.
+         GetDrawable<IGEnvironmentActor>()->OnEnteredWorld();
+         // the ephemeris shows stars in the daytime and at night, they are sort of gray instead of white.
+         GetGameManager()->GetApplication().GetCamera()->SetClearColor(osg::Vec4(0, 0, 0, 0));
       }
 
       /////////////////////////////////////////////////////////////

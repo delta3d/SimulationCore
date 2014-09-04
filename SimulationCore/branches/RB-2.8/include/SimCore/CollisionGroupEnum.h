@@ -59,17 +59,6 @@ namespace SimCore
    {
       enum CollisionGroupE
       {
-#ifdef AGEIA_PHYSICS
-         GROUP_TERRAIN        = 0
-         , GROUP_VEHICLE_GROUND = 1
-         , GROUP_USER_DEFINED   = 2
-         , GROUP_BULLET         = 15
-         , GROUP_PARTICLE       = 20
-         , GROUP_WATER          = 23
-         , GROUP_VEHICLE_WATER  = 26
-         , GROUP_HUMAN_LOCAL    = 30
-         , GROUP_HUMAN_REMOTE   = 31
-#else // Use different numbers for dtPhysics because some engines only have groups 0 - 15
          GROUP_TERRAIN        = 0
          , GROUP_VEHICLE_GROUND = 1
          , GROUP_BULLET         = 2
@@ -79,7 +68,6 @@ namespace SimCore
          , GROUP_HUMAN_LOCAL    = 6
          , GROUP_HUMAN_REMOTE   = 7
          , GROUP_USER_DEFINED   = 10
-#endif
       };
       void SIMCORE_EXPORT SetupDefaultGroupCollisions(dtPhysics::PhysicsComponent& comp);
    }

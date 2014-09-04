@@ -291,7 +291,7 @@ namespace SimCore
          newObject->SetLinearDamping(dtPhysics::Real(0.1));
          newObject->SetAngularDamping(dtPhysics::Real(0.4));
          newObject->SetSkinThickness(dtPhysics::Real(0.04));
-         newObject->CreateFromProperties(particle->mObj->GetOSGNode());
+         newObject->Create(particle->mObj->GetOSGNode());
          newObject->SetSkinThickness(dtPhysics::Real(0.0));
          osg::Vec3 moment = newObject->GetMomentOfInertia();
          newObject->SetMomentOfInertia(moment * 2.0f);

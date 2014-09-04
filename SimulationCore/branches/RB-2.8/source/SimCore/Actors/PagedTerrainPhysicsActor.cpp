@@ -505,7 +505,7 @@ namespace SimCore
             newTile->SetPrimitiveType(dtPhysics::PrimitiveType::TERRAIN_MESH);
             newTile->SetCollisionGroup(SimCore::CollisionGroup::GROUP_TERRAIN);
             newTile->SetSkinThickness(0.06);
-            newTile->CreateFromProperties(node);
+            newTile->Create(node);
             // We don't want this skin thickness, we want the thickness on the geometry.
             newTile->SetSkinThickness(0.00);
 
