@@ -327,56 +327,56 @@ class HumanTests : public CPPUNIT_NS::TestFixture
       void TestPlanShotStanding()
       {
          TestPlanShot(SimCore::Actors::HumanActorProxy::StanceEnum::UPRIGHT_STANDING,
-                  dtAnim::AnimationOperators::ANIM_SHOT_STANDING,
+                  dtAnim::AnimationOperators::ANIM_DYING_STANDING,
                   dtAnim::AnimationOperators::ANIM_DEAD_STANDING);
       }
 
       void TestPlanShotWalking()
       {
          TestPlanShot(SimCore::Actors::HumanActorProxy::StanceEnum::UPRIGHT_WALKING,
-                  dtAnim::AnimationOperators::ANIM_SHOT_STANDING,
+                  dtAnim::AnimationOperators::ANIM_DYING_STANDING,
                   dtAnim::AnimationOperators::ANIM_DEAD_STANDING);
       }
 
       void TestPlanShotRunning()
       {
          TestPlanShot(SimCore::Actors::HumanActorProxy::StanceEnum::UPRIGHT_RUNNING,
-                  dtAnim::AnimationOperators::ANIM_SHOT_STANDING,
+                  dtAnim::AnimationOperators::ANIM_DYING_STANDING,
                   dtAnim::AnimationOperators::ANIM_DEAD_STANDING);
       }
 
       void TestPlanShotKneeling()
       {
          TestPlanShot(SimCore::Actors::HumanActorProxy::StanceEnum::KNEELING,
-                  dtAnim::AnimationOperators::ANIM_SHOT_KNEELING,
+                  dtAnim::AnimationOperators::ANIM_DYING_KNEELING,
                   dtAnim::AnimationOperators::ANIM_DEAD_KNEELING);
       }
 
       void TestPlanShotCrouching()
       {
          TestPlanShot(SimCore::Actors::HumanActorProxy::StanceEnum::CROUCHING,
-                  dtAnim::AnimationOperators::ANIM_SHOT_KNEELING,
+                  dtAnim::AnimationOperators::ANIM_DYING_KNEELING,
                   dtAnim::AnimationOperators::ANIM_DEAD_KNEELING);
       }
 
       void TestPlanShotSquatting()
       {
          TestPlanShot(SimCore::Actors::HumanActorProxy::StanceEnum::SQUATTING,
-                  dtAnim::AnimationOperators::ANIM_SHOT_KNEELING,
+                  dtAnim::AnimationOperators::ANIM_DYING_KNEELING,
                   dtAnim::AnimationOperators::ANIM_DEAD_KNEELING);
       }
 
       void TestPlanShotProne()
       {
          TestPlanShot(SimCore::Actors::HumanActorProxy::StanceEnum::PRONE,
-                  dtAnim::AnimationOperators::ANIM_SHOT_PRONE,
+                  dtAnim::AnimationOperators::ANIM_DYING_PRONE,
                   dtAnim::AnimationOperators::ANIM_DEAD_PRONE);
       }
 
       void TestPlanShotCrawling()
       {
          TestPlanShot(SimCore::Actors::HumanActorProxy::StanceEnum::CRAWLING,
-                  dtAnim::AnimationOperators::ANIM_SHOT_PRONE,
+                  dtAnim::AnimationOperators::ANIM_DYING_PRONE,
                   dtAnim::AnimationOperators::ANIM_DEAD_PRONE);
       }
 
