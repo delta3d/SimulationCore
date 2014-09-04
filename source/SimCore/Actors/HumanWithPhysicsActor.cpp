@@ -136,7 +136,7 @@ namespace SimCore
          }
 
 
-         po->CreateFromProperties();
+         po->Create();
       }
 
       ////////////////////////////////////////////////////////////////////
