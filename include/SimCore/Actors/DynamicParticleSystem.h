@@ -111,7 +111,7 @@ namespace SimCore
 
             void Update( float simTimeDelta );
 
-            virtual void TickLocal( const dtGame::Message& tickMessage );
+            virtual void OnTickLocal( const dtGame::TickMessage& tickMessage );
 
          protected:
             virtual ~DynamicParticleSystemActor();
