@@ -638,20 +638,23 @@ namespace SimCore
       }
       else
       {
+         osg::Vec3 scale(0.0f, 0.0f, 0.0f);
+         if (scaleProp != NULL)
+         {
+            scale = scaleProp->GetValue();
+         }
+
          osg::Matrix bodyOffset;
          bodyOffset.makeIdentity();
          GetLocalMatrix(*chassis, bodyOffset);
+         osg::Vec3d unscaledTrans = bodyOffset.getTrans();
+         bodyOffset.setTrans(osg::Vec3d(unscaledTrans.x() * scale.x(),  unscaledTrans.y() * scale.y(), unscaledTrans.z() * scale.z()));
          bodyOffset.setTrans(bodyOffset.getTrans() - GetMainPhysicsObject()->GetOriginOffset());
          dtCore::Transform offsetXform;
          offsetXform.Set(bodyOffset);
 
          GetMainPhysicsObject()->SetVisualToBodyTransform(offsetXform);
 
-         osg::Vec3 scale(0.0f, 0.0f, 0.0f);
-         if (scaleProp != NULL)
-         {
-            scale = scaleProp->GetValue();
-         }
 
          CreateVehicle(ourTransform, *chassis, scale);
          GetMainPhysicsObject()->SetTransformAsVisual(ourTransform);

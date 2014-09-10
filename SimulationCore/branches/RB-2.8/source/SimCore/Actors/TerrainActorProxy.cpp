@@ -427,7 +427,7 @@ namespace SimCore
                if (!loadSuccess && mTerrainNode.valid())
                {
                   //if we didn't find a pre-baked static mesh but we did have a renderable terrain node
-                  //then just bake a static collision mesh with that and spit out a warning
+                  //then just bake a static collision mesh with that
                   mHelper->GetMainPhysicsObject()->SetTransform(xform);
                   mHelper->GetMainPhysicsObject()->Create(mTerrainNode.get());
                   loadSuccess = true;

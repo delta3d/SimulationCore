@@ -371,9 +371,9 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void DynamicParticleSystemActor::TickLocal( const dtGame::Message& tickMessage )
+      void DynamicParticleSystemActor::OnTickLocal( const dtGame::TickMessage& tickMessage )
       {
-         Update( static_cast<const dtGame::TickMessage&>(tickMessage).GetDeltaSimTime() );
+         Update( tickMessage.GetDeltaSimTime() );
       }
 
 

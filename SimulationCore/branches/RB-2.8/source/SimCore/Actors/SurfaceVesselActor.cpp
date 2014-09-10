@@ -548,20 +548,20 @@ namespace SimCore
       }
       
       //////////////////////////////////////////////////////////
-      void SurfaceVesselActor::TickLocal(const dtGame::Message& tickMessage)
+      void SurfaceVesselActor::OnTickLocal(const dtGame::TickMessage& tickMessage)
       {
-         BaseClass::TickLocal(tickMessage);
+         BaseClass::OnTickLocal(tickMessage);
 
-         float simTimeDelta = static_cast<const dtGame::TickMessage&>(tickMessage).GetDeltaSimTime();
+         float simTimeDelta = tickMessage.GetDeltaSimTime();
          UpdateSpray(simTimeDelta);
       }
 
       //////////////////////////////////////////////////////////
-      void SurfaceVesselActor::TickRemote(const dtGame::Message& tickMessage)
+      void SurfaceVesselActor::OnTickRemote(const dtGame::TickMessage& tickMessage)
       {
-         BaseClass::TickRemote(tickMessage);
+         BaseClass::OnTickRemote(tickMessage);
 
-         float simTimeDelta = static_cast<const dtGame::TickMessage&>(tickMessage).GetDeltaSimTime();
+         float simTimeDelta = tickMessage.GetDeltaSimTime();
          UpdateSpray(simTimeDelta);
       }
 
