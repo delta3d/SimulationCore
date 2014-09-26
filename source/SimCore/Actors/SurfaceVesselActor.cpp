@@ -22,6 +22,7 @@
  */
 #include <prefix/SimCorePrefix.h>
 #include <dtActors/particlesystemactorproxy.h>
+#include <dtActors/dynamicparticlesystemactor.h>
 #include <dtActors/engineactorregistry.h>
 #include <dtCore/shadermanager.h>
 #include <dtCore/particlesystem.h>
@@ -36,7 +37,6 @@
 #include <SimCore/Components/TimedDeleterComponent.h>
 #include <SimCore/Components/ParticleManagerComponent.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
-#include <SimCore/Actors/DynamicParticleSystem.h>
 
 #include <osg/MatrixTransform>
 #include <osg/Geode>
@@ -183,7 +183,7 @@ namespace SimCore
 
          if(mWaterSprayFront.valid())
          {
-            BindShaderToParticleSystem(mWaterSprayFront->GetParticleSystem(), "WaterSprayParticle");
+            BindShaderToParticleSystem(*mWaterSprayFront, "WaterSprayParticle");
 
             // Attach the particles to the parent
             GetOSGNode()->asGroup()->addChild(mWaterSprayFront->GetOSGNode());
@@ -197,8 +197,8 @@ namespace SimCore
     
          if(mWaterSpraySideStarboard.valid() && mWaterSpraySidePort.valid())
          {
-            BindShaderToParticleSystem(mWaterSpraySideStarboard->GetParticleSystem(), "WaterSprayParticle");
-            BindShaderToParticleSystem(mWaterSpraySidePort->GetParticleSystem(), "WaterSprayParticle");
+            BindShaderToParticleSystem(*mWaterSpraySideStarboard, "WaterSprayParticle");
+            BindShaderToParticleSystem(*mWaterSpraySidePort, "WaterSprayParticle");
 
             // Attach the particles to the parent
             GetOSGNode()->asGroup()->addChild(mWaterSpraySideStarboard->GetOSGNode());
@@ -216,7 +216,7 @@ namespace SimCore
 
          if(mWaterSprayBack.valid())
          {
-            BindShaderToParticleSystem(mWaterSprayBack->GetParticleSystem(), "WaterSprayParticle");
+            BindShaderToParticleSystem(*mWaterSprayBack, "WaterSprayParticle");
 
             // Attach the particles to the parent
             GetOSGNode()->asGroup()->addChild(mWaterSprayBack->GetOSGNode());
@@ -326,48 +326,48 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////
-      dtCore::RefPtr<SurfaceVesselActor::DynamicParticlesProxy> SurfaceVesselActor::CreatDynamicParticleSystemProxy(
+      dtCore::RefPtr<SurfaceVesselActor::DynamicParticlesActor> SurfaceVesselActor::CreateDynamicParticleSystemActor(
          const std::string& filename, const std::string& actorName)
       {
-         dtCore::RefPtr<DynamicParticlesProxy> proxy;
+         dtCore::RefPtr<DynamicParticlesActor> actor;
          
          dtGame::GameManager* gm = GetGameActorProxy().GetGameManager();
          if(gm != NULL)
          {
             // Create the actor.
-            DynamicParticlesActor* actor = NULL;
-            gm->CreateActor(*SimCore::Actors::EntityActorRegistry::DYNAMIC_PARTICLE_SYSTEM_ACTOR_TYPE, proxy);
-            proxy->GetDrawable(actor);
-            actor->SetName(actorName);
-            actor->SetParticleSystemFile(filename);
+            DynamicParticles* drawable = NULL;
+            gm->CreateActor(*dtActors::EngineActorRegistry::DYNAMIC_PARTICLE_SYSTEM_ACTOR_TYPE, actor);
+            actor->GetDrawable(drawable);
+            drawable->SetName(actorName);
+            drawable->LoadFile(filename);
 
             // Set default settings.
-            typedef DynamicParticlesActor::InterpolatorArray InterpolatorArray;
+            typedef DynamicParticles::InterpolatorArray InterpolatorArray;
             InterpolatorArray interpArray;
-            actor->GetAllInterpolators(interpArray);
+            drawable->GetAllInterpolators(interpArray);
 
             InterpolatorArray::iterator curInterp = interpArray.begin();
             InterpolatorArray::iterator endInterpArray = interpArray.end();
             for( ; curInterp != endInterpArray; ++curInterp)
             {         
-               ParticleSystemSettings& settings = (*curInterp)->GetStartSettings();
+               dtCore::ParticleSystemSettings& settings = (*curInterp)->GetStartSettings();
                settings.mRangeRate *= 0.0f;
                settings.mRangeSpeed *= 0.0f;
             }
          }
 
-         return proxy;
+         return actor;
       }
 
       //////////////////////////////////////////////////////////
-      SurfaceVesselActor::DynamicParticlesActor* SurfaceVesselActor::GetParticlesActor(DynamicParticlesProxy* proxy)
+      SurfaceVesselActor::DynamicParticles* SurfaceVesselActor::GetParticleSystem(DynamicParticlesActor* actor)
       {
-         DynamicParticlesActor* actor = NULL;
-         if(proxy != NULL)
+         DynamicParticles* drawable = NULL;
+         if(actor != NULL)
          {
-            proxy->GetDrawable(actor);
+            actor->GetDrawable(drawable);
          }
-         return actor;
+         return drawable;
       }
 
       //////////////////////////////////////////////////////////
@@ -375,8 +375,8 @@ namespace SimCore
       {
          if(!mWaterSprayFront.valid())
          {
-            mWaterSprayFrontProxy = CreatDynamicParticleSystemProxy(fileName, "WaterSprayFrontStarboard");
-            mWaterSprayFront = GetParticlesActor(mWaterSprayFrontProxy.get());
+            mWaterSprayFrontActor = CreateDynamicParticleSystemActor(fileName, "WaterSprayFrontStarboard");
+            mWaterSprayFront = GetParticleSystem(mWaterSprayFrontActor.get());
          }
       }
 
@@ -385,14 +385,14 @@ namespace SimCore
       {
          if(!mWaterSpraySideStarboard.valid())
          {
-            mWaterSpraySideStarboardProxy = CreatDynamicParticleSystemProxy(fileName, "WaterSpraySideStarboard");
-            mWaterSpraySideStarboard = GetParticlesActor(mWaterSpraySideStarboardProxy.get());
+            mWaterSpraySideStarboardActor = CreateDynamicParticleSystemActor(fileName, "WaterSpraySideStarboard");
+            mWaterSpraySideStarboard = GetParticleSystem(mWaterSpraySideStarboardActor.get());
          }
 
          if(!mWaterSpraySidePort.valid())
          {
-            mWaterSpraySidePortProxy = CreatDynamicParticleSystemProxy(fileName, "WaterSpraySidePort");
-            mWaterSpraySidePort = GetParticlesActor(mWaterSpraySidePortProxy.get());
+            mWaterSpraySidePortActor = CreateDynamicParticleSystemActor(fileName, "WaterSpraySidePort");
+            mWaterSpraySidePort = GetParticleSystem(mWaterSpraySidePortActor.get());
          }
       }
 
@@ -401,8 +401,8 @@ namespace SimCore
       {
          if(!mWaterSprayBack.valid())
          {
-            mWaterSprayBackProxy = CreatDynamicParticleSystemProxy(fileName, "WaterSprayBack");
-            mWaterSprayBack = GetParticlesActor(mWaterSprayBackProxy.get());
+            mWaterSprayBackActor = CreateDynamicParticleSystemActor(fileName, "WaterSprayBack");
+            mWaterSprayBack = GetParticleSystem(mWaterSprayBackActor.get());
          }
 
       }

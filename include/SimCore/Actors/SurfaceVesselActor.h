@@ -28,7 +28,9 @@
 
 namespace dtActors
 {
-   class ParticleSystemActorProxy;
+   class DynamicParticleSystem;
+   class DynamicParticleSystemActor;
+   class ParticleSystemActor;
 }
 
 namespace dtCore
@@ -50,8 +52,8 @@ namespace SimCore
 {
    namespace Actors
    {
+      class DynamicParticleSystem;
       class DynamicParticleSystemActor;
-      class DynamicParticleSystemActorProxy;
 
 
       class SIMCORE_EXPORT SurfaceVesselActor : public Platform
@@ -104,11 +106,11 @@ namespace SimCore
          void BindShaderToParticleSystem(dtCore::ParticleSystem& particles, const std::string& shaderName);
          void BindShaderToNode(const std::string& shaderName, osg::Node& node);
 
-         typedef SimCore::Actors::DynamicParticleSystemActor DynamicParticlesActor;
-         typedef SimCore::Actors::DynamicParticleSystemActorProxy DynamicParticlesProxy;
-         dtCore::RefPtr<DynamicParticlesProxy> CreatDynamicParticleSystemProxy(const std::string& filename,
+         typedef dtActors::DynamicParticleSystem DynamicParticles;
+         typedef dtActors::DynamicParticleSystemActor DynamicParticlesActor;
+         dtCore::RefPtr<DynamicParticlesActor> CreateDynamicParticleSystemActor(const std::string& filename,
             const std::string& actorName);
-         DynamicParticlesActor* GetParticlesActor(DynamicParticlesProxy* proxy);
+         DynamicParticles* GetParticleSystem(DynamicParticlesActor* actor);
 
       private:
          float mLastSprayRatio;
@@ -125,15 +127,15 @@ namespace SimCore
 
          osg::Vec3 mLastPos;
 
-         dtCore::RefPtr<DynamicParticlesProxy> mWaterSprayFrontProxy;
-         dtCore::RefPtr<DynamicParticlesProxy> mWaterSpraySideStarboardProxy;
-         dtCore::RefPtr<DynamicParticlesProxy> mWaterSpraySidePortProxy;
-         dtCore::RefPtr<DynamicParticlesProxy> mWaterSprayBackProxy;
+         dtCore::RefPtr<DynamicParticlesActor> mWaterSprayFrontActor;
+         dtCore::RefPtr<DynamicParticlesActor> mWaterSpraySideStarboardActor;
+         dtCore::RefPtr<DynamicParticlesActor> mWaterSpraySidePortActor;
+         dtCore::RefPtr<DynamicParticlesActor> mWaterSprayBackActor;
 
-         dtCore::ObserverPtr<DynamicParticlesActor> mWaterSprayFront;
-         dtCore::ObserverPtr<DynamicParticlesActor> mWaterSpraySideStarboard;
-         dtCore::ObserverPtr<DynamicParticlesActor> mWaterSpraySidePort;
-         dtCore::ObserverPtr<DynamicParticlesActor> mWaterSprayBack;
+         dtCore::ObserverPtr<DynamicParticles> mWaterSprayFront;
+         dtCore::ObserverPtr<DynamicParticles> mWaterSpraySideStarboard;
+         dtCore::ObserverPtr<DynamicParticles> mWaterSpraySidePort;
+         dtCore::ObserverPtr<DynamicParticles> mWaterSprayBack;
       };
 
       class SIMCORE_EXPORT SurfaceVesselActorProxy : public PlatformActorProxy
