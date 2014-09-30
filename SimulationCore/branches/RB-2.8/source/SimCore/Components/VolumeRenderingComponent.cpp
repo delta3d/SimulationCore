@@ -1131,7 +1131,7 @@ namespace SimCore
             radius2Sqr = p2l2 ? 1.0f / p2l2 : 0.0f;
 
             // Find a vector orthogonal to n.
-            osg::Vec3 basis(1.f, 0.f, 0.f);
+            osg::Vec3 basis(1.0f, 0.0f, 0.0f);
             if(std::abs(basis * n) > 0.999)
             {
                basis.set(0.0f, 1.0f, 0.0f);

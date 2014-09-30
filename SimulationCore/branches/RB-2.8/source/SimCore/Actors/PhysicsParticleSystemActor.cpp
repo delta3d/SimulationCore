@@ -177,7 +177,7 @@ namespace SimCore
          for(; i != iend; ++i)
          {
             PhysicsParticle& particle = **i;
-            if (particle.GetPhysicsObject()->GetBaseBodyWrapper() != NULL)
+            if (particle.GetPhysicsObject()->GetBodyWrapper() != NULL)
             {
                LOG_ERROR("During a Reset, got a particle that is not yet cleaned up by the physics helper.");
             }

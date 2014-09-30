@@ -86,7 +86,8 @@ namespace SimCore
          mEphemerisModel->setSunLightNum(0);
          mEphemerisModel->setMoveWithEyePoint(true);
 
-         osgEphemeris::DateTime osgDT(true);
+         osgEphemeris::DateTime osgDT;
+         osgDT.now();
          mEphemerisModel->setDateTime(osgDT);
 
          //FogSphere SetUp
