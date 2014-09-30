@@ -69,7 +69,7 @@ class StealthMotionModelTests : public CPPUNIT_NS::TestFixture
       void setUp()
       {
          mTerrain = new dtCore::InfiniteTerrain( "Ground" );
-         mTerrain->SetBuildDistance(1500.f);
+         mTerrain->SetBuildDistance(1500.0f);
          mTerrain->SetSegmentDivisions(64);
 
          mApp = &GetGlobalApplication();
@@ -188,7 +188,7 @@ class StealthMotionModelTests : public CPPUNIT_NS::TestFixture
          // Add a second and different overlapping terrain
          // to the scene.
          mTerrainAlternate = new dtCore::InfiniteTerrain( "Ground" );
-         mTerrainAlternate->SetBuildDistance(1000.f);
+         mTerrainAlternate->SetBuildDistance(1000.0f);
          mTerrainAlternate->SetSegmentDivisions(32);
          mTerrainAlternate->SetVerticalScale(3.0f);
          mApp->GetScene()->AddChild(mTerrainAlternate.get());
