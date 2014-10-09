@@ -1,0 +1,129 @@
+<ui version="4.0" >
+ <class>NetworkWeatherSettings</class>
+ <widget class="QWidget" name="NetworkWeatherSettings" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>229</width>
+    <height>150</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>Network Settings</string>
+  </property>
+  <widget class="QGroupBox" name="mNetSetGroupBox" >
+   <property name="geometry" >
+    <rect>
+     <x>10</x>
+     <y>0</y>
+     <width>211</width>
+     <height>131</height>
+    </rect>
+   </property>
+   <property name="title" >
+    <string>Network Settings</string>
+   </property>
+   <widget class="QWidget" name="gridLayout_3" >
+    <property name="geometry" >
+     <rect>
+      <x>0</x>
+      <y>20</y>
+      <width>201</width>
+      <height>101</height>
+     </rect>
+    </property>
+    <layout class="QGridLayout" >
+     <property name="leftMargin" >
+      <number>0</number>
+     </property>
+     <property name="topMargin" >
+      <number>0</number>
+     </property>
+     <property name="rightMargin" >
+      <number>0</number>
+     </property>
+     <property name="bottomMargin" >
+      <number>0</number>
+     </property>
+     <property name="horizontalSpacing" >
+      <number>6</number>
+     </property>
+     <property name="verticalSpacing" >
+      <number>6</number>
+     </property>
+     <item row="0" column="2" >
+      <spacer>
+       <property name="orientation" >
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" >
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item row="0" column="1" >
+      <widget class="QTimeEdit" name="mNetworkTimeEdit" >
+       <property name="displayFormat" >
+        <string>hh:mm:ss AP</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0" >
+      <widget class="QLabel" name="mVisibilityLabel" >
+       <property name="text" >
+        <string>Visibility</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1" >
+      <widget class="QLineEdit" name="mWeatherLineEdit" >
+       <property name="readOnly" >
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0" >
+      <widget class="QLabel" name="mNetworkTimeLabel" >
+       <property name="text" >
+        <string>Network Time</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0" >
+      <widget class="QLabel" name="mWeatherLabel" >
+       <property name="text" >
+        <string>Weather</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1" >
+      <widget class="QLineEdit" name="mVisibilityLineEdit" >
+       <property name="readOnly" >
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0" >
+      <spacer>
+       <property name="orientation" >
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" >
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

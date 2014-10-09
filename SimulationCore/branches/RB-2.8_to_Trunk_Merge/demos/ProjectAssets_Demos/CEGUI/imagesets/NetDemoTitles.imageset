@@ -1,0 +1,11 @@
+<?xml version="1.0" ?>
+<Imageset Name="NetDemoTitles" Imagefile="CEGUI/imagesets/NetDemoTitles.tga" NativeHorzRes="800" NativeVertRes="600" AutoScaled="true">
+
+   <Image Name="NETDEMO"   XPos="0" YPos="0"   Width="512" Height="70" />
+   <Image Name="CONNECT"   XPos="0" YPos="70"  Width="512" Height="70" />
+   <Image Name="READYROOM" XPos="0" YPos="140" Width="512" Height="80" />
+   <Image Name="OPTIONS"   XPos="0" YPos="220" Width="320" Height="80" />
+   <Image Name="QUIT"      XPos="0" YPos="300" Width="220" Height="80" />
+   <Image Name="LOADING"   XPos="0" YPos="380" Width="512" Height="80" />
+
+</Imageset>

@@ -1,0 +1,17 @@
+<shaderlist>
+   <shadergroup name="ToolsShaderGroup">
+      <shader name="Compass360Shader" default="yes">
+         <source type="Vertex">Shaders/Tools/Compass360.vert</source>
+         <source type="Fragment">Shaders/Tools/Compass360.frag</source>
+         <parameter name="diffuseTexture">
+            <texture2D textureUnit="0">
+               <source type="Auto"/>
+               <wrap axis="S" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+         <parameter name="screenRect">
+            <vec4 defaultValue="0.0 0.125 1.0 0.125"/>
+         </parameter>
+      </shader>
+   </shadergroup>
+</shaderlist>

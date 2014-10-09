@@ -1,0 +1,675 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>HLAOptions</class>
+ <widget class="QDialog" name="HLAOptions">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>626</width>
+    <height>948</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Network Options</string>
+  </property>
+  <property name="toolTip">
+   <string>These are the options you wish to associate with a HLA connection.</string>
+  </property>
+  <layout class="QGridLayout">
+   <property name="sizeConstraint">
+    <enum>QLayout::SetMinAndMaxSize</enum>
+   </property>
+   <item row="0" column="0">
+    <widget class="QGroupBox" name="mMainGroupBox">
+     <property name="title">
+      <string>Network Options</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <property name="sizeConstraint">
+       <enum>QLayout::SetMinAndMaxSize</enum>
+      </property>
+      <item>
+       <layout class="QGridLayout" name="gridLayout">
+        <property name="spacing">
+         <number>6</number>
+        </property>
+        <item row="2" column="0">
+         <widget class="QLabel" name="mConnectionTypeLabel">
+          <property name="text">
+           <string>Connection Type</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QComboBox" name="mConnectionTypeCombo">
+          <property name="currentIndex">
+           <number>0</number>
+          </property>
+          <property name="maxVisibleItems">
+           <number>5</number>
+          </property>
+          <property name="duplicatesEnabled">
+           <bool>false</bool>
+          </property>
+          <item>
+           <property name="text">
+            <string>(Select Type)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>HLA</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Client-Server</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QLineEdit" name="mConnectionNameLineEdit">
+          <property name="toolTip">
+           <string>This is the name of the connection. It must be unique.</string>
+          </property>
+          <property name="whatsThis">
+           <string>Name of the connection.</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="mConnectionNameLabel">
+          <property name="text">
+           <string>Connection Name</string>
+          </property>
+          <property name="buddy">
+           <cstring>mConnectionNameLineEdit</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="mMapLabel">
+          <property name="text">
+           <string>Map</string>
+          </property>
+          <property name="buddy">
+           <cstring>mMapLineEdit</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <layout class="QHBoxLayout" name="_2">
+          <property name="sizeConstraint">
+           <enum>QLayout::SetMinimumSize</enum>
+          </property>
+          <item>
+           <widget class="QLineEdit" name="mMapLineEdit">
+            <property name="toolTip">
+             <string>The map you select must correspond to the project context passed in on the command line.</string>
+            </property>
+            <property name="whatsThis">
+             <string>The map is the XML file which contains all of your game actors and events</string>
+            </property>
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="mMapToolButton">
+            <property name="text">
+             <string>...</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="mMapClearButton">
+            <property name="text">
+             <string>X</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QGroupBox" name="mHLAOptionsGroup">
+        <property name="title">
+         <string>HLA Options</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_3">
+         <property name="sizeConstraint">
+          <enum>QLayout::SetMinAndMaxSize</enum>
+         </property>
+         <property name="margin">
+          <number>6</number>
+         </property>
+         <item row="0" column="0">
+          <widget class="QLabel" name="mFedExNameLabel">
+           <property name="text">
+            <string>Federation Execution Name</string>
+           </property>
+           <property name="buddy">
+            <cstring>mFedExLineEdit</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="2">
+          <widget class="QLineEdit" name="mFedExLineEdit">
+           <property name="toolTip">
+            <string>The federation execution name (fedex) is the name of the federation that you wish to join in JSAF</string>
+           </property>
+           <property name="whatsThis">
+            <string>The federation execution name (fedex) is the name of the federation that you wish to join in JSAF.</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="mFederateNameLabel">
+           <property name="text">
+            <string>Federate Name</string>
+           </property>
+           <property name="buddy">
+            <cstring>mFederateNameLineEdit</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="2">
+          <widget class="QLineEdit" name="mFederateNameLineEdit">
+           <property name="toolTip">
+            <string>The Federate name is the identifier that will be used for you when you connect to the federation. </string>
+           </property>
+           <property name="whatsThis">
+            <string>The Federate name is the identifier that will be used for you when you connect to the federation.</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="mConfigurationResourceLabel">
+           <property name="text">
+            <string>Configuration Resource</string>
+           </property>
+           <property name="buddy">
+            <cstring>mConfigFileLineEdit</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="2">
+          <layout class="QHBoxLayout">
+           <item>
+            <widget class="QLineEdit" name="mConfigFileLineEdit">
+             <property name="toolTip">
+              <string>This configuration file is what maps Delta3D to JSAF entities. </string>
+             </property>
+             <property name="whatsThis">
+              <string>This configuration file is what maps Delta3D to JSAF entities. </string>
+             </property>
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QToolButton" name="mConfigFileToolButton">
+             <property name="text">
+              <string>...</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item row="3" column="0">
+          <widget class="QLabel" name="mFederationFileLabel">
+           <property name="text">
+            <string>Federation Resource</string>
+           </property>
+           <property name="buddy">
+            <cstring>mFedFileLineEdit</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="2">
+          <layout class="QHBoxLayout">
+           <item>
+            <widget class="QLineEdit" name="mFedFileLineEdit">
+             <property name="toolTip">
+              <string>The federation (fed) file is the file that defines the entities you will be using. </string>
+             </property>
+             <property name="whatsThis">
+              <string>The federation (fed) file is the file that defines the entities you will be using. </string>
+             </property>
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QToolButton" name="mFedFileToolButton">
+             <property name="text">
+              <string>...</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item row="4" column="0">
+          <widget class="QLabel" name="mRidFileLabel">
+           <property name="text">
+            <string>Rid File</string>
+           </property>
+           <property name="buddy">
+            <cstring>mRidFileLineEdit</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="2">
+          <layout class="QVBoxLayout">
+           <item>
+            <layout class="QHBoxLayout">
+             <item>
+              <widget class="QLineEdit" name="mRidFileLineEdit">
+               <property name="toolTip">
+                <string>This is the rid file to use for the RTI. It should match the rid file used by the JSAF you are connecting to. </string>
+               </property>
+               <property name="whatsThis">
+                <string>This is the rid file to use for the RTI. It should match the rid file used by the JSAF you are connecting to.</string>
+               </property>
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QToolButton" name="mRidFileToolButton">
+               <property name="text">
+                <string>...</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QToolButton" name="mClearRidButton">
+               <property name="text">
+                <string>X</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </item>
+         <item row="5" column="2">
+          <widget class="QComboBox" name="mRTIStandardCombo">
+           <item>
+            <property name="text">
+             <string>1.3</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>1516e</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Other</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item row="5" column="0">
+          <widget class="QLabel" name="mRTIStandardLabel">
+           <property name="text">
+            <string>RTI Standard Version</string>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="2">
+          <widget class="QLineEdit" name="mRTIStandardManualEdit">
+           <property name="toolTip">
+            <string>Enter the Library suffix.  It looks for dtHLAGM_{name} with OS appropriate extensions.</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QGroupBox" name="mClientServerGroup">
+        <property name="title">
+         <string>Client Server Options</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_2">
+         <property name="sizeConstraint">
+          <enum>QLayout::SetMinAndMaxSize</enum>
+         </property>
+         <property name="margin">
+          <number>6</number>
+         </property>
+         <item row="0" column="0">
+          <widget class="QLabel" name="mServerIPAddressLabel">
+           <property name="text">
+            <string>Server IP Address</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLineEdit" name="mServerIPAddressEdit">
+           <property name="toolTip">
+            <string>The IP Address of the server (ex 192.168.0.1).</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="mServerPortLabel">
+           <property name="text">
+            <string>Port</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QLineEdit" name="mServerPortEdit">
+           <property name="toolTip">
+            <string>The port number to connect to your server (ex 7239).</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QLineEdit" name="mServerGameNameEdit">
+           <property name="toolTip">
+            <string>The descriptive name for the network server you are connecting to (ex 'Demo').</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="mServerGameNameLabel">
+           <property name="text">
+            <string>Game Name</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0">
+          <widget class="QLabel" name="mServerGameVersionLabel">
+           <property name="text">
+            <string>Game Version</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="QLineEdit" name="mServerGameVersionEdit">
+           <property name="toolTip">
+            <string>The version of the server you are connecting to (ex 1, 2, 3).</string>
+           </property>
+           <property name="text">
+            <string>1</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QGroupBox" name="mDISGroup">
+        <property name="title">
+         <string>DIS Options</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_4">
+         <item row="0" column="0">
+          <widget class="QLabel" name="mDISIPAddressLabel">
+           <property name="text">
+            <string>IP Address</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLineEdit" name="mDISIPAddressEdit"/>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="mDISPortLabel">
+           <property name="text">
+            <string>Port</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QSpinBox" name="mDISPortEdit">
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+           <property name="maximum">
+            <number>65535</number>
+           </property>
+           <property name="value">
+            <number>62040</number>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0">
+          <widget class="QLabel" name="mDISExerciseIDLabel">
+           <property name="text">
+            <string>Exercise ID</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="QSpinBox" name="mDISExerciseIDEdit">
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+           <property name="maximum">
+            <number>255</number>
+           </property>
+           <property name="value">
+            <number>1</number>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="0">
+          <widget class="QLabel" name="mDISSiteIDLabel">
+           <property name="text">
+            <string>Site ID</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="1">
+          <widget class="QSpinBox" name="mDISSiteIDEdit">
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+           <property name="maximum">
+            <number>65535</number>
+           </property>
+           <property name="value">
+            <number>1</number>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="0">
+          <widget class="QLabel" name="mDISApplicationIDLabel">
+           <property name="text">
+            <string>Application ID</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="1">
+          <widget class="QSpinBox" name="mDISApplicationIDEdit">
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+           <property name="maximum">
+            <number>65535</number>
+           </property>
+           <property name="value">
+            <number>1</number>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="0">
+          <widget class="QLabel" name="mDISMTULabel">
+           <property name="text">
+            <string>MTU</string>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="1">
+          <widget class="QSpinBox" name="mDISMTUEdit">
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+           <property name="maximum">
+            <number>65535</number>
+           </property>
+           <property name="value">
+            <number>1500</number>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="0">
+          <widget class="QLabel" name="mDISActorLabel">
+           <property name="text">
+            <string>Actor XML File</string>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="1">
+          <layout class="QHBoxLayout" name="horizontalLayout">
+           <item>
+            <widget class="QLineEdit" name="mDISActorEdit">
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QToolButton" name="mDISActorToolButton">
+             <property name="text">
+              <string>...</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="mDISBroadcastLabel">
+           <property name="text">
+            <string>Is Broadcast port</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QCheckBox" name="mDISBroadcastPort"/>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <spacer name="verticalSpacer">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QDialogButtonBox" name="mButtonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <tabstops>
+  <tabstop>mFedExLineEdit</tabstop>
+  <tabstop>mFederateNameLineEdit</tabstop>
+  <tabstop>mMapLineEdit</tabstop>
+  <tabstop>mMapToolButton</tabstop>
+  <tabstop>mConfigFileLineEdit</tabstop>
+  <tabstop>mConfigFileToolButton</tabstop>
+  <tabstop>mFedFileLineEdit</tabstop>
+  <tabstop>mFedFileToolButton</tabstop>
+  <tabstop>mRidFileLineEdit</tabstop>
+  <tabstop>mRidFileToolButton</tabstop>
+  <tabstop>mButtonBox</tabstop>
+ </tabstops>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>mButtonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>HLAOptions</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>276</x>
+     <y>930</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mButtonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>HLAOptions</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>276</x>
+     <y>930</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mClearRidButton</sender>
+   <signal>clicked()</signal>
+   <receiver>mRidFileLineEdit</receiver>
+   <slot>clear()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>565</x>
+     <y>289</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>283</x>
+     <y>288</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mMapClearButton</sender>
+   <signal>clicked()</signal>
+   <receiver>mMapLineEdit</receiver>
+   <slot>clear()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>572</x>
+     <y>103</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>318</x>
+     <y>102</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

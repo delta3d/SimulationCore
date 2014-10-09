@@ -1,0 +1,23 @@
+SET(LIB_NAME     ${STEALTHGM_LIBRARY})
+
+SET(HEADER_PATH ${SimulationCore_SOURCE_DIR}/include/StealthViewer/GMApp)
+SET(SOURCE_PATH ${SimulationCore_SOURCE_DIR}/source/StealthViewer/GMApp)
+
+file(GLOB LIB_PUBLIC_HEADERS 
+   "${HEADER_PATH}/*.h")
+file(GLOB LIB_SOURCES 
+   "${SOURCE_PATH}/*.cpp")
+
+list(REMOVE_ITEM LIB_SOURCES ${SOURCE_PATH}/precomp.cpp)
+
+ADD_PRECOMPILED_HEADER(${LIB_NAME} prefix/SimCorePrefix.h prefix/SimCorePrefix.cpp LIB_SOURCES)
+
+set(LIB_DEPS
+   ${SIMCORE_LIBRARY}
+   ${SIMCOREHLA_LIBRARY}
+   ${RTI_LIBRARIES}
+)
+
+DELTA3D_ADD_LIBRARY(${LIB_NAME} STEALTH_GAME_LIBRARY SHARED)
+
+
