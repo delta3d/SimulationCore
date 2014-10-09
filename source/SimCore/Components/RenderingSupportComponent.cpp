@@ -52,6 +52,7 @@
 #include <dtUtil/log.h>
 #include <dtUtil/matrixutil.h>
 #include <dtUtil/stringutils.h>
+#include <dtUtil/nodemask.h>
 
 #include <osg/Camera>
 #include <osg/Geode>
@@ -136,15 +137,6 @@ namespace SimCore
       const std::string RenderingSupportComponent::DEFAULT_LIGHT_NAME = "DefaultLight";
 
       OpenThreads::Atomic RenderingSupportComponent::DynamicLight::mLightCounter(1U);
-
-      const unsigned RenderingSupportComponent::MAIN_CAMERA_CULL_MASK = 0xFFFFFFFF;
-      const unsigned RenderingSupportComponent::ADDITIONAL_CAMERA_CULL_MASK = 0x7FFFFFFF;
-      const unsigned RenderingSupportComponent::MAIN_CAMERA_ONLY_FEATURE_NODE_MASK = 0x80000000;
-
-	  const unsigned RenderingSupportComponent::RECEIVE_SHADOW_NODE_MASK = 1 << 30;
-      const unsigned RenderingSupportComponent::CAST_SHADOW_NODE_MASK = 1 << 29; 
-      const unsigned RenderingSupportComponent::DISABLE_SHADOW_NODE_MASK = ~(RECEIVE_SHADOW_NODE_MASK | CAST_SHADOW_NODE_MASK);
-
 
       //dyamic light constructor
       RenderingSupportComponent::DynamicLight::DynamicLight()
@@ -231,10 +223,6 @@ namespace SimCore
          InitializeCSM();
          InitializeFrameBuffer();
 
-         dtCore::Camera* cam = GetGameManager()->GetApplication().GetCamera();
-         osg::Camera* osgCam = cam->GetOSGCamera();
-         osgCam->setCullMask(MAIN_CAMERA_CULL_MASK);
-
          ///Added a callback to the camera this can set uniforms on each camera.
          dtCore::Camera::AddCameraSyncCallback(*this,
                   dtCore::Camera::CameraSyncCallback(this, &RenderingSupportComponent::UpdateViewMatrix));
@@ -299,7 +287,7 @@ namespace SimCore
          mNVGSRoot->setRenderOrder(osg::Camera::NESTED_RENDER);
          mGUIRoot->setRenderOrder(osg::Camera::POST_RENDER);
          mGUIRoot->setClearMask( GL_NONE );
-         mGUIRoot->setNodeMask(MAIN_CAMERA_ONLY_FEATURE_NODE_MASK);
+         mGUIRoot->setNodeMask(dtUtil::NodeMask::FOREGROUND);
       }
 
       ///////////////////////////////////////////////////////////////////////////////////////////////////

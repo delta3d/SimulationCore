@@ -50,10 +50,10 @@ namespace SimCore
       /** This class provides a weird ghost actor that shows how Dead Reckoning
        * works. It follows a real vehicle and shows where the remote version is.
        */
-      class SIMCORE_EXPORT DRGhostActor : public dtActors::GameMeshActor
+      class SIMCORE_EXPORT DRGhostActor : public dtActors::GameMeshDrawable
       {
          public:
-            typedef dtActors::GameMeshActor BaseClass;
+            typedef dtActors::GameMeshDrawable BaseClass;
 
             DRGhostActor(DRGhostActorProxy& proxy);
 
@@ -130,10 +130,10 @@ namespace SimCore
 
       ////////////////////////////////////////////////////////////////////////////////
       /// This is the proxy for the object.  It needs to build the property map, create the actor, and handle entered world.
-      class SIMCORE_EXPORT DRGhostActorProxy : public dtActors::GameMeshActorProxy
+      class SIMCORE_EXPORT DRGhostActorProxy : public dtActors::GameMeshActor
       {
          public:
-            typedef dtActors::GameMeshActorProxy BaseClass;
+            typedef dtActors::GameMeshActor BaseClass;
 
             DRGhostActorProxy();
             virtual void BuildPropertyMap();

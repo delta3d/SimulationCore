@@ -54,6 +54,8 @@ namespace SimCore
 
          /*virtual*/ osg::Vec3d GetSunPosition() const;
 
+         void BindShader(const std::string& shader, osg::Node* g);
+
       protected:
          virtual ~EphemerisEnvironmentActor();
       private:

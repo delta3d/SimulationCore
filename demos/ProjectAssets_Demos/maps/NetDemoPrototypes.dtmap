@@ -8,8 +8,8 @@
         <comment>Place for prototype actors</comment>
         <copyright>2009</copyright>
         <createTimestamp>2009-05-19T17:43:27.0-05:00</createTimestamp>
-        <lastUpdateTimestamp>2013-05-03T10:07:36-05:00</lastUpdateTimestamp>
-        <editorVersion>2.7.5</editorVersion>
+        <lastUpdateTimestamp>2014-09-04T22:45:33-05:00</lastUpdateTimestamp>
+        <editorVersion>2.8.0</editorVersion>
         <schemaVersion>1.0</schemaVersion>
     </header>
     <libraries>
@@ -31,6 +31,10 @@
             <type>NetDemo.LightTower</type>
             <id>09ed044c-13a7-46a6-91b5-69359b163d6b</id>
             <name>Light_Tower_25</name>
+            <property>
+                <name>Name</name>
+                <string>Light_Tower_25</string>
+            </property>
             <property>
                 <name>Translation</name>
                 <vec3>
@@ -70,6 +74,10 @@
             <type>NetDemo.Tower Actor</type>
             <id>0e3b3f6a-102c-4c53-a8d6-0e659eadaa2b</id>
             <name>Tower _14</name>
+            <property>
+                <name>Name</name>
+                <string>Tower _14</string>
+            </property>
             <property>
                 <name>Rotation</name>
                 <vec3>
@@ -136,6 +144,10 @@
             <id>1a8eca42-ad05-43a9-b3e9-2d9a91bda347</id>
             <name>Tower _20</name>
             <property>
+                <name>Name</name>
+                <string>Tower _20</string>
+            </property>
+            <property>
                 <name>Rotation</name>
                 <vec3>
                     <value1>-4.530045</value1>
@@ -200,6 +212,10 @@
             <type>NetDemo.FortActor</type>
             <id>20820f3b-14d4-4627-951c-4568852861a2</id>
             <name>FortPrototype_01</name>
+            <property>
+                <name>Name</name>
+                <string>FortPrototype_01</string>
+            </property>
             <property>
                 <name>Rotation</name>
                 <vec3>
@@ -284,6 +300,10 @@
             <id>25d04409-3818-4988-943f-f58d5b98e501</id>
             <name>Terrain1</name>
             <property>
+                <name>Name</name>
+                <string>Terrain1</string>
+            </property>
+            <property>
                 <name>Translation</name>
                 <vec3>
                     <value1>-57.000000</value1>
@@ -314,6 +334,10 @@
             <type>NetDemo.EnemyMothershipActor</type>
             <id>29331cc5-f74c-45ae-bb64-7e1e7cc4e1d9</id>
             <name>Mothership #2</name>
+            <property>
+                <name>Name</name>
+                <string>Mothership #2</string>
+            </property>
             <property>
                 <name>Rotation</name>
                 <vec3>
@@ -408,6 +432,10 @@
             <id>2a73107b-9adb-4daa-8cec-f2bfd456f7ef</id>
             <name>Tower _24</name>
             <property>
+                <name>Name</name>
+                <string>Tower _24</string>
+            </property>
+            <property>
                 <name>Rotation</name>
                 <vec3>
                     <value1>0.491326</value1>
@@ -473,6 +501,10 @@
             <id>2fcf3021-9c71-41ea-9f86-8ccb1e4ac6b9</id>
             <name>Light_Tower_17</name>
             <property>
+                <name>Name</name>
+                <string>Light_Tower_17</string>
+            </property>
+            <property>
                 <name>Translation</name>
                 <vec3>
                     <value1>-29.421722</value1>
@@ -512,6 +544,10 @@
             <id>3220801c-17d9-4c91-a68b-4243ccf7d784</id>
             <name>Light_Tower_22</name>
             <property>
+                <name>Name</name>
+                <string>Light_Tower_22</string>
+            </property>
+            <property>
                 <name>Translation</name>
                 <vec3>
                     <value1>-70.125168</value1>
@@ -550,6 +586,10 @@
             <type>NetDemo.LightTower</type>
             <id>33e4766e-85ba-4af9-b1da-ef55d11aad34</id>
             <name>Light_Tower_02</name>
+            <property>
+                <name>Name</name>
+                <string>Light_Tower_02</string>
+            </property>
             <property>
                 <name>Rotation</name>
                 <vec3>
@@ -597,6 +637,10 @@
             <type>NetDemo.Tower Actor</type>
             <id>37095cbf-11f2-4435-9644-e1887fe6b3d9</id>
             <name>Tower _13</name>
+            <property>
+                <name>Name</name>
+                <string>Tower _13</string>
+            </property>
             <property>
                 <name>Rotation</name>
                 <vec3>
@@ -662,6 +706,10 @@
             <type>NetDemo.EnemyMineActor</type>
             <id>3ad3f7d8-c4d4-4b91-a39f-cd837054d1e3</id>
             <name>Enemy Mine Prototype1</name>
+            <property>
+                <name>Name</name>
+                <string>Enemy Mine Prototype1</string>
+            </property>
             <property>
                 <name>Translation</name>
                 <vec3>
@@ -744,6 +792,10 @@
             <id>4021c6d8-a95c-4d2f-9267-de8ec07ef2ba</id>
             <name>Tower _08</name>
             <property>
+                <name>Name</name>
+                <string>Tower _08</string>
+            </property>
+            <property>
                 <name>Rotation</name>
                 <vec3>
                     <value1>4.479983</value1>
@@ -809,6 +861,10 @@
             <id>40e8ff80-5a26-41d7-bd74-f6a54b838dc9</id>
             <name>Tower 01</name>
             <property>
+                <name>Name</name>
+                <string>Tower 01</string>
+            </property>
+            <property>
                 <name>Rotation</name>
                 <vec3>
                     <value1>0.491326</value1>
@@ -873,6 +929,10 @@
             <type>NetDemo.EnemyMineActor</type>
             <id>462f65e6-2935-4d88-8940-19b7683fbf5c</id>
             <name>Enemy Mine Prototype2</name>
+            <property>
+                <name>Name</name>
+                <string>Enemy Mine Prototype2</string>
+            </property>
             <property>
                 <name>Translation</name>
                 <vec3>
@@ -955,6 +1015,10 @@
             <id>4bae075f-bccd-4683-865c-de740c49324d</id>
             <name>Tower _07</name>
             <property>
+                <name>Name</name>
+                <string>Tower _07</string>
+            </property>
+            <property>
                 <name>Rotation</name>
                 <vec3>
                     <value1>6.318279</value1>
@@ -1020,6 +1084,10 @@
             <id>4ea8c633-9880-40c9-a075-e5a94c608f50</id>
             <name>Light_Tower_19</name>
             <property>
+                <name>Name</name>
+                <string>Light_Tower_19</string>
+            </property>
+            <property>
                 <name>Translation</name>
                 <vec3>
                     <value1>-216.486908</value1>
@@ -1058,6 +1126,10 @@
             <type>NetDemo.Propelled Vehicle Actor</type>
             <id>540aeb75-fe36-48cc-ade2-dd19b68e762f</id>
             <name>Propelled Vehicle</name>
+            <property>
+                <name>Name</name>
+                <string>Propelled Vehicle</string>
+            </property>
             <property>
                 <name>Rotation</name>
                 <vec3>
@@ -1141,6 +1213,72 @@
                 <resourceType>Sounds</resourceType>
                 <resourceDisplayName>Sounds::SFX_Metal_Hit_Sound.wav</resourceDisplayName>
                 <resource>Sounds::SFX_Metal_Hit_Sound.wav</resource>
+            </property>
+            <property>
+                <name>Weapons</name>
+                <array>
+                    <size>2</size>
+                    <element>
+                        <index>0</index>
+                        <property>
+                            <name>NestedPropContainer</name>
+                            <propertyContainer>
+                                <property>
+                                    <name>WeaponSwapRootNode</name>
+                                    <string>dof_hotspot_01</string>
+                                </property>
+                                <property>
+                                    <name>WeaponPrototypeName</name>
+                                    <string>Weapon_MachineGun</string>
+                                </property>
+                                <property>
+                                    <name>ShooterPrototypeName</name>
+                                    <string>Particle_System_Weapon_GunWithTracer</string>
+                                </property>
+                                <property>
+                                    <name>WeaponHotSpotNode</name>
+                                    <string>hotspot_01</string>
+                                </property>
+                                <property>
+                                    <name>FiringParticleSystem</name>
+                                    <resourceType>Particles</resourceType>
+                                    <resourceDisplayName>Particles:weapon_gun_flash.osg</resourceDisplayName>
+                                    <resource>Particles:weapon_gun_flash.osg</resource>
+                                </property>
+                            </propertyContainer>
+                        </property>
+                    </element>
+                    <element>
+                        <index>1</index>
+                        <property>
+                            <name>NestedPropContainer</name>
+                            <propertyContainer>
+                                <property>
+                                    <name>WeaponSwapRootNode</name>
+                                    <string>dof_hotspot_01</string>
+                                </property>
+                                <property>
+                                    <name>WeaponPrototypeName</name>
+                                    <string>Weapon_Grenade</string>
+                                </property>
+                                <property>
+                                    <name>ShooterPrototypeName</name>
+                                    <string>Particle_System_Weapon_Grenade</string>
+                                </property>
+                                <property>
+                                    <name>WeaponHotSpotNode</name>
+                                    <string>hotspot_01</string>
+                                </property>
+                                <property>
+                                    <name>FiringParticleSystem</name>
+                                    <resourceType>Particles</resourceType>
+                                    <resourceDisplayName>Particles:weapon_gun_flash.osg</resourceDisplayName>
+                                    <resource>Particles:weapon_gun_flash.osg</resource>
+                                </property>
+                            </propertyContainer>
+                        </property>
+                    </element>
+                </array>
             </property>
             <property>
                 <name>Four Wheel Drive</name>
@@ -1270,77 +1408,15 @@
                 <name>Dead Reckoning Algorithm</name>
                 <enumerated>Velocity and Acceleration</enumerated>
             </property>
-            <property>
-                <name>Weapons</name>
-                <array>
-                    <size>2</size>
-                    <element>
-                        <index>0</index>
-                        <property>
-                            <name>NestedPropContainer</name>
-                            <propertyContainer>
-                                <property>
-                                    <name>WeaponSwapRootNode</name>
-                                    <string>dof_hotspot_01</string>
-                                </property>
-                                <property>
-                                    <name>WeaponPrototypeName</name>
-                                    <string>Weapon_MachineGun</string>
-                                </property>
-                                <property>
-                                    <name>ShooterPrototypeName</name>
-                                    <string>Particle_System_Weapon_GunWithTracer</string>
-                                </property>
-                                <property>
-                                    <name>WeaponHotSpotNode</name>
-                                    <string>hotspot_01</string>
-                                </property>
-                                <property>
-                                    <name>FiringParticleSystem</name>
-                                    <resourceType>Particles</resourceType>
-                                    <resourceDisplayName>Particles:weapon_gun_flash.osg</resourceDisplayName>
-                                    <resource>Particles:weapon_gun_flash.osg</resource>
-                                </property>
-                            </propertyContainer>
-                        </property>
-                    </element>
-                    <element>
-                        <index>1</index>
-                        <property>
-                            <name>NestedPropContainer</name>
-                            <propertyContainer>
-                                <property>
-                                    <name>WeaponSwapRootNode</name>
-                                    <string>dof_hotspot_01</string>
-                                </property>
-                                <property>
-                                    <name>WeaponPrototypeName</name>
-                                    <string>Weapon_Grenade</string>
-                                </property>
-                                <property>
-                                    <name>ShooterPrototypeName</name>
-                                    <string>Particle_System_Weapon_Grenade</string>
-                                </property>
-                                <property>
-                                    <name>WeaponHotSpotNode</name>
-                                    <string>hotspot_01</string>
-                                </property>
-                                <property>
-                                    <name>FiringParticleSystem</name>
-                                    <resourceType>Particles</resourceType>
-                                    <resourceDisplayName>Particles:weapon_gun_flash.osg</resourceDisplayName>
-                                    <resource>Particles:weapon_gun_flash.osg</resource>
-                                </property>
-                            </propertyContainer>
-                        </property>
-                    </element>
-                </array>
-            </property>
         </actor>
         <actor>
             <type>NetDemo.EnemyHelixActor</type>
             <id>68922ddc-fcc8-41d5-843b-a853eee3c2e8</id>
             <name>Enemy Helix Prototype</name>
+            <property>
+                <name>Name</name>
+                <string>Enemy Helix Prototype</string>
+            </property>
             <property>
                 <name>Translation</name>
                 <vec3>
@@ -1438,6 +1514,10 @@
             <type>NetDemo.HoverActor</type>
             <id>6bbb10f3-628b-4d29-a120-16891773ad45</id>
             <name>Hover Vehicle</name>
+            <property>
+                <name>Name</name>
+                <string>Hover Vehicle</string>
+            </property>
             <property>
                 <name>Translation</name>
                 <vec3>
@@ -1553,11 +1633,15 @@
             <id>70fda8c1-d3f1-4181-badc-4ad9d12df1fd</id>
             <name>Tower _28</name>
             <property>
+                <name>Name</name>
+                <string>Tower _28</string>
+            </property>
+            <property>
                 <name>Rotation</name>
                 <vec3>
                     <value1>6.316710</value1>
                     <value2>0.141175</value2>
-                    <value3>-1.282781</value3>
+                    <value3>-1.282754</value3>
                 </vec3>
             </property>
             <property>
@@ -1617,6 +1701,10 @@
             <type>NetDemo.FortActor</type>
             <id>7438548d-fcfd-404a-856d-264b22cefcfe</id>
             <name>FortPrototype</name>
+            <property>
+                <name>Name</name>
+                <string>FortPrototype</string>
+            </property>
             <property>
                 <name>Rotation</name>
                 <vec3>
@@ -1701,6 +1789,10 @@
             <id>7afec5f8-fada-4744-9474-f66fe556381d</id>
             <name>Tower _11</name>
             <property>
+                <name>Name</name>
+                <string>Tower _11</string>
+            </property>
+            <property>
                 <name>Rotation</name>
                 <vec3>
                     <value1>3.424593</value1>
@@ -1766,6 +1858,10 @@
             <id>7e153e8a-637d-49d1-926e-cfb1d347d1ef</id>
             <name>Tower _22</name>
             <property>
+                <name>Name</name>
+                <string>Tower _22</string>
+            </property>
+            <property>
                 <name>Rotation</name>
                 <vec3>
                     <value1>0.491326</value1>
@@ -1830,6 +1926,10 @@
             <type>NetDemo.Tower Actor</type>
             <id>7ec3b963-d278-443c-95ff-385c36f82744</id>
             <name>Tower _21</name>
+            <property>
+                <name>Name</name>
+                <string>Tower _21</string>
+            </property>
             <property>
                 <name>Rotation</name>
                 <vec3>
@@ -1929,6 +2029,10 @@
             <id>841b6aa3-a720-43fe-ab60-0eb90d5de74e</id>
             <name>Mothership #3</name>
             <property>
+                <name>Name</name>
+                <string>Mothership #3</string>
+            </property>
+            <property>
                 <name>Translation</name>
                 <vec3>
                     <value1>-204.774277</value1>
@@ -2014,6 +2118,10 @@
             <id>86d9ddfb-6ffb-43cf-b51d-3de907ef23b3</id>
             <name>Light_Tower_03</name>
             <property>
+                <name>Name</name>
+                <string>Light_Tower_03</string>
+            </property>
+            <property>
                 <name>Translation</name>
                 <vec3>
                     <value1>-555.642029</value1>
@@ -2052,6 +2160,10 @@
             <type>NetDemo.LightTower</type>
             <id>89077af0-8232-4855-b7a2-90287320f389</id>
             <name>Light_Tower_21</name>
+            <property>
+                <name>Name</name>
+                <string>Light_Tower_21</string>
+            </property>
             <property>
                 <name>Translation</name>
                 <vec3>
@@ -2092,11 +2204,15 @@
             <id>8bcb3f3e-30bf-4d74-b52f-9e34ba87eac7</id>
             <name>Tower _29</name>
             <property>
+                <name>Name</name>
+                <string>Tower _29</string>
+            </property>
+            <property>
                 <name>Rotation</name>
                 <vec3>
                     <value1>6.316710</value1>
                     <value2>0.141175</value2>
-                    <value3>-1.282781</value3>
+                    <value3>-1.282754</value3>
                 </vec3>
             </property>
             <property>
@@ -2190,6 +2306,10 @@
             <id>977bba90-77ae-4052-aaa9-3aa9f3a12dab</id>
             <name>Tower _26</name>
             <property>
+                <name>Name</name>
+                <string>Tower _26</string>
+            </property>
+            <property>
                 <name>Rotation</name>
                 <vec3>
                     <value1>0.491326</value1>
@@ -2255,6 +2375,10 @@
             <id>993d179d-0439-4689-9445-93cf6f25f5a9</id>
             <name>Start_Fort1</name>
             <property>
+                <name>Name</name>
+                <string>Start_Fort1</string>
+            </property>
+            <property>
                 <name>Translation</name>
                 <vec3>
                     <value1>-647.789551</value1>
@@ -2267,6 +2391,10 @@
             <type>NetDemo.Propelled Vehicle Actor</type>
             <id>9A74C29C-CFF7-4264-852A-5897458F664C</id>
             <name>HMMWV</name>
+            <property>
+                <name>Name</name>
+                <string>HMMWV</string>
+            </property>
             <property>
                 <name>Translation</name>
                 <vec3>
@@ -2447,11 +2575,15 @@
             <id>a7964526-8e8e-4094-b2ce-0ec08c3053ec</id>
             <name>Tower _09</name>
             <property>
+                <name>Name</name>
+                <string>Tower _09</string>
+            </property>
+            <property>
                 <name>Rotation</name>
                 <vec3>
                     <value1>6.316710</value1>
                     <value2>0.141175</value2>
-                    <value3>-1.282781</value3>
+                    <value3>-1.282754</value3>
                 </vec3>
             </property>
             <property>
@@ -2511,6 +2643,10 @@
             <type>NetDemo.Tower Actor</type>
             <id>ae93a604-774e-4788-87bd-696773fb35ac</id>
             <name>Tower _02</name>
+            <property>
+                <name>Name</name>
+                <string>Tower _02</string>
+            </property>
             <property>
                 <name>Rotation</name>
                 <vec3>
@@ -2576,6 +2712,10 @@
             <type>NetDemo.EnemyMothershipActor</type>
             <id>af0b3de2-c9cc-4110-95b5-4b1ee9443007</id>
             <name>Mothership #1</name>
+            <property>
+                <name>Name</name>
+                <string>Mothership #1</string>
+            </property>
             <property>
                 <name>Rotation</name>
                 <vec3>
@@ -2670,6 +2810,10 @@
             <id>af138366-9dc4-49bf-97c5-9c3eb3617c2a</id>
             <name>Light_Tower_15</name>
             <property>
+                <name>Name</name>
+                <string>Light_Tower_15</string>
+            </property>
+            <property>
                 <name>Translation</name>
                 <vec3>
                     <value1>-61.042347</value1>
@@ -2708,6 +2852,10 @@
             <type>NetDemo.LightTower</type>
             <id>af6b8428-f4b4-41d0-b5bf-c7e805673619</id>
             <name>Light_Tower_01</name>
+            <property>
+                <name>Name</name>
+                <string>Light_Tower_01</string>
+            </property>
             <property>
                 <name>Translation</name>
                 <vec3>
@@ -2764,6 +2912,10 @@
             <type>NetDemo.Tower Actor</type>
             <id>c13988f2-b683-4831-8c81-06f600dad5ea</id>
             <name>Tower _05</name>
+            <property>
+                <name>Name</name>
+                <string>Tower _05</string>
+            </property>
             <property>
                 <name>Rotation</name>
                 <vec3>
@@ -2830,9 +2982,13 @@
             <id>c1e32a6c-82e0-4af0-986a-56514b37d568</id>
             <name>Tower _12</name>
             <property>
+                <name>Name</name>
+                <string>Tower _12</string>
+            </property>
+            <property>
                 <name>Rotation</name>
                 <vec3>
-                    <value1>-2.794166</value1>
+                    <value1>-2.794138</value1>
                     <value2>0.000000</value2>
                     <value3>0.000000</value3>
                 </vec3>
@@ -2894,6 +3050,10 @@
             <type>NetDemo.Tower Actor</type>
             <id>c2a8fea9-f122-476c-b945-092d276d1095</id>
             <name>Tower _06</name>
+            <property>
+                <name>Name</name>
+                <string>Tower _06</string>
+            </property>
             <property>
                 <name>Rotation</name>
                 <vec3>
@@ -2960,6 +3120,10 @@
             <id>c8fa2604-389f-47b6-8130-b1ce3797a91a</id>
             <name>Tower _23</name>
             <property>
+                <name>Name</name>
+                <string>Tower _23</string>
+            </property>
+            <property>
                 <name>Rotation</name>
                 <vec3>
                     <value1>0.491326</value1>
@@ -3025,6 +3189,10 @@
             <id>d31e1a9d-1dd7-4e02-863e-88cc259cf740</id>
             <name>Light_Tower_20</name>
             <property>
+                <name>Name</name>
+                <string>Light_Tower_20</string>
+            </property>
+            <property>
                 <name>Translation</name>
                 <vec3>
                     <value1>-215.133942</value1>
@@ -3063,6 +3231,10 @@
             <type>NetDemo.Tower Actor</type>
             <id>d629fec5-0cd3-4c4a-834e-e9ded464d8ff</id>
             <name>Tower _27</name>
+            <property>
+                <name>Name</name>
+                <string>Tower _27</string>
+            </property>
             <property>
                 <name>Rotation</name>
                 <vec3>
@@ -3128,6 +3300,10 @@
             <type>NetDemo.FortActor</type>
             <id>d8786f5b-7062-4f87-97e7-a141e3433739</id>
             <name>FortPrototype_02</name>
+            <property>
+                <name>Name</name>
+                <string>FortPrototype_02</string>
+            </property>
             <property>
                 <name>Rotation</name>
                 <vec3>
@@ -3212,11 +3388,15 @@
             <id>e48c5d49-e12e-44ad-b97f-79a85e05a6af</id>
             <name>Tower _15</name>
             <property>
+                <name>Name</name>
+                <string>Tower _15</string>
+            </property>
+            <property>
                 <name>Rotation</name>
                 <vec3>
                     <value1>6.316710</value1>
                     <value2>0.141175</value2>
-                    <value3>-1.282781</value3>
+                    <value3>-1.282754</value3>
                 </vec3>
             </property>
             <property>
@@ -3276,6 +3456,10 @@
             <type>NetDemo.Tower Actor</type>
             <id>f520ce6c-eb0d-4bd0-a4cd-c4010e467e3d</id>
             <name>Tower _04</name>
+            <property>
+                <name>Name</name>
+                <string>Tower _04</string>
+            </property>
             <property>
                 <name>Rotation</name>
                 <vec3>
@@ -3341,6 +3525,10 @@
             <type>NetDemo.Tower Actor</type>
             <id>f8d2547b-bab9-4382-8771-5481460e5392</id>
             <name>Tower _10</name>
+            <property>
+                <name>Name</name>
+                <string>Tower _10</string>
+            </property>
             <property>
                 <name>Rotation</name>
                 <vec3>

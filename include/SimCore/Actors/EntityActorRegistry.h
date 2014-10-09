@@ -107,8 +107,6 @@ namespace SimCore
 
             static dtCore::RefPtr<dtCore::ActorType> SOUND_ACTOR_TYPE;
 
-            static dtCore::RefPtr<dtCore::ActorType> DYNAMIC_PARTICLE_SYSTEM_ACTOR_TYPE;
-
             static dtCore::RefPtr<dtCore::ActorType> LOGIC_CONDITIONAL_ACTOR_TYPE;
             static dtCore::RefPtr<dtCore::ActorType> LOGIC_ON_EVENT_ACTOR_TYPE;
 

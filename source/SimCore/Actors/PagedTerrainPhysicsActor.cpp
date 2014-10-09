@@ -451,40 +451,23 @@ namespace SimCore
             }
             else
             {
+               dtCore::RefPtr<dtPhysics::PhysicsObject> newTile = new dtPhysics::PhysicsObject(nameOfNode);
+               dtPhysics::PhysicsActComp* ac;
+               GetComponent(ac);
+               ac->AddPhysicsObject(*newTile);
+               newTile->SetName(nameOfNode);
+               newTile->SetMechanicsType(dtPhysics::MechanicsType::STATIC);
+               newTile->SetPrimitiveType(dtPhysics::PrimitiveType::TERRAIN_MESH);
+               newTile->SetCollisionGroup(SimCore::CollisionGroup::GROUP_TERRAIN);
+               // We don't want this skin thickness, we want the thickness on the geometry.
+               newTile->SetSkinThickness(0.06);
 
-               DrawableTriangleVisitor<dtPhysics::TriangleRecorder> dtv(*this);
-               nodeToParse->accept(dtv);
-
-               if (!dtv.mFunctor.mVertices.empty())
+               if (newTile->Create(nodeToParse))
                {
-                  dtCore::RefPtr<dtPhysics::PhysicsObject> newTile = new dtPhysics::PhysicsObject(nameOfNode);
-                  dtPhysics::PhysicsActComp* ac;
-                  GetComponent(ac);
-                  ac->AddPhysicsObject(*newTile);
-                  newTile->SetName(nameOfNode);
-                  newTile->SetMechanicsType(dtPhysics::MechanicsType::STATIC);
-                  newTile->SetPrimitiveType(dtPhysics::PrimitiveType::TERRAIN_MESH);
-                  newTile->SetCollisionGroup(SimCore::CollisionGroup::GROUP_TERRAIN);
-                  // We don't want this skin thickness, we want the thickness on the geometry.
-                  newTile->SetSkinThickness(0.0);
-
-                  dtPhysics::VertexData data;
-                  data.mIndices = &dtv.mFunctor.mIndices.front();
-                  data.mVertices = (dtPhysics::Real*)&dtv.mFunctor.mVertices.front();
-                  data.mNumIndices = dtv.mFunctor.mIndices.size();
-                  data.mNumVertices = dtv.mFunctor.mVertices.size();
-                  dtCore::Transform xform;
-                  dtCore::RefPtr<dtPhysics::Geometry> geom = dtPhysics::Geometry::CreateConcaveGeometry(xform, data, 0);
-                  geom->SetMargin(0.06);
-
-                  newTile->CreateFromGeometry(*geom);
                   return newTile.get();
                }
-               else
-               {
-                  return NULL;
-               }
             }
+            return NULL;
          }
 
          //////////////////////////////////////////////////////////////////////
@@ -505,7 +488,7 @@ namespace SimCore
             newTile->SetPrimitiveType(dtPhysics::PrimitiveType::TERRAIN_MESH);
             newTile->SetCollisionGroup(SimCore::CollisionGroup::GROUP_TERRAIN);
             newTile->SetSkinThickness(0.06);
-            newTile->CreateFromProperties(node);
+            newTile->Create(node);
             // We don't want this skin thickness, we want the thickness on the geometry.
             newTile->SetSkinThickness(0.00);
 

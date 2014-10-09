@@ -90,7 +90,7 @@ namespace NetDemo
 
       // TODO - Maybe use sphere instead???
       dtPhysics::PhysicsObject *physObj = GetPhysicsActComp()->GetMainPhysicsObject();
-      physObj->CreateFromProperties(GetNonDamagedFileNode());
+      physObj->Create(GetNonDamagedFileNode());
       physObj->SetTransform(ourTransform);
       physObj->SetActive(true);
 

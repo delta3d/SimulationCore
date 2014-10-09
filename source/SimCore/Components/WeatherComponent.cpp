@@ -18,7 +18,6 @@
 *
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
- * @author Chris Rodgers
  * @author Eddie Johnson
  */
 #include <prefix/SimCorePrefix.h>
@@ -46,6 +45,7 @@
 #include <dtGame/messagetype.h>
 
 #include <dtUtil/mathdefines.h>
+#include <dtUtil/nodemask.h>
 
 #include <SimCore/Actors/UniformAtmosphereActor.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
@@ -75,12 +75,7 @@ namespace SimCore
          mBaseElevation(0.0), // 600 was the old default height for some terrains
          mMaxVisibility(40000.0),
          mMaxElevationVis(15000.0),
-         mUpdatesEnabled(true),
-         mLastCloudType(dtABC::Weather::CLOUD_FEW),
-         mLastWindType(dtABC::Weather::WIND_NONE),
-         mLastVisType(dtABC::Weather::VIS_FAR),
-         mLastTimePeriod(dtABC::Weather::TIME_DAY),
-         mLastSeason(dtABC::Weather::SEASON_SUMMER)
+         mUpdatesEnabled(true)
       {
          mPrecipRate = 0;
          mPrecipEffect = NULL;
@@ -535,7 +530,7 @@ namespace SimCore
                   if(!mPrecipEffect.valid())
                   {
                      mPrecipEffect = new osgParticle::PrecipitationEffect;
-                     mPrecipEffect->setNodeMask(0x00000010);
+                     mPrecipEffect->setNodeMask(dtUtil::NodeMask::TRANSPARENT_EFFECTS);//prior value- (0x00000010);
 
                      SetStateSet(mPrecipEffect.get());
 
@@ -566,7 +561,7 @@ namespace SimCore
                }
             }
             // Notify the app that the environment actor has changed.
-            mEnvironmentActor->GetGameActorProxy().NotifyFullActorUpdate();
+            mEnvironmentActor->GetOwner()->NotifyFullActorUpdate();
          }
          else
          {

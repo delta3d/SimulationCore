@@ -422,7 +422,7 @@ namespace SimCore
             GetGameManager()->GetComponentByName(dtNetGM::ClientNetworkComponent::DEFAULT_NAME, clientNetworkComponent);
             if(clientNetworkComponent != NULL)
             {
-               if (clientNetworkComponent->IsConnectedClient())
+               if (clientNetworkComponent->IsConnected())
                {
                   //clientNetworkComponent->ShutdownNetwork();
                   clientNetworkComponent->Disconnect();
@@ -453,7 +453,7 @@ namespace SimCore
          // check client server
          dtNetGM::ClientNetworkComponent* clientNetworkComponent;
          GetGameManager()->GetComponentByName(dtNetGM::ClientNetworkComponent::DEFAULT_NAME, clientNetworkComponent);
-         if(clientNetworkComponent != NULL && clientNetworkComponent->IsConnectedClient())
+         if(clientNetworkComponent != NULL && clientNetworkComponent->IsConnected())
          {
             return true;
          }
