@@ -65,7 +65,7 @@ class OSGEphemerisTests : public CPPUNIT_NS::TestFixture
 
       void TestDateTime()
       {
-         osgEphemeris::DateTime osgEphDT(true);
+         osgEphemeris::DateTime osgEphDT;
          dtUtil::DateTime dtUtilDT;
          dtUtilDT.SetToGMTTime();
          osgEphDT.now();

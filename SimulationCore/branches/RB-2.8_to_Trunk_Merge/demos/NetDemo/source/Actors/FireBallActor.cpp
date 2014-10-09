@@ -78,7 +78,7 @@ namespace NetDemo
       GetTransform(ourTransform);
       dtPhysics::PhysicsObject* physObj = GetPhysicsActComp()->GetMainPhysicsObject();
       physObj->SetTransform(ourTransform);     
-      physObj->CreateFromProperties(NULL);
+      physObj->Create(NULL);
 
       BaseClass::OnEnteredWorld();
 

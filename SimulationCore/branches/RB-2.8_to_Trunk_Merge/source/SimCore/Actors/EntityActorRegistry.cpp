@@ -53,7 +53,6 @@
 #include <SimCore/Actors/WaterGridActor.h>
 #include <SimCore/Actors/SurfaceVesselActor.h>
 #include <dtAudio/soundactor.h>
-#include <SimCore/Actors/DynamicParticleSystem.h>
 #include <SimCore/Actors/PhysicsParticleSystemActor.h>
 #include <SimCore/Actors/MunitionParticlesActor.h>
 #include <SimCore/Actors/FourWheelVehicleActor.h>
@@ -300,9 +299,6 @@ namespace SimCore
       RefPtr<dtCore::ActorType> EntityActorRegistry::SOUND_ACTOR_TYPE(
                new dtCore::ActorType("SoundActor", "SimCore", "A sound actor that only takes up a source when it's not playing."));
 
-      RefPtr<dtCore::ActorType> EntityActorRegistry::DYNAMIC_PARTICLE_SYSTEM_ACTOR_TYPE(
-         new dtCore::ActorType("DynamicParticleSystemActor", "SimCore", "A particle system actor that can dynamically adjust various attributes of a particle system over time.."));
-
       // Game Event Logic pieces
       RefPtr<dtCore::ActorType> EntityActorRegistry::LOGIC_CONDITIONAL_ACTOR_TYPE(
          new dtCore::ActorType("LogicConditionalActor", "SimCore.Logic", "A true & false data class that is used by one of the Logic behavior classes such as LogicOnEventActor."));
@@ -434,8 +430,6 @@ namespace SimCore
          mActorFactory->RegisterType<DRGhostActorProxy>(DR_GHOST_ACTOR_TYPE.get());
          mActorFactory->RegisterType<SurfaceVesselActorProxy>(SURFACE_VESSEL_ACTOR_TYPE.get());
          mActorFactory->RegisterType<dtAudio::SoundActor>(SOUND_ACTOR_TYPE.get());
-
-         mActorFactory->RegisterType<DynamicParticleSystemActorProxy>(DYNAMIC_PARTICLE_SYSTEM_ACTOR_TYPE.get());
 
          // Game Event Logic pieces
          mActorFactory->RegisterType<LogicConditionalActor>(LOGIC_CONDITIONAL_ACTOR_TYPE.get());

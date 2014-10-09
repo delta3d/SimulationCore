@@ -77,7 +77,7 @@ namespace NetDemo
 
       dtPhysics::PhysicsObject *physObj = GetPhysicsActComp()->GetMainPhysicsObject();
       physObj->SetTransform(ourTransform);
-      physObj->CreateFromProperties(&GetScaleMatrixTransform());
+      physObj->Create(&GetScaleMatrixTransform());
 
       if(!IsRemote())
       {

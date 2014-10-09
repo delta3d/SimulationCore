@@ -23,16 +23,22 @@
  */
 
 #include <prefix/SimCorePrefix.h>
-#include <SimCore/Actors/EphemerisEnvironmentActor.h>
-#include <osgEphemeris/EphemerisData.h>
+
+#include <dtUtil/nodemask.h>
+
 #include <dtCore/shadermanager.h>
-#include <ctime>
+
+#include <SimCore/Actors/EphemerisEnvironmentActor.h>
+#include <SimCore/Components/RenderingSupportComponent.h>
 
 #include <osg/Depth>
 #include <osg/Fog>
 #include <osg/StateSet>
 #include <osg/Projection>
-#include <SimCore/Components/RenderingSupportComponent.h>
+
+#include <osgEphemeris/EphemerisData.h>
+
+#include <ctime>
 
 namespace SimCore
 {
@@ -80,7 +86,8 @@ namespace SimCore
          mEphemerisModel->setSunLightNum(0);
          mEphemerisModel->setMoveWithEyePoint(true);
 
-         osgEphemeris::DateTime osgDT(true);
+         osgEphemeris::DateTime osgDT;
+         osgDT.now();
          mEphemerisModel->setDateTime(osgDT);
 
          //FogSphere SetUp
@@ -99,8 +106,8 @@ namespace SimCore
          states->setRenderingHint( osg::StateSet::TRANSPARENT_BIN );
          states->setRenderBinDetails( SimCore::Components::RenderingSupportComponent::RENDER_BIN_ENVIRONMENT, "RenderBin" );
 
-		 //disable shadows on the ephemeris 
-		 mEphemerisModel->setNodeMask(SimCore::Components::RenderingSupportComponent::DISABLE_SHADOW_NODE_MASK);
+         //disable shadows on the ephemeris 
+         mEphemerisModel->setNodeMask(dtUtil::NodeMask::BACKGROUND);
 
          //Set up the Fog Sphere so that it can be rendered
          osg::StateSet* fogSphereStates = mFogSphere->getOrCreateStateSet();
@@ -112,8 +119,8 @@ namespace SimCore
          fogSphereStates->setMode(GL_BLEND, osg::StateAttribute::ON);
          fogSphereStates->setRenderBinDetails( SimCore::Components::RenderingSupportComponent::RENDER_BIN_ENVIRONMENT + 2, "RenderBin" );
 
-		 //disable shadows on the fog sphere
-		 mFogSphere->setNodeMask(SimCore::Components::RenderingSupportComponent::DISABLE_SHADOW_NODE_MASK);
+         //disable shadows on the fog sphere
+         mFogSphere->setNodeMask(dtUtil::NodeMask::BACKGROUND);
 
       }
 
@@ -162,16 +169,22 @@ namespace SimCore
          BBVisitor bbv;
          mEphemerisModel->traverse(bbv);
 
+         BindShader("EphemerisGroup", mEphemerisModel.get());
+         BindShader("EphemerisFogGroup", mFogSphere.get());
 
-         dtCore::ShaderManager::GetInstance().UnassignShaderFromNode(*mFogSphere.get());
+      }
+
+      void EphemerisEnvironmentActor::BindShader(const std::string& shader, osg::Node* g)
+      {
+
+         dtCore::ShaderManager::GetInstance().UnassignShaderFromNode(*g);
 
          //First get the shader group assigned to this actor.
-         const dtCore::ShaderGroup *shaderGroup =
-         dtCore::ShaderManager::GetInstance().FindShaderGroupPrototype("EphemerisFogGroup");
+         const dtCore::ShaderGroup *shaderGroup = dtCore::ShaderManager::GetInstance().FindShaderGroupPrototype(shader);
 
          if (shaderGroup == NULL)
          {
-            LOG_INFO("Could not find shader group EphemerisFogGroup");
+            LOG_INFO("Could not find shader group");
             return;
          }
 
@@ -181,7 +194,7 @@ namespace SimCore
          {
             if (defaultShader != NULL)
             {
-               dtCore::ShaderManager::GetInstance().AssignShaderFromPrototype(*defaultShader, *mFogSphere.get());
+               dtCore::ShaderManager::GetInstance().AssignShaderFromPrototype(*defaultShader, *g);
             }
             else
             {
@@ -194,16 +207,17 @@ namespace SimCore
          }
       }
 
+
       /////////////////////////////////////////////////////////////
       void EphemerisEnvironmentActor::SetEphemerisFog(bool fog_toggle)
       {
          if(fog_toggle == true)
          {
-            mFogSphere->setNodeMask(~0);
+            mFogSphere->setNodeMask(dtUtil::NodeMask::BACKGROUND);
          }
          else
          {
-            mFogSphere->setNodeMask(0);
+            mFogSphere->setNodeMask(dtUtil::NodeMask::NOTHING);
          }
       }
 

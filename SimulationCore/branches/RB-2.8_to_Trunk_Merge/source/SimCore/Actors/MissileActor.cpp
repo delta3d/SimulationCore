@@ -204,15 +204,15 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////
-      dtActors::ParticleSystemActorProxy* MissileActor::GetSmokeTrail()
+      dtActors::ParticleSystemActor* MissileActor::GetSmokeTrail()
       {
          return mSmokeTrail.get();
       }
 
       //////////////////////////////////////////////////////////
-      void MissileActor::SetSmokeTrail(dtActors::ParticleSystemActorProxy* particleProxy )
+      void MissileActor::SetSmokeTrail(dtActors::ParticleSystemActor* particleActor )
       {
-         mSmokeTrail = particleProxy;
+         mSmokeTrail = particleActor;
       }
 
       //////////////////////////////////////////////////////////
