@@ -204,7 +204,10 @@ namespace SimCore
    /////////////////////////////////////////////////////////////////////////////
    void StealthMotionModel::OnMessage(MessageData *data)
    {
-      // Get the max speed of the motion model.
+      if (GetTarget() == NULL)
+         return;
+
+         // Get the max speed of the motion model.
       // Ensure that the motion model does not travel any faster
       // than the imposed minimum and maximum speed limits.
       //
