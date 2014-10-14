@@ -188,7 +188,7 @@ namespace SimCore
             return;
          }
 
-         const dtCore::ShaderProgram *defaultShader = shaderGroup->GetDefaultShader();
+         const dtCore::ShaderProgram* defaultShader = shaderGroup->GetDefaultShader();
 
          try
          {
