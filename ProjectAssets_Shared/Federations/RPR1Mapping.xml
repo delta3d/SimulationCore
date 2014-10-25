@@ -435,7 +435,7 @@
             <attrToProp>
                <hlaName>StanceCode</hlaName>
                <hlaDataType>UNSIGNED_INT_TYPE</hlaDataType>
-               <gameName>Stance</gameName>
+               <gameName>Current Stance</gameName>
                <gameDataType>ENUMERATION</gameDataType>
                <default>UPRIGHT_STANDING</default>
                 <enumerationMapping>

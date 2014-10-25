@@ -95,7 +95,7 @@ namespace SimCore
       HumanActorProxy::StanceEnum HumanActorProxy::StanceEnum::JUMPING("JUMPING",
             dtAnim::BasicStanceEnum::STANDING);
       HumanActorProxy::StanceEnum HumanActorProxy::StanceEnum::SITTING("SITTING",
-            dtAnim::BasicStanceEnum::KNEELING);
+            dtAnim::BasicStanceEnum::SITTING);
       HumanActorProxy::StanceEnum HumanActorProxy::StanceEnum::SQUATTING("SQUATTING",
             dtAnim::BasicStanceEnum::KNEELING);
       HumanActorProxy::StanceEnum HumanActorProxy::StanceEnum::CROUCHING("CROUCHING",
@@ -116,7 +116,7 @@ namespace SimCore
       }
 
       const dtUtil::RefString HumanActorProxy::PROPERTY_WEAPON_MESH("Primary Weapon Mesh Name");
-      const dtUtil::RefString HumanActorProxy::PROPERTY_STANCE("Stance");
+      const dtUtil::RefString HumanActorProxy::PROPERTY_STANCE("Current Stance");
       const dtUtil::RefString HumanActorProxy::PROPERTY_PRIMARY_WEAPON_STATE("Primary Weapon State");
       const dtUtil::RefString HumanActorProxy::PROPERTY_MIN_RUN_VELOCITY("Minimum Run Velocity");
       const dtUtil::RefString HumanActorProxy::PROPERTY_FULL_RUN_VELOCITY("Full Run Velocity");
