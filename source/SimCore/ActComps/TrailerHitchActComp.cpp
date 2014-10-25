@@ -89,7 +89,7 @@ namespace SimCore
 
       void TrailerHitchActComp::BuildPropertyMap()
       {
-         typedef dtCore::PropertyRegHelper<TrailerHitchActComp&, TrailerHitchActComp> PropRegType;
+         typedef dtCore::PropertyRegHelper<TrailerHitchActComp> PropRegType;
          PropRegType propRegHelper(*this, this, "Trailer Hitch");
 
          DT_REGISTER_PROPERTY(

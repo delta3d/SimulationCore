@@ -146,7 +146,7 @@ namespace SimCore
       {
          BaseClass::BuildPropertyMap();
 
-         typedef dtCore::PropertyRegHelper<BodyPaintStateActComp&, BodyPaintStateActComp> PropRegType;
+         typedef dtCore::PropertyRegHelper<BodyPaintStateActComp> PropRegType;
          PropRegType propRegHelper(*this, this, "Body Paint (States)");
 
          // VEC PROPERTIES

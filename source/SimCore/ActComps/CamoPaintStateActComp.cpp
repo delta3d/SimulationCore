@@ -443,7 +443,7 @@ namespace SimCore
       {
          BaseClass::BuildPropertyMap();
 
-         typedef dtCore::PropertyRegHelper<CamoPaintStateActComp&, CamoPaintStateActComp> PropRegType;
+         typedef dtCore::PropertyRegHelper<CamoPaintStateActComp> PropRegType;
          PropRegType propRegHelper(*this, this, "Camo Paint Id");
 
          // INT PROPERTIES
