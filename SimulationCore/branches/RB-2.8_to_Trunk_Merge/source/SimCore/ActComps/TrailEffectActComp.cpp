@@ -547,7 +547,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void TrailEffectActComp::BuildPropertyMap()
       {
-         typedef dtCore::PropertyRegHelper<TrailEffectActComp&, TrailEffectActComp> PropRegType;
+         typedef dtCore::PropertyRegHelper<TrailEffectActComp> PropRegType;
          PropRegType propRegHelper(*this, this, "Trail Effect");
 
          // FLOAT PROPERTIES
