@@ -157,7 +157,7 @@ namespace SimCore
       mt->addChild(&bodyNode);
 
       GetMainPhysicsObject()->SetTransform(transformForRot);
-      GetMainPhysicsObject()->CreateFromProperties(mt);
+      GetMainPhysicsObject()->Create(mt);
 
       dtGame::GameActorProxy* ga = NULL;
       GetOwner(ga);

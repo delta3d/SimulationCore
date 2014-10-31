@@ -326,7 +326,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void BodyPaintActComp::BuildPropertyMap()
       {
-         typedef dtCore::PropertyRegHelper<BodyPaintActComp&, BodyPaintActComp> PropRegType;
+         typedef dtCore::PropertyRegHelper<BodyPaintActComp> PropRegType;
          PropRegType propRegHelper(*this, this, "Body Paint");
 
          DT_REGISTER_PROPERTY_WITH_NAME_AND_LABEL(

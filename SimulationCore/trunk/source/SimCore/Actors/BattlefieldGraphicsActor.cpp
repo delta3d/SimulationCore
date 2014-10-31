@@ -35,6 +35,7 @@
 #include <dtCore/propertymacros.h>
 #include <dtCore/arrayactorpropertycomplex.h>
 #include <dtCore/shadermanager.h>
+#include <dtUtil/nodemask.h>
 
 #include <SimCore/Components/RenderingSupportComponent.h>
 
@@ -263,7 +264,7 @@ namespace SimCore
 
             mGeode->addDrawable(geom.get());
 
-			GetDrawable()->GetOSGNode()->setNodeMask(SimCore::Components::RenderingSupportComponent::DISABLE_SHADOW_NODE_MASK);
+            GetDrawable()->GetOSGNode()->setNodeMask(dtUtil::NodeMask::TRANSPARENT_EFFECTS);
 
             GetDrawable()->GetOSGNode()->asGroup()->addChild(mGeode.get());
             GetDrawable()->GetOSGNode()->asGroup()->addChild(mTopGeode.get());
@@ -791,11 +792,11 @@ namespace SimCore
          {
             if(mEnableTopGeometry)
             {
-               mTopGeode->setNodeMask(0xFFFFFFFF);
+               mTopGeode->setNodeMask(dtUtil::NodeMask::EVERYTHING);
             }
             else
             {
-               mTopGeode->setNodeMask(0x0);
+               mTopGeode->setNodeMask(dtUtil::NodeMask::NOTHING);
             }
          }
       }

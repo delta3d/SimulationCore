@@ -33,6 +33,7 @@
 #include <osg/Texture2D>
 #include <osgDB/ReadFile>
 #include <dtUtil/functor.h>
+#include <dtUtil/nodemask.h>
 #include <dtCore/camera.h>
 #include <dtCore/shadermanager.h>
 #include <dtCore/shaderprogram.h>
@@ -82,7 +83,7 @@ namespace SimCore
 
          if(mRoot.valid())
          {
-            mRoot->setNodeMask(enable?0xFFFFFFFF:0x0);
+            mRoot->setNodeMask(enable ? dtUtil::NodeMask::FOREGROUND : dtUtil::NodeMask::NOTHING);
          }
       }
 

@@ -181,27 +181,6 @@ namespace SimCore
              */
             int DetachParticles();
 
-            /**
-             * Method for registering the remote tick handler.
-             */
-            void RegisterForRemoteTicks();
-
-            /**
-             * Method for unregistering the remote tick handler.
-             */
-            void UnregisterForRemoteTicks();
-
-            /**
-             * Method for registering the local/remote tick handler
-             * relevant to the owner actors local/remote mode.
-             */
-            void RegisterTickHandlers();
-            
-            /**
-             * Method for unregistering the local/remote tick handler
-             * relevant to the owner actors local/remote mode.
-             */
-            void UnregisterTickHandlers();
 
             /**
              * Method for setting the absolute position of the particle effect.

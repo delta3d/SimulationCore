@@ -107,7 +107,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void WeaponSwapActComp::BuildPropertyMap()
       {
-         typedef dtCore::PropertyRegHelper<WeaponSwapActComp&, WeaponSwapActComp> PropRegType;
+         typedef dtCore::PropertyRegHelper<WeaponSwapActComp> PropRegType;
          PropRegType propRegHelper(*this, this, "WeaponSwap");
 
          DT_REGISTER_PROPERTY(

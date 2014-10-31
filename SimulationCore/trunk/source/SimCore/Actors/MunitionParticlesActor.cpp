@@ -480,7 +480,7 @@ namespace SimCore
          newObject->SetExtents(mPhysicsActComp->GetDimensions());
          newObject->SetTransform(xform);
          newObject->SetNotifyCollisions(true);
-         newObject->CreateFromProperties(particle->mObj->GetOSGNode());
+         newObject->Create(particle->mObj->GetOSGNode());
          newActor = newObject.get();
 
          if( orientDrawable )

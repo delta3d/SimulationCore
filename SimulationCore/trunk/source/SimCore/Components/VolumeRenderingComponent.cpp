@@ -30,6 +30,8 @@
 
 #include <dtUtil/mathdefines.h>
 #include <dtUtil/noisetexture.h>
+#include <dtUtil/nodemask.h>
+#include <dtUtil/cullmask.h>
 
 #include <dtABC/application.h>
 //#include <dtCore/deltawin.h>
@@ -331,7 +333,7 @@ namespace SimCore
       //CreateDepthPrePass("sceneDepth", 16, 16);
       GetGameManager()->GetScene().GetSceneNode()->addChild(mRootNode.get());
 
-      mRootNode->setNodeMask(RenderingSupportComponent::MAIN_CAMERA_ONLY_FEATURE_NODE_MASK);
+      mRootNode->setNodeMask(dtUtil::NodeMask::VOLUMETRIC_EFFECTS );
 
       CreateNoiseTexture();
 
@@ -1125,7 +1127,7 @@ namespace SimCore
             radius2Sqr = p2l2 ? 1.0f / p2l2 : 0.0f;
 
             // Find a vector orthogonal to n.
-            osg::Vec3 basis(1.f, 0.f, 0.f);
+            osg::Vec3 basis(1.0f, 0.0f, 0.0f);
             if(std::abs(basis * n) > 0.999)
             {
                basis.set(0.0f, 1.0f, 0.0f);
@@ -1198,7 +1200,6 @@ namespace SimCore
       mDepthView->SetScene(&GetGameManager()->GetScene());
       GetGameManager()->GetApplication().AddView(*mDepthView);
 
-      //the rear view texture is used as the render target for the rear view mirror
       mDepthTexture = CreateDepthTexture(width, height);
 
       mDepthCamera->GetOSGCamera()->setReferenceFrame(osg::Transform::RELATIVE_RF);
@@ -1216,7 +1217,7 @@ namespace SimCore
 
       mDepthCamera->GetOSGCamera()->setRenderOrder(osg::Camera::PRE_RENDER);
       mDepthCamera->GetOSGCamera()->setClearMask(GL_DEPTH_BUFFER_BIT);
-      mDepthCamera->GetOSGCamera()->setCullMask(SimCore::Components::RenderingSupportComponent::ADDITIONAL_CAMERA_CULL_MASK);
+      mDepthCamera->GetOSGCamera()->setCullMask(dtUtil::CullMask::ADDITIONAL_CAMERA_MASK);
       mDepthCamera->GetOSGCamera()->setClearColor(osg::Vec4(0.0, 0.0, 1.0, 1.0));
 
       mDepthTextureUniform = new osg::Uniform(osg::Uniform::SAMPLER_2D, "depthTexture");

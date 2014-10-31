@@ -128,7 +128,7 @@ namespace SimCore
       {
          const dtUtil::RefString VEH_GROUP   = "Wheeled Vehicle Keyboard Input";
 
-         typedef dtCore::PropertyRegHelper<KeyboardWheeledVehicleInputActComp&, KeyboardWheeledVehicleInputActComp> PropRegType;
+         typedef dtCore::PropertyRegHelper<KeyboardWheeledVehicleInputActComp> PropRegType;
          PropRegType propRegHelper(*this, this, VEH_GROUP);
 
          DT_REGISTER_PROPERTY_WITH_LABEL(NumUpdatesUntilFullSteeringAngle, "Num updates until full steering angle",

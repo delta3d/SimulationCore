@@ -27,7 +27,7 @@
 
 namespace dtActors
 {
-   class ParticleSystemActorProxy;
+   class ParticleSystemActor;
 }
 
 namespace dtCore
@@ -72,9 +72,9 @@ namespace SimCore
 
          void LoadSmokeTrailFile(const std::string& fileName);
 
-         void SetSmokeTrail( dtActors::ParticleSystemActorProxy* particleProxy );
+         void SetSmokeTrail( dtActors::ParticleSystemActor* particleActor );
 
-         dtActors::ParticleSystemActorProxy* GetSmokeTrail();
+         dtActors::ParticleSystemActor* GetSmokeTrail();
 
          void ScheduleSmokeTrailDelete();
 
@@ -88,7 +88,7 @@ namespace SimCore
       private:
 
          dtCore::RefPtr<dtCore::ParticleSystem> mFlame;
-         dtCore::RefPtr<dtActors::ParticleSystemActorProxy> mSmokeTrail;
+         dtCore::RefPtr<dtActors::ParticleSystemActor> mSmokeTrail;
 
       };
 

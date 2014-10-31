@@ -81,14 +81,7 @@ namespace SimCore
       {
          public:
             typedef unsigned LightID;
-            static const unsigned MAIN_CAMERA_CULL_MASK;
-            static const unsigned ADDITIONAL_CAMERA_CULL_MASK;
-            static const unsigned MAIN_CAMERA_ONLY_FEATURE_NODE_MASK;
             
-            static const unsigned RECEIVE_SHADOW_NODE_MASK;
-            static const unsigned CAST_SHADOW_NODE_MASK;
-            static const unsigned DISABLE_SHADOW_NODE_MASK;
-
             class SIMCORE_EXPORT LightType: public dtUtil::Enumeration
             {
                DECLARE_ENUM(LightType)

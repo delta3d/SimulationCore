@@ -84,7 +84,7 @@ namespace Utils
     * @return true if it moves the transform.
     */
    bool SIMCORE_EXPORT KeepTransformOnGround(dtCore::Transform& xform, dtCore::Transformable& terrainActor, float dropHeight,
-      float maxDepthBelow = -1.f, float maxHeightAbove = -1.f);
+      float maxDepthBelow = -1.0f, float maxHeightAbove = -1.0f);
 
    /**
     * Uses an isector to check if an object's transform is too high or two low and should be adjusted to be on the terrain.
