@@ -383,7 +383,6 @@ namespace StealthGM
       gameManager.AddComponent(*new StealthGM::ViewerConfigComponent,
                                dtGame::GameManager::ComponentPriority::LOWER);
 
-      //this enables night vision
       dtCore::RefPtr<SimCore::Components::RenderingSupportComponent> renderingSupportComponent
          = new SimCore::Components::RenderingSupportComponent();
       renderingSupportComponent->SetEnableCullVisitor(false);
@@ -398,7 +397,7 @@ namespace StealthGM
       if(!IsUIRunning())
       {
          const std::string fedFile = dtCore::Project::GetInstance().
-            GetResourcePath(dtCore::ResourceDescriptor(mFedFileResource, mFedFileResource));
+            GetResourcePath(dtCore::ResourceDescriptor(mFedFileResource));
          // Capture HLA connection parameters for the input component to use later in record/playback
          // state swapping. Transitions to IDLE should join the network; PLAYBACK should leave
          // the connection to the network.
