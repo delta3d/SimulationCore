@@ -31,6 +31,7 @@
 #include <dtUtil/exception.h>
 #include <dtUtil/fileutils.h>
 #include <dtUtil/log.h>
+#include <dtUtil/nodemask.h>
 #include <osgDB/FileUtils>
 #include <osg/Geode>
 #include <osg/Geometry>
@@ -1646,11 +1647,11 @@ namespace SimCore
          mVisible = visible;
          if (mVisible)
          {
-            GetOSGNode()->setNodeMask(0xFFFFFFFF);
+            GetOSGNode()->setNodeMask(dtUtil::NodeMask::BACKGROUND);
          }
          else
          {
-            GetOSGNode()->setNodeMask(0);
+            GetOSGNode()->setNodeMask(dtUtil::NodeMask::NOTHING);
          }
       }
 

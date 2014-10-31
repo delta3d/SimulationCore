@@ -101,7 +101,7 @@ namespace SimCore
 
       ///////////////////////////////////////////////////////////////////////////////////
       DRGhostActor::DRGhostActor(DRGhostActorProxy& proxy)
-      : dtActors::GameMeshActor(proxy)
+      : dtActors::GameMeshDrawable(proxy)
       , mSlaveUpdatedParticleIsActive(false)
       , mPosUpdatedParticleCountdown(0)
       , mVelocityArrowColor(0.2f, 0.2f, 1.0f)

@@ -26,6 +26,8 @@
 #include <dtUtil/exception.h>
 #include <dtUtil/mathdefines.h>
 #include <dtUtil/matrixutil.h>
+#include <dtUtil/nodemask.h>
+
 #include <dtCore/project.h>
 #include <dtCore/scene.h>
 #include <dtCore/system.h>
@@ -219,7 +221,7 @@ namespace SimCore
          mNode = new osg::MatrixTransform();
          mNode->addChild(geode);
 
-		 mNode->setNodeMask(SimCore::Components::RenderingSupportComponent::DISABLE_SHADOW_NODE_MASK);
+         mNode->setNodeMask(dtUtil::NodeMask::BACKGROUND);
 
          //add a camera callback for updates
          dtCore::Camera::AddCameraSyncCallback(*this,

@@ -214,12 +214,6 @@ namespace SimCore
          double mMaxElevationVis;
          bool   mUpdatesEnabled;
 
-         dtABC::Weather::CloudType mLastCloudType;
-         dtABC::Weather::WindType mLastWindType;
-         dtABC::Weather::VisibilityType mLastVisType;
-         dtABC::Weather::TimePeriod mLastTimePeriod;
-         dtABC::Weather::Season mLastSeason;
-
          dtCore::RefPtr<Actors::UniformAtmosphereActor> mAtmosphere;
          dtCore::ObserverPtr<Actors::DayTimeActorProxy> mDayTime;
 

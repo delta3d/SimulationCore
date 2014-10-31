@@ -84,7 +84,7 @@ namespace NetDemo
 
       dtPhysics::PhysicsObject* physObj = GetPhysicsActComp()->GetMainPhysicsObject();
       physObj->SetTransform(ourTransform);
-      physObj->CreateFromProperties(GetNonDamagedFileNode());
+      physObj->Create(GetNonDamagedFileNode());
 
       if(!IsRemote())
       {

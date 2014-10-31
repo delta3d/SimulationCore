@@ -427,9 +427,9 @@ namespace SimCore
                if (!loadSuccess && mTerrainNode.valid())
                {
                   //if we didn't find a pre-baked static mesh but we did have a renderable terrain node
-                  //then just bake a static collision mesh with that and spit out a warning
+                  //then just bake a static collision mesh with that
                   mHelper->GetMainPhysicsObject()->SetTransform(xform);
-                  mHelper->GetMainPhysicsObject()->CreateFromProperties(mTerrainNode.get());
+                  mHelper->GetMainPhysicsObject()->Create(mTerrainNode.get());
                   loadSuccess = true;
                }
 
@@ -462,12 +462,9 @@ namespace SimCore
             std::string filename = dtUtil::FindFileInPathList(fileToLoad);
             if (!filename.empty())
             {
-               dtPhysics::PhysicsReaderWriter::PhysicsTriangleData data;
-               data.mFaces = new osg::UIntArray();
-               data.mMaterialFlags = new osg::UIntArray();
-               data.mVertices = new osg::Vec3Array();
+               dtCore::RefPtr<dtPhysics::VertexData> vertData = new dtPhysics::VertexData;
 
-               if (dtPhysics::PhysicsReaderWriter::LoadTriangleDataFile(data, fileToLoad))
+               if (dtPhysics::PhysicsReaderWriter::LoadTriangleDataFile(*vertData, fileToLoad))
                {
                   dtCore::Transform geometryWorld;
                   GetTransform(geometryWorld);
@@ -476,14 +473,8 @@ namespace SimCore
                   newTile->SetTransform(geometryWorld);
                   newTile->SetMechanicsType(dtPhysics::MechanicsType::STATIC);
                   newTile->SetPrimitiveType(dtPhysics::PrimitiveType::TERRAIN_MESH);
-                  
-                  dtPhysics::VertexData vertData;
-                  vertData.mIndices = &(data.mFaces->at(0));
-                  vertData.mNumIndices = data.mFaces->size();
-                  vertData.mVertices = &(data.mVertices->at(0)[0]);
-                  vertData.mNumVertices = data.mVertices->size();
 
-                  dtCore::RefPtr<dtPhysics::Geometry> geom = dtPhysics::Geometry::CreateConcaveGeometry(geometryWorld, vertData, 0);
+                  dtCore::RefPtr<dtPhysics::Geometry> geom = dtPhysics::Geometry::CreateConcaveGeometry(geometryWorld, *vertData, 0);
                   newTile->CreateFromGeometry(*geom);
 
                   newTile->SetCollisionGroup(SimCore::CollisionGroup::GROUP_TERRAIN);
@@ -604,7 +595,8 @@ namespace SimCore
          {
             mTerrainNode = mLoadNodeTask->GetLoadedNode();
 
-            osg::StateSet* ss = mTerrainNode->getOrCreateStateSet();
+            //osg::StateSet* ss =
+            mTerrainNode->getOrCreateStateSet();
             //ss->setRenderBinDetails(SimCore::Components::RenderingSupportComponent::RENDER_BIN_TERRAIN, "TerrainBin");
 
             // Run a visitor to switch to VBO's instead of DrawArrays (the OSG default)

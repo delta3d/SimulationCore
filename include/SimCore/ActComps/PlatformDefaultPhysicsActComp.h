@@ -54,11 +54,13 @@ namespace SimCore
             if (physObj != NULL)
             {
                dtCore::Transform xform;
-               dtCore::Transformable* drawable = NULL;
-               GetOwner(drawable);
-               if (drawable != NULL)
+               dtGame::GameActorProxy* owner = NULL;
+               GetOwner(owner);
+               dtCore::Transformable* xformable;
+               owner->GetDrawable(xformable);
+               if (xformable != NULL)
                {
-                  drawable->GetTransform(xform);
+                  xformable->GetTransform(xform);
                }
 
                physObj->SetTransformAsVisual(xform);
@@ -163,7 +165,7 @@ namespace SimCore
             // Note, this must be done after the visual to body transform is set because the origin
             // offset may be adjusted if the primitive type is a box, sphere, or cylinder and the center
             // of the bounding box doesn't match the center of the mesh
-            physObj->CreateFromProperties(node, true, checkValue);
+            physObj->Create(node, true, checkValue);
 
             mLastLoadDamageState = &plat->GetDamageState();
          }

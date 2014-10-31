@@ -26,6 +26,7 @@
 #include <osg/Geode>
 #include <osg/StateSet>
 #include <osg/MatrixTransform>
+#include <dtUtil/nodemask.h>
 #include <SimCore/Actors/VolumetricLine.h>
 #include <SimCore/Components/RenderingSupportComponent.h>
 
@@ -95,7 +96,7 @@ namespace SimCore
          geode->setStateSet( states.get() );
          geode->addDrawable( mGeom.get() );
 
-		 geode->setNodeMask(SimCore::Components::RenderingSupportComponent::DISABLE_SHADOW_NODE_MASK);
+         geode->setNodeMask(dtUtil::NodeMask::TRANSPARENT_EFFECTS);
 
          // Attach the shader
          dtCore::ShaderManager::GetInstance().AssignShaderFromPrototype( *shader, *geode );
