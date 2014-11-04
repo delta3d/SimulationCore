@@ -1,13 +1,13 @@
 <shaderlist>
    <shadergroup name="UnderWaterTerrainShaderGroup">
       <shader name="TerrainShader" default="yes">
-         <source type="Vertex">Shaders/Base/vertex_functions.vert</source>
-         <source type="Vertex">Shaders/Base/terrain_functions.vert</source>
-         <source type="Fragment">Shaders/Base/fragment_functions.frag</source>
-         <source type="Fragment">Shaders/Base/terrain_functions.frag</source>
-         <source type="Vertex">Shaders/Base/terrain_underwater.vert</source>
-         <source type="Fragment">Shaders/Base/water_functions.frag</source>
-         <source type="Fragment">Shaders/Base/terrain_underwater.frag</source>
+         <source type="Vertex">Shaders/SharedBase/vertex_functions.vert</source>
+         <source type="Vertex">Shaders/SharedBase/terrain_functions.vert</source>
+         <source type="Fragment">Shaders/SharedBase/fragment_functions.frag</source>
+         <source type="Fragment">Shaders/SharedBase/terrain_functions.frag</source>
+         <source type="Vertex">Shaders/SharedBase/terrain_underwater.vert</source>
+         <source type="Fragment">Shaders/SharedBase/water_functions.frag</source>
+         <source type="Fragment">Shaders/SharedBase/terrain_underwater.frag</source>
          <parameter name="baseTexture">
             <texture2D textureUnit="0">
                <source type="Auto"/>
