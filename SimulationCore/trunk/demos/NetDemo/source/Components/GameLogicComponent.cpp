@@ -75,6 +75,7 @@ namespace NetDemo
       AddState(&NetDemoState::STATE_GAME_QUIT);
       AddState(&NetDemoState::STATE_GAME_UNKNOWN);
       AddState(&NetDemoState::STATE_SCORE_SCREEN);
+      SetName(dtGame::GameStateComponent::DEFAULT_NAME);
    }
 
    //////////////////////////////////////////////////////////////////////////
