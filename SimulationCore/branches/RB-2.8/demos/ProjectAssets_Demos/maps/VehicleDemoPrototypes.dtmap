@@ -1,0 +1,645 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="delta3dMap" xsi:schemaLocation="delta3dMap map.xsd">
+    <header>
+        <name>VehicleDemoPrototypes</name>
+        <description></description>
+        <author>Curtiss Murphy, David Guthrie</author>
+        <comment>Place for prototype actors</comment>
+        <copyright>2009</copyright>
+        <createTimestamp>2009-05-19T17:43:27.0-05:00</createTimestamp>
+        <lastUpdateTimestamp>2014-11-04T11:24:58-05:00</lastUpdateTimestamp>
+        <editorVersion>2.8.0</editorVersion>
+        <schemaVersion>1.0</schemaVersion>
+    </header>
+    <libraries>
+        <library>
+            <name>dtPhysics</name>
+            <version></version>
+        </library>
+        <library>
+            <name>SimCore</name>
+            <version></version>
+        </library>
+        <library>
+            <name>NetDemo</name>
+            <version></version>
+        </library>
+    </libraries>
+    <actors>
+        <actor>
+            <type>NetDemo.Propelled Vehicle Actor</type>
+            <id>540aeb75-fe36-48cc-ade2-dd19b68e762f</id>
+            <name>Propelled Vehicle</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>CustomizableVehicleShaderGroup</string>
+            </property>
+            <property>
+                <name>Rotation</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>57.673561</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>3.870934</value1>
+                    <value2>285.795654</value2>
+                    <value3>5.197449</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>PROTOTYPE</enumerated>
+            </property>
+            <property>
+                <name>Fire particles</name>
+                <resourceType>Particles</resourceType>
+                <resourceDisplayName>Particles:nd_BurningVehicleSmall.osg</resourceDisplayName>
+                <resource>Particles:nd_BurningVehicleSmall.osg</resource>
+            </property>
+            <property>
+                <name>Munition Damage Table</name>
+                <string>VehicleDamageType</string>
+            </property>
+            <property>
+                <name>Default Scale</name>
+                <vec3>
+                    <value1>1.500000</value1>
+                    <value2>1.500000</value2>
+                    <value3>1.500000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Non-damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Vehicles:Truck.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Vehicles:Truck.ive</resource>
+            </property>
+            <property>
+                <name>Damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Vehicles:Truck.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Vehicles:Truck.ive</resource>
+            </property>
+            <property>
+                <name>Destroyed actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Vehicles:Truck.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Vehicles:Truck.ive</resource>
+            </property>
+            <property>
+                <name>SOUND_EFFECT_IGNITION</name>
+                <resourceType>Sounds</resourceType>
+                <resourceDisplayName>Sounds::Ignition.wav</resourceDisplayName>
+                <resource>Sounds::Ignition.wav</resource>
+            </property>
+            <property>
+                <name>SOUND_EFFECT_VEHICLE_LOOP</name>
+                <resourceType>Sounds</resourceType>
+                <resourceDisplayName>Sounds::Vehicle_Idle.wav</resourceDisplayName>
+                <resource>Sounds::Vehicle_Idle.wav</resource>
+            </property>
+            <property>
+                <name>SOUND_EFFECT_BRAKE</name>
+                <resourceType>Sounds</resourceType>
+                <resourceDisplayName>Sounds::BrakeSound.wav</resourceDisplayName>
+                <resource>Sounds::BrakeSound.wav</resource>
+            </property>
+            <property>
+                <name>SOUND_EFFECT_COLLISION_HIT</name>
+                <resourceType>Sounds</resourceType>
+                <resourceDisplayName>Sounds::SFX_Metal_Hit_Sound.wav</resourceDisplayName>
+                <resource>Sounds::SFX_Metal_Hit_Sound.wav</resource>
+            </property>
+            <property>
+                <name>Weapons</name>
+                <array>
+                    <size>2</size>
+                    <element>
+                        <index>0</index>
+                        <property>
+                            <name>NestedPropContainer</name>
+                            <propertyContainer>
+                                <property>
+                                    <name>WeaponSwapRootNode</name>
+                                    <string>dof_hotspot_01</string>
+                                </property>
+                                <property>
+                                    <name>WeaponPrototypeName</name>
+                                    <string>Weapon_MachineGun</string>
+                                </property>
+                                <property>
+                                    <name>ShooterPrototypeName</name>
+                                    <string>Particle_System_Weapon_GunWithTracer</string>
+                                </property>
+                                <property>
+                                    <name>WeaponHotSpotNode</name>
+                                    <string>hotspot_01</string>
+                                </property>
+                                <property>
+                                    <name>FiringParticleSystem</name>
+                                    <resourceType>Particles</resourceType>
+                                    <resourceDisplayName>Particles:weapon_gun_flash.osg</resourceDisplayName>
+                                    <resource>Particles:weapon_gun_flash.osg</resource>
+                                </property>
+                            </propertyContainer>
+                        </property>
+                    </element>
+                    <element>
+                        <index>1</index>
+                        <property>
+                            <name>NestedPropContainer</name>
+                            <propertyContainer>
+                                <property>
+                                    <name>WeaponSwapRootNode</name>
+                                    <string>dof_hotspot_01</string>
+                                </property>
+                                <property>
+                                    <name>WeaponPrototypeName</name>
+                                    <string>Weapon_Grenade</string>
+                                </property>
+                                <property>
+                                    <name>ShooterPrototypeName</name>
+                                    <string>Particle_System_Weapon_Grenade</string>
+                                </property>
+                                <property>
+                                    <name>WeaponHotSpotNode</name>
+                                    <string>hotspot_01</string>
+                                </property>
+                                <property>
+                                    <name>FiringParticleSystem</name>
+                                    <resourceType>Particles</resourceType>
+                                    <resourceDisplayName>Particles:weapon_gun_flash.osg</resourceDisplayName>
+                                    <resource>Particles:weapon_gun_flash.osg</resource>
+                                </property>
+                            </propertyContainer>
+                        </property>
+                    </element>
+                </array>
+            </property>
+            <property>
+                <name>Four Wheel Drive</name>
+                <boolean>true</boolean>
+            </property>
+            <property>
+                <name>FrontSuspensionRestLength</name>
+                <float>0.31999999</float>
+            </property>
+            <property>
+                <name>FrontSuspensionSpringFreq</name>
+                <float>1.3</float>
+            </property>
+            <property>
+                <name>FrontSuspensionDamperFactor</name>
+                <float>0.38</float>
+            </property>
+            <property>
+                <name>FrontTireSlip</name>
+                <float>1.2</float>
+            </property>
+            <property>
+                <name>FrontTireValue</name>
+                <float>2</float>
+            </property>
+            <property>
+                <name>FrontTireAsymptoteSlip</name>
+                <float>2</float>
+            </property>
+            <property>
+                <name>FrontTireAsymptoteValue</name>
+                <float>1</float>
+            </property>
+            <property>
+                <name>RearSuspensionRestLength</name>
+                <float>0.31999999</float>
+            </property>
+            <property>
+                <name>RearSuspensionSpringFreq</name>
+                <float>1.4</float>
+            </property>
+            <property>
+                <name>RearSuspensionDamperFactor</name>
+                <float>0.38</float>
+            </property>
+            <property>
+                <name>RearTireSlip</name>
+                <float>1.6</float>
+            </property>
+            <property>
+                <name>RearTireValue</name>
+                <float>2</float>
+            </property>
+            <property>
+                <name>RearTireAsymptoteSlip</name>
+                <float>2</float>
+            </property>
+            <property>
+                <name>RearTireAsymptoteValue</name>
+                <float>1</float>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>be123458-111d-4ec8-bd51-dd49d31abc00</actorId>
+            </property>
+            <property>
+                <name>Default Collision Group</name>
+                <integer>1</integer>
+            </property>
+            <property>
+                <name>chassis: Origin Offset</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.100000</value2>
+                    <value3>0.340000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>chassis: Dimensions</name>
+                <vec3>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>chassis: Mass</name>
+                <float>1800</float>
+            </property>
+            <property>
+                <name>chassis: Skin Thickness</name>
+                <float>0.039999999</float>
+            </property>
+            <property>
+                <name>chassis: Notify Collisions</name>
+                <boolean>true</boolean>
+            </property>
+            <property>
+                <name>chassis: Moment Of Inertia</name>
+                <vec3>
+                    <value1>9000.000000</value1>
+                    <value2>2100.000000</value2>
+                    <value3>4000.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Engine Torque</name>
+                <float>8100</float>
+            </property>
+            <property>
+                <name>Max Break Torque</name>
+                <float>40</float>
+            </property>
+            <property>
+                <name>Max Steer Angle</name>
+                <float>25</float>
+            </property>
+            <property>
+                <name>mVehicleTopSpeedReverse</name>
+                <float>45</float>
+            </property>
+            <property>
+                <name>NumUpdatesUntilFullSteeringAngle</name>
+                <integer>50</integer>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+        </actor>
+        <actor>
+            <type>NetDemo.HoverActor</type>
+            <id>6bbb10f3-628b-4d29-a120-16891773ad45</id>
+            <name>Hover Vehicle</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleVehicleShaderGroup</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-214.779831</value1>
+                    <value2>195.855698</value2>
+                    <value3>-10.573267</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>PROTOTYPE</enumerated>
+            </property>
+            <property>
+                <name>Fire particles</name>
+                <resourceType>Particles</resourceType>
+                <resourceDisplayName>Particles:nd_BurningVehicleSmall.osg</resourceDisplayName>
+                <resource>Particles:nd_BurningVehicleSmall.osg</resource>
+            </property>
+            <property>
+                <name>Max Damage Amount</name>
+                <float>5</float>
+            </property>
+            <property>
+                <name>Force Affiliation</name>
+                <enumerated>FRIENDLY</enumerated>
+            </property>
+            <property>
+                <name>Munition Damage Table</name>
+                <string>VehicleDamageType</string>
+            </property>
+            <property>
+                <name>Non-damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:HoverTank.ive</resourceDisplayName>
+                <resource>StaticMeshes:HoverTank.ive</resource>
+            </property>
+            <property>
+                <name>Damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:HoverTank.ive</resourceDisplayName>
+                <resource>StaticMeshes:HoverTank.ive</resource>
+            </property>
+            <property>
+                <name>Destroyed actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:HoverTank.ive</resourceDisplayName>
+                <resource>StaticMeshes:HoverTank.ive</resource>
+            </property>
+            <property>
+                <name>VehiclesSeatConfigActorNameTable</name>
+                <string>Vehicle_Driver_Config</string>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>be123458-111d-4ec8-bd51-dd49d31abc00</actorId>
+            </property>
+            <property>
+                <name>Physics Mass</name>
+                <float>1000</float>
+            </property>
+            <property>
+                <name>Default Collision Group</name>
+                <integer>1</integer>
+            </property>
+            <property>
+                <name>VehicleBody: Collision Group</name>
+                <integer>1</integer>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+        </actor>
+        <actor>
+            <type>dtcore.Player Start</type>
+            <id>993d179d-0439-4689-9445-93cf6f25f5a9</id>
+            <name>PlayerStart</name>
+            <property>
+                <name>Rotation</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>132.199966</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-229.386337</value1>
+                    <value2>-136.863663</value2>
+                    <value3>4.359209</value3>
+                </vec3>
+            </property>
+        </actor>
+        <actor>
+            <type>NetDemo.Propelled Vehicle Actor</type>
+            <id>9A74C29C-CFF7-4264-852A-5897458F664C</id>
+            <name>HMMWV</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>CustomizableVehicleShaderGroup</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>86.895264</value1>
+                    <value2>51.273102</value2>
+                    <value3>-7.545535</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>PROTOTYPE</enumerated>
+            </property>
+            <property>
+                <name>Fire particles</name>
+                <resourceType>Particles</resourceType>
+                <resourceDisplayName>Particles:nd_BurningVehicleSmall.osg</resourceDisplayName>
+                <resource>Particles:nd_BurningVehicleSmall.osg</resource>
+            </property>
+            <property>
+                <name>Munition Damage Table</name>
+                <string>VehicleDamageType</string>
+            </property>
+            <property>
+                <name>SOUND_EFFECT_IGNITION</name>
+                <resourceType>Sounds</resourceType>
+                <resourceDisplayName>Sounds::Ignition.wav</resourceDisplayName>
+                <resource>Sounds::Ignition.wav</resource>
+            </property>
+            <property>
+                <name>SOUND_EFFECT_VEHICLE_LOOP</name>
+                <resourceType>Sounds</resourceType>
+                <resourceDisplayName>Sounds::Vehicle_Idle.wav</resourceDisplayName>
+                <resource>Sounds::Vehicle_Idle.wav</resource>
+            </property>
+            <property>
+                <name>SOUND_EFFECT_BRAKE</name>
+                <resourceType>Sounds</resourceType>
+                <resourceDisplayName>Sounds::BrakeSound.wav</resourceDisplayName>
+                <resource>Sounds::BrakeSound.wav</resource>
+            </property>
+            <property>
+                <name>SOUND_EFFECT_COLLISION_HIT</name>
+                <resourceType>Sounds</resourceType>
+                <resourceDisplayName>Sounds::SFX_Metal_Hit_Sound.wav</resourceDisplayName>
+                <resource>Sounds::SFX_Metal_Hit_Sound.wav</resource>
+            </property>
+            <property>
+                <name>FrontSuspensionRestLength</name>
+                <float>0.31</float>
+            </property>
+            <property>
+                <name>FrontSuspensionSpringFreq</name>
+                <float>1.5</float>
+            </property>
+            <property>
+                <name>FrontTireSlip</name>
+                <float>0.69999999</float>
+            </property>
+            <property>
+                <name>FrontTireValue</name>
+                <float>2</float>
+            </property>
+            <property>
+                <name>FrontTireAsymptoteSlip</name>
+                <float>2</float>
+            </property>
+            <property>
+                <name>FrontTireAsymptoteValue</name>
+                <float>1</float>
+            </property>
+            <property>
+                <name>RearSuspensionRestLength</name>
+                <float>0.31</float>
+            </property>
+            <property>
+                <name>RearSuspensionSpringFreq</name>
+                <float>1.6</float>
+            </property>
+            <property>
+                <name>RearTireSlip</name>
+                <float>0.80000001</float>
+            </property>
+            <property>
+                <name>RearTireValue</name>
+                <float>2</float>
+            </property>
+            <property>
+                <name>RearTireAsymptoteSlip</name>
+                <float>2</float>
+            </property>
+            <property>
+                <name>RearTireAsymptoteValue</name>
+                <float>1</float>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>be123458-111d-4ec8-bd51-dd49d31abc00</actorId>
+            </property>
+            <property>
+                <name>Default Collision Group</name>
+                <integer>1</integer>
+            </property>
+            <property>
+                <name>chassis: Origin Offset</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.900000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>chassis: Dimensions</name>
+                <vec3>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>chassis: Mass</name>
+                <float>2300</float>
+            </property>
+            <property>
+                <name>chassis: Skin Thickness</name>
+                <float>0.039999999</float>
+            </property>
+            <property>
+                <name>chassis: Notify Collisions</name>
+                <boolean>true</boolean>
+            </property>
+            <property>
+                <name>chassis: Moment Of Inertia</name>
+                <vec3>
+                    <value1>9000.000000</value1>
+                    <value2>2100.000000</value2>
+                    <value3>4000.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Engine Torque</name>
+                <float>1700</float>
+            </property>
+            <property>
+                <name>Max Break Torque</name>
+                <float>30</float>
+            </property>
+            <property>
+                <name>Max Steer Angle</name>
+                <float>25</float>
+            </property>
+            <property>
+                <name>Top Speed (MPH)</name>
+                <float>71</float>
+            </property>
+            <property>
+                <name>mVehicleTopSpeedReverse</name>
+                <float>30</float>
+            </property>
+            <property>
+                <name>AeroDynDragArea</name>
+                <float>7</float>
+            </property>
+            <property>
+                <name>NumUpdatesUntilFullSteeringAngle</name>
+                <integer>50</integer>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+        </actor>
+        <actor>
+            <type>DVTETerrain.Terrain</type>
+            <id>b1d034e5-5ee8-457f-b577-5dd5090d31ed</id>
+            <name>Terrain1</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>Terrains</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>-2.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>PROTOTYPE</enumerated>
+            </property>
+            <property>
+                <name>Terrain Physics Mode</name>
+                <enumerated>IMMEDIATE</enumerated>
+            </property>
+            <property>
+                <name>TerrainMesh</name>
+                <resourceType>Terrains</resourceType>
+                <resourceDisplayName>Terrains:driving_terrain.ive</resourceDisplayName>
+                <resource>Terrains:driving_terrain.ive</resource>
+            </property>
+        </actor>
+        <actor>
+            <type>Physics Actors.Physics Material</type>
+            <id>be123458-111d-4ec8-bd51-dd49d31abc00</id>
+            <name>Vehicle Physics Material</name>
+            <property>
+                <name>Restitution</name>
+                <float>0</float>
+            </property>
+            <property>
+                <name>DirOfAnisotropy</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+        </actor>
+    </actors>
+    <groups></groups>
+    <drawablehierarchy></drawablehierarchy>
+    <presetCameras></presetCameras>
+</map>

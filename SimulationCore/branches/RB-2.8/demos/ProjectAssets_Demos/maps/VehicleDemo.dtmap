@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<map xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="delta3dMap" xsi:schemaLocation="delta3dMap map.xsd">
+    <header>
+        <name>VehicleDemo</name>
+        <description></description>
+        <author></author>
+        <comment></comment>
+        <copyright></copyright>
+        <createTimestamp>2014-11-04T08:44:31-05:00</createTimestamp>
+        <lastUpdateTimestamp>2014-11-04T11:26:05-05:00</lastUpdateTimestamp>
+        <editorVersion>2.8.0</editorVersion>
+        <schemaVersion>1.0</schemaVersion>
+    </header>
+    <libraries>
+        <library>
+            <name>SimCore</name>
+            <version></version>
+        </library>
+        <library>
+            <name>dtRender</name>
+            <version></version>
+        </library>
+    </libraries>
+    <actors>
+        <environmentActor>b792866c-d1e1-4d3d-aed6-6f19cf0b5f1b</environmentActor>
+        <actor>
+            <type>dtRender.Ephemeris Scene</type>
+            <id>05f77617-6d8b-4a34-bad8-52a7f5234008</id>
+            <name>EphemerisScene_01</name>
+        </actor>
+        <actor>
+            <type>dtRender.Ocean Scene</type>
+            <id>92e8bfb6-0305-4ea2-8c6a-bd5379b89e6e</id>
+            <name>OceanScene_01</name>
+        </actor>
+        <actor>
+            <type>dtRender.Scene Manager</type>
+            <id>b792866c-d1e1-4d3d-aed6-6f19cf0b5f1b</id>
+            <name>SceneManager_01</name>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>10.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+        </actor>
+        <actor>
+            <type>Stealth Actor.Stealth Actor</type>
+            <id>feaff4f3-fdf2-47e7-848e-0a338fa2a0be</id>
+            <name>Stealth</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>
+             </string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>257.860260</value1>
+                    <value2>-24.861784</value2>
+                    <value3>613.200134</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>PROTOTYPE</enumerated>
+            </property>
+            <property>
+                <name>Munition Damage Table</name>
+                <string>
+             </string>
+            </property>
+            <property>
+                <name>VehiclesSeatConfigActorNameTable</name>
+                <string>
+             </string>
+            </property>
+            <property>
+                <name>EntityType</name>
+                <string>
+             </string>
+            </property>
+            <property>
+                <name>Attach Offset</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>-4.000000</value2>
+                    <value3>2.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>None</enumerated>
+            </property>
+        </actor>
+    </actors>
+    <groups></groups>
+    <drawablehierarchy></drawablehierarchy>
+    <presetCameras></presetCameras>
+</map>
