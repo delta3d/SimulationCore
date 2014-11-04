@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <map xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="delta3dMap" xsi:schemaLocation="delta3dMap map.xsd">
     <header>
         <name>VehicleDemo</name>
@@ -8,7 +7,7 @@
         <comment></comment>
         <copyright></copyright>
         <createTimestamp>2014-11-04T08:44:31-05:00</createTimestamp>
-        <lastUpdateTimestamp>2014-11-04T11:26:05-05:00</lastUpdateTimestamp>
+        <lastUpdateTimestamp>2014-11-04T12:06:56-05:00</lastUpdateTimestamp>
         <editorVersion>2.8.0</editorVersion>
         <schemaVersion>1.0</schemaVersion>
     </header>
@@ -19,6 +18,10 @@
         </library>
         <library>
             <name>dtRender</name>
+            <version></version>
+        </library>
+        <library>
+            <name>testApp</name>
             <version></version>
         </library>
     </libraries>
