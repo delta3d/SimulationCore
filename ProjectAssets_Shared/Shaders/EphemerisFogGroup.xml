@@ -2,20 +2,20 @@
    <shadergroup name="EphemerisGroup">
       <shader name="Ephemeris" default="yes">
 
-         <source type="Vertex">Shaders/Base/ephemeris_functions.vert</source>
-         <source type="Fragment">Shaders/Base/fragment_functions.frag</source>
-         <source type="Fragment">Shaders/Base/ephemeris_functions.frag</source>
-         <source type="Vertex">Shaders/Base/ephemeris.vert</source>
-         <source type="Fragment">Shaders/Base/ephemeris.frag</source>
+         <source type="Vertex">Shaders/SharedBase/ephemeris_functions.vert</source>
+         <source type="Fragment">Shaders/SharedBase/fragment_functions.frag</source>
+         <source type="Fragment">Shaders/SharedBase/ephemeris_functions.frag</source>
+         <source type="Vertex">Shaders/SharedBase/ephemeris.vert</source>
+         <source type="Fragment">Shaders/SharedBase/ephemeris.frag</source>
       </shader>
    </shadergroup>
    <shadergroup name="EphemerisFogGroup">
       <shader name="EphemFog" default="yes">
-         <source type="Vertex">Shaders/Base/ephemeris_functions.vert</source>
-         <source type="Fragment">Shaders/Base/fragment_functions.frag</source>
-         <source type="Fragment">Shaders/Base/ephemeris_functions.frag</source>
-         <source type="Vertex">Shaders/Base/ephemeris_fog.vert</source>
-         <source type="Fragment">Shaders/Base/ephemeris_fog.frag</source>
+         <source type="Vertex">Shaders/SharedBase/ephemeris_functions.vert</source>
+         <source type="Fragment">Shaders/SharedBase/fragment_functions.frag</source>
+         <source type="Fragment">Shaders/SharedBase/ephemeris_functions.frag</source>
+         <source type="Vertex">Shaders/SharedBase/ephemeris_fog.vert</source>
+         <source type="Fragment">Shaders/SharedBase/ephemeris_fog.frag</source>
          <parameter name="DistanceForCompleteFog">
             <float defaultValue="1500.0"/>
          </parameter>

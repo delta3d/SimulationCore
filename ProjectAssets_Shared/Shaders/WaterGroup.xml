@@ -1,30 +1,30 @@
 <shaderlist>
    <shadergroup name="WaterGroup">
       <shader name="WaterShader" default="yes">
-         <source type="Vertex">Shaders/Base/vertex_functions.vert</source>
-         <source type="Vertex">Shaders/Base/water.vert</source>
-         <source type="Fragment">Shaders/Base/fragment_functions.frag</source>
-         <source type="Fragment">Shaders/Base/water_functions.frag</source>
-         <source type="Fragment">Shaders/Base/water.frag</source>
+         <source type="Vertex">Shaders/SharedBase/vertex_functions.vert</source>
+         <source type="Vertex">Shaders/SharedBase/water.vert</source>
+         <source type="Fragment">Shaders/SharedBase/fragment_functions.frag</source>
+         <source type="Fragment">Shaders/SharedBase/water_functions.frag</source>
+         <source type="Fragment">Shaders/SharedBase/water.frag</source>
       </shader>
       <shader name="TextureWave" default="no">
-         <source type="Vertex">Shaders/Base/vertex_functions.vert</source>
-         <source type="Vertex">Shaders/Base/texture_wave.vert</source>
-         <source type="Fragment">Shaders/Base/fragment_functions.frag</source>
-         <source type="Fragment">Shaders/Base/texture_wave.frag</source>
+         <source type="Vertex">Shaders/SharedBase/vertex_functions.vert</source>
+         <source type="Vertex">Shaders/SharedBase/texture_wave.vert</source>
+         <source type="Fragment">Shaders/SharedBase/fragment_functions.frag</source>
+         <source type="Fragment">Shaders/SharedBase/texture_wave.frag</source>
       </shader>
       <shader name="WaveTest" default="no">
-         <source type="Vertex">Shaders/Base/vertex_functions.vert</source>
-         <source type="Vertex">Shaders/Base/wave_test.vert</source>
-         <source type="Fragment">Shaders/Base/fragment_functions.frag</source>
-         <source type="Fragment">Shaders/Base/wave_test.frag</source>
+         <source type="Vertex">Shaders/SharedBase/vertex_functions.vert</source>
+         <source type="Vertex">Shaders/SharedBase/wave_test.vert</source>
+         <source type="Fragment">Shaders/SharedBase/fragment_functions.frag</source>
+         <source type="Fragment">Shaders/SharedBase/wave_test.frag</source>
       </shader>
       <shader name="UnderWater" default="no">
-         <source type="Vertex">Shaders/Base/vertex_functions.vert</source>
-         <source type="Vertex">Shaders/Base/underwater.vert</source>
-         <source type="Fragment">Shaders/Base/fragment_functions.frag</source>
-         <source type="Fragment">Shaders/Base/water_functions.frag</source>
-         <source type="Fragment">Shaders/Base/underwater.frag</source>
+         <source type="Vertex">Shaders/SharedBase/vertex_functions.vert</source>
+         <source type="Vertex">Shaders/SharedBase/underwater.vert</source>
+         <source type="Fragment">Shaders/SharedBase/fragment_functions.frag</source>
+         <source type="Fragment">Shaders/SharedBase/water_functions.frag</source>
+         <source type="Fragment">Shaders/SharedBase/underwater.frag</source>
       </shader>
    </shadergroup>
 </shaderlist>
