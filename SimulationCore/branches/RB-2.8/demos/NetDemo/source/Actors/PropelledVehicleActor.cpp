@@ -80,11 +80,6 @@ namespace NetDemo
       visitor->SetShaderGroup("CustomizableVehicleShaderGroup");
       GetOSGNode()->accept(*visitor);
 
-      // Add a particle system to see where the vehicle has been.
-      mTrailParticles = new dtCore::ParticleSystem;
-      mTrailParticles->LoadFile("Particles/SimpleSpotTrailGreen.osg", true);
-      mTrailParticles->SetEnabled(true);
-      AddChild(mTrailParticles.get());
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
