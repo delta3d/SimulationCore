@@ -58,6 +58,41 @@ namespace SimCore
 {
    namespace HLA
    {
+
+      DISConnectionData::DISConnectionData()
+      : mIPAddress()
+      , mPort()
+      , mBroadcastPort()
+      , mExerciseId()
+      , mSiteId()
+      , mApplicationId()
+      , mMTU()
+      {
+      }
+
+      DT_IMPLEMENT_ACCESSOR(DISConnectionData, std::string, IPAddress);
+      DT_IMPLEMENT_ACCESSOR(DISConnectionData, unsigned, Port);
+      DT_IMPLEMENT_ACCESSOR(DISConnectionData, bool, BroadcastPort);
+
+      DT_IMPLEMENT_ACCESSOR(DISConnectionData, unsigned char, ExerciseId);
+      DT_IMPLEMENT_ACCESSOR(DISConnectionData, unsigned short, SiteId);
+      DT_IMPLEMENT_ACCESSOR(DISConnectionData, unsigned short, ApplicationId);
+      DT_IMPLEMENT_ACCESSOR(DISConnectionData, unsigned, MTU);
+      DT_IMPLEMENT_ACCESSOR(DISConnectionData, dtCore::ResourceDescriptor, ActorXMLFile);
+
+#ifdef DIS_CONNECTIONS_AVAILABLE
+      void FilldtDISConnectionData(dtDIS::ConnectionData& disData, DISConnectionData& configData)
+      {
+         disData.ip = configData.GetIPAddress();
+         disData.port = configData.GetPort();
+         disData.exercise_id = configData.GetExerciseId();
+         disData.site_id = configData.GetSiteId();
+         disData.application_id = configData.GetApplicationId();
+         disData.MTU = configData.GetMTU();
+         disData.use_broadcast = configData.GetBroadcastPort();
+      }
+#endif
+
       IMPLEMENT_ENUM(HLAConnectionComponent::ConnectionState);
       const HLAConnectionComponent::ConnectionState HLAConnectionComponent::ConnectionState::STATE_NOT_CONNECTED("NOT_CONNECTED");
       const HLAConnectionComponent::ConnectionState HLAConnectionComponent::ConnectionState::STATE_CONNECTING("CONNECTING");
@@ -80,13 +115,6 @@ namespace SimCore
          , mRidFile()
          , mConnectionType(&ConnectionType::TYPE_NONE)
          , mServerGameVersion(1)
-         , mDISIPAddress()
-         , mDISPort()
-         , mDISIsBroadcastPort()
-         , mDISExerciseID()
-         , mDISSiteID()
-         , mDISApplicationID()
-         , mDISMTU()
          , mPausedDuringConnectionFrame(false)
          , mState(&ConnectionState::STATE_NOT_CONNECTED)
       {
@@ -115,8 +143,6 @@ namespace SimCore
          // can connect to the network.
          if(msg.GetMessageType() == dtGame::MessageType::INFO_MAP_LOADED)
          {
-            GetGameManager()->SetPaused(true);
-            mPausedDuringConnectionFrame = true;
             DoReconnectToNetwork();
          }
          else if(mPausedDuringConnectionFrame && msg.GetMessageType() == dtGame::MessageType::TICK_LOCAL)
@@ -126,16 +152,62 @@ namespace SimCore
          }
       }
 
+      void HLAConnectionComponent::AddComponentsForConnectionType()
+      {
+         // We recreate the Client Network Component with each connection because there
+         // are config options that can only be set in the constructor
+         // Note - this only works because we are not in the middle of a message from the GM.
+         if (*mConnectionType == ConnectionType::TYPE_CLIENTSERVER)
+         {
+            //LOG_WARNING("Creating new client networking component during connection.");
+            dtNetGM::ClientNetworkComponent* clientNetworkComponent;
+            GetGameManager()->GetComponentByName(dtNetGM::ClientNetworkComponent::DEFAULT_NAME, clientNetworkComponent);
+            if(clientNetworkComponent == NULL) // if not already created, create one. Remove this eventually, see two lines down.
+            {
+               dtCore::RefPtr<dtNetGM::ClientNetworkComponent> clientNetworkComponent =
+                  new dtNetGM::ClientNetworkComponent(mServerGameName, mServerGameVersion);
+               // NOTE - The GM needs to be modified to support adding a component during a message - 12/21/09 CMM
+               GetGameManager()->AddComponent(*clientNetworkComponent, dtGame::GameManager::ComponentPriority::NORMAL);
+            }
+         }
+#ifdef DIS_CONNECTIONS_AVAILABLE
+         else if (*mConnectionType == ConnectionType::TYPE_DIS)
+         {
+            dtDIS::MasterComponent* disComponent;
+            GetGameManager()->GetComponentByName(dtDIS::MasterComponent::DEFAULT_NAME, disComponent);
+            if(disComponent != NULL) // if it was already created, remove the old one and replace it with a new one
+            {
+               GetGameManager()->RemoveComponent(*disComponent);
+            }
+
+            dtDIS::ConnectionData disConfig;
+            FilldtDISConnectionData(disConfig, mDISConnectionData);
+
+            dtDIS::SharedState* disConfig = new dtDIS::SharedState("", mDISActorXMLFile);
+            disConfig->SetConnectionData(disConnectionData);
+
+            disComponent = new dtDIS::MasterComponent(disConfig);
+            GetGameManager()->AddComponent(*disComponent);
+         }
+#endif
+      }
+
       ///////////////////////////////////////////////////////////////////////
       void HLAConnectionComponent::DoReconnectToNetwork()
       {
+
+         AddComponentsForConnectionType();
+
+         GetGameManager()->SetPaused(true);
+         mPausedDuringConnectionFrame = true;
+
          // Look for a coordinate config actor.
          dtActors::CoordinateConfigActor* ccActor = NULL;
          std::vector<dtCore::ActorProxy*> proxies;
          GetGameManager()->FindActorsByType(*dtActors::EngineActorRegistry::COORDINATE_CONFIG_ACTOR_TYPE, proxies);
          if(proxies.empty())
          {
-            LOG_ERROR("!!!! ERROR !!!! -- Failed to find a coordinate config actor in the map. This will likely cause major runtime problems or even a crash!!!");
+            LOG_WARNING("Failed to find a coordinate config actor in the map. This is important for DIS and HLA!!!");
          }
          else
          {
@@ -224,12 +296,13 @@ namespace SimCore
          // Setup our client and then send a client connection request.
          if (clientNetworkComponent != NULL)
          {
-            std::string noticeMessage = "Setting up client networking component for host[" + mServerIPAddress + 
-               "] using port[" + mServerPort + "].";
+            std::string noticeMessage = "Setting up client networking component for host " + mServerIPAddress +
+               ":" + mServerPort + ".";
             LOG_WARNING(noticeMessage);
 
             int serverPort = dtUtil::ToType<int>(mServerPort);
-            //clientNetworkComponent->SetNetworkOptions("NetDemo", 1);
+            clientNetworkComponent->SetGameName(mServerGameName);
+            clientNetworkComponent->SetGameVersion(mServerGameVersion);
             if (clientNetworkComponent->SetupClient(mServerIPAddress, serverPort))
             {
                clientNetworkComponent->SendRequestConnectionMessage();
@@ -237,8 +310,8 @@ namespace SimCore
             else 
             {
                mState = &HLAConnectionComponent::ConnectionState::STATE_ERROR;
-               std::string errorMsg = "Failed to establish a client connection to server[" + mServerIPAddress +
-                  "] using port[" + mServerPort + "].";
+               std::string errorMsg = "Failed to establish a client connection to server " + mServerIPAddress +
+                  ":" + mServerPort + ".";
                throw dtGame::InvalidParameterException(errorMsg, __FILE__, __LINE__);
             }
          }
@@ -248,12 +321,7 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////
       void HLAConnectionComponent::StartNetworkConnection()
       {
-         if(mMapNames.empty())
-         {
-            throw SimCore::IGException("You have tried to connect when no maps have been specified. \
-                Please specify the name of the map to load for this connection", __FILE__, __LINE__);
-         }
-         else if (GetGameManager() == NULL)
+         if (GetGameManager() == NULL)
          {
             throw dtUtil::Exception(
                "You have tried to connect without adding this component to the Game Manager.", __FILE__, __LINE__);
@@ -262,8 +330,13 @@ namespace SimCore
          // Start in NOT connected state - set to connected when we succeed.
          mState = &HLAConnectionComponent::ConnectionState::STATE_NOT_CONNECTED;
 
-         // Determine if the specified map is valid.
-         std::string& mapName = mMapNames[0];
+
+         std::string mapName;
+         if (!mMapNames.empty())
+         {
+            // Determine if the specified map is valid.
+            mapName = mMapNames[0];
+         }
 
          try
          {
@@ -287,7 +360,14 @@ namespace SimCore
                GetGameManager()->GetGMSettings().SetClientRole(true);
             }
 
-            SimCore::Utils::LoadMaps(*GetGameManager(), mapName);
+            if (mapName.empty())
+            {
+               DoReconnectToNetwork();
+            }
+            else
+            {
+               SimCore::Utils::LoadMaps(*GetGameManager(), mapName);
+            }
             mState = &HLAConnectionComponent::ConnectionState::STATE_CONNECTING;
          }
          catch(const dtUtil::Exception& e)
@@ -296,49 +376,6 @@ namespace SimCore
             mState = &HLAConnectionComponent::ConnectionState::STATE_NOT_CONNECTED;
             throw e;
          }
-
-         // We recreate the Client Network Component with each connection because there
-         // are config options that can only be set in the constructor
-         // Note - this only works because we are not in the middle of a message from the GM.
-         if (*mConnectionType == ConnectionType::TYPE_CLIENTSERVER)
-         {
-            //LOG_WARNING("Creating new client networking component during connection.");
-            dtNetGM::ClientNetworkComponent* clientNetworkComponent;
-            GetGameManager()->GetComponentByName(dtNetGM::ClientNetworkComponent::DEFAULT_NAME, clientNetworkComponent);
-            if(clientNetworkComponent == NULL) // if not already created, create one. Remove this eventually, see two lines down.
-            {
-               dtCore::RefPtr<dtNetGM::ClientNetworkComponent> clientNetworkComponent = 
-                  new dtNetGM::ClientNetworkComponent(mServerGameName, mServerGameVersion);
-               // NOTE - The GM needs to be modified to support adding a component during a message - 12/21/09 CMM
-               GetGameManager()->AddComponent(*clientNetworkComponent, dtGame::GameManager::ComponentPriority::NORMAL);
-            }
-         }
-#ifdef DIS_CONNECTIONS_AVAILABLE
-         else if (*mConnectionType == ConnectionType::TYPE_DIS)
-         {
-            dtDIS::MasterComponent* disComponent;
-            GetGameManager()->GetComponentByName(dtDIS::MasterComponent::DEFAULT_NAME, disComponent);
-            if(disComponent != NULL) // if it was already created, remove the old one and replace it with a new one
-            {
-               GetGameManager()->RemoveComponent(*disComponent);
-            }
-
-            dtDIS::ConnectionData disConnectionData;
-            disConnectionData.ip = mDISIPAddress;
-            disConnectionData.port = mDISPort;
-            disConnectionData.exercise_id = mDISExerciseID;
-            disConnectionData.site_id = mDISSiteID;
-            disConnectionData.application_id = mDISApplicationID;
-            disConnectionData.MTU = mDISMTU;
-            disConnectionData.use_broadcast = mDISIsBroadcastPort;
-
-            dtDIS::SharedState* disConfig = new dtDIS::SharedState("", mDISActorXMLFile);
-            disConfig->SetConnectionData(disConnectionData);
-
-            disComponent = new dtDIS::MasterComponent(disConfig);
-            GetGameManager()->AddComponent(*disComponent);
-         }
-#endif
       }
 
       ///////////////////////////////////////////////////////////////////////
@@ -443,6 +480,9 @@ namespace SimCore
          }
 
       }
+
+      DT_IMPLEMENT_ACCESSOR(HLAConnectionComponent, DISConnectionData, DISConnectionData);
+
 
    }
 }
