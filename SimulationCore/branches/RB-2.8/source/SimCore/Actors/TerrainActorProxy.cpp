@@ -39,6 +39,7 @@
 #include <dtUtil/datapathutils.h>
 #include <dtUtil/stringutils.h>
 #include <dtUtil/functor.h>
+#include <dtUtil/nodemask.h>
 #include <dtCore/transform.h>
 
 #include <dtGame/messagetype.h>
@@ -253,6 +254,7 @@ namespace SimCore
          {
             if (ta->CheckForTerrainLoaded())
             {
+               ta->GetOSGNode()->setNodeMask(dtUtil::NodeMask::TERRAIN_GEOMETRY | dtUtil::NodeMask::NON_TRANSPARENT_GEOMETRY | dtUtil::NodeMask::SHADOW_RECEIVE);
                GetGameManager()->ClearTimer(LOAD_NODE_TERRAIN_TIMER, this);
                ta->SetupTerrainPhysics();
             }
