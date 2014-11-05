@@ -1,19 +1,10 @@
 <?xml version="1.0" encoding="iso-8859-1" standalone="no" ?>
 
-<!-- 
-To run the NetDemo, use the below startup settings for Visual Studio:
-NOTE - XML doesn't allow two dashes together. So, replace '-' with double dashes below
-
-GameStart.exe
--configFileName config.xml NetDemo -mapName NetDemo
-C:\Curtiss\Projects\Delta3D\SimulationCore\demos\NetDemo (as appropriate)
--->
-
 <Application xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="application.xsd">
-    <Window Name="Net Demo" X="50" Y="25" Width="1280" Height="800" PixelDepth="24" RefreshRate="60" ShowCursor="1" FullScreen="0" ChangeDisplayResolution="0" VSync="1" MultiSample="2" RealizeUponCreate="1"/>
+    <Window Name="Vehicle Demo" X="50" Y="25" Width="1280" Height="800" PixelDepth="24" RefreshRate="60" ShowCursor="1" FullScreen="0" ChangeDisplayResolution="0" VSync="1" MultiSample="2" RealizeUponCreate="1"/>
     <!-- Note - the VSync setting does not currently work on Windows. It is always on.  -->
     <Scene Name="defaultScene" />
-    <Camera Name="defaultCam" WindowInstance="Net Demo"  />
+    <Camera Name="defaultCam" WindowInstance="Vehicle Demo"  />
     <View Name="defaultView" CameraInstance="defaultCam" 
 	    SceneInstance="defaultScene" /> 
 

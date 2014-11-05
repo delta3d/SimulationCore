@@ -1,6 +1,163 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <shaderlist>
+
+
+   <shadergroup name="MultiTextureTerrain">
+      <shader name="MultiTextureTerrainDefault" default="yes">
+         <source type="Vertex">shaders/terrain/TerrainAltitude.vert</source>
+         <source type="Vertex">shaders/shadow/shadow_functions.vert</source>
+         <source type="Vertex">shaders/base/vertex_functions.vert</source>
+         <source type="Fragment">shaders/terrain/TerrainAltitude.frag</source>
+         <source type="Fragment">shaders/water/water_functions.frag</source>
+         <source type="Fragment">shaders/base/fragment_functions.frag</source>
+         <source type="Fragment">shaders/shadow/shadow_functions.frag</source>
+         <source type="Fragment">shaders/lighting/dynamic_light_functions.frag</source>
+
+         <parameter name="Altitudes">
+            <vec4 defaultValue="1.8 8.5 30 50" />
+         </parameter>
+         <parameter name="TextureScales">
+            <vec4 defaultValue="150 200 20 70" />
+         </parameter>
+         <!-->parameter name="WaterColor">  This is an actual uniform set by the water
+        <vec4 defaultValue="0 0.35 0.5 0.75" />
+      </parameter-->
+         <parameter name="AltitudeScale">
+            <float defaultValue="1" />
+         </parameter>
+         <parameter name="DetailScale">
+            <float defaultValue="3.0" />
+         </parameter>
+
+         <parameter name="diffuseTexture">
+            <texture2D textureUnit="0">
+               <source type="Auto"/>
+            </texture2D>
+         </parameter>
+         <parameter name="SandTexture">
+            <texture2D textureUnit="1">
+               <source type="Image">textures/ShaderBase/TerrainAltitude_Sand.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+         <parameter name="GrassTexture">
+            <texture2D textureUnit="2">
+               <source type="Image">textures/ShaderBase/TerrainAltitude_Grass.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+         <parameter name="RockTexture">
+            <texture2D textureUnit="3">
+               <source type="Image">textures/ShaderBase/TerrainAltitude_Rock.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+         <parameter name="BlendMaskTexture">
+            <texture2D textureUnit="4">
+               <source type="Image">textures/ShaderBase/TerrainAltitude_BlendMask.tga</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+         <parameter name="shadowTexture">
+            <texture2D textureUnit="5">
+               <source type="Auto"/>
+            </texture2D>
+         </parameter>
+         <parameter name="MountainsideTexture">
+            <texture2D textureUnit="8">
+               <source type="Image">textures/ShaderBase/TerrainAltitude_Mountainside.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+         <parameter name="UnderWaterSandTexture">
+            <texture2D textureUnit="9">
+               <source type="Image">textures/ShaderBase/TerrainAltitude_UnderWaterSand.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+
+      </shader>
+      <shader name="MultiTextureTerrainEditor" editor="yes">
+         <source type="Vertex">shaders/terrain/TerrainAltitude_editor.vert</source>
+         <source type="Fragment">shaders/terrain/TerrainAltitude_editor.frag</source>
+
+         <parameter name="Altitudes">
+            <vec4 defaultValue="1.8 8.5 30 50" />
+         </parameter>
+         <parameter name="TextureScales">
+            <vec4 defaultValue="150 200 20 70" />
+         </parameter>
+         <parameter name="WaterColor">
+            <vec4 defaultValue="0 0.35 0.5 0.75" />
+         </parameter>
+         <parameter name="WaterHeight">
+            <float defaultValue="0.0" />
+         </parameter>
+         <parameter name="AltitudeScale">
+            <float defaultValue="1" />
+         </parameter>
+         <parameter name="DetailScale">
+            <float defaultValue="3.0" />
+         </parameter>
+
+         <parameter name="diffuseTexture">
+            <texture2D textureUnit="0">
+               <source type="Auto"/>
+            </texture2D>
+         </parameter>
+         <parameter name="SandTexture">
+            <texture2D textureUnit="1">
+               <source type="Image">textures/ShaderBase/TerrainAltitude_Sand.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+         <parameter name="GrassTexture">
+            <texture2D textureUnit="2">
+               <source type="Image">textures/ShaderBase/TerrainAltitude_Grass.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+         <parameter name="RockTexture">
+            <texture2D textureUnit="3">
+               <source type="Image">textures/ShaderBase/TerrainAltitude_Rock.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+         <parameter name="BlendMaskTexture">
+            <texture2D textureUnit="4">
+               <source type="Image">textures/ShaderBase/TerrainAltitude_BlendMask.tga</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+         <parameter name="MountainsideTexture">
+            <texture2D textureUnit="8">
+               <source type="Image">textures/ShaderBase/TerrainAltitude_Mountainside.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+         <parameter name="UnderWaterSandTexture">
+            <texture2D textureUnit="9">
+               <source type="Image">textures/ShaderBase/TerrainAltitude_UnderWaterSand.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+
+      </shader>
+   </shadergroup>
+
    <shadergroup name="LensFlareGroup">
       <shader name="LensFlareShader" default="yes">
          <source type="Vertex">Shaders/SharedBase/lens_flare.vert</source>
