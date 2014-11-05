@@ -142,9 +142,9 @@ namespace NetDemo
       gm.AddComponent(*guiComp, dtGame::GameManager::ComponentPriority::NORMAL);
       guiComp->Initialize();
 
-      SimCore::Components::VolumeRenderingComponent* vrc = new SimCore::Components::VolumeRenderingComponent();
+      /*SimCore::Components::VolumeRenderingComponent* vrc = new SimCore::Components::VolumeRenderingComponent();
       gm.AddComponent(*vrc, dtGame::GameManager::ComponentPriority::NORMAL);
-      vrc->Init();
+      vrc->Init();*/
 
 
    }
