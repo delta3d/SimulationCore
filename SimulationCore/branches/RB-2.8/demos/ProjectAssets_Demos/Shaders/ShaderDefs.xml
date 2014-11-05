@@ -15,7 +15,7 @@
          <source type="Fragment">shaders/lighting/dynamic_light_functions.frag</source>
 
          <parameter name="Altitudes">
-            <vec4 defaultValue="1.8 8.5 30 50" />
+            <vec4 defaultValue="1.8 6.5 20 40" />
          </parameter>
          <parameter name="TextureScales">
             <vec4 defaultValue="150 200 20 70" />
