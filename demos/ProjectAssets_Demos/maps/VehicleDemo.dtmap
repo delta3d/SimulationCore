@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <map xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="delta3dMap" xsi:schemaLocation="delta3dMap map.xsd">
     <header>
         <name>VehicleDemo</name>
@@ -7,7 +8,7 @@
         <comment></comment>
         <copyright></copyright>
         <createTimestamp>2014-11-04T08:44:31-05:00</createTimestamp>
-        <lastUpdateTimestamp>2014-11-04T12:06:56-05:00</lastUpdateTimestamp>
+        <lastUpdateTimestamp>2014-11-04T23:59:40-05:00</lastUpdateTimestamp>
         <editorVersion>2.8.0</editorVersion>
         <schemaVersion>1.0</schemaVersion>
     </header>
@@ -33,9 +34,33 @@
             <name>EphemerisScene_01</name>
         </actor>
         <actor>
+            <type>dtRender.Light Scene</type>
+            <id>33a30c6b-a703-4940-a2db-81e7b814a5c6</id>
+            <name>LightScene_01</name>
+        </actor>
+        <actor>
+            <type>dtRender.Cube Map Scene</type>
+            <id>4e99868f-34c6-4b31-9fab-661d938ea29e</id>
+            <name>CubeMapScene_01</name>
+        </actor>
+        <actor>
+            <type>dtRender.Shadow Scene</type>
+            <id>76830127-aeec-4550-b5c9-a3a5dd6eda0c</id>
+            <name>ShadowScene_01</name>
+        </actor>
+        <actor>
+            <type>dtutil.Coordinate Config</type>
+            <id>8aac9d28-9fa8-4eed-9de7-8fa3dd46b35c</id>
+            <name>GameActor_01</name>
+        </actor>
+        <actor>
             <type>dtRender.Ocean Scene</type>
             <id>92e8bfb6-0305-4ea2-8c6a-bd5379b89e6e</id>
             <name>OceanScene_01</name>
+            <property>
+                <name>Chop</name>
+                <enumerated>CHOP_MED</enumerated>
+            </property>
         </actor>
         <actor>
             <type>dtRender.Scene Manager</type>
