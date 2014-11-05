@@ -280,14 +280,15 @@ namespace StealthQt
          reject();
          return;
       }
-      if(map.isEmpty())
-      {
-         QMessageBox::information(this, tr("Error"), tr("Please select a map file."), 
-            QMessageBox::Ok);
-
-         reject();
-         return;
-      }
+// The
+//      if(map.isEmpty())
+//      {
+//         QMessageBox::information(this, tr("Error"), tr("Please select a map file."),
+//            QMessageBox::Ok);
+//
+//         reject();
+//         return;
+//      }
 
       /////////////////////////////////////////////
       // HLA SETTINGS 

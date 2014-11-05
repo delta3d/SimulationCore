@@ -312,79 +312,71 @@ namespace StealthQt
       {
          dtCore::Project& project = dtCore::Project::GetInstance();
 
-         std::string fedex        = properties[4].toStdString();
-         std::string map          = properties[1].toStdString();
-         std::string config; // set below
-         std::string fedFile; // set below
-         std::string federateName = properties[5].toStdString();
-         std::string ridFile; // set below
-         std::string rtiStandard = properties[7].toStdString();
+         SimCore::HLA::DISConnectionData disConnectionData;
+
          std::string connectionType = properties[8].toStdString();
-         std::string serverIPAddress = properties[9].toStdString();
-         std::string serverPort = properties[10].toStdString();
-         std::string serverGameName = properties[11].toStdString();
-         int serverGameVersionInt = properties[12].toInt();
-         std::string disIPAddress = properties[13].toStdString();
-         unsigned int disPort = properties[14].toUInt();
-         bool disBroadcast = properties[15] == "true" ? true: false;
-         unsigned char disExerciseID = properties[16].toUInt();
-         unsigned short disSiteID = properties[17].toUShort();
-         unsigned short disApplicationID = properties[18].toUShort();
-         unsigned int disMTU = properties[19].toUInt();
-         std::string disActorXMLFile = properties[20].toStdString();
 
          if(mHLAComp != NULL)
          {
-            // Assign the primary map to load
-            mHLAComp->AddMap(map);
+            std::string map = properties[1].toStdString();
+            if (!map.empty())
+            {
+               // Assign the primary map to load
+               mHLAComp->AddMap(map);
+            }
+
+            mHLAComp->SetFedEx(properties[4].toStdString());
+            mHLAComp->SetFedName(properties[5].toStdString());
+
+            mHLAComp->SetRTIStandard(properties[7].toStdString());
+
+            mHLAComp->SetServerIPAddress(properties[9].toStdString());
+            mHLAComp->SetServerPort(properties[10].toStdString());
+            mHLAComp->SetServerGameName(properties[11].toStdString());
+            mHLAComp->SetServerGameVersion(properties[12].toInt());
+
+            disConnectionData.SetIPAddress(properties[13].toStdString());
+            disConnectionData.SetPort(properties[14].toUInt());
+            disConnectionData.SetBroadcastPort(dtUtil::ToType<bool>(properties[15].toStdString()));
+            disConnectionData.SetExerciseId(properties[16].toUInt());
+            disConnectionData.SetSiteId(properties[17].toUShort());
+            disConnectionData.SetApplicationId(properties[18].toUShort());
+            disConnectionData.SetMTU(properties[19].toUInt());
+            disConnectionData.SetActorXMLFile(properties[20].toStdString());
+
+            mHLAComp->SetDISConnectionData(disConnectionData);
 
             if (connectionType == StealthViewerSettings::CONNECTIONTYPE_HLA)
             {
-               mHLAComp->SetConnectionType(SimCore::HLA::HLAConnectionComponent::ConnectionType::TYPE_HLA);
+               // only read the connection files if this is for HLA.  This could be fixed if the connection component
+               // just took resource descriptors like it should.
+               mHLAComp->SetConfigFile(project.GetResourcePath(dtCore::ResourceDescriptor(properties[2].toStdString())));
+               mHLAComp->SetFedFile(project.GetResourcePath(dtCore::ResourceDescriptor(properties[3].toStdString())));
 
-               config = project.GetResourcePath(dtCore::ResourceDescriptor(properties[2].toStdString()));
-               fedFile = project.GetResourcePath(dtCore::ResourceDescriptor(properties[3].toStdString()));
                // The rid file is not required, and many newer rtis don't even have such a concept.
                if (!properties[6].isEmpty())
                {
-                  ridFile = project.GetResourcePath(dtCore::ResourceDescriptor(properties[6].toStdString()));
+                  mHLAComp->SetRidFile(project.GetResourcePath(dtCore::ResourceDescriptor(properties[6].toStdString())));
                }
                else
                {
-                  ridFile.clear();
+                  mHLAComp->SetRidFile("");
                }
 
-               mHLAComp->SetConfigFile(config);
-               mHLAComp->SetFedFile(fedFile);
-               mHLAComp->SetFedName(federateName);
-               mHLAComp->SetFedEx(fedex);
-               mHLAComp->SetRidFile(ridFile);
-               mHLAComp->SetRTIStandard(rtiStandard);
+               mHLAComp->SetConnectionType(SimCore::HLA::HLAConnectionComponent::ConnectionType::TYPE_HLA);
             }
             else if (connectionType == StealthViewerSettings::CONNECTIONTYPE_CLIENTSERVER)
             {
                mHLAComp->SetConnectionType(SimCore::HLA::HLAConnectionComponent::ConnectionType::TYPE_CLIENTSERVER);
-
-               mHLAComp->SetServerIPAddress(serverIPAddress);
-               mHLAComp->SetServerPort(serverPort);
-               mHLAComp->SetServerGameName(serverGameName);
-               mHLAComp->SetServerGameVersion(serverGameVersionInt);
             }
             else if (connectionType == StealthViewerSettings::CONNECTIONTYPE_DIS)
             {
                mHLAComp->SetConnectionType(SimCore::HLA::HLAConnectionComponent::ConnectionType::TYPE_DIS);
-
-               mHLAComp->SetDISIPAddress(disIPAddress);
-               mHLAComp->SetDISPort(disPort);
-               mHLAComp->SetDISBroadcast(disBroadcast);
-               mHLAComp->SetDISExerciseID(disExerciseID);
-               mHLAComp->SetDISSiteID(disSiteID);
-               mHLAComp->SetDISApplicationID(disApplicationID);
-               mHLAComp->SetDISMTU(disMTU);
-               mHLAComp->SetDISActorXMLFile(disActorXMLFile);
             }
             else 
+            {
                mHLAComp->SetConnectionType(SimCore::HLA::HLAConnectionComponent::ConnectionType::TYPE_NONE);
+            }
 
             try
             {
