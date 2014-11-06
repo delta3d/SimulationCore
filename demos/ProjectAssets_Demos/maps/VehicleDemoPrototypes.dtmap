@@ -8,7 +8,7 @@
         <comment>Place for prototype actors</comment>
         <copyright>2009</copyright>
         <createTimestamp>2009-05-19T17:43:27.0-05:00</createTimestamp>
-        <lastUpdateTimestamp>2014-11-05T23:11:21-05:00</lastUpdateTimestamp>
+        <lastUpdateTimestamp>2014-11-06T00:45:11-05:00</lastUpdateTimestamp>
         <editorVersion>2.8.0</editorVersion>
         <schemaVersion>1.0</schemaVersion>
     </header>
@@ -33,7 +33,7 @@
             <name>Propelled Vehicle</name>
             <property>
                 <name>ShaderGroup</name>
-                <string>CustomizableVehicleShaderGroup</string>
+                <string>MultiMapWater</string>
             </property>
             <property>
                 <name>Rotation</name>
