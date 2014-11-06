@@ -8,7 +8,7 @@
         <comment>Place for prototype actors</comment>
         <copyright>2009</copyright>
         <createTimestamp>2009-05-19T17:43:27.0-05:00</createTimestamp>
-        <lastUpdateTimestamp>2014-11-06T09:46:14-05:00</lastUpdateTimestamp>
+        <lastUpdateTimestamp>2014-11-06T10:00:33-05:00</lastUpdateTimestamp>
         <editorVersion>2.8.0</editorVersion>
         <schemaVersion>1.0</schemaVersion>
     </header>
@@ -76,6 +76,18 @@
             <property>
                 <name>Main: Mass</name>
                 <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
             </property>
         </actor>
         <actor>
@@ -447,6 +459,18 @@
                 <name>Main: Mass</name>
                 <float>10</float>
             </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
         </actor>
         <actor>
             <type>dtExample.Mesh Object</type>
@@ -485,6 +509,18 @@
             <property>
                 <name>Main: Mass</name>
                 <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
             </property>
         </actor>
         <actor>
@@ -580,6 +616,18 @@
             <property>
                 <name>Main: Mass</name>
                 <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
             </property>
         </actor>
     </actors>
