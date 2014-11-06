@@ -8,7 +8,7 @@
         <comment>Place for prototype actors</comment>
         <copyright>2009</copyright>
         <createTimestamp>2009-05-19T17:43:27.0-05:00</createTimestamp>
-        <lastUpdateTimestamp>2014-11-06T00:45:11-05:00</lastUpdateTimestamp>
+        <lastUpdateTimestamp>2014-11-06T00:47:36-05:00</lastUpdateTimestamp>
         <editorVersion>2.8.0</editorVersion>
         <schemaVersion>1.0</schemaVersion>
     </header>
@@ -379,6 +379,10 @@
                 <resourceType>Terrains</resourceType>
                 <resourceDisplayName>Terrains:driving_terrain.ive</resourceDisplayName>
                 <resource>Terrains:driving_terrain.ive</resource>
+            </property>
+            <property>
+                <name>PhysicsDirectory</name>
+                <string>drivingTerrainPhysics</string>
             </property>
         </actor>
         <actor>
