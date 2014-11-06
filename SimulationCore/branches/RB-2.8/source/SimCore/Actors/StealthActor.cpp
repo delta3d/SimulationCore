@@ -165,10 +165,11 @@ namespace SimCore
          GetGameActorProxy().RegisterForMessagesAboutOtherActor(dtGame::MessageType::INFO_ACTOR_UPDATED, id, "UpdateFromParent");
 
          dtCore::Transform xform;
-         xform.MakeIdentity();
          xform.SetRotation(attachRotationHPR);
 
-         BaseEntity* entity = dynamic_cast<BaseEntity*>(ga.GetDrawable());
+         BaseEntity* entity = NULL;
+         ga.GetDrawable(entity);
+
          if (entity != NULL)
          {
             if (!mAttachAsThirdPerson)
@@ -195,23 +196,35 @@ namespace SimCore
          }
 
          bool foundNode = false;
-         GameActor* gameActor = dynamic_cast<GameActor*>(ga.GetDrawable());
-         if (gameActor != NULL)
+         dtCore::Transformable* xformable = NULL;
+         ga.GetDrawable(xformable);
+         dtCore::Transform tempXform;
+
+         xformable->GetTransform(tempXform);
+         if (!tempXform.IsValid())
+         {
+             // Bail out if the actor has NAN or what not in it's matrix.
+             AttachOrDetachActor(NULL, dtCore::UniqueId(""));
+             return;
+         }
+
+         if (xformable != NULL)
          {
             //we don't support named parts at his level.
             if (GetParent() != NULL)
             {
-              Emancipate();
+               Emancipate();
             }
 
-            IGActor* igActor = dynamic_cast<IGActor*>(ga.GetDrawable());
+            IGActor* igActor = NULL;
+            ga.GetDrawable(igActor);
             if (igActor != NULL)
             {
                foundNode = igActor->AddChild(this, attachPointNode);
             }
             else
             {
-               gameActor->AddChild(this);
+               xformable->AddChild(this);
             }
          }
 
