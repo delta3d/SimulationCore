@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <map xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="delta3dMap" xsi:schemaLocation="delta3dMap map.xsd">
     <header>
         <name>VehicleDemo</name>
@@ -8,7 +7,7 @@
         <comment></comment>
         <copyright></copyright>
         <createTimestamp>2014-11-04T08:44:31-05:00</createTimestamp>
-        <lastUpdateTimestamp>2014-11-04T23:59:40-05:00</lastUpdateTimestamp>
+        <lastUpdateTimestamp>2014-11-06T01:05:42-05:00</lastUpdateTimestamp>
         <editorVersion>2.8.0</editorVersion>
         <schemaVersion>1.0</schemaVersion>
     </header>
@@ -49,11 +48,6 @@
             <name>ShadowScene_01</name>
         </actor>
         <actor>
-            <type>dtutil.Coordinate Config</type>
-            <id>8aac9d28-9fa8-4eed-9de7-8fa3dd46b35c</id>
-            <name>GameActor_01</name>
-        </actor>
-        <actor>
             <type>dtRender.Ocean Scene</type>
             <id>92e8bfb6-0305-4ea2-8c6a-bd5379b89e6e</id>
             <name>OceanScene_01</name>
@@ -66,14 +60,6 @@
             <type>dtRender.Scene Manager</type>
             <id>b792866c-d1e1-4d3d-aed6-6f19cf0b5f1b</id>
             <name>SceneManager_01</name>
-            <property>
-                <name>Translation</name>
-                <vec3>
-                    <value1>0.000000</value1>
-                    <value2>10.000000</value2>
-                    <value3>0.000000</value3>
-                </vec3>
-            </property>
         </actor>
         <actor>
             <type>Stealth Actor.Stealth Actor</type>
