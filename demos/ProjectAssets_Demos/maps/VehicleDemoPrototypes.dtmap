@@ -8,7 +8,7 @@
         <comment>Place for prototype actors</comment>
         <copyright>2009</copyright>
         <createTimestamp>2009-05-19T17:43:27.0-05:00</createTimestamp>
-        <lastUpdateTimestamp>2014-11-05T00:42:41-05:00</lastUpdateTimestamp>
+        <lastUpdateTimestamp>2014-11-05T22:19:04-05:00</lastUpdateTimestamp>
         <editorVersion>2.8.0</editorVersion>
         <schemaVersion>1.0</schemaVersion>
     </header>
@@ -76,20 +76,20 @@
             <property>
                 <name>Non-damaged actor</name>
                 <resourceType>StaticMeshes</resourceType>
-                <resourceDisplayName>StaticMeshes:NetDemo:Vehicles:Truck.ive</resourceDisplayName>
-                <resource>StaticMeshes:NetDemo:Vehicles:Truck.ive</resource>
+                <resourceDisplayName>StaticMeshes:vehicles:landcraft:jeep:Jeep.osg</resourceDisplayName>
+                <resource>StaticMeshes:vehicles:landcraft:jeep:Jeep.osg</resource>
             </property>
             <property>
                 <name>Damaged actor</name>
                 <resourceType>StaticMeshes</resourceType>
-                <resourceDisplayName>StaticMeshes:NetDemo:Vehicles:Truck.ive</resourceDisplayName>
-                <resource>StaticMeshes:NetDemo:Vehicles:Truck.ive</resource>
+                <resourceDisplayName>StaticMeshes:vehicles:landcraft:jeep:Jeep.osg</resourceDisplayName>
+                <resource>StaticMeshes:vehicles:landcraft:jeep:Jeep.osg</resource>
             </property>
             <property>
                 <name>Destroyed actor</name>
                 <resourceType>StaticMeshes</resourceType>
-                <resourceDisplayName>StaticMeshes:NetDemo:Vehicles:Truck.ive</resourceDisplayName>
-                <resource>StaticMeshes:NetDemo:Vehicles:Truck.ive</resource>
+                <resourceDisplayName>StaticMeshes:vehicles:landcraft:jeep:Jeep.osg</resourceDisplayName>
+                <resource>StaticMeshes:vehicles:landcraft:jeep:Jeep.osg</resource>
             </property>
             <property>
                 <name>SOUND_EFFECT_IGNITION</name>
@@ -191,7 +191,7 @@
             </property>
             <property>
                 <name>FrontSuspensionSpringFreq</name>
-                <float>1.3</float>
+                <float>1.5</float>
             </property>
             <property>
                 <name>FrontSuspensionDamperFactor</name>
@@ -219,11 +219,11 @@
             </property>
             <property>
                 <name>RearSuspensionSpringFreq</name>
-                <float>1.4</float>
+                <float>2.1210001</float>
             </property>
             <property>
                 <name>RearSuspensionDamperFactor</name>
-                <float>0.38</float>
+                <float>0.41999999</float>
             </property>
             <property>
                 <name>RearTireSlip</name>
@@ -637,6 +637,10 @@
                     <value2>1.000000</value2>
                     <value3>0.000000</value3>
                 </vec3>
+            </property>
+            <property>
+                <name>MaterialIndex</name>
+                <integer>1298360692</integer>
             </property>
         </actor>
     </actors>
