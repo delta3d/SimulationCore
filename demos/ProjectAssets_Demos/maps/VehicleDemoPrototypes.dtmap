@@ -8,7 +8,7 @@
         <comment>Place for prototype actors</comment>
         <copyright>2009</copyright>
         <createTimestamp>2009-05-19T17:43:27.0-05:00</createTimestamp>
-        <lastUpdateTimestamp>2014-11-06T00:47:36-05:00</lastUpdateTimestamp>
+        <lastUpdateTimestamp>2014-11-06T09:23:32-05:00</lastUpdateTimestamp>
         <editorVersion>2.8.0</editorVersion>
         <schemaVersion>1.0</schemaVersion>
     </header>
@@ -25,8 +25,51 @@
             <name>NetDemo</name>
             <version></version>
         </library>
+        <library>
+            <name>testApp</name>
+            <version></version>
+        </library>
     </libraries>
     <actors>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>34935a77-a439-4b13-acb6-1de0b581b4ad</id>
+            <name>GameActor_04</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-41.488659</value1>
+                    <value2>275.192139</value2>
+                    <value3>4.017287</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+        </actor>
         <actor>
             <type>NetDemo.Propelled Vehicle Actor</type>
             <id>540aeb75-fe36-48cc-ade2-dd19b68e762f</id>
@@ -351,6 +394,84 @@
             </property>
         </actor>
         <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>9ad3ef6e-3c47-4d66-a65a-2d6343e6bd60</id>
+            <name>GameActor_02</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-42.193661</value1>
+                    <value2>272.624481</value2>
+                    <value3>3.449403</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>a63695a3-376d-4d6a-a4de-c2ac801c2df2</id>
+            <name>GameActor_03</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-45.545940</value1>
+                    <value2>276.334229</value2>
+                    <value3>3.449403</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+        </actor>
+        <actor>
             <type>DVTETerrain.Terrain</type>
             <id>b1d034e5-5ee8-457f-b577-5dd5090d31ed</id>
             <name>Terrain1</name>
@@ -404,6 +525,45 @@
             <property>
                 <name>MaterialIndex</name>
                 <integer>1298360692</integer>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>e5d75551-279d-4efe-ab4a-aa776925f210</id>
+            <name>GameActor_01</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-38.847862</value1>
+                    <value2>271.482391</value2>
+                    <value3>4.017287</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
             </property>
         </actor>
     </actors>
