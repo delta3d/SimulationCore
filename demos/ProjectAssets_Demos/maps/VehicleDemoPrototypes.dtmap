@@ -8,7 +8,7 @@
         <comment>Place for prototype actors</comment>
         <copyright>2009</copyright>
         <createTimestamp>2009-05-19T17:43:27.0-05:00</createTimestamp>
-        <lastUpdateTimestamp>2014-11-06T09:23:32-05:00</lastUpdateTimestamp>
+        <lastUpdateTimestamp>2014-11-06T09:46:14-05:00</lastUpdateTimestamp>
         <editorVersion>2.8.0</editorVersion>
         <schemaVersion>1.0</schemaVersion>
     </header>
@@ -42,9 +42,9 @@
             <property>
                 <name>Translation</name>
                 <vec3>
-                    <value1>-41.488659</value1>
-                    <value2>275.192139</value2>
-                    <value3>4.017287</value3>
+                    <value1>-45.659492</value1>
+                    <value2>276.522064</value2>
+                    <value3>3.803286</value3>
                 </vec3>
             </property>
             <property>
@@ -56,6 +56,14 @@
                 <resourceType>StaticMeshes</resourceType>
                 <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
                 <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Scale</name>
+                <vec3>
+                    <value1>1.159501</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                </vec3>
             </property>
             <property>
                 <name>Main: Mechanics Type</name>
@@ -404,9 +412,9 @@
             <property>
                 <name>Translation</name>
                 <vec3>
-                    <value1>-42.193661</value1>
-                    <value2>272.624481</value2>
-                    <value3>3.449403</value3>
+                    <value1>-45.659492</value1>
+                    <value2>276.522064</value2>
+                    <value3>5.782421</value3>
                 </vec3>
             </property>
             <property>
@@ -418,6 +426,14 @@
                 <resourceType>StaticMeshes</resourceType>
                 <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
                 <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Scale</name>
+                <vec3>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.111134</value3>
+                </vec3>
             </property>
             <property>
                 <name>Main: Mechanics Type</name>
@@ -443,9 +459,9 @@
             <property>
                 <name>Translation</name>
                 <vec3>
-                    <value1>-45.545940</value1>
-                    <value2>276.334229</value2>
-                    <value3>3.449403</value3>
+                    <value1>-45.659492</value1>
+                    <value2>276.522064</value2>
+                    <value3>2.832213</value3>
                 </vec3>
             </property>
             <property>
@@ -538,9 +554,9 @@
             <property>
                 <name>Translation</name>
                 <vec3>
-                    <value1>-38.847862</value1>
-                    <value2>271.482391</value2>
-                    <value3>4.017287</value3>
+                    <value1>-45.659492</value1>
+                    <value2>276.522064</value2>
+                    <value3>4.725250</value3>
                 </vec3>
             </property>
             <property>
