@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <map xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="delta3dMap" xsi:schemaLocation="delta3dMap map.xsd">
     <header>
         <name>VehicleDemoPrototypes</name>
@@ -8,7 +7,7 @@
         <comment>Place for prototype actors</comment>
         <copyright>2009</copyright>
         <createTimestamp>2009-05-19T17:43:27.0-05:00</createTimestamp>
-        <lastUpdateTimestamp>2014-11-06T10:00:33-05:00</lastUpdateTimestamp>
+        <lastUpdateTimestamp>2014-11-06T14:39:00-05:00</lastUpdateTimestamp>
         <editorVersion>2.8.0</editorVersion>
         <schemaVersion>1.0</schemaVersion>
     </header>
@@ -31,6 +30,698 @@
         </library>
     </libraries>
     <actors>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>00818cbd-839e-4758-992e-1c33f21e19ec</id>
+            <name>GameActor_21</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-46.252739</value1>
+                    <value2>274.988312</value2>
+                    <value3>4.725250</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>024fb0e4-bdf9-4c5e-b954-eec8207133bd</id>
+            <name>GameActor_59</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-51.955223</value1>
+                    <value2>270.518433</value2>
+                    <value3>5.782421</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Scale</name>
+                <vec3>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.111134</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>07f3360e-0a4f-4aa0-8453-889594403550</id>
+            <name>GameActor_23</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-46.252739</value1>
+                    <value2>274.988312</value2>
+                    <value3>2.832213</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>0b8f92fb-c0b9-48a5-9b43-e5cdd0aaf0e4</id>
+            <name>GameActor_42</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-49.039597</value1>
+                    <value2>269.293640</value2>
+                    <value3>4.725250</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>0bd78be9-a968-443b-bc03-5d41b29eac9c</id>
+            <name>GameActor_68</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-53.598827</value1>
+                    <value2>274.800079</value2>
+                    <value3>2.832213</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>134dd60b-94fe-4703-8053-97feedf81cde</id>
+            <name>GameActor_44</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-49.039597</value1>
+                    <value2>269.293640</value2>
+                    <value3>2.832213</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>13e32cdc-c368-4319-a4ae-374b87fc7858</id>
+            <name>GameActor_55</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-51.737228</value1>
+                    <value2>272.836456</value2>
+                    <value3>5.782421</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Scale</name>
+                <vec3>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.111134</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>188d4412-80ec-4cbd-beab-578fc73b4b47</id>
+            <name>GameActor_08</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-45.648464</value1>
+                    <value2>278.437897</value2>
+                    <value3>3.803286</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Scale</name>
+                <vec3>
+                    <value1>1.159501</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>2269176e-1c99-4ef9-99d2-c57f0b2d8b3b</id>
+            <name>GameActor_57</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-51.737228</value1>
+                    <value2>272.836456</value2>
+                    <value3>3.803286</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Scale</name>
+                <vec3>
+                    <value1>1.159501</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>229bf6c0-fe11-4eac-8419-a457da7b7d92</id>
+            <name>GameActor_05</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-45.648464</value1>
+                    <value2>278.437897</value2>
+                    <value3>4.725250</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>2d09449e-4c83-485b-83be-b97344e3a40c</id>
+            <name>GameActor_62</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-51.987438</value1>
+                    <value2>277.210999</value2>
+                    <value3>4.725250</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>32ad0f38-4522-47de-931f-ab4d671c4380</id>
+            <name>GameActor_13</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-45.501385</value1>
+                    <value2>280.588776</value2>
+                    <value3>4.725250</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+        </actor>
         <actor>
             <type>dtExample.Mesh Object</type>
             <id>34935a77-a439-4b13-acb6-1de0b581b4ad</id>
@@ -64,6 +755,482 @@
                     <value2>1.000000</value2>
                     <value3>1.000000</value3>
                 </vec3>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>381260ba-8bac-4762-b0da-58e56a84bb21</id>
+            <name>GameActor_69</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-53.598827</value1>
+                    <value2>274.800079</value2>
+                    <value3>3.803286</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Scale</name>
+                <vec3>
+                    <value1>1.159501</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>3aa99fa1-6fc3-4297-9623-456db999118f</id>
+            <name>GameActor_24</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-46.252739</value1>
+                    <value2>274.988312</value2>
+                    <value3>3.803286</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Scale</name>
+                <vec3>
+                    <value1>1.159501</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>3b7612a7-f345-4750-bb9f-21d37178a376</id>
+            <name>GameActor_58</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-51.955223</value1>
+                    <value2>270.518433</value2>
+                    <value3>4.725250</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>3c354200-ee15-40fe-b6b7-a53f2beec7ef</id>
+            <name>GameActor_48</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-49.164703</value1>
+                    <value2>277.844055</value2>
+                    <value3>2.832213</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>3cf9c3a2-40c1-41e1-839a-5b0ea1001dae</id>
+            <name>GameActor_33</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-48.942947</value1>
+                    <value2>271.788849</value2>
+                    <value3>3.803286</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Scale</name>
+                <vec3>
+                    <value1>1.159501</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>3eb1fadc-8554-4897-8ac3-e8757224f311</id>
+            <name>GameActor_32</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-48.942947</value1>
+                    <value2>271.788849</value2>
+                    <value3>2.832213</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>491cb9f3-53cc-466d-9c28-57ad11fb5cbe</id>
+            <name>GameActor_45</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-49.039597</value1>
+                    <value2>269.293640</value2>
+                    <value3>3.803286</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Scale</name>
+                <vec3>
+                    <value1>1.159501</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>49d110c9-53b4-47c2-938f-cfb433fc742e</id>
+            <name>GameActor_09</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-46.387558</value1>
+                    <value2>273.006226</value2>
+                    <value3>4.725250</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
             </property>
             <property>
                 <name>Main: Mechanics Type</name>
@@ -312,6 +1479,297 @@
             </property>
         </actor>
         <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>56cca7c8-c924-4805-8eb0-73a2b74410a2</id>
+            <name>GameActor_19</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-45.956116</value1>
+                    <value2>269.261200</value2>
+                    <value3>2.832213</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>5c2f27b0-efb8-4529-a728-527d041bc626</id>
+            <name>GameActor_66</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-53.598827</value1>
+                    <value2>274.800079</value2>
+                    <value3>4.725250</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>61e9da0f-66aa-4fb0-b86a-1b07d6e2f4ff</id>
+            <name>GameActor_38</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-49.100273</value1>
+                    <value2>276.256287</value2>
+                    <value3>4.725250</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>6933050d-e1d5-4168-9277-dedb1425e16a</id>
+            <name>GameActor_47</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-49.164703</value1>
+                    <value2>277.844055</value2>
+                    <value3>5.782421</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Scale</name>
+                <vec3>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.111134</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>69fc168e-765d-45f4-b05a-7360034fb4e8</id>
+            <name>GameActor_49</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-49.164703</value1>
+                    <value2>277.844055</value2>
+                    <value3>3.803286</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Scale</name>
+                <vec3>
+                    <value1>1.159501</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+        </actor>
+        <actor>
             <type>NetDemo.HoverActor</type>
             <id>6bbb10f3-628b-4d29-a120-16891773ad45</id>
             <name>Hover Vehicle</name>
@@ -393,6 +1851,997 @@
             </property>
         </actor>
         <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>6d193830-5cdb-48f8-8aa5-9d5edbba60fb</id>
+            <name>GameActor_50</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-51.612118</value1>
+                    <value2>275.247375</value2>
+                    <value3>4.725250</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>732f8d55-1a66-46cc-b99d-a4d4ff0fd523</id>
+            <name>GameActor_34</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-48.975166</value1>
+                    <value2>274.115448</value2>
+                    <value3>4.725250</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>7542f727-4c96-4112-a66e-1ee17751a79b</id>
+            <name>GameActor_16</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-45.501385</value1>
+                    <value2>280.588776</value2>
+                    <value3>3.803286</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Scale</name>
+                <vec3>
+                    <value1>1.159501</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>796614bc-a710-4261-8efd-4ff851cc86d7</id>
+            <name>GameActor_65</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-51.987438</value1>
+                    <value2>277.210999</value2>
+                    <value3>3.803286</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Scale</name>
+                <vec3>
+                    <value1>1.159501</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>7cb19333-d298-4d07-82e4-3f9e946f9a40</id>
+            <name>GameActor_26</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-45.956116</value1>
+                    <value2>271.261536</value2>
+                    <value3>4.725250</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>7ed010ba-4200-49d8-b11a-cdfc2852a926</id>
+            <name>GameActor_54</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-51.737228</value1>
+                    <value2>272.836456</value2>
+                    <value3>4.725250</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>7ede577b-1754-4ffa-8088-4ef32d96f363</id>
+            <name>GameActor_60</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-51.955223</value1>
+                    <value2>270.518433</value2>
+                    <value3>2.832213</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>7f5868e2-d402-409f-9d33-c9bb7095566b</id>
+            <name>GameActor_31</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-48.942947</value1>
+                    <value2>271.788849</value2>
+                    <value3>5.782421</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Scale</name>
+                <vec3>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.111134</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>82281e3a-8509-47e9-a217-298747adda29</id>
+            <name>GameActor_17</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-45.956116</value1>
+                    <value2>269.261200</value2>
+                    <value3>4.725250</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>83acdcb1-8df0-413d-95be-c13de4eaaef3</id>
+            <name>GameActor_18</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-45.956116</value1>
+                    <value2>269.261200</value2>
+                    <value3>5.782421</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Scale</name>
+                <vec3>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.111134</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>844d587d-0b81-4654-a8cd-76a630f1947f</id>
+            <name>GameActor_56</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-51.737228</value1>
+                    <value2>272.836456</value2>
+                    <value3>2.832213</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>8598367a-162d-41a7-a177-616d645b42af</id>
+            <name>GameActor_71</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-55.210217</value1>
+                    <value2>271.738922</value2>
+                    <value3>5.782421</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Scale</name>
+                <vec3>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.111134</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>873ff0ab-65eb-472b-807a-6bcedec88589</id>
+            <name>GameActor_73</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-55.210217</value1>
+                    <value2>271.738922</value2>
+                    <value3>3.803286</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Scale</name>
+                <vec3>
+                    <value1>1.159501</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>8ffff709-669f-49bf-b859-916cdb4d5604</id>
+            <name>GameActor_28</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-45.956116</value1>
+                    <value2>271.261536</value2>
+                    <value3>2.832213</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>92ba6961-9856-440a-95a3-98887e9e374c</id>
+            <name>GameActor_30</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-48.942947</value1>
+                    <value2>271.788849</value2>
+                    <value3>4.725250</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>94adc666-bb42-4e68-ae07-fd91a97b92d8</id>
+            <name>GameActor_41</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-49.100273</value1>
+                    <value2>276.256287</value2>
+                    <value3>3.803286</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Scale</name>
+                <vec3>
+                    <value1>1.159501</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>9668da4f-5bc4-4a6b-8a08-c9c32510401f</id>
+            <name>GameActor_46</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-49.164703</value1>
+                    <value2>277.844055</value2>
+                    <value3>4.725250</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+        </actor>
+        <actor>
             <type>dtcore.Player Start</type>
             <id>993d179d-0439-4689-9445-93cf6f25f5a9</id>
             <name>PlayerStart</name>
@@ -448,6 +2897,10 @@
                 </vec3>
             </property>
             <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
                 <name>Main: Mechanics Type</name>
                 <enumerated>Dynamic</enumerated>
             </property>
@@ -497,6 +2950,372 @@
                 <resourceType>StaticMeshes</resourceType>
                 <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
                 <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>a7bbf179-94ae-4aea-b44d-7a53d5fff3f3</id>
+            <name>GameActor_39</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-49.100273</value1>
+                    <value2>276.256287</value2>
+                    <value3>5.782421</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Scale</name>
+                <vec3>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.111134</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>aa497dae-a8a6-49f4-a27c-eac2ed7f579f</id>
+            <name>GameActor_12</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-46.387558</value1>
+                    <value2>273.006226</value2>
+                    <value3>3.803286</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Scale</name>
+                <vec3>
+                    <value1>1.159501</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>aaf2d519-72a3-496b-9f48-262e7651635a</id>
+            <name>GameActor_64</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-51.987438</value1>
+                    <value2>277.210999</value2>
+                    <value3>2.832213</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>abce975b-e89b-422f-a159-07055199aa8b</id>
+            <name>GameActor_10</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-46.387558</value1>
+                    <value2>273.006226</value2>
+                    <value3>5.782421</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Scale</name>
+                <vec3>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.111134</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>af203d9f-dd80-47af-a3f2-3bd31637788c</id>
+            <name>GameActor_14</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-45.501385</value1>
+                    <value2>280.588776</value2>
+                    <value3>5.782421</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Scale</name>
+                <vec3>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.111134</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>affc249d-8289-478c-a0a0-0e8e411f709a</id>
+            <name>GameActor_70</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-55.210217</value1>
+                    <value2>271.738922</value2>
+                    <value3>4.725250</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
             </property>
             <property>
                 <name>Main: Mechanics Type</name>
@@ -557,6 +3376,380 @@
                 <name>PhysicsDirectory</name>
                 <string>drivingTerrainPhysics</string>
             </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>b5e8ae2c-4c7c-4541-b21f-2d09f1a457d2</id>
+            <name>GameActor_67</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-53.598827</value1>
+                    <value2>274.800079</value2>
+                    <value3>5.782421</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Scale</name>
+                <vec3>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.111134</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>b6ca48e0-237e-4cb3-9161-eda9209b057f</id>
+            <name>GameActor_29</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-45.956116</value1>
+                    <value2>271.261536</value2>
+                    <value3>3.803286</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Scale</name>
+                <vec3>
+                    <value1>1.159501</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>b9b73670-80bd-4144-916f-4050a0d319f9</id>
+            <name>GameActor_11</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-46.387558</value1>
+                    <value2>273.006226</value2>
+                    <value3>2.832213</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>bafd4bcb-d586-41f7-b637-7683129e7ee0</id>
+            <name>GameActor_63</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-51.987438</value1>
+                    <value2>277.210999</value2>
+                    <value3>5.782421</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Scale</name>
+                <vec3>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.111134</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>bb01d9ad-c891-4474-9371-aca6faaca5cc</id>
+            <name>GameActor_53</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-51.612118</value1>
+                    <value2>275.247375</value2>
+                    <value3>3.803286</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Scale</name>
+                <vec3>
+                    <value1>1.159501</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>bbaa76ec-d358-4689-82fe-f3882f1fb4a4</id>
+            <name>GameActor_51</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-51.612118</value1>
+                    <value2>275.247375</value2>
+                    <value3>5.782421</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Scale</name>
+                <vec3>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.111134</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
         </actor>
         <actor>
             <type>Physics Actors.Physics Material</type>
@@ -577,6 +3770,499 @@
             <property>
                 <name>MaterialIndex</name>
                 <integer>1298360692</integer>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>c01f0105-3d26-41f1-aa0d-914fb184af0f</id>
+            <name>GameActor_35</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-48.975166</value1>
+                    <value2>274.115448</value2>
+                    <value3>5.782421</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Scale</name>
+                <vec3>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.111134</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+        </actor>
+        <actor>
+            <type>Physics Actors.Physics Material</type>
+            <id>c34f8816-be53-4692-b666-b40005773183</id>
+            <name>Material_01</name>
+            <property>
+                <name>KineticFriction</name>
+                <float>1000</float>
+            </property>
+            <property>
+                <name>StaticFriction</name>
+                <float>1000</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>c3721477-57a1-4afa-9e74-70166630b4f0</id>
+            <name>GameActor_22</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-46.252739</value1>
+                    <value2>274.988312</value2>
+                    <value3>5.782421</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Scale</name>
+                <vec3>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.111134</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>c5cd1ec4-a9fe-4911-961d-6625dcef68c5</id>
+            <name>GameActor_20</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-45.956116</value1>
+                    <value2>269.261200</value2>
+                    <value3>3.803286</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Scale</name>
+                <vec3>
+                    <value1>1.159501</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>d423f9bd-0833-4466-80fc-02d0a0d5646a</id>
+            <name>GameActor_43</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-49.039597</value1>
+                    <value2>269.293640</value2>
+                    <value3>5.782421</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Scale</name>
+                <vec3>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.111134</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>d8e8adff-8264-425c-8223-23bb9cb88274</id>
+            <name>GameActor_06</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-45.648464</value1>
+                    <value2>278.437897</value2>
+                    <value3>5.782421</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Scale</name>
+                <vec3>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.111134</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>d9cf584b-62ed-4da4-b1fd-82b37b319548</id>
+            <name>GameActor_36</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-48.975166</value1>
+                    <value2>274.115448</value2>
+                    <value3>2.832213</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>ddb09c37-fd23-4610-85ed-2dd6c63b9173</id>
+            <name>GameActor_15</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-45.501385</value1>
+                    <value2>280.588776</value2>
+                    <value3>2.832213</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>e3e8c392-a327-4410-9d71-0596715818ff</id>
+            <name>GameActor_40</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-49.100273</value1>
+                    <value2>276.256287</value2>
+                    <value3>2.832213</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
             </property>
         </actor>
         <actor>
@@ -604,6 +4290,364 @@
                 <resourceType>StaticMeshes</resourceType>
                 <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
                 <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>e6014315-eddf-4139-9b05-e5c40b5b2cc2</id>
+            <name>GameActor_61</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-51.955223</value1>
+                    <value2>270.518433</value2>
+                    <value3>3.803286</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Scale</name>
+                <vec3>
+                    <value1>1.159501</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>e7394e30-d63d-46ae-9f2d-cc2e02cf00a6</id>
+            <name>GameActor_37</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-48.975166</value1>
+                    <value2>274.115448</value2>
+                    <value3>3.803286</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Scale</name>
+                <vec3>
+                    <value1>1.159501</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>f4fec0aa-5794-4bc4-91d3-f48d21edb1ce</id>
+            <name>GameActor_52</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-51.612118</value1>
+                    <value2>275.247375</value2>
+                    <value3>2.832213</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>fba30be3-8b18-4c5f-9d82-7e1e4e16591e</id>
+            <name>GameActor_07</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-45.648464</value1>
+                    <value2>278.437897</value2>
+                    <value3>2.832213</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>fdec1c8d-64ef-4279-badb-cc3738b60e2e</id>
+            <name>GameActor_72</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-55.210217</value1>
+                    <value2>271.738922</value2>
+                    <value3>2.832213</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Mesh Object</type>
+            <id>ffb90091-2b30-4173-84c3-ddab741774d1</id>
+            <name>GameActor_27</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleShader</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-45.956116</value1>
+                    <value2>271.261536</value2>
+                    <value3>5.782421</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:physics_crate.ive</resourceDisplayName>
+                <resource>StaticMeshes:physics_crate.ive</resource>
+            </property>
+            <property>
+                <name>Scale</name>
+                <vec3>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.111134</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
             </property>
             <property>
                 <name>Main: Mechanics Type</name>
