@@ -9,7 +9,7 @@
       <Property Name="FrameEnabled" Value="False"/>
       <Property Name="MousePassThroughEnabled" Value="True"/>
 
-      <!-- FORT IMAGE -->
+      <!-- FORT IMAGE >
       <Window Name="HUD_Fort" Type="WindowsLook/StaticImage">
          <Property Name="UnifiedSize" Value="{{0.2,0},{0.13333,0}}"/>
          <Property Name="UnifiedPosition" Value="{{0.0,0},{0.0,0}}"/>
@@ -20,9 +20,9 @@
          <Property Name="ZOrderChangeEnabled" Value="False"/>
          <Property Name="AlwaysOnTop" Value="True"/>
          <Property Name="Image" Value="set:Fort image:Fort"/>
-      </Window>
+      </Window-->
 
-      <!-- FORT POINTS -->
+      <!-- FORT POINTS >
       <Window Name="HUD_FortPoints" Type="WindowsLook/StaticText">
          <Property Name="UnifiedSize" Value="{{0.2,0},{0.13333,0}}"/>
          <Property Name="UnifiedPosition" Value="{{0.03,0},{0.02,0}}"/>
@@ -34,9 +34,9 @@
          <Property Name="AlwaysOnTop" Value="True"/>
          <Property Name="Font" Value="Arial-Bold-24"/>
          <Property Name="TextColours" Value="FFFFFF00"/>
-      </Window>
+      </Window-->
 
-      <!-- DAMAGE METER -->
+      <!-- DAMAGE METER >
       <Window Name="HUD_DamageMeter_Fort" Type="NetDemo/Meter">
          <Property Name="UnifiedSize" Value="{{0.9,0},{0.026667,0}}"/>
          <Property Name="UnifiedPosition" Value="{{0.1,0},{-0.025,0}}"/>
@@ -44,7 +44,7 @@
          <Property Name="VerticalAlignment" Value="Bottom"/>
          <Property Name="ZOrderChangeEnabled" Value="False"/>
          <Property Name="AlwaysOnTop" Value="True"/>
-      </Window>
+      </Window-->
       
       <!-- SCORE BOX -->
       <Window Name="HUD_ScoreBox" Type="NetDemo/GlowFrame">
