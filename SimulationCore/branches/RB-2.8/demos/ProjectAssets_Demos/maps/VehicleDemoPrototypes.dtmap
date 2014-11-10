@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <map xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="delta3dMap" xsi:schemaLocation="delta3dMap map.xsd">
     <header>
         <name>VehicleDemoPrototypes</name>
@@ -8,7 +7,7 @@
         <comment>Place for prototype actors</comment>
         <copyright>2009</copyright>
         <createTimestamp>2009-05-19T17:43:27.0-05:00</createTimestamp>
-        <lastUpdateTimestamp>2014-11-10T11:15:48-05:00</lastUpdateTimestamp>
+        <lastUpdateTimestamp>2014-11-10T15:12:02-05:00</lastUpdateTimestamp>
         <editorVersion>2.8.0</editorVersion>
         <schemaVersion>1.0</schemaVersion>
     </header>
@@ -1304,15 +1303,15 @@
                 <vec3>
                     <value1>0.000000</value1>
                     <value2>0.000000</value2>
-                    <value3>132.199966</value3>
+                    <value3>-21.199997</value3>
                 </vec3>
             </property>
             <property>
                 <name>Translation</name>
                 <vec3>
-                    <value1>-229.386337</value1>
-                    <value2>-136.863663</value2>
-                    <value3>4.359209</value3>
+                    <value1>-31.065987</value1>
+                    <value2>236.921875</value2>
+                    <value3>10.559214</value3>
                 </vec3>
             </property>
         </actor>
