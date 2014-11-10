@@ -4,7 +4,7 @@ file(GLOB DRIVER_DEMO_DATA_FILES ${CMAKE_SOURCE_DIR}/demos/DriverDemo/*.xml ${CM
 
 file(GLOB NET_DEMO_DATA_FILES ${CMAKE_SOURCE_DIR}/demos/NetDemo/*.xml ${CMAKE_SOURCE_DIR}/demos/NetDemo/*.dtproj)
 
-file(GLOB VEHICLE_DEMO_DATA_FILES ${CMAKE_SOURCE_DIR}/demos/VehicleDemo/*.xml ${CMAKE_SOURCE_DIR}/demos/NetDemo/*.dtproj)
+file(GLOB VEHICLE_DEMO_DATA_FILES ${CMAKE_SOURCE_DIR}/demos/VehicleDemo/*.xml ${CMAKE_SOURCE_DIR}/demos/VehicleDemo/*.dtproj)
 
 file(GLOB TEST_WATER_DATA_FILES ${CMAKE_SOURCE_DIR}/demos/TestWater/*.xml ${CMAKE_SOURCE_DIR}/demos/TestWater/*.dtproj)
 
