@@ -29,7 +29,10 @@
 #ifndef ADDITIONALVIEWEDITDIALOG_H_
 #define ADDITIONALVIEWEDITDIALOG_H_
 
+#include <dtUtil/warningdisable.h>
+DT_DISABLE_WARNING_ALL_START
 #include <QtGui/QDialog>
+DT_DISABLE_WARNING_END
 
 #include <StealthViewer/GMApp/ViewWindowConfigObject.h>
 

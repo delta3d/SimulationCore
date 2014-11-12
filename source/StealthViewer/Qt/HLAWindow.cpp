@@ -21,13 +21,19 @@
  * @author Eddie Johnson
  */
 #include <prefix/StealthQtPrefix.h>
-#include <StealthViewer/Qt/HLAWindow.h>
+
+#include <dtUtil/warningdisable.h>
+DT_DISABLE_WARNING_ALL_START
 #include <ui_HLAWindowUi.h>
+#include <QtGui/QMessageBox>
+DT_DISABLE_WARNING_END
+
+#include <StealthViewer/Qt/HLAWindow.h>
 #include <StealthViewer/Qt/HLAOptions.h>
 #include <StealthViewer/Qt/StealthViewerSettings.h>
 #include <StealthViewer/Qt/StealthViewerData.h>
 #include <StealthViewer/GMApp/PreferencesGeneralConfigObject.h>
-#include <QtGui/QMessageBox>
+
 #include <dtHLAGM/hlacomponent.h>
 #include <dtHLAGM/hlacomponentconfig.h>
 #include <dtCore/project.h>

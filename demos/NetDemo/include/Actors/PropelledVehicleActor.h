@@ -31,7 +31,6 @@
 #include <dtCore/propertymacros.h>
 #include <SimCore/Actors/FourWheelVehicleActor.h>
 #include <SimCore/FourWheelVehiclePhysicsHelper.h>
-#include <dtCore/particlesystem.h>
 #include <dtGame/basemessages.h>
 
 namespace dtGame
@@ -60,7 +59,6 @@ namespace NetDemo
 
    private:
       // The following are values used to test and render Dead Reckoning Behaviors
-      dtCore::RefPtr<dtCore::ParticleSystem> mTrailParticles;
       osg::Vec3 mDRTestingRealLocation;
       float mDRTestingAveragedError;
    };

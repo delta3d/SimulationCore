@@ -81,8 +81,8 @@ namespace NetDemo
 
          CEGUI::WindowManager& wm = *CEGUI::WindowManager::getSingletonPtr();
 
-         mFortPoints = wm.getWindow("HUD_FortPoints");
-         mDamageMeter_Fort = wm.getWindow("HUD_DamageMeter_Fort");
+         //mFortPoints = wm.getWindow("HUD_FortPoints");
+         //mDamageMeter_Fort = wm.getWindow("HUD_DamageMeter_Fort");
          mScore = wm.getWindow("HUD_Score");
 
          // Help Prompt
@@ -137,7 +137,7 @@ namespace NetDemo
       //////////////////////////////////////////////////////////////////////////
       bool HUDScreen::Update(float simTimeDelta)
       {
-         if(BaseClass::Update(simTimeDelta))
+         /*if(BaseClass::Update(simTimeDelta))
          {
             if(mDamageMeterLevel <= 0.5f)
             {
@@ -163,7 +163,7 @@ namespace NetDemo
                   mDamageMeterTimer = FLASH_CYCLE_TIME_MIN;
                }
             }
-         }
+         }*/
 
          return true;
       }

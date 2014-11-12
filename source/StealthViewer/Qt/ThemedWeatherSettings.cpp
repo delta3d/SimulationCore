@@ -22,7 +22,10 @@
 */
 #include <prefix/StealthQtPrefix.h>
 #include <StealthViewer/Qt/ThemedWeatherSettings.h>
+#include <dtUtil/warningdisable.h>
+DT_DISABLE_WARNING_ALL_START
 #include <ui_ThemedWeatherSettingsUi.h>
+DT_DISABLE_WARNING_END
 
 namespace StealthQt
 {

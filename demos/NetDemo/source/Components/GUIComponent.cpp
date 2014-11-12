@@ -422,7 +422,7 @@ namespace NetDemo
             ProcessPlayerStatusUpdate(*playerStats);
          }
       }
-      else if(actorType == *NetDemoActorRegistry::FORT_ACTOR_TYPE)
+      /*else if(actorType == *NetDemoActorRegistry::FORT_ACTOR_TYPE)
       {
          // If one of the forts sent out an update, go through all the forts 
          // and display the most damaged, but not completed destroyed tower.
@@ -445,7 +445,7 @@ namespace NetDemo
             curRatio = 1.0f; // no towers found or all dead.  So, show no health
          }
          mScreenHUD->SetFortDamageRatio(1.0 - curRatio);
-      }
+      }*/
    }
 
    /////////////////////////////////////////////////////////////////////////////

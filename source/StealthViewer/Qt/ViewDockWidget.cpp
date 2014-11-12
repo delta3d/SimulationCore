@@ -27,9 +27,12 @@
  */
 
 #include <prefix/StealthQtPrefix.h>
+#include <dtUtil/warningdisable.h>
+DT_DISABLE_WARNING_ALL_START
 #include <QtCore/QList>
 #include <QtOpenGL/QGLWidget>
 #include <QtGui/QMessageBox>
+DT_DISABLE_WARNING_END
 
 #include <StealthViewer/Qt/ViewDockWidget.h>
 #include <StealthViewer/Qt/FOVWidget.h>
@@ -40,7 +43,10 @@
 #include <dtQt/osggraphicswindowqt.h>
 
 #include <StealthViewer/GMApp/ViewWindowConfigObject.h>
+
+DT_DISABLE_WARNING_ALL_START
 #include <ui_Views.h>
+DT_DISABLE_WARNING_END
 
 namespace StealthQt
 {

@@ -35,8 +35,11 @@
 #include <StealthViewer/GMApp/ViewWindowConfigObject.h>
 #include <dtQt/osgadapterwidget.h>
 
+#include <dtUtil/warningdisable.h>
+DT_DISABLE_WARNING_ALL_START
 //So the Q_Object macro will work
 #include <QtCore/QObject>
+DT_DISABLE_WARNING_END
 
 /// @cond DOXYGEN_SHOULD_SKIP_THIS
 class QGLWidget;

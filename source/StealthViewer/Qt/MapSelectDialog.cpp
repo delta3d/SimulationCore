@@ -22,7 +22,10 @@
  */
 #include <prefix/StealthQtPrefix.h>
 #include <StealthViewer/Qt/MapSelectDialog.h>
+#include <dtUtil/warningdisable.h>
+DT_DISABLE_WARNING_ALL_START
 #include <ui_MapSelectDialogUi.h>
+DT_DISABLE_WARNING_END
 #include <dtCore/project.h>
 
 namespace StealthQt

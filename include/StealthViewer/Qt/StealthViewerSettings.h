@@ -28,7 +28,10 @@
 #ifndef STEALTH_VIEWER_SETTINGS
 #define STEALTH_VIEWER_SETTINGS
 
+#include <dtUtil/warningdisable.h>
+DT_DISABLE_WARNING_ALL_START
 #include <QtCore/QSettings>
+DT_DISABLE_WARNING_END
 #include <dtUtil/refstring.h>
 
 namespace StealthGM

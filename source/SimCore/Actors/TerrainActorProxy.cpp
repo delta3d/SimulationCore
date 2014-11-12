@@ -39,6 +39,7 @@
 #include <dtUtil/datapathutils.h>
 #include <dtUtil/stringutils.h>
 #include <dtUtil/functor.h>
+#include <dtUtil/nodemask.h>
 #include <dtCore/transform.h>
 
 #include <dtGame/messagetype.h>
@@ -58,6 +59,7 @@
 
 #include <dtPhysics/physicsreaderwriter.h>
 #include <dtPhysics/geometry.h>
+#include <dtPhysics/physicsmaterialactor.h>
 
 namespace SimCore
 {
@@ -253,6 +255,7 @@ namespace SimCore
          {
             if (ta->CheckForTerrainLoaded())
             {
+               ta->GetOSGNode()->setNodeMask(dtUtil::NodeMask::TERRAIN_GEOMETRY | dtUtil::NodeMask::NON_TRANSPARENT_GEOMETRY | dtUtil::NodeMask::SHADOW_RECEIVE);
                GetGameManager()->ClearTimer(LOAD_NODE_TERRAIN_TIMER, this);
                ta->SetupTerrainPhysics();
             }
@@ -429,6 +432,11 @@ namespace SimCore
                   //if we didn't find a pre-baked static mesh but we did have a renderable terrain node
                   //then just bake a static collision mesh with that
                   mHelper->GetMainPhysicsObject()->SetTransform(xform);
+                  const dtPhysics::MaterialActor* matAct = mHelper->LookupMaterialActor();
+                  if (matAct != NULL)
+                  {
+                     mHelper->GetMainPhysicsObject()->SetMaterial(matAct->GetMaterial());
+                  }
                   mHelper->GetMainPhysicsObject()->Create(mTerrainNode.get());
                   loadSuccess = true;
                }
@@ -478,6 +486,12 @@ namespace SimCore
                   newTile->CreateFromGeometry(*geom);
 
                   newTile->SetCollisionGroup(SimCore::CollisionGroup::GROUP_TERRAIN);
+                  const dtPhysics::MaterialActor* matAct = mHelper->LookupMaterialActor();
+                  if (matAct != NULL)
+                  {
+                     newTile->SetMaterial(matAct->GetMaterial());
+                  }
+
                   mHelper->AddPhysicsObject(*newTile);
                }
                else

@@ -29,7 +29,10 @@
 #ifndef FOVWIDGET_H_
 #define FOVWIDGET_H_
 
+#include <dtUtil/warningdisable.h>
+DT_DISABLE_WARNING_ALL_START
 #include <QtGui/QWidget>
+DT_DISABLE_WARNING_END
 #include <StealthViewer/GMApp/ViewWindowConfigObject.h>
 
 namespace Ui

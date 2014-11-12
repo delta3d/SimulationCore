@@ -25,7 +25,11 @@
 *
 * @author Eddie Johnson, Curtiss Murphy
 */
+#include <dtUtil/warningdisable.h>
+DT_DISABLE_WARNING_ALL_START
 #include <QtGui/QDialog>
+DT_DISABLE_WARNING_END
+
 #include <dtUtil/refstring.h>
 
 // Foward declarations

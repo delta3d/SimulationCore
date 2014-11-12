@@ -1,12 +1,12 @@
 <shaderlist>
    <shadergroup name="CustomizableTowerShaderGroup">
       <shader name="NoDamage" default="yes">
-         <source type="Vertex">Shaders/Base/custom_paint.vert</source>
-         <source type="Vertex">Shaders/Base/vertex_functions.vert</source>
-         <source type="Fragment">Shaders/Base/custom_paint.frag</source>
-         <source type="Fragment">Shaders/Base/fragment_functions.frag</source>
-         <source type="Fragment">Shaders/Base/dynamic_light.frag</source>
-         <source type="Fragment">Shaders/Base/spot_light.frag</source>
+         <source type="Vertex">Shaders/SharedBase/custom_paint.vert</source>
+         <source type="Vertex">Shaders/SharedBase/vertex_functions.vert</source>
+         <source type="Fragment">Shaders/SharedBase/custom_paint.frag</source>
+         <source type="Fragment">Shaders/SharedBase/fragment_functions.frag</source>
+         <source type="Fragment">Shaders/SharedBase/dynamic_light.frag</source>
+         <source type="Fragment">Shaders/SharedBase/spot_light.frag</source>
          <parameter name="diffuseTexture">
             <texture2D textureUnit="0">
                <source type="Auto"/>

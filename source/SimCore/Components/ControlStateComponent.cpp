@@ -171,7 +171,7 @@ namespace SimCore
       const SimCore::Actors::ControlStateActor* ControlStateComponent::GetControlState(
          const dtCore::UniqueId& actorID ) const
       {
-         const dtGame::GameManager* gm = GetGameManager();
+         dtGame::GameManager* gm = GetGameManager();
 
          if( gm != NULL )
          {

@@ -29,7 +29,10 @@
 #ifndef VIEWDOCKWIDGET_H_
 #define VIEWDOCKWIDGET_H_
 
+#include <dtUtil/warningdisable.h>
+DT_DISABLE_WARNING_ALL_START
 #include <QtGui/QDockWidget>
+DT_DISABLE_WARNING_END
 
 #include <StealthViewer/GMApp/ViewWindowConfigObject.h>
 #include <dtCore/refptr.h>

@@ -1,0 +1,2097 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="delta3dMap" xsi:schemaLocation="delta3dMap map.xsd">
+    <header>
+        <name>VehicleDemoPrototypes</name>
+        <description></description>
+        <author>Curtiss Murphy, David Guthrie</author>
+        <comment>Place for prototype actors</comment>
+        <copyright>2009</copyright>
+        <createTimestamp>2009-05-19T17:43:27.0-05:00</createTimestamp>
+        <lastUpdateTimestamp>2014-11-10T15:12:02-05:00</lastUpdateTimestamp>
+        <editorVersion>2.8.0</editorVersion>
+        <schemaVersion>1.0</schemaVersion>
+    </header>
+    <libraries>
+        <library>
+            <name>dtPhysics</name>
+            <version></version>
+        </library>
+        <library>
+            <name>SimCore</name>
+            <version></version>
+        </library>
+        <library>
+            <name>NetDemo</name>
+            <version></version>
+        </library>
+        <library>
+            <name>testApp</name>
+            <version></version>
+        </library>
+    </libraries>
+    <actors>
+        <actor>
+            <type>dtExample.Vessel</type>
+            <id>0125d7c5-fafd-4a47-ba63-5c2ed1d3e17a</id>
+            <name>GameActor_86</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>MultiMapWater</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-44.992828</value1>
+                    <value2>273.702576</value2>
+                    <value3>5.390821</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:containers:crates:Crate_4Foot_Wood.osg</resourceDisplayName>
+                <resource>StaticMeshes:containers:crates:Crate_4Foot_Wood.osg</resource>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+            <property>
+                <name>LiquidDensityGramsPerSqCm</name>
+                <float>1.2</float>
+            </property>
+            <property>
+                <name>CD</name>
+                <float>2</float>
+            </property>
+            <property>
+                <name>SurfaceAreaSqM</name>
+                <float>6</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Vessel</type>
+            <id>0e648646-c92a-49d7-9e19-2a2589365330</id>
+            <name>GameActor_82</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>MultiMapWater</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-44.980946</value1>
+                    <value2>275.141968</value2>
+                    <value3>5.390821</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:containers:crates:Crate_4Foot_Wood.osg</resourceDisplayName>
+                <resource>StaticMeshes:containers:crates:Crate_4Foot_Wood.osg</resource>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+            <property>
+                <name>LiquidDensityGramsPerSqCm</name>
+                <float>1.2</float>
+            </property>
+            <property>
+                <name>CD</name>
+                <float>2</float>
+            </property>
+            <property>
+                <name>SurfaceAreaSqM</name>
+                <float>6</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Vessel</type>
+            <id>0fd9a3da-e812-49f2-811d-15002465e873</id>
+            <name>GameActor_88</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>MultiMapWater</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-44.992828</value1>
+                    <value2>273.702576</value2>
+                    <value3>2.987037</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:containers:crates:Crate_4Foot_Wood.osg</resourceDisplayName>
+                <resource>StaticMeshes:containers:crates:Crate_4Foot_Wood.osg</resource>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+            <property>
+                <name>LiquidDensityGramsPerSqCm</name>
+                <float>1.2</float>
+            </property>
+            <property>
+                <name>CD</name>
+                <float>2</float>
+            </property>
+            <property>
+                <name>SurfaceAreaSqM</name>
+                <float>6</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Vessel</type>
+            <id>167e8343-c2a3-4962-bd90-f49e674a3324</id>
+            <name>GameActor_79</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>MultiMapWater</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-46.378796</value1>
+                    <value2>275.838989</value2>
+                    <value3>6.689580</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:containers:crates:Crate_4Foot_Wood.osg</resourceDisplayName>
+                <resource>StaticMeshes:containers:crates:Crate_4Foot_Wood.osg</resource>
+            </property>
+            <property>
+                <name>Scale</name>
+                <vec3>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.111134</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+            <property>
+                <name>LiquidDensityGramsPerSqCm</name>
+                <float>1.2</float>
+            </property>
+            <property>
+                <name>CD</name>
+                <float>2</float>
+            </property>
+            <property>
+                <name>SurfaceAreaSqM</name>
+                <float>6</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Vessel</type>
+            <id>2ac3ad62-bbe7-4e72-843e-63ad3593e446</id>
+            <name>GameActor_78</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>MultiMapWater</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-46.378796</value1>
+                    <value2>275.838989</value2>
+                    <value3>5.390821</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:containers:crates:Crate_4Foot_Wood.osg</resourceDisplayName>
+                <resource>StaticMeshes:containers:crates:Crate_4Foot_Wood.osg</resource>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+            <property>
+                <name>LiquidDensityGramsPerSqCm</name>
+                <float>1.2</float>
+            </property>
+            <property>
+                <name>CD</name>
+                <float>2</float>
+            </property>
+            <property>
+                <name>SurfaceAreaSqM</name>
+                <float>6</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Vessel</type>
+            <id>39f3257c-f899-4ac2-9987-1dafe71221f2</id>
+            <name>GameActor_81</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>MultiMapWater</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-46.378796</value1>
+                    <value2>275.838989</value2>
+                    <value3>4.181849</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:containers:crates:Crate_4Foot_Wood.osg</resourceDisplayName>
+                <resource>StaticMeshes:containers:crates:Crate_4Foot_Wood.osg</resource>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+            <property>
+                <name>LiquidDensityGramsPerSqCm</name>
+                <float>1.2</float>
+            </property>
+            <property>
+                <name>CD</name>
+                <float>2</float>
+            </property>
+            <property>
+                <name>SurfaceAreaSqM</name>
+                <float>6</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Vessel</type>
+            <id>49d110c9-53b4-47c2-938f-cfb433fc742e</id>
+            <name>GameActor_09</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>MultiMapWater</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-46.387558</value1>
+                    <value2>273.006226</value2>
+                    <value3>5.390821</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:containers:crates:Crate_4Foot_Wood.osg</resourceDisplayName>
+                <resource>StaticMeshes:containers:crates:Crate_4Foot_Wood.osg</resource>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+            <property>
+                <name>LiquidDensityGramsPerSqCm</name>
+                <float>1.2</float>
+            </property>
+            <property>
+                <name>CD</name>
+                <float>2</float>
+            </property>
+            <property>
+                <name>SurfaceAreaSqM</name>
+                <float>6</float>
+            </property>
+        </actor>
+        <actor>
+            <type>NetDemo.Propelled Vehicle Actor</type>
+            <id>540aeb75-fe36-48cc-ade2-dd19b68e762f</id>
+            <name>Propelled Vehicle</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>MultiMapWater</string>
+            </property>
+            <property>
+                <name>Rotation</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>57.673561</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>3.870934</value1>
+                    <value2>285.795654</value2>
+                    <value3>5.197449</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>PROTOTYPE</enumerated>
+            </property>
+            <property>
+                <name>Fire particles</name>
+                <resourceType>Particles</resourceType>
+                <resourceDisplayName>Particles:nd_BurningVehicleSmall.osg</resourceDisplayName>
+                <resource>Particles:nd_BurningVehicleSmall.osg</resource>
+            </property>
+            <property>
+                <name>Munition Damage Table</name>
+                <string>VehicleDamageType</string>
+            </property>
+            <property>
+                <name>Default Scale</name>
+                <vec3>
+                    <value1>1.500000</value1>
+                    <value2>1.500000</value2>
+                    <value3>1.500000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Non-damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:vehicles:landcraft:jeep:Jeep.osg</resourceDisplayName>
+                <resource>StaticMeshes:vehicles:landcraft:jeep:Jeep.osg</resource>
+            </property>
+            <property>
+                <name>Damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:vehicles:landcraft:jeep:Jeep.osg</resourceDisplayName>
+                <resource>StaticMeshes:vehicles:landcraft:jeep:Jeep.osg</resource>
+            </property>
+            <property>
+                <name>Destroyed actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:vehicles:landcraft:jeep:Jeep.osg</resourceDisplayName>
+                <resource>StaticMeshes:vehicles:landcraft:jeep:Jeep.osg</resource>
+            </property>
+            <property>
+                <name>SOUND_EFFECT_IGNITION</name>
+                <resourceType>Sounds</resourceType>
+                <resourceDisplayName>Sounds::Ignition.wav</resourceDisplayName>
+                <resource>Sounds::Ignition.wav</resource>
+            </property>
+            <property>
+                <name>SOUND_EFFECT_VEHICLE_LOOP</name>
+                <resourceType>Sounds</resourceType>
+                <resourceDisplayName>Sounds::Vehicle_Idle.wav</resourceDisplayName>
+                <resource>Sounds::Vehicle_Idle.wav</resource>
+            </property>
+            <property>
+                <name>SOUND_EFFECT_BRAKE</name>
+                <resourceType>Sounds</resourceType>
+                <resourceDisplayName>Sounds::BrakeSound.wav</resourceDisplayName>
+                <resource>Sounds::BrakeSound.wav</resource>
+            </property>
+            <property>
+                <name>SOUND_EFFECT_COLLISION_HIT</name>
+                <resourceType>Sounds</resourceType>
+                <resourceDisplayName>Sounds::SFX_Metal_Hit_Sound.wav</resourceDisplayName>
+                <resource>Sounds::SFX_Metal_Hit_Sound.wav</resource>
+            </property>
+            <property>
+                <name>Four Wheel Drive</name>
+                <boolean>true</boolean>
+            </property>
+            <property>
+                <name>FrontSuspensionRestLength</name>
+                <float>0.31999999</float>
+            </property>
+            <property>
+                <name>FrontSuspensionSpringFreq</name>
+                <float>1.5</float>
+            </property>
+            <property>
+                <name>FrontSuspensionDamperFactor</name>
+                <float>0.38</float>
+            </property>
+            <property>
+                <name>FrontTireSlip</name>
+                <float>1.2</float>
+            </property>
+            <property>
+                <name>FrontTireValue</name>
+                <float>2</float>
+            </property>
+            <property>
+                <name>FrontTireAsymptoteSlip</name>
+                <float>2</float>
+            </property>
+            <property>
+                <name>FrontTireAsymptoteValue</name>
+                <float>1</float>
+            </property>
+            <property>
+                <name>RearSuspensionRestLength</name>
+                <float>0.31999999</float>
+            </property>
+            <property>
+                <name>RearSuspensionSpringFreq</name>
+                <float>2.1210001</float>
+            </property>
+            <property>
+                <name>RearSuspensionDamperFactor</name>
+                <float>0.41999999</float>
+            </property>
+            <property>
+                <name>RearTireSlip</name>
+                <float>1.6</float>
+            </property>
+            <property>
+                <name>RearTireValue</name>
+                <float>2</float>
+            </property>
+            <property>
+                <name>RearTireAsymptoteSlip</name>
+                <float>2</float>
+            </property>
+            <property>
+                <name>RearTireAsymptoteValue</name>
+                <float>1</float>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>be123458-111d-4ec8-bd51-dd49d31abc00</actorId>
+            </property>
+            <property>
+                <name>Default Collision Group</name>
+                <integer>1</integer>
+            </property>
+            <property>
+                <name>chassis: Origin Offset</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.100000</value2>
+                    <value3>0.340000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>chassis: Dimensions</name>
+                <vec3>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>chassis: Mass</name>
+                <float>1800</float>
+            </property>
+            <property>
+                <name>chassis: Skin Thickness</name>
+                <float>0.039999999</float>
+            </property>
+            <property>
+                <name>chassis: Notify Collisions</name>
+                <boolean>true</boolean>
+            </property>
+            <property>
+                <name>chassis: Moment Of Inertia</name>
+                <vec3>
+                    <value1>9000.000000</value1>
+                    <value2>2100.000000</value2>
+                    <value3>4000.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Engine Torque</name>
+                <float>6000</float>
+            </property>
+            <property>
+                <name>Max Break Torque</name>
+                <float>40</float>
+            </property>
+            <property>
+                <name>Max Steer Angle</name>
+                <float>25</float>
+            </property>
+            <property>
+                <name>Top Speed (MPH)</name>
+                <float>70</float>
+            </property>
+            <property>
+                <name>mVehicleTopSpeedReverse</name>
+                <float>30</float>
+            </property>
+            <property>
+                <name>NumUpdatesUntilFullSteeringAngle</name>
+                <integer>50</integer>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Vessel</type>
+            <id>57051d82-36bf-4a6f-9cc5-5a73996f5b7c</id>
+            <name>GameActor_87</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>MultiMapWater</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-44.992828</value1>
+                    <value2>273.702576</value2>
+                    <value3>6.689580</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:containers:crates:Crate_4Foot_Wood.osg</resourceDisplayName>
+                <resource>StaticMeshes:containers:crates:Crate_4Foot_Wood.osg</resource>
+            </property>
+            <property>
+                <name>Scale</name>
+                <vec3>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.111134</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+            <property>
+                <name>LiquidDensityGramsPerSqCm</name>
+                <float>1.2</float>
+            </property>
+            <property>
+                <name>CD</name>
+                <float>2</float>
+            </property>
+            <property>
+                <name>SurfaceAreaSqM</name>
+                <float>6</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Vessel</type>
+            <id>597b31b3-d75f-44eb-8f0d-b6b1b6a11430</id>
+            <name>GameActor_90</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>MultiMapWater</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-43.598312</value1>
+                    <value2>274.428589</value2>
+                    <value3>5.390821</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:containers:crates:Crate_4Foot_Wood.osg</resourceDisplayName>
+                <resource>StaticMeshes:containers:crates:Crate_4Foot_Wood.osg</resource>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+            <property>
+                <name>LiquidDensityGramsPerSqCm</name>
+                <float>1.2</float>
+            </property>
+            <property>
+                <name>CD</name>
+                <float>2</float>
+            </property>
+            <property>
+                <name>SurfaceAreaSqM</name>
+                <float>6</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Vessel</type>
+            <id>5a1ffd02-8509-4adf-b771-d6e4f8f8db5f</id>
+            <name>GameActor_77</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>MultiMapWater</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-46.429626</value1>
+                    <value2>274.445831</value2>
+                    <value3>4.181849</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:containers:crates:Crate_4Foot_Wood.osg</resourceDisplayName>
+                <resource>StaticMeshes:containers:crates:Crate_4Foot_Wood.osg</resource>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+            <property>
+                <name>LiquidDensityGramsPerSqCm</name>
+                <float>1.2</float>
+            </property>
+            <property>
+                <name>CD</name>
+                <float>2</float>
+            </property>
+            <property>
+                <name>SurfaceAreaSqM</name>
+                <float>6</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Vessel</type>
+            <id>5b3f5655-d18f-41b6-8c89-1283d789ddde</id>
+            <name>GameActor_93</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>MultiMapWater</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-43.598312</value1>
+                    <value2>274.428589</value2>
+                    <value3>4.181849</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:containers:crates:Crate_4Foot_Wood.osg</resourceDisplayName>
+                <resource>StaticMeshes:containers:crates:Crate_4Foot_Wood.osg</resource>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+            <property>
+                <name>LiquidDensityGramsPerSqCm</name>
+                <float>1.2</float>
+            </property>
+            <property>
+                <name>CD</name>
+                <float>2</float>
+            </property>
+            <property>
+                <name>SurfaceAreaSqM</name>
+                <float>6</float>
+            </property>
+        </actor>
+        <actor>
+            <type>NetDemo.HoverActor</type>
+            <id>6bbb10f3-628b-4d29-a120-16891773ad45</id>
+            <name>Hover Vehicle</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleVehicleShaderGroup</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-214.779831</value1>
+                    <value2>195.855698</value2>
+                    <value3>-10.573267</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>PROTOTYPE</enumerated>
+            </property>
+            <property>
+                <name>Fire particles</name>
+                <resourceType>Particles</resourceType>
+                <resourceDisplayName>Particles:nd_BurningVehicleSmall.osg</resourceDisplayName>
+                <resource>Particles:nd_BurningVehicleSmall.osg</resource>
+            </property>
+            <property>
+                <name>Max Damage Amount</name>
+                <float>5</float>
+            </property>
+            <property>
+                <name>Force Affiliation</name>
+                <enumerated>FRIENDLY</enumerated>
+            </property>
+            <property>
+                <name>Munition Damage Table</name>
+                <string>VehicleDamageType</string>
+            </property>
+            <property>
+                <name>Non-damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:HoverTank.ive</resourceDisplayName>
+                <resource>StaticMeshes:HoverTank.ive</resource>
+            </property>
+            <property>
+                <name>Damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:HoverTank.ive</resourceDisplayName>
+                <resource>StaticMeshes:HoverTank.ive</resource>
+            </property>
+            <property>
+                <name>Destroyed actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:HoverTank.ive</resourceDisplayName>
+                <resource>StaticMeshes:HoverTank.ive</resource>
+            </property>
+            <property>
+                <name>VehiclesSeatConfigActorNameTable</name>
+                <string>Vehicle_Driver_Config</string>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>be123458-111d-4ec8-bd51-dd49d31abc00</actorId>
+            </property>
+            <property>
+                <name>Physics Mass</name>
+                <float>1000</float>
+            </property>
+            <property>
+                <name>Default Collision Group</name>
+                <integer>1</integer>
+            </property>
+            <property>
+                <name>VehicleBody: Collision Group</name>
+                <integer>1</integer>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Vessel</type>
+            <id>6ebf13d1-73e8-4f07-b44f-a10ef5f32cf6</id>
+            <name>GameActor_84</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>MultiMapWater</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-44.980946</value1>
+                    <value2>275.141968</value2>
+                    <value3>2.987037</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:containers:crates:Crate_4Foot_Wood.osg</resourceDisplayName>
+                <resource>StaticMeshes:containers:crates:Crate_4Foot_Wood.osg</resource>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+            <property>
+                <name>LiquidDensityGramsPerSqCm</name>
+                <float>1.2</float>
+            </property>
+            <property>
+                <name>CD</name>
+                <float>2</float>
+            </property>
+            <property>
+                <name>SurfaceAreaSqM</name>
+                <float>6</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Vessel</type>
+            <id>7693e207-b0e9-45a4-8ada-8b89f0f83494</id>
+            <name>GameActor_85</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>MultiMapWater</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-44.980946</value1>
+                    <value2>275.141968</value2>
+                    <value3>4.181849</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:containers:crates:Crate_4Foot_Wood.osg</resourceDisplayName>
+                <resource>StaticMeshes:containers:crates:Crate_4Foot_Wood.osg</resource>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+            <property>
+                <name>LiquidDensityGramsPerSqCm</name>
+                <float>1.2</float>
+            </property>
+            <property>
+                <name>CD</name>
+                <float>2</float>
+            </property>
+            <property>
+                <name>SurfaceAreaSqM</name>
+                <float>6</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Vessel</type>
+            <id>8bb716dd-ee37-445a-b8b0-e193a23b9297</id>
+            <name>GameActor_75</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>MultiMapWater</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-46.429626</value1>
+                    <value2>274.445831</value2>
+                    <value3>6.689580</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:containers:crates:Crate_4Foot_Wood.osg</resourceDisplayName>
+                <resource>StaticMeshes:containers:crates:Crate_4Foot_Wood.osg</resource>
+            </property>
+            <property>
+                <name>Scale</name>
+                <vec3>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.111134</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+            <property>
+                <name>LiquidDensityGramsPerSqCm</name>
+                <float>1.2</float>
+            </property>
+            <property>
+                <name>CD</name>
+                <float>2</float>
+            </property>
+            <property>
+                <name>SurfaceAreaSqM</name>
+                <float>6</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtcore.Player Start</type>
+            <id>993d179d-0439-4689-9445-93cf6f25f5a9</id>
+            <name>PlayerStart</name>
+            <property>
+                <name>Rotation</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>-21.199997</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-31.065987</value1>
+                    <value2>236.921875</value2>
+                    <value3>10.559214</value3>
+                </vec3>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Vessel</type>
+            <id>aa497dae-a8a6-49f4-a27c-eac2ed7f579f</id>
+            <name>GameActor_12</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>MultiMapWater</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-46.387558</value1>
+                    <value2>273.006226</value2>
+                    <value3>4.181849</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:containers:crates:Crate_4Foot_Wood.osg</resourceDisplayName>
+                <resource>StaticMeshes:containers:crates:Crate_4Foot_Wood.osg</resource>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+            <property>
+                <name>LiquidDensityGramsPerSqCm</name>
+                <float>1.2</float>
+            </property>
+            <property>
+                <name>CD</name>
+                <float>2</float>
+            </property>
+            <property>
+                <name>SurfaceAreaSqM</name>
+                <float>6</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Vessel</type>
+            <id>abce975b-e89b-422f-a159-07055199aa8b</id>
+            <name>GameActor_10</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>MultiMapWater</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-46.387558</value1>
+                    <value2>273.006226</value2>
+                    <value3>6.689580</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:containers:crates:Crate_4Foot_Wood.osg</resourceDisplayName>
+                <resource>StaticMeshes:containers:crates:Crate_4Foot_Wood.osg</resource>
+            </property>
+            <property>
+                <name>Scale</name>
+                <vec3>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.111134</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+            <property>
+                <name>LiquidDensityGramsPerSqCm</name>
+                <float>1.2</float>
+            </property>
+            <property>
+                <name>CD</name>
+                <float>2</float>
+            </property>
+            <property>
+                <name>SurfaceAreaSqM</name>
+                <float>6</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Vessel</type>
+            <id>afaf6e64-f29d-41f6-89a9-1144da575056</id>
+            <name>GameActor_89</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>MultiMapWater</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-44.992828</value1>
+                    <value2>273.702576</value2>
+                    <value3>4.181849</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:containers:crates:Crate_4Foot_Wood.osg</resourceDisplayName>
+                <resource>StaticMeshes:containers:crates:Crate_4Foot_Wood.osg</resource>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+            <property>
+                <name>LiquidDensityGramsPerSqCm</name>
+                <float>1.2</float>
+            </property>
+            <property>
+                <name>CD</name>
+                <float>2</float>
+            </property>
+            <property>
+                <name>SurfaceAreaSqM</name>
+                <float>6</float>
+            </property>
+        </actor>
+        <actor>
+            <type>DVTETerrain.Terrain</type>
+            <id>b1d034e5-5ee8-457f-b577-5dd5090d31ed</id>
+            <name>Terrain1</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>MultiTextureTerrain</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>-3.500000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>PROTOTYPE</enumerated>
+            </property>
+            <property>
+                <name>Terrain Physics Mode</name>
+                <enumerated>IMMEDIATE</enumerated>
+            </property>
+            <property>
+                <name>TerrainMesh</name>
+                <resourceType>Terrains</resourceType>
+                <resourceDisplayName>Terrains:driving_terrain.ive</resourceDisplayName>
+                <resource>Terrains:driving_terrain.ive</resource>
+            </property>
+            <property>
+                <name>PhysicsDirectory</name>
+                <string>drivingTerrainPhysics</string>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Vessel</type>
+            <id>b9b73670-80bd-4144-916f-4050a0d319f9</id>
+            <name>GameActor_11</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>MultiMapWater</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-46.387558</value1>
+                    <value2>273.006226</value2>
+                    <value3>2.987037</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:containers:crates:Crate_4Foot_Wood.osg</resourceDisplayName>
+                <resource>StaticMeshes:containers:crates:Crate_4Foot_Wood.osg</resource>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+            <property>
+                <name>LiquidDensityGramsPerSqCm</name>
+                <float>1.2</float>
+            </property>
+            <property>
+                <name>CD</name>
+                <float>2</float>
+            </property>
+            <property>
+                <name>SurfaceAreaSqM</name>
+                <float>6</float>
+            </property>
+        </actor>
+        <actor>
+            <type>Physics Actors.Physics Material</type>
+            <id>be123458-111d-4ec8-bd51-dd49d31abc00</id>
+            <name>Vehicle Physics Material</name>
+            <property>
+                <name>Restitution</name>
+                <float>0</float>
+            </property>
+            <property>
+                <name>DirOfAnisotropy</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>MaterialIndex</name>
+                <integer>1298360692</integer>
+            </property>
+        </actor>
+        <actor>
+            <type>Physics Actors.Physics Material</type>
+            <id>c34f8816-be53-4692-b666-b40005773183</id>
+            <name>Material_01</name>
+            <property>
+                <name>KineticFriction</name>
+                <float>0.89999998</float>
+            </property>
+            <property>
+                <name>StaticFriction</name>
+                <float>0.89999998</float>
+            </property>
+            <property>
+                <name>Restitution</name>
+                <float>0.69999999</float>
+            </property>
+            <property>
+                <name>MaterialIndex</name>
+                <integer>100</integer>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Vessel</type>
+            <id>cdbdde70-c523-43e9-875d-aac6ff6eb9e3</id>
+            <name>GameActor_92</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>MultiMapWater</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-43.598312</value1>
+                    <value2>274.428589</value2>
+                    <value3>2.987037</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:containers:crates:Crate_4Foot_Wood.osg</resourceDisplayName>
+                <resource>StaticMeshes:containers:crates:Crate_4Foot_Wood.osg</resource>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+            <property>
+                <name>LiquidDensityGramsPerSqCm</name>
+                <float>1.2</float>
+            </property>
+            <property>
+                <name>CD</name>
+                <float>2</float>
+            </property>
+            <property>
+                <name>SurfaceAreaSqM</name>
+                <float>6</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Vessel</type>
+            <id>ce6bcc6c-3edb-41e8-9404-7db5aa93a44c</id>
+            <name>GameActor_80</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>MultiMapWater</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-46.378796</value1>
+                    <value2>275.838989</value2>
+                    <value3>2.987037</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:containers:crates:Crate_4Foot_Wood.osg</resourceDisplayName>
+                <resource>StaticMeshes:containers:crates:Crate_4Foot_Wood.osg</resource>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+            <property>
+                <name>LiquidDensityGramsPerSqCm</name>
+                <float>1.2</float>
+            </property>
+            <property>
+                <name>CD</name>
+                <float>2</float>
+            </property>
+            <property>
+                <name>SurfaceAreaSqM</name>
+                <float>6</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Vessel</type>
+            <id>d5d5759e-e2bd-4f54-960a-7b8b5073b77e</id>
+            <name>GameActor_91</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>MultiMapWater</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-43.598312</value1>
+                    <value2>274.428589</value2>
+                    <value3>6.689580</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:containers:crates:Crate_4Foot_Wood.osg</resourceDisplayName>
+                <resource>StaticMeshes:containers:crates:Crate_4Foot_Wood.osg</resource>
+            </property>
+            <property>
+                <name>Scale</name>
+                <vec3>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.111134</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+            <property>
+                <name>LiquidDensityGramsPerSqCm</name>
+                <float>1.2</float>
+            </property>
+            <property>
+                <name>CD</name>
+                <float>2</float>
+            </property>
+            <property>
+                <name>SurfaceAreaSqM</name>
+                <float>6</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Vessel</type>
+            <id>e10a13d7-c983-4ebc-ace9-50c702de00ac</id>
+            <name>GameActor_74</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>MultiMapWater</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-46.429626</value1>
+                    <value2>274.445831</value2>
+                    <value3>5.390821</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:containers:crates:Crate_4Foot_Wood.osg</resourceDisplayName>
+                <resource>StaticMeshes:containers:crates:Crate_4Foot_Wood.osg</resource>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+            <property>
+                <name>LiquidDensityGramsPerSqCm</name>
+                <float>1.2</float>
+            </property>
+            <property>
+                <name>CD</name>
+                <float>2</float>
+            </property>
+            <property>
+                <name>SurfaceAreaSqM</name>
+                <float>6</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Vessel</type>
+            <id>eec93118-a1a3-4a4a-971a-e26bb283dcdd</id>
+            <name>GameActor_76</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>MultiMapWater</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-46.429626</value1>
+                    <value2>274.445831</value2>
+                    <value3>2.987037</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:containers:crates:Crate_4Foot_Wood.osg</resourceDisplayName>
+                <resource>StaticMeshes:containers:crates:Crate_4Foot_Wood.osg</resource>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+            <property>
+                <name>LiquidDensityGramsPerSqCm</name>
+                <float>1.2</float>
+            </property>
+            <property>
+                <name>CD</name>
+                <float>2</float>
+            </property>
+            <property>
+                <name>SurfaceAreaSqM</name>
+                <float>6</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtExample.Vessel</type>
+            <id>fb617b7d-2c3a-4481-91ed-663f71247eec</id>
+            <name>GameActor_83</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>MultiMapWater</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-44.980946</value1>
+                    <value2>275.141968</value2>
+                    <value3>6.689580</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:containers:crates:Crate_4Foot_Wood.osg</resourceDisplayName>
+                <resource>StaticMeshes:containers:crates:Crate_4Foot_Wood.osg</resource>
+            </property>
+            <property>
+                <name>Scale</name>
+                <vec3>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.111134</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
+            </property>
+            <property>
+                <name>Main: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>Main: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>Main: Mass</name>
+                <float>10</float>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+            <property>
+                <name>LiquidDensityGramsPerSqCm</name>
+                <float>1.2</float>
+            </property>
+            <property>
+                <name>CD</name>
+                <float>2</float>
+            </property>
+            <property>
+                <name>SurfaceAreaSqM</name>
+                <float>6</float>
+            </property>
+        </actor>
+    </actors>
+    <groups></groups>
+    <drawablehierarchy></drawablehierarchy>
+    <presetCameras></presetCameras>
+</map>
