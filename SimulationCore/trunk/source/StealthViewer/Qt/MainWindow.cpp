@@ -27,6 +27,8 @@
 // This has to be above the QT includes because 'emit' conflicts
 #include <SimCore/Actors/BaseEntity.h>
 
+#include <dtUtil/warningdisable.h>
+DT_DISABLE_WARNING_ALL_START
 #include <QtGui/QApplication>
 #include <QtGui/QCloseEvent>
 #include <QtGui/QVBoxLayout>
@@ -38,6 +40,7 @@
 #include <QtGui/QScrollBar>
 #include <QtGui/QKeyEvent>
 #include <QtGui/QSpacerItem>
+DT_DISABLE_WARNING_END
 
 #include <dtQt/osgadapterwidget.h>
 #include <dtQt/osggraphicswindowqt.h>
@@ -90,12 +93,16 @@
 
 #include <dtHLAGM/hlacomponent.h>
 
+#include <dtUtil/warningdisable.h>
+DT_DISABLE_WARNING_ALL_START
+//So the Q_Object macro will work
 #include <osg/ArgumentParser>
 #include <osg/ApplicationUsage>
 #include <osg/Matrixd>
 #include <osg/Math>
 
 #include <osgDB/FileNameUtils>
+DT_DISABLE_WARNING_END
 
 #include <cmath>
 #include <cfloat>
@@ -154,8 +161,7 @@ namespace StealthQt
 
    ///////////////////////////////////////////////////////////////////////////////
    MainWindow::MainWindow(int appArgc, char* appArgv[], const std::string& appLibName)
-   : mUi(new Ui::MainWindow)
-   , mIsPlaybackMode(false)
+   : mIsPlaybackMode(false)
    , mIsRecording(false)
    , mIsPlayingBack(false)
    , mRecordingStartTime(0.0)
@@ -169,6 +175,7 @@ namespace StealthQt
    , mPreviousCustomMinute(-1)
    , mPreviousCustomSecond(-1)
    , mViewDockWidget(new ViewDockWidget)
+   , mUi(new Ui::MainWindow)
    {
       mUi->setupUi(this);
       addDockWidget(Qt::LeftDockWidgetArea, mViewDockWidget);

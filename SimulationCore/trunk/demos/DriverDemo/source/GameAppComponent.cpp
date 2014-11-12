@@ -82,7 +82,6 @@ namespace DriverDemo
    //////////////////////////////////////////////////////////////////////////
    GameAppComponent::GameAppComponent(dtCore::SystemComponentType& type)
       : SimCore::Components::BaseGameAppComponent(type)
-      , mWaitForVehicle(false)
    {
 
    }

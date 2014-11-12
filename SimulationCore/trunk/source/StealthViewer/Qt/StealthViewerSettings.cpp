@@ -42,11 +42,14 @@
 #include <SimCore/Components/LabelManager.h>
 #include <SimCore/UnitEnums.h>
 
+#include <dtUtil/warningdisable.h>
+DT_DISABLE_WARNING_ALL_START
 #include <osg/io_utils>
 
 #include <QtCore/QStringList>
 #include <QtCore/QVariant>
 #include <QtGui/QMessageBox>
+DT_DISABLE_WARNING_END
 
 //For an ugly hack...
 #include <dtCore/system.h>

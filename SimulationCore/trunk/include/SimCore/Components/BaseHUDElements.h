@@ -27,16 +27,16 @@
 #include <SimCore/Export.h>
 #include <dtCore/base.h>
 
+#include <dtUtil/warningdisable.h>
+DT_DISABLE_WARNING_ALL_START
 #ifdef None
 #undef None
 #endif
 #include <CEGUI/CEGUI.h>
 #include <CEGUI/CEGUIVersion.h>
-#if CEGUI_VERSION_MAJOR == 0 && CEGUI_VERSION_MINOR < 7
-#include <dtGUI/dtgui.h>
-#else
+DT_DISABLE_WARNING_END
+
 #include <dtGUI/gui.h>
-#endif
 
 #include <dtCore/deltawin.h>
 #include <dtCore/deltadrawable.h>

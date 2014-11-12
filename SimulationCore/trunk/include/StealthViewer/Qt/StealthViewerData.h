@@ -28,11 +28,15 @@
 #ifndef STEALTH_VIEWER_DATA
 #define STEALTH_VIEWER_DATA
 
-#include <osg/Referenced>
 
 #include <dtCore/refptr.h>
 
+#include <dtUtil/warningdisable.h>
+DT_DISABLE_WARNING_ALL_START
+#include <osg/Referenced>
 #include <QtCore/QString>
+DT_DISABLE_WARNING_END
+
 
 namespace StealthGM
 {

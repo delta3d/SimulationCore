@@ -43,7 +43,6 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       PlayerActorProxy::~PlayerActorProxy()
       {
-
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -115,7 +114,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void PlayerActor::EnableTool(const dtGame::Message &msg)
+      void PlayerActor::EnableTool(const dtGame::Message& msg)
       {
          if (!SimCore::MessageType::IsValidToolType(msg.GetMessageType()))
             SetEnabledTool(SimCore::MessageType::NO_TOOL);

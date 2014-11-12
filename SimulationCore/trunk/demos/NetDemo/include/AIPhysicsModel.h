@@ -80,7 +80,7 @@ namespace NetDemo
 
      BaseAIGameState* mCurrentState;
      BaseAIGoalState* mGoalState;
-     dtCore::RefPtr<dtPhysics::PhysicsActComp> mPhysicsActComp;
+     dtCore::ObserverPtr<dtPhysics::PhysicsActComp> mPhysicsActComp;
 
    };
 

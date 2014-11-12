@@ -25,7 +25,10 @@
 *
 * @author Eddie Johnson, David Guthrie
 */
+#include <dtUtil/warningdisable.h>
+DT_DISABLE_WARNING_ALL_START
 #include <QtGui/QDialog>
+DT_DISABLE_WARNING_END
 
 // Forward declarations
 namespace Ui

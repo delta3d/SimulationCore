@@ -132,7 +132,6 @@ namespace StealthGM
          bool mIsRecording;
          bool mDisconnect;
          bool mJoinNetwork;
-         bool mRequestKeyFrameUpdate;
          double mLastRequestTime;
    }; 
 }

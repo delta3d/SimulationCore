@@ -1,10 +1,10 @@
 <shaderlist>
    <shadergroup name="ParticleShaderGroup">
       <shader name="Emissive" default="yes">
-         <source type="Vertex">Shaders/Base/vertex_functions.vert</source>
-         <source type="Vertex">Shaders/Base/particle_emissive.vert</source>
-         <source type="Fragment">Shaders/Base/fragment_functions.frag</source>
-         <source type="Fragment">Shaders/Base/particle_emissive.frag</source>
+         <source type="Vertex">Shaders/SharedBase/vertex_functions.vert</source>
+         <source type="Vertex">Shaders/SharedBase/particle_emissive.vert</source>
+         <source type="Fragment">Shaders/SharedBase/fragment_functions.frag</source>
+         <source type="Fragment">Shaders/SharedBase/particle_emissive.frag</source>
          <parameter name="diffuseTexture">
             <texture2D textureUnit="0">
                <source type="Image">Textures/fire.jpg</source>
@@ -17,10 +17,10 @@
          </parameter>
       </shader>
       <shader name="NonEmissive" default="no">
-         <source type="Vertex">Shaders/Base/vertex_functions.vert</source>
-         <source type="Vertex">Shaders/Base/particle_non_emissive.vert</source>
-         <source type="Fragment">Shaders/Base/fragment_functions.frag</source>
-         <source type="Fragment">Shaders/Base/particle_non_emissive.frag</source>
+         <source type="Vertex">Shaders/SharedBase/vertex_functions.vert</source>
+         <source type="Vertex">Shaders/SharedBase/particle_non_emissive.vert</source>
+         <source type="Fragment">Shaders/SharedBase/fragment_functions.frag</source>
+         <source type="Fragment">Shaders/SharedBase/particle_non_emissive.frag</source>
          <parameter name="diffuseTexture">
             <texture2D textureUnit="0">
                <source type="Image">Textures/fire.jpg</source>

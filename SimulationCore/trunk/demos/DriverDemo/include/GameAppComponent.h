@@ -100,9 +100,6 @@ namespace DriverDemo
    private:
       dtCore::RefPtr<SimCore::Actors::StealthActor> mStealth;
 
-      // if this is set to true, we are waiting for a vehicle to join the network
-      // with the name of the group sent in.
-      bool mWaitForVehicle;
    };
 } // namespace
 #endif

@@ -28,11 +28,14 @@
 
 #include <prefix/StealthQtPrefix.h>
 
+#include <dtUtil/warningdisable.h>
+DT_DISABLE_WARNING_ALL_START
 #include <QtOpenGL/QGLWidget>
 #include <QtGui/QMessageBox>
 #include <QtGui/QCloseEvent>
 #include <QtGui/QMainWindow>
 #include <QtGui/QVBoxLayout>
+DT_DISABLE_WARNING_END
 
 #include <StealthViewer/Qt/AdditionalViewDockWidget.h>
 #include <StealthViewer/Qt/ViewDockWidget.h>

@@ -25,8 +25,11 @@
 *
 * @author Eddie Johnson, Curtiss Murphy
 */
+#include <dtUtil/warningdisable.h>
+DT_DISABLE_WARNING_ALL_START
 #include <QtGui/QDialog>
 #include <QtGui/QListWidget>
+DT_DISABLE_WARNING_END
 
 namespace dtGame
 {

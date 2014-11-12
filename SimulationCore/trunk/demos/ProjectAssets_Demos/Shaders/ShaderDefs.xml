@@ -1,10 +1,167 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <shaderlist>
+
+
+   <shadergroup name="MultiTextureTerrain">
+      <shader name="MultiTextureTerrainDefault" default="yes">
+         <source type="Vertex">shaders/terrain/TerrainAltitude.vert</source>
+         <source type="Vertex">shaders/shadow/shadow_functions.vert</source>
+         <source type="Vertex">shaders/base/vertex_functions.vert</source>
+         <source type="Fragment">shaders/terrain/TerrainAltitude.frag</source>
+         <source type="Fragment">shaders/water/water_functions.frag</source>
+         <source type="Fragment">shaders/base/fragment_functions.frag</source>
+         <source type="Fragment">shaders/shadow/shadow_functions.frag</source>
+         <source type="Fragment">shaders/lighting/dynamic_light_functions.frag</source>
+
+         <parameter name="Altitudes">
+            <vec4 defaultValue="1.8 6.5 20 40" />
+         </parameter>
+         <parameter name="TextureScales">
+            <vec4 defaultValue="150 200 20 70" />
+         </parameter>
+         <!-->parameter name="WaterColor">  This is an actual uniform set by the water
+        <vec4 defaultValue="0 0.35 0.5 0.75" />
+      </parameter-->
+         <parameter name="AltitudeScale">
+            <float defaultValue="1" />
+         </parameter>
+         <parameter name="DetailScale">
+            <float defaultValue="3.0" />
+         </parameter>
+
+         <parameter name="diffuseTexture">
+            <texture2D textureUnit="0">
+               <source type="Auto"/>
+            </texture2D>
+         </parameter>
+         <parameter name="SandTexture">
+            <texture2D textureUnit="1">
+               <source type="Image">textures/ShaderBase/TerrainAltitude_Sand.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+         <parameter name="GrassTexture">
+            <texture2D textureUnit="2">
+               <source type="Image">textures/ShaderBase/TerrainAltitude_Grass.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+         <parameter name="RockTexture">
+            <texture2D textureUnit="3">
+               <source type="Image">textures/ShaderBase/TerrainAltitude_Rock.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+         <parameter name="BlendMaskTexture">
+            <texture2D textureUnit="4">
+               <source type="Image">textures/ShaderBase/TerrainAltitude_BlendMask.tga</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+         <parameter name="shadowTexture">
+            <texture2D textureUnit="5">
+               <source type="Auto"/>
+            </texture2D>
+         </parameter>
+         <parameter name="MountainsideTexture">
+            <texture2D textureUnit="8">
+               <source type="Image">textures/ShaderBase/TerrainAltitude_Mountainside.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+         <parameter name="UnderWaterSandTexture">
+            <texture2D textureUnit="9">
+               <source type="Image">textures/ShaderBase/TerrainAltitude_UnderWaterSand.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+
+      </shader>
+      <shader name="MultiTextureTerrainEditor" editor="yes">
+         <source type="Vertex">shaders/terrain/TerrainAltitude_editor.vert</source>
+         <source type="Fragment">shaders/terrain/TerrainAltitude_editor.frag</source>
+
+         <parameter name="Altitudes">
+            <vec4 defaultValue="1.8 8.5 30 50" />
+         </parameter>
+         <parameter name="TextureScales">
+            <vec4 defaultValue="150 200 20 70" />
+         </parameter>
+         <parameter name="WaterColor">
+            <vec4 defaultValue="0 0.35 0.5 0.75" />
+         </parameter>
+         <parameter name="WaterHeight">
+            <float defaultValue="0.0" />
+         </parameter>
+         <parameter name="AltitudeScale">
+            <float defaultValue="1" />
+         </parameter>
+         <parameter name="DetailScale">
+            <float defaultValue="3.0" />
+         </parameter>
+
+         <parameter name="diffuseTexture">
+            <texture2D textureUnit="0">
+               <source type="Auto"/>
+            </texture2D>
+         </parameter>
+         <parameter name="SandTexture">
+            <texture2D textureUnit="1">
+               <source type="Image">textures/ShaderBase/TerrainAltitude_Sand.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+         <parameter name="GrassTexture">
+            <texture2D textureUnit="2">
+               <source type="Image">textures/ShaderBase/TerrainAltitude_Grass.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+         <parameter name="RockTexture">
+            <texture2D textureUnit="3">
+               <source type="Image">textures/ShaderBase/TerrainAltitude_Rock.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+         <parameter name="BlendMaskTexture">
+            <texture2D textureUnit="4">
+               <source type="Image">textures/ShaderBase/TerrainAltitude_BlendMask.tga</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+         <parameter name="MountainsideTexture">
+            <texture2D textureUnit="8">
+               <source type="Image">textures/ShaderBase/TerrainAltitude_Mountainside.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+         <parameter name="UnderWaterSandTexture">
+            <texture2D textureUnit="9">
+               <source type="Image">textures/ShaderBase/TerrainAltitude_UnderWaterSand.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+
+      </shader>
+   </shadergroup>
+
    <shadergroup name="LensFlareGroup">
       <shader name="LensFlareShader" default="yes">
-         <source type="Vertex">Shaders/Base/lens_flare.vert</source>
-         <source type="Fragment">Shaders/Base/lens_flare.frag</source>
+         <source type="Vertex">Shaders/SharedBase/lens_flare.vert</source>
+         <source type="Fragment">Shaders/SharedBase/lens_flare.frag</source>
       </shader>
    </shadergroup>
    <shadergroup name="GUIShaderGroup">
@@ -47,10 +204,10 @@
 
    <shadergroup name="TrailEffectShaderGroup">
       <shader name="TrailEffectShader">
-         <source type="Vertex">Shaders/Base/vertex_functions.vert</source>
-         <source type="Vertex">Shaders/Base/trail_effect.vert</source>
-         <source type="Fragment">Shaders/Base/fragment_functions.frag</source>
-         <source type="Fragment">Shaders/Base/trail_effect.frag</source>
+         <source type="Vertex">Shaders/SharedBase/vertex_functions.vert</source>
+         <source type="Vertex">Shaders/SharedBase/trail_effect.vert</source>
+         <source type="Fragment">Shaders/SharedBase/fragment_functions.frag</source>
+         <source type="Fragment">Shaders/SharedBase/trail_effect.frag</source>
          <parameter name="diffuseTexture">
             <texture2D textureUnit="0">
                <source type="Image">Textures/ShadersBase/TrailEffect.tga</source>
@@ -102,11 +259,11 @@
    <shadergroup name="Human">
       <shader name="Normal" default="yes">
          <source type="Vertex">Shaders/human_skinning.vert</source>
-         <source type="Vertex">Shaders/Base/vertex_functions.vert</source>
-         <source type="Fragment">Shaders/Base/shader_nogloss.frag</source>
-         <source type="Fragment">Shaders/Base/fragment_functions.frag</source>
-         <source type="Fragment">Shaders/Base/spot_light.frag</source>
-         <source type="Fragment">Shaders/Base/dynamic_light.frag</source>
+         <source type="Vertex">Shaders/SharedBase/vertex_functions.vert</source>
+         <source type="Fragment">Shaders/SharedBase/shader_nogloss.frag</source>
+         <source type="Fragment">Shaders/SharedBase/fragment_functions.frag</source>
+         <source type="Fragment">Shaders/SharedBase/spot_light.frag</source>
+         <source type="Fragment">Shaders/SharedBase/dynamic_light.frag</source>
          <parameter name="diffuseTexture">
             <texture2D textureUnit="0">
                <source type="Auto"/>
@@ -117,14 +274,14 @@
 
    <shadergroup name="TerrainShaderGroup">
       <shader name="Terrain_DetailMapping" default="yes">
-         <source type="Fragment">Shaders/Base/dynamic_light_10.frag</source>
-         <source type="Fragment">Shaders/Base/spot_light.frag</source>
-         <source type="Vertex">Shaders/Base/vertex_functions.vert</source>
-         <source type="Vertex">Shaders/Base/terrain_functions.vert</source>
-         <source type="Fragment">Shaders/Base/fragment_functions.frag</source>
-         <source type="Fragment">Shaders/Base/terrain_functions.frag</source>
-         <source type="Vertex">Shaders/Base/terrain.vert</source>
-         <source type="Fragment">Shaders/Base/terrain.frag</source>
+         <source type="Fragment">Shaders/SharedBase/dynamic_light_10.frag</source>
+         <source type="Fragment">Shaders/SharedBase/spot_light.frag</source>
+         <source type="Vertex">Shaders/SharedBase/vertex_functions.vert</source>
+         <source type="Vertex">Shaders/SharedBase/terrain_functions.vert</source>
+         <source type="Fragment">Shaders/SharedBase/fragment_functions.frag</source>
+         <source type="Fragment">Shaders/SharedBase/terrain_functions.frag</source>
+         <source type="Vertex">Shaders/SharedBase/terrain.vert</source>
+         <source type="Fragment">Shaders/SharedBase/terrain.frag</source>
          <parameter name="baseTexture">
             <texture2D textureUnit="0">
                <source type="Auto"/>
@@ -145,13 +302,13 @@
 
    <shadergroup name="UnderWaterTerrainShaderGroup">
       <shader name="TerrainShader" default="yes">
-         <source type="Vertex">Shaders/Base/vertex_functions.vert</source>
-         <source type="Vertex">Shaders/Base/terrain_functions.vert</source>
-         <source type="Fragment">Shaders/Base/fragment_functions.frag</source>
-         <source type="Fragment">Shaders/Base/terrain_functions.frag</source>
-         <source type="Vertex">Shaders/Base/terrain_underwater.vert</source>
-         <source type="Fragment">Shaders/Base/water_functions.frag</source>
-         <source type="Fragment">Shaders/Base/terrain_underwater.frag</source>
+         <source type="Vertex">Shaders/SharedBase/vertex_functions.vert</source>
+         <source type="Vertex">Shaders/SharedBase/terrain_functions.vert</source>
+         <source type="Fragment">Shaders/SharedBase/fragment_functions.frag</source>
+         <source type="Fragment">Shaders/SharedBase/terrain_functions.frag</source>
+         <source type="Vertex">Shaders/SharedBase/terrain_underwater.vert</source>
+         <source type="Fragment">Shaders/SharedBase/water_functions.frag</source>
+         <source type="Fragment">Shaders/SharedBase/terrain_underwater.frag</source>
          <parameter name="baseTexture">
             <texture2D textureUnit="0">
                <source type="Auto"/>
@@ -173,11 +330,11 @@
    <shadergroup name="EphemerisFogGroup">
       <shader name="EphemFog" default="yes">
 
-         <source type="Vertex">Shaders/Base/ephemeris_functions.vert</source>
-         <source type="Fragment">Shaders/Base/fragment_functions.frag</source>
-         <source type="Fragment">Shaders/Base/ephemeris_functions.frag</source>
-         <source type="Vertex">Shaders/Base/ephemeris_fog.vert</source>
-         <source type="Fragment">Shaders/Base/ephemeris_fog.frag</source>
+         <source type="Vertex">Shaders/SharedBase/ephemeris_functions.vert</source>
+         <source type="Fragment">Shaders/SharedBase/fragment_functions.frag</source>
+         <source type="Fragment">Shaders/SharedBase/ephemeris_functions.frag</source>
+         <source type="Vertex">Shaders/SharedBase/ephemeris_fog.vert</source>
+         <source type="Fragment">Shaders/SharedBase/ephemeris_fog.frag</source>
          <parameter name="DistanceForCompleteFog">
             <float defaultValue="1500.0"/>
          </parameter>
@@ -189,12 +346,12 @@
 
    <shadergroup name="SimpleVehicleShaderGroup">
       <shader name="NoDamage" default="yes">
-         <source type="Vertex">Shaders/Base/shader_nogloss.vert</source>
-         <source type="Vertex">Shaders/Base/vertex_functions.vert</source>
-         <source type="Fragment">Shaders/Base/shader_nogloss.frag</source>
-         <source type="Fragment">Shaders/Base/fragment_functions.frag</source>
-         <source type="Fragment">Shaders/Base/dynamic_light.frag</source>
-         <source type="Fragment">Shaders/Base/spot_light.frag</source>
+         <source type="Vertex">Shaders/SharedBase/shader_nogloss.vert</source>
+         <source type="Vertex">Shaders/SharedBase/vertex_functions.vert</source>
+         <source type="Fragment">Shaders/SharedBase/shader_nogloss.frag</source>
+         <source type="Fragment">Shaders/SharedBase/fragment_functions.frag</source>
+         <source type="Fragment">Shaders/SharedBase/dynamic_light.frag</source>
+         <source type="Fragment">Shaders/SharedBase/spot_light.frag</source>
          <parameter name="diffuseTexture">
             <texture2D textureUnit="0">
                <source type="Auto"/>
@@ -205,12 +362,12 @@
 
    <shadergroup name="CustomizableVehicleShaderGroup">
       <shader name="NoDamage" default="yes">
-         <source type="Vertex">Shaders/Base/custom_paint.vert</source>
-         <source type="Vertex">Shaders/Base/vertex_functions.vert</source>
-         <source type="Fragment">Shaders/Base/custom_paint.frag</source>
-         <source type="Fragment">Shaders/Base/fragment_functions.frag</source>
-         <source type="Fragment">Shaders/Base/dynamic_light.frag</source>
-         <source type="Fragment">Shaders/Base/spot_light.frag</source>
+         <source type="Vertex">Shaders/SharedBase/custom_paint.vert</source>
+         <source type="Vertex">Shaders/SharedBase/vertex_functions.vert</source>
+         <source type="Fragment">Shaders/SharedBase/custom_paint.frag</source>
+         <source type="Fragment">Shaders/SharedBase/fragment_functions.frag</source>
+         <source type="Fragment">Shaders/SharedBase/dynamic_light.frag</source>
+         <source type="Fragment">Shaders/SharedBase/spot_light.frag</source>
          <parameter name="diffuseTexture">
             <texture2D textureUnit="0">
                <source type="Auto"/>
@@ -231,10 +388,10 @@
          </parameter>
       </shader>
       <shader name="ColorPulseShader">
-         <source type="Vertex">Shaders/Base/vertex_functions.vert</source>
+         <source type="Vertex">Shaders/SharedBase/vertex_functions.vert</source>
          <source type="Vertex">Shaders/vertex_simple.vert</source>
-         <source type="Fragment">Shaders/Base/fragment_functions.frag</source>
-         <source type="Fragment">Shaders/Base/color_pulse.frag</source>
+         <source type="Fragment">Shaders/SharedBase/fragment_functions.frag</source>
+         <source type="Fragment">Shaders/SharedBase/color_pulse.frag</source>
          <parameter name="diffuseTexture">
             <texture2D textureUnit="0">
                <source type="Auto"/>
@@ -258,12 +415,12 @@
 
    <shadergroup name="CustomizableTowerShaderGroup">
       <shader name="NoDamage" default="yes">
-         <source type="Vertex">Shaders/Base/custom_paint.vert</source>
-         <source type="Vertex">Shaders/Base/vertex_functions.vert</source>
-         <source type="Fragment">Shaders/Base/custom_paint.frag</source>
-         <source type="Fragment">Shaders/Base/fragment_functions.frag</source>
-         <source type="Fragment">Shaders/Base/dynamic_light.frag</source>
-         <source type="Fragment">Shaders/Base/spot_light.frag</source>
+         <source type="Vertex">Shaders/SharedBase/custom_paint.vert</source>
+         <source type="Vertex">Shaders/SharedBase/vertex_functions.vert</source>
+         <source type="Fragment">Shaders/SharedBase/custom_paint.frag</source>
+         <source type="Fragment">Shaders/SharedBase/fragment_functions.frag</source>
+         <source type="Fragment">Shaders/SharedBase/dynamic_light.frag</source>
+         <source type="Fragment">Shaders/SharedBase/spot_light.frag</source>
          <parameter name="diffuseTexture">
             <texture2D textureUnit="0">
                <source type="Auto"/>
@@ -287,10 +444,10 @@
 
    <shadergroup name="GhostVehicleShaderGroup">
       <shader name="NoDamage" default="yes">
-         <source type="Vertex">Shaders/Base/shader_nogloss.vert</source>
-         <source type="Vertex">Shaders/Base/vertex_functions.vert</source>
-         <source type="Fragment">Shaders/Base/shader_ghost.frag</source>
-         <source type="Fragment">Shaders/Base/fragment_functions.frag</source>
+         <source type="Vertex">Shaders/SharedBase/shader_nogloss.vert</source>
+         <source type="Vertex">Shaders/SharedBase/vertex_functions.vert</source>
+         <source type="Fragment">Shaders/SharedBase/shader_ghost.frag</source>
+         <source type="Fragment">Shaders/SharedBase/fragment_functions.frag</source>
          <parameter name="diffuseTexture">
             <texture2D textureUnit="0">
                <source type="Auto"/>
@@ -298,10 +455,10 @@
          </parameter>
       </shader>
       <shader name="GhostParticleShader" default="no">
-         <source type="Vertex">Shaders/Base/vertex_functions.vert</source>
-         <source type="Vertex">Shaders/Base/particle_emissive.vert</source>
-         <source type="Fragment">Shaders/Base/fragment_functions.frag</source>
-         <source type="Fragment">Shaders/Base/particle_emissive.frag</source>
+         <source type="Vertex">Shaders/SharedBase/vertex_functions.vert</source>
+         <source type="Vertex">Shaders/SharedBase/particle_emissive.vert</source>
+         <source type="Fragment">Shaders/SharedBase/fragment_functions.frag</source>
+         <source type="Fragment">Shaders/SharedBase/particle_emissive.frag</source>
          <parameter name="diffuseTexture">
             <texture2D textureUnit="0">
                <source type="Auto"/>
@@ -312,12 +469,12 @@
 
    <shadergroup name="ExplodingTargetShaderGroup">
       <shader name="NormalMode" default="yes">
-         <source type="Vertex">Shaders/Base/shader_nogloss.vert</source>
-         <source type="Vertex">Shaders/Base/vertex_functions.vert</source>
-         <source type="Fragment">Shaders/Base/shader_nogloss.frag</source>
-         <source type="Fragment">Shaders/Base/fragment_functions.frag</source>
-         <source type="Fragment">Shaders/Base/spot_light.frag</source>
-         <source type="Fragment">Shaders/Base/dynamic_light.frag</source>
+         <source type="Vertex">Shaders/SharedBase/shader_nogloss.vert</source>
+         <source type="Vertex">Shaders/SharedBase/vertex_functions.vert</source>
+         <source type="Fragment">Shaders/SharedBase/shader_nogloss.frag</source>
+         <source type="Fragment">Shaders/SharedBase/fragment_functions.frag</source>
+         <source type="Fragment">Shaders/SharedBase/spot_light.frag</source>
+         <source type="Fragment">Shaders/SharedBase/dynamic_light.frag</source>
          <parameter name="diffuseTexture">
             <texture2D textureUnit="0">
                <source type="Auto"/>
@@ -325,12 +482,12 @@
          </parameter>
       </shader>
       <shader name="Chasing" default="no">
-         <source type="Vertex">Shaders/Base/shader_nogloss.vert</source>
-         <source type="Vertex">Shaders/Base/vertex_functions.vert</source>
-         <source type="Fragment">Shaders/Base/shader_target_highlighted.frag</source>
-         <source type="Fragment">Shaders/Base/fragment_functions.frag</source>
-         <source type="Fragment">Shaders/Base/spot_light.frag</source>
-         <source type="Fragment">Shaders/Base/dynamic_light.frag</source>
+         <source type="Vertex">Shaders/SharedBase/shader_nogloss.vert</source>
+         <source type="Vertex">Shaders/SharedBase/vertex_functions.vert</source>
+         <source type="Fragment">Shaders/SharedBase/shader_target_highlighted.frag</source>
+         <source type="Fragment">Shaders/SharedBase/fragment_functions.frag</source>
+         <source type="Fragment">Shaders/SharedBase/spot_light.frag</source>
+         <source type="Fragment">Shaders/SharedBase/dynamic_light.frag</source>
          <parameter name="diffuseTexture">
             <texture2D textureUnit="0">
                <source type="Auto"/>
@@ -344,15 +501,15 @@
 
    <shadergroup name="SimpleWaterVehicleShaderGroup">
       <shader name="NoDamage" default="yes">
-         <source type="Vertex">Shaders/Base/vertex_functions.vert</source>
-         <source type="Vertex">Shaders/Base/water_functions.vert</source>
-         <source type="Vertex">Shaders/Base/shader_nogloss_water.vert</source>
-         <source type="Fragment">Shaders/Base/fragment_functions.frag</source>
-         <source type="Fragment">Shaders/Base/water_functions.frag</source>
-         <source type="Fragment">Shaders/Base/water_functions.vert</source>
-         <source type="Fragment">Shaders/Base/spot_light.frag</source>
-         <source type="Fragment">Shaders/Base/dynamic_light.frag</source>
-         <source type="Fragment">Shaders/Base/shader_nogloss_water.frag</source>
+         <source type="Vertex">Shaders/SharedBase/vertex_functions.vert</source>
+         <source type="Vertex">Shaders/SharedBase/water_functions.vert</source>
+         <source type="Vertex">Shaders/SharedBase/shader_nogloss_water.vert</source>
+         <source type="Fragment">Shaders/SharedBase/fragment_functions.frag</source>
+         <source type="Fragment">Shaders/SharedBase/water_functions.frag</source>
+         <source type="Fragment">Shaders/SharedBase/water_functions.vert</source>
+         <source type="Fragment">Shaders/SharedBase/spot_light.frag</source>
+         <source type="Fragment">Shaders/SharedBase/dynamic_light.frag</source>
+         <source type="Fragment">Shaders/SharedBase/shader_nogloss_water.frag</source>
          <parameter name="diffuseTexture">
             <texture2D textureUnit="0">
                <source type="Auto"/>
@@ -361,41 +518,41 @@
       </shader>
    </shadergroup>
 
-   <shadergroup name="WaterGroup">
+   <shadergroup name="WaterGroup_SimCore">
       <shader name="WaterShader" default="yes">
-         <source type="Vertex">Shaders/Base/vertex_functions.vert</source>
-         <source type="Vertex">Shaders/Base/water.vert</source>
-         <source type="Fragment">Shaders/Base/fragment_functions.frag</source>
-         <source type="Fragment">Shaders/Base/water_functions.frag</source>
-         <source type="Fragment">Shaders/Base/water.frag</source>
+         <source type="Vertex">Shaders/SharedBase/vertex_functions.vert</source>
+         <source type="Vertex">Shaders/SharedBase/water.vert</source>
+         <source type="Fragment">Shaders/SharedBase/fragment_functions.frag</source>
+         <source type="Fragment">Shaders/SharedBase/water_functions.frag</source>
+         <source type="Fragment">Shaders/SharedBase/water.frag</source>
       </shader>
       <shader name="TextureWave" default="no">
-         <source type="Vertex">Shaders/Base/vertex_functions.vert</source>
-         <source type="Vertex">Shaders/Base/texture_wave.vert</source>
-         <source type="Fragment">Shaders/Base/fragment_functions.frag</source>
-         <source type="Fragment">Shaders/Base/texture_wave.frag</source>
+         <source type="Vertex">Shaders/SharedBase/vertex_functions.vert</source>
+         <source type="Vertex">Shaders/SharedBase/texture_wave.vert</source>
+         <source type="Fragment">Shaders/SharedBase/fragment_functions.frag</source>
+         <source type="Fragment">Shaders/SharedBase/texture_wave.frag</source>
       </shader>
       <shader name="WaveTest" default="no">
-         <source type="Vertex">Shaders/Base/vertex_functions.vert</source>
-         <source type="Vertex">Shaders/Base/wave_test.vert</source>
-         <source type="Fragment">Shaders/Base/fragment_functions.frag</source>
-         <source type="Fragment">Shaders/Base/wave_test.frag</source>
+         <source type="Vertex">Shaders/SharedBase/vertex_functions.vert</source>
+         <source type="Vertex">Shaders/SharedBase/wave_test.vert</source>
+         <source type="Fragment">Shaders/SharedBase/fragment_functions.frag</source>
+         <source type="Fragment">Shaders/SharedBase/wave_test.frag</source>
       </shader>
       <shader name="UnderWater" default="no">
-         <source type="Vertex">Shaders/Base/vertex_functions.vert</source>
-         <source type="Vertex">Shaders/Base/underwater.vert</source>
-         <source type="Fragment">Shaders/Base/fragment_functions.frag</source>
-         <source type="Fragment">Shaders/Base/water_functions.frag</source>
-         <source type="Fragment">Shaders/Base/underwater.frag</source>
+         <source type="Vertex">Shaders/SharedBase/vertex_functions.vert</source>
+         <source type="Vertex">Shaders/SharedBase/underwater.vert</source>
+         <source type="Fragment">Shaders/SharedBase/fragment_functions.frag</source>
+         <source type="Fragment">Shaders/SharedBase/water_functions.frag</source>
+         <source type="Fragment">Shaders/SharedBase/underwater.frag</source>
       </shader>
    </shadergroup>
 
    <shadergroup name="TracerGroup">
       <shader name="VolumetricLines">
-         <source type="Vertex">Shaders/Base/vertex_functions.vert</source>
-         <source type="Vertex">Shaders/Base/volumetric_lines.vert</source>
-         <source type="Fragment">Shaders/Base/fragment_functions.frag</source>
-         <source type="Fragment">Shaders/Base/volumetric_lines.frag</source>
+         <source type="Vertex">Shaders/SharedBase/vertex_functions.vert</source>
+         <source type="Vertex">Shaders/SharedBase/volumetric_lines.vert</source>
+         <source type="Fragment">Shaders/SharedBase/fragment_functions.frag</source>
+         <source type="Fragment">Shaders/SharedBase/volumetric_lines.frag</source>
          <parameter name="glowTexture">
             <texture2D textureUnit="0">
                <source type="Image">Textures/ShadersBase/tracer.png</source>
@@ -417,12 +574,12 @@
 
    <shadergroup name="PositionMarkerGroup">
       <shader name="SphereShader" default="yes">
-         <source type="Vertex">Shaders/Base/shader_nogloss.vert</source>
-         <source type="Vertex">Shaders/Base/vertex_functions.vert</source>
-         <source type="Fragment">Shaders/Base/position_marker.frag</source>
-         <source type="Fragment">Shaders/Base/fragment_functions.frag</source>
-         <source type="Fragment">Shaders/Base/spot_light.frag</source>
-         <source type="Fragment">Shaders/Base/dynamic_light.frag</source>
+         <source type="Vertex">Shaders/SharedBase/shader_nogloss.vert</source>
+         <source type="Vertex">Shaders/SharedBase/vertex_functions.vert</source>
+         <source type="Fragment">Shaders/SharedBase/position_marker.frag</source>
+         <source type="Fragment">Shaders/SharedBase/fragment_functions.frag</source>
+         <source type="Fragment">Shaders/SharedBase/spot_light.frag</source>
+         <source type="Fragment">Shaders/SharedBase/dynamic_light.frag</source>
          <parameter name="diffuseTexture">
             <texture2D textureUnit="0">
                <source type="Auto"/>
@@ -433,10 +590,10 @@
 
    <shadergroup name="ParticleShaderGroup">
       <shader name="Emissive" default="yes">
-         <source type="Vertex">Shaders/Base/vertex_functions.vert</source>
-         <source type="Vertex">Shaders/Base/particle_emissive.vert</source>
-         <source type="Fragment">Shaders/Base/fragment_functions.frag</source>
-         <source type="Fragment">Shaders/Base/particle_emissive.frag</source>
+         <source type="Vertex">Shaders/SharedBase/vertex_functions.vert</source>
+         <source type="Vertex">Shaders/SharedBase/particle_emissive.vert</source>
+         <source type="Fragment">Shaders/SharedBase/fragment_functions.frag</source>
+         <source type="Fragment">Shaders/SharedBase/particle_emissive.frag</source>
          <parameter name="diffuseTexture">
             <texture2D textureUnit="0">
                <source type="Image">Textures/fire.jpg</source>
@@ -449,10 +606,10 @@
          </parameter>
       </shader>
       <shader name="NonEmissive" default="no">
-         <source type="Vertex">Shaders/Base/vertex_functions.vert</source>
-         <source type="Vertex">Shaders/Base/particle_non_emissive.vert</source>
-         <source type="Fragment">Shaders/Base/fragment_functions.frag</source>
-         <source type="Fragment">Shaders/Base/particle_non_emissive.frag</source>
+         <source type="Vertex">Shaders/SharedBase/vertex_functions.vert</source>
+         <source type="Vertex">Shaders/SharedBase/particle_non_emissive.vert</source>
+         <source type="Fragment">Shaders/SharedBase/fragment_functions.frag</source>
+         <source type="Fragment">Shaders/SharedBase/particle_non_emissive.frag</source>
          <parameter name="diffuseTexture">
             <texture2D textureUnit="0">
                <source type="Image">Textures/fire.jpg</source>
@@ -468,12 +625,12 @@
 
    <shadergroup name="PlaceholderVehicleShaderGroup">
       <shader name="NoDamage" default="yes">
-         <source type="Vertex">Shaders/Base/shader_gloss_reflect.vert</source>
-         <source type="Vertex">Shaders/Base/vertex_functions.vert</source>
-         <source type="Fragment">Shaders/Base/shader_gloss_reflect.frag</source>
-         <source type="Fragment">Shaders/Base/fragment_functions.frag</source>
-         <source type="Fragment">Shaders/Base/spot_light.frag</source>
-         <source type="Fragment">Shaders/Base/dynamic_light.frag</source>
+         <source type="Vertex">Shaders/SharedBase/shader_gloss_reflect.vert</source>
+         <source type="Vertex">Shaders/SharedBase/vertex_functions.vert</source>
+         <source type="Fragment">Shaders/SharedBase/shader_gloss_reflect.frag</source>
+         <source type="Fragment">Shaders/SharedBase/fragment_functions.frag</source>
+         <source type="Fragment">Shaders/SharedBase/spot_light.frag</source>
+         <source type="Fragment">Shaders/SharedBase/dynamic_light.frag</source>
          <parameter name="diffuseTexture">
             <texture2D textureUnit="0">
                <source type="Auto"/>
@@ -498,15 +655,15 @@
 
    <shadergroup name="CamoPaintGroup">
       <shader name="NoDamage" default="yes">
-         <source type="Fragment">Shaders/Base/body_paint_color4.frag</source>
-         <source type="Vertex">Shaders/Base/camo_paint.vert</source>
-         <source type="Fragment">Shaders/Base/camo_paint.frag</source>
-         <source type="Vertex">Shaders/Base/camo_vehicle.vert</source>
-         <source type="Fragment">Shaders/Base/camo_vehicle.frag</source>
-         <source type="Vertex">Shaders/Base/vertex_functions.vert</source>
-         <source type="Fragment">Shaders/Base/fragment_functions.frag</source>
-         <source type="Fragment">Shaders/Base/dynamic_light.frag</source>
-         <source type="Fragment">Shaders/Base/spot_light.frag</source>
+         <source type="Fragment">Shaders/SharedBase/body_paint_color4.frag</source>
+         <source type="Vertex">Shaders/SharedBase/camo_paint.vert</source>
+         <source type="Fragment">Shaders/SharedBase/camo_paint.frag</source>
+         <source type="Vertex">Shaders/SharedBase/camo_vehicle.vert</source>
+         <source type="Fragment">Shaders/SharedBase/camo_vehicle.frag</source>
+         <source type="Vertex">Shaders/SharedBase/vertex_functions.vert</source>
+         <source type="Fragment">Shaders/SharedBase/fragment_functions.frag</source>
+         <source type="Fragment">Shaders/SharedBase/dynamic_light.frag</source>
+         <source type="Fragment">Shaders/SharedBase/spot_light.frag</source>
          <!-- For Camo Paint State Actor Component - Uniforms specified in class code. -->
       </shader>
    </shadergroup>
@@ -514,35 +671,35 @@
 
    <shadergroup name="VolumeRenderingGroup">
       <shader name="ParticleVolumeShader" default="yes">
-         <source type="Vertex">Shaders/Base/dynamic_light.frag</source>
-         <source type="Vertex">Shaders/Base/spot_light.frag</source>
-         <source type="Vertex">Shaders/Base/fragment_functions.frag</source>
-         <source type="Vertex">Shaders/Base/particle_volume.vert</source>
-         <source type="Fragment">Shaders/Base/particle_volume.frag</source>
-         <source type="Fragment">Shaders/Base/fragment_functions.frag</source>
+         <source type="Vertex">Shaders/SharedBase/dynamic_light.frag</source>
+         <source type="Vertex">Shaders/SharedBase/spot_light.frag</source>
+         <source type="Vertex">Shaders/SharedBase/fragment_functions.frag</source>
+         <source type="Vertex">Shaders/SharedBase/particle_volume.vert</source>
+         <source type="Fragment">Shaders/SharedBase/particle_volume.frag</source>
+         <source type="Fragment">Shaders/SharedBase/fragment_functions.frag</source>
       </shader>
       <shader name="LightVolumeShader" default="yes">
-         <source type="Vertex">Shaders/Base/dynamic_light.frag</source>
-         <source type="Vertex">Shaders/Base/spot_light.frag</source>
-         <source type="Vertex">Shaders/Base/fragment_functions.frag</source>
-         <source type="Vertex">Shaders/Base/light_volume.vert</source>
-         <source type="Fragment">Shaders/Base/light_volume.frag</source>
-         <source type="Fragment">Shaders/Base/fragment_functions.frag</source>
+         <source type="Vertex">Shaders/SharedBase/dynamic_light.frag</source>
+         <source type="Vertex">Shaders/SharedBase/spot_light.frag</source>
+         <source type="Vertex">Shaders/SharedBase/fragment_functions.frag</source>
+         <source type="Vertex">Shaders/SharedBase/light_volume.vert</source>
+         <source type="Fragment">Shaders/SharedBase/light_volume.frag</source>
+         <source type="Fragment">Shaders/SharedBase/fragment_functions.frag</source>
       </shader>
       <shader name="FireVolumeShader" default="no">
-         <source type="Vertex">Shaders/Base/fragment_functions.frag</source>
-         <source type="Vertex">Shaders/Base/fire_volume.vert</source>
-         <source type="Fragment">Shaders/Base/fire_volume.frag</source>
-         <source type="Fragment">Shaders/Base/fragment_functions.frag</source>
+         <source type="Vertex">Shaders/SharedBase/fragment_functions.frag</source>
+         <source type="Vertex">Shaders/SharedBase/fire_volume.vert</source>
+         <source type="Fragment">Shaders/SharedBase/fire_volume.frag</source>
+         <source type="Fragment">Shaders/SharedBase/fragment_functions.frag</source>
       </shader>
    </shadergroup>
 
    <shadergroup name="BattlefieldGraphicsGroup">
       <shader name="BFG_Single_Color_And_Fog" default="yes">
-         <source type="Vertex">Shaders/Base/vertex_functions.vert</source>
-         <source type="Vertex">Shaders/Base/BattlefieldGraphics.vert</source>
-         <source type="Fragment">Shaders/Base/fragment_functions.frag</source>
-         <source type="Fragment">Shaders/Base/BattlefieldGraphics.frag</source>
+         <source type="Vertex">Shaders/SharedBase/vertex_functions.vert</source>
+         <source type="Vertex">Shaders/SharedBase/BattlefieldGraphics.vert</source>
+         <source type="Fragment">Shaders/SharedBase/fragment_functions.frag</source>
+         <source type="Fragment">Shaders/SharedBase/BattlefieldGraphics.frag</source>
       </shader>
    </shadergroup>
    

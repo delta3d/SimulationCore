@@ -30,9 +30,13 @@
 #ifndef DELTA_MAIN_WINDOW
 #define DELTA_MAIN_WINDOW
 
+#include <dtUtil/warningdisable.h>
+DT_DISABLE_WARNING_ALL_START
 #include <QtGui/QMainWindow>
 #include <QtGui/QCheckBox>
 #include <QtCore/QTimer>
+DT_DISABLE_WARNING_END
+
 #include <dtCore/refptr.h>
 #include <dtCore/sigslot.h>
 #include <dtGame/gamemanager.h>

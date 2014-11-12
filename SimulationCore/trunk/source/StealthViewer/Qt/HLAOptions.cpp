@@ -28,6 +28,8 @@
 #include <StealthViewer/Qt/StealthViewerData.h>
 #include <StealthViewer/Qt/StealthViewerSettings.h>
 
+#include <dtUtil/warningdisable.h>
+DT_DISABLE_WARNING_ALL_START
 #include <QtGui/QPushButton>
 #include <QtGui/QMessageBox>
 #include <QtGui/QDialog>
@@ -36,6 +38,8 @@
 #include <QtGui/QListWidgetItem>
 #include <QtGui/QTreeWidget>
 #include <QtGui/QFileDialog>
+DT_DISABLE_WARNING_END
+
 
 #include <dtHLAGM/hlacomponentconfig.h>
 #include <dtHLAGM/hlacomponent.h>

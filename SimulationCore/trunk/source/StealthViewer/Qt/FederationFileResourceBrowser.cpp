@@ -28,7 +28,11 @@
 #include <prefix/StealthQtPrefix.h>
 #include <StealthViewer/Qt/FederationFileResourceBrowser.h>
 #include <ui_FederationFileResourceBrowserUi.h>
+
+#include <dtUtil/warningdisable.h>
+DT_DISABLE_WARNING_ALL_START
 #include <QtGui/QHeaderView>
+DT_DISABLE_WARNING_END
 
 namespace StealthQt
 {

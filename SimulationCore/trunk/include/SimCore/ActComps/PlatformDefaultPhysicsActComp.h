@@ -27,6 +27,7 @@
 #include <SimCore/Actors/Platform.h>
 #include <dtUtil/log.h>
 #include <SimCore/CollisionGroupEnum.h>
+#include <dtPhysics/physicsmaterialactor.h>
 
 namespace SimCore
 {
@@ -160,6 +161,15 @@ namespace SimCore
             if (drawNode != NULL && drawNode->getNumChildren() > 0)
             {
                node = drawNode->getChild(0);
+            }
+
+            if (physObj->GetMaterial() == NULL)
+            {
+               const dtPhysics::MaterialActor* matActor = LookupMaterialActor();
+               if (matActor != NULL)
+               {
+                  physObj->SetMaterial(matActor->GetMaterial());
+               }
             }
 
             // Note, this must be done after the visual to body transform is set because the origin
