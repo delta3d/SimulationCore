@@ -109,7 +109,7 @@
             <Property Name="UnifiedSize" Value="{{1.0,0},{0.5,0}}"/>
             <Property Name="SelectedTextColour" Value="FF00FF00"/>
             <Property Name="Text" Value="Observer"/>
-            <Property Name="UserData" Value="OSERVER"/>
+            <Property Name="UserData" Value="OBSERVER"/>
             <Property Name="Selected" Value="True"/>
          </Window>
 
