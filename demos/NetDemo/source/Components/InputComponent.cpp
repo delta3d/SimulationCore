@@ -54,6 +54,9 @@
 
 namespace NetDemo
 {
+   //////////////////////////////////////////////////////////////
+   // CONSTANTS
+   //////////////////////////////////////////////////////////////
    const dtUtil::RefString InputComponent::DOF_NAME_WEAPON_PIVOT("dof_gun_01");
    const dtUtil::RefString InputComponent::DOF_NAME_WEAPON_FIRE_POINT("dof_hotspot_01");
    const dtUtil::RefString InputComponent::DOF_NAME_RINGMOUNT("dof_turret_01");
@@ -62,22 +65,86 @@ namespace NetDemo
    const dtUtil::RefString InputComponent::DOF_TOPDOWN_VIEW_01("dof_topdown_view_01");
    const dtUtil::RefString InputComponent::DOF_TOPDOWN_VIEW_02("dof_topdown_view_02");
 
+
+
+   //////////////////////////////////////////////////////////////
+   // CLASS CODE
+   //////////////////////////////////////////////////////////////
+   ModelInfo::ModelInfo()
+      : mCurrentIndex(0)
+   {}
+
+   ModelInfo::~ModelInfo()
+   {}
+
+   std::string ModelInfo::GetCurrentDofName() const
+   {
+      std::string name;
+
+      if ( ! mDofs.empty())
+      {
+         name = mDofs[mCurrentIndex].first;
+      }
+
+      return name;
+   }
+
+   osgSim::DOFTransform* ModelInfo::GetCurrentDof() const
+   {
+      osgSim::DOFTransform* dof = NULL;
+
+      if ( ! mDofs.empty())
+      {
+         dof = mDofs[mCurrentIndex].second.get();
+      }
+
+      return dof;
+   }
+
+   osgSim::DOFTransform* ModelInfo::GetNextDof()
+   {
+      osgSim::DOFTransform* dof = NULL;
+
+      if ( ! mDofs.empty())
+      {
+         dof = mDofs[mCurrentIndex].second.get();
+         mCurrentIndex = (mCurrentIndex + 1) % ((int) mDofs.size());
+      }
+
+      return dof;
+   }
+
+   osgSim::DOFTransform* ModelInfo::GetPreviousDof()
+   {
+      osgSim::DOFTransform* dof = NULL;
+
+      if ( ! mDofs.empty())
+      {
+         dof = mDofs[mCurrentIndex].second.get();
+         --mCurrentIndex;
+
+         if (mCurrentIndex < 0)
+         {
+            mCurrentIndex = ((int) mDofs.size()) - 1;
+         }
+      }
+
+      return dof;
+   }
+
+
+
+   //////////////////////////////////////////////////////////////
+   // CLASS CODE
    //////////////////////////////////////////////////////////////
    InputComponent::InputComponent(const std::string& name)
       : SimCore::Components::BaseInputComponent(name)
       , mDRGhostMode(NONE)
       , mDebugToggleMode(DEBUG_TOGGLE_DR_ALGORITHM)
-      , mCurrentViewPointIndex(0)
       , mIsInGameState(false)
       , mOriginalPublishTimesPerSecond(3.0f)
       , mMaxPublishRate(5)
    {
-      mViewPointList.push_back(DOF_NAME_WEAPON_PIVOT);
-      mViewPointList.push_back(DOF_NAME_RINGMOUNT);
-      mViewPointList.push_back(DOF_NAME_VIEW_01);
-      mViewPointList.push_back(DOF_NAME_VIEW_02);
-      mViewPointList.push_back(DOF_TOPDOWN_VIEW_01);
-      mViewPointList.push_back(DOF_TOPDOWN_VIEW_02);
    }
 
    //////////////////////////////////////////////////////////////
@@ -392,10 +459,12 @@ namespace NetDemo
 
          case 'v':
             {
-               if (mVehicle.valid())
+               if (mVehicle.valid() && mModelInfo.valid())
                {
-                  mCurrentViewPointIndex = (mCurrentViewPointIndex + 1) % mViewPointList.size();
-                  SendAttachOrDetachMessage(mVehicle->GetUniqueId(), mViewPointList[mCurrentViewPointIndex]);
+                  if (mModelInfo->GetNextDof() != NULL)
+                  {
+                     SendAttachOrDetachMessage(mVehicle->GetUniqueId(), mModelInfo->GetCurrentDofName());
+                  }
                }
             }
             break;
@@ -563,6 +632,45 @@ namespace NetDemo
       //                       - StealthActor (yay!  almost there)
       //                           - camera
 
+      
+      typedef std::vector<dtUtil::RefString> StrList;
+      StrList dofNames;
+      {
+         dofNames.push_back(DOF_NAME_WEAPON_PIVOT);
+         dofNames.push_back(DOF_NAME_RINGMOUNT);
+         dofNames.push_back(DOF_NAME_VIEW_01);
+         dofNames.push_back(DOF_NAME_VIEW_02);
+         dofNames.push_back(DOF_TOPDOWN_VIEW_01);
+         dofNames.push_back(DOF_TOPDOWN_VIEW_02);
+      }
+
+      mModelInfo = new ModelInfo;
+      dtUtil::NodeCollector* collector = mVehicle->GetNodeCollector();
+
+      // Find only valid DOF nodes.
+      if (collector == NULL)
+      {
+         LOG_ERROR("No NodeCollector available for finding model DOF nodes.");
+      }
+      else
+      {
+         osgSim::DOFTransform* dof = NULL;
+         StrList::iterator curIter = dofNames.begin();
+         StrList::iterator endIter = dofNames.end();
+         for (; curIter != endIter; ++curIter)
+         {
+            const std::string& name = curIter->Get();
+
+            dof = collector->GetDOFTransform(name);
+
+            if (dof != NULL)
+            {
+               ModelInfo::NameDofPair nameDofPair(name, dof);
+               mModelInfo->mDofs.push_back(nameDofPair);
+            }
+         }
+      }
+
       // Get the DOF's
       mDOFRing = mVehicle->GetNodeCollector()->GetDOFTransform(DOF_NAME_RINGMOUNT.Get());
       // Check for DOF's - toss an error or something
@@ -578,7 +686,7 @@ namespace NetDemo
          //return;
       }
 
-      SendAttachOrDetachMessage(mVehicle->GetUniqueId(), DOF_NAME_VIEW_02.Get());
+      SendAttachOrDetachMessage(mVehicle->GetUniqueId(), mModelInfo->GetCurrentDofName());
 
       ///////////////////////////////////////////
       // Setup our Motion Models
@@ -773,7 +881,7 @@ namespace NetDemo
       else if (mDRGhostMode == DETACH_FROM_VEHICLE)
       {
          LOG_ALWAYS(" --- Removing DR and re-attaching to Real Vehicle.");
-         SendAttachOrDetachMessage(mPhysVehicle->GetUniqueId(), mViewPointList[mCurrentViewPointIndex]);
+         SendAttachOrDetachMessage(mPhysVehicle->GetUniqueId(), mModelInfo->GetCurrentDofName());
          mDRGhostMode = NONE;
       }
 

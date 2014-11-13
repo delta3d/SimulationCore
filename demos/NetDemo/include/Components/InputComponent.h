@@ -64,6 +64,32 @@ namespace NetDemo
    class GameLogicComponent;
    class MessageType;
 
+
+
+   /////////////////////////////////////////////////////////////////////////////
+   // CODE
+   /////////////////////////////////////////////////////////////////////////////
+   class ModelInfo : public osg::Referenced
+   {
+   public:
+      typedef std::pair<std::string, dtCore::ObserverPtr<osgSim::DOFTransform> > NameDofPair;
+      typedef std::vector<NameDofPair> NameDofList;
+      NameDofList mDofs;
+      int mCurrentIndex;
+
+      ModelInfo();
+
+      std::string GetCurrentDofName() const;
+      osgSim::DOFTransform* GetCurrentDof() const;
+      osgSim::DOFTransform* GetNextDof();
+      osgSim::DOFTransform* GetPreviousDof();
+
+   protected:
+      virtual ~ModelInfo();
+   };
+
+
+
    /////////////////////////////////////////////////////////////////////////////
    // CODE
    /////////////////////////////////////////////////////////////////////////////
@@ -196,11 +222,11 @@ namespace NetDemo
          dtCore::ObserverPtr<osgSim::DOFTransform> mDOFWeapon;
          dtCore::RefPtr<SimCore::ClampedMotionModel> mRingMM; // moves the seat
          dtCore::RefPtr<SimCore::ClampedMotionModel> mWeaponMM; // moves the weapon pivot
-         std::vector<std::string> mViewPointList;
-         unsigned mCurrentViewPointIndex;
          bool mIsInGameState;
          float mOriginalPublishTimesPerSecond;
          int mMaxPublishRate;
+
+         dtCore::RefPtr<ModelInfo> mModelInfo;
    };
 }
 
