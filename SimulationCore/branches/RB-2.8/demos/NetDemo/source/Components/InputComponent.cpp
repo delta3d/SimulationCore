@@ -489,12 +489,15 @@ namespace NetDemo
 
       if( button == dtCore::Mouse::LeftButton )
       {
-         SimCore::ActComps::WeaponInventoryActComp* weaponAC = mVehicle->GetComponent<SimCore::ActComps::WeaponInventoryActComp>();
-         if (weaponAC != NULL)
+         if(mVehicle.valid() &&  mVehicle->HasComponent(SimCore::ActComps::WeaponInventoryActComp::TYPE.get()))
          {
-            weaponAC->StartFiring();
+            SimCore::ActComps::WeaponInventoryActComp* weaponAC = mVehicle->GetComponent<SimCore::ActComps::WeaponInventoryActComp>();
+            if (weaponAC != NULL)
+            {
+               weaponAC->StartFiring();
+            }
+            handled = true;
          }
-         handled = true;
       }
 
       if(!handled)
@@ -511,12 +514,15 @@ namespace NetDemo
       // stop firing
       if( button == dtCore::Mouse::LeftButton )
       {
-         SimCore::ActComps::WeaponInventoryActComp* weaponAC = mVehicle->GetComponent<SimCore::ActComps::WeaponInventoryActComp>();
-         if (weaponAC != NULL)
+         if(mVehicle.valid() &&  mVehicle->HasComponent(SimCore::ActComps::WeaponInventoryActComp::TYPE.get()))
          {
-            weaponAC->StopFiring();
+            SimCore::ActComps::WeaponInventoryActComp* weaponAC = mVehicle->GetComponent<SimCore::ActComps::WeaponInventoryActComp>();
+            if (weaponAC != NULL)
+            {
+               weaponAC->StopFiring();
+            }
+            handled = true;
          }
-         handled = true;
       }
 
       if(!handled)
