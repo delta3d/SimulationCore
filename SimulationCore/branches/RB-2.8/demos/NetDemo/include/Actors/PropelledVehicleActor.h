@@ -42,7 +42,7 @@ namespace NetDemo
 {
 
    /////////////////////////////////////////////////////////
-   class PropelledVehicleActor : public SimCore::Actors::FourWheelVehicleActor
+   class NETDEMO_EXPORT PropelledVehicleActor : public SimCore::Actors::FourWheelVehicleActor
    {
    public:
       typedef SimCore::Actors::FourWheelVehicleActor BaseClass;
@@ -65,7 +65,7 @@ namespace NetDemo
 
 
    /////////////////////////////////////////////////////////
-   class PropelledVehicleActorProxy : public SimCore::Actors::FourWheelVehicleActorProxy
+   class NETDEMO_EXPORT PropelledVehicleActorProxy : public SimCore::Actors::FourWheelVehicleActorProxy
    {
    public:
       typedef SimCore::Actors::FourWheelVehicleActorProxy BaseClass;
