@@ -144,14 +144,14 @@ namespace NetDemo
       mInputServerPort = static_cast<CEGUI::Editbox*>(wm.getWindow("Lobby_Input_ServerPort"));
       mInputServerIP = static_cast<CEGUI::Editbox*>(wm.getWindow("Lobby_Input_ServerIP"));
       mListVehicleType = static_cast<CEGUI::ItemListbox*>(wm.getWindow("Lobby_List_VehicleType"));
-      mListVehicleType->subscribeEvent(CEGUI::Window::EventMouseLeaves,
-         CEGUI::Event::Subscriber(&GUIComponent::OnVehicleTypeSelected, this));
+      /*mListVehicleType->subscribeEvent(CEGUI::ItemListbox::EventSelectionChanged,
+         CEGUI::Event::Subscriber(&GUIComponent::OnVehicleTypeSelected, this));*/
       mServerMode = static_cast<CEGUI::ItemListbox*>(wm.getWindow("Lobby_List_ServerMode"));
-      mServerMode->subscribeEvent(CEGUI::Window::EventMouseLeaves,
-         CEGUI::Event::Subscriber(&GUIComponent::OnServerModeSelected, this));
+      /*mServerMode->subscribeEvent(CEGUI::ItemListbox::EventSelectionChanged,
+         CEGUI::Event::Subscriber(&GUIComponent::OnServerModeSelected, this));*/
       mDifficulty = static_cast<CEGUI::ItemListbox*>(wm.getWindow("Lobby_List_Difficulty"));
-      mDifficulty->subscribeEvent(CEGUI::Window::EventMouseLeaves,
-         CEGUI::Event::Subscriber(&GUIComponent::OnDifficultySelected, this));
+      /*mDifficulty->subscribeEvent(CEGUI::ItemListbox::EventSelectionChanged,
+         CEGUI::Event::Subscriber(&GUIComponent::OnDifficultySelected, this));*/
 
 
       // Default the server IP to what's in the config file.
@@ -602,12 +602,8 @@ namespace NetDemo
    /////////////////////////////////////////////////////////////////////////////
    bool GUIComponent::OnVehicleTypeSelected(const CEGUI::EventArgs& args)
    {
-      // Do nothing - it generate the event when you click, instead it generates it 
-      // when you move the mouse around or something.  So, I moved it to when the press
-      // connect
-
-      // Let CEGUI know the button has been handled.
-      return true;
+      // Handled when you press connect.      
+      return true; // Let CEGUI know the button has been handled.
    }
 
    /////////////////////////////////////////////////////////////////////////////
@@ -667,76 +663,79 @@ namespace NetDemo
    }
 
    /////////////////////////////////////////////////////////////////////////////
+   // HELPER FUNCTION
+   std::string GetListboxSelectedText(CEGUI::ItemListbox& listbox)
+   {
+      std::string value;
+
+      if (listbox.getSelectedCount() >= 1)
+      {
+         CEGUI::ItemEntry* item = listbox.getFirstSelectedItem();
+
+         static const CEGUI::String USER_DATA("UserData");
+         if (item->isPropertyPresent(USER_DATA))
+         {
+            value = item->getProperty(USER_DATA).c_str();
+         }
+
+         if (value.empty())
+         {
+            value = item->getText().c_str();
+         }
+      }
+
+      return value;
+   }
+
+   /////////////////////////////////////////////////////////////////////////////
    void GUIComponent::HandleSpecialButton(const std::string& buttonType, std::string& inOutAction)
    {
       // Determine if this is a special button.
       if(buttonType == BUTTON_TYPE_CONNECT.Get())
       {
          // Pick the vehicle type
-         if(mListVehicleType->getSelectedCount() > 0)
-         {
-            CEGUI::ItemEntry* listItem = mListVehicleType->getFirstSelectedItem();
-            if(listItem != NULL)
-            {
-               std::string selectedValue(listItem->getText().c_str());
-               PlayerStatusActor::VehicleTypeEnum* vehicleType = NULL;
-               if(selectedValue == "Truck")
-               {
-                  vehicleType = &PlayerStatusActor::VehicleTypeEnum::FOUR_WHEEL;
-               }
-               else if(selectedValue == "Hover")
-               {
-                  vehicleType = &PlayerStatusActor::VehicleTypeEnum::HOVER;
-               }
+         std::string value = GetListboxSelectedText(*mListVehicleType);
 
-               if(vehicleType != NULL)
-               {
-                  mAppComp->SetVehicleType(*vehicleType);
-               }
+         typedef NetDemo::PlayerStatusActor::VehicleTypeEnum VehicleType;
+
+         VehicleType* vehicleType = VehicleType::GetValueForName(value);
+         if (vehicleType != NULL)
+         {
+            mAppComp->SetVehicleType(*vehicleType);
+         }
+
+         // Pick the server mode
+         value = GetListboxSelectedText(*mServerMode);
+         if( ! value.empty())
+         {
+            if(value == "Client")
+            {
+               GetGameManager()->GetGMSettings().SetServerRole(false);
+               GetGameManager()->GetGMSettings().SetClientRole(true);
+            }
+            else // if(value == "Server") or anything else.
+            {
+               // as server, we want both GM to be both Server AND Client
+               GetGameManager()->GetGMSettings().SetServerRole(true);
+               GetGameManager()->GetGMSettings().SetClientRole(true);
             }
          }
 
          // Pick the server mode
-         if(mServerMode->getSelectedCount() > 0)
+         value = GetListboxSelectedText(*mDifficulty);
+         if( ! value.empty())
          {
-            CEGUI::ItemEntry* listItem = mServerMode->getFirstSelectedItem();
-            if(listItem != NULL)
+            if(value == "Easiest")
             {
-               std::string selectedValue(listItem->getText().c_str());
-               //PlayerStatusActor::VehicleTypeEnum* vehicleType = NULL;
-               if(selectedValue == "Client")
-               {
-                  GetGameManager()->GetGMSettings().SetServerRole(false);
-                  GetGameManager()->GetGMSettings().SetClientRole(true);
-               }
-               else // if(selectedValue == "Server") or anything else.
-               {
-                  // as server, we want both GM to be both Server AND Client
-                  GetGameManager()->GetGMSettings().SetServerRole(true);
-                  GetGameManager()->GetGMSettings().SetClientRole(true);
-               }
+               mAppComp->SetGameDifficulty(0);
             }
-         }
-
-         // Pick the server mode
-         if(mDifficulty->getSelectedCount() > 0)
-         {
-            CEGUI::ItemEntry* listItem = mDifficulty->getFirstSelectedItem();
-            if(listItem != NULL)
+            else if(value == "Normal")
             {
-               std::string selectedValue(listItem->getText().c_str());
-               if(selectedValue == "Easiest")
-               {
-                  mAppComp->SetGameDifficulty(0);
-               }
-               else if(selectedValue == "Normal")
-               {
-                  mAppComp->SetGameDifficulty(1);
-               }
-               else // if(selectedValue == "Hard") or anything else.
-               {
-                  mAppComp->SetGameDifficulty(2);
-               }
+               mAppComp->SetGameDifficulty(1);
+            }
+            else // if(value == "Hard") or anything else.
+            {
+               mAppComp->SetGameDifficulty(2);
             }
          }
 
