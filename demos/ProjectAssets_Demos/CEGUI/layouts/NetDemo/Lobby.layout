@@ -108,7 +108,7 @@
          <Window Name="Lobby_VehicleType_0" Type="WindowsLook/ListboxItem">
             <Property Name="UnifiedSize" Value="{{1.0,0},{0.5,0}}"/>
             <Property Name="SelectedTextColour" Value="FF00FF00"/>
-            <Property Name="Text" Value="Truck"/>
+            <Property Name="Text" Value="Observer"/>
             <Property Name="Selected" Value="True"/>
          </Window>
 
@@ -117,9 +117,17 @@
             <Property Name="UnifiedSize" Value="{{1.0,0},{0.5,0}}"/>
             <Property Name="UnifiedPosition" Value="{{0.0,0},{0.5,0}}"/>
             <Property Name="SelectedTextColour" Value="FF00FF00"/>
-            <Property Name="Text" Value="Hover"/>
+            <Property Name="Text" Value="Four Wheel Vehicle"/>
          </Window>
-         
+
+         <!-- ITEM 2 -->
+         <Window Name="Lobby_VehicleType_2" Type="WindowsLook/ListboxItem">
+            <Property Name="UnifiedSize" Value="{{1.0,0},{0.5,0}}"/>
+            <Property Name="UnifiedPosition" Value="{{0.0,0},{0.5,0}}"/>
+            <Property Name="SelectedTextColour" Value="FF00FF00"/>
+            <Property Name="Text" Value="Surface Vessel"/>
+         </Window>
+
       </Window>
 
       <!-- TEXT - SERVER MODE -->
