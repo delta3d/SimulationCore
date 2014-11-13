@@ -180,11 +180,14 @@ namespace NetDemo
       dtCore::RefPtr<dtGame::GameActorProxy> ap;
 
       // Get the vehicle type set in the config file.
-      std::string vehicleTypeValue = GetGameManager()->GetConfiguration().GetConfigPropertyValue("NetDemo.DefaultPlayMode","FOUR_WHEEL");
-      PlayerStatusActor::VehicleTypeEnum* vehicleType = PlayerStatusActor::VehicleTypeEnum::GetValueForName(vehicleTypeValue);
-      if(vehicleType != NULL)
+      if (mVehicleType == NULL)
       {
-         mVehicleType = vehicleType;
+         std::string vehicleTypeValue = GetGameManager()->GetConfiguration().GetConfigPropertyValue("NetDemo.DefaultPlayMode","FOUR_WHEEL");
+         PlayerStatusActor::VehicleTypeEnum* vehicleType = PlayerStatusActor::VehicleTypeEnum::GetValueForName(vehicleTypeValue);
+         if(vehicleType != NULL)
+         {
+            mVehicleType = vehicleType;
+         }
       }
 
       // Every player always has a player actor. On some apps, it is an overkill, but

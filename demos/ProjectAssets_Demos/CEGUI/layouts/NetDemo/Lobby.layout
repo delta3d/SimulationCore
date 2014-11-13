@@ -32,7 +32,7 @@
 
       <!-- TEXT - SERVER PORT -->
       <Window Name="Lobby_Text_ServerPort" Type="WindowsLook/StaticText">
-         <Property Name="UnifiedSize" Value="{{0.10416667,0},{0.053333,0}}"/>
+         <Property Name="UnifiedSize" Value="{{0.10416667,0},{0.033333,0}}"/>
          <Property Name="UnifiedPosition" Value="{{-0.08,0},{-0.175,0}}"/>
          <Property Name="BackgroundEnabled" Value="False"/>
          <Property Name="FrameEnabled" Value="False"/>
@@ -46,7 +46,7 @@
 
       <!-- INPUT - SERVER PORT -->
       <Window Name="Lobby_Input_ServerPort" Type="WindowsLook/Editbox">
-         <Property Name="UnifiedSize" Value="{{0.15,0},{0.07,0}}"/>
+         <Property Name="UnifiedSize" Value="{{0.15,0},{0.05,0}}"/>
          <Property Name="UnifiedPosition" Value="{{0.05,0},{-0.175,0}}"/>
          <Property Name="AlwaysOnTop" Value="True"/>
          <Property Name="HorizontalAlignment" Value="Centre"/>
@@ -57,7 +57,7 @@
 
       <!-- TEXT - SERVER IP -->
       <Window Name="Lobby_Text_ServerIP" Type="WindowsLook/StaticText">
-         <Property Name="UnifiedSize" Value="{{0.10416667,0},{0.053333,0}}"/>
+         <Property Name="UnifiedSize" Value="{{0.10416667,0},{0.033333,0}}"/>
          <Property Name="UnifiedPosition" Value="{{-0.08,0},{-0.085,0}}"/>
          <Property Name="BackgroundEnabled" Value="False"/>
          <Property Name="FrameEnabled" Value="False"/>
@@ -71,7 +71,7 @@
       
       <!-- INPUT - SERVER IP -->
       <Window Name="Lobby_Input_ServerIP" Type="WindowsLook/Editbox">
-         <Property Name="UnifiedSize" Value="{{0.15,0},{0.07,0}}"/>
+         <Property Name="UnifiedSize" Value="{{0.15,0},{0.05,0}}"/>
          <Property Name="UnifiedPosition" Value="{{0.05,0},{-0.085,0}}"/>
          <Property Name="AlwaysOnTop" Value="True"/>
          <Property Name="HorizontalAlignment" Value="Centre"/>
@@ -82,7 +82,7 @@
 
       <!-- TEXT - VEHICLE TYPE -->
       <Window Name="Lobby_Text_VehicleType" Type="WindowsLook/StaticText">
-         <Property Name="UnifiedSize" Value="{{0.10416667,0},{0.053333,0}}"/>
+         <Property Name="UnifiedSize" Value="{{0.10416667,0},{0.033333,0}}"/>
          <Property Name="UnifiedPosition" Value="{{-0.08,0},{0.005,0}}"/>
          <Property Name="BackgroundEnabled" Value="False"/>
          <Property Name="FrameEnabled" Value="False"/>
@@ -96,7 +96,7 @@
 
       <!-- LIST - VEHICLE TYPE -->
       <Window Name="Lobby_List_VehicleType" Type="WindowsLook/ItemListbox">
-         <Property Name="UnifiedSize" Value="{{0.15,0},{0.07,0}}"/>
+         <Property Name="UnifiedSize" Value="{{0.15,0},{0.125,0}}"/>
          <Property Name="UnifiedPosition" Value="{{0.05,0},{0.005,0}}"/>
          <Property Name="AlwaysOnTop" Value="True"/>
          <Property Name="HorizontalAlignment" Value="Centre"/>
@@ -109,6 +109,7 @@
             <Property Name="UnifiedSize" Value="{{1.0,0},{0.5,0}}"/>
             <Property Name="SelectedTextColour" Value="FF00FF00"/>
             <Property Name="Text" Value="Observer"/>
+            <Property Name="UserData" Value="OSERVER"/>
             <Property Name="Selected" Value="True"/>
          </Window>
 
@@ -118,6 +119,7 @@
             <Property Name="UnifiedPosition" Value="{{0.0,0},{0.5,0}}"/>
             <Property Name="SelectedTextColour" Value="FF00FF00"/>
             <Property Name="Text" Value="Four Wheel Vehicle"/>
+            <Property Name="UserData" Value="FOUR_WHEEL"/>
          </Window>
 
          <!-- ITEM 2 -->
@@ -126,6 +128,7 @@
             <Property Name="UnifiedPosition" Value="{{0.0,0},{0.5,0}}"/>
             <Property Name="SelectedTextColour" Value="FF00FF00"/>
             <Property Name="Text" Value="Surface Vessel"/>
+            <Property Name="UserData" Value="SURFACE_VESSEL"/>
          </Window>
 
       </Window>

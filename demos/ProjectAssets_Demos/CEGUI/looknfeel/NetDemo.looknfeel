@@ -1301,6 +1301,7 @@
     ***************************************************
     -->
     <WidgetLook name="WindowsLook/ListboxItem">
+		<PropertyDefinition name="UserData" initialValue="" redrawOnWrite="false" />
 		<PropertyDefinition name="TextColour" initialValue="FF000000" redrawOnWrite="true" />
 		<PropertyDefinition name="SelectedTextColour" initialValue="FFFFFFFF" redrawOnWrite="true" />
 		<PropertyDefinition name="SelectionBrush" initialValue="set:WindowsLook image:Background" redrawOnWrite="true" />
