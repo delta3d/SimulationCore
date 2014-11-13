@@ -52,6 +52,7 @@ namespace NetDemo
          static dtCore::RefPtr<dtCore::ActorType> FIREBALL_ACTOR_TYPE;
 
          static dtCore::RefPtr<dtCore::ActorType> PROPELLED_VEHICLE_ACTOR_TYPE;
+         static dtCore::RefPtr<dtCore::ActorType> SURFACE_VESSEL_ACTOR_TYPE;
          /// Constructor
          NetDemoActorRegistry();
 

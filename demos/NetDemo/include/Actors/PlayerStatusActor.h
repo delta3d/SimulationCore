@@ -73,6 +73,7 @@ namespace NetDemo
             static VehicleTypeEnum OBSERVER;
             static VehicleTypeEnum HOVER;
             static VehicleTypeEnum FOUR_WHEEL;
+            static VehicleTypeEnum SURFACE_VESSEL;
          private:
             VehicleTypeEnum(const std::string &name) : dtUtil::Enumeration(name)
             {

@@ -31,6 +31,7 @@
 #include <Actors/FireBallTowerActor.h>
 #include <Actors/FireBallActor.h>
 #include <Actors/LightTower.h>
+#include <Actors/SurfaceVesselActor.h>
 #include <dtCore/shadermanager.h>
 #include <dtCore/scene.h>
 
@@ -90,6 +91,11 @@ namespace NetDemo
       new dtCore::ActorType("FireBall", "NetDemo", "A blazing fireball shot through the fireball tower.",
       SimCore::Actors::EntityActorRegistry::MILITARY_AIR_PLATFORM_ACTOR_TYPE.get()));
 
+   RefPtr<dtCore::ActorType> NetDemoActorRegistry::SURFACE_VESSEL_ACTOR_TYPE(
+      new dtCore::ActorType("SurfaceVessel", "NetDemo", "A steerable vessel.",
+      SimCore::Actors::EntityActorRegistry::PLATFORM_WITH_PHYSICS_ACTOR_TYPE.get()));
+
+
    ///////////////////////////////////////////////////////////////////////////
    extern "C" NETDEMO_EXPORT dtCore::ActorPluginRegistry* CreatePluginRegistry()
    {
@@ -124,6 +130,7 @@ namespace NetDemo
       mActorFactory->RegisterType<LightTowerProxy>(LIGHT_TOWER_ACTOR_TYPE.get());
       mActorFactory->RegisterType<FireBallTowerActorProxy>(FIREBALL_TOWER_ACTOR_TYPE.get());
       mActorFactory->RegisterType<FireBallActorProxy>(FIREBALL_ACTOR_TYPE.get());
+      mActorFactory->RegisterType<SurfaceVesselActor>(SURFACE_VESSEL_ACTOR_TYPE.get());
 
    }
 }

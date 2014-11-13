@@ -46,6 +46,7 @@ namespace NetDemo
    PlayerStatusActor::VehicleTypeEnum PlayerStatusActor::VehicleTypeEnum::OBSERVER("OBSERVER");
    PlayerStatusActor::VehicleTypeEnum PlayerStatusActor::VehicleTypeEnum::HOVER("HOVER");
    PlayerStatusActor::VehicleTypeEnum PlayerStatusActor::VehicleTypeEnum::FOUR_WHEEL("FOUR_WHEEL");
+   PlayerStatusActor::VehicleTypeEnum PlayerStatusActor::VehicleTypeEnum::SURFACE_VESSEL("SURFACE_VESSEL");
 
    ///////////////////////////////////////////////////////////////////////////////////
    PlayerStatusActor::PlayerStatusActor(PlayerStatusActorProxy &proxy)

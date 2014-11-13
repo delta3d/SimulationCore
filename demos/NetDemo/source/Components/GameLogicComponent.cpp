@@ -13,6 +13,7 @@
 
 #include <dtCore/camera.h>
 #include <dtCore/transform.h>
+#include <dtActors/playerstartactorproxy.h>
 #include <dtABC/application.h>
 #include <dtGame/messagetype.h>
 #include <dtGame/actorupdatemessage.h>
@@ -52,6 +53,7 @@ namespace NetDemo
    const std::string GameLogicComponent::TIMER_UPDATE_TERRAIN("FORCE_UPDATE_OF_TERRAIN");
    const std::string GameLogicComponent::HOVER_VEHICLE_PROTOTYPE("NetDemo.DefaultHoverVehiclePrototype");
    const std::string GameLogicComponent::WHEELED_VEHICLE_PROTOTYPE("NetDemo.DefaultWheeledVehiclePrototype");
+   const std::string GameLogicComponent::SURFACE_VESSEL_PROTOTYPE("NetDemo.DefaultSurfaceVehiclePrototype");
    const std::string GameLogicComponent::WHEELED_VEHICLE_TRAILER_PROTOTYPE("NetDemo.DefaultWheeledVehicleTrailerPrototype");
 
    //////////////////////////////////////////////////////////////////////////
@@ -61,7 +63,7 @@ namespace NetDemo
       , mIsServer(false)
       , mIsConnectedToNetwork(false)
       , mStartTheGameOnNextGameRunning(false)
-      , mVehicleType(&PlayerStatusActor::VehicleTypeEnum::FOUR_WHEEL)
+      , mVehicleType(&PlayerStatusActor::VehicleTypeEnum::SURFACE_VESSEL)
       , mGameDifficulty(1)
    {
       // Register application-specific states.
@@ -120,13 +122,6 @@ namespace NetDemo
          new dtNetGM::ClientNetworkComponent(gameName, gameVersion);
       GetGameManager()->AddComponent(*clientComp, dtGame::GameManager::ComponentPriority::NORMAL);
 
-      // Get the vehicle type set in the config file.
-      std::string vehicleTypeValue = GetGameManager()->GetConfiguration().GetConfigPropertyValue("NetDemo.DefaultPlayMode","FOUR_WHEEL");
-      PlayerStatusActor::VehicleTypeEnum* vehicleType = PlayerStatusActor::VehicleTypeEnum::GetValueForName(vehicleTypeValue);
-      if(vehicleType != NULL)
-      {
-         mVehicleType = vehicleType;
-      }
    }
 
    //////////////////////////////////////////////////////////////////////////
@@ -184,6 +179,14 @@ namespace NetDemo
    {
       dtCore::RefPtr<dtGame::GameActorProxy> ap;
 
+      // Get the vehicle type set in the config file.
+      std::string vehicleTypeValue = GetGameManager()->GetConfiguration().GetConfigPropertyValue("NetDemo.DefaultPlayMode","FOUR_WHEEL");
+      PlayerStatusActor::VehicleTypeEnum* vehicleType = PlayerStatusActor::VehicleTypeEnum::GetValueForName(vehicleTypeValue);
+      if(vehicleType != NULL)
+      {
+         mVehicleType = vehicleType;
+      }
+
       // Every player always has a player actor. On some apps, it is an overkill, but
       // we use it anyway, for consistency. It allows tools, position, ability to have an avatar, walk, run, jump, etc.
       //GetGameManager()->CreateActor(*SimCore::Actors::EntityActorRegistry::PLAYER_ACTOR_TYPE, ap);
@@ -207,18 +210,17 @@ namespace NetDemo
       GetGameManager()->AddActor(mPlayerStatus->GetGameActorProxy(), false, true);
 
 
-      //////////////TEMP HACK
       // Set the starting position from a player start actor in the map.
-      //dtActors::PlayerStartActorProxy* startPosProxy = NULL;
-      //GetGameManager()->FindActorByType(*dtActors::EngineActorRegistry::PLAYER_START_ACTOR_TYPE, startPosProxy);
-      //if (startPosProxy != NULL)
-      //{
-      //   dtCore::Transformable* actor = NULL;
-      //   startPosProxy->GetDrawable(actor);
-      //   dtCore::Transform xform;
-      //   actor->GetTransform(xform);
-      //   mPlayerStatus->SetTransform(xform);
-      //}
+      dtActors::PlayerStartActorProxy* startPosProxy = NULL;
+      GetGameManager()->FindActorByType(*dtActors::EngineActorRegistry::PLAYER_START_ACTOR_TYPE, startPosProxy);
+      if (startPosProxy != NULL)
+      {
+         dtCore::Transformable* actor = NULL;
+         startPosProxy->GetDrawable(actor);
+         dtCore::Transform xform;
+         actor->GetTransform(xform);
+         mPlayerStatus->SetTransform(xform);
+      }
       ////////////////////////
    }
 
@@ -654,9 +656,9 @@ namespace NetDemo
          }
 
          /////// CLIENT STUFF
-
+         
          // Create a vehicle and stick our player in it.
-         if (mPlayerStatus->GetVehiclePreference() != PlayerStatusActor::VehicleTypeEnum::OBSERVER)
+         if (mPlayerStatus->GetVehiclePreference() != PlayerStatusActor::VehicleTypeEnum::OBSERVER && mPlayerStatus->GetVehiclePreference() != PlayerStatusActor::VehicleTypeEnum::HOVER)
          {
             if (mPlayerStatus->GetVehiclePreference() == PlayerStatusActor::VehicleTypeEnum::HOVER)
             {
@@ -664,9 +666,15 @@ namespace NetDemo
                SimCore::Utils::CreateActorFromPrototypeWithException(*GetGameManager(),
                         vehiclePrototype, mPlayerOwnedVehicle, "Check your additional maps in config.xml (compare to config_example.xml).");
             }
+            else if (mPlayerStatus->GetVehiclePreference() == PlayerStatusActor::VehicleTypeEnum::SURFACE_VESSEL)
+            {
+               std::string vehiclePrototype = GetGameManager()->GetConfiguration().GetConfigPropertyValue(SURFACE_VESSEL_PROTOTYPE,"CargoShip");
+               SimCore::Utils::CreateActorFromPrototypeWithException(*GetGameManager(),
+                  vehiclePrototype, mPlayerOwnedVehicle, "Check your additional maps in config.xml (compare to config_example.xml).");
+            }
             else if (mPlayerStatus->GetVehiclePreference() == PlayerStatusActor::VehicleTypeEnum::FOUR_WHEEL)
             {
-               std::string vehiclePrototype = GetGameManager()->GetConfiguration().GetConfigPropertyValue(WHEELED_VEHICLE_PROTOTYPE, "Truck");
+               std::string vehiclePrototype = GetGameManager()->GetConfiguration().GetConfigPropertyValue(WHEELED_VEHICLE_PROTOTYPE, "Jeep");
 
                SimCore::Utils::CreateActorFromPrototypeWithException(*GetGameManager(),
                         vehiclePrototype, mPlayerOwnedVehicle, "Check your additional maps in config.xml (compare to config_example.xml).");
@@ -688,7 +696,7 @@ namespace NetDemo
                   GetGameManager()->AddActor(*trailer, false, true);
                }
             }
-
+            
             SimCore::Actors::BasePhysicsVehicleActor* vehicleActor = NULL;
             mPlayerOwnedVehicle->GetDrawable(vehicleActor);
             vehicleActor->SetHasDriver(true);

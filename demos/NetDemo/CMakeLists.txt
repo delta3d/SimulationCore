@@ -56,6 +56,7 @@ set(LIB_SOURCES_2
    "${SOURCE_PATH}/Actors/PropelledVehicleActor.cpp"
    "${SOURCE_PATH}/Actors/ServerGameStatusActor.cpp"
    "${SOURCE_PATH}/Actors/SpawnVolumeActor.cpp"
+   "${SOURCE_PATH}/Actors/SurfaceVesselActor.cpp"
    "${SOURCE_PATH}/Actors/TowerActor.cpp"
    "${SOURCE_PATH}/Actors/LightTower.cpp"
    "${SOURCE_PATH}/Actors/FireBallActor.cpp"

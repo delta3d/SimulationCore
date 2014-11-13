@@ -54,12 +54,11 @@
       <!-- SimCore Demo Settings -->
       <Property Name="MunitionsConfigFile">Configs:NetDemoMunitionsConfig.xml</Property>
       
-      <Property Name="NetDemo.DefaultPlayMode">FOUR_WHEEL</Property><!--FOUR_WHEEL  HOVER -->
+      <Property Name="NetDemo.DefaultPlayMode">SURFACE_VESSEL</Property> <!--FOUR_WHEEL  HOVER SURFACE_VESSEL-->
       <Property Name="NetDemo.DefaultHoverVehiclePrototype">Truck</Property>
-      <!--Property Name="NetDemo.DefaultWheeledVehiclePrototype">HMMWV</Property--> 
-      <!-- Property Name="NetDemo.DefaultWheeledVehiclePrototype">Truck</Property--> 
-      <Property Name="NetDemo.DefaultWheeledVehiclePrototype">Propelled Vehicle</Property> 
-      <!--Property Name="NetDemo.DefaultWheeledVehicleTrailerPrototype">Trailer</Property--> 
+      <Property Name="NetDemo.DefaultWheeledVehiclePrototype">Jeep</Property>
+      <Property Name="NetDemo.DefaultSurfaceVehiclePrototype">CargoShip</Property>
+       <!--Property Name="NetDemo.DefaultWheeledVehicleTrailerPrototype">Trailer</Property--> 
       <Property Name="HasBinocs">true</Property>
       <Property Name="HasCompass">true</Property>
       <Property Name="HasGPS">true</Property>
