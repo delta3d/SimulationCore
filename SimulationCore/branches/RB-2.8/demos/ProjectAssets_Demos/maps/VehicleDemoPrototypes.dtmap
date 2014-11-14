@@ -98,89 +98,6 @@
             </property>
         </actor>
         <actor>
-            <type>NetDemo.SurfaceVessel</type>
-            <id>03befa4e-e267-4df8-b7d5-7523bd1583cd</id>
-            <name>CargoShip</name>
-            <property>
-                <name>ShaderGroup</name>
-                <string>MultiMapWater</string>
-            </property>
-            <property>
-                <name>Rotation</name>
-                <vec3>
-                    <value1>0.000000</value1>
-                    <value2>0.000000</value2>
-                    <value3>-61.700478</value3>
-                </vec3>
-            </property>
-            <property>
-                <name>Translation</name>
-                <vec3>
-                    <value1>-642.455933</value1>
-                    <value2>-497.850861</value2>
-                    <value3>-15.000000</value3>
-                </vec3>
-            </property>
-            <property>
-                <name>Initial Ownership</name>
-                <enumerated>PROTOTYPE</enumerated>
-            </property>
-            <property>
-                <name>Service</name>
-                <enumerated>CIVILIAN</enumerated>
-            </property>
-            <property>
-                <name>Non-damaged actor</name>
-                <resourceType>StaticMeshes</resourceType>
-                <resourceDisplayName>StaticMeshes:vehicles:watercraft:cargo_ship:CargoShip.osg</resourceDisplayName>
-                <resource>StaticMeshes:vehicles:watercraft:cargo_ship:CargoShip.osg</resource>
-            </property>
-            <property>
-                <name>Damaged actor</name>
-                <resourceType>StaticMeshes</resourceType>
-                <resourceDisplayName>StaticMeshes:vehicles:watercraft:cargo_ship:CargoShip.osg</resourceDisplayName>
-                <resource>StaticMeshes:vehicles:watercraft:cargo_ship:CargoShip.osg</resource>
-            </property>
-            <property>
-                <name>Destroyed actor</name>
-                <resourceType>StaticMeshes</resourceType>
-                <resourceDisplayName>StaticMeshes:vehicles:watercraft:cargo_ship:CargoShip.osg</resourceDisplayName>
-                <resource>StaticMeshes:vehicles:watercraft:cargo_ship:CargoShip.osg</resource>
-            </property>
-            <property>
-                <name>SurfaceAreaSqM</name>
-                <float>15000</float>
-            </property>
-            <property>
-                <name>Material Actor</name>
-                <actorId>c34f8816-be53-4692-b666-b40005773183</actorId>
-            </property>
-            <property>
-                <name>Physics Mass</name>
-                <float>500000</float>
-            </property>
-            <property>
-                <name>Physics Dimensions</name>
-                <vec3>
-                    <value1>300.000000</value1>
-                    <value2>50.000000</value2>
-                    <value3>15.000000</value3>
-                </vec3>
-            </property>
-            <property>
-                <name>Auto-Create Physics Objects</name>
-                <boolean>true</boolean>
-            </property>
-            <property>
-                <name>Body: Mechanics Type</name>
-                <enumerated>Dynamic</enumerated>
-            </property>
-            <property>
-                <name>GroundClampType</name>
-                <enumerated>None</enumerated>
-            </property>
-        </actor>
-        <actor>
             <type>dtExample.Vessel</type>
             <id>0e648646-c92a-49d7-9e19-2a2589365330</id>
             <name>GameActor_82</name>
@@ -454,6 +371,67 @@
             <property>
                 <name>SurfaceAreaSqM</name>
                 <float>6</float>
+            </property>
+        </actor>
+        <actor>
+            <type>NetDemo.SurfaceVessel</type>
+            <id>3685ba5b-1ddc-4a97-8e2e-15e1cec7a9dc</id>
+            <name>CargoShip</name>
+            <property>
+                <name>ShaderGroup</name>
+                <string>MultiMapWater</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-642.455933</value1>
+                    <value2>-497.850861</value2>
+                    <value3>-15.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>PROTOTYPE</enumerated>
+            </property>
+            <property>
+                <name>Non-damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:vehicles:watercraft:cargo_ship:CargoShip.osg</resourceDisplayName>
+                <resource>StaticMeshes:vehicles:watercraft:cargo_ship:CargoShip.osg</resource>
+            </property>
+            <property>
+                <name>Damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:vehicles:watercraft:cargo_ship:CargoShip.osg</resourceDisplayName>
+                <resource>StaticMeshes:vehicles:watercraft:cargo_ship:CargoShip.osg</resource>
+            </property>
+            <property>
+                <name>Destroyed actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:vehicles:watercraft:cargo_ship:CargoShip.osg</resourceDisplayName>
+                <resource>StaticMeshes:vehicles:watercraft:cargo_ship:CargoShip.osg</resource>
+            </property>
+            <property>
+                <name>Wait_For_Terrain_To_Start</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>SurfaceAreaSqM</name>
+                <float>1500</float>
+            </property>
+            <property>
+                <name>Auto-Create Physics Objects</name>
+                <boolean>true</boolean>
+            </property>
+            <property>
+                <name>Body: PhysicsMesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:vehicles:watercraft:cargo_ship:CargoShip.osg</resourceDisplayName>
+                <resource>StaticMeshes:vehicles:watercraft:cargo_ship:CargoShip.osg</resource>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
             </property>
         </actor>
         <actor>
@@ -1636,10 +1614,6 @@
                 <resourceType>Terrains</resourceType>
                 <resourceDisplayName>Terrains:driving_terrain.ive</resourceDisplayName>
                 <resource>Terrains:driving_terrain.ive</resource>
-            </property>
-            <property>
-                <name>PhysicsDirectory</name>
-                <string>drivingTerrainPhysics</string>
             </property>
             <property>
                 <name>Material Actor</name>
