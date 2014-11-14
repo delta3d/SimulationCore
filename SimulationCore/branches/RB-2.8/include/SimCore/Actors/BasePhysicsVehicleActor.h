@@ -96,6 +96,8 @@ namespace SimCore
             void SetPerformAboveGroundSafetyCheck(bool enable);
             bool GetPerformAboveGroundSafetyCheck() const;
 
+            bool GetWaitForTerrain() const;
+            void SetWaitForTerrain(bool flag);
 
          protected:
             /// Angles/ steering moving etc done here. From TickLocal - called second -
@@ -143,6 +145,8 @@ namespace SimCore
 
             bool GetPushTransformToPhysics() const;
             void SetPushTransformToPhysics(bool flag);
+
+
          // Private vars
          private:
 
@@ -163,6 +167,8 @@ namespace SimCore
             ///////////////////////////////////////////////////
             // Was terrain currently found? Used for startup checks.
             bool mHasFoundTerrain : 1;
+
+            bool mWaitForTerrain : 1;
 
             /// Should the physics coll. det. fail, this will keep the vehicle above ground
             /// at the cost of some runtime performance.
