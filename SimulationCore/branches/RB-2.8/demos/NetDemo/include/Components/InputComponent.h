@@ -98,15 +98,6 @@ namespace NetDemo
       public:
          typedef SimCore::Components::BaseInputComponent BaseClass;
 
-         // The common DOF names found on most vehicle models
-         static const dtUtil::RefString DOF_NAME_WEAPON_PIVOT;
-         static const dtUtil::RefString DOF_NAME_WEAPON_FIRE_POINT;
-         static const dtUtil::RefString DOF_NAME_RINGMOUNT;
-         static const dtUtil::RefString DOF_NAME_VIEW_01;
-         static const dtUtil::RefString DOF_NAME_VIEW_02;
-         static const dtUtil::RefString DOF_TOPDOWN_VIEW_01;
-         static const dtUtil::RefString DOF_TOPDOWN_VIEW_02;
-
          /// Constructor
          InputComponent(const std::string& name = dtGame::BaseInputComponent::DEFAULT_NAME);
 
@@ -206,6 +197,7 @@ namespace NetDemo
          /// Kills one or more enemies instantly.
          void KillEnemy(bool killAllEnemies);
 
+         void SetDof(osgSim::DOFTransform& dof);
 
       private:
          enum DR_GHOST_MODE { NONE = 1, GHOST_ON, ATTACH_TO_GHOST, HIDE_REAL, DETACH_FROM_VEHICLE };
@@ -222,6 +214,7 @@ namespace NetDemo
          dtCore::ObserverPtr<osgSim::DOFTransform> mDOFWeapon;
          dtCore::RefPtr<SimCore::ClampedMotionModel> mRingMM; // moves the seat
          dtCore::RefPtr<SimCore::ClampedMotionModel> mWeaponMM; // moves the weapon pivot
+         dtCore::RefPtr<SimCore::ClampedMotionModel> mViewMM;
          bool mIsInGameState;
          float mOriginalPublishTimesPerSecond;
          int mMaxPublishRate;
