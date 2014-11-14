@@ -73,6 +73,7 @@ namespace SimCore
          , mTimeToWaitBeforeDropping(1.0f)
          , mHasDriver(false)
          , mHasFoundTerrain(false)
+         , mWaitForTerrain(true)
          , mPerformAboveGroundSafetyCheck(false)
          , mPushTransformToPhysics(false)
       {
@@ -220,6 +221,14 @@ namespace SimCore
             isDynamic = false;
             //No need to look for terrain on static objects.
             mHasFoundTerrain = true;
+         }
+
+         if(!mWaitForTerrain)
+         {
+            mHasFoundTerrain = true;
+            physicsObject->SetGravityEnabled(true);
+            physicsObject->SetCollisionResponseEnabled(true);
+
          }
 
          if (isDynamic && !physicsObject->IsActive())
@@ -545,6 +554,16 @@ namespace SimCore
          return mPerformAboveGroundSafetyCheck;
       }
 
+      bool BasePhysicsVehicleActor::GetWaitForTerrain() const
+      {
+         return mWaitForTerrain;
+      }
+
+      void BasePhysicsVehicleActor::SetWaitForTerrain( bool flag )
+      {
+         mWaitForTerrain = flag;
+      }
+
       //////////////////////////////////////////////////////////////////////
       // PROXY
       //////////////////////////////////////////////////////////////////////
@@ -568,6 +587,14 @@ namespace SimCore
             dtCore::BooleanActorProperty::GetFuncType(actor, &BasePhysicsVehicleActor::GetPerformAboveGroundSafetyCheck),
             "Use an Isector as a safety check to keep the vehicle above ground if the collision detection fails.",
             VEH_GROUP));
+
+         AddProperty(new dtCore::BooleanActorProperty("Wait_For_Terrain_To_Start",
+            "Wait for terrain to start",
+            dtCore::BooleanActorProperty::SetFuncType(actor, &BasePhysicsVehicleActor::SetWaitForTerrain),
+            dtCore::BooleanActorProperty::GetFuncType(actor, &BasePhysicsVehicleActor::GetWaitForTerrain),
+            "Waits until the terrain loads before starting the physics.",
+            VEH_GROUP));
+
 
       }
 
