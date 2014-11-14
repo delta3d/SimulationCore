@@ -57,13 +57,15 @@ namespace NetDemo
    //////////////////////////////////////////////////////////////
    // CONSTANTS
    //////////////////////////////////////////////////////////////
-   const dtUtil::RefString InputComponent::DOF_NAME_WEAPON_PIVOT("dof_gun_01");
-   const dtUtil::RefString InputComponent::DOF_NAME_WEAPON_FIRE_POINT("dof_hotspot_01");
-   const dtUtil::RefString InputComponent::DOF_NAME_RINGMOUNT("dof_turret_01");
-   const dtUtil::RefString InputComponent::DOF_NAME_VIEW_01("dof_view_01");
-   const dtUtil::RefString InputComponent::DOF_NAME_VIEW_02("dof_view_02");
-   const dtUtil::RefString InputComponent::DOF_TOPDOWN_VIEW_01("dof_topdown_view_01");
-   const dtUtil::RefString InputComponent::DOF_TOPDOWN_VIEW_02("dof_topdown_view_02");
+   static const dtUtil::RefString DOF_NAME_WEAPON_PIVOT("dof_gun_01");
+   static const dtUtil::RefString DOF_NAME_WEAPON_FIRE_POINT("dof_hotspot_01");
+   static const dtUtil::RefString DOF_NAME_RINGMOUNT("dof_turret_01");
+   static const dtUtil::RefString DOF_NAME_VIEW_01("dof_view_01");
+   static const dtUtil::RefString DOF_NAME_VIEW_02("dof_view_02");
+   static const dtUtil::RefString DOF_NAME_VIEW_03("dof_view_03");
+   static const dtUtil::RefString DOF_NAME_VIEW_04("dof_view_04");
+   static const dtUtil::RefString DOF_TOPDOWN_VIEW_01("dof_topdown_view_01");
+   static const dtUtil::RefString DOF_TOPDOWN_VIEW_02("dof_topdown_view_02");
 
 
 
@@ -244,6 +246,10 @@ namespace NetDemo
       mMotionModel->SetMaximumFlySpeed(5.0f);
       mMotionModel->SetMaximumTurnSpeed(90.0f);
 
+      mViewMM = new SimCore::ClampedMotionModel(app.GetKeyboard(), app.GetMouse());
+      mViewMM->SetMaximumMouseTurnSpeed(40.0f);
+      mViewMM->SetUpDownLimit(45.0f, 45.0f); // should probably be per vehicle
+      mViewMM->SetName("mViewMM");
 
       mRingMM = new SimCore::ClampedMotionModel(app.GetKeyboard(), app.GetMouse());
       mRingMM->SetMaximumMouseTurnSpeed(40.0f);
@@ -272,8 +278,6 @@ namespace NetDemo
       mVehicle = NULL;
       mDOFRing = NULL;
       mDOFWeapon = NULL;
-      mRingMM = NULL;
-      mWeaponMM = NULL;
    }
 
    ////////////////////////////////////////////////////////////////////
@@ -463,7 +467,7 @@ namespace NetDemo
                {
                   if (mModelInfo->GetNextDof() != NULL)
                   {
-                     SendAttachOrDetachMessage(mVehicle->GetUniqueId(), mModelInfo->GetCurrentDofName());
+                     SetDof(*mModelInfo->GetCurrentDof());
                   }
                }
             }
@@ -637,9 +641,10 @@ namespace NetDemo
       StrList dofNames;
       {
          dofNames.push_back(DOF_NAME_WEAPON_PIVOT);
-         dofNames.push_back(DOF_NAME_RINGMOUNT);
          dofNames.push_back(DOF_NAME_VIEW_01);
          dofNames.push_back(DOF_NAME_VIEW_02);
+         dofNames.push_back(DOF_NAME_VIEW_03);
+         dofNames.push_back(DOF_NAME_VIEW_04);
          dofNames.push_back(DOF_TOPDOWN_VIEW_01);
          dofNames.push_back(DOF_TOPDOWN_VIEW_02);
       }
@@ -686,7 +691,7 @@ namespace NetDemo
          //return;
       }
 
-      SendAttachOrDetachMessage(mVehicle->GetUniqueId(), mModelInfo->GetCurrentDofName());
+      SetDof(*mModelInfo->GetCurrentDof());
 
       ///////////////////////////////////////////
       // Setup our Motion Models
@@ -781,18 +786,29 @@ namespace NetDemo
    ////////////////////////////////////////////////////////////////////////////////
    void InputComponent::EnableMotionModels()
    {
+      osgSim::DOFTransform* dof = NULL;
+      if (mModelInfo.valid())
+      {
+         dof = mModelInfo->GetCurrentDof();
+      }
+
+      bool isNormalView = dof != mDOFRing.get() && dof != mDOFWeapon.get();
+
       if (!mIsInGameState || !mVehicle.valid())
       {
          mWeaponMM->SetEnabled(false);
          mRingMM->SetEnabled(false);
+         mViewMM->SetEnabled(false);
 
          mMotionModel->SetEnabled(true);
       }
       else //if (mVehicle.valid()) //  Attached
       {
-         bool enableVehicleModels = !mVehicle->GetFlamesPresent();
+         bool enableVehicleModels = !mVehicle->GetFlamesPresent() && !isNormalView;
          mWeaponMM->SetEnabled(enableVehicleModels);
          mRingMM->SetEnabled(enableVehicleModels);
+         mViewMM->SetEnabled(isNormalView);
+         mViewMM->SetTargetDOF(dof);
 
          mMotionModel->SetEnabled(false);
       }
@@ -1412,6 +1428,11 @@ namespace NetDemo
 
          mVehicle->GetGameActorProxy().NotifyFullActorUpdate();
       }
+   }
+
+   void InputComponent::SetDof(osgSim::DOFTransform& dof)
+   {
+      SendAttachOrDetachMessage(mVehicle->GetUniqueId(), dof.getName());
    }
 }
 
