@@ -7,7 +7,7 @@
         <comment>Place for prototype actors</comment>
         <copyright>2009</copyright>
         <createTimestamp>2009-05-19T17:43:27.0-05:00</createTimestamp>
-        <lastUpdateTimestamp>2014-11-12T22:31:29-05:00</lastUpdateTimestamp>
+        <lastUpdateTimestamp>2014-11-13T22:23:49-05:00</lastUpdateTimestamp>
         <editorVersion>2.8.0</editorVersion>
         <schemaVersion>1.0</schemaVersion>
     </header>
@@ -416,12 +416,28 @@
                 <boolean>false</boolean>
             </property>
             <property>
-                <name>SurfaceAreaSqM</name>
-                <float>1500</float>
-            </property>
-            <property>
                 <name>Auto-Create Physics Objects</name>
                 <boolean>true</boolean>
+            </property>
+            <property>
+                <name>Body: Origin Offset</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>35.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Body: Mass</name>
+                <float>500000</float>
+            </property>
+            <property>
+                <name>Body: LinearDamping</name>
+                <float>0.07</float>
+            </property>
+            <property>
+                <name>Body: AngularDamping</name>
+                <float>0.079999998</float>
             </property>
             <property>
                 <name>Body: PhysicsMesh</name>
@@ -432,6 +448,10 @@
             <property>
                 <name>GroundClampType</name>
                 <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>SurfaceAreaSqM</name>
+                <float>1500</float>
             </property>
         </actor>
         <actor>
