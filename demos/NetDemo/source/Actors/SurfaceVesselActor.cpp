@@ -162,10 +162,10 @@ namespace NetDemo
 
          dtCore::RefPtr<dtPhysics::PhysicsObject> physicsObject = new dtPhysics::PhysicsObject("Body");
          physicsObject->SetPrimitiveType(dtPhysics::PrimitiveType::BOX);
-         physicsObject->SetMechanicsType(dtPhysics::MechanicsType::KINEMATIC);
-         physicsObject->SetCollisionGroup(SimCore::CollisionGroup::GROUP_VEHICLE_WATER);
-         physicsObject->SetMass(500000.0f);
-         physicsObject->SetExtents(osg::Vec3(300.0f, 50.0f, 15.0f));
+         physicsObject->SetMechanicsType(dtPhysics::MechanicsType::DYNAMIC);
+         //physicsObject->SetCollisionGroup(SimCore::CollisionGroup::GROUP_VEHICLE_WATER);
+         //physicsObject->SetMass(500000.0f);
+         //physicsObject->SetExtents(osg::Vec3(300.0f, 50.0f, 15.0f));
          physAC->AddPhysicsObject(*physicsObject);
 
          AddComponent(*physAC);
