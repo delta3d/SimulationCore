@@ -139,12 +139,6 @@ namespace NetDemo
    void SurfaceVesselActor::BuildActorComponents()
    {
 
-      dtCore::RefPtr<dtCore::BaseActorObject> comp = dtCore::LibraryManager::GetInstance().CreateActor("ActorComponents", "SurfaceVessel");
-      if(comp.valid())
-      {
-         AddComponent(*dynamic_cast<dtGame::ActorComponent*>(comp.get()));
-      }
-
       if (!HasComponent(SimCore::ActComps::AbstractWheeledVehicleInputActComp::TYPE))
       {
          AddComponent(*new SimCore::ActComps::KeyboardWheeledVehicleInputActComp());
@@ -172,6 +166,13 @@ namespace NetDemo
       }
 
       BaseClass::BuildActorComponents();
+
+      // Must be created and initialized AFTER the physics.
+      dtCore::RefPtr<dtCore::BaseActorObject> comp = dtCore::LibraryManager::GetInstance().CreateActor("ActorComponents", "SurfaceVessel");
+      if(comp.valid())
+      {
+         AddComponent(*dynamic_cast<dtGame::ActorComponent*>(comp.get()));
+      }
 
    }
 }
