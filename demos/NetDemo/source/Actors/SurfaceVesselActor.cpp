@@ -81,6 +81,34 @@ namespace NetDemo
    void SurfaceVessel::UpdateVehicleTorquesAndAngles(float deltaTime)
    {
       BaseClass::UpdateVehicleTorquesAndAngles(deltaTime);
+
+      dtCore::RefPtr<SimCore::ActComps::AbstractWheeledVehicleInputActComp> inputAC;
+      GetComponent(inputAC);
+
+      if (!inputAC.valid())
+      {
+         return;
+      }
+
+      float steeringAngle  = inputAC->GetSteeringAngleNormalized();
+      float accel  = inputAC->GetAcceleratorNormalized();
+
+      using namespace dtPhysics;
+      PhysicsActComp* pac = GetComponent<PhysicsActComp>();
+      if (pac != NULL)
+      {
+         PhysicsObject* po = pac->GetMainPhysicsObject();
+         if (po != NULL && po->GetMechanicsType() == MechanicsType::DYNAMIC)
+         {
+            dtCore::Transform curTransform;
+            po->GetTransform(curTransform);
+
+            po->AddTorque(VectorType(0.0,0.0,osg::DegreesToRadians(500.0 * steeringAngle * po->GetMass())));
+
+            po->AddLocalForce(curTransform.GetForwardVector() * 0.5 * po->GetMass() * accel);
+         }
+      }
+
    }
 
    ////////////////////////////////////////////////////////////////////////
@@ -164,6 +192,7 @@ namespace NetDemo
 
          AddComponent(*physAC);
       }
+
 
       BaseClass::BuildActorComponents();
 
