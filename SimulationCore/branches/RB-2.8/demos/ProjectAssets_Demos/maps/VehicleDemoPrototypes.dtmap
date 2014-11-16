@@ -7,7 +7,7 @@
         <comment>Place for prototype actors</comment>
         <copyright>2009</copyright>
         <createTimestamp>2009-05-19T17:43:27.0-05:00</createTimestamp>
-        <lastUpdateTimestamp>2014-11-13T22:23:49-05:00</lastUpdateTimestamp>
+        <lastUpdateTimestamp>2014-11-13T23:15:13-05:00</lastUpdateTimestamp>
         <editorVersion>2.8.0</editorVersion>
         <schemaVersion>1.0</schemaVersion>
     </header>
@@ -386,7 +386,7 @@
                 <vec3>
                     <value1>-642.455933</value1>
                     <value2>-497.850861</value2>
-                    <value3>-15.000000</value3>
+                    <value3>-10.000000</value3>
                 </vec3>
             </property>
             <property>
@@ -448,6 +448,14 @@
             <property>
                 <name>GroundClampType</name>
                 <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>20</float>
+            </property>
+            <property>
+                <name>MaxRotationError</name>
+                <float>0.5</float>
             </property>
             <property>
                 <name>SurfaceAreaSqM</name>

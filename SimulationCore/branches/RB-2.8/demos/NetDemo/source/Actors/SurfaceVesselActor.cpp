@@ -99,13 +99,13 @@ namespace NetDemo
       {
          PhysicsObject* po = pac->GetMainPhysicsObject();
          if (po != NULL && po->GetMechanicsType() == MechanicsType::DYNAMIC)
-         {
+         { 
             dtCore::Transform curTransform;
             po->GetTransform(curTransform);
 
-            po->AddTorque(VectorType(0.0,0.0,osg::DegreesToRadians(500.0 * steeringAngle * po->GetMass())));
+            po->AddLocalTorque(VectorType(0.0,0.0, 10.0 * steeringAngle * po->GetMass()));
 
-            po->AddLocalForce(curTransform.GetForwardVector() * 0.5 * po->GetMass() * accel);
+            po->AddForce(curTransform.GetForwardVector() * 0.5 * po->GetMass() * accel);
          }
       }
 
