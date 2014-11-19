@@ -255,6 +255,7 @@ namespace StealthGM
 
       // --- Setup the associated label manager.
       mLabelManager = new SimCore::Components::LabelManager;
+      mLabelManager->Init(GetGUI());
       mLabelManager->SetGameManager( GetGameManager() );
       mLabelManager->SetGUILayer( mLabelLayer.get() );
 

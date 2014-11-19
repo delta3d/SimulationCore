@@ -91,6 +91,7 @@ class LabelManagerTests : public CPPUNIT_NS::TestFixture
 #endif
 
          mLabelManager = new SimCore::Components::LabelManager();
+         mLabelManager->Init(mGUI.get());
          mLabelManager->SetGameManager(mGM.get());
          CPPUNIT_ASSERT(mLabelManager->GetGameManager() == mGM.get());
 
