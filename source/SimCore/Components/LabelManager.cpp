@@ -387,6 +387,16 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
+      void LabelManager::Init(dtGUI::GUI* gui)
+      {
+         if (gui != NULL)
+         {
+            dtCore::RefPtr<LabelUpdateTask> task = new LabelUpdateTask(*this);
+            gui->AddTask(*task);
+         }
+      }
+
+      //////////////////////////////////////////////////////////////////////////
       void LabelManager::SetGameManager( dtGame::GameManager* gm )
       {
          mGM = gm;
@@ -556,7 +566,7 @@ namespace SimCore
             unsigned low, high;
             low = i * proxiesPerTask;
             high = low + proxiesPerTask;
-            // The last task won't have an many unless the number of actors is evenly divisible by the number of actors.
+            // The last task won't have as many unless the number of actors is evenly divisible by the number of actors.
             high = dtUtil::Min(high, unsigned(proxies.size()));
             if (high > low)
             {
@@ -569,7 +579,11 @@ namespace SimCore
          //We stored add the labels we're using now in the new map, so we swap with the last set
          //for the next frame.
          mLastLabels.swap(newLabels);
+      }
 
+      //////////////////////////////////////////////////////////////////////////
+      void LabelManager::UpdateFormatting(float dt)
+      {
          // We have to set the text and size of the labels in the main thread since
          // it has a valid glContext and the other threads don't
          LabelMap::iterator i = mLastLabels.begin();
@@ -844,7 +858,7 @@ namespace SimCore
       {
          // In frame sync, the cameras have already had their view matrices updated
          // which we need, so here is where the update occurs.
-         if( data->message == dtCore::System::MESSAGE_FRAME_SYNCH)
+         if (data->message == dtCore::System::MESSAGE_FRAME_SYNCH)
          {
             try
             {
@@ -854,6 +868,41 @@ namespace SimCore
             {
                ex.LogException(dtUtil::Log::LOG_ERROR);
                throw;
+            }
+            catch (const CEGUI::Exception& ce)
+            {
+               LOG_ERROR(ce.getMessage().c_str());
+            }
+         }
+      }
+
+
+
+      //////////////////////////////////////////////////////////////////////////
+      // CLASS CODE
+      //////////////////////////////////////////////////////////////////////////
+      LabelUpdateTask::LabelUpdateTask(LabelManager& labelManager)
+         : mLabelManager(&labelManager)
+      {}
+
+      LabelUpdateTask::~LabelUpdateTask()
+      {}
+
+      void LabelUpdateTask::Update(float dt)
+      {
+         if (mLabelManager.valid())
+         {
+            try
+            {
+               mLabelManager->UpdateFormatting(dt);
+            }
+            catch (const dtUtil::Exception& ex)
+            {
+               ex.LogException(dtUtil::Log::LOG_ERROR);
+            }
+            catch (const CEGUI::Exception& ce)
+            {
+               LOG_ERROR(ce.getMessage().c_str());
             }
          }
       }

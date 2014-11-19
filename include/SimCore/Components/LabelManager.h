@@ -61,8 +61,28 @@ namespace SimCore
 {
    namespace Components
    {
+      class LabelManager;
+
       //////////////////////////////////////////////////////////////////////////
-      // LABEL CODE
+      // CLASS CODE
+      //////////////////////////////////////////////////////////////////////////
+      class LabelUpdateTask : public dtGUI::GUI::GUITask
+      {
+      public:
+         LabelUpdateTask(LabelManager& labelManager);
+
+         /*virtual*/ void Update(float dt);
+
+      protected:
+         virtual ~LabelUpdateTask();
+
+         dtCore::ObserverPtr<SimCore::Components::LabelManager> mLabelManager;
+      };
+
+
+
+      //////////////////////////////////////////////////////////////////////////
+      // CLASS CODE
       //////////////////////////////////////////////////////////////////////////
       class SIMCORE_EXPORT HUDLabel : public SimCore::Components::HUDElement
       {
@@ -180,6 +200,8 @@ namespace SimCore
 
             LabelManager();
 
+            void Init(dtGUI::GUI* gui);
+
             /**
              * Set the game manager so that the camera can be accessed as well
              * as entities involved with labels.
@@ -201,6 +223,7 @@ namespace SimCore
 
             void Update(float dt);
 
+            void UpdateFormatting(float dt);
 
             const std::string AssignLabelColor(const dtCore::BaseActorObject& actor, HUDLabel& label);
 
