@@ -23,7 +23,7 @@ LINK_WITH_VARIABLES(${APP_NAME}
                                    OSG_LIBRARY
                                    OSGUTIL_LIBRARY
                                    OSGTEXT_LIBRARY
-                                   ODE_LIBRARY
+                                   #ODE_LIBRARY
                                    XERCES_LIBRARY
                                    OSGDB_LIBRARY
                                    OPENTHREADS_LIBRARY)
