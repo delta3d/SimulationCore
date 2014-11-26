@@ -855,9 +855,6 @@ void BaseEntityActorProxyTests::TestBaseEntityActorProxy(SimCore::Actors::BaseEn
    CPPUNIT_ASSERT_MESSAGE("The \"" + SimCore::Actors::BaseEntityActorProxy::PROPERTY_MAPPING_NAME.Get() + "\" property should not be NULL", strProp != NULL);
    strProp->SetValue(testValue);
    CPPUNIT_ASSERT( strProp->GetValue() == testValue );
-
-   CPPUNIT_ASSERT(eap.GetHideDTCorePhysicsProps());
-   CPPUNIT_ASSERT_MESSAGE("dtCore physics properties should be hidden.", eap.GetProperty("Show Collision Geometry") == NULL);
 }
 
 void BaseEntityActorProxyTests::TestPlatformScaleMagnification()

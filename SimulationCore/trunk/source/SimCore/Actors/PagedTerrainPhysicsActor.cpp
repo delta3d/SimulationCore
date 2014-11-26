@@ -548,7 +548,6 @@ namespace SimCore
          PagedTerrainPhysicsActorProxy::PagedTerrainPhysicsActorProxy()
          {
             SetClassName("SimCore::Actors::PagedTerrainPhysicsActor");
-            SetHideDTCorePhysicsProps(true);
          }
 
          //////////////////////////////////////////////////////////////////////

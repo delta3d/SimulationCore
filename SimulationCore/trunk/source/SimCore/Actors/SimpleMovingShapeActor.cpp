@@ -140,7 +140,6 @@ namespace SimCore
       , mShapeColor(1.0f, 1.0f, 1.0f)
       {
          SetClassName("SimCore::Actors::SimpleMovingShapeActorProxy");
-         SetHideDTCorePhysicsProps(true);
       }
 
       ////////////////////////////////////////////////////////////////////////////
