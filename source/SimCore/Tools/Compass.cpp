@@ -49,6 +49,14 @@
 
 #include <CEGUI/CEGUI.h>
 
+// This exists to fix a compile error where M_PI is undefined.
+#ifndef _USE_MATH_DEFINES
+#define _USE_MATH_DEFINES 1
+#endif
+#include <math.h>
+
+
+
 namespace SimCore
 {
    namespace Tools
