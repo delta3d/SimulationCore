@@ -79,7 +79,6 @@ namespace SimCore
       , mChangeMarker(false)
       {
          SetClassName("SimCore::Actors::EnvironmentProcessActorProxy");
-         SetHideDTCorePhysicsProps(true);
          printf("%s\n","Created Environment Process");
       }
 

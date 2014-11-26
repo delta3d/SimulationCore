@@ -112,7 +112,6 @@ namespace SimCore
          , mEnableTopGeometry(false)
       {
          SetClassName("SimCore::Actors::BattlefieldGraphicsActorProxy");
-         SetHideDTCorePhysicsProps(true);
       }
 
       ////////////////////////////////////////////////////////////////////////////

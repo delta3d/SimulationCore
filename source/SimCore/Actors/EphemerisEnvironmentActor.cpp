@@ -309,7 +309,6 @@ namespace SimCore
       EphemerisEnvironmentActorProxy::EphemerisEnvironmentActorProxy()
       {
          SetClassName("SimCore::Actors::EphemerisEnvironmentActor");
-         SetHideDTCorePhysicsProps(true);
       }
 
       /////////////////////////////////////////////////////////////

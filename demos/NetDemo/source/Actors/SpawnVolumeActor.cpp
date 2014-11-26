@@ -72,22 +72,16 @@ namespace NetDemo
    //////////////////////////////////////////////////////////////////////////////
    osg::BoundingBox SpawnVolumeActor::GetBoundingBox()
    {
-      dtCore::CollisionGeomType* type = GetCollisionGeomType();
-
       osg::BoundingBox bb;
 
-      if (type == &dtCore::CollisionGeomType::CUBE)
-      {
-         std::vector<float> dimensions;
-         GetCollisionGeomDimensions(dimensions);
+      osg::Vec3 dimensions(10.0f, 10.0f, 10.0f);
 
-         float halfWidth  = dimensions[0] * 0.5f;
-         float halfLength = dimensions[1] * 0.5f;
-         float halfHeight = dimensions[2] * 0.5f;
+      float halfWidth  = dimensions[0] * 0.5f;
+      float halfLength = dimensions[1] * 0.5f;
+      float halfHeight = dimensions[2] * 0.5f;
 
-         bb._min.set(-halfWidth, -halfLength, -halfHeight);
-         bb._max.set(halfWidth, halfLength, halfHeight);
-      }
+      bb._min.set(-halfWidth, -halfLength, -halfHeight);
+      bb._max.set(halfWidth, halfLength, halfHeight);
 
       return bb;
    }
@@ -97,18 +91,13 @@ namespace NetDemo
    {
       osg::Vec3 pos;
 
-      dtCore::CollisionGeomType* type = GetCollisionGeomType();
-
-      if (type == &dtCore::CollisionGeomType::CUBE)
-      {
-         dtCore::Transform trans;
-         GetTransform(trans);
-         trans.GetTranslation(pos);
-         osg::BoundingBox bb = GetBoundingBox();
-         pos[0] += dtUtil::RandFloat(bb._min[0], bb._max[0]);
-         pos[1] += dtUtil::RandFloat(bb._min[1], bb._max[1]);
-         pos[2] += dtUtil::RandFloat(bb._min[2], bb._max[2]);
-      }
+      dtCore::Transform trans;
+      GetTransform(trans);
+      trans.GetTranslation(pos);
+      osg::BoundingBox bb = GetBoundingBox();
+      pos[0] += dtUtil::RandFloat(bb._min[0], bb._max[0]);
+      pos[1] += dtUtil::RandFloat(bb._min[1], bb._max[1]);
+      pos[2] += dtUtil::RandFloat(bb._min[2], bb._max[2]);
 
       return pos;
    }
@@ -116,32 +105,27 @@ namespace NetDemo
    //////////////////////////////////////////////////////////////////////////////
    bool SpawnVolumeActor::IsPointInVolume(osg::Vec3 pos)
    {
-      dtCore::CollisionGeomType* type = GetCollisionGeomType();
+      dtCore::Transform transform;
+      GetTransform(transform);
 
-      if (type == &dtCore::CollisionGeomType::CUBE)
+      osg::Vec3 translation;
+      transform.GetTranslation(translation);
+
+      osg::Matrix rotation;
+      transform.GetRotation(rotation);
+
+      rotation.invert(rotation);
+
+      pos -= translation;
+      pos = pos * rotation;
+
+      osg::BoundingBox bb = GetBoundingBox();
+
+      if (pos.x() > bb._min.x() && pos.x() < bb._max.x() &&
+         pos.y() > bb._min.y() && pos.y() < bb._max.y() &&
+         pos.z() > bb._min.z() && pos.z() < bb._max.z())
       {
-         dtCore::Transform transform;
-         GetTransform(transform);
-
-         osg::Vec3 translation;
-         transform.GetTranslation(translation);
-
-         osg::Matrix rotation;
-         transform.GetRotation(rotation);
-
-         rotation.invert(rotation);
-
-         pos -= translation;
-         pos = pos * rotation;
-
-         osg::BoundingBox bb = GetBoundingBox();
-
-         if (pos.x() > bb._min.x() && pos.x() < bb._max.x() &&
-            pos.y() > bb._min.y() && pos.y() < bb._max.y() &&
-            pos.z() > bb._min.z() && pos.z() < bb._max.z())
-         {
-            return true;
-         }
+         return true;
       }
       return false;
    }

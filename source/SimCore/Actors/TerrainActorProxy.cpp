@@ -149,7 +149,6 @@ namespace SimCore
       TerrainActorProxy::TerrainActorProxy()
       {
          SetClassName("SimCore::Actors::TerrainActorProxy");
-         SetHideDTCorePhysicsProps(true);
       }
 
       /////////////////////////////////////////////////////////////////////////////

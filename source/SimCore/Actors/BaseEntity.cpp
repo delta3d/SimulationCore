@@ -130,7 +130,6 @@ namespace SimCore
       BaseEntityActorProxy::BaseEntityActorProxy()
       {
          SetClassName("SimCore::Actors::BaseEntity");
-         SetHideDTCorePhysicsProps(true);
       }
       /////////////////////////////////////////////////////////////////////
       BaseEntityActorProxy::~BaseEntityActorProxy()
@@ -430,8 +429,6 @@ namespace SimCore
          g->addChild(mScaleMatrixNode.get());
          mScaleMatrixNode->setName("mScaleMatrixNode");
 
-         // temp turned off to test performance.
-         SetCollisionDetection(false);
       }
 
       /////////////////////////////////////////////////////////////////////
