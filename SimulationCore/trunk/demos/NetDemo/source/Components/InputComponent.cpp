@@ -625,7 +625,7 @@ namespace NetDemo
          dtCore::RefPtr<osg::MatrixTransform> topdownNode = new osg::MatrixTransform();
          // Set it's pos and name
          osg::Matrix transUp = osg::Matrix::translate(0.0f, 0.0f, height); // move us up X meters.
-         osg::Matrix rotDown = osg::Matrix::rotate(-M_PI*0.5, 1, 0, 0); // look down at us
+         osg::Matrix rotDown = osg::Matrix::rotate(-osg::PI*0.5, 1, 0, 0); // look down at us
          osg::Matrix offset = rotDown * transUp;
          topdownNode->setMatrix(offset);
          topdownNode->setName(nodeName);
