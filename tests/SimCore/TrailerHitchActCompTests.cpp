@@ -191,8 +191,7 @@ public:
 
       mGM->AddActor(*mVehicle, remote, false);
 
-      dtCore::AppSleep(17);
-      dtCore::System::GetInstance().Step();
+      dtCore::System::GetInstance().Step(0.0167);
 
       // Note the actors should not fall any, because of the Keep above ground code.
       // if this test fails later, one should check to see if that is the cause.
