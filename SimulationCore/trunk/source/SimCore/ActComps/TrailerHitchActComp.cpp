@@ -28,7 +28,8 @@
 #include <dtPhysics/palphysicsworld.h>
 #include <dtPhysics/physicsactcomp.h>
 #include <dtPhysics/physicsobject.h>
-#include <dtPhysics/bodywrapper.h>
+#include <dtPhysics/jointtype.h>
+#include <dtPhysics/jointdesc.h>
 #include <dtGame/deadreckoninghelper.h>
 #include <dtGame/environmentactor.h>
 #include <dtCore/scene.h>
@@ -193,31 +194,34 @@ namespace SimCore
                   ga->GetGameManager()->PublishActor(mTrailerActor->GetGameActorProxy());
                }
 
-               osg::Vec3d hitchWorldPos = WarpTrailerToTractor();
+               osg::Vec3d pos = WarpTrailerToTractor();
+               dtPhysics::TransformType tx,tx2;
+               physicsObjects.first->GetTransform(tx);
+               physicsObjects.second->GetTransform(tx2);
+               tx.Invert();
+               tx2.Invert();
+               osg::Vec3d hitchRelTractor = tx.Multiply(pos);
+               osg::Vec3d hitchRelTrailer = tx2.Multiply(pos);
+
+               dtCore::RefPtr<dtPhysics::JointDesc> jointDesc = new dtPhysics::JointDesc;
+               jointDesc->SetBody1RelativeTranslation(hitchRelTractor);
+               jointDesc->SetBody2RelativeTranslation(hitchRelTrailer);
+
                palFactory* factory = dtPhysics::PhysicsWorld::GetInstance().GetPalFactory();
                if (*mHitchType == HitchTypeEnum::HITCH_TYPE_SPHERICAL)
                {
-                  palSphericalLink* psl = factory->CreateSphericalLink(
-                           &physicsObjects.first->GetBodyWrapper()->GetPalBodyBase(), &physicsObjects.second->GetBodyWrapper()->GetPalBodyBase(),
-                           Float(hitchWorldPos.x()), Float(hitchWorldPos.y()), Float(hitchWorldPos.z()));
-
-                  psl->SetLimits(osg::DegreesToRadians(mRotationMaxCone), osg::DegreesToRadians(mRotationMaxYaw));
-
-                  mHitchJoint = psl;
+                  // Point the X axis toward the body Y because the X axis the main axis.
+                  jointDesc->SetJointType(dtPhysics::JointType::SPHERICAL);
+                  jointDesc->SetBody1RelativeRotationHPR(osg::Vec3(90.0, 0.0, 0.0));
+                  jointDesc->SetBody2RelativeRotationHPR(osg::Vec3(90.0, 0.0, 0.0));
+                  jointDesc->SetAngularLimitMaximums(dtPhysics::VectorType(mRotationMaxYaw, mRotationMaxCone, mRotationMaxCone));
+                  mHitchJoint = dtPhysics::PhysicsObject::CreateJoint(*physicsObjects.first, *physicsObjects.second, *jointDesc);
                }
                else if (*mHitchType == HitchTypeEnum::HITCH_TYPE_5TH_WHEEL)
                {
-                  float rotationMaxConeRad = osg::DegreesToRadians(mRotationMaxCone);
-                  float rotationMaxYawRad = osg::DegreesToRadians(mRotationMaxYaw);
-
-                  palGenericLink* pgl = factory->CreateGenericLink(
-                           &physicsObjects.first->GetBodyWrapper()->GetPalBodyBase(), &physicsObjects.second->GetBodyWrapper()->GetPalBodyBase(),
-                           palVector3(Float(hitchWorldPos.x()), Float(hitchWorldPos.y()), Float(hitchWorldPos.z())),
-                           palVector3(-FLT_EPSILON, -FLT_EPSILON, -FLT_EPSILON), palVector3(FLT_EPSILON, FLT_EPSILON, FLT_EPSILON), // Lock the linear motion.
-                           palVector3(-rotationMaxConeRad, 0.0f, -rotationMaxYawRad),
-                           palVector3(rotationMaxConeRad, 0.0f, rotationMaxYawRad));
-
-                  mHitchJoint = pgl;
+                  jointDesc->SetJointType(dtPhysics::JointType::GENERIC_6DOF);
+                  jointDesc->SetAngularLimitMaximums(dtPhysics::VectorType(mRotationMaxCone, 0.0 , mRotationMaxYaw));
+                  mHitchJoint = dtPhysics::PhysicsObject::CreateJoint(*physicsObjects.first, *physicsObjects.second, *jointDesc);
                }
             }
             else
