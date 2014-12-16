@@ -50,6 +50,10 @@ namespace SimCore
          public:
             WeaponDescription();
             virtual ~WeaponDescription();
+
+            static const dtCore::RefPtr<dtCore::ObjectType> TYPE;
+            /*override*/ const dtCore::ObjectType& GetObjectType() const;
+
             DT_DECLARE_ACCESSOR(std::string, WeaponPrototypeName);
             DT_DECLARE_ACCESSOR(std::string, ShooterPrototypeName);
             DT_DECLARE_ACCESSOR(std::string, WeaponSwapRootNode);

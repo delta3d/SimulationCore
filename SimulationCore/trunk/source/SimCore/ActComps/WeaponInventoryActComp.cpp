@@ -82,11 +82,16 @@ namespace SimCore
             "Firing Particle System",
             "The particle system to use for firing",
             PropRegType, propRegHelper);
+
+         InitDefaults();
       }
 
       WeaponInventoryActComp::WeaponDescription::~WeaponDescription()
       {
       }
+
+      const dtCore::RefPtr<dtCore::ObjectType> WeaponInventoryActComp::WeaponDescription::TYPE;
+      const dtCore::ObjectType& WeaponInventoryActComp::WeaponDescription::GetObjectType() const { return *WeaponInventoryActComp::WeaponDescription::TYPE; }
 
       DT_IMPLEMENT_ACCESSOR(WeaponInventoryActComp::WeaponDescription, std::string, WeaponPrototypeName);
       DT_IMPLEMENT_ACCESSOR(WeaponInventoryActComp::WeaponDescription, std::string, ShooterPrototypeName);

@@ -131,6 +131,7 @@ namespace SimCore
                 mActComp->InsertNewAnimationPropertyContainer(i);
                 curPropContainer = mActComp->GetAnimationPropertyContainer(i);
                 curPropContainer->SetName(testNames[i]);
+                CPPUNIT_ASSERT(curPropContainer->GetObjectType().DefaultsEmpty());
                 propContainers.push_back(curPropContainer);
             }
             CPPUNIT_ASSERT(mActComp->GetNumAnimationPropertyContainers() == numElements);
