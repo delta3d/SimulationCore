@@ -48,7 +48,6 @@ namespace SimCore
       PlayModeEnum PlayModeEnum::SWING("SWING");
 
 
-
       ////////////////////////////////////////////////////////////////////////////////
       // ANIMATION PROPERTY CONTAINER
       ////////////////////////////////////////////////////////////////////////////////
@@ -83,17 +82,27 @@ namespace SimCore
                "Time scale to speed up or slow down playback. Defaults to 1.",
                PropertyRegType, propertyRegHelper );
 
-         AddProperty(new dtCore::EnumActorProperty<PlayModeEnum>(
+         DT_REGISTER_PROPERTY_WITH_NAME(
+               PlayMode,
                "Play Mode",
-               "Play Mode",
-               dtCore::EnumActorProperty<PlayModeEnum>::SetFuncType(this,&AnimationPropertyContainer::SetPlayMode),
-               dtCore::EnumActorProperty<PlayModeEnum>::GetFuncType(this,&AnimationPropertyContainer::GetPlayMode),
-               "Sets the tether mode for this tripod actor.", GROUPNAME));
+               "Sets the tether mode for this tripod actor.",
+               PropertyRegType, propertyRegHelper);
+
+         InitDefaults();
+      }
+
+      const dtCore::RefPtr<dtCore::ObjectType> AnimationPropertyContainer::ANIMATION_PC_TYPE(new dtCore::ObjectType("AnimationPropertyContainer", "SimCore", "Properties for Animation clip data."));
+
+      const dtCore::ObjectType& AnimationPropertyContainer::GetObjectType() const
+      {
+         return *ANIMATION_PC_TYPE;
       }
 
       AnimationPropertyContainer::~AnimationPropertyContainer()
       {
       }
+
+      DT_IMPLEMENT_ACCESSOR(AnimationPropertyContainer, dtUtil::EnumerationPointer<PlayModeEnum>, PlayMode);
 
       void AnimationPropertyContainer::SetName(const std::string& name)
       {
@@ -133,16 +142,6 @@ namespace SimCore
       float AnimationPropertyContainer::GetTimeScale() const
       {
          return mTimeScale;
-      }
-
-      void AnimationPropertyContainer::SetPlayMode(PlayModeEnum& mode)
-      {
-         mPlayMode = &mode;
-      }
-
-      PlayModeEnum& AnimationPropertyContainer::GetPlayMode() const
-      {
-         return *mPlayMode;
       }
 
 

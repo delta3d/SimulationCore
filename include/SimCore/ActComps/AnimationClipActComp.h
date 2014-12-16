@@ -64,6 +64,9 @@ namespace SimCore
             AnimationPropertyContainer();
             virtual ~AnimationPropertyContainer();
 
+            static const dtCore::RefPtr<dtCore::ObjectType> ANIMATION_PC_TYPE;
+            /*override*/ const dtCore::ObjectType& GetObjectType() const;
+
             void SetName(const std::string& name);
             const std::string& GetName() const;
 
@@ -76,15 +79,12 @@ namespace SimCore
             void SetTimeScale(float timeScale);
             float GetTimeScale() const;
 
-            void SetPlayMode(PlayModeEnum& mode);
-            PlayModeEnum& GetPlayMode() const;
-
+            DT_DECLARE_ACCESSOR(dtUtil::EnumerationPointer<PlayModeEnum>, PlayMode);
         private:
             std::string mName;
             float mBeginTime;
             float mEndTime;
             float mTimeScale;
-            PlayModeEnum* mPlayMode;
         };
 
 
