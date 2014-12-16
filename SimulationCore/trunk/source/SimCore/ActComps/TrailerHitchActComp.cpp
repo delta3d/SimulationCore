@@ -220,6 +220,7 @@ namespace SimCore
                else if (*mHitchType == HitchTypeEnum::HITCH_TYPE_5TH_WHEEL)
                {
                   jointDesc->SetJointType(dtPhysics::JointType::GENERIC_6DOF);
+                  jointDesc->SetAngularLimitMinimums(dtPhysics::VectorType(-mRotationMaxCone, 0.0 , -mRotationMaxYaw));
                   jointDesc->SetAngularLimitMaximums(dtPhysics::VectorType(mRotationMaxCone, 0.0 , mRotationMaxYaw));
                   mHitchJoint = dtPhysics::PhysicsObject::CreateJoint(*physicsObjects.first, *physicsObjects.second, *jointDesc);
                }
