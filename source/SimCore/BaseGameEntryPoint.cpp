@@ -89,7 +89,6 @@ namespace SimCore
    const std::string BaseGameEntryPoint::PROJECT_CONFIG_FILE("ProjectConfig.dtproj");
 
    const std::string BaseGameEntryPoint::CONFIG_PROP_PROJECT_CONTEXT_PATH("ProjectPath");
-   const std::string BaseGameEntryPoint::CONFIG_PROP_USE_GPU_CHARACTER_SKINNING("UseGPUCharacterSkinning");
    const std::string BaseGameEntryPoint::CONFIG_PROP_DEVELOPERMODE("DeveloperMode");
    const std::string BaseGameEntryPoint::CONFIG_PROP_ASPECT_RATIO("AspectRatio");
    const std::string BaseGameEntryPoint::CONFIG_PROP_MUNITION_MAP("MunitionMap");
@@ -396,9 +395,6 @@ namespace SimCore
       gameManager.AddComponent(*viewerMaterialComponent, dtGame::GameManager::ComponentPriority::NORMAL);
       gameManager.AddComponent(*munitionsComp, dtGame::GameManager::ComponentPriority::NORMAL);
       gameManager.AddComponent(*animationComponent, dtGame::GameManager::ComponentPriority::NORMAL);
-
-      std::string useGPUSkinning = gameManager.GetConfiguration().GetConfigPropertyValue(
-               CONFIG_PROP_USE_GPU_CHARACTER_SKINNING, "1");
 
       std::string highResGroundClampingRange = gameManager.GetConfiguration().GetConfigPropertyValue(
          CONFIG_PROP_HIGH_RES_GROUND_CLAMP_RANGE, "200");
