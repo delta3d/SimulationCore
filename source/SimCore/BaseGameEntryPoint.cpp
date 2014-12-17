@@ -400,30 +400,9 @@ namespace SimCore
       std::string useGPUSkinning = gameManager.GetConfiguration().GetConfigPropertyValue(
                CONFIG_PROP_USE_GPU_CHARACTER_SKINNING, "1");
 
-
-      dtAnim::AnimNodeBuilder* nodeBuilder = dtAnim::ModelDatabase::GetInstance().GetNodeBuilder();
-
-      if (nodeBuilder == NULL)
-      {
-         LOG_ERROR("Failed to acquire an AnimNodeBuilder from the ModelDatabase.");
-      }
-      else 
-      {
-         if (useGPUSkinning == "1" || useGPUSkinning == "true")
-         {
-            nodeBuilder->SetCreate(dtAnim::AnimNodeBuilder::CreateFunc(nodeBuilder, &dtAnim::AnimNodeBuilder::CreateHardware));
-            LOG_INFO("Using GPU Character Skinning");
-         }
-         else
-         {
-            nodeBuilder->SetCreate(dtAnim::AnimNodeBuilder::CreateFunc(nodeBuilder, &dtAnim::AnimNodeBuilder::CreateSoftware));
-            LOG_INFO("Using CPU Character Skinning");
-         }
-      }
-
       std::string highResGroundClampingRange = gameManager.GetConfiguration().GetConfigPropertyValue(
          CONFIG_PROP_HIGH_RES_GROUND_CLAMP_RANGE, "200");
-
+ 
       // Setup the DR Component.
       dtCore::RefPtr<Components::MultiSurfaceClamper> clamper = new Components::MultiSurfaceClamper;
       
