@@ -154,16 +154,6 @@ namespace SimCore
 
 
       ////////////////////////////////////////////////////////////////////////////////////
-      void BaseEntityActorProxy::GetPartialUpdateProperties(std::vector<dtUtil::RefString>& propNamesToFill)
-      {
-         // Add the properties for dead reckoning such as last known translation, etc...
-         GetComponent<dtGame::DeadReckoningActorComponent>()->GetPartialUpdateProperties(propNamesToFill);
-
-         // Add your own properties that you want to publish with EVERY partial update (ie very often)
-      }
-
-
-      ////////////////////////////////////////////////////////////////////////////////////
       void BaseEntityActorProxy::BuildPropertyMap()
       {
          BaseEntity* e = NULL;
