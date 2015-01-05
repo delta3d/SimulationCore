@@ -245,7 +245,7 @@ namespace SimCore
             void CheckAvailableActorComponents(SimCore::Actors::PlatformActorProxy& platform, bool physics, bool camo, bool weaponInventory,
                      bool munitions, bool wheels, bool trailEffects)
             {
-               CPPUNIT_ASSERT(platform.GetComponent<dtGame::DeadReckoningHelper>() != NULL);
+               CPPUNIT_ASSERT(platform.GetComponent<dtGame::DeadReckoningActorComponent>() != NULL);
                CPPUNIT_ASSERT(platform.GetComponent<dtGame::DRPublishingActComp>() != NULL);
 
                CPPUNIT_ASSERT_EQUAL(physics, platform.GetComponent<dtPhysics::PhysicsActComp>() != NULL);
@@ -262,7 +262,7 @@ namespace SimCore
 
                if (platform.GetActorType().InstanceOf(*EntityActorRegistry::AIR_PLATFORM_ACTOR_TYPE))
                {
-                  CPPUNIT_ASSERT_EQUAL(dtGame::GroundClampTypeEnum::NONE, platform.GetComponent<dtGame::DeadReckoningHelper>()->GetGroundClampType());
+                  CPPUNIT_ASSERT_EQUAL(dtGame::GroundClampTypeEnum::NONE, platform.GetComponent<dtGame::DeadReckoningActorComponent>()->GetGroundClampType());
                   CPPUNIT_ASSERT_EQUAL(PlatformActorProxy::DomainEnum::AIR, be->GetDomain());
                }
                else if (platform.GetActorType().InstanceOf(*EntityActorRegistry::GROUND_PLATFORM_ACTOR_TYPE))

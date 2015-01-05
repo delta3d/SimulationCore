@@ -118,18 +118,18 @@ class ViewerNetworkPublishingComponentTests : public CPPUNIT_NS::TestFixture
 
          std::vector<dtUtil::RefString> params;
 
-         params.push_back(dtGame::DeadReckoningHelper::PROPERTY_LAST_KNOWN_ROTATION);
-         params.push_back(dtGame::DeadReckoningHelper::PROPERTY_LAST_KNOWN_TRANSLATION);
+         params.push_back(dtGame::DeadReckoningActorComponent::PROPERTY_LAST_KNOWN_ROTATION);
+         params.push_back(dtGame::DeadReckoningActorComponent::PROPERTY_LAST_KNOWN_TRANSLATION);
 
          InternalTestStealthActorMessages(true, params);
 
          params.clear();
-         params.push_back(dtGame::DeadReckoningHelper::PROPERTY_LAST_KNOWN_ROTATION);
+         params.push_back(dtGame::DeadReckoningActorComponent::PROPERTY_LAST_KNOWN_ROTATION);
 
          InternalTestStealthActorMessages(true, params);
 
          params.clear();
-         params.push_back(dtGame::DeadReckoningHelper::PROPERTY_LAST_KNOWN_TRANSLATION);
+         params.push_back(dtGame::DeadReckoningActorComponent::PROPERTY_LAST_KNOWN_TRANSLATION);
 
          InternalTestStealthActorMessages(true, params);
 
@@ -168,7 +168,7 @@ class ViewerNetworkPublishingComponentTests : public CPPUNIT_NS::TestFixture
          //account for the different order of rotation vecs.
          osg::Vec3 testRot(testVec.z(), testVec.x(), testVec.y());
 
-         dtGame::DeadReckoningHelper* drHelper = NULL;
+         dtGame::DeadReckoningActorComponent* drHelper = NULL;
          mStealthActor->GetComponent(drHelper);
          //Must set both the last known and the actual values so the message and
          //and actor will match after being stepped

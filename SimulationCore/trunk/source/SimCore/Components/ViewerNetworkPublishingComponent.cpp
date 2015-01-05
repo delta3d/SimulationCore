@@ -75,8 +75,8 @@ namespace SimCore
             GetGameManager()->GetMessageFactory().CreateMessage(dtGame::MessageType::INFO_ACTOR_CREATED, createMsg);
 
             std::vector<dtUtil::RefString> propNames;
-            propNames.push_back(dtGame::DeadReckoningHelper::PROPERTY_LAST_KNOWN_ROTATION);
-            propNames.push_back(dtGame::DeadReckoningHelper::PROPERTY_LAST_KNOWN_TRANSLATION);
+            propNames.push_back(dtGame::DeadReckoningActorComponent::PROPERTY_LAST_KNOWN_ROTATION);
+            propNames.push_back(dtGame::DeadReckoningActorComponent::PROPERTY_LAST_KNOWN_TRANSLATION);
             gap->PopulateActorUpdate(*createMsg, propNames);
 
             SendStealthActorMessages(*createMsg);

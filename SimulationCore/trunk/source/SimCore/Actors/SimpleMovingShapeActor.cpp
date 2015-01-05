@@ -65,7 +65,7 @@ namespace SimCore
          dtGame::GameActorProxy* gap;
          GetOwner(gap);
          if (GetEffectiveUpdateMode(gap->IsRemote())
-                  == DeadReckoningHelper::UpdateMode::CALCULATE_AND_MOVE_ACTOR)
+                  == DeadReckoningActorComponent::UpdateMode::CALCULATE_AND_MOVE_ACTOR)
          {
             //std::cout << "DIMS: " << pos << std::endl;
             SimpleMovingShapeActorProxy& s = static_cast<SimpleMovingShapeActorProxy&>(*gap);
@@ -151,7 +151,7 @@ namespace SimCore
       void SimpleMovingShapeActorProxy::BuildActorComponents()
       {
          // DEAD RECKONING - ACT COMPONENT
-         if (!HasComponent(dtGame::DeadReckoningHelper::TYPE)) // not added by a subclass
+         if (!HasComponent(dtGame::DeadReckoningActorComponent::TYPE)) // not added by a subclass
          {
             // TODO, use a subclassed dr actor comp that makes the shape dr too.
             mDRHelper = new SimpleShapeDRHelper();

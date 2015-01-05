@@ -120,10 +120,10 @@ namespace SimCore
          if (mSlavedEntity.valid())
          {
             // See Baseentity::OnEnteredWorld for more info on why we do this
-            //mSlavedEntity->GetDeadReckoningHelper().SetMaxTranslationSmoothingTime
-            //   (dtGame::DeadReckoningHelper::DEFAULT_MAX_SMOOTHING_TIME_POS);
-            //mSlavedEntity->GetDeadReckoningHelper().SetMaxRotationSmoothingTime
-            //   (dtGame::DeadReckoningHelper::DEFAULT_MAX_SMOOTHING_TIME_ROT);
+            //mSlavedEntity->GetDeadReckoningActorComponent().SetMaxTranslationSmoothingTime
+            //   (dtGame::DeadReckoningActorComponent::DEFAULT_MAX_SMOOTHING_TIME_POS);
+            //mSlavedEntity->GetDeadReckoningActorComponent().SetMaxRotationSmoothingTime
+            //   (dtGame::DeadReckoningActorComponent::DEFAULT_MAX_SMOOTHING_TIME_ROT);
          }
 
       }
@@ -179,8 +179,8 @@ namespace SimCore
                      rap->SetValue(platform->GetNonDamagedResource());
                   }
                }
-               //mSlavedEntity->GetDeadReckoningHelper().SetMaxRotationSmoothingTime(dtGame::DeadReckoningHelper::DEFAULT_MAX_SMOOTHING_TIME_ROT);
-               //mSlavedEntity->GetDeadReckoningHelper().SetMaxTranslationSmoothingTime(dtGame::DeadReckoningHelper::DEFAULT_MAX_SMOOTHING_TIME_POS);
+               //mSlavedEntity->GetDeadReckoningActorComponent().SetMaxRotationSmoothingTime(dtGame::DeadReckoningActorComponent::DEFAULT_MAX_SMOOTHING_TIME_ROT);
+               //mSlavedEntity->GetDeadReckoningActorComponent().SetMaxTranslationSmoothingTime(dtGame::DeadReckoningActorComponent::DEFAULT_MAX_SMOOTHING_TIME_POS);
             }
             SetShaderGroup("GhostVehicleShaderGroup");
 
@@ -325,11 +325,11 @@ namespace SimCore
             osg::Vec3 ghostPos = xform.GetTranslation();
 
             // Update one of our Velocity Lines
-            osg::Vec3 velocity = mSlavedEntity->GetComponent<dtGame::DeadReckoningHelper>()->GetLastKnownVelocity();
+            osg::Vec3 velocity = mSlavedEntity->GetComponent<dtGame::DeadReckoningActorComponent>()->GetLastKnownVelocity();
             SetCurrentLine(*mVelocityArrowGeom.get(), ghostPos, velocity);
 
             // Update one of our Acceleration Lines
-            osg::Vec3 acceleration = mSlavedEntity->GetComponent<dtGame::DeadReckoningHelper>()->GetLastKnownAcceleration();
+            osg::Vec3 acceleration = mSlavedEntity->GetComponent<dtGame::DeadReckoningActorComponent>()->GetLastKnownAcceleration();
             SetCurrentLine(*mAccelerationArrowGeom.get(), ghostPos, acceleration);
 
             mArrowCurrentIndex = (mArrowCurrentIndex + 1) % mArrowMaxNumTrails;
@@ -355,7 +355,7 @@ namespace SimCore
             countDownToDebug = 1.0f;
             if (mSlavedEntity.valid())
             {
-               std::cout << "GHOST - Vel[" << mSlavedEntity->GetDeadReckoningHelper().GetLastKnownVelocity() << "]." << std::endl;
+               std::cout << "GHOST - Vel[" << mSlavedEntity->GetDeadReckoningActorComponent().GetLastKnownVelocity() << "]." << std::endl;
             }
             else
             {
@@ -408,7 +408,7 @@ namespace SimCore
       {
          if (mSlavedEntity.valid())
          {
-            dtGame::DeadReckoningHelper& drHelper(*mSlavedEntity->GetComponent<dtGame::DeadReckoningHelper>());
+            dtGame::DeadReckoningActorComponent& drHelper(*mSlavedEntity->GetComponent<dtGame::DeadReckoningActorComponent>());
             dtCore::Transform ourTransform;
             GetTransform(ourTransform);
 
@@ -464,8 +464,8 @@ namespace SimCore
             // Hack Test Debug prints just to check Vel and Accel
             //if (mSlavedEntity.valid())
             //{
-            //   osg::Vec3 velocity = mSlavedEntity->GetDeadReckoningHelper().GetLastKnownVelocity();
-            //   osg::Vec3 acceleration = mSlavedEntity->GetDeadReckoningHelper().GetLastKnownAcceleration();
+            //   osg::Vec3 velocity = mSlavedEntity->GetDeadReckoningActorComponent().GetLastKnownVelocity();
+            //   osg::Vec3 acceleration = mSlavedEntity->GetDeadReckoningActorComponent().GetLastKnownAcceleration();
             //   std::cout << "Ghost - Updated - Vel[" << velocity << 
             //      "], Accel[" << acceleration << "]." << std::endl;
             //}

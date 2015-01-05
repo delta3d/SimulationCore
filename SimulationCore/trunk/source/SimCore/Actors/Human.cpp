@@ -305,7 +305,7 @@ namespace SimCore
          dtCore::RefPtr<dtAnim::WalkRunBlend> newWRBlend;
          if (IsRemote())
          {
-            newWRBlend = new dtAnim::WalkRunBlend(*GetComponent<dtGame::DeadReckoningHelper>());
+            newWRBlend = new dtAnim::WalkRunBlend(*GetComponent<dtGame::DeadReckoningActorComponent>());
          }
          else
          {
@@ -486,7 +486,7 @@ namespace SimCore
          //SetFlamesPresentFile("");
          //SetSmokePlumesFile("");
 
-         dtGame::DeadReckoningHelper* drHelper = NULL;
+         dtGame::DeadReckoningActorComponent* drHelper = NULL;
          GetComponent(drHelper);
 
          //RegisterWithDeadReckoningComponent(); // Now handled in base class
@@ -501,7 +501,7 @@ namespace SimCore
          }
          else
          {
-            drHelper->SetUpdateMode(dtGame::DeadReckoningHelper::UpdateMode::CALCULATE_ONLY);
+            drHelper->SetUpdateMode(dtGame::DeadReckoningActorComponent::UpdateMode::CALCULATE_ONLY);
          }
 
       }
@@ -613,7 +613,7 @@ namespace SimCore
       {
          if (IsRemote())
          {
-            return GetComponent<dtGame::DeadReckoningHelper>()->GetVelocity().length();
+            return GetComponent<dtGame::DeadReckoningActorComponent>()->GetVelocity().length();
          }
          return GetComponent<dtGame::DRPublishingActComp>()->GetVelocity().length();
       }

@@ -40,22 +40,22 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       IMPLEMENT_ENUM(ArticulationMetricType);
       ArticulationMetricType ArticulationMetricType::ARTICULATE_UNKNOWN("Unknown Metric","Unknown Rate Metric");
-      ArticulationMetricType ArticulationMetricType::ARTICULATE_POSITION(dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_POSITION,
-         dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_POSITIONRATE);
-      ArticulationMetricType ArticulationMetricType::ARTICULATE_EXTENSION(dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_EXTENSION,
-         dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_EXTENSIONRATE);
-      ArticulationMetricType ArticulationMetricType::ARTICULATE_X(dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_X,
-         dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_XRATE);
-      ArticulationMetricType ArticulationMetricType::ARTICULATE_Y(dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_Y,
-         dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_YRATE);
-      ArticulationMetricType ArticulationMetricType::ARTICULATE_Z(dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_Z,
-         dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_ZRATE);
-      ArticulationMetricType ArticulationMetricType::ARTICULATE_AZIMUTH(dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_AZIMUTH,
-         dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_AZIMUTHRATE);
-      ArticulationMetricType ArticulationMetricType::ARTICULATE_ELEVATION(dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_ELEVATION,
-         dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_ELEVATIONRATE);
-      ArticulationMetricType ArticulationMetricType::ARTICULATE_ROTATION(dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_ROTATION,
-         dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_ROTATIONRATE);
+      ArticulationMetricType ArticulationMetricType::ARTICULATE_POSITION(dtGame::DeadReckoningActorComponent::DeadReckoningDOF::REPRESENATION_POSITION,
+         dtGame::DeadReckoningActorComponent::DeadReckoningDOF::REPRESENATION_POSITIONRATE);
+      ArticulationMetricType ArticulationMetricType::ARTICULATE_EXTENSION(dtGame::DeadReckoningActorComponent::DeadReckoningDOF::REPRESENATION_EXTENSION,
+         dtGame::DeadReckoningActorComponent::DeadReckoningDOF::REPRESENATION_EXTENSIONRATE);
+      ArticulationMetricType ArticulationMetricType::ARTICULATE_X(dtGame::DeadReckoningActorComponent::DeadReckoningDOF::REPRESENATION_X,
+         dtGame::DeadReckoningActorComponent::DeadReckoningDOF::REPRESENATION_XRATE);
+      ArticulationMetricType ArticulationMetricType::ARTICULATE_Y(dtGame::DeadReckoningActorComponent::DeadReckoningDOF::REPRESENATION_Y,
+         dtGame::DeadReckoningActorComponent::DeadReckoningDOF::REPRESENATION_YRATE);
+      ArticulationMetricType ArticulationMetricType::ARTICULATE_Z(dtGame::DeadReckoningActorComponent::DeadReckoningDOF::REPRESENATION_Z,
+         dtGame::DeadReckoningActorComponent::DeadReckoningDOF::REPRESENATION_ZRATE);
+      ArticulationMetricType ArticulationMetricType::ARTICULATE_AZIMUTH(dtGame::DeadReckoningActorComponent::DeadReckoningDOF::REPRESENATION_AZIMUTH,
+         dtGame::DeadReckoningActorComponent::DeadReckoningDOF::REPRESENATION_AZIMUTHRATE);
+      ArticulationMetricType ArticulationMetricType::ARTICULATE_ELEVATION(dtGame::DeadReckoningActorComponent::DeadReckoningDOF::REPRESENATION_ELEVATION,
+         dtGame::DeadReckoningActorComponent::DeadReckoningDOF::REPRESENATION_ELEVATIONRATE);
+      ArticulationMetricType ArticulationMetricType::ARTICULATE_ROTATION(dtGame::DeadReckoningActorComponent::DeadReckoningDOF::REPRESENATION_ROTATION,
+         dtGame::DeadReckoningActorComponent::DeadReckoningDOF::REPRESENATION_ROTATIONRATE);
 
       //////////////////////////////////////////////////////////////////////////
       ArticulationMetricType::ArticulationMetricType( const std::string &name, const std::string& relatedRateName )
@@ -160,7 +160,7 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////
       void ArticulationHelper::HandleArticulatedParametersArray(
          const dtCore::NamedGroupParameter& articArrayParam,
-         dtUtil::NodeCollector& nodeCollector, dtGame::DeadReckoningHelper& deadReckoningHelper )
+         dtUtil::NodeCollector& nodeCollector, dtGame::DeadReckoningActorComponent& deadReckoningHelper )
       {
          if(nodeCollector.GetTransformNodeMap().empty())
          {
@@ -207,65 +207,65 @@ namespace SimCore
 
                         osg::Vec3::value_type* dataMetricField = NULL;
                         const std::string* metricName = NULL;
-                        if(GetArticulation(curGroupParam,  dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_AZIMUTH, value))
+                        if(GetArticulation(curGroupParam,  dtGame::DeadReckoningActorComponent::DeadReckoningDOF::REPRESENATION_AZIMUTH, value))
                         {
-                           metricName = &dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_AZIMUTH;
+                           metricName = &dtGame::DeadReckoningActorComponent::DeadReckoningDOF::REPRESENATION_AZIMUTH;
                            dataMetricField = &dofData->mPosition[0];
                            isNotRate = true;
                         }
-                        else if(GetArticulation(curGroupParam,  dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_AZIMUTHRATE, value))
+                        else if(GetArticulation(curGroupParam,  dtGame::DeadReckoningActorComponent::DeadReckoningDOF::REPRESENATION_AZIMUTHRATE, value))
                         {
-                           metricName = &dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_AZIMUTHRATE;
+                           metricName = &dtGame::DeadReckoningActorComponent::DeadReckoningDOF::REPRESENATION_AZIMUTHRATE;
                            dataMetricField = &dofData->mVelocity[0];
                         }
-                        else if(GetArticulation(curGroupParam, dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_ELEVATION, value))
+                        else if(GetArticulation(curGroupParam, dtGame::DeadReckoningActorComponent::DeadReckoningDOF::REPRESENATION_ELEVATION, value))
                         {
-                           metricName = &dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_ELEVATION;
+                           metricName = &dtGame::DeadReckoningActorComponent::DeadReckoningDOF::REPRESENATION_ELEVATION;
                            dataMetricField = &dofData->mPosition[1];
                            isNotRate = true;
                         }
-                        else if(GetArticulation(curGroupParam,  dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_ELEVATIONRATE, value))
+                        else if(GetArticulation(curGroupParam,  dtGame::DeadReckoningActorComponent::DeadReckoningDOF::REPRESENATION_ELEVATIONRATE, value))
                         {
-                           metricName = &dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_ELEVATIONRATE;
+                           metricName = &dtGame::DeadReckoningActorComponent::DeadReckoningDOF::REPRESENATION_ELEVATIONRATE;
                            dataMetricField = &dofData->mVelocity[1];
                         }
-                        else if(GetArticulation(curGroupParam,  dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_ROTATION, value))
+                        else if(GetArticulation(curGroupParam,  dtGame::DeadReckoningActorComponent::DeadReckoningDOF::REPRESENATION_ROTATION, value))
                         {
-                           metricName = &dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_ROTATION;
+                           metricName = &dtGame::DeadReckoningActorComponent::DeadReckoningDOF::REPRESENATION_ROTATION;
                            dataMetricField = &dofData->mPosition[2];
                            isNotRate = true;
                         }
-                        else if(GetArticulation(curGroupParam,  dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_ROTATIONRATE, value))
+                        else if(GetArticulation(curGroupParam,  dtGame::DeadReckoningActorComponent::DeadReckoningDOF::REPRESENATION_ROTATIONRATE, value))
                         {
-                           metricName = &dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_ROTATIONRATE;
+                           metricName = &dtGame::DeadReckoningActorComponent::DeadReckoningDOF::REPRESENATION_ROTATIONRATE;
                            dataMetricField = &dofData->mVelocity[2];
                         }
-                        /*else if(GetArticulation(curGroupParam,  dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_POSITION, value))
+                        /*else if(GetArticulation(curGroupParam,  dtGame::DeadReckoningActorComponent::DeadReckoningDOF::REPRESENATION_POSITION, value))
                         {}
-                        else if(GetArticulation(curGroupParam,  dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_POSITIONRATE, value))
+                        else if(GetArticulation(curGroupParam,  dtGame::DeadReckoningActorComponent::DeadReckoningDOF::REPRESENATION_POSITIONRATE, value))
                         {}*/
-                        else if(GetArticulation(curGroupParam,  dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_EXTENSION, value))
+                        else if(GetArticulation(curGroupParam,  dtGame::DeadReckoningActorComponent::DeadReckoningDOF::REPRESENATION_EXTENSION, value))
                         {
-                           metricName = &dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_EXTENSION;
+                           metricName = &dtGame::DeadReckoningActorComponent::DeadReckoningDOF::REPRESENATION_EXTENSION;
                            dataMetricField = &dofData->mPosition[1];
                            isNotRate = true;
                         }
-                        /*else if(GetArticulation(curGroupParam,  dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_EXTENSIONRATE, value))
+                        /*else if(GetArticulation(curGroupParam,  dtGame::DeadReckoningActorComponent::DeadReckoningDOF::REPRESENATION_EXTENSIONRATE, value))
                         {
-                           metricName = &dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_EXTENSIONRATE;
+                           metricName = &dtGame::DeadReckoningActorComponent::DeadReckoningDOF::REPRESENATION_EXTENSIONRATE;
                            dataMetricField = &dofData->mVelocity[1];
                         }
-                        else if(GetArticulation(curGroupParam,  dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_X, value))
+                        else if(GetArticulation(curGroupParam,  dtGame::DeadReckoningActorComponent::DeadReckoningDOF::REPRESENATION_X, value))
                         {}
-                        else if(GetArticulation(curGroupParam,  dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_XRATE, value))
+                        else if(GetArticulation(curGroupParam,  dtGame::DeadReckoningActorComponent::DeadReckoningDOF::REPRESENATION_XRATE, value))
                         {}
-                        else if(GetArticulation(curGroupParam,  dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_Y, value))
+                        else if(GetArticulation(curGroupParam,  dtGame::DeadReckoningActorComponent::DeadReckoningDOF::REPRESENATION_Y, value))
                         {}
-                        else if(GetArticulation(curGroupParam,  dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_YRATE, value))
+                        else if(GetArticulation(curGroupParam,  dtGame::DeadReckoningActorComponent::DeadReckoningDOF::REPRESENATION_YRATE, value))
                         {}
-                        else if(GetArticulation(curGroupParam,  dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_Z, value))
+                        else if(GetArticulation(curGroupParam,  dtGame::DeadReckoningActorComponent::DeadReckoningDOF::REPRESENATION_Z, value))
                         {}
-                        else if(GetArticulation(curGroupParam,  dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_ZRATE, value))
+                        else if(GetArticulation(curGroupParam,  dtGame::DeadReckoningActorComponent::DeadReckoningDOF::REPRESENATION_ZRATE, value))
                         {}*/
 
                         // Determine if this helper owns the metric to the specified DOF.

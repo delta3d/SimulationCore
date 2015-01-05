@@ -943,7 +943,7 @@ void BaseEntityActorProxyTests::TestBaseEntityActorUpdates(SimCore::Actors::Base
 
    mGM->AddActor(eap, false, true);
 
-   dtGame::DeadReckoningHelper* drHelper = NULL;
+   dtGame::DeadReckoningActorComponent* drHelper = NULL;
    eap.GetComponent(drHelper);
 
    dtGame::DRPublishingActComp* drPubAC = NULL;
@@ -1088,7 +1088,7 @@ void BaseEntityActorProxyTests::TestEntityUpdateToFromStream()
    mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE, eap);
    CPPUNIT_ASSERT(eap.valid());
 
-   dtGame::DeadReckoningHelper* drHelper = NULL;
+   dtGame::DeadReckoningActorComponent* drHelper = NULL;
    eap->GetComponent(drHelper);
 
 
@@ -1204,7 +1204,7 @@ void BaseEntityActorProxyTests::TestBaseEntityDRRegistration(SimCore::Actors::Ba
 
    osg::Vec3 setVec = osg::Vec3(1.0, 1.2, 1.3);
 
-   dtGame::DeadReckoningHelper* drHelper = NULL;
+   dtGame::DeadReckoningActorComponent* drHelper = NULL;
    actor.GetComponent(drHelper);
 
    drHelper->SetLastKnownTranslation(setVec);

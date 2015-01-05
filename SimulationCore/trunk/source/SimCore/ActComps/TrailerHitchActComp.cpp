@@ -424,10 +424,10 @@ namespace SimCore
             }
          }
 
-         dtGame::DeadReckoningHelper* drHelper = NULL;
+         dtGame::DeadReckoningActorComponent* drHelper = NULL;
          mTrailerActor->GetComponent(drHelper);
 
-         dtGame::DeadReckoningHelper* drHelperOwner = NULL;
+         dtGame::DeadReckoningActorComponent* drHelperOwner = NULL;
          ga->GetComponent(drHelperOwner);
          if (drHelper != NULL && drHelperOwner != NULL)
          {
@@ -445,7 +445,7 @@ namespace SimCore
             dtCore::Transform tractorHitchTransform, trailerWorld;
             CalcTransformsForTractorHitchAndTrailerVisual(tractorHitchTransform, trailerWorld);
 
-            dtGame::DeadReckoningHelper* drHelper = NULL;
+            dtGame::DeadReckoningActorComponent* drHelper = NULL;
             mTrailerActor->GetComponent(drHelper);
 
             dtGame::GameActorProxy* ga = NULL;

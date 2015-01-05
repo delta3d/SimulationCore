@@ -309,7 +309,7 @@ namespace SimCore
                mCreatedActorsBuffer2.push_back(puff);
             }
 
-            dtGame::DeadReckoningHelper* drAC = NULL;
+            dtGame::DeadReckoningActorComponent* drAC = NULL;
             puff->GetComponent(drAC);
 
             osg::Vec3d tempVec3d;

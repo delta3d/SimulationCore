@@ -171,7 +171,7 @@ public:
       xform.SetRotation(90.0f, -0.1f, -0.2f);
       tx->SetTransform(xform);
 
-      dtGame::DeadReckoningHelper* drHelper = NULL;
+      dtGame::DeadReckoningActorComponent* drHelper = NULL;
       mVehicle->GetComponent(drHelper);
       drHelper->SetLastKnownTranslation(xform.GetTranslation());
       drHelper->SetLastKnownRotation(xform.GetRotation());
@@ -215,7 +215,7 @@ public:
 
       CPPUNIT_ASSERT_EQUAL(enableRemoteMovement && remote, parented);
 
-      dtGame::DeadReckoningHelper* drHelperTrailer = NULL;
+      dtGame::DeadReckoningActorComponent* drHelperTrailer = NULL;
       mTrailer->GetComponent(drHelperTrailer);
       CPPUNIT_ASSERT(drHelperTrailer != NULL);
 
@@ -355,9 +355,9 @@ private:
 
    void CheckDetached(SimCore::ActComps::TrailerHitchActComp& trailerAC)
    {
-      dtGame::DeadReckoningHelper* drHelper = NULL;
+      dtGame::DeadReckoningActorComponent* drHelper = NULL;
       mVehicle->GetComponent(drHelper);
-      dtGame::DeadReckoningHelper* drHelperTrailer = NULL;
+      dtGame::DeadReckoningActorComponent* drHelperTrailer = NULL;
       mTrailer->GetComponent(drHelperTrailer);
       CPPUNIT_ASSERT(drHelperTrailer != NULL);
 

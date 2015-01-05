@@ -54,7 +54,7 @@ namespace dtCore
 
 namespace dtGame
 {
-   class DeadReckoningHelper;
+   class DeadReckoningActorComponent;
 }
 
 namespace osgSim
@@ -246,7 +246,7 @@ namespace SimCore
              *        and the physical movement of the entity's DOFs.
              */
             void HandleArticulatedParametersArray( const dtCore::NamedGroupParameter& articArrayParam,
-               dtUtil::NodeCollector& nodeCollector, dtGame::DeadReckoningHelper& deadReckoningHelper );
+               dtUtil::NodeCollector& nodeCollector, dtGame::DeadReckoningActorComponent& deadReckoningHelper );
 
             /**
              * Modify articulations of an entity by receiving data from the

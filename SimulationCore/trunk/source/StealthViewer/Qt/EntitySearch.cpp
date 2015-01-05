@@ -101,7 +101,7 @@ namespace StealthQt
          if (entity == NULL)
             return 0.0;
 
-         const dtGame::DeadReckoningHelper* drhelp = NULL;
+         const dtGame::DeadReckoningActorComponent* drhelp = NULL;
          entity->GetComponent(drhelp);
 
          double lastTransUpdate = drhelp->GetLastTranslationUpdatedTime();

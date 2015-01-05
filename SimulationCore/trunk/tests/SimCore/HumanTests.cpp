@@ -582,7 +582,7 @@ class HumanTests : public CPPUNIT_NS::TestFixture
          SimCore::Actors::Human* human = NULL;
          mHumanAP->GetDrawable(human);
 
-         dtGame::DeadReckoningHelper* drHelper = NULL;
+         dtGame::DeadReckoningActorComponent* drHelper = NULL;
          mHumanAP->GetComponent(drHelper);
 
          human->SetStance(SimCore::Actors::HumanActorProxy::StanceEnum::UPRIGHT_WALKING);

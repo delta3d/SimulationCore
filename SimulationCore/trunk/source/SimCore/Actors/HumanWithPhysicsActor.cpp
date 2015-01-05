@@ -209,7 +209,7 @@ namespace SimCore
 
          BaseClass::BuildActorComponents();
 
-         dtCore::RefPtr<dtGame::DeadReckoningHelper> drAC;
+         dtCore::RefPtr<dtGame::DeadReckoningActorComponent> drAC;
          GetComponent(drAC);
          if (drAC.valid())
          {
