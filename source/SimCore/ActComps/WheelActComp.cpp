@@ -398,7 +398,7 @@ namespace SimCore
             return;
          }
 
-         dtGame::DeadReckoningHelper* drHelper = NULL;
+         dtGame::DeadReckoningActorComponent* drHelper = NULL;
          actor->GetComponent(drHelper);
 
          osg::Vec3 vvec;

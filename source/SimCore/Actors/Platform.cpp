@@ -340,7 +340,7 @@ namespace SimCore
 
          if (at.InstanceOf(*EntityActorRegistry::AIR_PLATFORM_ACTOR_TYPE))
          {
-            dtGame::DeadReckoningHelper* drHelper = NULL;
+            dtGame::DeadReckoningActorComponent* drHelper = NULL;
             GetComponent(drHelper);
             drHelper->SetGroundClampType(dtGame::GroundClampTypeEnum::NONE);
             p->SetDomain(BaseEntityActorProxy::DomainEnum::AIR);
@@ -698,7 +698,7 @@ namespace SimCore
             paintActComp->SetPaintState(stateNum);
          }
 
-         dtGame::DeadReckoningHelper* drHelper = NULL;
+         dtGame::DeadReckoningActorComponent* drHelper = NULL;
          GetComponent(drHelper);
 
          //compute the model dimensions for this damage state model, since the dimensions will differ from
@@ -1027,12 +1027,12 @@ namespace SimCore
             dtUtil::NodeCollector* nodeCollector = GetNodeCollector();
             if (nodeCollector != NULL && !nodeCollector->GetTransformNodeMap().empty())
             {
-               GetComponent<dtGame::DeadReckoningHelper>()->SetNodeCollector(*nodeCollector);
+               GetComponent<dtGame::DeadReckoningActorComponent>()->SetNodeCollector(*nodeCollector);
             }
          }
          else
          {
-            GetComponent<dtGame::DeadReckoningHelper>()->SetUpdateMode(dtGame::DeadReckoningHelper::UpdateMode::CALCULATE_ONLY);
+            GetComponent<dtGame::DeadReckoningActorComponent>()->SetUpdateMode(dtGame::DeadReckoningActorComponent::UpdateMode::CALCULATE_ONLY);
          }
 
          //// Curt - bump mapping
@@ -1152,7 +1152,7 @@ namespace SimCore
          if ( mArticHelper.valid() && GetNodeCollector() != NULL)
          {
             mArticHelper->HandleArticulatedParametersArray(
-               newValue, *GetNodeCollector(), *GetComponent<dtGame::DeadReckoningHelper>() );
+               newValue, *GetNodeCollector(), *GetComponent<dtGame::DeadReckoningActorComponent>() );
          }
       }
 
@@ -1172,7 +1172,7 @@ namespace SimCore
       {
          dtCore::RefPtr<dtUtil::NodeCollector> nc =  new dtUtil::NodeCollector(mNonDamagedFileNode.get(), dtUtil::NodeCollector::AllNodeTypes);
          SetNodeCollector(nc);
-         GetComponent<dtGame::DeadReckoningHelper>()->SetNodeCollector(*nc);
+         GetComponent<dtGame::DeadReckoningActorComponent>()->SetNodeCollector(*nc);
          // Update the articulation helper with DOFs of the current model.
          if (!mArticHelper.valid())
          {

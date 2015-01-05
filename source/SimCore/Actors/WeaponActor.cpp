@@ -361,7 +361,7 @@ namespace SimCore
                //std::cout << "Weapon Actor shooting. Attempting to set parent velocity." << std::endl;
                if (entityProxy != NULL)
                {
-                  vehicleVelocity = entityProxy->GetComponent<dtGame::DeadReckoningHelper>()->GetLastKnownVelocity();
+                  vehicleVelocity = entityProxy->GetComponent<dtGame::DeadReckoningActorComponent>()->GetLastKnownVelocity();
                   //std::cout << "      NOW SETTING PARENT VELOCITY TO [" << vehicleVelocity << "]." << std::endl;
                   particleSystem->SetParentsWorldRelativeVelocityVector(vehicleVelocity);
                }

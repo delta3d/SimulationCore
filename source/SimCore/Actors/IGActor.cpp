@@ -265,7 +265,7 @@ namespace SimCore
       {
          mNodeCollector = new dtUtil::NodeCollector(GetOSGNode(),
                   dtUtil::NodeCollector::AllNodeTypes);
-         dtGame::DeadReckoningHelper* drAC = NULL;
+         dtGame::DeadReckoningActorComponent* drAC = NULL;
          GetComponent(drAC);
          if (drAC != NULL)
          {

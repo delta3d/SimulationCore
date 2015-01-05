@@ -266,7 +266,7 @@ namespace SimCore
                mEntity->SetDamageState( SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::NO_DAMAGE );
                //if( mLastDRAlgorithm != NULL )
                //{
-               //   mEntity->GetDeadReckoningHelper().SetDeadReckoningAlgorithm( *mLastDRAlgorithm );
+               //   mEntity->GetDeadReckoningActorComponent().SetDeadReckoningAlgorithm( *mLastDRAlgorithm );
                //}
                mEntity->SetFlamesPresent( false );
             }
@@ -296,7 +296,7 @@ namespace SimCore
                mEntity->SetDamageState( SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::DESTROYED );
                // We no longer turn off the DR algorithm when we are dead. The reason is that we could 
                // be pushed around, or falling (if a plane gets shot, it falls down) even though we are dead
-               //mEntity->GetDeadReckoningHelper().SetDeadReckoningAlgorithm(dtGame::DeadReckoningAlgorithm::STATIC );
+               //mEntity->GetDeadReckoningActorComponent().SetDeadReckoningAlgorithm(dtGame::DeadReckoningAlgorithm::STATIC );
 
                // This checks for the property.  The reason is that removing the property is the way we stopped external sims
                // from wantonly setting humans to be on fire.  Thus I check it here also to be consistent since this code would otherwise

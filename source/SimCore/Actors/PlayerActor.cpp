@@ -82,7 +82,7 @@ namespace SimCore
       {
          BaseClass::BuildActorComponents();
 
-         dtGame::DeadReckoningHelper* drHelper = NULL;
+         dtGame::DeadReckoningActorComponent* drHelper = NULL;
          GetComponent(drHelper);
          if (drHelper != NULL)
          {

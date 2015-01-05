@@ -2507,7 +2507,7 @@ namespace StealthQt
       oss << SimCore::UnitOfAngle::Convert(SimCore::UnitOfAngle::DEGREE, toolsConfig.GetAngleUnit(), roll);
       mUi->mEntityInfoRotRollEdit->setText(tr(oss.str().c_str()));
 
-      osg::Vec3 velocity = entityDraw->GetComponent<dtGame::DeadReckoningHelper>()->GetLastKnownVelocity();
+      osg::Vec3 velocity = entityDraw->GetComponent<dtGame::DeadReckoningActorComponent>()->GetLastKnownVelocity();
       // speed is distance of velocity. Then, convert from m/s to MPH
       float speed = velocity.length();
       oss.str("");

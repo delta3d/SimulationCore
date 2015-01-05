@@ -98,7 +98,7 @@ namespace NetDemo
       GetTransform(xform);
       xform.GetTranslation(mDRTestingRealLocation);
 
-      dtGame::DeadReckoningHelper* drHelper = NULL;
+      dtGame::DeadReckoningActorComponent* drHelper = NULL;
       GetComponent(drHelper);
 
       // Get the DR position. The DR pos is set in Tick Remote, so we pull it after that.

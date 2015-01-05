@@ -91,7 +91,7 @@ namespace SimCore
       {
          // This makes the results smoother when sending updates at a high rate.
          // This is just a default value. It can be overridden in the base class via config options.
-         GetComponent<dtGame::DeadReckoningHelper>()->SetUseFixedSmoothingTime(true);
+         GetComponent<dtGame::DeadReckoningActorComponent>()->SetUseFixedSmoothingTime(true);
 
          std::string timeConfig = GetGameActorProxy().GetGameManager()->GetConfiguration().GetConfigPropertyValue(CONF_TIME_WAIT_TERRAIN_PAGING);
          if (!timeConfig.empty())
@@ -336,7 +336,7 @@ namespace SimCore
                // In order to make our local vehicle bounce on impact, the physics engine needs the velocity of
                // the remote entities. Essentially remote entities are kinematic (physics isn't really simulating),
                // but we want to act like their not.
-               osg::Vec3 velocity = GetComponent<dtGame::DeadReckoningHelper>()->GetLastKnownVelocity();
+               osg::Vec3 velocity = GetComponent<dtGame::DeadReckoningActorComponent>()->GetLastKnownVelocity();
                physicsObject->SetLinearVelocity(velocity);
             }
 
@@ -423,7 +423,7 @@ namespace SimCore
          static const float METERSPS_TO_MILESPH = 2.236936291;
          if (IsRemote())
          {
-            return GetComponent<dtGame::DeadReckoningHelper>()->GetLastKnownVelocity().length() * METERSPS_TO_MILESPH;
+            return GetComponent<dtGame::DeadReckoningActorComponent>()->GetLastKnownVelocity().length() * METERSPS_TO_MILESPH;
          }
          else
          {
@@ -610,7 +610,7 @@ namespace SimCore
          // DEFAULT the Dead Reckoning Algorithm to Velocity And Acceleration. It's a prop so will
          // be overwriten from the map, unless this is a new vehicle object.
          // For a default, static would be dumb. Velocity might be OK.
-         dtCore::RefPtr<dtGame::DeadReckoningHelper> drAC;
+         dtCore::RefPtr<dtGame::DeadReckoningActorComponent> drAC;
          GetComponent(drAC);
          if (drAC.valid())
          {

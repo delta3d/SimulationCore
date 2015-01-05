@@ -247,7 +247,7 @@ namespace DriverDemo
          // In order to make our local vehicle bounce on impact, the physics engine needs the velocity of
          // the remote entities. Essentially remote entities are kinematic (physics isn't really simulating),
          // but we want to act like their not.
-         osg::Vec3 velocity = GetDeadReckoningHelper().GetLastKnownVelocity();;
+         osg::Vec3 velocity = GetDeadReckoningActorComponent().GetLastKnownVelocity();;
          NxVec3 physVelocity(velocity[0], velocity[1], velocity[2]);
          physObject->setLinearVelocity(physVelocity );
 

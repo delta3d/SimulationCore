@@ -34,7 +34,7 @@ namespace dtGame
 {
    class DeadReckoningComponent;
    //class DeadReckoningAlgorithm;
-   class DeadReckoningHelper;
+   class DeadReckoningActorComponent;
    class DRPublishingActComp;
 }
 
@@ -155,10 +155,6 @@ namespace SimCore
          protected:
             virtual ~BaseEntityActorProxy();
             virtual void OnEnteredWorld();
-
-
-            /// Overridden to remove Pos & rotation. See method for explanation.
-            virtual void NotifyFullActorUpdate();
 
          private:
       };

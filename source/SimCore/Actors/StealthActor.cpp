@@ -150,7 +150,7 @@ namespace SimCore
                GetGameActorProxy().UnregisterForMessagesAboutOtherActor(dtGame::MessageType::INFO_ACTOR_UPDATED, entityParent->GetUniqueId(), "UpdateFromParent");
             }
 
-            GetComponent<dtGame::DeadReckoningHelper>()->SetDeadReckoningAlgorithm(*mOldDRA);
+            GetComponent<dtGame::DeadReckoningActorComponent>()->SetDeadReckoningAlgorithm(*mOldDRA);
             Emancipate();
          }
       }
@@ -182,12 +182,12 @@ namespace SimCore
                entity->SetDrawingModel(true);
                entity->SetPlayerAttached(true);
             }
-            dtGame::DeadReckoningHelper* drHelper = NULL;
+            dtGame::DeadReckoningActorComponent* drHelper = NULL;
             GetComponent(drHelper);
 
             mOldDRA = &drHelper->GetDeadReckoningAlgorithm();
 
-            dtGame::DeadReckoningHelper* drHelperEntity = NULL;
+            dtGame::DeadReckoningActorComponent* drHelperEntity = NULL;
             ga.GetComponent(drHelperEntity);
 
             drHelper->SetDeadReckoningAlgorithm(
@@ -309,9 +309,9 @@ namespace SimCore
             return;
          }
 
-         dtGame::DeadReckoningHelper* drHelper = NULL;
+         dtGame::DeadReckoningActorComponent* drHelper = NULL;
          GetComponent(drHelper);
-         dtGame::DeadReckoningHelper* drHelperParent = NULL;
+         dtGame::DeadReckoningActorComponent* drHelperParent = NULL;
          parent->GetComponent(drHelperParent);
 
          drHelper->SetDeadReckoningAlgorithm(drHelperParent->GetDeadReckoningAlgorithm());

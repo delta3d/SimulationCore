@@ -243,7 +243,7 @@ namespace Components
    {
       if(mEntity.valid())
       {
-         dtGame::DeadReckoningHelper* drHelper = NULL;
+         dtGame::DeadReckoningActorComponent* drHelper = NULL;
          mEntity->GetComponent(drHelper);
          drHelper->AddToDeadReckonDOF(dofName, position, velocity);
       }

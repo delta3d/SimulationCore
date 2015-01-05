@@ -852,8 +852,8 @@ namespace NetDemo
          timesPerSecondRate *= scaleFactor;
          physVehicle->GetDRPublishingActComp()->SetMaxUpdateSendRate(timesPerSecondRate);
          float rateInSeconds = 1.0f / timesPerSecondRate;
-         //mVehicle->GetDeadReckoningHelper().SetMaxRotationSmoothingTime(0.97 * rateInSeconds);
-         //mVehicle->GetDeadReckoningHelper().SetMaxTranslationSmoothingTime(0.97 * rateInSeconds);
+         //mVehicle->GetDeadReckoningActorComponent().SetMaxRotationSmoothingTime(0.97 * rateInSeconds);
+         //mVehicle->GetDeadReckoningActorComponent().SetMaxTranslationSmoothingTime(0.97 * rateInSeconds);
          std::cout << "TEST - Min time between publishes[" << rateInSeconds <<  "]." << std::endl;
          */
 
@@ -871,7 +871,7 @@ namespace NetDemo
          bool ctrlIsPressed = app.GetKeyboard()->GetKeyState(osgGA::GUIEventAdapter::KEY_Control_L) ||
             app.GetKeyboard()->GetKeyState(osgGA::GUIEventAdapter::KEY_Control_R);
 
-         dtGame::DeadReckoningHelper* drHelper = NULL;
+         dtGame::DeadReckoningActorComponent* drHelper = NULL;
          mVehicle->GetComponent(drHelper);
 
          if (drHelper != NULL)
@@ -957,7 +957,7 @@ namespace NetDemo
       // Toggle the publishing of angular velocity
       if (mVehicle.valid())
       {
-         dtGame::DeadReckoningHelper* drHelper = NULL;
+         dtGame::DeadReckoningActorComponent* drHelper = NULL;
          mVehicle->GetComponent(drHelper);
 
          if (drHelper!= NULL)
@@ -1010,7 +1010,7 @@ namespace NetDemo
 //      // Toggle the Use Cubic Spline
 //      if (mVehicle.valid())
 //      {
-//         dtGame::DeadReckoningHelper* drHelper = NULL;
+//         dtGame::DeadReckoningActorComponent* drHelper = NULL;
 //         mVehicle->GetComponent(drHelper);
 //
 //         if (drHelper != NULL)
@@ -1034,7 +1034,7 @@ namespace NetDemo
    {
       if (mVehicle.valid())
       {
-         dtGame::DeadReckoningHelper* drHelper = NULL;
+         dtGame::DeadReckoningActorComponent* drHelper = NULL;
          mVehicle->GetComponent(drHelper);
 
          if (drHelper != NULL)
@@ -1069,7 +1069,7 @@ namespace NetDemo
    {
       if (mVehicle.valid())
       {
-         dtGame::DeadReckoningHelper* drHelper = NULL;
+         dtGame::DeadReckoningActorComponent* drHelper = NULL;
          mVehicle->GetComponent(drHelper);
 
          if (drHelper != NULL)
@@ -1115,7 +1115,7 @@ namespace NetDemo
          return; // nothing to do without a Game logic component
       }
 
-      dtGame::DeadReckoningHelper* drHelper = NULL;
+      dtGame::DeadReckoningActorComponent* drHelper = NULL;
       dtGame::DRPublishingActComp* drPubAC = NULL;
       if (mVehicle.valid())
       {
@@ -1227,7 +1227,7 @@ namespace NetDemo
             drPubAC->SetPublishLinearVelocity(true);
          }
 
-         dtGame::DeadReckoningHelper* drHelper = NULL;
+         dtGame::DeadReckoningActorComponent* drHelper = NULL;
          mVehicle->GetComponent(drHelper);
          if (drHelper != NULL)
          {

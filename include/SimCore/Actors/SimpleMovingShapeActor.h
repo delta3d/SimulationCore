@@ -44,10 +44,10 @@ namespace SimCore
       public:
          typedef dtGame::GameActorProxy BaseClass;
 
-         class SIMCORE_EXPORT SimpleShapeDRHelper : public dtGame::DeadReckoningHelper
+         class SIMCORE_EXPORT SimpleShapeDRHelper : public dtGame::DeadReckoningActorComponent
          {
             public:
-               typedef dtGame::DeadReckoningHelper BaseClass;
+               typedef dtGame::DeadReckoningActorComponent BaseClass;
 
                SimpleShapeDRHelper();
 
@@ -58,7 +58,7 @@ namespace SimCore
                virtual void IncrementTimeSinceUpdate(float simTimeDelta, double curSimulationTime);
 
                float mCurTimeDelta;
-               DeadReckoningHelper::DRVec3Util mDRScale;
+               DeadReckoningActorComponent::DRVec3Util mDRScale;
 
          };
 

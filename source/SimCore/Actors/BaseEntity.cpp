@@ -157,7 +157,7 @@ namespace SimCore
       void BaseEntityActorProxy::GetPartialUpdateProperties(std::vector<dtUtil::RefString>& propNamesToFill)
       {
          // Add the properties for dead reckoning such as last known translation, etc...
-         GetComponent<dtGame::DeadReckoningHelper>()->GetPartialUpdateProperties(propNamesToFill);
+         GetComponent<dtGame::DeadReckoningActorComponent>()->GetPartialUpdateProperties(propNamesToFill);
 
          // Add your own properties that you want to publish with EVERY partial update (ie very often)
       }
@@ -331,9 +331,9 @@ namespace SimCore
          BaseClass::BuildActorComponents();
 
          // DEAD RECKONING - ACT COMPONENT
-         if (!HasComponent(dtGame::DeadReckoningHelper::TYPE)) // not added by a subclass
+         if (!HasComponent(dtGame::DeadReckoningActorComponent::TYPE)) // not added by a subclass
          {
-            dtCore::RefPtr<dtGame::DeadReckoningHelper> deadReckoningHelper = new dtGame::DeadReckoningHelper();
+            dtCore::RefPtr<dtGame::DeadReckoningActorComponent> deadReckoningHelper = new dtGame::DeadReckoningActorComponent();
 
             // attempt to fix the z-fighting on treads and wheels that are
             // very close to the ground. We move the vehicle up about 3-4 inches...
@@ -368,33 +368,6 @@ namespace SimCore
       void BaseEntityActorProxy::OnRemovedFromWorld()
       {
          GetDrawable<SimCore::Actors::BaseEntity>()->OnRemovedFromWorld();
-      }
-
-      ////////////////////////////////////////////////////////////////////////////////////
-      void BaseEntityActorProxy::NotifyFullActorUpdate()
-      {
-         // Remove the rot and trans from the full actor update.
-         // If we send pos & rot out in an update, then that sometimes causes problems
-         // on remote items. Network components usually pick up their data on tick local, which
-         // sends a message to the DefaultmessageProcessorComponent. However, before that message
-         // gets processed, the tick-remote gets picked up by the DeadReckoningComponent. Causes jumpiness.
-         std::vector<dtCore::ActorProperty* > allProperties;
-         GetPropertyList(allProperties);
-
-         std::vector<dtUtil::RefString> finalPropNameList;
-         finalPropNameList.reserve(allProperties.size());
-
-         for (size_t i = 0; i < allProperties.size(); ++i)
-         {
-            if (allProperties[i]->GetName() != dtCore::TransformableActorProxy::PROPERTY_ROTATION &&
-               allProperties[i]->GetName() != dtCore::TransformableActorProxy::PROPERTY_TRANSLATION)
-            {
-               finalPropNameList.push_back(allProperties[i]->GetName());
-            }
-         }
-
-         // Even though we are using the partialactorupdate method - it should be treated as a full
-         NotifyPartialActorUpdate(finalPropNameList, false);
       }
 
       /////////////////////////////////////////////////////////////////////
@@ -465,7 +438,7 @@ namespace SimCore
       {
          GetOSGNode()->setName(GetName());
 
-         dtGame::DeadReckoningHelper* drHelper;
+         dtGame::DeadReckoningActorComponent* drHelper;
          GetComponent(drHelper);
 
          if (!IsRemote())
