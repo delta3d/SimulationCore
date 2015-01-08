@@ -10,12 +10,12 @@ if (REGENERATE_VERSION_HEADER)
    add_custom_target(VersionHeader ALL
        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/SimCoreGeneratedVersion.h)
 
-   # creates svnheader.h using cmake script
+   # creates SimCoreGeneratedVersion.h using cmake script
    add_custom_command(OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/SimCoreGeneratedVersion.h
        COMMAND ${CMAKE_COMMAND} -DSOURCE_DIR=${CMAKE_CURRENT_SOURCE_DIR}
                          -P ${CMAKE_SOURCE_DIR}/CMakeModules/GenerateVersionHeader.cmake)
 
-   # svnversion.h is a generated file
+   # SimCoreGeneratedVersion.h is a generated file
    set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/SimCoreGeneratedVersion.h
        PROPERTIES GENERATED TRUE
        HEADER_FILE_ONLY TRUE)

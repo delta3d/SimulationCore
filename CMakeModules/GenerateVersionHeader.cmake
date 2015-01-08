@@ -33,5 +33,6 @@ file(WRITE SimCoreGeneratedVersion.h.txt "
 
 # copy the file to the final header only if the version changes
 # reduces needless rebuilds
+message ("current source of header copy "${SOURCE_DIR})
 execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                        SimCoreGeneratedVersion.h.txt ${CMAKE_CURRENT_SOURCE_DIR}/SimCoreGeneratedVersion.h)
+                        SimCoreGeneratedVersion.h.txt ${SOURCE_DIR}/SimCoreGeneratedVersion.h)
