@@ -759,20 +759,6 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
-      void BaseEntity::ProcessMessage(const dtGame::Message& message)
-      {
-      }
-
-
-      ////////////////////////////////////////////////////////////////////////////////////
-      void BaseEntity::OnTickLocal(const dtGame::TickMessage& tickMessage)
-      {
-
-         GameActor::OnTickLocal(tickMessage);
-
-      }
-
-      ////////////////////////////////////////////////////////////////////////////////////
       osg::MatrixTransform& BaseEntity::GetScaleMatrixTransform()
       {
          return *mScaleMatrixNode;
@@ -863,8 +849,19 @@ namespace SimCore
 
          if (force.length2() > 0.0f)
          {
-            // Apply an instantaneous impulse force to the entity
-            ApplyForce(force, location, true);
+            // The old version of this code added function to the actor that could be overridden, but that was removed
+            // because the intent to try to make BaseEntity no longer a top level actor class, so that sort of functionality
+            // is inappropriate.  For the moment, it simply adds the force.  This is really incorrect because
+            // the force of an explosion is a gas expansion, and this more like wind drag where it is related to the shape
+            // and surface area of the object.  Objects would also tend to move relative to the speed of the expanding gas.
+            dtPhysics::PhysicsActComp* physAC = GetComponent<dtPhysics::PhysicsActComp>();
+            if (physAC != NULL)
+            {
+               if (physAC->GetMainPhysicsObject() != NULL)
+               {
+                  physAC->GetMainPhysicsObject()->AddForce(force);
+               }
+            }
          }
       }
 

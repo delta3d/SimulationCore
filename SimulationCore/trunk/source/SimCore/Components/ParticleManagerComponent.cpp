@@ -663,7 +663,7 @@ namespace SimCore
                const std::string& opName = forceOp->getName();
                if(opName != forceName)
                {
-                  // Determine if the force operator is useless; this will mostlikely
+                  // Determine if the force operator is useless; this will most likely
                   // be a placeholder operator created in the particle editor just for
                   // this effect. Future particle editor will give the ability to apply
                   // names to these operators.

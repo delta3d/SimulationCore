@@ -451,7 +451,7 @@ namespace SimCore
             }
             else
             {
-               dtCore::RefPtr<dtPhysics::PhysicsObject> newTile = new dtPhysics::PhysicsObject(nameOfNode);
+               dtCore::RefPtr<dtPhysics::PhysicsObject> newTile = dtPhysics::PhysicsObject::CreateNew(nameOfNode);
                dtPhysics::PhysicsActComp* ac;
                GetComponent(ac);
                ac->AddPhysicsObject(*newTile);
@@ -479,7 +479,7 @@ namespace SimCore
             dtUtil::MakeIndexString(mNumNodesLoaded, numNodesString);
             numNodesString = nameOfNode + " " + numNodesString;
 
-            dtCore::RefPtr<dtPhysics::PhysicsObject> newTile = new dtPhysics::PhysicsObject(nameOfNode);
+            dtCore::RefPtr<dtPhysics::PhysicsObject> newTile = dtPhysics::PhysicsObject::CreateNew(nameOfNode);
             dtPhysics::PhysicsActComp* ac;
             GetComponent(ac);
             ac->AddPhysicsObject(*newTile);

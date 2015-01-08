@@ -113,9 +113,8 @@ namespace DriverDemo
       // LOCAL - Finish initial startup conditions
       else
       {
-         // Give it a boost upwards on creation.
          osg::Vec3 dir(0.0, 0.0, 1000.0);
-         ApplyForce(dir, osg::Vec3(0.0f, 0.0f, 0.0f), true);
+         GetTargetPhysicsActComp()->GetMainPhysicsObject()->ApplyImpulse(dir);
 
          // Offset the Target Dir so that they spread out around the map.
          mGoalLocation[0] += dtUtil::RandFloat(-40.0, 40.0);

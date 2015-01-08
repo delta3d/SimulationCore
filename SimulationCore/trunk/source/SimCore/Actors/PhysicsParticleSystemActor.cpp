@@ -269,7 +269,7 @@ namespace SimCore
             LoadParticleResource(*particle, referenceString);
          }
 
-         dtCore::RefPtr<dtPhysics::PhysicsObject> newObject = new dtPhysics::PhysicsObject(id.ToString());
+         dtCore::RefPtr<dtPhysics::PhysicsObject> newObject = dtPhysics::PhysicsObject::CreateNew(id.ToString());
 
          //////////////////////////////////////////////////////////////////////////
          // Set up the physics values for the object

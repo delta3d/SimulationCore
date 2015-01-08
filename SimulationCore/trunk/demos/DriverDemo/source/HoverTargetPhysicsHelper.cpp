@@ -35,7 +35,7 @@ namespace DriverDemo
    , mGroundClearance(4.0)
    {
       // non properties
-      dtCore::RefPtr<dtPhysics::PhysicsObject> physicsObject = new dtPhysics::PhysicsObject("VehicleBody");
+      dtCore::RefPtr<dtPhysics::PhysicsObject> physicsObject = dtPhysics::PhysicsObject::CreateNew("VehicleBody");
       AddPhysicsObject(*physicsObject);
       physicsObject->SetPrimitiveType(dtPhysics::PrimitiveType::SPHERE);
       physicsObject->SetMass(100.0f);

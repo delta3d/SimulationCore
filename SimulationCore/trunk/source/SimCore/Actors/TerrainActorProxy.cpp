@@ -226,7 +226,7 @@ namespace SimCore
          // Adding this physics object AFTER the build actor components because we don't want the properties to be
          // accessible.
          // Add our initial body.
-         dtPhysics::PhysicsObject* pobj = new dtPhysics::PhysicsObject("Terrain");
+         dtCore::RefPtr<dtPhysics::PhysicsObject> pobj = dtPhysics::PhysicsObject::CreateNew("Terrain");
          pobj->SetPrimitiveType(dtPhysics::PrimitiveType::TERRAIN_MESH);
          pobj->SetMechanicsType(dtPhysics::MechanicsType::STATIC);
          pobj->SetCollisionGroup(SimCore::CollisionGroup::GROUP_TERRAIN);
@@ -476,7 +476,7 @@ namespace SimCore
                   dtCore::Transform geometryWorld;
                   GetTransform(geometryWorld);
 
-                  dtCore::RefPtr<dtPhysics::PhysicsObject> newTile = new dtPhysics::PhysicsObject(fileToLoad);
+                  dtCore::RefPtr<dtPhysics::PhysicsObject> newTile = dtPhysics::PhysicsObject::CreateNew(fileToLoad);
                   newTile->SetTransform(geometryWorld);
                   newTile->SetMechanicsType(dtPhysics::MechanicsType::STATIC);
                   newTile->SetPrimitiveType(dtPhysics::PrimitiveType::TERRAIN_MESH);

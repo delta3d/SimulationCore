@@ -181,20 +181,6 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
-      void BasePhysicsVehicleActor::ApplyForce(const osg::Vec3& force, const osg::Vec3& location, bool isImpulse)
-      {
-         if (isImpulse)
-         {
-            GetPhysicsActComp()->GetMainPhysicsObject()->ApplyImpulse(force);
-         }
-         else
-         {
-            GetPhysicsActComp()->GetMainPhysicsObject()->AddForce(force);
-         }
-      }
-
-
-      ///////////////////////////////////////////////////////////////////////////////////
       /// Overridden so that it will flag the actor as being transformed when you set the position.
       void BasePhysicsVehicleActor::SetTransform(const dtCore::Transform& xform, dtCore::Transformable::CoordSysEnum cs)
       {

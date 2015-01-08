@@ -58,7 +58,7 @@ namespace SimCore
    , mAeroDynDragArea(8.0)
    , mLastMPH(0.0f)
    {
-      dtCore::RefPtr<dtPhysics::PhysicsObject> physicsObject = new dtPhysics::PhysicsObject("chassis");
+      dtCore::RefPtr<dtPhysics::PhysicsObject> physicsObject = dtPhysics::PhysicsObject::CreateNew("chassis");
       physicsObject->SetPrimitiveType(dtPhysics::PrimitiveType::CONVEX_HULL);
       physicsObject->SetCollisionGroup(SimCore::CollisionGroup::GROUP_VEHICLE_GROUND);
       AddPhysicsObject(*physicsObject);

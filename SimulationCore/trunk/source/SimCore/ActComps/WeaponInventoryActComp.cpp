@@ -90,7 +90,8 @@ namespace SimCore
       {
       }
 
-      const dtCore::RefPtr<dtCore::ObjectType> WeaponInventoryActComp::WeaponDescription::TYPE;
+      const dtCore::RefPtr<dtCore::ObjectType> WeaponInventoryActComp::WeaponDescription::TYPE(new dtCore::ObjectType("WeaponDescription", "SimCore",
+            "Weapon Description Object"));
       const dtCore::ObjectType& WeaponInventoryActComp::WeaponDescription::GetObjectType() const { return *WeaponInventoryActComp::WeaponDescription::TYPE; }
 
       DT_IMPLEMENT_ACCESSOR(WeaponInventoryActComp::WeaponDescription, std::string, WeaponPrototypeName);

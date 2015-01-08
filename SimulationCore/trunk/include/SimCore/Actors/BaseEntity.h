@@ -299,26 +299,6 @@ namespace SimCore
             ///@return the rotation on the model matrix
             osg::Vec3 GetModelRotation() const;
 
-            /// Ticks are registered for on all local entities. Over ride for custom stuff.
-            virtual void OnTickLocal(const dtGame::TickMessage& tickMessage);
-
-            virtual void ProcessMessage(const dtGame::Message& message);
-
-            /**
-             * This function is intended for use by entities that implement physics
-             * simulation behaviors.
-             * @param force The force direction and magnitude emitted from the location
-             *              to the center of the entity. The entity will have to determine
-             *              the exact force at specific points relative to its center.
-             *              Force is measured in Newtons: mass (1kg) * acceleration (1meter/1sec^2).
-             * @param location The location in world space from which the force was generated.
-             *              The location components will be measured in meters.
-             * @param isImpulse Impulses are not applied each tick, they are fully applied
-             *              instantaneous forces. For most physics engines, that means the impulse
-             *              should not be scaled down to be relative to the current tick timeslice.
-             */
-            virtual void ApplyForce(const osg::Vec3& force, const osg::Vec3& location, bool IsImpulse = false) {}
-
 
             /**
              * Gives a local entity an opportunity to respond to damage from a munition.
