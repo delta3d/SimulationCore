@@ -196,7 +196,7 @@ namespace SimCore
          {
             dtCore::RefPtr<dtPhysics::PhysicsActComp> physAC = new dtPhysics::PhysicsActComp();
 
-            dtCore::RefPtr<dtPhysics::PhysicsObject> physicsObject = new dtPhysics::PhysicsObject("Body");
+            dtCore::RefPtr<dtPhysics::PhysicsObject> physicsObject = dtPhysics::PhysicsObject::CreateNew("Body");
             physicsObject->SetPrimitiveType(dtPhysics::PrimitiveType::CYLINDER);
             physicsObject->SetMechanicsType(dtPhysics::MechanicsType::KINEMATIC);
             physicsObject->SetCollisionGroup(SimCore::CollisionGroup::GROUP_HUMAN_LOCAL);

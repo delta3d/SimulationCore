@@ -408,7 +408,7 @@ namespace NetDemo
       dtCore::RefPtr<dtPhysics::PhysicsActComp> physAC = new dtPhysics::PhysicsActComp();
 
       // Add our initial body.
-      dtCore::RefPtr<dtPhysics::PhysicsObject> physicsObject = new dtPhysics::PhysicsObject("VehicleBody");
+      dtCore::RefPtr<dtPhysics::PhysicsObject> physicsObject = dtPhysics::PhysicsObject::CreateNew("VehicleBody");
       physAC->AddPhysicsObject(*physicsObject);
       physAC->SetMass(500.0f);
       physicsObject->SetPrimitiveType(dtPhysics::PrimitiveType::CONVEX_HULL);

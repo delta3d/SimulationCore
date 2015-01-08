@@ -44,7 +44,7 @@ namespace NetDemo
       , mGroundClearance(0.5)
       , mForceBoostFactor(0.25)
    {
-      dtCore::RefPtr<dtPhysics::PhysicsObject> physicsObject = new dtPhysics::PhysicsObject("VehicleBody");
+      dtCore::RefPtr<dtPhysics::PhysicsObject> physicsObject = dtPhysics::PhysicsObject::CreateNew("VehicleBody");
       AddPhysicsObject(*physicsObject);
       physicsObject->SetPrimitiveType(dtPhysics::PrimitiveType::SPHERE);
       physicsObject->SetMass(1000.0f);

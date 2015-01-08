@@ -334,7 +334,7 @@ namespace NetDemo
       dtPhysics::PhysicsActComp* physAC = NULL;
       GetComponent(physAC);
       // Add our initial body.
-      dtCore::RefPtr<dtPhysics::PhysicsObject> physicsObject = new dtPhysics::PhysicsObject("FireBallBody");
+      dtCore::RefPtr<dtPhysics::PhysicsObject> physicsObject = dtPhysics::PhysicsObject::CreateNew("FireBallBody");
       physAC->AddPhysicsObject(*physicsObject);
       physicsObject->SetPrimitiveType(dtPhysics::PrimitiveType::SPHERE);
       physicsObject->SetMass(30.0f);

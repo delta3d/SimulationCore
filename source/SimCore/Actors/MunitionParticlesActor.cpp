@@ -472,7 +472,7 @@ namespace SimCore
          xform.SetTranslation(osg::Vec3(ourTranslation.x(), ourTranslation.y(), ourTranslation.z()));
 
          dtPhysics::PhysicsObject* newActor = NULL;
-         dtCore::RefPtr<dtPhysics::PhysicsObject> newObject = new dtPhysics::PhysicsObject(id.ToString());
+         dtCore::RefPtr<dtPhysics::PhysicsObject> newObject = dtPhysics::PhysicsObject::CreateNew(id.ToString());
          newObject->SetCollisionGroup(collisionGroupToSendIn);
          newObject->SetMechanicsType(dtPhysics::MechanicsType::DYNAMIC);
          newObject->SetMass(mPhysicsActComp->GetMass());
