@@ -907,7 +907,7 @@ namespace SimCore
             return;
          }
 
-         const dtCore::ShaderGroup *shaderGroup =
+         const dtCore::ShaderGroup* shaderGroup =
             dtCore::ShaderManager::GetInstance().FindShaderGroupPrototype(GetShaderGroup());
 
          //First get the shader group assigned to this actor.
@@ -924,10 +924,23 @@ namespace SimCore
          //to that damage state.  If all three damage state shaders are undefined and
          //a default shader exists, that shader is applied to the root switch node of
          //the actor so it gets passed on to all damage states.
-         const dtCore::ShaderProgram *defaultShader = shaderGroup->GetDefaultShader();
-         const dtCore::ShaderProgram *noDamage = shaderGroup->FindShader("NoDamage");
-         const dtCore::ShaderProgram *moderate = shaderGroup->FindShader("ModerateDamage");
-         const dtCore::ShaderProgram *destroyed = shaderGroup->FindShader("Destroyed");
+         const dtCore::ShaderProgram* defaultShader = shaderGroup->GetDefaultShader();
+         const dtCore::ShaderProgram* noDamage = shaderGroup->FindShader("NoDamage");
+         const dtCore::ShaderProgram* moderate = shaderGroup->FindShader("ModerateDamage");
+         const dtCore::ShaderProgram* destroyed = shaderGroup->FindShader("Destroyed");
+
+         // Override the explicit shaders if this actor is within an editor such as Stage.
+         if (GetGameActorProxy().IsInSTAGE())
+         {
+            const dtCore::ShaderProgram* editorShader = shaderGroup->GetEditorShader();
+            if (editorShader != NULL)
+            {
+               defaultShader = editorShader;
+               noDamage = editorShader;
+               moderate = editorShader;
+               destroyed = editorShader;
+            }
+         }
 
          try
          {
