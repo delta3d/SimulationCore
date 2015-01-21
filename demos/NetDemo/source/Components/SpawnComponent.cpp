@@ -125,11 +125,11 @@ namespace NetDemo
          }
 
          //collect all enemy motherships
-         std::vector<dtCore::BaseActorObject*> proxies;
+         dtCore::ActorPtrVector proxies;
          GetGameManager()->FindActorsByType(*NetDemoActorRegistry::ENEMY_MOTHERSHIP_ACTOR_TYPE, proxies);
 
-         std::vector<dtCore::BaseActorObject*>::iterator iter = proxies.begin();
-         std::vector<dtCore::BaseActorObject*>::iterator iterEnd = proxies.end();
+         dtCore::ActorPtrVector::iterator iter = proxies.begin();
+         dtCore::ActorPtrVector::iterator iterEnd = proxies.end();
 
          for(; iter != iterEnd; ++iter)
          {
