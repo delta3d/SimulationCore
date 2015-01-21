@@ -811,11 +811,11 @@ namespace SimCore
       {
          mEnableTopGeometryGlobal = b;
 
-         std::vector<dtCore::BaseActorObject*> vect;
+         dtCore::ActorPtrVector vect;
          gm.FindActorsByType(*SimCore::Actors::EntityActorRegistry::BATTLEFIELD_GRAPHICS_ACTOR_TYPE, vect);
 
-         std::vector<dtCore::BaseActorObject*>::iterator iter = vect.begin();
-         std::vector<dtCore::BaseActorObject*>::iterator iterEnd = vect.end();
+         dtCore::ActorPtrVector::iterator iter = vect.begin();
+         dtCore::ActorPtrVector::iterator iterEnd = vect.end();
 
          for(;iter != iterEnd; ++iter)
          {

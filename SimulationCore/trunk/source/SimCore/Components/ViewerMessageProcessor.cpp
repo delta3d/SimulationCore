@@ -82,7 +82,7 @@ namespace SimCore
          if (msg.GetMessageType() == dtGame::MessageType::INFO_MAP_LOADED)
          {
             dtGame::GameManager& gameManager = *GetGameManager();
-            std::vector<dtCore::BaseActorObject*> actors;
+            dtCore::ActorPtrVector actors;
 
             //dtAnim::AnimationComponent* animComp = NULL;
             //gameManager.GetComponentByName(dtAnim::AnimationComponent::DEFAULT_NAME, animComp);

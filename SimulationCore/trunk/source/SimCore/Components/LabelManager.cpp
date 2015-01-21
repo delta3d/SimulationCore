@@ -509,7 +509,7 @@ namespace SimCore
       class ApplyLabelTask : public dtUtil::ThreadPoolTask
       {
       public:
-         ApplyLabelTask(LabelManager& labelManager, std::vector<dtCore::BaseActorObject*>& actors, dtCore::Camera& camera, LabelManager::LabelMap& newLabels,
+         ApplyLabelTask(LabelManager& labelManager, dtCore::ActorPtrVector& actors, dtCore::Camera& camera, LabelManager::LabelMap& newLabels,
                   unsigned low, unsigned high)
          : mLabelManager(labelManager)
          , mActors(actors)
@@ -529,7 +529,7 @@ namespace SimCore
          }
 
          LabelManager& mLabelManager;
-         std::vector<dtCore::BaseActorObject*>& mActors;
+         dtCore::ActorPtrVector& mActors;
          dtCore::RefPtr<dtCore::Camera> mCamera;
          LabelManager::LabelMap& mNewLabels;
          std::string nameBuffer;
@@ -540,7 +540,7 @@ namespace SimCore
       void LabelManager::Update(float dt)
       {
          // Get all entities from the game manager.
-         typedef std::vector<dtCore::BaseActorObject*> ProxyList;
+         typedef dtCore::ActorPtrVector ProxyList;
          ProxyList proxies;
 
          // No need to do a find if when labels are off.
