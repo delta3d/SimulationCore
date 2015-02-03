@@ -34,6 +34,7 @@
 #include <SimCore/Actors/IGEnvironmentActor.h>
 #include <osgParticle/PrecipitationEffect>
 #include <SimCore/Actors/DayTimeActor.h>
+#include <SimCore/Actors/AtmosphereData.h>
 
 namespace osg
 {
@@ -56,6 +57,11 @@ namespace dtGame
    class Message;
 }
 
+namespace dtAudio
+{
+   class Sound;
+}
+
 namespace SimCore
 {
    namespace Actors
@@ -75,9 +81,9 @@ namespace SimCore
       public:
          typedef dtGame::GMComponent BaseClass;
          static const dtCore::RefPtr<dtCore::SystemComponentType> TYPE;
-
-         // The default component name, used when looking it up on the GM.
          static const std::string DEFAULT_NAME;
+
+         static const dtUtil::RefString THUNDER_TIMER_NAME;
 
          // Constructor
          // @param name The name by which this component is called from the GameManager
@@ -175,6 +181,31 @@ namespace SimCore
          //Toggel Fog
          void ToggleFog();
 
+         /***
+          *  The thunder sounds are selected and played randomly,
+          *     it is possible to add as many sounds as you would like.
+          *
+          */
+         void AddThunderSound(dtAudio::Sound& sound);
+         bool RemoveThunderSound(dtAudio::Sound& sound);
+
+         const std::vector< dtCore::RefPtr<dtAudio::Sound> >& GetThunderSounds() const;
+         
+         ///This sets the min and max range in seconds for playing random thunder sounds
+         void SetRandomThunderRangeInSeconds(float from, float to);
+         void GetRandomThunderRangeInSeconds(float& from, float& to) const;
+        
+         /***
+          *  The rain sounds are selected based on the speed of the rain
+          *     with the 0 element being a gentle shower and the last element being
+          *     the heaviest.  It will divide the precipitation range by the number
+          *     of elements so the number of rain sounds can be variable.
+          */
+         void AddRainSound(dtAudio::Sound& sound);
+         bool RemoveRainSound(dtAudio::Sound& sound);
+
+         const std::vector< dtCore::RefPtr<dtAudio::Sound> >& GetRainSounds() const;        
+
       protected:
 
          // Destructor
@@ -202,6 +233,13 @@ namespace SimCore
 
       private:
 
+         typedef std::vector<dtCore::RefPtr<dtAudio::Sound> > SoundArray;
+         bool RemoveSoundFromArray(dtAudio::Sound&, SoundArray&);
+         void UpdateRainSoundFX();
+         void PlayRandomThunder();
+         void ResetThunderTimer();
+         void ClearRainSoundFX();
+         float MapPrecipRate(float rate);
 
          bool   mAllowClipAjust;
          float  mPrecipStart;
@@ -209,10 +247,13 @@ namespace SimCore
          float  mPreviousNearClipPlane;
          float  mFarClipPlane;
          float  mPreviousFarClipPlane;
+         float  mThunderRangeMin, mThunderRangeMax;
          double mBaseElevation;
          double mMaxVisibility;
          double mMaxElevationVis;
          bool   mUpdatesEnabled;
+
+         SimCore::Actors::PrecipitationType* mCurrentPrecipType;
 
          dtCore::RefPtr<Actors::UniformAtmosphereActor> mAtmosphere;
          dtCore::ObserverPtr<Actors::DayTimeActorProxy> mDayTime;
@@ -221,6 +262,14 @@ namespace SimCore
          // to clouds. If it were not for this reason, the Environment
          // object would instead be referenced directly.
          dtCore::RefPtr<SimCore::Actors::IGEnvironmentActor> mEnvironmentActor;
+
+         
+         dtCore::ObserverPtr<dtAudio::Sound> mCurrentRainSound;
+         dtCore::ObserverPtr<dtAudio::Sound> mCurrentThunderSound;
+         
+         std::vector< dtCore::RefPtr<dtAudio::Sound> > mThunderSounds;
+         std::vector< dtCore::RefPtr<dtAudio::Sound> > mRainSounds;
+
       };
    }
 }
