@@ -31,6 +31,8 @@
 #include <dtActors/engineactorregistry.h>
 #include <dtActors/coordinateconfigactor.h>
 
+#include <dtAudio/sound.h>
+
 #include <dtCore/camera.h>
 #include <dtCore/environment.h>
 #include <dtCore/isector.h>
@@ -60,22 +62,27 @@ namespace SimCore
 {
    namespace Components
    {
+      const dtUtil::RefString WeatherComponent::THUNDER_TIMER_NAME("WeatherTimerForThunder");
+
       //////////////////////////////////////////////////////////
       // Weather Component Code
       //////////////////////////////////////////////////////////
       //////////////////////////////////////////////////////////
       WeatherComponent::WeatherComponent( dtCore::SystemComponentType& type )
-         : dtGame::GMComponent(type),
-         mAllowClipAjust(true),
-         mPrecipStart(0.0f),
-         mNearClipPlane(SimCore::Tools::Binoculars::NEAR_CLIPPING_PLANE),
-         mPreviousNearClipPlane(0.0),
-         mFarClipPlane(SimCore::Tools::Binoculars::FAR_CLIPPING_PLANE),
-         mPreviousFarClipPlane(0.0),
-         mBaseElevation(0.0), // 600 was the old default height for some terrains
-         mMaxVisibility(40000.0),
-         mMaxElevationVis(15000.0),
-         mUpdatesEnabled(true)
+         : dtGame::GMComponent(type)
+         , mAllowClipAjust(true)
+         , mPrecipStart(0.0f)
+         , mNearClipPlane(SimCore::Tools::Binoculars::NEAR_CLIPPING_PLANE)
+         , mPreviousNearClipPlane(0.0)
+         , mFarClipPlane(SimCore::Tools::Binoculars::FAR_CLIPPING_PLANE)
+         , mPreviousFarClipPlane(0.0)
+         , mThunderRangeMin(10.0f)
+         , mThunderRangeMax(120.0f)
+         , mBaseElevation(0.0) // 600 was the old default height for some terrains
+         , mMaxVisibility(40000.0)
+         , mMaxElevationVis(15000.0)
+         , mUpdatesEnabled(true)
+         , mCurrentPrecipType(&SimCore::Actors::PrecipitationType::NONE)
       {
          mPrecipRate = 0;
          mPrecipEffect = NULL;
@@ -84,6 +91,11 @@ namespace SimCore
       //////////////////////////////////////////////////////////
       WeatherComponent::~WeatherComponent()
       {
+         mThunderSounds.clear();
+         mRainSounds.clear();
+
+         mCurrentRainSound = NULL;
+         mCurrentThunderSound = NULL;
       }
 
       //////////////////////////////////////////////////////////
@@ -114,6 +126,8 @@ namespace SimCore
          // "Time Master". If a "Time Master" is connected, the
          // day time actor will be replaced automatically.
          //mDayTime = NULL;
+
+         GetGameManager()->ClearTimer(THUNDER_TIMER_NAME, NULL);
       }
 
       //////////////////////////////////////////////////////////
@@ -388,6 +402,16 @@ namespace SimCore
             // as it should be expected.
             Reset();
          }
+         else if(type == dtGame::MessageType::INFO_TIMER_ELAPSED )
+         {
+            const dtGame::TimerElapsedMessage& timeElapseMessage = static_cast<const dtGame::TimerElapsedMessage&> (msg);
+            if(timeElapseMessage.GetTimerName() == THUNDER_TIMER_NAME)
+            {
+               PlayRandomThunder();
+               ResetThunderTimer();
+            }
+
+         }
       }
 
       //////////////////////////////////////////////////////////
@@ -493,28 +517,26 @@ namespace SimCore
             //     some other precipitation effect needs to respond to
             //     wind forces.
             // TODO: Precipitation effect shutdown and setup
-            if (//m_iPrecipType != atmosActor->GetPrecipitationType() ||
-               mPrecipRate != atmosActor->GetPrecipitationRate())
+            float newPrecipRate = MapPrecipRate(atmosActor->GetPrecipitationRate());
+            
+            if (mCurrentPrecipType != &atmosActor->GetPrecipitationType() || mPrecipRate != newPrecipRate)
             {
-               mPrecipRate = atmosActor->GetPrecipitationRate();	// mm/hr
+               mPrecipRate = newPrecipRate;	// mm/hr
+               mCurrentPrecipType = &atmosActor->GetPrecipitationType();
 
-               // Map rate to a rough 0-1 density based on meteorologist classifications.
-               // A weather server may send specific values in {0,2,5,12,25,75} mm/hr.
-               if (mPrecipRate < 0.1)
-                  mPrecipRate = 0.0;
-               else if (mPrecipRate < 2.5)	// "light rain" is < 2.5 mm/hr
-                  mPrecipRate = 0.2;
-               else if (mPrecipRate < 7.6)
-                  mPrecipRate = 0.4;
-               else if (mPrecipRate < 16)	// "heavy rain" is > 7.6 mm/hr
-                  mPrecipRate = 0.6;
-               else if (mPrecipRate < 50)	// "downpour"   is > 16 mm/hr
-                  mPrecipRate = 0.8;
+                //play sound effects for rain
+                if(mCurrentPrecipType == &SimCore::Actors::PrecipitationType::FREEZING_RAIN
+                     || mCurrentPrecipType == &SimCore::Actors::PrecipitationType::RAIN)
+               {        
+                   UpdateRainSoundFX();
+               }
                else
-                  mPrecipRate = 1.0;
-
+               {
+                   ClearRainSoundFX();
+               }
+         
                bool toContinue = true;
-               if(mPrecipRate < 0.01 || atmosActor->GetPrecipitationType() == SimCore::Actors::PrecipitationType::NONE)
+               if(mPrecipRate < 0.01 || mCurrentPrecipType == &SimCore::Actors::PrecipitationType::NONE)
                {
                   if(mPrecipEffect.valid())
                   {
@@ -537,21 +559,21 @@ namespace SimCore
                      mEnvironmentActor->GetOSGNode()->asGroup()->addChild(mPrecipEffect.get());
                   }
 
-                  if(atmosActor->GetPrecipitationType() == SimCore::Actors::PrecipitationType::FREEZING_RAIN
-                     || atmosActor->GetPrecipitationType() == SimCore::Actors::PrecipitationType::RAIN
-                     || atmosActor->GetPrecipitationType() == SimCore::Actors::PrecipitationType::OTHER
-                     || atmosActor->GetPrecipitationType() == SimCore::Actors::PrecipitationType::UNKNOWN)
+                  if(mCurrentPrecipType == &SimCore::Actors::PrecipitationType::FREEZING_RAIN
+                     || mCurrentPrecipType == &SimCore::Actors::PrecipitationType::RAIN
+                     || mCurrentPrecipType == &SimCore::Actors::PrecipitationType::OTHER
+                     || mCurrentPrecipType == &SimCore::Actors::PrecipitationType::UNKNOWN)
                   {
                      mPrecipEffect->rain(mPrecipRate);
                   }
-                  else if(atmosActor->GetPrecipitationType() == SimCore::Actors::PrecipitationType::SNOW
-                     || atmosActor->GetPrecipitationType() == SimCore::Actors::PrecipitationType::HAIL
-                     || atmosActor->GetPrecipitationType() == SimCore::Actors::PrecipitationType::SLEET
-                     || atmosActor->GetPrecipitationType() == SimCore::Actors::PrecipitationType::GRAUPEL)
+                  else if(mCurrentPrecipType == &SimCore::Actors::PrecipitationType::SNOW
+                     || mCurrentPrecipType == &SimCore::Actors::PrecipitationType::HAIL
+                     || mCurrentPrecipType == &SimCore::Actors::PrecipitationType::SLEET
+                     || mCurrentPrecipType == &SimCore::Actors::PrecipitationType::GRAUPEL)
                   {
                      mPrecipEffect->snow(mPrecipRate);
                   }
-                  else if (atmosActor->GetPrecipitationType() == SimCore::Actors::PrecipitationType::NONE)
+                  else if (mCurrentPrecipType == &SimCore::Actors::PrecipitationType::NONE)
                   {
                      // It really shouldn't even get here because it's shut off above.
                      mPrecipEffect->rain(0.0f);
@@ -698,6 +720,184 @@ namespace SimCore
             UpdateDayTime();
          }
       }
+
+      //////////////////////////////////////////////////////////
+      void WeatherComponent::AddThunderSound(dtAudio::Sound& sound)
+      {
+         mThunderSounds.push_back(&sound);
+      }
+
+      //////////////////////////////////////////////////////////
+      bool WeatherComponent::RemoveThunderSound(dtAudio::Sound& sound)
+      {         
+         return RemoveSoundFromArray(sound, mThunderSounds);
+      }
+
+      //////////////////////////////////////////////////////////
+      const std::vector< dtCore::RefPtr<dtAudio::Sound> >& WeatherComponent::GetThunderSounds() const 
+      {
+         return mThunderSounds;
+      }
+
+
+      //////////////////////////////////////////////////////////
+      void WeatherComponent::AddRainSound(dtAudio::Sound& sound)
+      {
+         mRainSounds.push_back(&sound);
+      }
+
+      //////////////////////////////////////////////////////////
+      bool WeatherComponent::RemoveRainSound(dtAudio::Sound& sound)
+      {
+         return RemoveSoundFromArray(sound, mRainSounds);         
+      }
+
+      //////////////////////////////////////////////////////////
+      const std::vector< dtCore::RefPtr<dtAudio::Sound> >& WeatherComponent::GetRainSounds() const 
+      {
+         return mRainSounds;
+      }
+
+      //////////////////////////////////////////////////////////
+      bool WeatherComponent::RemoveSoundFromArray(dtAudio::Sound& sound, SoundArray& sarray)
+      {
+         bool removed = false;
+
+         SoundArray::iterator iter = std::find(sarray.begin(), sarray.end(), &sound);
+         if(iter != sarray.end())
+         {
+            sarray.erase(iter);
+            removed = true;
+         }
+         
+         return removed;
+      }
+
+      //////////////////////////////////////////////////////////
+      void WeatherComponent::PlayRandomThunder() 
+      {
+         if(!mThunderSounds.empty())
+         {
+            if(mCurrentThunderSound.valid() && mCurrentThunderSound->IsPlaying())
+            {
+               mCurrentThunderSound->Stop();
+            }
+
+            int i = dtUtil::RandRange(0, int(mThunderSounds.size() - 1));
+            mCurrentThunderSound = mThunderSounds[i].get();
+            mCurrentThunderSound->Play();
+
+            GetGameManager()->ClearTimer(THUNDER_TIMER_NAME, NULL);
+         }
+      }
+
+      //////////////////////////////////////////////////////////
+      void WeatherComponent::UpdateRainSoundFX()
+      {              
+         //only play sound effects if its raining
+         if(mPrecipRate > 0.1f)
+         {
+             if(!mRainSounds.empty())
+             {
+                int numRainSounds = mRainSounds.size();
+                float precipRateMax = mPrecipRate;
+                dtUtil::ClampMax(precipRateMax, 16.0f);
+
+                int effectToPlay = int(std::floor(precipRateMax * (numRainSounds / 16.0f)));
+
+                bool playSound = true;
+                if(mCurrentRainSound.valid())
+                {
+                   if(mCurrentRainSound.get() != mRainSounds[effectToPlay].get())
+                   {
+                       mCurrentRainSound->Stop();
+                   }
+                   else
+                   {
+                       playSound = false;
+                   }
+                }
+                if(playSound)
+                {
+                  mCurrentRainSound = mRainSounds[effectToPlay].get();
+                  mCurrentRainSound->Play();
+                }
+                
+             }
+             if(!mThunderSounds.empty())
+             {
+               ResetThunderTimer();
+             }
+         }
+         else
+         {
+            ClearRainSoundFX();
+         }
+
+      }
+
+      void WeatherComponent::ClearRainSoundFX()
+      {
+         //stop current sounds
+         if(mCurrentRainSound.valid())
+         {
+             mCurrentRainSound->Stop();
+             mCurrentRainSound = NULL;
+         }
+
+         if(mCurrentThunderSound.valid())
+         {
+             mCurrentThunderSound->Stop();
+             mCurrentThunderSound = NULL;
+         }
+         
+         GetGameManager()->ClearTimer(THUNDER_TIMER_NAME, NULL);
+      
+      }
+
+      //////////////////////////////////////////////////////////
+      void WeatherComponent::ResetThunderTimer()
+      {
+         //allow time (10 sec) for any existing thunder to clear
+         float randomTime = 10.0f + dtUtil::RandFloat(mThunderRangeMin, mThunderRangeMax);
+         GetGameManager()->SetTimer(THUNDER_TIMER_NAME, NULL, randomTime);
+      }
+
+      //////////////////////////////////////////////////////////
+      void WeatherComponent::SetRandomThunderRangeInSeconds(float from, float to)
+      {
+         mThunderRangeMin = from;
+         mThunderRangeMax = to;
+      }
+
+      //////////////////////////////////////////////////////////
+      void WeatherComponent::GetRandomThunderRangeInSeconds(float& from, float& to) const
+      {
+         from = mThunderRangeMin;
+         to = mThunderRangeMax;
+      }
+
+      //////////////////////////////////////////////////////////
+      float WeatherComponent::MapPrecipRate(float rate)
+      {
+         // Map rate to a rough 0-1 density based on meteorologist classifications.
+         // A weather server may send specific values in {0,2,5,12,25,75} mm/hr.
+         if (rate < 0.1)
+            rate = 0.0;
+         else if (rate < 2.5)	// "light rain" is < 2.5 mm/hr
+            rate = 0.2;
+         else if (rate < 7.6)
+            rate = 0.4;
+         else if (rate < 16)	// "heavy rain" is > 7.6 mm/hr
+            rate = 0.6;
+         else if (rate < 50)	// "downpour"   is > 16 mm/hr
+            rate = 0.8;
+         else
+            rate = 1.0;
+         
+         return rate;
+      }
+
    }
 }
 
