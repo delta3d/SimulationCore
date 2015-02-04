@@ -52,7 +52,7 @@
 
 #include <dtCore/project.h>
 #include <dtCore/map.h>
-#include <dtCore/librarymanager.h>
+#include <dtCore/actorfactory.h>
 
 #include <dtABC/application.h>
 
@@ -206,7 +206,7 @@ int main (int argc, char* argv[])
       dtUtil::SetDataFilePathList(dtUtil::GetDeltaDataPathList());
       dtCore::Project::GetInstance().SetContext("demos/ProjectAssets_Demos");
       dtCore::Project::GetInstance().AddContext("ProjectAssets_Shared");
-      dtCore::LibraryManager::GetInstance().LoadActorRegistry(SimCore::BaseGameEntryPoint::LIBRARY_NAME);
+      dtCore::ActorFactory::GetInstance().LoadActorRegistry(SimCore::BaseGameEntryPoint::LIBRARY_NAME);
       SetupCEGUI(*globalApplication);
    }
    catch(const dtUtil::Exception& ex)
@@ -327,7 +327,7 @@ int main (int argc, char* argv[])
 #endif
    globalGUI = NULL;
 
-   dtCore::LibraryManager::GetInstance().UnloadActorRegistry(SimCore::BaseGameEntryPoint::LIBRARY_NAME);
+   dtCore::ActorFactory::GetInstance().UnloadActorRegistry(SimCore::BaseGameEntryPoint::LIBRARY_NAME);
    dtAudio::AudioManager::Destroy();
 
    return collectedResults.wasSuccessful () ? 0 : 1;

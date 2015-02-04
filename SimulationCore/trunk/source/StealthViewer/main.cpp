@@ -36,7 +36,7 @@
 #include <dtCore/system.h>
 #include <dtAudio/audiomanager.h>
 #include <dtCore/project.h>
-#include <dtCore/librarymanager.h>
+#include <dtCore/actorfactory.h>
 
 #include <sstream>
 #include <cstring>

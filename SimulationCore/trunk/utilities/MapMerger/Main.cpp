@@ -40,7 +40,7 @@
 #include <dtCore/gameevent.h>
 #include <dtCore/gameeventmanager.h>
 #include <dtCore/map.h>
-#include <dtCore/librarymanager.h>
+#include <dtCore/actorfactory.h>
 
 #include <dtAudio/audiomanager.h>
 
