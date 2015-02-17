@@ -92,8 +92,8 @@ namespace SimCore
       bool IGActor::LoadFileStatic(const std::string& fileName, dtCore::RefPtr<osg::Node>& originalFile,
          dtCore::RefPtr<osg::Node>& copiedFile, bool useCache , bool loadTerrainMaterialsOn )
       {
-         //Log::GetInstance().LogMessage(Log::LOG_DEBUG, __FUNCTION__,
-         //   "Loading '%s'", filename.c_str());
+         dtUtil::Log::GetInstance("Resources").LogMessage(dtUtil::Log::LOG_DEBUG, __FUNCTION__, __LINE__,
+            "Loading '%s'", fileName.c_str());
 
          // Setup appropriate options
          osgDB::ReaderWriter::Options* curOptions = osgDB::Registry::instance()->getOptions();
