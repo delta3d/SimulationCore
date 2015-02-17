@@ -118,7 +118,7 @@ namespace SimCore
                dtPhysics::PhysicsActComp::UpdateCallback(this, &BasePhysicsVehicleActor::PrePhysicsUpdate));
 
             dtPhysics::PhysicsObject* po = GetPhysicsActComp()->GetMainPhysicsObject();
-            if (po->GetMechanicsType() == dtPhysics::MechanicsType::DYNAMIC)
+            if (po != NULL && po->GetMechanicsType() == dtPhysics::MechanicsType::DYNAMIC)
             {
                // Disable gravity until the map has loaded terrain under our feet...
                // Note - you can probably do this on remote entities too, but they probably are kinematic anyway
