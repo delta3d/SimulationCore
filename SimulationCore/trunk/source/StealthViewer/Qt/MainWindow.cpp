@@ -107,6 +107,8 @@ DT_DISABLE_WARNING_END
 #include <cmath>
 #include <cfloat>
 
+#include <iostream>
+
 namespace StealthQt
 {
    class StealthWidgetFactory: public dtQt::GLWidgetFactory
@@ -282,6 +284,12 @@ namespace StealthQt
       parser.getApplicationUsage()->addCommandLineOption("-connectionName", "The name of the connection to auto connect to. ");
       parser.getApplicationUsage()->addCommandLineOption("-configurationName", "The name of the configuration settings to use.  "
                "This allows having separate sets of preferences on the same computer/login.");
+      parser.getApplicationUsage()->addCommandLineOption("-h", "Print out this help information.");
+
+      if (parser.read("-h"))
+      {
+         parser.getApplicationUsage()->write(std::cout, parser.getApplicationUsage()->getCommandLineOptions());
+      }
 
       std::string name;
       if (parser.read("-configurationName", name))
@@ -295,6 +303,7 @@ namespace StealthQt
          // It's not really the "current" connection name.
          mCurrentConnectionName = name.c_str();
       }
+
    }
 
    //////////////////////////////////////////////////////////
