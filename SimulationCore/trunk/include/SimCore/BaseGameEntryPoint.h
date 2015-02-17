@@ -67,7 +67,6 @@ namespace SimCore
 
          /// Name of the config property pointing to the directory holding the project context.
          static const std::string CONFIG_PROP_PROJECT_CONTEXT_PATH;
-         /// Property enable shader-based human/character skinning
          static const std::string CONFIG_PROP_DEVELOPERMODE;
          static const std::string CONFIG_PROP_ASPECT_RATIO;
          static const std::string CONFIG_PROP_MUNITION_MAP;
