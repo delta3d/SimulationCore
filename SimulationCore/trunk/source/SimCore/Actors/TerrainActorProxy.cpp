@@ -107,7 +107,21 @@ namespace SimCore
 
             options->setOptionString("loadMaterialsToStateSet");
 
-            mLoadedNode = osgDB::readNodeFile(mFileToLoad, options.get());
+            mLoadedNode = NULL;
+
+            try
+            {
+               mLoadedNode = osgDB::readNodeFile(mFileToLoad, options.get());
+               mComplete = true;
+            }
+            catch(...)
+            {
+               LOG_ERROR("Exception thrown trying to load terrain:" + mFileToLoad);
+               mComplete = true;
+            }
+         }
+         else
+         {
             mComplete = true;
          }
       }
