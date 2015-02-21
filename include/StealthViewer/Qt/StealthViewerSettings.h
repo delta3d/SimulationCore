@@ -169,6 +169,13 @@ namespace StealthQt
          virtual ~StealthViewerSettings();
 
          /**
+          * Method to determine if their are setting data to load.
+          * This is good for determining if the the viewer is launching 
+          * for the first time.
+          */
+         bool HasSavedData() const;
+
+         /**
           * Adds a new connection to the list
           * @param name The connection name
           * @param mapName The name of the map
