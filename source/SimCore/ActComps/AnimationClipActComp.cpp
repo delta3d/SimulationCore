@@ -149,8 +149,6 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////
       // ANIMATION CLIP ACTOR COMPONENT
       ////////////////////////////////////////////////////////////////////////////////
-      const dtGame::ActorComponent::ACType AnimationClipActComp::TYPE(new dtCore::ActorType("AnimationClipActComp","ActorComponents",
-            "Plays animation clips stored in the geometry of a drawable.", dtGame::ActorComponent::BaseActorComponentType));
       const dtUtil::RefString AnimationClipActComp::PROPERTY_ANIMATION_PROPERTY_ARRAY("Animation Property Array");
       const dtUtil::RefString AnimationClipActComp::PROPERTY_PAUSED;
 

@@ -85,6 +85,7 @@
 #include <SimCore/Components/TimedDeleterComponent.h>
 #include <SimCore/Components/BaseInputComponent.h>
 
+#include <SimCore/ActComps/AnimationClipActComp.h>
 
 #include <dtActors/engineactorregistry.h>
 
@@ -162,6 +163,12 @@ namespace SimCore
             dtGame::BaseInputComponent::DEFAULT_TYPE));
       const std::string BaseInputComponent::DEFAULT_NAME(BaseInputComponent::TYPE->GetName());
 
+   }
+
+   namespace ActComps
+   {
+      const dtGame::ActorComponent::ACType AnimationClipActComp::TYPE(new dtCore::ActorType("AnimationClipActComp","ActorComponents",
+            "Plays animation clips stored in the geometry of a drawable.", dtGame::ActorComponent::BaseActorComponentType));
    }
 
    namespace Actors
@@ -319,6 +326,7 @@ namespace SimCore
 
       RefPtr<dtCore::ActorType> EntityActorRegistry::BATTLEFIELD_GRAPHICS_ACTOR_TYPE( new dtCore::ActorType("BattlefieldGraphics", "SimCore", "Represents a shape or area that is extruded in 2D."));
 
+
       ///////////////////////////////////////////////////////////////////////////
       extern "C" SIMCORE_EXPORT dtCore::ActorPluginRegistry* CreatePluginRegistry()
       {
@@ -439,6 +447,8 @@ namespace SimCore
          mActorFactory->RegisterType<CamoConfigActorProxy>(CAMO_CONFIG_ACTOR_TYPE.get());
 
          mActorFactory->RegisterType<BattlefieldGraphicsActorProxy>(BATTLEFIELD_GRAPHICS_ACTOR_TYPE.get());
+
+         mActorFactory->RegisterType<SimCore::ActComps::AnimationClipActComp>();
 
       }
    }
