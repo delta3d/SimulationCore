@@ -316,6 +316,18 @@ namespace StealthQt
       mUi->mSearchCallSignLineEdit->installEventFilter(this);
       mUi->mSearchEntityTableWidget->installEventFilter(this);
 
+      // Only hide panels for subsequent launches of the viewer
+      // from the initial fist time launch. Some users may want
+      // the the window to load at certain size, location and dock
+      // configuration. Having some docks visible by default may
+      // disturb the intended window dimensions.
+      if ( ! StealthViewerData::GetInstance().GetSettings().HasSavedData())
+      {
+         mUi->mControlsDockWidget->hide();
+         mUi->mEntityInfoDockWidget->hide();
+         mUi->mPreferencesDockWidget->hide();
+      }
+
       //mUi->mGeneralAdvancedPerformanceOptionsGroupBox->hide();
       mUi->mRecordTimeMarkersGroupBox->hide();
       mUi->mPlaybackTimeMarkersGroupBox->hide();

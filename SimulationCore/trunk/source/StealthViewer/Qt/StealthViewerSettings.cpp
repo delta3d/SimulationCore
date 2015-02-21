@@ -189,6 +189,12 @@ namespace StealthQt
    }
 
    /////////////////////////////////////////////////////////////////////
+   bool StealthViewerSettings::HasSavedData() const
+   {
+      return contains(WINDOW_GEOMETRY);
+   }
+
+   /////////////////////////////////////////////////////////////////////
    bool StealthViewerSettings::AddConnection(const QString& name,
       const QString& mapResource, const QString& configResource, const QString& fedResource,
       const QString& fedex, const QString& federateName, const QString& ridFile,
