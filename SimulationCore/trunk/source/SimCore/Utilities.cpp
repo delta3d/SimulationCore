@@ -37,6 +37,7 @@
 #include <sstream>
 
 #include <dtPhysics/palphysicsworld.h>
+#include <algorithm>
 
 namespace SimCore
 {
@@ -66,8 +67,10 @@ namespace Utils
 
 
    ///////////////////////////////////////////////////////////////////////
-   void LoadMaps(dtGame::GameManager& gm, std::string baseMapName)
+   bool LoadMaps(dtGame::GameManager& gm, const std::string& baseMapName)
    {
+      bool result = false;
+
       // BaseMapName is not required, but if provided, it must exist
       if (!baseMapName.empty())
       {
@@ -85,24 +88,86 @@ namespace Utils
 
       // Get the other map names used in loading prototypes
       // and other application data.
-      std::vector<std::string> mapNames;
-
-      if (!baseMapName.empty())
-      {
-         mapNames.push_back(baseMapName);
-      }
+      dtGame::GameManager::NameVector mapNames;
+      dtGame::GameManager::NameVector mapsToClose;
 
       GetAdditionalMaps(gm, mapNames);
 
-      try
+      bool hasAllAdditionalMaps = true;
+
+      mapsToClose = gm.GetCurrentMapSet();
+
+      for (unsigned i = 0; i < mapNames.size(); ++i)
       {
-         gm.ChangeMapSet(mapNames, false);
+         dtGame::GameManager::NameVector::iterator found = std::find(mapsToClose.begin(), mapsToClose.end(), mapNames[i]);
+         if (found == mapsToClose.end())
+         {
+            hasAllAdditionalMaps = false;
+         }
+         else
+         {
+            do
+            {
+               mapsToClose.erase(found);
+               found = std::find(mapsToClose.begin(), mapsToClose.end(), mapNames[i]);
+            }
+            while (found != mapsToClose.end());
+         }
       }
-      catch(const dtUtil::Exception& e)
+
+      bool baseMapOpenAlready = false;
+      if (!baseMapName.empty())
       {
-         e.LogException(dtUtil::Log::LOG_ERROR);
-         throw;
+         if (!hasAllAdditionalMaps)
+         {
+            dtGame::GameManager::NameVector::iterator found = std::find(mapNames.begin(), mapNames.end(), baseMapName);
+            if (found == mapNames.end())
+               mapNames.push_back(baseMapName);
+         }
+         else
+         {
+            dtGame::GameManager::NameVector::iterator found = std::find(mapsToClose.begin(), mapsToClose.end(), baseMapName);
+            if (found != mapsToClose.end())
+            {
+               mapsToClose.erase(found);
+               baseMapOpenAlready = true;
+            }
+         }
       }
+
+      if (!hasAllAdditionalMaps)
+      {
+         try
+         {
+            gm.ChangeMapSet(mapNames, false);
+            result = true;
+         }
+         catch(const dtUtil::Exception& e)
+         {
+            e.LogException(dtUtil::Log::LOG_ERROR);
+            throw;
+         }
+      }
+      else
+      {
+         try
+         {
+            if (!mapsToClose.empty())
+               gm.CloseAdditionalMapSet(mapsToClose);
+            if (!baseMapName.empty() && !baseMapOpenAlready)
+            {
+               mapNames.clear();
+               mapNames.push_back(baseMapName);
+               gm.OpenAdditionalMapSet(mapNames);
+            }
+         }
+         catch(const dtUtil::Exception& e)
+         {
+            e.LogException(dtUtil::Log::LOG_ERROR);
+            throw;
+         }
+      }
+      return result;
    }
 
    ///////////////////////////////////////////////////////////////////////
