@@ -208,6 +208,7 @@ namespace StealthQt
          // Disconnect from network
          if(mHLAComp != NULL)
          {
+
             mHLAComp->Disconnect();
          }
 

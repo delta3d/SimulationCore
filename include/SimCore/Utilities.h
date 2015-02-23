@@ -57,8 +57,11 @@ namespace Utils
    //    Ex: <Property Name="AdditionalMap1">DriverPrototypes</Property> 
    void SIMCORE_EXPORT GetAdditionalMaps(dtGame::GameManager& gm, std::vector<std::string>& toFill);
 
-   // Attempts to load the maps - using passed in map PLUS any additional maps in config.
-   void SIMCORE_EXPORT LoadMaps(dtGame::GameManager& gm, std::string baseMapName);
+   /**
+    * Attempts to load the maps - using passed in map PLUS any additional maps in config.
+    * @return if it needed to do a map change or false if it's job could be completed without one.
+    */
+   bool SIMCORE_EXPORT LoadMaps(dtGame::GameManager& gm, const std::string& baseMapName);
 
    /// A simple utility to check the DeveloperMode config parameter.
    bool SIMCORE_EXPORT IsDevModeOn(dtGame::GameManager& gm); 

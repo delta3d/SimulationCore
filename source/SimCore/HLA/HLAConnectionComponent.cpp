@@ -199,7 +199,6 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////
       void HLAConnectionComponent::DoReconnectToNetwork()
       {
-
          AddComponentsForConnectionType();
 
          GetGameManager()->SetPaused(true);
@@ -364,13 +363,10 @@ namespace SimCore
                GetGameManager()->GetGMSettings().SetClientRole(true);
             }
 
-            if (mapName.empty())
+            // If load maps doesn't need to wait for a map change.
+            if (!SimCore::Utils::LoadMaps(*GetGameManager(), mapName))
             {
                DoReconnectToNetwork();
-            }
-            else
-            {
-               SimCore::Utils::LoadMaps(*GetGameManager(), mapName);
             }
             mState = &HLAConnectionComponent::ConnectionState::STATE_CONNECTING;
          }
@@ -401,7 +397,6 @@ namespace SimCore
                GetComponentByName(SimCore::Components::TimedDeleterComponent::DEFAULT_NAME));
             if (deleterComp != NULL)
                deleterComp->Clear();
-
 
             // DISCONNECT HLA
             dtHLAGM::HLAComponent* hlaComp = GetHLAComponent();
