@@ -27,9 +27,11 @@
 #include <dtUtil/enumeration.h>
 #include <dtCore/refptr.h>
 #include <dtCore/uniqueid.h>
+#include <dtUtil/getsetmacros.h>
 
 #include <StealthViewer/GMApp/ConfigurationObjectInterface.h>
 #include <StealthViewer/GMApp/Export.h>
+
 
 #include <osg/Vec2f>
 #include <osg/Vec3>
@@ -209,6 +211,9 @@ namespace StealthGM
           * @param name The connection name
           */
          void SetStartupConnectionName(const std::string &name) { mStartupConnectionName = name;}
+
+         DT_DECLARE_ACCESSOR_INLINE(bool, AutoReconnect);
+         DT_DECLARE_ACCESSOR_INLINE(unsigned, AutoReconnectTimeout);
 
          /**
           * Gets the connection name to reconnect to

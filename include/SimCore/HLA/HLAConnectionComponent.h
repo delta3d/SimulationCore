@@ -73,7 +73,10 @@ namespace SimCore
                   static const ConnectionState STATE_NOT_CONNECTED;
                   static const ConnectionState STATE_CONNECTING;
                   static const ConnectionState STATE_CONNECTED;
+                  /// This is for a fatal error
                   static const ConnectionState STATE_ERROR;
+                  // The connection was dropped either because of a network error or because a 3rd party closed it.
+                  static const ConnectionState STATE_DISCONNECTED;
 
                protected:
                   ConnectionState(const std::string &name) : dtUtil::Enumeration(name)

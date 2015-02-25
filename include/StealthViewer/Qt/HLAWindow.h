@@ -71,8 +71,11 @@ namespace StealthQt
          /// Destructor
          virtual ~HLAWindow();
 
-         /// Connects to HLA
+         /// Connects to the network. Returns true for success
          bool SetConnectionValues(QStringList& properties);
+
+         // Connects to network with the last set values.  Returns true for success
+         bool Connect();
 
          /// This exists mainly for the unit tests;
          QListWidget* GetNetworkListWidget();
@@ -117,6 +120,7 @@ namespace StealthQt
 
          /// Private helper method to connect slots
          void ConnectSlots();
+         void UpdateConnectText();
 
          Ui::HLAWindow *mUi;
 

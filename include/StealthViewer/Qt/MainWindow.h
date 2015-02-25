@@ -336,6 +336,8 @@ namespace StealthQt
          /// Called when we connect to HLA
          void OnConnectToNetwork(QString connectionName);
 
+         void OnConnectToNetworkFailed(QString connectionName);
+
          /// Called when we disconnect from HLA
          void OnDisconnectFromNetwork(bool disableUI);
 

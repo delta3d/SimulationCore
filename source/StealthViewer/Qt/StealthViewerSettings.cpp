@@ -105,6 +105,8 @@ namespace StealthQt
       const QString StealthViewerSettings::LOD_SCALE("LOD_SCALE");
       const QString StealthViewerSettings::RECONNECT_ON_STARTUP("RECONNECT_ON_STARTUP");
       const QString StealthViewerSettings::STARTUP_CONNECTION_NAME("STARTUP_CONNECTION_NAME");
+      const QString StealthViewerSettings::AUTO_RECONNECT("AUTO_RECONNECT");
+      const QString StealthViewerSettings::AUTO_RECONNECT_TIMEOUT("AUTO_RECONNECT_TIMEOUT");
 
    const QString StealthViewerSettings::PREFERENCES_ENVIRONMENT_GROUP("PREFERENCES_ENVIRONMENT_GROUP");
       const QString StealthViewerSettings::USE_NETWORK_SETTINGS("USE_NETWORK_SETTINGS");
@@ -559,6 +561,8 @@ namespace StealthQt
          setValue(StealthViewerSettings::LOD_SCALE, genConfig.GetLODScale());
          setValue(StealthViewerSettings::RECONNECT_ON_STARTUP, genConfig.GetReconnectOnStartup());
          setValue(StealthViewerSettings::STARTUP_CONNECTION_NAME, genConfig.GetStartupConnectionName().c_str());
+         setValue(StealthViewerSettings::AUTO_RECONNECT, genConfig.GetAutoReconnect());
+         setValue(StealthViewerSettings::AUTO_RECONNECT_TIMEOUT, genConfig.GetAutoReconnectTimeout());
 
       endGroup();
    }
@@ -888,6 +892,16 @@ namespace StealthQt
          }
 
          genConfig.SetReconnectOnStartup(connectValue, name.toStdString());
+
+         if (contains(StealthViewerSettings::AUTO_RECONNECT))
+         {
+            genConfig.SetAutoReconnect(value(StealthViewerSettings::AUTO_RECONNECT).toBool());
+         }
+
+         if (contains(StealthViewerSettings::AUTO_RECONNECT_TIMEOUT))
+         {
+            genConfig.SetAutoReconnectTimeout(value(StealthViewerSettings::AUTO_RECONNECT_TIMEOUT).toUInt());
+         }
 
       endGroup();
    }

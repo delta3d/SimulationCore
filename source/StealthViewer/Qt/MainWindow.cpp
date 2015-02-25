@@ -387,7 +387,7 @@ namespace StealthQt
       mDurationTimer.setInterval(1000);
       mDurationTimer.setSingleShot(false);
 
-      mHLAErrorTimer.setInterval(10000);
+      mHLAErrorTimer.setInterval(1000);
       mHLAErrorTimer.setSingleShot(true);
 
       mUi->mWarpToLat->setValidator(mLatValidator);
@@ -501,10 +501,11 @@ namespace StealthQt
       mIsConnectedToANetwork = comp->GetConnectionState() !=
          SimCore::HLA::HLAConnectionComponent::ConnectionState::STATE_NOT_CONNECTED;
 
+      mHLAErrorTimer.stop();
       HLAWindow window(*mGM, this, NULL, mIsConnectedToANetwork, mCurrentConnectionName);
 
       connect(&window, SIGNAL(ConnectedToNetwork(QString)), this, SLOT(OnConnectToNetwork(QString)));
-      connect(&window, SIGNAL(ConnectedToNetworkFailed(QString)), this, SLOT(EndWaitCursor()));
+      connect(&window, SIGNAL(ConnectedToNetworkFailed(QString)), this, SLOT(OnConnectToNetworkFailed(QString)));
       connect(&window, SIGNAL(DisconnectedFromNetwork(bool)), this, SLOT(OnDisconnectFromNetwork(bool)));
 
       if (window.exec() == QDialog::Accepted)
@@ -2160,11 +2161,34 @@ namespace StealthQt
       mCurrentConnectionName = connectionName;
 
       EnableGeneralUIAndTick();
+      StealthGM::PreferencesGeneralConfigObject& genConfig = StealthViewerData::GetInstance().GetGeneralConfigObject();
+      if (genConfig.GetAutoReconnect())
+      {
+         mHLAErrorTimer.setInterval(1000 * genConfig.GetAutoReconnectTimeout());
+      }
+      else
+      {
+         mHLAErrorTimer.setInterval(1000);
+      }
       mHLAErrorTimer.start();
       mUi->mActionMaps->setEnabled(false);
 
       EndWaitCursor();
    }
+
+   ///////////////////////////////////////////////////////////////////
+   void MainWindow::OnConnectToNetworkFailed(QString connectionName)
+   {
+      DisableGeneralUIAndTick();
+      StealthGM::PreferencesGeneralConfigObject& genConfig = StealthViewerData::GetInstance().GetGeneralConfigObject();
+      if (genConfig.GetAutoReconnect())
+      {
+         mHLAErrorTimer.setInterval(1000 * genConfig.GetAutoReconnectTimeout());
+         mHLAErrorTimer.start();
+      }
+      EndWaitCursor();
+   }
+
 
    ///////////////////////////////////////////////////////////////////
    void MainWindow::OnDisconnectFromNetwork(bool disableUI)
@@ -2272,13 +2296,20 @@ namespace StealthQt
 
       if (comp->GetConnectionState() == SimCore::HLA::HLAConnectionComponent::ConnectionState::STATE_ERROR)
       {
-         QMessageBox::critical(this, tr("Error"),
-                  tr("An error occurred while connecting to the network. ") +
-                  tr("Please check your connection settings from the Network tab ") +
-                  tr("and ensure they are correct."),
-                  QMessageBox::Ok);
+         if (StealthViewerData::GetInstance().GetGeneralConfigObject().GetAutoReconnect())
+         {
+            ReconnectToHLA();
+         }
+         else
+         {
+            QMessageBox::critical(this, tr("Error"),
+                     tr("An error occurred while connecting to the network. ") +
+                     tr("Please check your connection settings from the Network tab ") +
+                     tr("and ensure they are correct."),
+                     QMessageBox::Ok);
 
-         OnConnectionWindowActionTriggered();
+            OnConnectionWindowActionTriggered();
+         }
       }
       else if (comp->GetConnectionState() == SimCore::HLA::HLAConnectionComponent::ConnectionState::STATE_CONNECTING)
       {
@@ -2377,7 +2408,7 @@ namespace StealthQt
          return;
 
       // Look up the properties for the name
-      QString connectionName = tr(name.c_str());
+      QString connectionName = QString(name.c_str());
       QStringList connectionProps =
          StealthViewerData::GetInstance().GetSettings().GetConnectionProperties(connectionName);
 
