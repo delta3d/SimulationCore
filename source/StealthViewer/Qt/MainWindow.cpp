@@ -501,7 +501,7 @@ namespace StealthQt
       mIsConnectedToANetwork = comp->GetConnectionState() !=
          SimCore::HLA::HLAConnectionComponent::ConnectionState::STATE_NOT_CONNECTED;
 
-      mHLAErrorTimer.stop();
+      //mHLAErrorTimer.stop();
       HLAWindow window(*mGM, this, NULL, mIsConnectedToANetwork, mCurrentConnectionName);
 
       connect(&window, SIGNAL(ConnectedToNetwork(QString)), this, SLOT(OnConnectToNetwork(QString)));
@@ -2195,6 +2195,7 @@ namespace StealthQt
    {
       mIsConnectedToANetwork = false;
       mCurrentConnectionName = tr("");
+      mHLAErrorTimer.stop();
 
       if (disableUI)
       {
