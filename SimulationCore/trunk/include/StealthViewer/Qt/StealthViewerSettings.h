@@ -96,6 +96,8 @@ namespace StealthQt
             static const QString LOD_SCALE;
             static const QString RECONNECT_ON_STARTUP;
             static const QString STARTUP_CONNECTION_NAME;
+            static const QString AUTO_RECONNECT;
+            static const QString AUTO_RECONNECT_TIMEOUT;
 
          static const QString PREFERENCES_ENVIRONMENT_GROUP;
             static const QString USE_NETWORK_SETTINGS;

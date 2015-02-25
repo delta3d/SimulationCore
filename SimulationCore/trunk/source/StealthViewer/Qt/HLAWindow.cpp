@@ -77,16 +77,18 @@ namespace StealthQt
          static_cast<SimCore::HLA::HLAConnectionComponent*>
          (gm.GetComponentByName(SimCore::HLA::HLAConnectionComponent::DEFAULT_NAME));
 
-      mUi->mConnectPushButton->setEnabled(!mIsConnected && mUi->mNetworkListWidget->currentItem() != NULL);
-      mUi->mDisconnectPushButton->setEnabled(mIsConnected);
       mUi->mEditPushButton->setEnabled(false);
       mUi->mDeletePushButton->setEnabled(false);
 
       if(!mCurrentConnectionName.isEmpty())
          mUi->mCurrentConnectionLineEdit->setText(mCurrentConnectionName);
 
+      StealthGM::PreferencesGeneralConfigObject& genConfig = StealthViewerData::GetInstance().GetGeneralConfigObject();
       bool connect =
          StealthViewerData::GetInstance().GetGeneralConfigObject().GetReconnectOnStartup();
+
+      mUi->mAutoReconnect->setChecked(genConfig.GetAutoReconnect());
+      mUi->mAutoReconnectDelayTime->setValue(genConfig.GetAutoReconnectTimeout());
 
       mUi->mReconnectOnStartupCheckBox->setChecked(connect);
 
@@ -100,6 +102,8 @@ namespace StealthQt
       {
          mUi->mNetworkListWidget->setCurrentItem(mUi->mNetworkListWidget->item(0));
       }
+
+      UpdateConnectText();
    }
 
    //////////////////////////////////////////////////////////////
@@ -119,7 +123,6 @@ namespace StealthQt
    void HLAWindow::ConnectSlots()
    {
       connect(mUi->mConnectPushButton,    SIGNAL(clicked(bool)), this, SLOT(OnConnect(bool)));
-      connect(mUi->mDisconnectPushButton, SIGNAL(clicked(bool)), this, SLOT(OnDisconnect(bool)));
       connect(mUi->mClosePushButton,      SIGNAL(clicked(bool)), this, SLOT(OnClose(bool)));
       connect(mUi->mNewPushButton,        SIGNAL(clicked(bool)), this, SLOT(OnNew(bool)));
       connect(mUi->mEditPushButton,       SIGNAL(clicked(bool)), this, SLOT(OnEdit(bool)));
@@ -137,6 +140,24 @@ namespace StealthQt
    }
 
    //////////////////////////////////////////////////////////////
+   void HLAWindow::UpdateConnectText()
+   {
+      if( mHLAComp != NULL)
+      {
+         if (mHLAComp->GetConnectionState() == SimCore::HLA::HLAConnectionComponent::ConnectionState::STATE_NOT_CONNECTED )
+         {
+            mUi->mConnectPushButton->setText(tr("Connect"));
+            mUi->mConnectPushButton->setEnabled(mUi->mNetworkListWidget->currentItem() != NULL);
+         }
+         else
+         {
+            mUi->mConnectPushButton->setText(tr("Disconnect"));
+            mUi->mConnectPushButton->setEnabled(true);
+         }
+      }
+   }
+
+   //////////////////////////////////////////////////////////////
    void HLAWindow::OnConnect(bool checked)
    {
       if( mHLAComp == NULL )
@@ -150,19 +171,7 @@ namespace StealthQt
          SimCore::HLA::HLAConnectionComponent::ConnectionState::STATE_NOT_CONNECTED )
       {
          OnDisconnect();
-
-         // If the disconnect from current network message box
-         // is picked to cancel, this flag will be set to true
-         // in which case we need to leave this method.
-
-         // This is done since OnDisconnect is a SLOT, it's return value
-         // CANNOT be changed to mismatch the SIGNAL prototype.
-         if(mCancelConnectProcess)
-         {
-            // Make sure to flip this back to false
-            mCancelConnectProcess = false;
-            return;
-         }
+         return;
       }
 
       QListWidgetItem *currentItem = mUi->mNetworkListWidget->currentItem();
@@ -176,15 +185,12 @@ namespace StealthQt
       mUi->mCurrentConnectionLineEdit->setText(currentItem->text());
       mCurrentConnectionName = currentItem->text();
 
-      QString connectionName = currentItem->text();
-
       QStringList props =
-         StealthViewerData::GetInstance().GetSettings().GetConnectionProperties(connectionName);
+         StealthViewerData::GetInstance().GetSettings().GetConnectionProperties(mCurrentConnectionName);
 
       mIsConnected = SetConnectionValues(props);
 
-      mUi->mDisconnectPushButton->setEnabled( mIsConnected );
-      mUi->mConnectPushButton->setEnabled( ! mIsConnected );
+      UpdateConnectText();
 
       if (mIsConnected)
       {
@@ -208,13 +214,8 @@ namespace StealthQt
          // Disconnect from network
          if(mHLAComp != NULL)
          {
-
             mHLAComp->Disconnect();
          }
-
-         // Disable applicable buttons
-         mUi->mDisconnectPushButton->setEnabled(false);
-         mUi->mConnectPushButton->setEnabled(true);
 
          if(mUi->mNetworkListWidget->currentItem() != NULL)
          {
@@ -239,11 +240,7 @@ namespace StealthQt
 
          emit DisconnectedFromNetwork(mapsUnloaded);
       }
-      else
-      {
-         // Cancel, because they selected QMessageBox::No
-         mCancelConnectProcess = true;
-      }
+      UpdateConnectText();
    }
 
    //////////////////////////////////////////////////////////////
@@ -256,6 +253,9 @@ namespace StealthQt
 
       genConfig.SetReconnectOnStartup(mUi->mReconnectOnStartupCheckBox->isChecked(),
          mCurrentConnectionName != "" ? mCurrentConnectionName.toStdString() : "");
+
+      genConfig.SetAutoReconnect(mUi->mAutoReconnect->isChecked());
+      genConfig.SetAutoReconnectTimeout(unsigned(mUi->mAutoReconnectDelayTime->value()));
 
       close();
    }
@@ -403,27 +403,8 @@ namespace StealthQt
                mHLAComp->SetConnectionType(SimCore::HLA::HLAConnectionComponent::ConnectionType::TYPE_NONE);
             }
 
-            try
-            {
-               mHLAComp->StartNetworkConnection();
-            }
-            catch(const dtUtil::Exception& e)
-            {
-               QMessageBox::warning(this, tr("Error"),
-                  tr("An error occurred while trying to connect to the network: ") +
-                  tr(e.What().c_str()), QMessageBox::Ok);
-            }
-
-            if (mHLAComp->GetConnectionState() != SimCore::HLA::HLAConnectionComponent::ConnectionState::STATE_NOT_CONNECTED)
-            {
-               result = true;
-               emit ConnectedToNetwork(properties[0]);
-            }
-            else
-            {
-               result = false;
-               emit ConnectedToNetworkFailed(properties[0]);
-            }
+            mCurrentConnectionName = properties[0];
+            result = Connect();
          }
       }
       catch(const dtUtil::Exception& ex)
@@ -436,10 +417,43 @@ namespace StealthQt
    }
 
    //////////////////////////////////////////////////////////////
+   bool HLAWindow::Connect()
+   {
+      bool result = false;
+      try
+      {
+         mHLAComp->StartNetworkConnection();
+      }
+      catch(const dtUtil::Exception& e)
+      {
+         StealthGM::PreferencesGeneralConfigObject& genConfig =
+            StealthViewerData::GetInstance().GetGeneralConfigObject();
+
+         if (!genConfig.GetAutoReconnect())
+         {
+            QMessageBox::warning(this, tr("Error"),
+               tr("An error occurred while trying to connect to the network: ") +
+               tr(e.What().c_str()), QMessageBox::Ok);
+         }
+      }
+
+      if (mHLAComp->GetConnectionState() != SimCore::HLA::HLAConnectionComponent::ConnectionState::STATE_NOT_CONNECTED)
+      {
+         result = true;
+         emit ConnectedToNetwork(mCurrentConnectionName);
+      }
+      else
+      {
+         result = false;
+         emit ConnectedToNetworkFailed(mCurrentConnectionName);
+      }
+      return result;
+   }
+
+   //////////////////////////////////////////////////////////////
    void HLAWindow::OnCurrentTextChanged(const QString& str)
    {
       mUi->mConnectPushButton->setEnabled(!str.isEmpty() && !mIsConnected);
-      //mUi->mDisconnectPushButton->setEnabled(mIsConnected);
       mUi->mEditPushButton->setEnabled(!str.isEmpty() && !mIsConnected);
       mUi->mDeletePushButton->setEnabled(!str.isEmpty() && !mIsConnected);
    }

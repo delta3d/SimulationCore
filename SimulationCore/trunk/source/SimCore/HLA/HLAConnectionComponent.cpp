@@ -103,6 +103,7 @@ namespace SimCore
       const HLAConnectionComponent::ConnectionState HLAConnectionComponent::ConnectionState::STATE_CONNECTING("CONNECTING");
       const HLAConnectionComponent::ConnectionState HLAConnectionComponent::ConnectionState::STATE_CONNECTED("CONNECTED");
       const HLAConnectionComponent::ConnectionState HLAConnectionComponent::ConnectionState::STATE_ERROR("ERROR");
+      const HLAConnectionComponent::ConnectionState HLAConnectionComponent::ConnectionState::STATE_DISCONNECTED("DISCONNECTED");
 
       IMPLEMENT_ENUM(HLAConnectionComponent::ConnectionType);
       HLAConnectionComponent::ConnectionType HLAConnectionComponent::ConnectionType::TYPE_NONE("NONE");
@@ -154,6 +155,18 @@ namespace SimCore
             GetGameManager()->SetPaused(false);
             mPausedDuringConnectionFrame = false;
          }
+         else if (*mState ==  HLAConnectionComponent::ConnectionState::STATE_CONNECTED
+               && *mConnectionType == ConnectionType::TYPE_CLIENTSERVER
+               && msg.GetMessageType() == dtGame::MessageType::TICK_LOCAL)
+         {
+            dtNetGM::ClientNetworkComponent* clientNetworkComponent = NULL;
+            GetGameManager()->GetComponentByName(dtNetGM::ClientNetworkComponent::DEFAULT_NAME, clientNetworkComponent);
+
+            if (clientNetworkComponent != NULL && !clientNetworkComponent->IsConnected())
+            {
+               mState = &HLAConnectionComponent::ConnectionState::STATE_DISCONNECTED;
+            }
+         }
       }
 
       void HLAConnectionComponent::AddComponentsForConnectionType()
@@ -164,7 +177,7 @@ namespace SimCore
          if (*mConnectionType == ConnectionType::TYPE_CLIENTSERVER)
          {
             //LOG_WARNING("Creating new client networking component during connection.");
-            dtNetGM::ClientNetworkComponent* clientNetworkComponent;
+            dtNetGM::ClientNetworkComponent* clientNetworkComponent = NULL;
             GetGameManager()->GetComponentByName(dtNetGM::ClientNetworkComponent::DEFAULT_NAME, clientNetworkComponent);
             if(clientNetworkComponent == NULL) // if not already created, create one. Remove this eventually, see two lines down.
             {
@@ -363,17 +376,17 @@ namespace SimCore
                GetGameManager()->GetGMSettings().SetClientRole(true);
             }
 
+            mState = &HLAConnectionComponent::ConnectionState::STATE_CONNECTING;
             // If load maps doesn't need to wait for a map change.
             if (!SimCore::Utils::LoadMaps(*GetGameManager(), mapName))
             {
                DoReconnectToNetwork();
             }
-            mState = &HLAConnectionComponent::ConnectionState::STATE_CONNECTING;
          }
          catch(const dtUtil::Exception& e)
          {
             mMapNames.clear();
-            mState = &HLAConnectionComponent::ConnectionState::STATE_NOT_CONNECTED;
+            mState = &HLAConnectionComponent::ConnectionState::STATE_ERROR;
             throw e;
          }
       }

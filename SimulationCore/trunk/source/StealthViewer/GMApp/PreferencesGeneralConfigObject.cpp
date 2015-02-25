@@ -62,7 +62,9 @@ namespace StealthGM
 
    ////////////////////////////////////////////////////////////////
    PreferencesGeneralConfigObject::PreferencesGeneralConfigObject()
-   : mAttachMode(&PreferencesGeneralConfigObject::AttachMode::THIRD_PERSON)
+   : mAutoReconnect(false)
+   , mAutoReconnectTimeout(30)
+   , mAttachMode(&PreferencesGeneralConfigObject::AttachMode::THIRD_PERSON)
    , mEnableCameraCollision(true)
    , mPerformanceMode(&PreferencesGeneralConfigObject::PerformanceMode::DEFAULT)
    , mLODScale(1.0f)

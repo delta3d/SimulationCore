@@ -166,6 +166,9 @@ void StealthViewerSettingsTests::TestGeneralSettings()
    genConfig.SetLODScale(2.0f);
    genConfig.SetPerformanceMode(StealthGM::PreferencesGeneralConfigObject::PerformanceMode::BEST_GRAPHICS);
    genConfig.SetShowAdvancedOptions(true);
+   genConfig.SetReconnectOnStartup(true, "booga");
+   genConfig.SetAutoReconnect(true);
+   genConfig.SetAutoReconnectTimeout(43);
 
    {
       viewConfig.GetMainViewWindow().SetUseAspectRatioForFOV(false);
@@ -223,6 +226,11 @@ void StealthViewerSettingsTests::TestGeneralSettings()
       genConfig.GetPerformanceMode());
 
    CPPUNIT_ASSERT_EQUAL(true, genConfig.GetShowAdvancedOptions());
+
+   CPPUNIT_ASSERT_EQUAL(true, genConfig.GetReconnectOnStartup());
+   CPPUNIT_ASSERT_EQUAL(std::string("booga"), genConfig.GetStartupConnectionName());
+   CPPUNIT_ASSERT_EQUAL(true, genConfig.GetAutoReconnect());
+   CPPUNIT_ASSERT_EQUAL(43U, genConfig.GetAutoReconnectTimeout());
 }
 
 void StealthViewerSettingsTests::TestVisibilitySettings()
