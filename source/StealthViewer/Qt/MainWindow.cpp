@@ -2194,7 +2194,7 @@ namespace StealthQt
    void MainWindow::OnDisconnectFromNetwork(bool disableUI)
    {
       mIsConnectedToANetwork = false;
-      mCurrentConnectionName = tr("");
+      mCurrentConnectionName.clear();
       mHLAErrorTimer.stop();
 
       if (disableUI)
