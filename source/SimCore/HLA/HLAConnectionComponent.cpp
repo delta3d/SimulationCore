@@ -150,7 +150,7 @@ namespace SimCore
          {
             DoReconnectToNetwork();
          }
-         else if(mPausedDuringConnectionFrame && msg.GetMessageType() == dtGame::MessageType::TICK_LOCAL)
+         else if(mPausedDuringConnectionFrame && msg.GetMessageType() == dtGame::MessageType::TICK_LOCAL && mState != &HLAConnectionComponent::ConnectionState::STATE_CONNECTING)
          {
             GetGameManager()->SetPaused(false);
             mPausedDuringConnectionFrame = false;
@@ -214,9 +214,6 @@ namespace SimCore
       {
          AddComponentsForConnectionType();
 
-         GetGameManager()->SetPaused(true);
-         mPausedDuringConnectionFrame = true;
-
          // Look for a coordinate config actor.
          dtActors::CoordinateConfigActor* ccActor = NULL;
          std::vector<dtCore::ActorProxy*> proxies;
@@ -248,8 +245,6 @@ namespace SimCore
             mState = &HLAConnectionComponent::ConnectionState::STATE_CONNECTED;
          }
 
-         // Unpause the GM after we connect. Else, we might get stuck after a replay.
-         GetGameManager()->SetPaused(false);
       }
 
       ///////////////////////////////////////////////////////////////////////
@@ -346,6 +341,8 @@ namespace SimCore
          // Start in NOT connected state - set to connected when we succeed.
          mState = &HLAConnectionComponent::ConnectionState::STATE_NOT_CONNECTED;
 
+         GetGameManager()->SetPaused(true);
+         mPausedDuringConnectionFrame = true;
 
          std::string mapName;
          if (!mMapNames.empty())
