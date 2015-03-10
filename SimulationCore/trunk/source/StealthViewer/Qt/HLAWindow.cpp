@@ -211,34 +211,7 @@ namespace StealthQt
 
       if (result == QMessageBox::Yes)
       {
-         // Disconnect from network
-         if(mHLAComp != NULL)
-         {
-            mHLAComp->Disconnect();
-         }
-
-         if(mUi->mNetworkListWidget->currentItem() != NULL)
-         {
-            mUi->mEditPushButton->setEnabled(true);
-            mUi->mDeletePushButton->setEnabled(true);
-         }
-
-         mIsConnected = false;
-
-         bool mapsUnloaded = true;
-         if (!mCurrentConnectionName.isEmpty())
-         {
-            QStringList props = StealthViewerData::GetInstance().GetSettings().GetConnectionProperties(mCurrentConnectionName);
-            QString map;
-            if (props.length() > 1)
-                map = props[1];
-            mapsUnloaded = !map.isEmpty();
-         }
-
-         mUi->mCurrentConnectionLineEdit->setText("None");
-         mCurrentConnectionName = mUi->mCurrentConnectionLineEdit->text();
-
-         emit DisconnectedFromNetwork(mapsUnloaded);
+         Disconnect(false);
       }
       UpdateConnectText();
    }
@@ -448,6 +421,39 @@ namespace StealthQt
          emit ConnectedToNetworkFailed(mCurrentConnectionName);
       }
       return result;
+   }
+
+   //////////////////////////////////////////////////////////////
+   void HLAWindow::Disconnect(bool alwaysUnloadMaps)
+   {
+      // Disconnect from network
+      if(mHLAComp != NULL)
+      {
+         mHLAComp->Disconnect();
+      }
+
+      if(mUi->mNetworkListWidget->currentItem() != NULL)
+      {
+         mUi->mEditPushButton->setEnabled(true);
+         mUi->mDeletePushButton->setEnabled(true);
+      }
+
+      mIsConnected = false;
+
+      bool mapsUnloaded = alwaysUnloadMaps;
+      if (!mCurrentConnectionName.isEmpty())
+      {
+         QStringList props = StealthViewerData::GetInstance().GetSettings().GetConnectionProperties(mCurrentConnectionName);
+         QString map;
+         if (props.length() > 1)
+             map = props[1];
+         mapsUnloaded = mapsUnloaded || !map.isEmpty();
+      }
+
+      mUi->mCurrentConnectionLineEdit->setText("None");
+      mCurrentConnectionName = mUi->mCurrentConnectionLineEdit->text();
+
+      emit DisconnectedFromNetwork(mapsUnloaded);
    }
 
    //////////////////////////////////////////////////////////////

@@ -2387,14 +2387,42 @@ namespace StealthQt
 
       mUi->mWeatherLineEdit->setText(tr(envConfig.GetPrecipitationAsString().c_str()));
 
-      SimCore::HLA::HLAConnectionComponent* comp =
-         static_cast<SimCore::HLA::HLAConnectionComponent*>
-      (mGM->GetComponentByName(SimCore::HLA::HLAConnectionComponent::DEFAULT_NAME));
+      SimCore::HLA::HLAConnectionComponent* comp = NULL;
+      mGM->GetComponentByName(SimCore::HLA::HLAConnectionComponent::DEFAULT_NAME, comp);
 
       if (comp->GetConnectionState() == SimCore::HLA::HLAConnectionComponent::ConnectionState::STATE_DISCONNECTED)
       {
-         mGM->CloseCurrentMap();
-         ReconnectToHLA();
+         StealthGM::PreferencesGeneralConfigObject& genConfig = StealthViewerData::GetInstance().GetGeneralConfigObject();
+         bool reconnectSucceeded = false;
+         if (genConfig.GetAutoReconnect())
+         {
+            try
+            {
+               mGM->CloseCurrentMap();
+            }
+            catch (const dtUtil::Exception& ex)
+            {
+               QString message = tr("The application failed to unload the current set of maps "
+                     "after an externally forced disconnect: ") + tr(ex.ToString().c_str());
+               QMessageBox::critical(this, tr("Error"), message, QMessageBox::Ok);
+            }
+
+            ReconnectToHLA();
+            reconnectSucceeded = true;
+         }
+
+         if (!reconnectSucceeded)
+         {
+            // Make sure we still pick up the signals from these events. This is important
+            // for the UI to update itself properly
+            HLAWindow window(*mGM, this, NULL, mIsConnectedToANetwork, mCurrentConnectionName);
+
+            connect(&window, SIGNAL(ConnectedToNetwork(QString)), this, SLOT(OnConnectToNetwork(QString)));
+            connect(&window, SIGNAL(ConnectedToNetworkFailed(QString)), this, SLOT(EndWaitCursor()));
+            connect(&window, SIGNAL(DisconnectedFromNetwork(bool)), this, SLOT(OnDisconnectFromNetwork(bool)));
+
+            window.Disconnect(true);
+         }
       }
 
    }
