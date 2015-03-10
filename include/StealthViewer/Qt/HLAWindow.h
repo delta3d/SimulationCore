@@ -76,6 +76,8 @@ namespace StealthQt
 
          // Connects to network with the last set values.  Returns true for success
          bool Connect();
+         // Disconnects the network connection.  Passing false will result it only unloading maps if they are associated with the connection.
+         void Disconnect(bool alwaysUnloadMaps);
 
          /// This exists mainly for the unit tests;
          QListWidget* GetNetworkListWidget();
