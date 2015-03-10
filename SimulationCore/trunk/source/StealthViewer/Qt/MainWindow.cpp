@@ -2376,7 +2376,7 @@ namespace StealthQt
    ///////////////////////////////////////////////////////////////////
    void MainWindow::OnGenericTickTimerElapsed()
    {
-      StealthGM::PreferencesEnvironmentConfigObject &envConfig =
+      StealthGM::PreferencesEnvironmentConfigObject& envConfig =
          StealthViewerData::GetInstance().GetEnvironmentConfigObject();
 
       OnSecondTimerElapsed();
@@ -2386,6 +2386,16 @@ namespace StealthQt
       mUi->mVisibilityLineEdit->setText(QString::number(visMeters) + tr(" KM"));
 
       mUi->mWeatherLineEdit->setText(tr(envConfig.GetPrecipitationAsString().c_str()));
+
+      SimCore::HLA::HLAConnectionComponent* comp =
+         static_cast<SimCore::HLA::HLAConnectionComponent*>
+      (mGM->GetComponentByName(SimCore::HLA::HLAConnectionComponent::DEFAULT_NAME));
+
+      if (comp->GetConnectionState() == SimCore::HLA::HLAConnectionComponent::ConnectionState::STATE_DISCONNECTED)
+      {
+         mGM->CloseCurrentMap();
+         ReconnectToHLA();
+      }
 
    }
 
@@ -2442,7 +2452,8 @@ namespace StealthQt
       window.SetConnectionValues(connectionProps);
    }
 
-   ///////////////////////////////////////////////////////////////////
+   /////////////////////////////////////////////////////////////
+   //////
    void MainWindow::OnRefreshEntityInfoTimerElapsed()
    {
       // In addition to refreshing the entity, we also update the 'Detach' button.
