@@ -40,58 +40,7 @@ namespace SimCore
 
    namespace Actors
    {
-      // actor
-      class SIMCORE_EXPORT  HumanWithPhysicsActor : public Human
-      {
-         public:
-            typedef Human BaseClass;
-
-            /// Constructor
-            HumanWithPhysicsActor(dtGame::GameActorProxy& parent);
-
-            /// Destructor
-            virtual ~HumanWithPhysicsActor();
-
-            /**
-            * This method is an invokable called when an object is local and
-            * receives a tick.
-            * @param tickMessage A message containing tick related information.
-            */
-            virtual void OnTickLocal(const dtGame::TickMessage& tickMessage);
-
-            /**
-            * This method is an invokable called when an object is remote and
-            * receives a tick.
-            * @param tickMessage A message containing tick related information.
-            */
-            virtual void OnTickRemote(const dtGame::TickMessage& tickMessage);
-
-            virtual void SetPosition( const osg::Vec3& position );
-
-            virtual void OffsetPosition( const osg::Vec3& offset );
-
-            // Called when the actor has been added to the game manager.
-            // You can respond to OnEnteredWorld on either the proxy or actor or both.
-            virtual void OnEnteredWorld();
-
-            void PrePhysicsUpdate();
-	        void PostPhysicsUpdate();
-
-            // returns the physics helper for use
-            dtPhysics::PhysicsActComp* GetPhysicsActComp();
-
-         private:
-
-            osg::Vec3   mMoveRateConstant;// for multiplying for movement amount.
-            osg::Vec3   mPreviousTransform;
-            osg::Vec3   mSentOverTransform;
-//            float mSecsSinceLastUpdateSent;
-//            float mMaxUpdateSendRate;
-//            bool        mAcceptInput;     // for ai vs human.
-            bool        mNotifyChangePosition;
-            bool        mNotifyChangeOrient;
-            bool        mNotifyChangeVelocity;
-      };
+      typedef Human HumanWithPhysicsActor;
 
       // proxy
       class SIMCORE_EXPORT HumanWithPhysicsActorProxy : public HumanActorProxy
@@ -104,9 +53,6 @@ namespace SimCore
 
             /// Destructor
             virtual ~HumanWithPhysicsActorProxy();
-
-            /// Instantiates the actor this proxy encapsulated
-            virtual void CreateDrawable();
 
             /// Overridden to force upright rotations on the Dead Reckoning Helper
             void BuildActorComponents();

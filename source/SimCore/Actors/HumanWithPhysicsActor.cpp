@@ -49,128 +49,6 @@ namespace SimCore
 {
    namespace Actors
    {
-      //////////////////////////////////////////////////////////
-      // Actor code
-      //////////////////////////////////////////////////////////
-      HumanWithPhysicsActor::HumanWithPhysicsActor(dtGame::GameActorProxy& owner)
-      : Human(owner)
-      // With 30, this is about 12.66 MPH, which is a decently fast sustainable run. The fastest human sprint
-      // speed is like 27 MPH. Typically slow walk speed is like 3 MPH. A marathoner can sustain 12.55 MPH
-      // for 2 hours. Note, this multiplies times the frame speed using the motion model, but it should be
-      // irrelevant of FPS.
-      , mMoveRateConstant(30.0f, 30.0f, 0.0f)
-      , mNotifyChangePosition(false)
-      , mNotifyChangeOrient(false)
-      , mNotifyChangeVelocity(false)
-      {
-      }
-
-      ////////////////////////////////////////////////////////////
-      HumanWithPhysicsActor::~HumanWithPhysicsActor()
-      {
-      }
-
-      ////////////////////////////////////////////////////////////
-      void HumanWithPhysicsActor::OnTickLocal(const dtGame::TickMessage& tickMessage)
-      {
-         mNotifyChangePosition = false;
-         mNotifyChangeOrient = false;
-         mNotifyChangeVelocity = false;
-
-         //TODO: CURRENTLY NO LOCAL BEHAVIOR WITH dtPhysics in local mode
-
-
-         Human::OnTickLocal(tickMessage);
-      }
-
-      ////////////////////////////////////////////////////////////
-      void HumanWithPhysicsActor::OnTickRemote(const dtGame::TickMessage& tickMessage)
-      {
-         Human::OnTickRemote(tickMessage);
-
-         dtCore::Transform transform;
-         GetTransform(transform);
-
-         transform.GetTranslation(mPreviousTransform);
-      }
-
-      ////////////////////////////////////////////////////////////
-      void HumanWithPhysicsActor::SetPosition( const osg::Vec3& position )
-      {
-         dtCore::Transform xform;
-         xform.SetTranslation( position );
-         SetTransform(xform);
-      }
-
-      ////////////////////////////////////////////////////////////
-      void HumanWithPhysicsActor::OffsetPosition( const osg::Vec3& offset )
-      {
-         dtCore::Transform xform;
-         GetTransform( xform );
-         osg::Vec3 trans;
-         xform.GetTranslation(trans);
-         trans += offset;
-         xform.SetTranslation( trans );
-         SetPosition( trans );
-      }
-
-      ////////////////////////////////////////////////////////////
-      void HumanWithPhysicsActor::OnEnteredWorld()
-      {
-         Human::OnEnteredWorld();
-
-         GetPhysicsActComp()->SetPrePhysicsCallback(dtPhysics::PhysicsActComp::UpdateCallback(this, &HumanWithPhysicsActor::PrePhysicsUpdate));
-
-         dtPhysics::PhysicsObject* po = GetPhysicsActComp()->GetMainPhysicsObject();
-         // Human remote is a bad group name because the local behavior is the same.
-         po->SetCollisionGroup(CollisionGroup::GROUP_HUMAN_REMOTE);
-
-         // If the developer didn't set the origin offset to something.
-         // This is sort of a problem, because if the user WANTS no offset, they would have to set it to
-         // something really small, but not quite 0.
-         if (po->GetOriginOffset().length2() < FLT_EPSILON)
-         {
-            osg::Vec3 extents = po->GetExtents();
-            // Move the cylinder up half the height to sync up the origins.
-            po->SetOriginOffset(osg::Vec3(0.0f, 0.0f, (extents.x() / 2.0f) + extents.y()));
-         }
-
-
-         po->Create();
-      }
-
-      ////////////////////////////////////////////////////////////////////
-      dtPhysics::PhysicsActComp* HumanWithPhysicsActor::GetPhysicsActComp()
-      {
-         dtPhysics::PhysicsActComp* physAC = NULL;
-         GetComponent(physAC);
-         return physAC;
-      }
-
-
-      ////////////////////////////////////////////////////////////////////
-      void HumanWithPhysicsActor::PrePhysicsUpdate()
-      {
-          dtCore::Transform xform;
-          GetTransform(xform);
-          dtPhysics::PhysicsObject* physObj = GetPhysicsActComp()->GetMainPhysicsObject();
-          if (physObj != NULL)
-          {
-             physObj->SetTransformAsVisual(xform);
-          }
-      }
-
-      ///////////////////////////////////////////////////////////////////////////////////
-      void HumanWithPhysicsActor::PostPhysicsUpdate()
-      {
-         if (!IsRemote())
-         {
-         }
-      }
-
-      //////////////////////////////////////////////////////////
-      // Proxy code
-      //////////////////////////////////////////////////////////
       HumanWithPhysicsActorProxy::HumanWithPhysicsActorProxy()
       {
          SetClassName("HumanWithPhysicsActor");
@@ -181,14 +59,6 @@ namespace SimCore
       {
 
       }
-
-      /// Instantiates the actor this proxy encapsulated
-      void HumanWithPhysicsActorProxy::CreateDrawable()
-      {
-         HumanWithPhysicsActor* p = new HumanWithPhysicsActor(*this);
-         SetDrawable(*p);
-      }
-
       //////////////////////////////////////////////////////////////////////
       void HumanWithPhysicsActorProxy::BuildActorComponents()
       {
@@ -199,10 +69,14 @@ namespace SimCore
             dtCore::RefPtr<dtPhysics::PhysicsObject> physicsObject = dtPhysics::PhysicsObject::CreateNew("Body");
             physicsObject->SetPrimitiveType(dtPhysics::PrimitiveType::CYLINDER);
             physicsObject->SetMechanicsType(dtPhysics::MechanicsType::KINEMATIC);
-            physicsObject->SetCollisionGroup(SimCore::CollisionGroup::GROUP_HUMAN_LOCAL);
+            physicsObject->SetCollisionGroup(SimCore::CollisionGroup::GROUP_HUMAN_REMOTE);
             physicsObject->SetMass(100.0f);
-            physicsObject->SetExtents(osg::Vec3(1.8f, 0.5f, 0.0f));
+            osg::Vec3 extents(1.8f, 0.5f, 0.0f);
+            physicsObject->SetExtents(extents);
+            // Move the cylinder up half the height to sync up the origins.
+            physicsObject->SetOriginOffset(osg::Vec3(0.0f, 0.0f, (extents.x() / 2.0f) + extents.y()));
             physAC->AddPhysicsObject(*physicsObject);
+            physAC->SetAutoCreateOnEnteringWorld(true);
 
             AddComponent(*physAC);
          }
