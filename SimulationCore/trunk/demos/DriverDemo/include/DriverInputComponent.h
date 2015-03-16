@@ -60,8 +60,8 @@ namespace SimCore
 
    namespace Actors
    {
-      class HumanWithPhysicsActor;
       class HumanWithPhysicsActorProxy;
+      class Human;
       class BasePhysicsVehicleActor;
       class InteriorActor;
       class VehicleInterface;
@@ -279,7 +279,7 @@ namespace DriverDemo
 
          // Simulator specific objects
          dtCore::RefPtr<SimCore::Actors::HumanWithPhysicsActorProxy> mPlayerAvatarProxy;
-         dtCore::RefPtr<SimCore::Actors::HumanWithPhysicsActor> mPlayerAvatar;
+         dtCore::RefPtr<SimCore::Actors::Human> mPlayerAvatar;
          dtCore::RefPtr<SimCore::Actors::BasePhysicsVehicleActor> mVehicle;
          dtCore::RefPtr<SimCore::Actors::BasePhysicsVehicleActorProxy> mVehicleProxy;
          // ??? dtCore::RefPtr<SimCore::Actors::InteriorActor> mInterior;
