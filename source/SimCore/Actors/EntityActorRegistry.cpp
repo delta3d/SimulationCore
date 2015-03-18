@@ -86,6 +86,7 @@
 #include <SimCore/Components/BaseInputComponent.h>
 
 #include <SimCore/ActComps/AnimationClipActComp.h>
+#include <SimCore/ActComps/BodyPaintActComp.h>
 
 #include <dtActors/engineactorregistry.h>
 
@@ -169,6 +170,8 @@ namespace SimCore
    {
       const dtGame::ActorComponent::ACType AnimationClipActComp::TYPE(new dtCore::ActorType("AnimationClipActComp","ActorComponents",
             "Plays animation clips stored in the geometry of a drawable.", dtGame::ActorComponent::BaseActorComponentType));
+      const dtGame::ActorComponent::ACType BodyPaintActComp::TYPE( new dtCore::ActorType("BodyPaintActComp", "ActorComponents",
+            "Repaints geometry in the shader given colors", dtGame::ActorComponent::BaseActorComponentType));
    }
 
    namespace Actors
@@ -449,6 +452,7 @@ namespace SimCore
          mActorFactory->RegisterType<BattlefieldGraphicsActorProxy>(BATTLEFIELD_GRAPHICS_ACTOR_TYPE.get());
 
          mActorFactory->RegisterType<SimCore::ActComps::AnimationClipActComp>();
+         mActorFactory->RegisterType<SimCore::ActComps::BodyPaintActComp>();
 
       }
    }
