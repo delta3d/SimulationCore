@@ -375,7 +375,7 @@ namespace NetDemo
       bool success = false;
 
       //if (role == "Server" || role == "server" || role == "SERVER")
-      if (GetGameManager()->GetGMSettings().IsServerRole())
+      if (GetGameManager()->GetGMSettings().GetServerRole())
       {
          success = JoinNetworkAsServer(serverPort);
          if (success)
