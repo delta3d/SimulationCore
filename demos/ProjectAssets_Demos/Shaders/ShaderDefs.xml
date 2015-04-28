@@ -327,23 +327,6 @@
       </shader>
    </shadergroup>
 
-   <shadergroup name="EphemerisFogGroup">
-      <shader name="EphemFog" default="yes">
-
-         <source type="Vertex">Shaders/SharedBase/ephemeris_functions.vert</source>
-         <source type="Fragment">Shaders/SharedBase/fragment_functions.frag</source>
-         <source type="Fragment">Shaders/SharedBase/ephemeris_functions.frag</source>
-         <source type="Vertex">Shaders/SharedBase/ephemeris_fog.vert</source>
-         <source type="Fragment">Shaders/SharedBase/ephemeris_fog.frag</source>
-         <parameter name="DistanceForCompleteFog">
-            <float defaultValue="1500.0"/>
-         </parameter>
-         <parameter name="DistanceForHorizonFog">
-            <float defaultValue="1501.0"/>
-         </parameter>
-      </shader>
-   </shadergroup>
-
    <shadergroup name="SimpleVehicleShaderGroup">
       <shader name="NoDamage" default="yes">
          <source type="Vertex">Shaders/SharedBase/shader_nogloss.vert</source>

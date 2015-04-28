@@ -24,10 +24,10 @@
 #define _BASIC_ENVIRONMENT_ACTOR_H_
 
 #include <SimCore/Export.h>
-#include <dtGame/environmentactor.h>
-#include <dtCore/environment.h>
+#include <dtRender/scenemanager.h>
+#include <dtRender/ephemerisscene.h>
 #include <dtUtil/datetime.h>
-
+#include <dtUtil/getsetmacros.h>
 //#include <SimCore/Actors/LensFlareDrawable.h>
 
 namespace osg
@@ -50,11 +50,11 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////
       // Actor Code
       ////////////////////////////////////////////////////////////////////////
-      class SIMCORE_EXPORT IGEnvironmentActor : public dtGame::IEnvGameActor
+      class SIMCORE_EXPORT IGEnvironmentActor : public dtRender::SceneManager
       {
       public:
 
-         typedef dtGame::IEnvGameActor BaseClass;
+		 typedef dtRender::SceneManager BaseClass;
 
          // Constructor
          IGEnvironmentActor( dtGame::GameActorProxy& parent );
@@ -91,7 +91,7 @@ namespace SimCore
 
          virtual bool IsCloudPlaneEnabled() const;
 
-         const dtUtil::DateTime& GetDateTime() const;
+         dtUtil::DateTime GetDateTime() const;
          void SetDateTime(const dtUtil::DateTime& dateTime);
 
          void SetTimeFromSystem();
@@ -114,7 +114,7 @@ namespace SimCore
          // to be called from a motion model
          void SetSkyDomesCenter(const osg::Vec3& position);
 
-         void SetFogMode( dtCore::Environment::FogMode mode );
+         void SetFogMode( dtRender::EphemerisScene::FogMode mode );
 
          void SetFogNear( float val );
 
@@ -132,11 +132,6 @@ namespace SimCore
          // @return The number of the Cloud texture file that is currently being used.
          int GetCloudCoverage() const;
 
-         void SetTimeAndDateString( const std::string &timeAndDate );
-         bool SetTimeAndDate( std::istringstream& iss );
-
-         std::string GetTimeAndDateString() const;
-
          dtCore::CloudPlane* GetCloudPlane(){return mCloudPlane.get();};
 
          bool GetEnableLensFlare() const;
@@ -149,6 +144,10 @@ namespace SimCore
          bool GetInitializeSystemClock() const;
          void SetInitializeSystemClock(bool enable);
 
+		 void SetEphemerisScene(dtRender::EphemerisScene& ephScene);
+		 dtRender::EphemerisScene* GetEphemerisScene();
+		 const dtRender::EphemerisScene* GetEphemerisScene() const;
+
       protected:
 
          // Destructor
@@ -159,33 +158,33 @@ namespace SimCore
          //this function is called when the time on the dtCore::Environment changes
          virtual void OnTimeChanged();
 
-         dtCore::Environment& GetCoreEnvironment();
-         osg::Fog& GetFog();
-
          void InitLensFlare();
 
       private:
 
-         bool mEnableCloudPlane, mEnableLensFlare, mInitSystemClock;
-         time_t mCurrTime;
-         osg::Vec3 mWind;
-         dtCore::RefPtr<dtCore::CloudPlane> mCloudPlane;
-         dtCore::RefPtr<dtCore::Environment> mEnvironment;
-         dtCore::RefPtr<LensFlareDrawable> mLensFlare;
-         dtCore::RefPtr<osg::Fog> mFog;
+         bool mEnableCloudPlane, mEnableLensFlare, mInitSystemClock;         
+		 int mCloudCoverage;
 
-         int mCloudCoverage;
+         osg::Vec3 mWind;
+         dtCore::RefPtr<dtCore::CloudPlane> mCloudPlane;         
+         dtCore::RefPtr<LensFlareDrawable> mLensFlare;
+		 dtCore::RefPtr<dtRender::EphemerisScene> mEphemeris;
       };
 
       ////////////////////////////////////////////////////////////////////////
       // Proxy Code
       ////////////////////////////////////////////////////////////////////////
-      class SIMCORE_EXPORT IGEnvironmentActorProxy : public dtGame::IEnvGameActorProxy
+	  class SIMCORE_EXPORT IGEnvironmentActorProxy : public dtRender::SceneManagerActor
       {
       public:
 
+		 typedef dtRender::SceneManagerActor BaseClass;
+
          /// Constructor
          IGEnvironmentActorProxy();
+
+		 ///Init calls CreateDrawable
+         virtual void Init(const dtCore::ActorType& actorType);
 
          /// Creates the actor
          virtual void CreateDrawable();
@@ -202,11 +201,27 @@ namespace SimCore
          //we override this to make the environment actor global.. ie return false
          /*virtual*/ bool IsPlaceable() const;
 
+         DT_DECLARE_ACCESSOR_INLINE(bool, InitialFogState);
+         DT_DECLARE_ACCESSOR_INLINE(bool, InitialCloudState);
+         DT_DECLARE_ACCESSOR_INLINE(int, CloudNum);
+         DT_DECLARE_ACCESSOR_INLINE(float, CloudHeight);
+         
+         void SetInitialDateTimeAsString(const std::string&);
+         std::string GetInitialDateTimeAsString() const;
+
+         const dtUtil::DateTime& GetInitialDateTime() const;
+         void SetInitialDateTime(const dtUtil::DateTime&);
+
+         bool SetTimeAndDateFromStringStream(std::istringstream& iss);
+
       protected:
 
          /// Destructor
          virtual ~IGEnvironmentActorProxy();
 
+		 dtCore::RefPtr<dtRender::EphemerisSceneActor> CreateEphemeris();
+
+         dtUtil::DateTime mStartTime;
       private:
 
       };
