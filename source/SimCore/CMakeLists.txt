@@ -225,7 +225,7 @@ source_group("Source Files\\Components\\Conversations" FILES ${LIB_SOURCES_6})
 source_group("Source Files\\Components\\GameState" FILES ${LIB_SOURCES_7})
 source_group("Source Files\\ActComps" FILES ${LIB_SOURCES_8})
 
-SET(LIB_EXTERNAL_DEPS ${LIB_NAME}
+SET(LIB_EXTERNAL_DEPS
   DTUTIL_LIBRARY
   DTCORE_LIBRARY
   DTANIM_LIBRARY
@@ -256,7 +256,7 @@ SET(LIB_EXTERNAL_DEPS ${LIB_NAME}
   OSGEPHEMERIS_LIBRARY
   )
 
-SET(LIB_DEPS ${LIB_NAME} 
+SET(LIB_DEPS
    ${OPENGL_LIBRARY}
    ${AGL_LIBRARY}
    ${OPENAL_LIBRARY}
