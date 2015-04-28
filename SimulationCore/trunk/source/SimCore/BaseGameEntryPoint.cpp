@@ -377,6 +377,9 @@ namespace SimCore
 	   camera->AddChild(dtAudio::AudioManager::GetListener());
 
       gameManager.LoadActorRegistry(LIBRARY_NAME);
+      
+      //a temporary workaround since the IGEnvironmentActor creates a dtRender::EphemerisScene in code
+      gameManager.LoadActorRegistry("dtRender");
 
       RefPtr<dtGame::DeadReckoningComponent>   drComp            = new dtGame::DeadReckoningComponent;
       RefPtr<Components::ViewerNetworkPublishingComponent> rulesComp         = new Components::ViewerNetworkPublishingComponent;

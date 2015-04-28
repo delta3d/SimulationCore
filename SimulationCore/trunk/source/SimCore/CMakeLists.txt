@@ -88,7 +88,6 @@ set(LIB_SOURCES_2
    "${SOURCE_PATH}/Actors/DynamicLightPrototypeActor.cpp"
    "${SOURCE_PATH}/Actors/EntityActorRegistry.cpp"
    "${SOURCE_PATH}/Actors/EnvironmentProcessActor.cpp"
-   "${SOURCE_PATH}/Actors/EphemerisEnvironmentActor.cpp"
    "${SOURCE_PATH}/Actors/FireActor.cpp"
    "${SOURCE_PATH}/Actors/FlareActor.cpp"
    "${SOURCE_PATH}/Actors/FourWheelVehicleActor.cpp"
@@ -236,6 +235,7 @@ SET(LIB_EXTERNAL_DEPS ${LIB_NAME}
   DTGUI_LIBRARY
   DTAUDIO_LIBRARY
   DTACTORS_LIBRARY
+  DTRENDER_LIBBRARY
   OSG_LIBRARY
   OSGGA_LIBRARY
   OSGVIEWER_LIBRARY

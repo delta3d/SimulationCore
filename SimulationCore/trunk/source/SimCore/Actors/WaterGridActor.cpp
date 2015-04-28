@@ -75,7 +75,6 @@
 
 #include <SimCore/Components/RenderingSupportComponent.h>
 #include <SimCore/Components/WeatherComponent.h>
-#include <SimCore/Actors/EphemerisEnvironmentActor.h>
 #include <SimCore/Actors/OceanDataActor.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
 
@@ -1269,35 +1268,37 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       void WaterGridActor::AddReflectionScene( osg::Camera* cam )
       {
-         SimCore::Components::WeatherComponent* comp = NULL;
-         GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::WeatherComponent::DEFAULT_NAME, comp);
+          LOG_ERROR("WaterGridActor::AddReflectionScene() functionality is deprecated, use dtRender::OceanScene.");
+         
+         //SimCore::Components::WeatherComponent* comp = NULL;
+         //GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::WeatherComponent::DEFAULT_NAME, comp);
 
-         osg::MatrixTransform* mat = new osg::MatrixTransform();
-         mat->setMatrix(osg::Matrix::scale(osg::Vec3(1.0, 1.0, -1.0)));
+         //osg::MatrixTransform* mat = new osg::MatrixTransform();
+         //mat->setMatrix(osg::Matrix::scale(osg::Vec3(1.0, 1.0, -1.0)));
 
-         if(comp != NULL)
-         {
-            SimCore::Actors::EphemerisEnvironmentActor* env = dynamic_cast<SimCore::Actors::EphemerisEnvironmentActor*>(comp->GetEphemerisEnvironment());
+         //if(comp != NULL)
+         //{
+         //   SimCore::Actors::EphemerisEnvironmentActor* env = dynamic_cast<SimCore::Actors::EphemerisEnvironmentActor*>(comp->GetEphemerisEnvironment());
 
-            if(env != NULL)
-            {
-               osgEphemeris::EphemerisModel* ephem = env->GetEphemerisModel();
-               if(ephem != NULL)
-               {
-                  //we have to reverse the cullface on the ephemeris or we wont see it
-                  //this is necessary due to the reflection about the z axis
-                  osg::Group* grp = new osg::Group();
-                  grp->getOrCreateStateSet()->setAttributeAndModes(new osg::CullFace(osg::CullFace::FRONT), osg::StateAttribute::ON | osg::StateAttribute::OVERRIDE);
+         //   if(env != NULL)
+         //   {
+         //      osgEphemeris::EphemerisModel* ephem = env->GetEphemerisModel();
+         //      if(ephem != NULL)
+         //      {
+         //         //we have to reverse the cullface on the ephemeris or we wont see it
+         //         //this is necessary due to the reflection about the z axis
+         //         osg::Group* grp = new osg::Group();
+         //         grp->getOrCreateStateSet()->setAttributeAndModes(new osg::CullFace(osg::CullFace::FRONT), osg::StateAttribute::ON | osg::StateAttribute::OVERRIDE);
 
-                  grp->addChild(ephem);
-                  mat->addChild(grp);
+         //         grp->addChild(ephem);
+         //         mat->addChild(grp);
 
-                  mat->addChild(env->GetFogSphere());
-                  mat->addChild(env->GetCloudPlane()->GetOSGNode());
-               }
-            }
-         }
-         cam->addChild(mat);
+         //         mat->addChild(env->GetFogSphere());
+         //         mat->addChild(env->GetCloudPlane()->GetOSGNode());
+         //      }
+         //   }
+         //}
+         //cam->addChild(mat);
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

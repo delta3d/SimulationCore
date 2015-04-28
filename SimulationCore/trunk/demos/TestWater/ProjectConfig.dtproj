@@ -13,5 +13,8 @@
     <contexts>
        <context path="../ProjectAssets_Demos"/>
        <context path="../../ProjectAssets_Shared"/>
+
+      <!--Needs path to delta3d example assets -->
+      <context path="../../../delta3d/examples/data"/>
     </contexts>
 </projectConfig>
