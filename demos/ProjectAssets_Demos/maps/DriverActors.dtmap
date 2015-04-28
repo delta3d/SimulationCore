@@ -16,6 +16,10 @@
             <name>SimCore</name>
             <version></version>
         </library>
+      <library>
+        <name>dtRender</name>
+        <version></version>
+      </library>
     </libraries>
     <actors>
         <environmentActor>12d1ab8c-c401-42cd-9a00-a622eed0a9bf</environmentActor>
@@ -104,10 +108,14 @@
                 <name>Enable Fog</name>
                 <boolean>true</boolean>
             </property>
-            <property>
-                <name>Time and Date</name>
-                <string>2008-01-31T09:55:45</string>
-            </property>
+          <property>
+            <name>Init System Clock</name>
+            <boolean>true</boolean>
+          </property>
+          <property>
+            <name>Time and Date</name>
+            <string>2010-07-11T19:09:19+00:00</string>
+          </property>
             <property>
                 <name>Wind</name>
                 <vec3>
