@@ -65,7 +65,7 @@ set (SIMULATIONCORE_IGNORE_CONFIG_FILE ON)
 set (SIMULATIONCORE_LIB_DIR ${CMAKE_BINARY_DIR}/lib CACHE FORCE "Path to the simulation core libraries" )
 FIND_PACKAGE(SimulationCore REQUIRED)
 
-FIND_PACKAGE(Delta3D COMPONENTS dtUtil dtCore dtAI dtAudio dtAnim dtPhysics dtABC dtGame dtGUI dtActors REQUIRED)
+FIND_PACKAGE(Delta3D COMPONENTS dtUtil dtCore dtAI dtAudio dtAnim dtPhysics dtRender dtABC dtGame dtGUI dtActors REQUIRED)
 if (BUILD_HLA)
    FIND_PACKAGE(Delta3D COMPONENTS dtHLAGM REQUIRED )
 endif()
