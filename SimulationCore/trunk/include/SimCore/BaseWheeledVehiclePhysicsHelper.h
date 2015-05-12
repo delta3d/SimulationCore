@@ -143,11 +143,6 @@ namespace SimCore
 
       void UpdateWheelTransforms();
 
-      /// This currently assumes this dof is placed in the model using the 3DSMax OSG Helper
-      /// because the local to world matrix is placed right above the DOF in the export process
-      /// since the dof transform does not actually have a matrix
-      static void GetLocalMatrix(const osg::Node& node, osg::Matrix& wcMatrix);
-
       /// Computes the aero dynamic drag on the vehicle.  It will be positive, you have to figure out the direction.
       osg::Vec3 ComputeAeroDynDrag(const osg::Vec3& linearVelocity);
 

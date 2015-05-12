@@ -477,7 +477,7 @@ namespace SimCore
          newObject->SetMechanicsType(dtPhysics::MechanicsType::DYNAMIC);
          newObject->SetMass(mPhysicsActComp->GetMass());
          newObject->SetPrimitiveType(mPhysicsActComp->GetDefaultPrimitiveType());
-         newObject->SetExtents(mPhysicsActComp->GetDimensions());
+         newObject->SetExtents(GetParticleDimensions());
          newObject->SetTransform(xform);
          newObject->SetNotifyCollisions(true);
          newObject->Create(particle->mObj->GetOSGNode());

@@ -127,7 +127,7 @@ namespace SimCore
             CPPUNIT_ASSERT(pac != NULL);
 
             pac->SetDefaultPrimitiveType(dtPhysics::PrimitiveType::SPHERE);
-            pac->SetDimensions(osg::Vec3(3.0f, 3.0f, 3.0f));
+            drawable->SetParticleDimensions(osg::Vec3(3.0f, 3.0f, 3.0f));
 
             mGM->AddActor(*mPhysicsParticleSystemActor, false, false);
 
