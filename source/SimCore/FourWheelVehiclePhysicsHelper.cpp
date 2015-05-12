@@ -213,16 +213,11 @@ namespace SimCore
          }
       }
 
+      dtCore::Transform bodyOffsetTx, visualToBody;
+      visualToBody.SetTranslation(GetMainPhysicsObject()->GetOriginOffset());
       osg::Matrix bodyOffset;
-      GetLocalMatrix(bodyNode, bodyOffset);
-      //To allow the developer to shift the center of mass.
-      bodyOffset.setTrans(bodyOffset.getTrans() - GetMainPhysicsObject()->GetOriginOffset());
-      osg::Vec3d newScaledTrans = bodyOffset.getTrans();
-      for (unsigned k = 0; k < 3; ++k)
-      {
-         newScaledTrans[k] *= scale[k];
-      }
-      bodyOffset.setTrans(newScaledTrans);
+      ComputeLocalOffsetMatrixForNode(bodyOffsetTx, bodyNode, visualToBody, scale);
+      bodyOffsetTx.Get(bodyOffset);
 
       float frontDamping = 0.0f, rearDamping = 0.0f, frontSpring = 0.0f, rearSpring = 0.0f;
       std::vector<osg::Matrix> WheelMatrix;
@@ -235,6 +230,7 @@ namespace SimCore
       float frontLeverArm = 0.0f; // Y distance from front wheels to center of gravity
       float rearLeverArm  = 0.0f;  // Y distance from rear wheels to center of gravity
 
+      osg::Vec3 newScaledTrans;
       for (unsigned i = 0; i < wheelAC->GetNumAxles(); ++i)
       {
          SimCore::ActComps::Axle* curAxle = wheelAC->GetAxle(i);
@@ -644,16 +640,12 @@ namespace SimCore
             scale = scaleProp->GetValue();
          }
 
-         osg::Matrix bodyOffset;
-         bodyOffset.makeIdentity();
-         GetLocalMatrix(*chassis, bodyOffset);
-         osg::Vec3d unscaledTrans = bodyOffset.getTrans();
-         bodyOffset.setTrans(osg::Vec3d(unscaledTrans.x() * scale.x(),  unscaledTrans.y() * scale.y(), unscaledTrans.z() * scale.z()));
-         bodyOffset.setTrans(bodyOffset.getTrans() - GetMainPhysicsObject()->GetOriginOffset());
-         dtCore::Transform offsetXform;
-         offsetXform.Set(bodyOffset);
+         dtCore::Transform bodyOffsetTx, visualToBody;
+         visualToBody.SetTranslation(GetMainPhysicsObject()->GetOriginOffset());
 
-         GetMainPhysicsObject()->SetVisualToBodyTransform(offsetXform);
+         ComputeLocalOffsetMatrixForNode(bodyOffsetTx, *chassis, visualToBody, scale);
+
+         GetMainPhysicsObject()->SetVisualToBodyTransform(bodyOffsetTx);
 
 
          CreateVehicle(ourTransform, *chassis, scale);

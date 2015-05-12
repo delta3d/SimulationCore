@@ -175,6 +175,7 @@ namespace SimCore
          osg::Vec3 GetParentsWorldRelativeVelocityVector()     {return mParentsWorldRelativeVelocityVector;}
          bool GetObjectsStayStaticWhenHit()                    {return mObjectsStayStaticWhenHit;}
 
+         DT_DECLARE_ACCESSOR_INLINE(osg::Vec3, ParticleDimensions)
 
          dtPhysics::PhysicsActComp& GetPhysicsActComp() { return *GetComponent<dtPhysics::PhysicsActComp>(); }
       protected:

@@ -70,18 +70,18 @@ namespace SimCore
       delete mVehicle;
    }
 
-   /// A workaround for the transform inefficiency
-   void BaseWheeledVehiclePhysicsActComp::GetLocalMatrix(const osg::Node& node, osg::Matrix& wcMatrix)
-   {
-      if(node.getNumParents() > 0)
-      {
-         const osg::MatrixTransform* parentNode = dynamic_cast<const osg::MatrixTransform*>(node.getParent(0));
-         if (parentNode != NULL)
-         {
-            wcMatrix = parentNode->getMatrix();
-         }
-      }
-   }
+//   /////////////////////////////////////////////////////////////////////////////////////
+//   void BaseWheeledVehiclePhysicsActComp::GetLocalMatrix(const osg::Node& node, osg::Matrix& wcMatrix)
+//   {
+//      if(node.getNumParents() > 0)
+//      {
+//         const osg::Transform* parentNode = node.getParent(0)->asTransform();
+//         if (parentNode != NULL)
+//         {
+//            parentNode->computeLocalToWorldMatrix(wcMatrix,NULL);
+//         }
+//      }
+//   }
 
    /////////////////////////////////////////////////////////////////////////////////////
    osg::Vec3 BaseWheeledVehiclePhysicsActComp::ComputeAeroDynDrag(const osg::Vec3& linearVelocity)

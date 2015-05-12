@@ -277,7 +277,7 @@ namespace SimCore
 
          dtPhysics::Real skinWidth = 0.10f;
          newObject->SetMass(mPhysicsActComp->GetMass());
-         dtPhysics::VectorType dimensions = mPhysicsActComp->GetDimensions();
+         dtPhysics::VectorType dimensions = GetParticleDimensions();
          for (unsigned i = 0; i < 3; ++i)
          {
             dimensions[i] += skinWidth;
@@ -627,6 +627,11 @@ namespace SimCore
          AddProperty(new dtCore::ResourceActorProperty(*this, dtCore::DataType::STATIC_MESH,
                   "ObjectToUse5", "ObjectToUse5", dtCore::ResourceActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetFileToLoadFive),
                   "The static mesh resource that defines the geometry", GROUP));
+
+         AddProperty(new dtCore::Vec3fActorProperty("ParticleDimensions", "ParticleDimensions",
+                  dtCore::Vec3fActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetParticleDimensions),
+                  dtCore::Vec3fActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetParticleDimensions),
+                  "", GROUP));
       }
 
       ////////////////////////////////////////////////////////////////////
@@ -680,6 +685,11 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       dtCore::RefPtr<dtCore::ActorProperty> PhysicsParticleSystemActorProxy::GetDeprecatedProperty(const std::string& name)
       {
+         if (name == "Physics Dimensions")
+         {
+            return GetProperty("ParticleDimensions");
+         }
+
          dtCore::RefPtr<dtCore::ActorProperty> depProp = BaseClass::GetDeprecatedProperty(name);
 
          if (!depProp.valid())
