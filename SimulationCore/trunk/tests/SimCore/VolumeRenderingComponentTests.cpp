@@ -99,23 +99,12 @@ namespace SimCore
                unsigned(25), volume1->GetNumParticles());
 
 
-            osg::BoundingBox b;
+            osg::BoundingSphere b;
             b = volume1->computeBound();
            
             CPPUNIT_ASSERT_MESSAGE("ParticleVolumeDrawable with radius 1 and particle radius 5 should should have a bounding volume with no more then 6 m radius",
-               b._min.x() <= 6.0f);
-            CPPUNIT_ASSERT_MESSAGE("ParticleVolumeDrawable with radius 1 and particle radius 5 should should have a bounding volume with no more then 6 m radius",
-               b._min.y() <= 6.0f);
-            CPPUNIT_ASSERT_MESSAGE("ParticleVolumeDrawable with radius 1 and particle radius 5 should should have a bounding volume with no more then 6 m radius",
-               b._min.z() <= 6.0f);
-
-            CPPUNIT_ASSERT_MESSAGE("ParticleVolumeDrawable with radius 1 and particle radius 5 should should have a bounding volume with no more then 6 m radius",
-               b._max.x() <= 6.0f);
-            CPPUNIT_ASSERT_MESSAGE("ParticleVolumeDrawable with radius 1 and particle radius 5 should should have a bounding volume with no more then 6 m radius",
-               b._max.x() <= 6.0f);
-            CPPUNIT_ASSERT_MESSAGE("ParticleVolumeDrawable with radius 1 and particle radius 5 should should have a bounding volume with no more then 6 m radius",
-               b._max.x() <= 6.0f);
-
+               b.radius() <= 6.0f);
+            
 
             char str[255];
             for(unsigned i = 0; i < 25; ++i)

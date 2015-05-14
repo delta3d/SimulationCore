@@ -18,7 +18,7 @@
 //#include <prefix/dtgameprefix.h>
 #include <prefix/SimCorePrefix.h>
 #include <cppunit/extensions/HelperMacros.h>
-#include <osg/CameraNode>
+#include <osg/Camera>
 #include <osg/Group>
 #include <SimCore/GUI/SceneWindow.h>
 #include <UnitTestMain.h>

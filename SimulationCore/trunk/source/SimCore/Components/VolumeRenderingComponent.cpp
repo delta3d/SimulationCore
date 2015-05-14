@@ -1247,17 +1247,17 @@ namespace SimCore
    }
 
    ////////////////////////////////////////////////////////////////////////// 
-   osg::BoundingBox VolumeRenderingComponent::ParticleVolumeDrawable::computeBound() const
+   osg::BoundingSphere VolumeRenderingComponent::ParticleVolumeDrawable::computeBound() const
    {
-      osg::BoundingBox bb;
+      osg::BoundingSphere bv;
       for(unsigned i = 0; i < mNumParticles; ++i)
       {
          osg::BoundingSphere bs;
          osg::Vec4 pos = mPoints[i];
          bs.set(osg::Vec3(pos[0], pos[1], pos[2]), mParticleRadius);
-         bb.expandBy(bs);
+         bv.expandBy(bs);
       }
-      return bb;
+      return bv;
    }
 
    ////////////////////////////////////////////////////////////////////////// 

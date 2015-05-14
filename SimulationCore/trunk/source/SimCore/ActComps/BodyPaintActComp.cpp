@@ -222,7 +222,7 @@ namespace SimCore
       osg::Vec4 BodyPaintActComp::GetDimensions(osg::Node& node)
       {
          dtUtil::BoundingBoxVisitor visitor;
-         visitor.apply(node);
+         node.accept(visitor);
 
          const osg::BoundingBox& bb = visitor.mBoundingBox;
          osg::Vec4 dims(

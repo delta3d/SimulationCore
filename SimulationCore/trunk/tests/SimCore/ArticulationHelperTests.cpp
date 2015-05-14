@@ -46,6 +46,7 @@
 
 #include <UnitTestMain.h>
 #include <dtABC/application.h>
+#include <dtUtil/mswinmacros.h>
 
 #ifdef DELTA_WIN32
 #include <dtUtil/mswin.h>
