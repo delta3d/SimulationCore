@@ -184,7 +184,7 @@ namespace SimCore
             if(node != NULL)
             {
                osg::ComputeBoundsVisitor visitor;
-               visitor.apply(*node);
+               node->accept(visitor);
 
                const osg::BoundingBox& bb = visitor.getBoundingBox();
                if(bb.valid())

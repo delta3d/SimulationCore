@@ -135,7 +135,7 @@ namespace SimCore
             virtual bool supports(const osg::PrimitiveIndexFunctor&) const { return false; }
 
 
-            /*virtual*/ osg::BoundingBox computeBound() const;
+            /*virtual*/ osg::BoundingSphere computeBound() const;
 
             /*virtual*/ void drawImplementation(osg::RenderInfo& renderInfo) const;
 
