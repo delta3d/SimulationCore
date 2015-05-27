@@ -150,7 +150,7 @@ namespace SimCore
       // ANIMATION CLIP ACTOR COMPONENT
       ////////////////////////////////////////////////////////////////////////////////
       const dtUtil::RefString AnimationClipActComp::PROPERTY_ANIMATION_PROPERTY_ARRAY("Animation Property Array");
-      const dtUtil::RefString AnimationClipActComp::PROPERTY_PAUSED;
+      const dtUtil::RefString AnimationClipActComp::PROPERTY_PAUSED("Paused");
 
       AnimationClipActComp::AnimationClipActComp()
       : BaseClass(AnimationClipActComp::TYPE)
@@ -382,9 +382,9 @@ namespace SimCore
 
             // Convert the animation paths to path types
             // that can play segments of a full animation.
-            // This could take a good amount of time depending
-            // the number of objects and length of animation
-            // to be copied between animation paths.
+            // This could take a significant amount of time 
+            // depending on the number of objects and length of
+            // animation to be copied between animation paths.
             typedef AnimCallbackVisitor::AnimCallbackVector AnimCallbackVector;
             AnimCallbackVector::iterator iter = visitor.GetAnimCallbacks().begin();
             AnimCallbackVector::iterator iterEnd = visitor.GetAnimCallbacks().end();
