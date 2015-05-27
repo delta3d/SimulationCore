@@ -103,7 +103,7 @@ namespace SimCore
             b = volume1->computeBound();
            
             CPPUNIT_ASSERT_MESSAGE("ParticleVolumeDrawable with radius 1 and particle radius 5 should should have a bounding volume with no more then 6 m radius",
-               b.radius() <= 6.0f);
+               b.radius() < 6.0f);
             
 
             char str[255];

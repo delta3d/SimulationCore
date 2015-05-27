@@ -1,23 +1,23 @@
 /* -*-c++-*-
-* Simulation Core
-* Copyright 2007-2008, Alion Science and Technology
-*
-* This library is free software; you can redistribute it and/or modify it under
-* the terms of the GNU Lesser General Public License as published by the Free
-* Software Foundation; either version 2.1 of the License, or (at your option)
-* any later version.
-*
-* This library is distributed in the hope that it will be useful, but WITHOUT
-* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-* FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
-* details.
-*
-* You should have received a copy of the GNU Lesser General Public License
-* along with this library; if not, write to the Free Software Foundation, Inc.,
-* 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-*
-* This software was developed by Alion Science and Technology Corporation under
-* circumstances in which the U. S. Government may have rights in the software.
+ * Simulation Core
+ * Copyright 2007-2008, Alion Science and Technology
+ *
+ * This library is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 2.1 of the License, or (at your option)
+ * any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this library; if not, write to the Free Software Foundation, Inc.,
+ * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ *
+ * This software was developed by Alion Science and Technology Corporation under
+ * circumstances in which the U. S. Government may have rights in the software.
  * @author Chris Rodgers
  */
 
@@ -70,17 +70,17 @@ namespace SimCore
       // Actor code
       ////////////////////////////////////////////////////////////////////////
       IGEnvironmentActor::IGEnvironmentActor(dtGame::GameActorProxy& owner)
-         : BaseClass(owner)
-         , mEnableCloudPlane(false)
-         , mEnableLensFlare(false)
-         , mInitSystemClock(false)
-         , mCloudCoverage(0)
-         , mWind(0.0f, 0.0f, 0.0f)
-         , mCloudPlane()
-         , mLensFlare()
-         , mEphemeris()
+      : BaseClass(owner)
+      , mEnableCloudPlane(false)
+      , mEnableLensFlare(false)
+      , mInitSystemClock(false)
+      , mCloudCoverage(0)
+      , mWind(0.0f, 0.0f, 0.0f)
+      , mCloudPlane()
+      , mLensFlare()
+      , mEphemeris()
       {
-         
+
       }
 
       /////////////////////////////////////////////////////////////
@@ -102,11 +102,11 @@ namespace SimCore
       {
          if(mEphemeris.valid())
          {
-             mEphemeris->SetLatitudeLongitude(latitude, longitude);
+            mEphemeris->SetLatitudeLongitude(latitude, longitude);
          }
          else
          {
-             LOG_ERROR("No valid EphemerisScene found, cannot set lat/long");
+            LOG_ERROR("No valid EphemerisScene found, cannot set lat/long");
          }
       }
 
@@ -116,47 +116,47 @@ namespace SimCore
          //we should have a valid ephemeris scene
          if (mEphemeris.valid())
          {
-             if (!ContainsActor(*mEphemeris))
-             {
-                 AddActor(*mEphemeris);
-                 IGEnvironmentActorProxy& igProxy = *dynamic_cast<IGEnvironmentActorProxy*>(GetOwner());
-                 
-                 //setup clouds
-                 mCloudPlane = new dtCore::CloudPlane(igProxy.GetCloudHeight(), "Cloud Plane", "./Textures/CloudTexture9.dds");
-                 
-                 osg::Depth* depthState = new osg::Depth(osg::Depth::ALWAYS, 1.0f, 1.0f);
-                 osg::StateSet* cloudPlaneSS = mCloudPlane->GetOSGNode()->getOrCreateStateSet();
-                 cloudPlaneSS->setAttributeAndModes(depthState);
-                 cloudPlaneSS->setRenderBinDetails(-3, "RenderBin");
-                 
-                 ChangeClouds(igProxy.GetCloudNum(), mWind[0], mWind[1]);
+            if (!ContainsActor(*mEphemeris))
+            {
+               AddActor(*mEphemeris);
+               IGEnvironmentActorProxy& igProxy = *dynamic_cast<IGEnvironmentActorProxy*>(GetOwner());
 
-                 if (igProxy.GetInitialCloudState())
-                 {
-                     EnableCloudPlane(true);
-                 }
-                 
-                 if (igProxy.GetInitialFogState())
-                 {
-                     SetFogEnabled(true);
-                 }
+               //setup clouds
+               mCloudPlane = new dtCore::CloudPlane(igProxy.GetCloudHeight(), "Cloud Plane", "./Textures/CloudTexture9.dds");
 
-                 if (GetInitializeSystemClock())
-                 {
-                     SetDateTime(igProxy.GetInitialDateTime());
-                 }
-                 
-                 //set default visibility to go to the far plane
-                 SetVisibility(SimCore::BaseGameEntryPoint::PLAYER_FAR_CLIP_PLANE - 100.0f);
-             }
-             else
-             {
-                 LOG_ERROR("Ephemeris already added to scene.");
-             }
+               osg::Depth* depthState = new osg::Depth(osg::Depth::ALWAYS, 1.0f, 1.0f);
+               osg::StateSet* cloudPlaneSS = mCloudPlane->GetOSGNode()->getOrCreateStateSet();
+               cloudPlaneSS->setAttributeAndModes(depthState);
+               cloudPlaneSS->setRenderBinDetails(-3, "RenderBin");
+
+               ChangeClouds(igProxy.GetCloudNum(), mWind[0], mWind[1]);
+
+               if (igProxy.GetInitialCloudState())
+               {
+                  EnableCloudPlane(true);
+               }
+
+               if (igProxy.GetInitialFogState())
+               {
+                  SetFogEnabled(true);
+               }
+
+               if (GetInitializeSystemClock())
+               {
+                  SetDateTime(igProxy.GetInitialDateTime());
+               }
+
+               //set default visibility to go to the far plane
+               SetVisibility(SimCore::BaseGameEntryPoint::PLAYER_FAR_CLIP_PLANE - 100.0f);
+            }
+            else
+            {
+               LOG_ERROR("Ephemeris already added to scene.");
+            }
          }
          else
          {
-             LOG_ERROR("Ephemeris Scene should be created and added by the proxy class.");
+            LOG_ERROR("Ephemeris Scene should be created and added by the proxy class.");
          }
 
          //add lens flare if necessary
@@ -207,31 +207,31 @@ namespace SimCore
       /////////////////////////////////////////////////////////////
       void IGEnvironmentActor::RemoveActor( dtCore::DeltaDrawable& actor )
       {
-		  BaseClass::RemoveActor(actor);
+         BaseClass::RemoveActor(actor);
       }
 
       /////////////////////////////////////////////////////////////
       void IGEnvironmentActor::RemoveAllActors()
       {
-		  BaseClass::RemoveAllActors();
+         BaseClass::RemoveAllActors();
       }
 
       /////////////////////////////////////////////////////////////
       bool IGEnvironmentActor::ContainsActor( dtCore::DeltaDrawable& actor ) const
       {
-		 return BaseClass::ContainsActor(actor);
+         return BaseClass::ContainsActor(actor);
       }
 
       /////////////////////////////////////////////////////////////
       void IGEnvironmentActor::GetAllActors( std::vector<dtCore::DeltaDrawable*>& outActorList )
       {
-		 BaseClass::GetAllActors(outActorList);
+         BaseClass::GetAllActors(outActorList);
       }
 
       /////////////////////////////////////////////////////////////
       unsigned int IGEnvironmentActor::GetNumEnvironmentChildren() const
       {
-		 return BaseClass::GetNumEnvironmentChildren();
+         return BaseClass::GetNumEnvironmentChildren();
       }
 
       /////////////////////////////////////////////////////////////
@@ -268,12 +268,12 @@ namespace SimCore
       {
          if(mEphemeris.valid())
          {
-             return mEphemeris->GetDateTime();
+            return mEphemeris->GetDateTime();
          }
          else
          {
-             LOG_ERROR("No valid EphemerisScene found, returning default DateTime.");
-             return dtUtil::DateTime();
+            LOG_ERROR("No valid EphemerisScene found, returning default DateTime.");
+            return dtUtil::DateTime();
          }
       }
 
@@ -281,44 +281,44 @@ namespace SimCore
       void IGEnvironmentActor::SetDateTime(const dtUtil::DateTime& dt)
       {
          dtUtil::Log::GetInstance("IGEnvironmentActor.cpp").LogMessage(dtUtil::Log::LOG_DEBUG, __FILE__, "Sim time set to:%s",
-            dt.ToString(dtUtil::DateTime::TimeFormat::CALENDAR_DATE_AND_TIME_FORMAT).c_str());
+               dt.ToString(dtUtil::DateTime::TimeFormat::CALENDAR_DATE_AND_TIME_FORMAT).c_str());
 
          if (mEphemeris.valid())
          {
-             mEphemeris->SetDateTime(dt);
+            mEphemeris->SetDateTime(dt);
 
-             OnTimeChanged();
+            OnTimeChanged();
          }
          else
          {
-             LOG_ERROR("Invalid EphemerisScene unable to SetDateTime().");
+            LOG_ERROR("Invalid EphemerisScene unable to SetDateTime().");
          }
 
          dtUtil::Log::GetInstance("IGEnvironmentActor.cpp").LogMessage(dtUtil::Log::LOG_DEBUG, __FILE__, "Sim time set to:%s",
-            dt.ToString(dtUtil::DateTime::TimeFormat::CALENDAR_DATE_AND_TIME_FORMAT).c_str());
+               dt.ToString(dtUtil::DateTime::TimeFormat::CALENDAR_DATE_AND_TIME_FORMAT).c_str());
       }
 
       /////////////////////////////////////////////////////////////
       void IGEnvironmentActor::SetTimeFromSystem()
       {
-          if (mEphemeris.valid())
-          {
-              mEphemeris->SetTimeFromSystem();
+         if (mEphemeris.valid())
+         {
+            mEphemeris->SetTimeFromSystem();
 
-              OnTimeChanged();
-          }
-          else
-          {
-              LOG_ERROR("Invalid EphemerisScene unable to SetTimeFromSystem().");
-          }
+            OnTimeChanged();
+         }
+         else
+         {
+            LOG_ERROR("Invalid EphemerisScene unable to SetTimeFromSystem().");
+         }
 
       }
 
       /////////////////////////////////////////////////////////////
       void IGEnvironmentActor::OnTimeChanged()
       {
-        //this functionality is currently not supported in the upgrade to dtRender
-        //temporarily commenting out as a reminder
+         //this functionality is currently not supported in the upgrade to dtRender
+         //temporarily commenting out as a reminder
 
          //when the time changes the fog color changes as well so we must update
          //the fog color on our "FogSphere"
@@ -336,85 +336,85 @@ namespace SimCore
       /////////////////////////////////////////////////////////////
       void IGEnvironmentActor::SetDensity(float density)
       {
-          if (mEphemeris.valid())
-          {
-              mEphemeris->SetFogDensity(density);
-          }
-          else
-          {
-              LOG_ERROR("Invalid EphemerisScene unable to Set Fog Density.");
-          }
+         if (mEphemeris.valid())
+         {
+            mEphemeris->SetFogDensity(density);
+         }
+         else
+         {
+            LOG_ERROR("Invalid EphemerisScene unable to Set Fog Density.");
+         }
       }
 
       float IGEnvironmentActor::GetDensity()
       {
-          if (mEphemeris.valid())
-          {
-              return mEphemeris->GetFogDensity();
-          }
-          else
-          {
-              LOG_ERROR("Invalid EphemerisScene unable to Get Fog Density.");
-              return 0.0f;
-          }
+         if (mEphemeris.valid())
+         {
+            return mEphemeris->GetFogDensity();
+         }
+         else
+         {
+            LOG_ERROR("Invalid EphemerisScene unable to Get Fog Density.");
+            return 0.0f;
+         }
       }
 
       /////////////////////////////////////////////////////////////
       bool IGEnvironmentActor::IsFogEnabled() const
       {
-          if (mEphemeris.valid())
-          {
-              return mEphemeris->GetFogEnable();
-          }
-          else
-          {
-              LOG_ERROR("Invalid EphemerisScene unable to Get Fog Enabled.");
-              return false;
-          }
+         if (mEphemeris.valid())
+         {
+            return mEphemeris->GetFogEnable();
+         }
+         else
+         {
+            LOG_ERROR("Invalid EphemerisScene unable to Get Fog Enabled.");
+            return false;
+         }
       }
 
       /////////////////////////////////////////////////////////////
       void IGEnvironmentActor::SetFogEnabled(bool enable)
       {
-          if (mEphemeris.valid())
-          {
-              mEphemeris->SetFogEnable(enable);
-          }
-          else
-          {
-              LOG_ERROR("Invalid EphemerisScene unable to Set Fog Enabled.");
-          }
+         if (mEphemeris.valid())
+         {
+            mEphemeris->SetFogEnable(enable);
+         }
+         else
+         {
+            LOG_ERROR("Invalid EphemerisScene unable to Set Fog Enabled.");
+         }
       }
 
       /////////////////////////////////////////////////////////////
       const osg::Vec3 IGEnvironmentActor::GetFogColor()
       {
-          osg::Vec4 color;
+         osg::Vec4 color;
 
-          if (mEphemeris.valid())
-          {
-              color = mEphemeris->GetFogColor();
-          }
-          else
-          {
-              LOG_ERROR("Invalid EphemerisScene unable to Get Fog Color.");
-          }
+         if (mEphemeris.valid())
+         {
+            color = mEphemeris->GetFogColor();
+         }
+         else
+         {
+            LOG_ERROR("Invalid EphemerisScene unable to Get Fog Color.");
+         }
 
-          return osg::Vec3(color.x(), color.y(), color.z());
+         return osg::Vec3(color.x(), color.y(), color.z());
       }
 
       /////////////////////////////////////////////////////////////
       void IGEnvironmentActor::SetFogColor(const osg::Vec3& color)
       {
-          if (mEphemeris.valid())
-          {
-              mEphemeris->SetFogColor(osg::Vec4(color, 1.0f));
-              mCloudPlane->SetColor(osg::Vec4(color, 1.0f));
-          }
-          else
-          {
-              LOG_ERROR("Invalid EphemerisScene unable to Set Fog Color.");
-          }
+         if (mEphemeris.valid())
+         {
+            mEphemeris->SetFogColor(osg::Vec4(color, 1.0f));
+            mCloudPlane->SetColor(osg::Vec4(color, 1.0f));
+         }
+         else
+         {
+            LOG_ERROR("Invalid EphemerisScene unable to Set Fog Color.");
+         }
       }
 
       /////////////////////////////////////////////////////////////
@@ -422,11 +422,11 @@ namespace SimCore
       {
          if (mEphemeris.valid())
          {
-             mEphemeris->SetFogMode(mode);
+            mEphemeris->SetFogMode(mode);
          }
          else
          {
-             LOG_ERROR("Invalid EphemerisScene unable to Set Fog Mode.");
+            LOG_ERROR("Invalid EphemerisScene unable to Set Fog Mode.");
          }
       }
 
@@ -434,27 +434,27 @@ namespace SimCore
       /////////////////////////////////////////////////////////////
       void IGEnvironmentActor::SetFogNear(float val )
       {
-          if (mEphemeris.valid())
-          {
-              mEphemeris->SetFogNear(val);
-          }
-          else
-          {
-              LOG_ERROR("Invalid EphemerisScene unable to Set Fog Near.");
-          }
+         if (mEphemeris.valid())
+         {
+            mEphemeris->SetFogNear(val);
+         }
+         else
+         {
+            LOG_ERROR("Invalid EphemerisScene unable to Set Fog Near.");
+         }
       }
 
       /////////////////////////////////////////////////////////////
       void IGEnvironmentActor::SetVisibility(float distance)
       {
-          if (mEphemeris.valid())
-          {
-              mEphemeris->SetVisibility(distance);
-          }
-          else
-          {
-              LOG_ERROR("Invalid EphemerisScene unable to Set Visibility.");
-          }
+         if (mEphemeris.valid())
+         {
+            mEphemeris->SetVisibility(distance);
+         }
+         else
+         {
+            LOG_ERROR("Invalid EphemerisScene unable to Set Visibility.");
+         }
       }
 
       /////////////////////////////////////////////////////////////
@@ -464,11 +464,11 @@ namespace SimCore
 
          if (mEphemeris.valid())
          {
-             result = mEphemeris->GetVisibility();
+            result = mEphemeris->GetVisibility();
          }
          else
          {
-             LOG_ERROR("Invalid EphemerisScene unable to GetVisibility().");
+            LOG_ERROR("Invalid EphemerisScene unable to GetVisibility().");
          }
 
          return result;
@@ -481,11 +481,11 @@ namespace SimCore
 
          if (mEphemeris.valid())
          {
-             position = mEphemeris->GetSunPosition();
+            position = mEphemeris->GetSunPosition();
          }
          else
          {
-             LOG_ERROR("Invalid EphemerisScene unable to GetSunPosition().");
+            LOG_ERROR("Invalid EphemerisScene unable to GetSunPosition().");
          }        
 
          return position;
@@ -541,32 +541,32 @@ namespace SimCore
          return mLensFlare.get();
       }
 
-	  /////////////////////////////////////////////////////////////
-	  void IGEnvironmentActor::SetEphemerisScene(dtRender::EphemerisScene& ephScene)
-	  {
-		  mEphemeris = &ephScene;
-	  }
+      /////////////////////////////////////////////////////////////
+      void IGEnvironmentActor::SetEphemerisScene(dtRender::EphemerisScene& ephScene)
+      {
+         mEphemeris = &ephScene;
+      }
 
-	  /////////////////////////////////////////////////////////////
-	  dtRender::EphemerisScene* IGEnvironmentActor::GetEphemerisScene()
-	  {
-		  return mEphemeris.get();
-	  }
+      /////////////////////////////////////////////////////////////
+      dtRender::EphemerisScene* IGEnvironmentActor::GetEphemerisScene()
+      {
+         return mEphemeris.get();
+      }
 
-	  /////////////////////////////////////////////////////////////
-	  const dtRender::EphemerisScene* IGEnvironmentActor::GetEphemerisScene() const
-	  {
-		  return mEphemeris.get();
-	  }
+      /////////////////////////////////////////////////////////////
+      const dtRender::EphemerisScene* IGEnvironmentActor::GetEphemerisScene() const
+      {
+         return mEphemeris.get();
+      }
 
       /////////////////////////////////////////////////////////////
       // Actor Proxy Code
       /////////////////////////////////////////////////////////////
       IGEnvironmentActorProxy::IGEnvironmentActorProxy()
-          : mInitialFogState(true)
-          , mInitialCloudState(true)
-          , mCloudNum(3)
-          , mCloudHeight(1500.0f)
+      : mInitialFogState(true)
+      , mInitialCloudState(true)
+      , mCloudNum(3)
+      , mCloudHeight(1500.0f)
       {
          SetClassName("SimCore::Actors::IGEnvironmentActor");
       }
@@ -576,57 +576,59 @@ namespace SimCore
       {
       }
 
-	  /////////////////////////////////////////////////////////////
+      /////////////////////////////////////////////////////////////
       void IGEnvironmentActorProxy::Init(const dtCore::ActorType& actorType)
-	  {
-		  BaseClass::Init(actorType);
+      {
+         BaseClass::Init(actorType);
 
-		  dtCore::RefPtr<IGEnvironmentActor> envActor = GetDrawable<IGEnvironmentActor>();
-		  if (envActor != NULL)
-		  {
-              //inherited from scene manager
-			  envActor->CreateScene();
+         dtCore::RefPtr<IGEnvironmentActor> envActor = GetDrawable<IGEnvironmentActor>();
+         if (envActor != NULL)
+         {
+            //inherited from scene manager
+            envActor->CreateScene();
 
-              dtCore::RefPtr<dtRender::EphemerisSceneActor> ephActor = CreateEphemeris();
-              
-              dtCore::RefPtr<dtRender::EphemerisScene> ephScene = ephActor->GetDrawable<dtRender::EphemerisScene>();             
+            dtCore::RefPtr<dtRender::EphemerisSceneActor> ephActor = CreateEphemeris();
 
-              if (ephScene.valid())
-              {
-                  envActor->SetEphemerisScene(*ephScene);
-              }
-              else
-              {
-                  LOG_ERROR("Error creating EphemerisScene");
-              }
-		  }
-		  else
-		  {
-			  LOG_ERROR("Error creating drawable.");
-		  }
+            dtCore::RefPtr<dtRender::EphemerisScene> ephScene = ephActor->GetDrawable<dtRender::EphemerisScene>();
 
-	  }
+            if (ephScene.valid())
+            {
+               envActor->SetEphemerisScene(*ephScene);
+            }
+            else
+            {
+               LOG_ERROR("Error creating EphemerisScene");
+            }
+         }
+         else
+         {
+            LOG_ERROR("Error creating drawable.");
+         }
 
-	  /////////////////////////////////////////////////////////////
-      void IGEnvironmentActorProxy::CreateDrawable()
-      {		 
-		 dtCore::RefPtr<IGEnvironmentActor> envActor = new IGEnvironmentActor(*this);		 
-		 SetDrawable(*envActor);
       }
 
-	  /////////////////////////////////////////////////////////////
-	  dtCore::RefPtr<dtRender::EphemerisSceneActor> IGEnvironmentActorProxy::CreateEphemeris()
-	  {
-        dtCore::RefPtr<dtCore::BaseActorObject> ap = dtCore::ActorFactory::GetInstance().CreateActor(*dtRender::RenderActorRegistry::EPHEMERIS_SCENE_ACTOR_TYPE);
-        dtCore::RefPtr<dtRender::EphemerisSceneActor> ephActor = dynamic_cast<dtRender::EphemerisSceneActor*>(ap.get());
+      /////////////////////////////////////////////////////////////
+      void IGEnvironmentActorProxy::CreateDrawable()
+      {		 
+         dtCore::RefPtr<IGEnvironmentActor> envActor = new IGEnvironmentActor(*this);
+         SetDrawable(*envActor);
+      }
 
-		if(ephActor == NULL)
-        {
+      /////////////////////////////////////////////////////////////
+      dtCore::RefPtr<dtRender::EphemerisSceneActor> IGEnvironmentActorProxy::CreateEphemeris()
+      {
+         //a temporary workaround since the IGEnvironmentActor creates a dtRender::EphemerisScene in code
+         dtCore::ActorFactory::GetInstance().LoadActorRegistry("dtRender");
+         dtCore::RefPtr<dtCore::BaseActorObject> ap = dtCore::ActorFactory::GetInstance().CreateActor(*dtRender::RenderActorRegistry::EPHEMERIS_SCENE_ACTOR_TYPE);
+         dtCore::RefPtr<dtRender::EphemerisSceneActor> ephActor = dynamic_cast<dtRender::EphemerisSceneActor*>(ap.get());
+
+         if(ephActor == NULL)
+         {
             LOG_ERROR("Error creating EphemerisScene.");
-        }
-		 
-        return ephActor;
-	  }
+         }
+
+         return ephActor;
+      }
 
       /////////////////////////////////////////////////////////////
       void IGEnvironmentActorProxy::BuildPropertyMap()
@@ -639,49 +641,49 @@ namespace SimCore
 
 
          DT_REGISTER_PROPERTY(
-             InitialFogState,
-             "Setting this enables fog at startup.",
-             PropertyRegType, propertyRegHelper );
+               InitialFogState,
+               "Setting this enables fog at startup.",
+               PropertyRegType, propertyRegHelper );
 
          DT_REGISTER_PROPERTY(
-             InitialCloudState,
-             "Setting this enables the cloud plane at startup.",
-             PropertyRegType, propertyRegHelper);
+               InitialCloudState,
+               "Setting this enables the cloud plane at startup.",
+               PropertyRegType, propertyRegHelper);
 
          DT_REGISTER_PROPERTY(
-             CloudNum,
-             "An integer from 1-10 specifying the amount cloud coverage.",
-             PropertyRegType, propertyRegHelper);
+               CloudNum,
+               "An integer from 1-10 specifying the amount cloud coverage.",
+               PropertyRegType, propertyRegHelper);
 
          DT_REGISTER_PROPERTY(
-             CloudHeight,
-             "The height in meters to place the cloud plane, default is 1500.",
-             PropertyRegType, propertyRegHelper);
+               CloudHeight,
+               "The height in meters to place the cloud plane, default is 1500.",
+               PropertyRegType, propertyRegHelper);
 
 
          IGEnvironmentActor* env = static_cast<IGEnvironmentActor*>(GetDrawable());
 
 
          AddProperty(new dtCore::BooleanActorProperty("Init System Clock", "Set the system clock to this time and date on startup",
-            dtCore::BooleanActorProperty::SetFuncType(env, &IGEnvironmentActor::SetInitializeSystemClock),
-            dtCore::BooleanActorProperty::GetFuncType(env, &IGEnvironmentActor::GetInitializeSystemClock),
-            "Set the system clock to this time and date on startup"));
+               dtCore::BooleanActorProperty::SetFuncType(env, &IGEnvironmentActor::SetInitializeSystemClock),
+               dtCore::BooleanActorProperty::GetFuncType(env, &IGEnvironmentActor::GetInitializeSystemClock),
+               "Set the system clock to this time and date on startup"));
 
          AddProperty(new dtCore::StringActorProperty("Time and Date", "Time and Date",
-             dtCore::StringActorProperty::SetFuncType(this, &IGEnvironmentActorProxy::SetInitialDateTimeAsString),
-             dtCore::StringActorProperty::GetFuncType(this, &IGEnvironmentActorProxy::GetInitialDateTimeAsString),
-            "Sets the time and date of the application. This string must be in the following UTC format: yyyy-mm-ddThh:mm:ss"));
+               dtCore::StringActorProperty::SetFuncType(this, &IGEnvironmentActorProxy::SetInitialDateTimeAsString),
+               dtCore::StringActorProperty::GetFuncType(this, &IGEnvironmentActorProxy::GetInitialDateTimeAsString),
+               "Sets the time and date of the application. This string must be in the following UTC format: yyyy-mm-ddThh:mm:ss"));
 
          AddProperty(new dtCore::Vec3ActorProperty("Wind", "Wind",
-            dtCore::Vec3ActorProperty::SetFuncType(env, &IGEnvironmentActor::SetWind),
-            dtCore::Vec3ActorProperty::GetFuncType(env, &IGEnvironmentActor::GetWind),
-            "Sets the force of wind, measured in meters per second"));
+               dtCore::Vec3ActorProperty::SetFuncType(env, &IGEnvironmentActor::SetWind),
+               dtCore::Vec3ActorProperty::GetFuncType(env, &IGEnvironmentActor::GetWind),
+               "Sets the force of wind, measured in meters per second"));
       }
 
       /////////////////////////////////////////////////////////////
       void IGEnvironmentActorProxy::BuildInvokables()
       {
-          BaseClass::BuildInvokables();
+         BaseClass::BuildInvokables();
       }
 
       /////////////////////////////////////////////////////////////
@@ -704,81 +706,81 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////
       void IGEnvironmentActorProxy::SetInitialDateTimeAsString(const std::string& timeAndDate)
       {
-          std::istringstream iss(timeAndDate);
-          // The time is stored in the universal format of:
-          // yyyy-mm-ddThh:min:ss-some number
-          // So we need to use a delimeter to ensure that we don't choke on the separators
-          bool result = SetTimeAndDateFromStringStream(iss);
+         std::istringstream iss(timeAndDate);
+         // The time is stored in the universal format of:
+         // yyyy-mm-ddThh:min:ss-some number
+         // So we need to use a delimeter to ensure that we don't choke on the separators
+         bool result = SetTimeAndDateFromStringStream(iss);
 
-          if (!result)
-          {
-              LOG_ERROR("The input time and date string: " + timeAndDate
+         if (!result)
+         {
+            LOG_ERROR("The input time and date string: " + timeAndDate
                   + " was not formatted correctly. The correct format is: yyyy-mm-ddThh:mm:ss. Ignoring.");
-          }
+         }
       }
 
       ///////////////////////////////////////////////////////////////
       bool IGEnvironmentActorProxy::SetTimeAndDateFromStringStream(std::istringstream& iss)
       {
-          unsigned year, month, day, hour, min, sec;
-          char delimeter;
+         unsigned year, month, day, hour, min, sec;
+         char delimeter;
 
-          iss >> year;
-          if (iss.fail()) { return false; }
+         iss >> year;
+         if (iss.fail()) { return false; }
 
-          iss >> delimeter;
-          if (iss.fail()) { return false; }
+         iss >> delimeter;
+         if (iss.fail()) { return false; }
 
-          iss >> month;
-          if (iss.fail()) { return false; }
+         iss >> month;
+         if (iss.fail()) { return false; }
 
-          iss >> delimeter;
-          if (iss.fail()) { return false; }
+         iss >> delimeter;
+         if (iss.fail()) { return false; }
 
-          iss >> day;
-          if (iss.fail()) { return false; }
+         iss >> day;
+         if (iss.fail()) { return false; }
 
-          iss >> delimeter;
-          if (iss.fail()) { return false; }
+         iss >> delimeter;
+         if (iss.fail()) { return false; }
 
-          iss >> hour;
-          if (iss.fail()) { return false; }
+         iss >> hour;
+         if (iss.fail()) { return false; }
 
-          iss >> delimeter;
-          if (iss.fail()) { return false; }
+         iss >> delimeter;
+         if (iss.fail()) { return false; }
 
-          iss >> min;
-          if (iss.fail()) { return false; }
+         iss >> min;
+         if (iss.fail()) { return false; }
 
-          iss >> delimeter;
-          if (iss.fail()) { return false; }
+         iss >> delimeter;
+         if (iss.fail()) { return false; }
 
-          iss >> sec;
-          if (iss.fail()) { return false; }
+         iss >> sec;
+         if (iss.fail()) { return false; }
 
-          dtUtil::DateTime dt;
-          dt.SetTime(year, month, day, hour, min, sec);
+         dtUtil::DateTime dt;
+         dt.SetTime(year, month, day, hour, min, sec);
 
-          SetInitialDateTime(dt);
-          return true;
+         SetInitialDateTime(dt);
+         return true;
       }
 
       /////////////////////////////////////////////////////////////
       const dtUtil::DateTime& IGEnvironmentActorProxy::GetInitialDateTime() const
       {
-          return mStartTime;
+         return mStartTime;
       }
 
       /////////////////////////////////////////////////////////////
       void IGEnvironmentActorProxy::SetInitialDateTime(const dtUtil::DateTime& dt)
       {
-          mStartTime = dt;
+         mStartTime = dt;
       }
 
       /////////////////////////////////////////////////////////////
       std::string IGEnvironmentActorProxy::GetInitialDateTimeAsString() const
       {
-          return mStartTime.ToString();
+         return mStartTime.ToString();
       }
    }
 }
