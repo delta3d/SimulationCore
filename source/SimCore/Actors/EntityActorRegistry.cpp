@@ -346,7 +346,12 @@ namespace SimCore
       EntityActorRegistry::EntityActorRegistry() :
          dtCore::ActorPluginRegistry("This library will store some entity actors")
       {
-         dtCore::ShaderManager::GetInstance().LoadShaderDefinitions("Shaders/ShaderDefs.xml", true);
+         try
+         {
+            dtCore::ShaderManager::GetInstance().LoadShaderDefinitions("Shaders/ShaderDefs.xml", true);
+         }
+         catch (...)
+         {}
       }
 
       ///////////////////////////////////////////////////////////////////////////
