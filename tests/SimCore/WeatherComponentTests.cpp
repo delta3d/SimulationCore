@@ -538,17 +538,18 @@ namespace SimCore
          // Test actor create messages
          // --- Test the Environment create message
 
-         mWeatherComp->SetEphemerisEnvironment(static_cast<SimCore::Actors::IGEnvironmentActor*>(mEnv->GetDrawable()));
+         mWeatherComp->SetEphemerisEnvironment(mEnv->GetDrawable<SimCore::Actors::IGEnvironmentActor>());
          CPPUNIT_ASSERT_MESSAGE("WeatherComponent SHOULD have an EnvironmentActor",
             mWeatherComp->GetEphemerisEnvironment() != NULL );
+         mGM->AddActor( *mEnv, false, false );
 
          // --- Test the DayTime create message
          CPPUNIT_ASSERT_MESSAGE("WeatherComponent should NOT have an DayTimeActor",
             mWeatherComp->GetDayTimeActor() == NULL );
-         Actors::DayTimeActor* actor = static_cast<Actors::DayTimeActor*> (mDayTime->GetDrawable());
+         Actors::DayTimeActor* actor = mDayTime->GetDrawable<Actors::DayTimeActor>();
          actor->SetTime(1166207083);
          mGM->AddActor( *mDayTime, false, false );
-         dtCore::System::GetInstance().Step();
+         dtCore::System::GetInstance().Step(0.016);
          CPPUNIT_ASSERT_MESSAGE("WeatherComponent SHOULD have an DayTimeActor",
             mWeatherComp->GetDayTimeActor() != NULL );
 
@@ -556,11 +557,11 @@ namespace SimCore
          CPPUNIT_ASSERT_MESSAGE("WeatherComponent should NOT have an AtmosphereActor",
             mWeatherComp->GetAtmosphereActor() == NULL );
          mGM->AddActor( *mAtmos, false, false );
-         dtCore::System::GetInstance().Step();
+         dtCore::System::GetInstance().Step(0.016);
          CPPUNIT_ASSERT_MESSAGE("WeatherComponent SHOULD have an AtmosphereActor",
             mWeatherComp->GetAtmosphereActor() != NULL );
 
-         // Prepare to capture and test the time set on
+         // Prepare to capture and tbest the time set on
          // the weather component's environment actor.
          int year, month, day, hour, minute, second;
          year = month = day = hour = minute = second = 0;
@@ -612,7 +613,7 @@ namespace SimCore
          // Test actor delete messages
          // --- Delete all actors
          mGM->DeleteAllActors();
-         dtCore::System::GetInstance().Step();
+         dtCore::System::GetInstance().Step(0.016f);
 
          // --- Test the DayTime delete message
          CPPUNIT_ASSERT_MESSAGE("WeatherComponent should NOT have an DayTimeActor",
@@ -630,13 +631,13 @@ namespace SimCore
 
          // --- Test the DayTime create message
          mGM->AddActor( *mDayTime, false, false );
-         dtCore::System::GetInstance().Step();
+         dtCore::System::GetInstance().Step(0.016f);
          CPPUNIT_ASSERT_MESSAGE("WeatherComponent SHOULD have an DayTimeActor",
             mWeatherComp->GetDayTimeActor() != NULL );
 
          // --- Test the Atmosphere create message
          mGM->AddActor( *mAtmos, false, false );
-         dtCore::System::GetInstance().Step();
+         dtCore::System::GetInstance().Step(0.016f);
          CPPUNIT_ASSERT_MESSAGE("WeatherComponent SHOULD have an AtmosphereActor",
             mWeatherComp->GetAtmosphereActor() != NULL );
 
@@ -655,11 +656,11 @@ namespace SimCore
 
 
          // Simulate the environment loading from a map file
-         dtCore::System::GetInstance().Step();
+         dtCore::System::GetInstance().Step(0.016f);
          RefPtr<dtGame::Message> msg =
             mGM->GetMessageFactory().CreateMessage( dtGame::MessageType::INFO_MAP_LOADED );
          mGM->SendMessage( *msg );
-         dtCore::System::GetInstance().Step();
+         dtCore::System::GetInstance().Step(0.016f);
       }
 
       //////////////////////////////////////////////////////////////
