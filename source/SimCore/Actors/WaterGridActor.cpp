@@ -1,27 +1,27 @@
 /* -*-c++-*-
-* Simulation Core
-* Copyright 2007-2008, Alion Science and Technology
-*
-* This library is free software; you can redistribute it and/or modify it under
-* the terms of the GNU Lesser General Public License as published by the Free
-* Software Foundation; either version 2.1 of the License, or (at your option)
-* any later version.
-*
-* This library is distributed in the hope that it will be useful, but WITHOUT
-* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-* FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
-* details.
-*
-* You should have received a copy of the GNU Lesser General Public License
-* along with this library; if not, write to the Free Software Foundation, Inc.,
-* 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-*
-* This software was developed by Alion Science and Technology Corporation under
-* circumstances in which the U. S. Government may have rights in the software.
-*
-* @author Bradley Anderegg
-* @author Curtiss Murphy
-*/
+ * Simulation Core
+ * Copyright 2007-2008, Alion Science and Technology
+ *
+ * This library is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 2.1 of the License, or (at your option)
+ * any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this library; if not, write to the Free Software Foundation, Inc.,
+ * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ *
+ * This software was developed by Alion Science and Technology Corporation under
+ * circumstances in which the U. S. Government may have rights in the software.
+ *
+ * @author Bradley Anderegg
+ * @author Curtiss Murphy
+ */
 
 
 #include <prefix/SimCorePrefix.h>
@@ -83,10 +83,10 @@ class UpdateReflectionCameraCallback : public osg::NodeCallback
 public:
 
    UpdateReflectionCameraCallback(osg::Camera* trans, osg::Camera* camera)
-   : mTarget(trans)
-   , mCamera(camera)
-   {
-   }
+: mTarget(trans)
+, mCamera(camera)
+{
+}
 
    virtual void operator()(osg::Node* node, osg::NodeVisitor* nv)
    {
@@ -203,17 +203,17 @@ namespace SimCore
 
       IMPLEMENT_ENUM(WaterGridActor::ChoppinessSettings);
       WaterGridActor::ChoppinessSettings WaterGridActor::ChoppinessSettings::
-         CHOP_FLAT("CHOP_FLAT", 0.0f, 30.0f);
+      CHOP_FLAT("CHOP_FLAT", 0.0f, 30.0f);
       WaterGridActor::ChoppinessSettings WaterGridActor::ChoppinessSettings::
-         CHOP_MILD("CHOP_MILD", 0.615f, 45.0f);
+      CHOP_MILD("CHOP_MILD", 0.615f, 45.0f);
       WaterGridActor::ChoppinessSettings WaterGridActor::ChoppinessSettings::
-         CHOP_MED("CHOP_MED", 1.75f, 65.0f);
+      CHOP_MED("CHOP_MED", 1.75f, 65.0f);
       WaterGridActor::ChoppinessSettings WaterGridActor::ChoppinessSettings::
-         CHOP_ROUGH("CHOP_ROUGH", 3.5f, 90.0f);
+      CHOP_ROUGH("CHOP_ROUGH", 3.5f, 90.0f);
 
 
       WaterGridActor::ChoppinessSettings::ChoppinessSettings(const std::string &name, float rotationSpread, float texMod)
-         : dtUtil::Enumeration(name), mRotationSpread(rotationSpread), mTextureWaveModifier(texMod)
+      : dtUtil::Enumeration(name), mRotationSpread(rotationSpread), mTextureWaveModifier(texMod)
       {  
          AddInstance(this);
       }
@@ -238,7 +238,7 @@ namespace SimCore
 
 
       WaterGridActor::SeaState::SeaState(const std::string& name, float ampMod, float waveLenMod, float speedMod)
-         : dtUtil::Enumeration(name), mAmplitudeModifier(ampMod) , mWaveLengthModifier(waveLenMod), mSpeedModifier(speedMod)
+      : dtUtil::Enumeration(name), mAmplitudeModifier(ampMod) , mWaveLengthModifier(waveLenMod), mSpeedModifier(speedMod)
       {  
          AddInstance(this);
       }
@@ -252,8 +252,8 @@ namespace SimCore
       {
       public:
          WaterGridComputeBound()
-         {
-         }
+      {
+      }
 
          /*virtual*/ osg::BoundingBox computeBound(const osg::Drawable& drawable) const
          {
@@ -267,7 +267,7 @@ namespace SimCore
       {
       public:
          WaterCullCallback()
-         {}
+      {}
 
          virtual bool cull(osg::NodeVisitor* nv, osg::Drawable* drawable, osg::RenderInfo* renderInfo) const
          {
@@ -282,25 +282,25 @@ namespace SimCore
       //WATER GRID ACTOR
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       WaterGridActor::WaterGridActor(WaterGridActorProxy& proxy)
-          : BaseClass(proxy)
-          , mElapsedTime(0.0f)
-          , mDeltaTime(0.0f)
-          , mRenderWaveTexture(false)
-          , mWireframe(false)
-          , mDeveloperMode(false)
-          , mComputedRadialDistance(0.0)
-          , mTextureWaveAmpOverLength(1.0 / 64.0)
-          , mModForWaveLength(1.0f)
-          , mModForSpeed(1.0f)
-          , mModForSteepness(1.0f)
-          , mModForAmplitude(1.0f)
-          , mModForDirectionInDegrees(0.0f)
-          , mModForFOV(1.0f)
-          , mCameraFoVScalar(1.0f)
-          , mMaxWaveHeight(0.0f)
-          , mWaterColor(0.117187, 0.3125, 0.58593, 1.0)
-          , mChoppinessEnum(&ChoppinessSettings::CHOP_FLAT)
-          , mSeaStateEnum(&SeaState::SeaState_4)
+      : BaseClass(proxy)
+      , mModForWaveLength(1.0f)
+      , mModForSpeed(1.0f)
+      , mModForSteepness(1.0f)
+      , mModForAmplitude(1.0f)
+      , mModForDirectionInDegrees(0.0f)
+      , mElapsedTime(0.0f)
+      , mDeltaTime(0.0f)
+      , mRenderWaveTexture(false)
+      , mWireframe(false)
+      , mDeveloperMode(false)
+      , mComputedRadialDistance(0.0)
+      , mTextureWaveAmpOverLength(1.0 / 64.0)
+      , mModForFOV(1.0f)
+      , mCameraFoVScalar(1.0f)
+      , mMaxWaveHeight(0.0f)
+      , mWaterColor(0.117187, 0.3125, 0.58593, 1.0)
+      , mChoppinessEnum(&ChoppinessSettings::CHOP_FLAT)
+      , mSeaStateEnum(&SeaState::SeaState_4)
       {
          SetName("WaterGridActor"); // Set a default name
       }
@@ -366,7 +366,7 @@ namespace SimCore
 
          ///Added a callback to the camera this can set uniforms on each camera.
          dtCore::Camera::AddCameraSyncCallback(*this,
-            dtCore::Camera::CameraSyncCallback(this, &WaterGridActor::UpdateWaveUniforms));
+               dtCore::Camera::CameraSyncCallback(this, &WaterGridActor::UpdateWaveUniforms));
 
          std::string developerMode;
          developerMode = GetGameActorProxy().GetGameManager()->GetConfiguration().GetConfigPropertyValue("DeveloperMode");
@@ -374,33 +374,33 @@ namespace SimCore
 
 
          const float kArray[] = {1.33, 1.76, 3.0, 2.246,
-                                       1.0, 3.71, 1.0, 1.75,
-                                       1.5, 1.0, 1.0, 2.0,
-                                       2.2, 2.0, 1.113, 1.0,
-                                       1.33, 1.76, 3.0, 2.246,
-                                       1.0, 3.71, 1.0, 1.75,
-                                       1.5, 1.0, 1.0, 2.0,
-                                       2.2, 2.0, 1.113, 1.0};
+               1.0, 3.71, 1.0, 1.75,
+               1.5, 1.0, 1.0, 2.0,
+               2.2, 2.0, 1.113, 1.0,
+               1.33, 1.76, 3.0, 2.246,
+               1.0, 3.71, 1.0, 1.75,
+               1.5, 1.0, 1.0, 2.0,
+               2.2, 2.0, 1.113, 1.0};
 
          const float waveLengthArray[] = {0.1788, 0.0535, 0.12186, 0.24,
-                                          0.14, 0.116844, 0.97437, 0.0805,
-                                          0.067, 0.3565, 0.67135 , 0.191,
-                                          0.155, 0.13917, 0.275, .448,
-                                          0.1788, 0.0535, 0.12186, 0.24,
-                                          0.14, 0.116844, 0.97437, 0.0805,
-                                          0.067, 0.3565, 0.67135 , 0.191,
-                                          0.155, 0.13917, 0.275, .448};
+               0.14, 0.116844, 0.97437, 0.0805,
+               0.067, 0.3565, 0.67135 , 0.191,
+               0.155, 0.13917, 0.275, .448,
+               0.1788, 0.0535, 0.12186, 0.24,
+               0.14, 0.116844, 0.97437, 0.0805,
+               0.067, 0.3565, 0.67135 , 0.191,
+               0.155, 0.13917, 0.275, .448};
 
          const float waveSpeedArray[] = {0.0953, 0.03839, 0.0311, 0.04221,
-                                         0.11497, 0.143213, 0.14571, 0.051181,
+               0.11497, 0.143213, 0.14571, 0.051181,
 
-                                         0.01473, 0.1531, 0.2131, 0.0221,
-                                         0.121497, 0.1213, 0.14571, 0.1181,
-                                         0.0953, 0.03839, 0.0311, 0.04221,
-                                         0.11497, 0.143213, 0.14571, 0.051181,
+               0.01473, 0.1531, 0.2131, 0.0221,
+               0.121497, 0.1213, 0.14571, 0.1181,
+               0.0953, 0.03839, 0.0311, 0.04221,
+               0.11497, 0.143213, 0.14571, 0.051181,
 
-                                         0.01473, 0.1531, 0.2131, 0.0221,
-                                         0.121497, 0.1213, 0.14571, 0.1181};
+               0.01473, 0.1531, 0.2131, 0.0221,
+               0.121497, 0.1213, 0.14571, 0.1181};
 
          for(int i = 0; i < MAX_TEXTURE_WAVES; ++i)
          {
@@ -424,7 +424,7 @@ namespace SimCore
 
       /////////////////////////////////////////////////////////////////////////////
       bool WaterGridActor::GetHeightAndNormalAtPoint( const osg::Vec3& detectionPoint,
-         float& outHeight, osg::Vec3& outNormal ) const
+            float& outHeight, osg::Vec3& outNormal ) const
       {
          outHeight = GetWaterHeight();
 
@@ -465,7 +465,7 @@ namespace SimCore
 
       /////////////////////////////////////////////////////////////////////////////
       float WaterGridActor::GetWaveAmplitudeAtPoint( const Wave& wave,
-         const osg::Vec3& worldPoint ) const
+            const osg::Vec3& worldPoint ) const
       {
          return 0.0;
       }
@@ -604,7 +604,7 @@ namespace SimCore
             if(kb->GetKeyState(osgGA::GUIEventAdapter::KEY_Page_Up))
             {
                if(testSeaState == 12) testSeaState = -1;
-               
+
                testSeaState++;
 
                SetSeaStateByNumber(testSeaState);
@@ -656,12 +656,12 @@ namespace SimCore
 
          //for reflection texture
          //CreateReflectionTexture();
-         
+
          CreateNoiseTexture();
          CreateWaveTexture();
          CreateReflectionCamera();
 
-           
+
          osg::Texture2D* foamTexture2D = new osg::Texture2D();
          std::string foamTextureFile = dtCore::Project::GetInstance().GetResourcePath(dtCore::ResourceDescriptor("Textures:OceanFoam.tga"));
          osg::Image* newImage = osgDB::readImageFile(foamTextureFile);
@@ -681,7 +681,7 @@ namespace SimCore
          foamTexUniform->set(2);
          ss->addUniform(foamTexUniform);
          ss->setTextureAttributeAndModes(2, foamTexture2D, osg::StateAttribute::ON);
-         
+
 
          //add a custom compute bounding box callback
          mGeometry->setComputeBoundingBoxCallback(new WaterGridComputeBound());
@@ -785,9 +785,9 @@ namespace SimCore
          {
             // Order is: waveLength, speed, amp, freq, UNUSED, UNUSED, dirX, dirY
             waveArray->setElement(2 * count, osg::Vec4(mProcessedWaveData[count][0], mProcessedWaveData[count][1],
-               mProcessedWaveData[count][2], mProcessedWaveData[count][3]));
+                  mProcessedWaveData[count][2], mProcessedWaveData[count][3]));
             waveArray->setElement(2 * count + 1, osg::Vec4(mProcessedWaveData[count][4], mProcessedWaveData[count][5],
-               mProcessedWaveData[count][6], mProcessedWaveData[count][7]));
+                  mProcessedWaveData[count][6], mProcessedWaveData[count][7]));
 
             maxWaveHeight += mProcessedWaveData[2 * count][2];
          }
@@ -954,7 +954,7 @@ namespace SimCore
       void WaterGridActor::AddWave(Wave& pWave)
       {
          pWave.mDirection.set(sin(osg::DegreesToRadians(pWave.mDirectionInDegrees)),
-                              cos(osg::DegreesToRadians(pWave.mDirectionInDegrees)));
+               cos(osg::DegreesToRadians(pWave.mDirectionInDegrees)));
          pWave.mDirection.normalize();
          mWaves.push_back(pWave);
       }
@@ -1031,7 +1031,7 @@ namespace SimCore
             }
          }
          mComputedRadialDistance = r;
-         
+
          for(int i = 0; i < N - 1; ++i)
          {
             for(int j = 0; j < K - 1; ++j)
@@ -1100,7 +1100,7 @@ namespace SimCore
 
                mWaveTexture = CreateTexture(width, height, false);
                InitAndBindToTarget(mWaveCamera.get(), mWaveTexture.get(), width, height);
-               
+
                AddOrthoQuad(mWaveCamera.get(), NULL, "TextureWave", "");
 
                comp->AddCamera(mWaveCamera.get());
@@ -1237,7 +1237,7 @@ namespace SimCore
             ss->addUniform(tex);
             ss->setTextureAttributeAndModes(1, mReflectionTexture.get(), osg::StateAttribute::ON);
 
-//            this is commented out because we are switching between using it for visualizing the reflection and visualizing the texture waves
+            //            this is commented out because we are switching between using it for visualizing the reflection and visualizing the texture waves
             //mWaveCameraScreen = new osg::Camera();
             //mWaveCameraScreen->setRenderOrder(osg::Camera::POST_RENDER, 1);
             //mWaveCameraScreen->setClearMask(GL_NONE);
@@ -1268,8 +1268,8 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       void WaterGridActor::AddReflectionScene( osg::Camera* cam )
       {
-          LOG_ERROR("WaterGridActor::AddReflectionScene() functionality is deprecated, use dtRender::OceanScene.");
-         
+         LOG_ERROR("WaterGridActor::AddReflectionScene() functionality is deprecated, use dtRender::OceanScene.");
+
          //SimCore::Components::WeatherComponent* comp = NULL;
          //GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::WeatherComponent::DEFAULT_NAME, comp);
 
@@ -1310,27 +1310,27 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       void WaterGridActor::ActorUpdate(const dtGame::Message& msg)
       {
-        const dtGame::ActorUpdateMessage &updateMessage = static_cast<const dtGame::ActorUpdateMessage&>(msg);
-        dtGame::GameActorProxy* proxy = GetGameActorProxy().GetGameManager()->FindGameActorById(updateMessage.GetAboutActorId());
-        if (proxy == NULL) // Could be deleted or not fully created from partial
-        {
-           return;
-        }
+         const dtGame::ActorUpdateMessage &updateMessage = static_cast<const dtGame::ActorUpdateMessage&>(msg);
+         dtGame::GameActorProxy* proxy = GetGameActorProxy().GetGameManager()->FindGameActorById(updateMessage.GetAboutActorId());
+         if (proxy == NULL) // Could be deleted or not fully created from partial
+         {
+            return;
+         }
 
-        OceanDataActor* oceanDataActor = NULL;
-        proxy->GetDrawable(oceanDataActor);
+         OceanDataActor* oceanDataActor = NULL;
+         proxy->GetDrawable(oceanDataActor);
 
-        if(oceanDataActor != NULL)
-        {
-           int seaState = oceanDataActor->GetSeaState();
-           float waveDirection = oceanDataActor->GetWaveDirectionPrimary();
-           float waveHeight = oceanDataActor->GetWaveHeightSignificant();
+         if(oceanDataActor != NULL)
+         {
+            int seaState = oceanDataActor->GetSeaState();
+            float waveDirection = oceanDataActor->GetWaveDirectionPrimary();
+            float waveHeight = oceanDataActor->GetWaveHeightSignificant();
 
-           double lat = oceanDataActor->GetLatitude();
-           double llong = oceanDataActor->GetLongitude();
+            double lat = oceanDataActor->GetLatitude();
+            double llong = oceanDataActor->GetLongitude();
 
-           OceanDataUpdate(lat, llong, seaState, waveDirection, waveHeight);
-        }
+            OceanDataUpdate(lat, llong, seaState, waveDirection, waveHeight);
+         }
 
       }
 
@@ -1680,7 +1680,7 @@ namespace SimCore
             SetSeaState(SeaState::SeaState_5);
             //AddRandomizedWaves(43.33, 02.667, 3.0f, 10.0f, numWaves);
             //AddRandomizedWaves(waveLenMod * 43.33, ampMod * 2.667, 6.0f, 10.0f, numWaves);
-            
+
             AddRandomizedWaves(waveLenMod * 12.667f, ampMod * 0.9667f, 1.75f, 6.0f, 4);
             AddRandomizedWaves(waveLenMod * 16.667f, ampMod * 1.1667f, 2.0f, 6.5f, 4);
             AddRandomizedWaves(waveLenMod * 20.66f, ampMod * 1.5f, 4.5f, 8.5f, 4);
@@ -1744,7 +1744,7 @@ namespace SimCore
             AddRandomizedWaves(waveLenMod * 83.33, ampMod * 9.667, 6.0f, 10.0f, 4);
             AddRandomizedWaves(waveLenMod * 129.667, ampMod * 12.33f, 10.5f, 20.0f, 4);
 
-            
+
 
          }
          else if(force == 10)
@@ -1821,18 +1821,18 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       //WATER GRID PROXY
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-       const dtUtil::RefString WaterGridActorProxy::CLASSNAME("WaterGridActor");
-       const dtUtil::RefString WaterGridActorProxy::PROPERTY_CHOPPINESS("Choppiness");
-       const dtUtil::RefString WaterGridActorProxy::PROPERTY_WATER_COLOR("Water Color");
-       const dtUtil::RefString WaterGridActorProxy::INVOKABLE_MAP_LOADED("Map Loaded");
-       const dtUtil::RefString WaterGridActorProxy::INVOKABLE_ACTOR_CREATED("Actor Created");
-       const dtUtil::RefString WaterGridActorProxy::INVOKABLE_ACTOR_UPDATE("Actor Updated");
+      const dtUtil::RefString WaterGridActorProxy::CLASSNAME("WaterGridActor");
+      const dtUtil::RefString WaterGridActorProxy::PROPERTY_CHOPPINESS("Choppiness");
+      const dtUtil::RefString WaterGridActorProxy::PROPERTY_WATER_COLOR("Water Color");
+      const dtUtil::RefString WaterGridActorProxy::INVOKABLE_MAP_LOADED("Map Loaded");
+      const dtUtil::RefString WaterGridActorProxy::INVOKABLE_ACTOR_CREATED("Actor Created");
+      const dtUtil::RefString WaterGridActorProxy::INVOKABLE_ACTOR_UPDATE("Actor Updated");
 
       WaterGridActorProxy::WaterGridActorProxy()
-         : mWaveDirection(0.0f)
-         , mAmplitudeModifier(1.0f)
-         , mWavelengthModifier(1.0f)
-         , mSpeedModifier(1.0f)
+      : mWaveDirection(0.0f)
+      , mAmplitudeModifier(1.0f)
+      , mWavelengthModifier(1.0f)
+      , mSpeedModifier(1.0f)
       {
          SetClassName(WaterGridActorProxy::CLASSNAME);
       }
@@ -1859,13 +1859,13 @@ namespace SimCore
          GetDrawable(wga);
 
          AddInvokable(*new dtGame::Invokable(INVOKABLE_MAP_LOADED,
-            dtUtil::MakeFunctor(&WaterGridActor::Init, *wga)));
+               dtUtil::MakeFunctor(&WaterGridActor::Init, *wga)));
 
          AddInvokable(*new dtGame::Invokable(INVOKABLE_ACTOR_UPDATE,
-                  dtUtil::MakeFunctor(&WaterGridActor::ActorUpdate, *wga)));
+               dtUtil::MakeFunctor(&WaterGridActor::ActorUpdate, *wga)));
 
          AddInvokable(*new dtGame::Invokable(INVOKABLE_ACTOR_CREATED,
-                  dtUtil::MakeFunctor(&WaterGridActor::ActorCreated, *wga)));
+               dtUtil::MakeFunctor(&WaterGridActor::ActorCreated, *wga)));
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1874,13 +1874,13 @@ namespace SimCore
          BaseClass::OnEnteredWorld();
 
          RegisterForMessages(dtGame::MessageType::TICK_LOCAL,
-            dtGame::GameActorProxy::TICK_LOCAL_INVOKABLE);
+               dtGame::GameActorProxy::TICK_LOCAL_INVOKABLE);
 
          RegisterForMessages(dtGame::MessageType::INFO_MAP_LOADED,
-            INVOKABLE_MAP_LOADED);
+               INVOKABLE_MAP_LOADED);
 
          RegisterForMessages(dtGame::MessageType::INFO_ACTOR_CREATED,
-            INVOKABLE_ACTOR_CREATED);
+               INVOKABLE_ACTOR_CREATED);
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1902,19 +1902,19 @@ namespace SimCore
          DT_REGISTER_PROPERTY(SpeedModifier, "A percentage multiplied with the speed.", RegHelperType, propReg);
 
          AddProperty(new dtCore::ColorRgbaActorProperty(PROPERTY_WATER_COLOR, PROPERTY_WATER_COLOR,
-            dtCore::ColorRgbaActorProperty::SetFuncType(actor,&WaterGridActor::SetWaterColor),
-            dtCore::ColorRgbaActorProperty::GetFuncType(actor,&WaterGridActor::GetWaterColor),
-            "Sets the color of the water.", GROUPNAME));
+               dtCore::ColorRgbaActorProperty::SetFuncType(actor,&WaterGridActor::SetWaterColor),
+               dtCore::ColorRgbaActorProperty::GetFuncType(actor,&WaterGridActor::GetWaterColor),
+               "Sets the color of the water.", GROUPNAME));
 
          AddProperty(new dtCore::EnumActorProperty<WaterGridActor::ChoppinessSettings>(PROPERTY_CHOPPINESS, PROPERTY_CHOPPINESS,
-            dtCore::EnumActorProperty<WaterGridActor::ChoppinessSettings>::SetFuncType(actor, &WaterGridActor::SetChoppiness),
-            dtCore::EnumActorProperty<WaterGridActor::ChoppinessSettings>::GetFuncType(actor, &WaterGridActor::GetChoppiness),
-            "Sets the choppiness for the water.", GROUPNAME));
+               dtCore::EnumActorProperty<WaterGridActor::ChoppinessSettings>::SetFuncType(actor, &WaterGridActor::SetChoppiness),
+               dtCore::EnumActorProperty<WaterGridActor::ChoppinessSettings>::GetFuncType(actor, &WaterGridActor::GetChoppiness),
+               "Sets the choppiness for the water.", GROUPNAME));
 
          AddProperty(new dtCore::EnumActorProperty<WaterGridActor::SeaState>("Sea State", "Sea State",
-            dtCore::EnumActorProperty<WaterGridActor::SeaState>::SetFuncType(actor, &WaterGridActor::SetSeaState),
-            dtCore::EnumActorProperty<WaterGridActor::SeaState>::GetFuncType(actor, &WaterGridActor::GetSeaState),
-            "The Sea State number based on the Beaufort wind force scale.", GROUPNAME));
+               dtCore::EnumActorProperty<WaterGridActor::SeaState>::SetFuncType(actor, &WaterGridActor::SetSeaState),
+               dtCore::EnumActorProperty<WaterGridActor::SeaState>::GetFuncType(actor, &WaterGridActor::GetSeaState),
+               "The Sea State number based on the Beaufort wind force scale.", GROUPNAME));
 
       }
 
