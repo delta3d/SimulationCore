@@ -238,7 +238,7 @@ namespace SimCore
          // Modulation of the base wave structures.
          DT_DECLARE_ACCESSOR_INLINE(float, ModForWaveLength)
          DT_DECLARE_ACCESSOR_INLINE(float, ModForSpeed)
-         DT_DECLARE_ACCESSOR_INLINE(float, ModForSteepness)         
+         DT_DECLARE_ACCESSOR_INLINE(float, ModForSteepness)
          DT_DECLARE_ACCESSOR_INLINE(float, ModForAmplitude)
          DT_DECLARE_ACCESSOR_INLINE(float, ModForDirectionInDegrees)
 
