@@ -33,12 +33,7 @@
 
 #include <dtUtil/threadpool.h>
 
-// Sadly, this includes a lot, but it's needed for the options on the LoadNodeTask
-#include <osgDB/ReaderWriter>
-
-#if AGEIA_PHYSICS
-#include <NxAgeiaPrimitivePhysicsHelper.h>
-#endif
+#include <dtUtil/readnodethreadpooltask.h>
 
 namespace dtGame
 {
@@ -49,32 +44,6 @@ namespace SimCore
 {
    namespace Actors
    {
-      class SIMCORE_EXPORT LoadNodeTask : public dtUtil::ThreadPoolTask
-      {
-      public:
-         LoadNodeTask();
-
-         virtual void operator()();
-
-         osg::Node* GetLoadedNode();
-         const osg::Node* GetLoadedNode() const;
-
-         /// Check to see if the loading is complete.  If it returns true, call WaitUntilComplete() to make sure.
-         bool IsComplete() const;
-
-         virtual void ResetData();
-
-         DT_DECLARE_ACCESSOR(bool, UseFileCaching);
-         DT_DECLARE_ACCESSOR(std::string, FileToLoad);
-         DT_DECLARE_ACCESSOR(dtCore::RefPtr<osgDB::ReaderWriter::Options>, LoadOptions);
-
-      protected:
-         virtual ~LoadNodeTask();
-      private:
-         dtCore::RefPtr<osg::Node> mLoadedNode;
-         volatile bool mComplete;
-      };
-
       class SIMCORE_EXPORT TerrainActor : public IGActor
       {
       public:
@@ -144,7 +113,7 @@ namespace SimCore
          TerrainPhysicsMode* mTerrainPhysicsMode;
          dtCore::RefPtr<osg::Node> mTerrainNode;
 
-         dtCore::RefPtr<LoadNodeTask> mLoadNodeTask;
+         dtCore::RefPtr<dtUtil::ReadNodeThreadPoolTask> mLoadNodeTask;
 
          std::string mLoadedFile, mCollisionResourceString, mPhysicsDirectory;
          //This doesn't load the file unless it's in a scene, so this flag tells it to load
