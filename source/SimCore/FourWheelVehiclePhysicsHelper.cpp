@@ -216,7 +216,7 @@ namespace SimCore
       dtCore::Transform bodyOffsetTx, visualToBody;
       visualToBody.SetTranslation(GetMainPhysicsObject()->GetOriginOffset());
       osg::Matrix bodyOffset;
-      ComputeLocalOffsetMatrixForNode(bodyOffsetTx, bodyNode, visualToBody, scale);
+      ComputeLocalOffsetMatrixForNode(bodyOffsetTx, bodyNode, visualToBody, NULL, scale);
       bodyOffsetTx.Get(bodyOffset);
 
       float frontDamping = 0.0f, rearDamping = 0.0f, frontSpring = 0.0f, rearSpring = 0.0f;
@@ -643,7 +643,7 @@ namespace SimCore
          dtCore::Transform bodyOffsetTx, visualToBody;
          visualToBody.SetTranslation(GetMainPhysicsObject()->GetOriginOffset());
 
-         ComputeLocalOffsetMatrixForNode(bodyOffsetTx, *chassis, visualToBody, scale);
+         ComputeLocalOffsetMatrixForNode(bodyOffsetTx, *chassis, visualToBody, NULL, scale);
 
          GetMainPhysicsObject()->SetVisualToBodyTransform(bodyOffsetTx);
 

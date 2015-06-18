@@ -49,9 +49,7 @@
 #include <osg/MatrixTransform>
 #include <osg/Node>
 #include <osg/StateSet>
-
-#include <osgDB/ReadFile>
-#include <osgDB/Registry>
+#include <osgDB/Options>
 
 #include <osgUtil/GLObjectsVisitor>
 
@@ -61,6 +59,8 @@
 #include <dtPhysics/geometry.h>
 #include <dtPhysics/physicsmaterialactor.h>
 
+#include <dtUtil/readnodethreadpooltask.h>
+
 namespace SimCore
 {
    namespace Actors
@@ -68,92 +68,6 @@ namespace SimCore
       static const std::string LOAD_NODE_TERRAIN_TIMER;
       // time between checks for loaded terrain.
       static const float LOAD_NODE_TIMER_TIMEOUT = 0.1;
-
-      ///////////////////////////////////////////////////////////////////////////////
-      LoadNodeTask::LoadNodeTask()
-      : mUseFileCaching(true)
-      , mComplete(false)
-      {
-      }
-
-      ///////////////////////////////////////////////////////////////////////////////
-      LoadNodeTask::~LoadNodeTask()
-      {
-      }
-
-      ///////////////////////////////////////////////////////////////////////////////
-      void LoadNodeTask::operator()()
-      {
-         if (!mFileToLoad.empty())
-         {
-            dtCore::RefPtr<osgDB::ReaderWriter::Options> options;
-            if (mLoadOptions.valid())
-            {
-               options = mLoadOptions;
-            }
-            else
-            {
-               options = new osgDB::ReaderWriter::Options;
-            }
-
-            if (mUseFileCaching)
-            {
-               options->setObjectCacheHint(osgDB::ReaderWriter::Options::CACHE_ALL);
-            }
-            else
-            {
-               options->setObjectCacheHint(osgDB::ReaderWriter::Options::CACHE_NONE);
-            }
-
-            options->setOptionString("loadMaterialsToStateSet");
-
-            mLoadedNode = NULL;
-
-            try
-            {
-               mLoadedNode = osgDB::readNodeFile(mFileToLoad, options.get());
-               mComplete = true;
-            }
-            catch(...)
-            {
-               LOG_ERROR("Exception thrown trying to load terrain:" + mFileToLoad);
-               mComplete = true;
-            }
-         }
-         else
-         {
-            mComplete = true;
-         }
-      }
-
-      ///////////////////////////////////////////////////////////////////////////////
-      osg::Node* LoadNodeTask::GetLoadedNode()
-      {
-         return mLoadedNode;
-      }
-
-      ///////////////////////////////////////////////////////////////////////////////
-      const osg::Node* LoadNodeTask::GetLoadedNode() const
-      {
-         return mLoadedNode;
-      }
-
-      ///////////////////////////////////////////////////////////////////////////////
-      bool LoadNodeTask::IsComplete() const
-      {
-         return mComplete;
-      }
-
-      ///////////////////////////////////////////////////////////////////////////////
-      void LoadNodeTask::ResetData()
-      {
-         mLoadedNode = NULL;
-         mComplete = false;
-      }
-
-      DT_IMPLEMENT_ACCESSOR(LoadNodeTask, bool, UseFileCaching);
-      DT_IMPLEMENT_ACCESSOR(LoadNodeTask, std::string, FileToLoad);
-      DT_IMPLEMENT_ACCESSOR(LoadNodeTask, dtCore::RefPtr<osgDB::ReaderWriter::Options>, LoadOptions);
 
       ///////////////////////////////////////////////////////////////////////////////
       ///////////////////////////////////////////////////////////////////////////////
@@ -556,16 +470,16 @@ namespace SimCore
                }
                else
                {
-                  mLoadNodeTask = new LoadNodeTask();
+                  mLoadNodeTask = new dtUtil::ReadNodeThreadPoolTask();
                }
 
                mLoadNodeTask->SetUseFileCaching(mLoadTerrainMeshWithCaching);
                mLoadNodeTask->SetFileToLoad(fileName);
 
-               dtCore::RefPtr<osgDB::ReaderWriter::Options> options;
+               dtCore::RefPtr<osgDB::Options> options;
                if (!options.valid())
                {
-                  options = new osgDB::ReaderWriter::Options;
+                  options = new osgDB::Options;
                   mLoadNodeTask->SetLoadOptions(options);
                }
 
