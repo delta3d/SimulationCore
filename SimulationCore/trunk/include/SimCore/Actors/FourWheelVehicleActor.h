@@ -1,27 +1,27 @@
 /* -*-c++-*-
-* Simulation Core
-* Copyright 2007-2010, Alion Science and Technology
-*
-* This library is free software; you can redistribute it and/or modify it under
-* the terms of the GNU Lesser General Public License as published by the Free
-* Software Foundation; either version 2.1 of the License, or (at your option)
-* any later version.
-*
-* This library is distributed in the hope that it will be useful, but WITHOUT
-* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-* FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
-* details.
-*
-* You should have received a copy of the GNU Lesser General Public License
-* along with this library; if not, write to the Free Software Foundation, Inc.,
-* 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-*
-* This software was developed by Alion Science and Technology Corporation under
-* circumstances in which the U. S. Government may have rights in the software.
-*
-* Allen Danklefsen
-* David Guthrie
-*/
+ * Simulation Core
+ * Copyright 2007-2010, Alion Science and Technology
+ *
+ * This library is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 2.1 of the License, or (at your option)
+ * any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this library; if not, write to the Free Software Foundation, Inc.,
+ * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ *
+ * This software was developed by Alion Science and Technology Corporation under
+ * circumstances in which the U. S. Government may have rights in the software.
+ *
+ * Allen Danklefsen
+ * David Guthrie
+ */
 #ifndef AGEIA_PHYSICS
 #ifndef FOUR_WHEEL_VEHICLE_
 #define FOUR_WHEEL_VEHICLE_
@@ -46,108 +46,110 @@ namespace SimCore
        */
       class SIMCORE_EXPORT FourWheelVehicleActor : public BasePhysicsVehicleActor
       {
-         public:
-            typedef BasePhysicsVehicleActor BaseClass;
-            /// Constructor
-            FourWheelVehicleActor (BasePhysicsVehicleActorProxy& proxy);
+      public:
+         typedef BasePhysicsVehicleActor BaseClass;
+         /// Constructor
+         FourWheelVehicleActor (BasePhysicsVehicleActorProxy& proxy);
 
-         protected:
-            /// Destructor
-            virtual ~FourWheelVehicleActor();
+      protected:
+         /// Destructor
+         virtual ~FourWheelVehicleActor();
 
          // INHERITED PUBLIC
-         public:
+      public:
 
-            // Called when the actor has been added to the game manager.
-            // You can respond to OnEnteredWorld on either the proxy or actor or both.
-            virtual void OnEnteredWorld();
-            virtual void OnRemovedFromWorld();
-            virtual void PostPhysicsUpdate();
-         public:
-            /// Utility Methods
-            float GetBrakeTorque();
+         // Called when the actor has been added to the game manager.
+         // You can respond to OnEnteredWorld on either the proxy or actor or both.
+         virtual void OnEnteredWorld();
+         virtual void OnRemovedFromWorld();
+         virtual void PostPhysicsUpdate();
+      public:
+         /// Utility Methods
+         float GetBrakeTorque();
 
-            /// Reset to starting position In additional to base behavior, it turns off sounds.
-            virtual void ResetVehicle();
+         /// Reset to starting position In additional to base behavior, it turns off sounds.
+         virtual void ResetVehicle();
 
-            SimCore::FourWheelVehiclePhysicsActComp* GetFourWheelPhysicsActComp() const;
+         SimCore::FourWheelVehiclePhysicsActComp* GetFourWheelPhysicsActComp() const;
 
-            /// Steering angle normalized from -1 to 1
-            DT_DECLARE_ACCESSOR(float, CurrentSteeringAngleNormalized);
+         /// Steering angle normalized from -1 to 1
+         DT_DECLARE_ACCESSOR(float, CurrentSteeringAngleNormalized);
 
-            DT_DECLARE_ACCESSOR(float, SoundBrakeSquealSpeed);
-            DT_DECLARE_ACCESSOR(float, GearChangeLow);
-            DT_DECLARE_ACCESSOR(float, GearChangeMedium);
-            DT_DECLARE_ACCESSOR(float, GearChangeHigh);
-            DT_DECLARE_ACCESSOR(dtCore::ResourceDescriptor, SoundEffectIgnition);
-            DT_DECLARE_ACCESSOR(dtCore::ResourceDescriptor, SoundEffectIdleLoop);
-            DT_DECLARE_ACCESSOR(dtCore::ResourceDescriptor, SoundEffectBrake);
-            DT_DECLARE_ACCESSOR(dtCore::ResourceDescriptor, SoundEffectAcceleration);
-            DT_DECLARE_ACCESSOR(dtCore::ResourceDescriptor, SoundEffectCollisionHit);
-            DT_DECLARE_ACCESSOR(dtCore::ResourceDescriptor, VehicleInteriorModel);
+         DT_DECLARE_ACCESSOR(float, SoundBrakeSquealSpeed);
+         DT_DECLARE_ACCESSOR(float, GearChangeLow);
+         DT_DECLARE_ACCESSOR(float, GearChangeMedium);
+         DT_DECLARE_ACCESSOR(float, GearChangeHigh);
+         DT_DECLARE_ACCESSOR(dtCore::ResourceDescriptor, SoundEffectIgnition);
+         DT_DECLARE_ACCESSOR(dtCore::ResourceDescriptor, SoundEffectIdleLoop);
+         DT_DECLARE_ACCESSOR(dtCore::ResourceDescriptor, SoundEffectBrake);
+         DT_DECLARE_ACCESSOR(dtCore::ResourceDescriptor, SoundEffectAcceleration);
+         DT_DECLARE_ACCESSOR(dtCore::ResourceDescriptor, SoundEffectCollisionHit);
+         DT_DECLARE_ACCESSOR(dtCore::ResourceDescriptor, VehicleInteriorModel);
 
-            /// Turns it up and moves up
-            virtual void RepositionVehicle(float deltaTime);
+         /// Turns it up and moves up
+         virtual void RepositionVehicle(float deltaTime);
 
-            virtual float GetMPH() const;
+         virtual float GetMPH() const;
 
-         protected:
-            /// Angles/ steering moving etc done here. Of the updates, this is called first.
-            /// This does nothing by default.
-            virtual void UpdateVehicleTorquesAndAngles(float deltaTime);
+      protected:
+         /// Angles/ steering moving etc done here. Of the updates, this is called first.
+         /// This does nothing by default.
+         virtual void UpdateVehicleTorquesAndAngles(float deltaTime);
 
-            /// Called update the dofs for your vehicle. Wheels or whatever. Of the updates, this is called second
-            /// By default, this does nothing.
-            virtual void UpdateRotationDOFS(float deltaTime, bool insideVehicle);
+         /// Called update the dofs for your vehicle. Wheels or whatever. Of the updates, this is called second
+         /// By default, this does nothing.
+         virtual void UpdateRotationDOFS(float deltaTime, bool insideVehicle);
 
-            /// called from tick. Do your sounds. Of the updates, this is called third.
-            /// Does nothing by default.
-            virtual void UpdateSoundEffects(float deltaTime);
+         /// called from tick. Do your sounds. Of the updates, this is called third.
+         /// Does nothing by default.
+         virtual void UpdateSoundEffects(float deltaTime);
 
-            /**
-             * Loads a sound from a resource descriptor and adds it as child
-             * @param rd the resource to load
-             * @param sound  Output, the sound ref pointer to assign.
-             * @return true if the sound was loaded successfully.
-             */
-            virtual bool LoadSound(const dtCore::ResourceDescriptor& rd, dtCore::RefPtr<dtAudio::Sound>& soundOut);
+         /**
+          * Loads a sound from a resource descriptor and adds it as child
+          * @param rd the resource to load
+          * @param sound  Output, the sound ref pointer to assign.
+          * @return true if the sound was loaded successfully.
+          */
+         virtual bool LoadSound(const dtCore::ResourceDescriptor& rd, dtCore::RefPtr<dtAudio::Sound>& soundOut);
 
-         private:
+      private:
 
-            ///////////////////////////////////////////////////
-            // for sound
-            enum GearSoundLevel {FIRST_GEAR = 1, SECOND_GEAR, THIRD_GEAR, FOURTH_GEAR};
-            GearSoundLevel    mLastGearChange;     /// So we know when to play a sound.
-            ///////////////////////////////////////////////////
+         ///////////////////////////////////////////////////
+         // for sound
+         enum GearSoundLevel {FIRST_GEAR = 1, SECOND_GEAR, THIRD_GEAR, FOURTH_GEAR};
+         GearSoundLevel    mLastGearChange;     /// So we know when to play a sound.
+         ///////////////////////////////////////////////////
 
-            ///////////////////////////////////////////////////
-            // Sound effects
-            dtCore::RefPtr<dtAudio::Sound> mSndIgnition;
-            dtCore::RefPtr<dtAudio::Sound> mSndVehicleIdleLoop;
-            dtCore::RefPtr<dtAudio::Sound> mSndBrake;
-            dtCore::RefPtr<dtAudio::Sound> mSndAcceleration;
-            dtCore::RefPtr<dtAudio::Sound> mSndCollisionHit;
-            ///////////////////////////////////////////////////
+         ///////////////////////////////////////////////////
+         // Sound effects
+         dtCore::RefPtr<dtAudio::Sound> mSndIgnition;
+         dtCore::RefPtr<dtAudio::Sound> mSndVehicleIdleLoop;
+         dtCore::RefPtr<dtAudio::Sound> mSndBrake;
+         dtCore::RefPtr<dtAudio::Sound> mSndAcceleration;
+         dtCore::RefPtr<dtAudio::Sound> mSndCollisionHit;
+         ///////////////////////////////////////////////////
 
-            ///////////////////////////////////////////////////
-            // vehicles portal for the actor
-            dtCore::RefPtr<dtGame::GameActorProxy> mVehiclesPortal;
-            float mCruiseSpeed;
-            bool mStopMode, mCruiseMode;
+         ///////////////////////////////////////////////////
+         // vehicles portal for the actor
+         dtCore::RefPtr<dtGame::GameActorProxy> mVehiclesPortal;
+         float mCruiseSpeed;
+         bool mStopMode, mCruiseMode;
 
       };
 
       class SIMCORE_EXPORT FourWheelVehicleActorProxy : public BasePhysicsVehicleActorProxy
       {
-         public:
-            FourWheelVehicleActorProxy();
-            virtual void BuildPropertyMap();
-            virtual void BuildActorComponents();
+      public:
+         typedef BasePhysicsVehicleActorProxy BaseClass;
 
-         protected:
-            virtual ~FourWheelVehicleActorProxy();
-            void CreateDrawable();
-            virtual void OnEnteredWorld();
+         FourWheelVehicleActorProxy();
+         virtual void BuildPropertyMap();
+         virtual void BuildActorComponents();
+
+      protected:
+         virtual ~FourWheelVehicleActorProxy();
+         void CreateDrawable();
+         virtual void OnEnteredWorld();
       };
 
    }
