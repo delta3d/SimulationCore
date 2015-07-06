@@ -1474,7 +1474,7 @@ namespace DriverDemo
          GetGameManager()->CreateActor(*SimCore::Actors::EntityActorRegistry::DR_GHOST_ACTOR_TYPE, mDRGhostActorProxy);
          if (mDRGhostActorProxy.valid())
          {
-            SimCore::Actors::DRGhostActor* actor = NULL;
+            SimCore::Actors::DRGhostDrawable* actor = NULL;
             mDRGhostActorProxy->GetDrawable(actor);
             actor->SetSlavedEntity(mVehicle);
             GetGameManager()->AddActor(*mDRGhostActorProxy, false, false);

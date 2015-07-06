@@ -33,10 +33,11 @@
 #include <SimCore/MessageType.h>
 #include <SimCore/PlayerMotionModel.h>
 #include <SimCore/Actors/WeaponActor.h>
-#include <SimCore/Actors/DRGhostActor.h>
 #include <dtCore/refptr.h>
 
 #include <osgSim/DOFTransform>
+
+#include "../../../include/SimCore/Actors/DRGhostActor.h"
 
 namespace dtAudio
 {
@@ -365,7 +366,7 @@ namespace DriverDemo
 
          enum DR_GHOST_MODE { NONE = 1, GHOST_ON };
          DR_GHOST_MODE mDRGhostMode;
-         dtCore::RefPtr<SimCore::Actors::DRGhostActorProxy> mDRGhostActorProxy;
+         dtCore::RefPtr<SimCore::Actors::DRGhostActor> mDRGhostActorProxy;
 
    };
 }

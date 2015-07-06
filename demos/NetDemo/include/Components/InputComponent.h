@@ -30,7 +30,8 @@
 #include <SimCore/Components/BaseInputComponent.h>
 #include <dtCore/observerptr.h>
 #include <osgSim/DOFTransform>
-#include <SimCore/Actors/DRGhostActor.h>
+
+#include "../../../../include/SimCore/Actors/DRGhostActor.h"
 
 //#include <SimCore/MessageType.h>
 //#include <SimCore/PlayerMotionModel.h>
@@ -189,7 +190,7 @@ namespace NetDemo
          DEBUG_TOGGLE_MODE mDebugToggleMode; 
 
          dtCore::RefPtr<SimCore::Actors::Platform> mVehicle;
-         dtCore::RefPtr<SimCore::Actors::DRGhostActorProxy> mDRGhostActorProxy;
+         dtCore::RefPtr<SimCore::Actors::DRGhostActor> mDRGhostActorProxy;
          dtCore::RefPtr<dtCore::FlyMotionModel> mMotionModel;
          dtCore::ObserverPtr<osgSim::DOFTransform> mDOFRing;
          dtCore::ObserverPtr<osgSim::DOFTransform> mDOFWeapon;

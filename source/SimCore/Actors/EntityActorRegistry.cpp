@@ -65,7 +65,6 @@
 #include <SimCore/Actors/LatLongDataActor.h>
 #include <SimCore/Actors/OceanDataActor.h>
 #include <SimCore/Actors/SurfaceHazeDataActor.h>
-#include <SimCore/Actors/DRGhostActor.h>
 #include <SimCore/Actors/LogicConditionalActor.h>
 #include <SimCore/Actors/LogicOnEventActor.h>
 #include <SimCore/Actors/CamoConfigActor.h>
@@ -92,6 +91,7 @@
 
 #include <dtCore/shadermanager.h>
 #include <dtCore/scene.h>
+#include "../../../include/SimCore/Actors/DRGhostActor.h"
 
 using dtCore::RefPtr;
 
@@ -443,7 +443,7 @@ namespace SimCore
          mActorFactory->RegisterType<SimpleMovingShapeActorProxy>(ENVIRONMENT_PROCESS_MOVING_SHAPE_ACTOR_TYPE);
 
          mActorFactory->RegisterType<WaterGridActorProxy>(WATER_GRID_ACTOR_TYPE.get());
-         mActorFactory->RegisterType<DRGhostActorProxy>(DR_GHOST_ACTOR_TYPE.get());
+         mActorFactory->RegisterType<DRGhostActor>(DR_GHOST_ACTOR_TYPE.get());
          mActorFactory->RegisterType<SurfaceVesselActorProxy>(SURFACE_VESSEL_ACTOR_TYPE.get());
          mActorFactory->RegisterType<dtAudio::SoundActor>(SOUND_ACTOR_TYPE.get());
 

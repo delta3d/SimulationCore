@@ -295,7 +295,7 @@ namespace NetDemo
             {
                if (mDRGhostActorProxy.valid())
                {
-                  SimCore::Actors::DRGhostActor* ghost = NULL;
+                  SimCore::Actors::DRGhostDrawable* ghost = NULL;
                   mDRGhostActorProxy->GetDrawable(ghost);
                   ghost->ClearLinesAndParticles();
 
@@ -724,7 +724,7 @@ namespace NetDemo
          if (mDRGhostActorProxy.valid())
          {
             mOriginalPublishTimesPerSecond = mPhysVehicle->GetComponent<dtGame::DRPublishingActComp>()->GetMaxUpdateSendRate();
-            SimCore::Actors::DRGhostActor* drawable = NULL;
+            SimCore::Actors::DRGhostDrawable* drawable = NULL;
             mDRGhostActorProxy->GetDrawable(drawable);
             drawable->SetSlavedEntity(mVehicle);
             GetGameManager()->AddActor(*mDRGhostActorProxy, false, false);
