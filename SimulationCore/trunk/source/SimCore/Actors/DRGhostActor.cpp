@@ -21,9 +21,9 @@
 *
 * Curtiss Murphy
 */
-#include <prefix/SimCorePrefix.h>
+#include "../../../include/SimCore/Actors/DRGhostActor.h"
 
-#include <SimCore/Actors/DRGhostActor.h>
+#include <prefix/SimCorePrefix.h>
 
 #include <dtCore/shadermanager.h>
 
@@ -31,6 +31,7 @@
 #include <dtGame/deadreckoninghelper.h>
 #include <dtGame/basegroundclamper.h>
 #include <dtGame/basemessages.h>
+#include <dtGame/actorupdatemessage.h>
 #include <dtGame/environmentactor.h>
 #include <dtGame/messagefactory.h>
 #include <dtGame/messagetype.h>
@@ -100,8 +101,9 @@ namespace SimCore
 
 
       ///////////////////////////////////////////////////////////////////////////////////
-      DRGhostActor::DRGhostActor(DRGhostActorProxy& proxy)
-      : dtActors::GameMeshDrawable(proxy)
+      DRGhostDrawable::DRGhostDrawable(DRGhostActor& actor)
+      : dtCore::Object()
+      , mOwner(&actor)
       , mSlaveUpdatedParticleIsActive(false)
       , mPosUpdatedParticleCountdown(0)
       , mVelocityArrowColor(0.2f, 0.2f, 1.0f)
@@ -115,7 +117,7 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
-      DRGhostActor::~DRGhostActor(void)
+      DRGhostDrawable::~DRGhostDrawable(void)
       {
          if (mSlavedEntity.valid())
          {
@@ -129,10 +131,10 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
-      void DRGhostActor::CleanUp()
+      void DRGhostDrawable::CleanUp()
       {
          // Remove our velocity line node from the scene before we go.
-         dtGame::IEnvGameActorProxy *envProxy = GetGameActorProxy().GetGameManager()->GetEnvironmentActor();
+         dtGame::IEnvGameActorProxy *envProxy = GetOwner()->GetGameManager()->GetEnvironmentActor();
          if (mArrowGlobalParentNode.valid() && envProxy != NULL)
          {
             dtGame::IEnvGameActor *envActor;
@@ -142,13 +144,13 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
-      void DRGhostActor::SetSlavedEntity(SimCore::Actors::BaseEntity* newEntity)
+      void DRGhostDrawable::SetSlavedEntity(SimCore::Actors::BaseEntity* newEntity)
       {
          mSlavedEntity = newEntity;
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
-      void DRGhostActor::SetArrowMaxNumTrails(unsigned int newValue)
+      void DRGhostDrawable::SetArrowMaxNumTrails(unsigned int newValue)
       {
          if (mArrowGlobalParentNode.valid())
          {
@@ -161,10 +163,10 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
-      void DRGhostActor::OnEnteredWorld()
+      void DRGhostDrawable::OnEnteredWorld()
       {
 
-         if(!IsRemote())
+         if(!GetOwner()->IsRemote())
          {
             // Get our mesh from the entity we are modeling
             if (mSlavedEntity.valid())
@@ -173,7 +175,7 @@ namespace SimCore
                if (platform != NULL)
                {
                   dtCore::ResourceActorProperty* rap = NULL;
-                  GetGameActorProxy().GetProperty("static mesh", rap);
+                  GetOwner()->GetProperty("static mesh", rap);
                   if (rap != NULL)
                   {
                      rap->SetValue(platform->GetNonDamagedResource());
@@ -229,7 +231,7 @@ namespace SimCore
             // We put all of our arrows under a special node that is NOT a child 
             // of the slave OR the ghost. The parent is world relative and doesn't move.
             mArrowGlobalParentNode = new dtCore::Transformable("Arrow");
-            dtGame::IEnvGameActorProxy *envProxy = GetGameActorProxy().GetGameManager()->GetEnvironmentActor();
+            dtGame::IEnvGameActorProxy *envProxy = GetOwner()->GetGameManager()->GetEnvironmentActor();
             if (envProxy != NULL)
             {
                dtGame::IEnvGameActor *envActor;
@@ -248,12 +250,10 @@ namespace SimCore
             SetupVelocityArrows();
             SetupAccelerationArrows();
          }
-
-         BaseClass::OnEnteredWorld();
       }
 
       //////////////////////////////////////////////////////////////////////
-      void DRGhostActor::SetupVelocityArrows()
+      void DRGhostDrawable::SetupVelocityArrows()
       {
          // Create a velocity pointer.
          mVelocityArrowGeode = new osg::Geode();
@@ -265,7 +265,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////
-      void DRGhostActor::SetupAccelerationArrows()
+      void DRGhostDrawable::SetupAccelerationArrows()
       {
          // Create a velocity pointer.
          mAccelerationArrowGeode = new osg::Geode();
@@ -277,7 +277,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////
-      void DRGhostActor::SetupLineData(osg::Geode& arrowGeode, osg::Geometry& arrowGeom, 
+      void DRGhostDrawable::SetupLineData(osg::Geode& arrowGeode, osg::Geometry& arrowGeom, 
          osg::Vec3Array& arrowVerts, const osg::Vec3& arrowColor)
       {
          // 2 points to create a line for our velocity.
@@ -308,9 +308,8 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////
-      void DRGhostActor::OnTickLocal( const dtGame::TickMessage& tickMessage )
+      void DRGhostDrawable::OnTickLocal( const dtGame::TickMessage& tickMessage )
       {
-         BaseClass::OnTickLocal( tickMessage );
 
          // Move to TickRemote().
          UpdateOurPosition();
@@ -366,7 +365,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////
-      void DRGhostActor::SetCurrentLine(osg::Geometry& arrowGeom, osg::Vec3& startPos, osg::Vec3& endPosDelta)
+      void DRGhostDrawable::SetCurrentLine(osg::Geometry& arrowGeom, osg::Vec3& startPos, osg::Vec3& endPosDelta)
       {
          osg::Vec3Array* vertices = (osg::Vec3Array*)arrowGeom.getVertexArray();
          // Set our start point to be our current ghost position
@@ -387,7 +386,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////
-      void DRGhostActor::ClearLinesAndParticles()
+      void DRGhostDrawable::ClearLinesAndParticles()
       {
          // Make all of our lines go away
          osg::Vec3 zeros(0.0f, 0.0f, 0.0f);
@@ -404,7 +403,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////
-      void DRGhostActor::UpdateOurPosition()
+      void DRGhostDrawable::UpdateOurPosition()
       {
          if (mSlavedEntity.valid())
          {
@@ -424,7 +423,7 @@ namespace SimCore
             if (drHelper.GetGroundClampType() != dtGame::GroundClampTypeEnum::NONE)
             {
                dtGame::DeadReckoningComponent* drComp = NULL;
-               GetGameActorProxy().GetGameManager()->
+               GetOwner()->GetGameManager()->
                   GetComponentByName(dtGame::DeadReckoningComponent::DEFAULT_NAME, drComp);
 
                //BaseGroundClamper::GroundClampingType* groundClampingType = &;
@@ -434,15 +433,15 @@ namespace SimCore
                // be smart enough to know what to do with the supplied values.
                drComp->GetGroundClamper().ClampToGround(
                   dtGame::BaseGroundClamper::GroundClampRangeType::RANGED, 
-                  GetGameActorProxy().GetGameManager()->GetSimulationTime(), ourTransform, 
-                  GetGameActorProxy(),drHelper.GetGroundClampingData(), true, velocity);
+                  GetOwner()->GetGameManager()->GetSimulationTime(), ourTransform,
+                  *GetOwner(), drHelper.GetGroundClampingData(), true, velocity);
                drComp->GetGroundClamper().FinishUp();
             }
          }
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
-      void DRGhostActor::ProcessMessage(const dtGame::Message& message)
+      void DRGhostDrawable::OnSlavedUpdate(const dtGame::ActorUpdateMessage& message)
       {
          if (message.GetMessageType() == dtGame::MessageType::INFO_ACTOR_UPDATED)
          {
@@ -475,13 +474,13 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////
       // PROXY
       //////////////////////////////////////////////////////////////////////
-      DRGhostActorProxy::DRGhostActorProxy()
+      DRGhostActor::DRGhostActor()
       {
          SetClassName("DRGhostActor");
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
-      void DRGhostActorProxy::BuildPropertyMap()
+      void DRGhostActor::BuildPropertyMap()
       {
          //static const dtUtil::RefString GROUP("DRGhost Props");
          BaseClass::BuildPropertyMap();
@@ -491,42 +490,44 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
-      DRGhostActorProxy::~DRGhostActorProxy(){}
+      DRGhostActor::~DRGhostActor(){}
       ///////////////////////////////////////////////////////////////////////////////////
-      void DRGhostActorProxy::CreateDrawable()
+      void DRGhostActor::CreateDrawable()
       {
-         SetDrawable(*new DRGhostActor(*this));
+         SetDrawable(*new DRGhostDrawable(*this));
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
-      void DRGhostActorProxy::OnEnteredWorld()
+      void DRGhostActor::OnEnteredWorld()
       {
          BaseClass::OnEnteredWorld();
 
+         DRGhostDrawable* drawable = GetDrawable<DRGhostDrawable>();
          if (!IsRemote())
          {
             //So it's not a frame behind, it needs to happen on tick remote.  This is because the DeadReckoningComponent
             //ticks on Tick-Remote..
             //RegisterForMessages(dtGame::MessageType::TICK_REMOTE, dtGame::GameActorProxy::TICK_REMOTE_INVOKABLE);
-            RegisterForMessages(dtGame::MessageType::TICK_LOCAL, dtGame::GameActorProxy::TICK_LOCAL_INVOKABLE);
+            RegisterForMessages(dtGame::MessageType::TICK_LOCAL, dtUtil::MakeFunctor(&DRGhostDrawable::OnTickLocal, drawable));
 
             // Listen for actor updates on our slave entity.
-            if (GetActorAsDRGhostActor().GetSlavedEntity() != NULL)
+            if (GetDrawable<DRGhostDrawable>()->GetSlavedEntity() != NULL)
             {
                RegisterForMessagesAboutOtherActor(dtGame::MessageType::INFO_ACTOR_UPDATED, 
-                  GetActorAsDRGhostActor().GetSlavedEntity()->GetUniqueId(), PROCESS_MSG_INVOKABLE);
+                     drawable->GetSlavedEntity()->GetUniqueId(), dtUtil::MakeFunctor(&DRGhostDrawable::OnSlavedUpdate, drawable));
             }
             else 
             {
                LOG_ERROR("Ghost DR Actor [" + GetName() + "] has NO SLAVE - cannot register for updates!");
             }
          }
+         drawable->OnEnteredWorld();
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
-      void DRGhostActorProxy::OnRemovedFromWorld()
+      void DRGhostActor::OnRemovedFromWorld()
       {
-         GetActorAsDRGhostActor().CleanUp();
+         GetDrawable<DRGhostDrawable>()->CleanUp();
       }
    }
 } // namespace

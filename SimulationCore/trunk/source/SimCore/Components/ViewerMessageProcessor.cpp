@@ -84,11 +84,11 @@ namespace SimCore
             dtGame::GameManager& gameManager = *GetGameManager();
             dtCore::ActorPtrVector actors;
 
-            //dtAnim::AnimationComponent* animComp = NULL;
+            //dtAnim::AnimationComponent* animComp = nullptr;
             //gameManager.GetComponentByName(dtAnim::AnimationComponent::DEFAULT_NAME, animComp);
 
             // SET THE TERRAIN
-            dtCore::BaseActorObject* terrainAO = NULL;
+            dtCore::BaseActorObject* terrainAO = nullptr;
             gameManager.FindActorByName("Terrain", terrainAO);
             if (!HandleTerrainActor(terrainAO))
             {
@@ -102,7 +102,7 @@ namespace SimCore
             // SET THE WATER
             // Get any water actor and assign it to the multi surface ground clamper,
             // which happens to be managed by the Dead Reckoning Component.
-            SimCore::Actors::BaseWaterActorProxy* waterProxy = NULL;
+            SimCore::Actors::BaseWaterActorProxy* waterProxy = nullptr;
             gameManager.FindActorByType(*SimCore::Actors::EntityActorRegistry::BASE_WATER_ACTOR_TYPE, waterProxy);
             HandleWaterActor(waterProxy);
          }
@@ -115,7 +115,7 @@ namespace SimCore
             const dtGame::ActorUpdateMessage& updateMessage = static_cast<const dtGame::ActorUpdateMessage&> (msg);
             // SET THE TERRAIN
             dtCore::BaseActorObject* terrainAO = GetGameManager()->FindActorById(msg.GetAboutActorId());
-            if (terrainAO != NULL && terrainAO->GetName() == "Terrain")
+            if (terrainAO != nullptr && terrainAO->GetName() == "Terrain")
             {
                HandleTerrainActor(terrainAO);
             }
@@ -133,22 +133,22 @@ namespace SimCore
       {
          bool result = false;
 
-         if(terrainProxy != NULL)
+         if(terrainProxy != nullptr)
          {
-            dtGame::DeadReckoningComponent* drComp = NULL;
+            dtGame::DeadReckoningComponent* drComp = nullptr;
             GetGameManager()->GetComponentByName(dtGame::DeadReckoningComponent::DEFAULT_NAME, drComp);
 
             dtCore::Transformable* terrain;
             terrainProxy->GetDrawable(terrain);
-            if(terrain == NULL)
+            if(terrain == nullptr)
             {
                LOG_ERROR("The terrain actor is not a transformable. Ignoring.");
             }
-            else if (drComp != NULL)
+            else if (drComp != nullptr)
             {
                result = true;
                drComp->SetTerrainActor(terrain);
-               //if (animComp != NULL)
+               //if (animComp != nullptr)
                //animComp->SetTerrainActor(terrain);
             }
          }
@@ -158,20 +158,20 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////
       void ViewerMessageProcessor::HandleWaterActor(dtCore::BaseActorObject* waterProxy)
       {
-         if (waterProxy != NULL)
+         if (waterProxy != nullptr)
          {
-            dtGame::DeadReckoningComponent* drComp = NULL;
+            dtGame::DeadReckoningComponent* drComp = nullptr;
             GetGameManager()->GetComponentByName(dtGame::DeadReckoningComponent::DEFAULT_NAME, drComp);
 
-            if (drComp != NULL)
+            if (drComp != nullptr)
             {
-               SimCore::Actors::BaseWaterActor* water = NULL;
+               SimCore::Actors::BaseWaterActor* water = nullptr;
                waterProxy->GetDrawable(water);
 
                // Assign the water surface to the clamper for water based entities to clamp to.
                SimCore::Components::MultiSurfaceClamper* clamper
                   = dynamic_cast<SimCore::Components::MultiSurfaceClamper*>(&drComp->GetGroundClamper());
-               if(clamper != NULL)
+               if(clamper != nullptr)
                {
                   clamper->SetWaterSurface(water);
                }
@@ -189,11 +189,11 @@ namespace SimCore
       {
          RefPtr<dtGame::GameActorProxy> ap = dtGame::DefaultMessageProcessor::ProcessRemoteCreateActor(msg);
 
-         if(ap.valid() && dynamic_cast<SimCore::Actors:: StealthActorProxy*>(ap.get()) == NULL)
+         if(ap.valid() && dynamic_cast<SimCore::Actors:: StealthActorProxy*>(ap.get()) == nullptr)
          {
             //Must dynamic cast here because the GetActor template does a static cast.
             BaseEntity* eap = dynamic_cast<BaseEntity*>(ap->GetDrawable());
-            if (eap != NULL)
+            if (eap != nullptr)
             {
                eap->SetScaleMagnification(osg::Vec3(mMagnification, mMagnification, mMagnification));
             }
@@ -208,14 +208,14 @@ namespace SimCore
       {
          dtGame::DefaultMessageProcessor::ProcessRemoteUpdateActor(msg, ap);
 
-         if (ap == NULL)
+         if (ap == nullptr)
          {
             return;
          }
 
-         SimCore::Actors::IGActor* ig = NULL;
+         SimCore::Actors::IGActor* ig = nullptr;
          ap->GetDrawable(ig);
-         if (ig != NULL)
+         if (ig != nullptr)
          {
             // The happens every time we get an update, but it must happen after the properties
             // are set because a property set can change if it should be visible or not.
@@ -229,7 +229,7 @@ namespace SimCore
       void ViewerMessageProcessor::ProcessLocalUpdateActor(const dtGame::ActorUpdateMessage& msg)
       {
          dtGame::GameActorProxy* ap = GetGameManager()->FindGameActorById(msg.GetAboutActorId());
-         if (ap == NULL)
+         if (ap == nullptr)
          {
             LOG_ERROR("The about actor id is invalid");
             return;
@@ -237,18 +237,18 @@ namespace SimCore
 
          if(msg.GetMessageType() == dtGame::MessageType::INFO_ACTOR_CREATED)
          {
-            if(dynamic_cast<SimCore::Actors:: StealthActorProxy*>(ap) == NULL)
+            if(dynamic_cast<SimCore::Actors:: StealthActorProxy*>(ap) == nullptr)
             {
                BaseEntityActorProxy* eap = dynamic_cast<BaseEntityActorProxy*>(ap);
-               if(eap != NULL)
+               if(eap != nullptr)
                {
                   eap->GetDrawable<BaseEntity>()->SetScaleMagnification(osg::Vec3(mMagnification, mMagnification, mMagnification));
                }
             }
             //Must dynamic cast here because the GetActor template does a static cast.
-            SimCore::Actors::IGActor* ig = NULL;
+            SimCore::Actors::IGActor* ig = nullptr;
             ap->GetDrawable(ig);
-            if (ig != NULL)
+            if (ig != nullptr)
             {
                ig->SetVisible(ig->ShouldBeVisible(*mVisibilityOptions));
             }
@@ -260,7 +260,7 @@ namespace SimCore
       {
          if(mPlayer.valid() && msg.GetAboutActorId() == mPlayer->GetUniqueId())
          {
-            mPlayer = NULL;
+            mPlayer = nullptr;
          }
       }
 
@@ -331,7 +331,7 @@ namespace SimCore
                dtGame::LogController *logController;
                GetGameManager()->GetComponentByName(dtGame::LogController::DEFAULT_NAME, logController);
 
-               if (logController != NULL)
+               if (logController != nullptr)
                {
                   const dtGame::LogStatus &logStatus = logController->GetLastKnownStatus();
                   if (logStatus.GetStateEnum() == dtGame::LogStateEnumeration::LOGGER_STATE_PLAYBACK)
@@ -380,7 +380,7 @@ namespace SimCore
 
             mPlayer = dynamic_cast<SimCore::Actors::StealthActor*>(proxy->GetDrawable());
 
-            if(mPlayer == NULL)
+            if(mPlayer == nullptr)
             {
                LOG_ERROR("Received a player entered world message from an actor that is not a player");
                return;
@@ -397,7 +397,7 @@ namespace SimCore
                   static_cast<dtGame::DeadReckoningComponent*>(
                   GetGameManager()->GetComponentByName(dtGame::DeadReckoningComponent::DEFAULT_NAME));
 
-               if (drComp != NULL)
+               if (drComp != nullptr)
                {
                   LOG_INFO("Setting eye point on Dead Reckoning Component to the Player Actor: " + msg.GetAboutActorId().ToString());
                   drComp->SetEyePointActor(mPlayer.get());
@@ -415,10 +415,7 @@ namespace SimCore
       {
          mVisibilityOptions = &options;
          //It may be better here to set a flag and do in on the next tick.
-         if (GetGameManager() != NULL)
-         {
-            UpdateMagnificationAndVisibilityOptions();
-         }
+         UpdateMagnificationAndVisibilityOptions();
       }
 
       ///////////////////////////////////////////////////////////////////////////
@@ -447,15 +444,16 @@ namespace SimCore
          void operator()(dtCore::ActorProxy& ap)
          {
             SimCore::Actors::BaseEntityActorProxy* eap = dynamic_cast<SimCore::Actors::BaseEntityActorProxy*>(&ap);
-            if (eap != NULL && dynamic_cast<SimCore::Actors::StealthActorProxy*>(eap) == NULL)
+            if (eap != nullptr && dynamic_cast<SimCore::Actors::StealthActorProxy*>(eap) == nullptr)
             {
-               SimCore::Actors::BaseEntity* entity = NULL;
+               SimCore::Actors::BaseEntity* entity = nullptr;
                eap->GetDrawable(entity);
                entity->SetScaleMagnification(osg::Vec3(mMagnification, mMagnification, mMagnification));
             }
 
-            SimCore::Actors::IGActor* ig = dynamic_cast<SimCore::Actors::IGActor*>(ap.GetDrawable());
-            if (ig != NULL)
+            SimCore::Actors::IGActor* ig = nullptr;
+            ap.GetDrawable(ig);
+            if (ig != nullptr)
             {
                ig->SetVisible(ig->ShouldBeVisible(mVisibilityOptions));
             }
@@ -469,8 +467,12 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////
       void ViewerMessageProcessor::UpdateMagnificationAndVisibilityOptions()
       {
-         VMPUpdateMagVisFunctor mag(mMagnification, *mVisibilityOptions);
-         GetGameManager()->ForEachActor(mag);
+         dtGame::GameManager* gm = GetGameManager();
+         if (gm != nullptr)
+         {
+            VMPUpdateMagVisFunctor mag(mMagnification, *mVisibilityOptions);
+            gm->ForEachActor(mag);
+         }
       }
 
    }

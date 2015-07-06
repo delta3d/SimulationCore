@@ -29,14 +29,15 @@
 #include <dtActors/gamemeshactor.h>
 #include <dtCore/observerptr.h>
 #include <dtCore/particlesystem.h>
-#include <dtCore/transformable.h>
+#include <dtCore/object.h>
 
 #include <osg/Geometry>
 #include <osg/Geode>
 
 namespace dtGame
 {
-   class Message;
+   class ActorUpdateMessage;
+   class TickMessage;
 }
 
 namespace SimCore
@@ -44,32 +45,51 @@ namespace SimCore
    namespace Actors
    {
       class BaseEntity;
-      class DRGhostActorProxy;
+      class DRGhostDrawable;
+
+      class SIMCORE_EXPORT DRGhostActor : public dtActors::GameMeshActor
+      {
+         public:
+            typedef dtActors::GameMeshActor BaseClass;
+
+            DRGhostActor();
+            void BuildPropertyMap() override;
+
+         protected:
+            virtual ~DRGhostActor();
+            void CreateDrawable();
+            virtual void OnEnteredWorld();
+            virtual void OnRemovedFromWorld();
+      };
 
       ////////////////////////////////////////////////////////////////////////////////
       /** This class provides a weird ghost actor that shows how Dead Reckoning
        * works. It follows a real vehicle and shows where the remote version is.
+       *
+       * @TODO most of the code in this class needs to be moved to the actor.
+       * It's majorly over-engineered also, so it really should be cut down.
        */
-      class SIMCORE_EXPORT DRGhostActor : public dtActors::GameMeshDrawable
+      class SIMCORE_EXPORT DRGhostDrawable : public dtCore::Object
       {
          public:
-            typedef dtActors::GameMeshDrawable BaseClass;
+            typedef dtCore::Object BaseClass;
 
-            DRGhostActor(DRGhostActorProxy& proxy);
+            DRGhostDrawable(DRGhostActor& actor);
 
          protected:
-            virtual ~DRGhostActor();
+            virtual ~DRGhostDrawable();
+
+            DRGhostActor* GetOwner() { return mOwner.get(); }
 
          public:
 
-            /**
-             * Called when the actor has been added to the game manager.
-             * You can respond to OnEnteredWorld on either the proxy or actor or both.
-             */
-            virtual void OnEnteredWorld();
+            // Not virtual, just on this custom drawable
+            void OnEnteredWorld();
 
+            // Not virtual, just on this custom drawable
             //virtual void OnTickRemote(const dtGame::TickMessage& tickMessage);
-            virtual void OnTickLocal(const dtGame::TickMessage& tickMessage);
+            // Not virtual, just on this custom drawable
+            void OnTickLocal(const dtGame::TickMessage& tickMessage);
 
             void SetSlavedEntity(SimCore::Actors::BaseEntity* newEntity);
             SimCore::Actors::BaseEntity* GetSlavedEntity() { return mSlavedEntity.get(); }
@@ -84,8 +104,7 @@ namespace SimCore
 
             void UpdateOurPosition();
 
-            /// Default invokable. Used for messages about our slave.
-            void ProcessMessage(const dtGame::Message& message);
+            void OnSlavedUpdate(const dtGame::ActorUpdateMessage& message);
 
             void CleanUp();
 
@@ -101,6 +120,7 @@ namespace SimCore
             void SetCurrentLine(osg::Geometry& arrowGeom, osg::Vec3& startPos, osg::Vec3& endPosDelta);
 
          private:
+            dtCore::ObserverPtr<DRGhostActor> mOwner;
             dtCore::ObserverPtr<SimCore::Actors::BaseEntity> mSlavedEntity;
             bool mSlaveUpdatedParticleIsActive;
             int mPosUpdatedParticleCountdown;
@@ -126,29 +146,6 @@ namespace SimCore
             dtCore::RefPtr<dtCore::ParticleSystem> mTrailParticles;
             dtCore::RefPtr<dtCore::ParticleSystem> mUpdateTrailParticles;
 
-      };
-
-      ////////////////////////////////////////////////////////////////////////////////
-      /// This is the proxy for the object.  It needs to build the property map, create the actor, and handle entered world.
-      class SIMCORE_EXPORT DRGhostActorProxy : public dtActors::GameMeshActor
-      {
-         public:
-            typedef dtActors::GameMeshActor BaseClass;
-
-            DRGhostActorProxy();
-            virtual void BuildPropertyMap();
-
-            /// Returns a useful reference to our actor. If no actor is created yet, this will likely crash.
-            DRGhostActor& GetActorAsDRGhostActor()
-            {
-               return *(static_cast<DRGhostActor*>(GetDrawable()));
-            }
-
-         protected:
-            virtual ~DRGhostActorProxy();
-            void CreateDrawable();
-            virtual void OnEnteredWorld();
-            virtual void OnRemovedFromWorld();
       };
    }
 }
