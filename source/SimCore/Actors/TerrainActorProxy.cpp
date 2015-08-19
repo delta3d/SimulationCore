@@ -359,11 +359,7 @@ namespace SimCore
                   //if we didn't find a pre-baked static mesh but we did have a renderable terrain node
                   //then just bake a static collision mesh with that
                   mHelper->GetMainPhysicsObject()->SetTransform(xform);
-                  const dtPhysics::MaterialActor* matAct = mHelper->LookupMaterialActor();
-                  if (matAct != NULL)
-                  {
-                     mHelper->GetMainPhysicsObject()->SetMaterial(matAct->GetMaterial());
-                  }
+                  mHelper->GetMainPhysicsObject()->SetMaterialId(mHelper->GetMaterialActor());
                   mHelper->GetMainPhysicsObject()->Create(mTerrainNode.get());
                   loadSuccess = true;
                }
@@ -413,11 +409,7 @@ namespace SimCore
                   newTile->CreateFromGeometry(*geom);
 
                   newTile->SetCollisionGroup(SimCore::CollisionGroup::GROUP_TERRAIN);
-                  const dtPhysics::MaterialActor* matAct = mHelper->LookupMaterialActor();
-                  if (matAct != NULL)
-                  {
-                     newTile->SetMaterial(matAct->GetMaterial());
-                  }
+                  newTile->SetMaterialId(mHelper->GetMaterialActor());
 
                   mHelper->AddPhysicsObject(*newTile);
                }
