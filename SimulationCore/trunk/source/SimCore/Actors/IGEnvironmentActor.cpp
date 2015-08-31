@@ -316,16 +316,7 @@ namespace SimCore
 
       /////////////////////////////////////////////////////////////
       void IGEnvironmentActor::OnTimeChanged()
-      {
-         //this functionality is currently not supported in the upgrade to dtRender
-         //temporarily commenting out as a reminder
-
-         //when the time changes the fog color changes as well so we must update
-         //the fog color on our "FogSphere"
-         //osg::Vec3 fogColor;
-         //mEnvironment->GetModFogColor(fogColor);
-         //SetFogColor(fogColor);
-
+      {         
          if(mLensFlare.valid())
          {
             //when the time changes we must update the position of the sun
