@@ -591,6 +591,10 @@ namespace SimCore
          DT_REGISTER_ACTOR_ID_PROPERTY(DetonationActorProxy::CLASS_NAME, DetonationActor, "Detonation Prototype",
                                        "This is the class that will be spawned to handle the detonation for this munition type", RegHelperType, propReg);
 
+         dtCore::ActorIDActorProperty* idProp = nullptr;
+         GetProperty("DetonationActor", idProp);
+         idProp->SetShowPrototypes(true);
+
          AddProperty(new dtCore::StringActorProperty("DIS Identifier", "DIS Identifier",
             dtCore::StringActorProperty::SetFuncType( &actor, &MunitionTypeActor::SetDISIdentifierByString ),
             dtCore::StringActorProperty::GetFuncType( &actor, &MunitionTypeActor::GetDISIdentifierString ),
