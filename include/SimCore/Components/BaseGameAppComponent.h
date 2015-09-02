@@ -67,7 +67,7 @@ namespace SimCore
           * @param The message to process
           * @see dtGame::GameManager
           */
-         virtual void ProcessMessage(const dtGame::Message &msg);
+         virtual void ProcessMessage(const dtGame::Message& msg);
 
          SimCore::CommandLineObject* GetCommandLineObject() {return mCommandLineObject.get();}
 
