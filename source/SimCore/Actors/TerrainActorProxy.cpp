@@ -406,10 +406,10 @@ namespace SimCore
                   newTile->SetPrimitiveType(dtPhysics::PrimitiveType::TERRAIN_MESH);
 
                   dtCore::RefPtr<dtPhysics::Geometry> geom = dtPhysics::Geometry::CreateConcaveGeometry(geometryWorld, *vertData, 0);
-                  newTile->CreateFromGeometry(*geom);
-
                   newTile->SetCollisionGroup(SimCore::CollisionGroup::GROUP_TERRAIN);
                   newTile->SetMaterialId(mHelper->GetMaterialActor());
+                  newTile->CreateFromGeometry(*geom);
+
 
                   mHelper->AddPhysicsObject(*newTile);
                }
