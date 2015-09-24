@@ -207,7 +207,6 @@ namespace SimCore
                jointDesc->SetBody1RelativeTranslation(hitchRelTractor);
                jointDesc->SetBody2RelativeTranslation(hitchRelTrailer);
 
-               palFactory* factory = dtPhysics::PhysicsWorld::GetInstance().GetPalFactory();
                if (*mHitchType == HitchTypeEnum::HITCH_TYPE_SPHERICAL)
                {
                   // Point the X axis toward the body Y because the X axis the main axis.
