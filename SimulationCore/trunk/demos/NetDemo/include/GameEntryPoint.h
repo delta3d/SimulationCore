@@ -57,9 +57,6 @@ namespace NetDemo
          virtual void InitializeComponents(dtGame::GameManager& gm);
 
       private:
-         char **mArgv;
-         int mArgc;
-         bool mIsServer;
    };
 }
 

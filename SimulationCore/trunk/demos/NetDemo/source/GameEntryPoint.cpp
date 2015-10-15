@@ -30,9 +30,11 @@
 #include <dtPhysics/physicscomponent.h>
 
 #include <dtUtil/fileutils.h>
+#include <dtUtil/stringutils.h>
 
 #include <osg/ApplicationUsage>
 #include <osg/ArgumentParser>
+#include <osgDB/FileNameUtils>
 
 namespace NetDemo
 {
@@ -52,8 +54,6 @@ namespace NetDemo
 
    ///////////////////////////////////////////////////////////////////////////
    GameEntryPoint::GameEntryPoint()
-      : mArgv(NULL)
-      , mIsServer(true)
    {
    }
 
@@ -66,18 +66,18 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////
    void GameEntryPoint::Initialize(dtABC::BaseABC& app, int argc, char** argv)
    {
-      mArgv = argv;
-      mArgc = argc;
-
-      // this is set cause argc and argv passed into the function
-      // goes out of scope, cause they are sent by pointer.
-      if (parser == NULL)
-         parser = new osg::ArgumentParser(&mArgc, mArgv);
-
-      SetMapName("NetDemo");
-
-      parser->getApplicationUsage()->setCommandLineUsage("Res Game Application [options] value ...");
-
+      std::string appName;
+      if (argc > 0 && argv[0] != nullptr)
+      {
+         appName = osgDB::getStrippedName(argv[0]);
+         if (dtUtil::StrCompare("GameStart", appName, false) == 0)
+         {
+            appName = APP_NAME;
+         }
+      }
+      SetMapName(appName);
+      SetMapIsRequired(false);
+      GetOrCreateArgParser(argc, argv)->getApplicationUsage()->setCommandLineUsage("Res Game Application [options] value ...");
       BaseClass::Initialize(app, argc, argv);
    }
 
@@ -85,8 +85,6 @@ namespace NetDemo
    void GameEntryPoint::OnStartup(dtABC::BaseABC& app, dtGame::GameManager& gameManager)
    {
       BaseClass::OnStartup(app, gameManager);
-
-      FinalizeParser();
 
       GameLogicComponent* gameAppComp = NULL;
       gameManager.GetComponentByName(GameLogicComponent::DEFAULT_NAME, gameAppComp);
