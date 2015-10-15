@@ -23,7 +23,7 @@
 #ifndef _BASE_GAME_ENTRY_POINT_H_
 #define _BASE_GAME_ENTRY_POINT_H_
 
-#include <dtGame/gameentrypoint.h>
+#include <dtGame/defaultgameentrypoint.h>
 #include <SimCore/Export.h>
 #include <dtCore/refptr.h>
 #include <dtCore/baseactorobject.h>
@@ -43,9 +43,10 @@ namespace dtGame
 
 namespace SimCore
 {
-   class SIMCORE_EXPORT BaseGameEntryPoint : public dtGame::GameEntryPoint
+   class SIMCORE_EXPORT BaseGameEntryPoint : public dtGame::DefaultGameEntryPoint
    {
       public:
+         typedef dtGame::DefaultGameEntryPoint BaseClass;
 
          static const std::string PROJECT_CONTEXT_DIR;
          static const std::string PROJECT_CONFIG_FILE;
@@ -65,8 +66,6 @@ namespace SimCore
           */
          static const float PLAYER_FAR_CLIP_PLANE;
 
-         /// Name of the config property pointing to the directory holding the project context.
-         static const std::string CONFIG_PROP_PROJECT_CONTEXT_PATH;
          static const std::string CONFIG_PROP_DEVELOPERMODE;
          static const std::string CONFIG_PROP_ASPECT_RATIO;
          static const std::string CONFIG_PROP_MUNITION_MAP;
@@ -84,45 +83,31 @@ namespace SimCore
           * @param argv array of string pointers to the arguments.
           * @throwns dtUtil::Exception if initialization fails.
           */
-         virtual void Initialize(dtABC::BaseABC& app, int argc, char **argv);
+         void Initialize(dtABC::BaseABC& app, int argc, char **argv) override;
 
          /**
           * Called after all startup related code is run.
           * @param gameManager The game manager to init
           */
-         virtual void OnStartup(dtABC::BaseABC& app, dtGame::GameManager& gameManager);
+         void OnStartup(dtABC::BaseABC& app, dtGame::GameManager& gameManager) override;
 
-         virtual void OnShutdown(dtABC::BaseABC& app, dtGame::GameManager& gameManager);
+         void OnShutdown(dtABC::BaseABC& app, dtGame::GameManager& gameManager) override;
 
          /// May be overridden to allow subclassed to add components
          virtual void InitializeComponents(dtGame::GameManager& gm) {};
-
-         /**
-          * called from external to 'end' the parser so anyone can
-          * mess with the parser wherever they need and not tied into
-          * an exact way of calling the parser shutdown.
-          */
-         virtual void FinalizeParser();
 
          /**
           * @return true if this GM app is initialized and controlled by a GUI or some other system.
           * setting this to true makes it not require a map name argument, disables weather updating,
           * and may disable auto-networking connection in some subclasses.
           */
-         bool IsUIRunning() const { return mIsUIRunning; }
-
-         /// The name of the map to load.  This only matters if IsUIRunning is false.
-         DT_DECLARE_ACCESSOR(std::string, MapName)
+         bool IsUIRunning() const { return !GetMapIsRequired(); }
 
       protected:
 
-         // Change if this running in a UI.
-         void SetUIRunning(bool uiRunning) { mIsUIRunning = uiRunning; }
 
          /// reads the values of command line parameters and config options set the project context
-         void AssignProjectContext(dtGame::GameManager& gm);
-         /// if the UI is not enabled, will load the map specified on the command line.
-         void PreLoadMap();
+         void SetupProjectContext() override;
 
          /**
           * Reads the aspect ratio first from the command line setting, then from the config. Finally
@@ -135,11 +120,8 @@ namespace SimCore
          /// Destructor
          virtual ~BaseGameEntryPoint();
 
-         osg::ArgumentParser* parser;
-
          dtCore::RefPtr<dtCore::BaseActorObject> terrainActor;
 
-         std::string mProjectPath;
          float mAspectRatio;
          float mLingeringShotEffectSecs;
          //int mStatisticsInterval;
@@ -147,7 +129,6 @@ namespace SimCore
          bool mMissingRequiredCommandLineOption;
 
       private:
-         bool mIsUIRunning;
          // If the audio was started by this class, or was already running.
          bool mStartedAudio;
    };

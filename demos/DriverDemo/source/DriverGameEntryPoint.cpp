@@ -69,8 +69,6 @@ namespace DriverDemo
    ///////////////////////////////////////////////////////////////////////////
    DriverGameEntryPoint::DriverGameEntryPoint()
    {
-      mArgv = NULL;
-      mArgc = 0;
    }
 
    ///////////////////////////////////////////////////////////////////////////
@@ -81,15 +79,7 @@ namespace DriverDemo
    ///////////////////////////////////////////////////////////////////////////
    void DriverGameEntryPoint::Initialize(dtABC::BaseABC& app, int argc, char **argv)
    {
-      mArgv = argv;
-      mArgc = argc;
-
-      // this is set cause argc and argv passed into the function
-      // goes out of scope, cause they are sent by pointer.
-      if(parser == NULL)
-         parser = new osg::ArgumentParser(&mArgc, mArgv);
-
-      parser->getApplicationUsage()->setCommandLineUsage("Driver Demo Application [options] value ...");
+      GetOrCreateArgParser(argc, argv)->getApplicationUsage()->setCommandLineUsage("Driver Demo Application [options] value ...");
 
       BaseClass::Initialize(app, argc, argv);
    }
@@ -106,10 +96,7 @@ namespace DriverDemo
       gameAppComponent = new DriverDemo::GameAppComponent();
       gameManager.AddComponent(*gameAppComponent, dtGame::GameManager::ComponentPriority::HIGHER);
 
-      gameAppComponent->InitializeCommandLineOptionsAndRead(parser);
-
-      // call base class we're done initializing
-      FinalizeParser();
+      gameAppComponent->InitializeCommandLineOptionsAndRead(GetArgParser());
 
       // turn off showing the cursor
       gameManager.GetApplication().GetWindow()->SetShowCursor(false);
@@ -154,14 +141,6 @@ namespace DriverDemo
       dtCore::RefPtr<dtPhysics::PhysicsComponent> physicsComponent = new dtPhysics::PhysicsComponent(*world, false);
       gm.AddComponent(*physicsComponent, dtGame::GameManager::ComponentPriority::NORMAL);
       SimCore::CollisionGroup::SetupDefaultGroupCollisions(*physicsComponent);
-      // OLD - Physics collision group pairings. 
-      //nxScene.setActorGroupPairFlags(GROUP_HUMAN_LOCAL, GROUP_TERRAIN,
-      //   NX_NOTIFY_ON_START_TOUCH | NX_NOTIFY_ON_TOUCH | NX_NOTIFY_ON_END_TOUCH);
-      // contact reports
-      // We really only care about the world and the world
-      //nxScene.setActorGroupPairFlags(GROUP_TERRAIN, GROUP_TERRAIN,
-      //   NX_NOTIFY_ON_START_TOUCH | NX_NOTIFY_ON_TOUCH | NX_NOTIFY_ON_END_TOUCH);
-
 
       // Rendering Support - Gives us lighting, sets up our viewmatrix, and other stuff.
       // We disable the physics cull visitor (which is for large tiled terrains like Terrex)

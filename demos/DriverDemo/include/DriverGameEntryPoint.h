@@ -77,9 +77,6 @@ namespace DriverDemo
 
          static const std::string ApplicationLibraryName;
          dtCore::RefPtr<GameAppComponent> gameAppComponent;
-
-         char **mArgv;
-         int mArgc;
    };
 }
 

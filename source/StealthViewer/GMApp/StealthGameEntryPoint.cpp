@@ -125,9 +125,9 @@ namespace StealthGM
    ///////////////////////////////////////////////////////////////////////////
    void StealthGameEntryPoint::Initialize(dtABC::BaseABC& app, int argc, char **argv)
    {
-      if(parser == NULL)
-         parser = new osg::ArgumentParser(&argc, argv);
+      BaseClass::Initialize(app, argc, argv);
 
+      osg::ArgumentParser* parser = GetArgParser();
       parser->getApplicationUsage()->setCommandLineUsage("Stealth Viewer Application [options] value ...");
       parser->getApplicationUsage()->addCommandLineOption("--enableLogging","Specify 1 or 0 to enable and disable logging of the scene.");
       parser->getApplicationUsage()->addCommandLineOption("--enablePlayback","Specify 1 if this is playback for after action review (AAR)");
@@ -176,8 +176,6 @@ namespace StealthGM
       {
          mHasMap = true;
       }
-
-      SimCore::HLA::BaseHLAGameEntryPoint::Initialize(app, argc, argv);
    }
 
    ///////////////////////////////////////////////////////////////////////////

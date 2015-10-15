@@ -88,7 +88,6 @@ namespace SimCore
    const std::string BaseGameEntryPoint::PROJECT_CONTEXT_DIR("ProjectAssets");
    const std::string BaseGameEntryPoint::PROJECT_CONFIG_FILE("ProjectConfig.dtproj");
 
-   const std::string BaseGameEntryPoint::CONFIG_PROP_PROJECT_CONTEXT_PATH("ProjectPath");
    const std::string BaseGameEntryPoint::CONFIG_PROP_DEVELOPERMODE("DeveloperMode");
    const std::string BaseGameEntryPoint::CONFIG_PROP_ASPECT_RATIO("AspectRatio");
    const std::string BaseGameEntryPoint::CONFIG_PROP_MUNITION_MAP("MunitionMap");
@@ -97,9 +96,9 @@ namespace SimCore
 
    //////////////////////////////////////////////////////////////////////////
    BaseGameEntryPoint::BaseGameEntryPoint()
-   : parser(NULL)
+   : mAspectRatio(0.0f)
+   , mLingeringShotEffectSecs(300.0f)
    , mMissingRequiredCommandLineOption(false)
-   , mIsUIRunning(false)
    , mStartedAudio(false)
    {
    }
@@ -107,9 +106,6 @@ namespace SimCore
    //////////////////////////////////////////////////////////////////////////
    BaseGameEntryPoint::~BaseGameEntryPoint()
    {
-      delete parser;
-      parser = NULL;
-
       // This has to be in the destructor because
       // OnShutdown happens before the GM shutdown, and sounds can get freed after that.
       if (mStartedAudio)
@@ -122,62 +118,33 @@ namespace SimCore
    //////////////////////////////////////////////////////////////////////////
    void BaseGameEntryPoint::Initialize(dtABC::BaseABC& app, int argc, char **argv)
    {
+      BaseClass::Initialize(app, argc, argv);
       mMissingRequiredCommandLineOption = false;
 
-      if(parser == NULL)
-         parser = new osg::ArgumentParser(&argc, argv);
+      osg::ArgumentParser* parser = GetArgParser();
 
-      parser->getApplicationUsage()->addCommandLineOption("-h or --help","Display command line options");
       parser->getApplicationUsage()->addCommandLineOption("--UI", "Specify this to disable old functionality in favor of the UI");
-      parser->getApplicationUsage()->addCommandLineOption("--projectPath", "The path (either relative or absolute) to the project context you wish to use. This defaults to the current working directory.");
-      parser->getApplicationUsage()->addCommandLineOption("--mapName", "The name of the map to load in. This must be a map that is located within the project path specified");
       parser->getApplicationUsage()->addCommandLineOption("--aspectRatio", "The aspect ratio to use for the camera [1.33 or 1.6]");
       parser->getApplicationUsage()->addCommandLineOption("--lingeringShotSecs", "The number of seconds for a shot to linger after impact. The default value is 300 (5 minutes)");
-      //parser->getApplicationUsage()->addCommandLineOption("--statisticsInterval", "The interval the game manager will use to print statistics, in seconds");
 
-      if (parser->read("-h") || parser->read("--help") || parser->read("-?") || parser->read("--?") ||
-         parser->argc() == 0)
-      {
-         parser->getApplicationUsage()->write(std::cerr);
-         throw dtGame::GameApplicationConfigException(
-            "Command Line Error.", __FILE__, __LINE__);
-      }
+      ParseDefaultCommandLineOptions();
 
       // Only change the value if a command line option is received.
       int tempBool = 0;
       if(parser->read("--UI", tempBool))
       {
-         mIsUIRunning = tempBool == 1 ? true : false;
+         // note: bool is intentionally reversed
+         SetMapIsRequired(tempBool == 1 ? false : true);
       }
 
-      if (!parser->read("--projectPath", mProjectPath))
-      {
-         mProjectPath = "";
-      }
+      parser->read("--aspectRatio", mAspectRatio);
 
-      if (!parser->read("--aspectRatio", mAspectRatio))
-      {
-         mAspectRatio = 0.0f;
-      }
-
-      if (!parser->read("--lingeringShotSecs", mLingeringShotEffectSecs))
-      {
-         mLingeringShotEffectSecs = 300.0f;
-      }
+      parser->read("--lingeringShotSecs", mLingeringShotEffectSecs);
 
       //if (!parser->read("--statisticsInterval", mStatisticsInterval))
       //{
       //   mStatisticsInterval = 0;
       //}
-
-      if(!mIsUIRunning)
-      {
-         if (!parser->read("--mapName", mMapName) && mMapName.empty())
-         {
-            std::cerr << "Please specify the map file to be used with the --mapName option.\n";
-            mMissingRequiredCommandLineOption = true;
-         }
-      }
 
       mStartedAudio = false;
 
@@ -206,104 +173,27 @@ namespace SimCore
       }
    }
 
-   //////////////////////////////////////////////////////////////////////////
-   void BaseGameEntryPoint::FinalizeParser()
-   {
-      if(parser == NULL)
-      {
-         LOG_DEBUG("FinalizeParser was called when the parser was null");
-         return;
-      }
-
-      parser->reportRemainingOptionsAsUnrecognized();
-      if (parser->errors())
-      {
-         parser->writeErrorMessages(std::cerr);
-         throw dtGame::GameApplicationConfigException(
-            "Command Line Error.", __FILE__, __LINE__);
-      }
-
-      if (mMissingRequiredCommandLineOption)
-      {
-         parser->getApplicationUsage()->write(std::cerr);
-         throw dtGame::GameApplicationConfigException(
-            "Command Line Error.", __FILE__, __LINE__);
-      }
-   }
-
-
-   void BaseGameEntryPoint::AssignProjectContext(dtGame::GameManager& gm)
+   void BaseGameEntryPoint::SetupProjectContext()
    {
       dtUtil::FileUtils& fileUtils = dtUtil::FileUtils::GetInstance();
 
-      if (mProjectPath.empty())
-      {
-         mProjectPath = gm.GetConfiguration().GetConfigPropertyValue(CONFIG_PROP_PROJECT_CONTEXT_PATH);
-      }
-
-      if (mProjectPath.empty())
+      if (GetProjectPath().empty())
       {
          if (fileUtils.FileExists(PROJECT_CONFIG_FILE))
          {
-            mProjectPath = PROJECT_CONFIG_FILE;
+            SetProjectPath(PROJECT_CONFIG_FILE);
          }
          else if (fileUtils.DirExists(PROJECT_CONTEXT_DIR))
          {
-            mProjectPath = PROJECT_CONTEXT_DIR;
+            SetProjectPath(PROJECT_CONTEXT_DIR);
          }
          else if (fileUtils.DirExists(std::string("../") + PROJECT_CONTEXT_DIR))
          {
-            mProjectPath = std::string("../") + PROJECT_CONTEXT_DIR;
+            SetProjectPath(std::string("../") + PROJECT_CONTEXT_DIR);
          }
       }
 
-      if(!mProjectPath.empty())
-      {
-         if (fileUtils.DirExists(mProjectPath))
-         {
-            LOG_INFO("The project context \"" + mProjectPath + "\" is a directory has been found. Attempting config project");
-            dtCore::Project::GetInstance().SetContext(mProjectPath);
-         }
-         else if (fileUtils.FileExists(mProjectPath))
-         {
-            LOG_INFO("The project context \"" + mProjectPath + "\" is a file.  Attempting to load as a project config.");
-            dtCore::Project::GetInstance().SetupFromProjectConfigFile(mProjectPath);
-         }
-         else
-         {
-            throw dtGame::GameApplicationConfigException(
-                   "The path " + mProjectPath + " could not be located in the working directory or its parent directory. Aborting application. Make sure the config.xml is in the right directory and the ProjectPath is set correctly."
-                   , __FILE__, __LINE__);
-         }
-      }
-      else
-      {
-         throw dtGame::GameApplicationConfigException(
-                  "The data directory " + PROJECT_CONTEXT_DIR +
-                  " could not be located in the working directory or its parent directory. Aborting application. Make sure the config.xml is in the right directory and the ProjectPath is set correctly."
-                  , __FILE__, __LINE__);
-      }
-   }
-
-   void BaseGameEntryPoint::PreLoadMap()
-   {
-      if(!mIsUIRunning)
-      {
-         std::set<std::string> mapNames = dtCore::Project::GetInstance().GetMapNames();
-         bool containsMap = false;
-         for(std::set<std::string>::iterator i = mapNames.begin(); i != mapNames.end(); ++i)
-            if(*i == mMapName)
-               containsMap = true;
-
-         if(!containsMap)
-         {
-            std::ostringstream oss;
-            oss << "A map named: " << mMapName << " could not be located in the project context: "
-               << mProjectPath;
-            throw dtGame::GameApplicationConfigException(
-               oss.str(), __FILE__, __LINE__);
-         }
-      }
+      BaseClass::SetupProjectContext();
    }
 
    //////////////////////////////////////////////////////////////////////////
@@ -346,9 +236,7 @@ namespace SimCore
    //////////////////////////////////////////////////////////////////////////
    void BaseGameEntryPoint::OnStartup(dtABC::BaseABC& app, dtGame::GameManager& gameManager)
    {
-
-      AssignProjectContext(gameManager);
-      PreLoadMap();
+      BaseClass::OnStartup(app, gameManager);
 
       dtCore::Camera* camera = gameManager.GetApplication().GetCamera();
 
@@ -378,14 +266,14 @@ namespace SimCore
 
       gameManager.LoadActorRegistry(LIBRARY_NAME);
       
-      RefPtr<dtGame::DeadReckoningComponent>   drComp            = new dtGame::DeadReckoningComponent;
-      RefPtr<Components::ViewerNetworkPublishingComponent> rulesComp         = new Components::ViewerNetworkPublishingComponent;
-      RefPtr<Components::TimedDeleterComponent>            mTimedDeleterComp = new Components::TimedDeleterComponent;
-      RefPtr<Components::ParticleManagerComponent>         mParticleComp     = new Components::ParticleManagerComponent;
-      RefPtr<Components::WeatherComponent>                 weatherComp       = new Components::WeatherComponent;
-      RefPtr<Components::MunitionsComponent>               munitionsComp     = new Components::MunitionsComponent;
-      RefPtr<Components::ViewerMaterialComponent> viewerMaterialComponent    = new Components::ViewerMaterialComponent;
-      RefPtr<dtAnim::AnimationComponent>          animationComponent         = new dtAnim::AnimationComponent;
+      RefPtr<dtGame::DeadReckoningComponent>               drComp                     = new dtGame::DeadReckoningComponent;
+      RefPtr<Components::ViewerNetworkPublishingComponent> rulesComp                  = new Components::ViewerNetworkPublishingComponent;
+      RefPtr<Components::TimedDeleterComponent>            mTimedDeleterComp          = new Components::TimedDeleterComponent;
+      RefPtr<Components::ParticleManagerComponent>         mParticleComp              = new Components::ParticleManagerComponent;
+      RefPtr<Components::WeatherComponent>                 weatherComp                = new Components::WeatherComponent;
+      RefPtr<Components::MunitionsComponent>               munitionsComp              = new Components::MunitionsComponent;
+      RefPtr<Components::ViewerMaterialComponent>          viewerMaterialComponent    = new Components::ViewerMaterialComponent;
+      RefPtr<dtAnim::AnimationComponent>                   animationComponent         = new dtAnim::AnimationComponent;
 
       gameManager.AddComponent(*weatherComp, dtGame::GameManager::ComponentPriority::NORMAL);
       gameManager.AddComponent(*drComp, dtGame::GameManager::ComponentPriority::NORMAL);
@@ -406,7 +294,7 @@ namespace SimCore
       drComp->SetGroundClamper( *clamper );
 
       // Setup the Weather Component.
-      weatherComp->SetUpdatesEnabled(!mIsUIRunning);
+      weatherComp->SetUpdatesEnabled(!IsUIRunning());
       //WeatherComp->SetUseEphemeris(mIsUIRunning);
       weatherComp->SetNearFarClipPlanes( PLAYER_NEAR_CLIP_PLANE, PLAYER_FAR_CLIP_PLANE );
       //WeatherComp->SetUseEphemeris(true);
@@ -422,9 +310,5 @@ namespace SimCore
    /////////////////////////////////////////////////////////////////////////////////////////
    void BaseGameEntryPoint::OnShutdown(dtABC::BaseABC& app, dtGame::GameManager& gameManager)
    {
-      delete parser;
-      parser = NULL;
    }
-
-   DT_IMPLEMENT_ACCESSOR(BaseGameEntryPoint, std::string, MapName);
 }

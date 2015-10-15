@@ -156,11 +156,9 @@ namespace SimCore
       {
          BaseClass::Initialize(app, argc, argv);
 
-         if(parser == NULL)
-            parser = new osg::ArgumentParser(&argc, argv);
-
          if(!IsUIRunning())
          {
+            osg::ArgumentParser* parser = GetArgParser();
             parser->getApplicationUsage()->addCommandLineOption("--federationExecutionName",
                      "Name of the federation execution to use");
             parser->getApplicationUsage()->addCommandLineOption("--fedFileName",

@@ -67,6 +67,8 @@ namespace StealthGM
    class STEALTH_GAME_EXPORT StealthGameEntryPoint: public SimCore::HLA::BaseHLAGameEntryPoint
    {
       public:
+         typedef SimCore::HLA::BaseHLAGameEntryPoint BaseClass;
+
          static const std::string CONFIG_HAS_BINOCS;
          static const std::string CONFIG_HAS_COMPASS;
          static const std::string CONFIG_HAS_COMPASS_360;
