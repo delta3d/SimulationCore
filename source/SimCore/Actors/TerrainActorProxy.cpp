@@ -435,7 +435,8 @@ namespace SimCore
          }
 
          //Don't actually load the file unless we are in the scene.
-         if (GetSceneParent() != NULL)
+         //The additional checks are necessary because properties can be sent that set the scene hierarchy prior to being added to the GM.
+         if (GetSceneParent() != NULL && (GetGameActorProxy().IsInGM() || GetGameActorProxy().IsInSTAGE()))
          {
             //We should always clear the geometry.  If LoadFile fails, we should have no geometry.
             if (GetMatrixNode()->getNumChildren() != 0)
