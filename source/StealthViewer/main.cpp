@@ -41,12 +41,11 @@
 #include <sstream>
 #include <cstring>
 
-const int appArgc = 9;
+const int appArgc = 7;
 static const char* appArgv[appArgc] =
 {
    "GameStart",
-   "--UI", "1",
-   "--statisticsInterval", "30",
+    "--UI", "1",
    "--enableLogging", "1",
    "--enablePlayback", "1",
 };

@@ -118,16 +118,11 @@ namespace SimCore
    //////////////////////////////////////////////////////////////////////////
    void BaseGameEntryPoint::Initialize(dtABC::BaseABC& app, int argc, char **argv)
    {
-      BaseClass::Initialize(app, argc, argv);
-      mMissingRequiredCommandLineOption = false;
-
-      osg::ArgumentParser* parser = GetArgParser();
+      osg::ArgumentParser* parser = GetOrCreateArgParser(argc, argv);
 
       parser->getApplicationUsage()->addCommandLineOption("--UI", "Specify this to disable old functionality in favor of the UI");
       parser->getApplicationUsage()->addCommandLineOption("--aspectRatio", "The aspect ratio to use for the camera [1.33 or 1.6]");
       parser->getApplicationUsage()->addCommandLineOption("--lingeringShotSecs", "The number of seconds for a shot to linger after impact. The default value is 300 (5 minutes)");
-
-      ParseDefaultCommandLineOptions();
 
       // Only change the value if a command line option is received.
       int tempBool = 0;
@@ -136,6 +131,9 @@ namespace SimCore
          // note: bool is intentionally reversed
          SetMapIsRequired(tempBool == 1 ? false : true);
       }
+
+      BaseClass::Initialize(app, argc, argv);
+      mMissingRequiredCommandLineOption = false;
 
       parser->read("--aspectRatio", mAspectRatio);
 

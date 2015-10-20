@@ -226,11 +226,7 @@ namespace StealthGM
          dtCore::Camera *camera = inputComp->GetGameManager()->GetApplication().GetCamera();
          float aspectRatio = camera->GetAspectRatio();
          SimCore::Tools::Compass* compass = new SimCore::Tools::Compass(mHudGUI->GetToolsWindow(), *inputComp->GetGameManager()->GetApplication().GetCamera(), false, aspectRatio);         compass->SetPlayerActor(mStealth.get());
-#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
-         compass->InitLens( *mHudGUI->GetGUIDrawable()->GetOSGNode()->asGroup() );
-#else
          compass->InitLens( mHudGUI->GetRootNode() );
-#endif
          inputComp->AddTool(
             *compass,
             SimCore::MessageType::COMPASS
@@ -374,9 +370,8 @@ namespace StealthGM
       //gameManager.PublishActor(mStealth->GetGameActorProxy());
       //mStealth->AddChild(gameManager.GetApplication().GetCamera());
 
-      // The stealth processor component is now obsolete since the updates to the AAR ignore actor behavior.
-      RefPtr<StealthMessageProcessor> stealthProcessor = new StealthMessageProcessor;
-      gameManager.AddComponent(*stealthProcessor,
+      RefPtr<SimCore::Components::ViewerMessageProcessor> defMsgProcessor = new SimCore::Components::ViewerMessageProcessor;
+      gameManager.AddComponent(*defMsgProcessor,
                                dtGame::GameManager::ComponentPriority::HIGHEST);
       gameManager.AddComponent(*new StealthGM::ViewerConfigComponent,
                                dtGame::GameManager::ComponentPriority::LOWER);
