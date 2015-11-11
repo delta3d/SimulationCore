@@ -149,7 +149,7 @@ namespace SimCore
          mNonDamagedResource = rd;
          if (GetHasLoadedResources() || IsInSTAGE())
          {
-            Platform* plat = NULL;
+            Platform* plat = nullptr;
             GetDrawable(plat);
             plat->LoadDamageableFile(rd,  PlatformActorProxy::DamageStateEnum::NO_DAMAGE);
          }
@@ -162,7 +162,7 @@ namespace SimCore
          mDamagedResource = rd;
          if (GetHasLoadedResources() || IsInSTAGE())
          {
-            Platform* plat = NULL;
+            Platform* plat = nullptr;
             GetDrawable(plat);
             plat->LoadDamageableFile(rd,  PlatformActorProxy::DamageStateEnum::SLIGHT_DAMAGE);
          }
@@ -175,7 +175,7 @@ namespace SimCore
          mDestroyedResource = rd;
          if (GetHasLoadedResources() || IsInSTAGE())
          {
-            Platform* plat = NULL;
+            Platform* plat = nullptr;
             GetDrawable(plat);
             plat->LoadDamageableFile(rd,  PlatformActorProxy::DamageStateEnum::DESTROYED);
          }
@@ -189,7 +189,7 @@ namespace SimCore
          Platform* platform;
          GetDrawable(platform);
 
-         if (platform->GetArticulationHelper() != NULL && platform->GetArticulationHelper()->IsDirty() )
+         if (platform->GetArticulationHelper() != nullptr && platform->GetArticulationHelper()->IsDirty() )
          {
             propNamesToFill.push_back(platform->GetArticulationHelper()->GetArticulationArrayPropertyName());
             platform->GetArticulationHelper()->SetDirty(false);
@@ -198,7 +198,7 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////
       void PlatformActorProxy::BuildPropertyMap()
       {
-         Platform* plat = NULL;
+         Platform* plat = nullptr;
          GetDrawable(plat);
 
          typedef dtCore::PropertyRegHelper<PlatformActorProxy&, Platform> PropRegType;
@@ -335,12 +335,12 @@ namespace SimCore
             }
          }
 
-         SimCore::Actors::Platform* p = NULL;
+         SimCore::Actors::Platform* p = nullptr;
          GetDrawable(p);
 
          if (at.InstanceOf(*EntityActorRegistry::AIR_PLATFORM_ACTOR_TYPE))
          {
-            dtGame::DeadReckoningActorComponent* drHelper = NULL;
+            dtGame::DeadReckoningActorComponent* drHelper = nullptr;
             GetComponent(drHelper);
             drHelper->SetGroundClampType(dtGame::GroundClampTypeEnum::NONE);
             p->SetDomain(BaseEntityActorProxy::DomainEnum::AIR);
@@ -392,7 +392,7 @@ namespace SimCore
       {
          if (!mHasLoadedResources)
          {
-            Platform* plat = NULL;
+            Platform* plat = nullptr;
             GetDrawable(plat);
 
             plat->LoadDamageableFile(mNonDamagedResource,  PlatformActorProxy::DamageStateEnum::NO_DAMAGE);
@@ -487,7 +487,7 @@ namespace SimCore
             if (mEngineSmokeSystem.valid())
             {
                RemoveChild(mEngineSmokeSystem);
-               mEngineSmokeSystem = NULL;
+               mEngineSmokeSystem = nullptr;
             }
          }
          mEngineSmokeOn = enable;
@@ -508,12 +508,12 @@ namespace SimCore
          // Attempt to capture the headlight transformable that is tracked by the
          // light effect for world position information.
          dtCore::RefPtr<dtCore::Transformable> headLightPoint;
-         dtCore::DeltaDrawable* curChild = NULL;
+         dtCore::DeltaDrawable* curChild = nullptr;
          unsigned limit = GetNumChildren();
          for( unsigned i = 0; i < limit; ++i )
          {
             curChild = GetChild( i );
-            if( curChild != NULL && curChild->GetName() == DOF_NAME_HEAD_LIGHTS )
+            if( curChild != nullptr && curChild->GetName() == DOF_NAME_HEAD_LIGHTS )
             {
                headLightPoint = dynamic_cast<dtCore::Transformable*>(curChild);
                break;
@@ -549,27 +549,27 @@ namespace SimCore
 
             // ...get the game manager...
             dtGame::GameManager* gm = GetGameActorProxy().GetGameManager();
-            if( gm == NULL )
+            if( gm == nullptr )
             {
                return;
             }
 
             // ...so that the render support component can be accessed...
-            SimCore::Components::RenderingSupportComponent* rsComp = NULL;
+            SimCore::Components::RenderingSupportComponent* rsComp = nullptr;
 
             if( enabled )
             {
                gm->GetComponentByName( SimCore::Components::RenderingSupportComponent::DEFAULT_NAME, rsComp);
 
-               SimCore::Components::RenderingSupportComponent::DynamicLight* dl = NULL;
-               if (rsComp != NULL)
+               SimCore::Components::RenderingSupportComponent::DynamicLight* dl = nullptr;
+               if (rsComp != nullptr)
                {
                   // ...so that the head light effect can be accessed...
                   dl = rsComp->GetDynamicLight( mHeadLightID );
                }
 
                // ...and if the light effect does not exist...
-               if( dl == NULL && rsComp != NULL)
+               if( dl == nullptr && rsComp != nullptr)
                {
                   // ...create it and get its ID to be tracked.
                   //
@@ -584,7 +584,7 @@ namespace SimCore
             {
                gm->GetComponentByName( SimCore::Components::RenderingSupportComponent::DEFAULT_NAME, rsComp);
 
-               if (rsComp != NULL)
+               if (rsComp != nullptr)
                {
                   // ...turn it off by removing it.
                   rsComp->RemoveDynamicLight( mHeadLightID );
@@ -602,11 +602,11 @@ namespace SimCore
          if (mHeadLightsEnabled)
          {
             const dtGame::GameManager* gm = GetGameActorProxy().GetGameManager();
-            if (gm != NULL)
+            if (gm != nullptr)
             {
                if (mHeadLightID != 0)
                {
-                  const SimCore::Components::RenderingSupportComponent* rsComp = NULL;
+                  const SimCore::Components::RenderingSupportComponent* rsComp = nullptr;
                   gm->GetComponentByName( SimCore::Components::RenderingSupportComponent::DEFAULT_NAME, rsComp);
 
                   // Check to see if the light exists, in the world.
@@ -639,7 +639,7 @@ namespace SimCore
       {
          bool setUseDimensions = true;
          float stateNum = 0.0f;
-         osg::Node* modelToCalcDims = NULL;
+         osg::Node* modelToCalcDims = nullptr;
 
          if (damageState == PlatformActorProxy::DamageStateEnum::NO_DAMAGE)
          {
@@ -649,7 +649,7 @@ namespace SimCore
          else if (damageState == PlatformActorProxy::DamageStateEnum::SLIGHT_DAMAGE || damageState == PlatformActorProxy::DamageStateEnum::MODERATE_DAMAGE)
          {
             stateNum = 1.0f;
-            if (mDamagedFileNode->getUserData() == NULL)
+            if (mDamagedFileNode->getUserData() == nullptr)
             {
                mSwitchNode->setSingleChildOn(0);
                modelToCalcDims = mNonDamagedFileNode.get();
@@ -663,9 +663,9 @@ namespace SimCore
          else if (damageState == PlatformActorProxy::DamageStateEnum::DESTROYED)
          {
             stateNum = 2.0f;
-            if (mDestroyedFileNode->getUserData() == NULL)
+            if (mDestroyedFileNode->getUserData() == nullptr)
             {
-               if (mDamagedFileNode->getUserData() == NULL)
+               if (mDamagedFileNode->getUserData() == nullptr)
                {
                   mSwitchNode->setSingleChildOn(0);
                   modelToCalcDims = mNonDamagedFileNode.get();
@@ -693,19 +693,19 @@ namespace SimCore
          // Update the entity painting effect to show damage.
          using namespace SimCore::ActComps;
          CamoPaintStateActComp* paintActComp = GetComponent<CamoPaintStateActComp>();
-         if (paintActComp != NULL)
+         if (paintActComp != nullptr)
          {
             paintActComp->SetPaintState(stateNum);
          }
 
-         dtGame::DeadReckoningActorComponent* drHelper = NULL;
+         dtGame::DeadReckoningActorComponent* drHelper = nullptr;
          GetComponent(drHelper);
 
          //compute the model dimensions for this damage state model, since the dimensions will differ from
          //the other damage states
          //NOTE: this fixes the flaming entity problem because the DeadReckoningComponent will
          //factor in any particle system attached to us with our bounding volume
-         if (modelToCalcDims != NULL)
+         if (modelToCalcDims != nullptr)
          {
             drHelper->SetModelDimensions(ComputeDimensions(*modelToCalcDims));
          }
@@ -722,11 +722,11 @@ namespace SimCore
          {
             InternalSetDamageState(damageState);
 
-            SimCore::ActComps::PlatformDefaultPhysicsActComp* physAC = NULL;
+            SimCore::ActComps::PlatformDefaultPhysicsActComp* physAC = nullptr;
             // as if this writing, GetComponent doesn't do a dynamic cast, but the dynamic cast is required here
             // because I need to know not only if this has a physics component, but if that component is this specific type.
             physAC = GetComponent<SimCore::ActComps::PlatformDefaultPhysicsActComp>();
-            if (physAC != NULL)
+            if (physAC != nullptr)
             {
                physAC->LoadCollision(false);
             }
@@ -740,7 +740,7 @@ namespace SimCore
          {
             return mNonDamagedFileNode->getChild(0);
          }
-         return NULL;
+         return nullptr;
       }
 
       /// For the different physics models
@@ -750,7 +750,7 @@ namespace SimCore
          {
             return mDamagedFileNode->getChild(0);
          }
-         return NULL;
+         return nullptr;
       }
 
       /// For the different physics models
@@ -760,7 +760,7 @@ namespace SimCore
          {
             return mDestroyedFileNode->getChild(0);
          }
-         return NULL;
+         return nullptr;
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
@@ -872,24 +872,24 @@ namespace SimCore
             {
                mNonDamagedFileNode->removeChild(0,mNonDamagedFileNode->getNumChildren());
                mNonDamagedFileNode->setName("");
-               mNonDamagedFileNode->setUserData(NULL);
-               SetNodeCollector(NULL);
+               mNonDamagedFileNode->setUserData(nullptr);
+               SetNodeCollector(nullptr);
                if (mArticHelper.valid())
                {
-                  mArticHelper->UpdateDOFReferences(NULL);
+                  mArticHelper->UpdateDOFReferences(nullptr);
                }
             }
             else if (state == PlatformActorProxy::DamageStateEnum::SLIGHT_DAMAGE || state == PlatformActorProxy::DamageStateEnum::MODERATE_DAMAGE)
             {
                mDamagedFileNode->removeChild(0,mDamagedFileNode->getNumChildren());
                mDamagedFileNode->setName("");
-               mDamagedFileNode->setUserData(NULL);
+               mDamagedFileNode->setUserData(nullptr);
             }
             else if (state == PlatformActorProxy::DamageStateEnum::DESTROYED)
             {
                mDestroyedFileNode->removeChild(0,mDestroyedFileNode->getNumChildren());
                mDamagedFileNode->setName("");
-               mDestroyedFileNode->setUserData(NULL);
+               mDestroyedFileNode->setUserData(nullptr);
             }
             else
             {
@@ -911,7 +911,7 @@ namespace SimCore
             dtCore::ShaderManager::GetInstance().FindShaderGroupPrototype(GetShaderGroup());
 
          //First get the shader group assigned to this actor.
-         if (shaderGroup == NULL)
+         if (shaderGroup == nullptr)
          {
             //mLogger->LogMessage(dtUtil::Log::LOG_ERROR, __FUNCTION__, __LINE__,
             //   "Could not find shader group: [" + GetShaderGroup() + "].");
@@ -933,7 +933,7 @@ namespace SimCore
          if (GetGameActorProxy().IsInSTAGE())
          {
             const dtCore::ShaderProgram* editorShader = shaderGroup->GetEditorShader();
-            if (editorShader != NULL)
+            if (editorShader != nullptr)
             {
                defaultShader = editorShader;
                noDamage = editorShader;
@@ -945,9 +945,9 @@ namespace SimCore
          try
          {
             //First if all three are not present check the default, assign it, or return.
-            if (noDamage == NULL && moderate == NULL && destroyed == NULL)
+            if (noDamage == nullptr && moderate == nullptr && destroyed == nullptr)
             {
-               if (defaultShader != NULL)
+               if (defaultShader != nullptr)
                {
                   dtCore::ShaderManager::GetInstance().AssignShaderFromPrototype(*defaultShader, *mSwitchNode);
                }
@@ -960,31 +960,31 @@ namespace SimCore
             }
 
             //Check the non damaged shader...
-            if (noDamage != NULL)
+            if (noDamage != nullptr)
             {
                dtCore::ShaderManager::GetInstance().AssignShaderFromPrototype(*noDamage,*mNonDamagedFileNode);
             }
-            else if (defaultShader != NULL)
+            else if (defaultShader != nullptr)
             {
                dtCore::ShaderManager::GetInstance().AssignShaderFromPrototype(*defaultShader,*mNonDamagedFileNode);
             }
 
             //Check the moderate damage shader...
-            if (moderate != NULL)
+            if (moderate != nullptr)
             {
                dtCore::ShaderManager::GetInstance().AssignShaderFromPrototype(*moderate,*mDamagedFileNode);
             }
-            else if (defaultShader != NULL)
+            else if (defaultShader != nullptr)
             {
                dtCore::ShaderManager::GetInstance().AssignShaderFromPrototype(*defaultShader,*mDamagedFileNode);
             }
 
             //Check the destroyed shader...
-            if (destroyed != NULL)
+            if (destroyed != nullptr)
             {
                dtCore::ShaderManager::GetInstance().AssignShaderFromPrototype(*destroyed,*mDestroyedFileNode);
             }
-            else if (defaultShader != NULL)
+            else if (defaultShader != nullptr)
             {
                dtCore::ShaderManager::GetInstance().AssignShaderFromPrototype(*defaultShader,*mDestroyedFileNode);
             }
@@ -1027,7 +1027,7 @@ namespace SimCore
          dtCore::RefPtr<SimCore::ActComps::CamoPaintStateActComp> camoPaintComp;
          GetComponent(camoPaintComp);
 
-         if (camoPaintComp.valid() && camoPaintComp->GetParentNode() == NULL)
+         if (camoPaintComp.valid() && camoPaintComp->GetParentNode() == nullptr)
          {
             camoPaintComp->SetParentNode(&GetScaleMatrixTransform());
             camoPaintComp->SetHiderNode(mSwitchNode.get());
@@ -1038,7 +1038,7 @@ namespace SimCore
          if (IsRemote())
          {
             dtUtil::NodeCollector* nodeCollector = GetNodeCollector();
-            if (nodeCollector != NULL && !nodeCollector->GetTransformNodeMap().empty())
+            if (nodeCollector != nullptr && !nodeCollector->GetTransformNodeMap().empty())
             {
                GetComponent<dtGame::DeadReckoningActorComponent>()->SetNodeCollector(*nodeCollector);
             }
@@ -1051,15 +1051,15 @@ namespace SimCore
          //// Curt - bump mapping
          dtCore::ShaderProgram* defaultShader = dtCore::ShaderManager::GetInstance().
             GetShaderInstanceForNode(GetOSGNode());
-         dtCore::ShaderParamFloat* useBumpmappingParam = NULL;
-         if (defaultShader != NULL)
+         dtCore::ShaderParamFloat* useBumpmappingParam = nullptr;
+         if (defaultShader != nullptr)
          {
             useBumpmappingParam = dynamic_cast<dtCore::ShaderParamFloat*>
                (defaultShader->FindParameter("useBumpMap"));
          }
 
          // if bump mapping is turned on, generate the tangents to be passed to the shader
-         if (useBumpmappingParam != NULL && useBumpmappingParam->GetValue() == 1.0f)
+         if (useBumpmappingParam != nullptr && useBumpmappingParam->GetValue() == 1.0f)
          {
             dtCore::RefPtr<dtUtil::TangentSpaceVisitor> visitor = new dtUtil::TangentSpaceVisitor
                ("vTangent", (osg::Program*)defaultShader->GetShaderProgram(), 6);
@@ -1122,7 +1122,7 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////
       void Platform::UpdateEngineIdleSoundEffect()
       {
-         if (mSndIdleLoop == NULL)
+         if (mSndIdleLoop == nullptr)
          {
             return;
          }
@@ -1162,7 +1162,7 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////
       void Platform::SetArticulatedParametersArray(const dtCore::NamedGroupParameter& newValue)
       {
-         if ( mArticHelper.valid() && GetNodeCollector() != NULL)
+         if ( mArticHelper.valid() && GetNodeCollector() != nullptr)
          {
             mArticHelper->HandleArticulatedParametersArray(
                newValue, *GetNodeCollector(), *GetComponent<dtGame::DeadReckoningActorComponent>() );
@@ -1228,7 +1228,7 @@ namespace SimCore
          // on a remote entity.
          if ( mTimeUntilControlStateUpdate < 0.0f && mArticHelper.valid() && mArticHelper->IsDirty() )
          {
-            if ( mArticHelper->GetControlState() != NULL )
+            if ( mArticHelper->GetControlState() != nullptr )
             {
                mTimeUntilControlStateUpdate = mTimeBetweenControlStateUpdates;
 
@@ -1241,9 +1241,9 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////
       void Platform::OnTickLocal(const dtGame::TickMessage& tickMessage)
       {
-         dtGame::DRPublishingActComp* drPublishingComp = NULL;
+         dtGame::DRPublishingActComp* drPublishingComp = nullptr;
          GetComponent(drPublishingComp);
-         if (drPublishingComp != NULL && mArticHelper.valid() && mArticHelper->IsDirty())
+         if (drPublishingComp != nullptr && mArticHelper.valid() && mArticHelper->IsDirty())
          {
             drPublishingComp->ForceUpdateAtNextOpportunity();
             //mArticHelper->SetDirty(false); //Dirty is cleared when we publish elsewhere
