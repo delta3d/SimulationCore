@@ -22,9 +22,9 @@
 *
 */
 #include <prefix/SimCorePrefix.h>
-#include <QtGui/QApplication>
-#include <QtGui/QMessageBox>
-#include <QtGui/QSplashScreen>
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QMessageBox>
+#include <QtWidgets/QSplashScreen>
 #include <QtGui/QPixmap>
 
 #include <StealthViewer/Qt/MainWindow.h>

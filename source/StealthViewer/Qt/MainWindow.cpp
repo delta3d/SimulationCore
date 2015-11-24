@@ -29,17 +29,17 @@
 
 #include <dtUtil/warningdisable.h>
 DT_DISABLE_WARNING_ALL_START
-#include <QtGui/QApplication>
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QVBoxLayout>
+#include <QtWidgets/QDateTimeEdit>
+#include <QtWidgets/QFileDialog>
+#include <QtWidgets/QMessageBox>
+#include <QtWidgets/QHeaderView>
+#include <QtWidgets/QScrollBar>
+#include <QtWidgets/QSpacerItem>
 #include <QtGui/QCloseEvent>
-#include <QtGui/QVBoxLayout>
-#include <QtGui/QDateTimeEdit>
-#include <QtGui/QFileDialog>
-#include <QtGui/QMessageBox>
-#include <QtGui/QHeaderView>
 #include <QtGui/QDoubleValidator>
-#include <QtGui/QScrollBar>
 #include <QtGui/QKeyEvent>
-#include <QtGui/QSpacerItem>
 DT_DISABLE_WARNING_END
 
 #include <dtQt/osgadapterwidget.h>
@@ -184,7 +184,7 @@ namespace StealthQt
 
       ConnectSlots();
 
-      ParseCommandLine();
+      ParseCommandLine(appArgc, appArgv);
 
       // Instantiate singletons
       StealthViewerData::GetInstance().SetMainWindow(*this);
@@ -273,12 +273,8 @@ namespace StealthQt
    }
 
    //////////////////////////////////////////////////////////
-   void MainWindow::ParseCommandLine()
+   void MainWindow::ParseCommandLine(int argc, char* argv[])
    {
-      // Support passing in the connection name on the command line
-      int argc    = qApp->argc();
-      char **argv = qApp->argv();
-
       // Parse the name from the command line
       osg::ArgumentParser parser(&argc, argv);
       parser.getApplicationUsage()->addCommandLineOption("-connectionName", "The name of the connection to auto connect to. ");

@@ -28,7 +28,7 @@
 
 #include <dtUtil/warningdisable.h>
 DT_DISABLE_WARNING_ALL_START
-#include <QtGui/QDialog>
+#include <QtWidgets/QDialog>
 DT_DISABLE_WARNING_END
 
 // Forward declarations

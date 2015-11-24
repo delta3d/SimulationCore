@@ -31,7 +31,7 @@
 DT_DISABLE_WARNING_ALL_START
 #include <QtCore/QList>
 #include <QtOpenGL/QGLWidget>
-#include <QtGui/QMessageBox>
+#include <QtWidgets/QMessageBox>
 DT_DISABLE_WARNING_END
 
 #include <StealthViewer/Qt/ViewDockWidget.h>

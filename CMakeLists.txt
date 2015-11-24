@@ -49,14 +49,6 @@ include(UtilityMacros)
 # 3rd Party Dependency Stuff
 # Common to all platforms:
 
-if (SUPER_BUILD)
-    SET(QT_USE_QTOPENGL "true")
-    FIND_PACKAGE(Qt4 REQUIRED)
-
-   include(${CMAKE_CURRENT_SOURCE_DIR}/SuperBuild.cmake)
-   return()
-endif()
-
 #This is so simcore itself won't get messed up with its own config
 set (SIMULATIONCORE_IGNORE_CONFIG_FILE ON)
 
@@ -108,8 +100,7 @@ IF (DELTA3D_FOUND)
    ENDIF (NOT WIN32 AND NOT APPLE)
 
    if (BUILD_STEALTH_VIEWER)
-      SET(QT_USE_QTOPENGL "true")
-      FIND_PACKAGE(Qt4 REQUIRED)
+      FIND_PACKAGE(Qt5 REQUIRED)
    endif (BUILD_STEALTH_VIEWER)
 
 ELSE ()

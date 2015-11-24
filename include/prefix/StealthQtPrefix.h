@@ -26,7 +26,7 @@
 
   #ifdef SIMCORE_USE_PCH
     #ifdef _MSC_VER
-      #include <QtGui/QDialog>
+      #include <QtWidgets/QDialog>
       #include <StealthViewer/GMApp/ViewWindowConfigObject.h>
       #include <StealthViewer/GMApp/PreferencesVisibilityConfigObject.h>
     #else //_MSC_VER
