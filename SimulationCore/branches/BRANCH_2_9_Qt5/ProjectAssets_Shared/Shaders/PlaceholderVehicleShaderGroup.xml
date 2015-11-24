@@ -1,0 +1,31 @@
+<shaderlist>
+   <shadergroup name="PlaceholderVehicleShaderGroup">
+      <shader name="NoDamage" default="yes">
+         <source type="Vertex">Shaders/SharedBase/shader_gloss_reflect.vert</source>
+         <source type="Vertex">Shaders/SharedBase/vertex_functions.vert</source>
+         <source type="Fragment">Shaders/SharedBase/shader_gloss_reflect.frag</source>
+         <source type="Fragment">Shaders/SharedBase/fragment_functions.frag</source>
+         <source type="Fragment">Shaders/SharedBase/spot_light.frag</source>
+         <source type="Fragment">Shaders/SharedBase/dynamic_light.frag</source>
+         <parameter name="diffuseTexture">
+            <texture2D textureUnit="0">
+               <source type="Auto"/>
+            </texture2D>
+         </parameter>
+         <parameter name="glossTexture">
+            <texture2D textureUnit="1">
+               <source type="Image">Textures/gloss_map.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+         <parameter name="reflectTexture">
+            <texture2D textureUnit="2">
+               <source type="Image">Textures/ShadersBase/spheremap2.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+      </shader>
+   </shadergroup>
+</shaderlist>

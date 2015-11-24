@@ -1,0 +1,23 @@
+<shaderlist>
+   <shadergroup name="TrailEffectShaderGroup">
+      <shader name="TrailEffectShader">
+         <source type="Vertex">Shaders/SharedBase/vertex_functions.vert</source>
+         <source type="Vertex">Shaders/SharedBase/trail_effect.vert</source>
+         <source type="Fragment">Shaders/SharedBase/fragment_functions.frag</source>
+         <source type="Fragment">Shaders/SharedBase/trail_effect.frag</source>
+         <parameter name="diffuseTexture">
+            <texture2D textureUnit="0">
+               <source type="Image">Textures/ShadersBase/TrailEffect.tga</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Clamp"/>
+            </texture2D>
+         </parameter>
+         <parameter name="trailWidth">
+            <float defaultValue="1.0"/>
+         </parameter>
+         <parameter name="trailTextureOffset">
+            <float defaultValue="0.0"/>
+         </parameter>
+      </shader>
+   </shadergroup>
+</shaderlist>

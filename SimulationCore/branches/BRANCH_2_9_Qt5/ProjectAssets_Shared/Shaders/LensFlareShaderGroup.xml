@@ -1,0 +1,8 @@
+<shaderlist>
+   <shadergroup name="LensFlareGroup">
+      <shader name="LensFlareShader" default="yes">
+         <source type="Vertex">Shaders/SharedBase/lens_flare.vert</source>
+         <source type="Fragment">Shaders/SharedBase/lens_flare.frag</source>
+      </shader>
+   </shadergroup>
+</shaderlist>

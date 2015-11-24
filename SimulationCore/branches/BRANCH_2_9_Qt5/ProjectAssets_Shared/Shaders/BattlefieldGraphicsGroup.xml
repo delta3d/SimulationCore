@@ -1,0 +1,10 @@
+<shaderlist>
+   <shadergroup name="BattlefieldGraphicsGroup">
+      <shader name="BFG_Single_Color_And_Fog" default="yes">
+         <source type="Vertex">Shaders/SharedBase/vertex_functions.vert</source>
+         <source type="Vertex">Shaders/SharedBase/BattlefieldGraphics.vert</source>
+         <source type="Fragment">Shaders/SharedBase/fragment_functions.frag</source>
+         <source type="Fragment">Shaders/SharedBase/BattlefieldGraphics.frag</source>
+      </shader>
+   </shadergroup>
+</shaderlist>

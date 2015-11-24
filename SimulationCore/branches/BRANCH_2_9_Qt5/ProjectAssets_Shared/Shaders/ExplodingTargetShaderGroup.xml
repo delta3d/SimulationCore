@@ -1,0 +1,33 @@
+<shaderlist>
+   <shadergroup name="ExplodingTargetShaderGroup">
+      <shader name="NormalMode" default="yes">
+         <source type="Vertex">Shaders/SharedBase/shader_nogloss.vert</source>
+         <source type="Vertex">Shaders/SharedBase/vertex_functions.vert</source>
+         <source type="Fragment">Shaders/SharedBase/shader_nogloss.frag</source>
+         <source type="Fragment">Shaders/SharedBase/fragment_functions.frag</source>
+         <source type="Fragment">Shaders/SharedBase/spot_light.frag</source>
+         <source type="Fragment">Shaders/SharedBase/dynamic_light.frag</source>
+         <parameter name="diffuseTexture">
+            <texture2D textureUnit="0">
+               <source type="Auto"/>
+            </texture2D>
+         </parameter>
+      </shader>
+      <shader name="Chasing" default="no">
+         <source type="Vertex">Shaders/SharedBase/shader_nogloss.vert</source>
+         <source type="Vertex">Shaders/SharedBase/vertex_functions.vert</source>
+         <source type="Fragment">Shaders/SharedBase/shader_target_highlighted.frag</source>
+         <source type="Fragment">Shaders/SharedBase/fragment_functions.frag</source>
+         <source type="Fragment">Shaders/SharedBase/spot_light.frag</source>
+         <source type="Fragment">Shaders/SharedBase/dynamic_light.frag</source>
+         <parameter name="diffuseTexture">
+            <texture2D textureUnit="0">
+               <source type="Auto"/>
+            </texture2D>
+         </parameter>
+         <parameter name="ColorOscillate">
+            <oscillator oscillation="UpAndDown" cycletimemin="0.75" cycletimemax="0.75" rangemin="0.6" rangemax="0.6" offset="0.4"/>
+         </parameter>
+      </shader>
+   </shadergroup>
+</shaderlist>

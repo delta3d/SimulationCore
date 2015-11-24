@@ -1,0 +1,29 @@
+<shaderlist>
+   <shadergroup name="TerrainShaderGroup">
+      <shader name="Terrain_DetailMapping" default="yes">
+         <source type="Fragment">Shaders/SharedBase/dynamic_light_10.frag</source>
+         <source type="Fragment">Shaders/SharedBase/spot_light.frag</source>
+         <source type="Vertex">Shaders/SharedBase/vertex_functions.vert</source>
+         <source type="Vertex">Shaders/SharedBase/terrain_functions.vert</source>
+         <source type="Fragment">Shaders/SharedBase/fragment_functions.frag</source>
+         <source type="Fragment">Shaders/SharedBase/terrain_functions.frag</source>
+         <source type="Vertex">Shaders/SharedBase/terrain.vert</source>
+         <source type="Fragment">Shaders/SharedBase/terrain.frag</source>
+         <parameter name="baseTexture">
+            <texture2D textureUnit="0">
+               <source type="Auto"/>
+            </texture2D>
+         </parameter>
+         <parameter name="secondaryTexture">
+            <texture2D textureUnit="2">
+               <source type="Image">Textures/ShadersBase/terrain_detailmap.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+         <parameter name="shaderInEffect">
+            <float defaultValue="1.0"/>
+         </parameter>
+      </shader>
+   </shadergroup>
+</shaderlist>

@@ -1,0 +1,34 @@
+
+SET(APP_NAME StealthQt)
+
+INCLUDE_DIRECTORIES(${QT_INCLUDE_DIR})
+
+SET(SOURCE_PATH ${SimulationCore_SOURCE_DIR}/source/StealthViewer)
+
+file(GLOB PROG_SOURCES "*.cpp")
+
+list(REMOVE_ITEM PROG_SOURCES ${SOURCE_PATH}/precomp.cpp)
+
+ADD_EXECUTABLE(${APP_NAME}
+    ${PROG_SOURCES}
+)
+
+LINK_WITH_VARIABLES(${APP_NAME}
+                                   QT_QTCORE_LIBRARY
+                                   QT_QTGUI_LIBRARY
+                                   QT_QTOPENGL_LIBRARY
+                                   DTQT_LIBRARY
+)
+
+TARGET_LINK_LIBRARIES(${APP_NAME} 
+   ${SIMCORE_LIBRARY}
+   ${SIMCOREHLA_LIBRARY}
+   ${STEALTHGM_LIBRARY}
+   ${STEALTHQT_LIBRARY}
+)
+
+IF (MSVC) 
+  SET_TARGET_PROPERTIES(${APP_NAME} PROPERTIES DEBUG_POSTFIX "${CMAKE_DEBUG_POSTFIX}")
+ENDIF (MSVC)
+
+INCLUDE(ProgramInstall OPTIONAL)

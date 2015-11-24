@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<munitionsMapping xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="munitionsConfig"
+     xsi:schemaLocation="munitionsConfig MunitionConfig.xsd">
+ 
+     <header>
+        <name>UnitTestsMunitions</name>
+        <description>Map munitions - Unit tests</description>
+        <author>Curtiss Murphy</author>
+        <comment></comment>
+        <copyright>2008 Alion Science and Technology</copyright>
+        <schemaVersion>1.0</schemaVersion>
+    </header>
+
+	<entityClass name="UnitTestsVehicle">
+	
+		<munition name="Test1Bullet">
+			<force>1000</force> <!-- in Newtons -->
+			<accumulationFactor>0.1</accumulationFactor>
+			<damageProbability>
+				<N>0.90</N>
+				<M>0.10</M>
+				<K>0.0</K>
+			</damageProbability>
+		</munition>
+		<munition name="Test2Grenade">
+			<force>4000</force> <!-- in Newtons -->
+			<accumulationFactor>0.8</accumulationFactor>
+			<damageProbability>
+				<M>0.6</M>
+				<K>0.4</K>
+			</damageProbability>
+			<lethalRanges>
+				<rangeCutoff>15.0</rangeCutoff>
+				<range name="Max">
+					<angleOfFall>45.0</angleOfFall>
+					<forwardRange>
+						<M>15</M>
+						<K>3</K>
+					</forwardRange>
+					<deflectRange>
+						<M>7</M>
+						<K>3</K>
+					</deflectRange>
+				</range>
+			</lethalRanges>
+		</munition>
+	
+		
+	</entityClass>
+
+</munitionsMapping>

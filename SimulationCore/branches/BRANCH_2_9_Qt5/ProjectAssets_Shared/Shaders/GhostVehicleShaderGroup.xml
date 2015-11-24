@@ -1,0 +1,26 @@
+<shaderlist>
+   <shadergroup name="GhostVehicleShaderGroup">
+      <shader name="NoDamage" default="yes">
+         <source type="Vertex">Shaders/SharedBase/shader_nogloss.vert</source>
+         <source type="Vertex">Shaders/SharedBase/vertex_functions.vert</source>
+         <source type="Fragment">Shaders/SharedBase/shader_ghost.frag</source>
+         <source type="Fragment">Shaders/SharedBase/fragment_functions.frag</source>
+         <parameter name="diffuseTexture">
+            <texture2D textureUnit="0">
+               <source type="Auto"/>
+            </texture2D>
+         </parameter>
+      </shader>
+      <shader name="GhostParticleShader" default="no">
+         <source type="Vertex">Shaders/SharedBase/vertex_functions.vert</source>
+         <source type="Vertex">Shaders/SharedBase/particle_emissive.vert</source>
+         <source type="Fragment">Shaders/SharedBase/fragment_functions.frag</source>
+         <source type="Fragment">Shaders/SharedBase/particle_emissive.frag</source>
+         <parameter name="diffuseTexture">
+            <texture2D textureUnit="0">
+               <source type="Auto"/>
+            </texture2D>
+         </parameter>
+      </shader>
+   </shadergroup>
+</shaderlist>

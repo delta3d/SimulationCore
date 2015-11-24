@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<projectConfig  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="project_config.xsd">
+    <header>
+        <name>SimulationCore</name>
+        <description>Project config for the simulation core demo project assets.</description>
+        <author>David Guthrie</author>
+        <comment></comment>
+        <copyright>2011 Alion</copyright>
+        <schemaVersion>1.0</schemaVersion>
+    </header>
+
+    <contexts>
+       <context path="../ProjectAssets_Demos"/>
+       <context path="../../ProjectAssets_Shared"/>
+
+      <!--Needs path to delta3d example assets -->
+      <context path="../../../delta3d/examples/data"/>
+    </contexts>
+</projectConfig>

@@ -1,0 +1,3597 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<map xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="delta3dMap" xsi:schemaLocation="delta3dMap map.xsd">
+    <header>
+        <name>NetDemoPrototypes</name>
+        <description>Has prototype actors that are Unique to NetDemo. Used in conjunction with SharedDemoPrototypes.</description>
+        <author>Curtiss Murphy, David Guthrie</author>
+        <comment>Place for prototype actors</comment>
+        <copyright>2009</copyright>
+        <createTimestamp>2009-05-19T17:43:27.0-05:00</createTimestamp>
+        <lastUpdateTimestamp>2014-09-04T22:45:33-05:00</lastUpdateTimestamp>
+        <editorVersion>2.8.0</editorVersion>
+        <schemaVersion>1.0</schemaVersion>
+    </header>
+    <libraries>
+        <library>
+            <name>dtPhysics</name>
+            <version></version>
+        </library>
+        <library>
+            <name>SimCore</name>
+            <version></version>
+        </library>
+        <library>
+            <name>NetDemo</name>
+            <version></version>
+        </library>
+    </libraries>
+    <actors>
+        <actor>
+            <type>NetDemo.LightTower</type>
+            <id>09ed044c-13a7-46a6-91b5-69359b163d6b</id>
+            <name>Light_Tower_25</name>
+            <property>
+                <name>Name</name>
+                <string>Light_Tower_25</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-563.326843</value1>
+                    <value2>-278.911804</value2>
+                    <value3>-2.016804</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>Non-damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Destroyed actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Static</enumerated>
+            </property>
+        </actor>
+        <actor>
+            <type>NetDemo.Tower Actor</type>
+            <id>0e3b3f6a-102c-4c53-a8d6-0e659eadaa2b</id>
+            <name>Tower _14</name>
+            <property>
+                <name>Name</name>
+                <string>Tower _14</string>
+            </property>
+            <property>
+                <name>Rotation</name>
+                <vec3>
+                    <value1>-4.530045</value1>
+                    <value2>4.735539</value2>
+                    <value3>-0.383929</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-196.815506</value1>
+                    <value2>-244.552170</value2>
+                    <value3>-12.520474</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>ShaderGroup</name>
+                <string>CustomizableTowerShaderGroup</string>
+            </property>
+            <property>
+                <name>Fire particles</name>
+                <resourceType>Particles</resourceType>
+                <resourceDisplayName>Particles:nd_BurningBuildingMed.osg</resourceDisplayName>
+                <resource>Particles:nd_BurningBuildingMed.osg</resource>
+            </property>
+            <property>
+                <name>Non-damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Destroyed actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>Ground Offset</name>
+                <float>0</float>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>3</float>
+            </property>
+        </actor>
+        <actor>
+            <type>NetDemo.Tower Actor</type>
+            <id>1a8eca42-ad05-43a9-b3e9-2d9a91bda347</id>
+            <name>Tower _20</name>
+            <property>
+                <name>Name</name>
+                <string>Tower _20</string>
+            </property>
+            <property>
+                <name>Rotation</name>
+                <vec3>
+                    <value1>-4.530045</value1>
+                    <value2>4.735539</value2>
+                    <value3>-0.383929</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-513.243286</value1>
+                    <value2>-89.402512</value2>
+                    <value3>-12.926236</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>ShaderGroup</name>
+                <string>CustomizableTowerShaderGroup</string>
+            </property>
+            <property>
+                <name>Fire particles</name>
+                <resourceType>Particles</resourceType>
+                <resourceDisplayName>Particles:nd_BurningBuildingMed.osg</resourceDisplayName>
+                <resource>Particles:nd_BurningBuildingMed.osg</resource>
+            </property>
+            <property>
+                <name>Non-damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Destroyed actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>Ground Offset</name>
+                <float>0</float>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>3</float>
+            </property>
+        </actor>
+        <actor>
+            <type>NetDemo.FortActor</type>
+            <id>20820f3b-14d4-4627-951c-4568852861a2</id>
+            <name>FortPrototype_01</name>
+            <property>
+                <name>Name</name>
+                <string>FortPrototype_01</string>
+            </property>
+            <property>
+                <name>Rotation</name>
+                <vec3>
+                    <value1>0.864947</value1>
+                    <value2>0.010115</value2>
+                    <value3>-0.616018</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-70.506348</value1>
+                    <value2>-263.976776</value2>
+                    <value3>-6.912925</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleVehicleShaderGroup</string>
+            </property>
+            <property>
+                <name>Fire particles</name>
+                <resourceType>Particles</resourceType>
+                <resourceDisplayName>Particles::nd_BurningBuildingFort.osg</resourceDisplayName>
+                <resource>Particles::nd_BurningBuildingFort.osg</resource>
+            </property>
+            <property>
+                <name>Max Damage Amount</name>
+                <float>5</float>
+            </property>
+            <property>
+                <name>Munition Damage Table</name>
+                <string>FortDamageType</string>
+            </property>
+            <property>
+                <name>Default Scale</name>
+                <vec3>
+                    <value1>1.500000</value1>
+                    <value2>1.500000</value2>
+                    <value3>2.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Non-damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Forts:Fort.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Forts:Fort.ive</resource>
+            </property>
+            <property>
+                <name>Damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Forts:Fort_Damaged.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Forts:Fort_Damaged.ive</resource>
+            </property>
+            <property>
+                <name>Destroyed actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Forts:Fort_Damaged.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Forts:Fort_Damaged.ive</resource>
+            </property>
+            <property>
+                <name>Engine smoke particles</name>
+                <resourceType>Particles</resourceType>
+                <resourceDisplayName>Particles::nd_BurningBuildingFort.osg</resourceDisplayName>
+                <resource>Particles::nd_BurningBuildingFort.osg</resource>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+        </actor>
+        <actor>
+            <type>DVTETerrain.Terrain</type>
+            <id>25d04409-3818-4988-943f-f58d5b98e501</id>
+            <name>Terrain1</name>
+            <property>
+                <name>Name</name>
+                <string>Terrain1</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-57.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>PROTOTYPE</enumerated>
+            </property>
+            <property>
+                <name>ShaderGroup</name>
+                <string>TerrainShaderGroup</string>
+            </property>
+            <property>
+                <name>Terrain Physics Mode</name>
+                <enumerated>IMMEDIATE</enumerated>
+            </property>
+            <property>
+                <name>TerrainMesh</name>
+                <resourceType>Terrains</resourceType>
+                <resourceDisplayName>Terrains:Level_Desert.ive</resourceDisplayName>
+                <resource>Terrains:Level_Desert.ive</resource>
+            </property>
+        </actor>
+        <actor>
+            <type>NetDemo.EnemyMothershipActor</type>
+            <id>29331cc5-f74c-45ae-bb64-7e1e7cc4e1d9</id>
+            <name>Mothership #2</name>
+            <property>
+                <name>Name</name>
+                <string>Mothership #2</string>
+            </property>
+            <property>
+                <name>Rotation</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>-5.328931</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-99.633072</value1>
+                    <value2>890.663696</value2>
+                    <value3>150.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>Fire particles</name>
+                <resourceType>Particles</resourceType>
+                <resourceDisplayName>Particles:nd_BurningVehicleSmall.osg</resourceDisplayName>
+                <resource>Particles:nd_BurningVehicleSmall.osg</resource>
+            </property>
+            <property>
+                <name>Service</name>
+                <enumerated>OTHER</enumerated>
+            </property>
+            <property>
+                <name>Non-damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Enemies:UFO.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Enemies:UFO.ive</resource>
+            </property>
+            <property>
+                <name>Damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Enemies:UFO.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Enemies:UFO.ive</resource>
+            </property>
+            <property>
+                <name>Destroyed actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Enemies:UFO.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Enemies:UFO.ive</resource>
+            </property>
+            <property>
+                <name>Point Value</name>
+                <integer>40</integer>
+            </property>
+            <property>
+                <name>Physics Mass</name>
+                <float>50000</float>
+            </property>
+            <property>
+                <name>Physics Dimensions</name>
+                <vec3>
+                    <value1>20.000000</value1>
+                    <value2>20.000000</value2>
+                    <value3>20.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>VehicleBody: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>VehicleBody: Primitive Type</name>
+                <enumerated>Sphere</enumerated>
+            </property>
+            <property>
+                <name>VehicleBody: Dimensions</name>
+                <vec3>
+                    <value1>10.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>VehicleBody: Mass</name>
+                <float>10000</float>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>5</float>
+            </property>
+        </actor>
+        <actor>
+            <type>NetDemo.Tower Actor</type>
+            <id>2a73107b-9adb-4daa-8cec-f2bfd456f7ef</id>
+            <name>Tower _24</name>
+            <property>
+                <name>Name</name>
+                <string>Tower _24</string>
+            </property>
+            <property>
+                <name>Rotation</name>
+                <vec3>
+                    <value1>0.491326</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-705.117065</value1>
+                    <value2>-370.049988</value2>
+                    <value3>0.762881</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>ShaderGroup</name>
+                <string>CustomizableTowerShaderGroup</string>
+            </property>
+            <property>
+                <name>Fire particles</name>
+                <resourceType>Particles</resourceType>
+                <resourceDisplayName>Particles:nd_BurningBuildingMed.osg</resourceDisplayName>
+                <resource>Particles:nd_BurningBuildingMed.osg</resource>
+            </property>
+            <property>
+                <name>Non-damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Destroyed actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>Ground Offset</name>
+                <float>0</float>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>3</float>
+            </property>
+        </actor>
+        <actor>
+            <type>NetDemo.LightTower</type>
+            <id>2fcf3021-9c71-41ea-9f86-8ccb1e4ac6b9</id>
+            <name>Light_Tower_17</name>
+            <property>
+                <name>Name</name>
+                <string>Light_Tower_17</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-29.421722</value1>
+                    <value2>-211.189056</value2>
+                    <value3>-12.175654</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>Non-damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Destroyed actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Static</enumerated>
+            </property>
+        </actor>
+        <actor>
+            <type>NetDemo.LightTower</type>
+            <id>3220801c-17d9-4c91-a68b-4243ccf7d784</id>
+            <name>Light_Tower_22</name>
+            <property>
+                <name>Name</name>
+                <string>Light_Tower_22</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-70.125168</value1>
+                    <value2>310.079742</value2>
+                    <value3>-12.205867</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>Non-damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Destroyed actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Static</enumerated>
+            </property>
+        </actor>
+        <actor>
+            <type>NetDemo.LightTower</type>
+            <id>33e4766e-85ba-4af9-b1da-ef55d11aad34</id>
+            <name>Light_Tower_02</name>
+            <property>
+                <name>Name</name>
+                <string>Light_Tower_02</string>
+            </property>
+            <property>
+                <name>Rotation</name>
+                <vec3>
+                    <value1>0.741743</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-720.578430</value1>
+                    <value2>-308.890900</value2>
+                    <value3>-0.871672</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>Non-damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Destroyed actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Static</enumerated>
+            </property>
+        </actor>
+        <actor>
+            <type>NetDemo.Tower Actor</type>
+            <id>37095cbf-11f2-4435-9644-e1887fe6b3d9</id>
+            <name>Tower _13</name>
+            <property>
+                <name>Name</name>
+                <string>Tower _13</string>
+            </property>
+            <property>
+                <name>Rotation</name>
+                <vec3>
+                    <value1>-4.530045</value1>
+                    <value2>4.735539</value2>
+                    <value3>-0.383929</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>115.755783</value1>
+                    <value2>64.674583</value2>
+                    <value3>-12.416324</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>ShaderGroup</name>
+                <string>CustomizableTowerShaderGroup</string>
+            </property>
+            <property>
+                <name>Fire particles</name>
+                <resourceType>Particles</resourceType>
+                <resourceDisplayName>Particles:nd_BurningBuildingMed.osg</resourceDisplayName>
+                <resource>Particles:nd_BurningBuildingMed.osg</resource>
+            </property>
+            <property>
+                <name>Non-damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Destroyed actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>Ground Offset</name>
+                <float>0</float>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>3</float>
+            </property>
+        </actor>
+        <actor>
+            <type>NetDemo.EnemyMineActor</type>
+            <id>3ad3f7d8-c4d4-4b91-a39f-cd837054d1e3</id>
+            <name>Enemy Mine Prototype1</name>
+            <property>
+                <name>Name</name>
+                <string>Enemy Mine Prototype1</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>2.000000</value2>
+                    <value3>-0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>PROTOTYPE</enumerated>
+            </property>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleVehicleShaderGroup</string>
+            </property>
+            <property>
+                <name>Fire particles</name>
+                <resourceType>Particles</resourceType>
+                <resourceDisplayName>Particles:nd_BurningVehicleSmall.osg</resourceDisplayName>
+                <resource>Particles:fire.osg</resource>
+            </property>
+            <property>
+                <name>Domain</name>
+                <enumerated>GROUND</enumerated>
+            </property>
+            <property>
+                <name>Non-damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Enemies:Mine.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Enemies:Mine.ive</resource>
+            </property>
+            <property>
+                <name>Damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Enemies:Mine.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Enemies:Mine.ive</resource>
+            </property>
+            <property>
+                <name>Destroyed actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Enemies:Mine.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Enemies:Mine.ive</resource>
+            </property>
+            <property>
+                <name>Point Value</name>
+                <integer>10</integer>
+            </property>
+            <property>
+                <name>Physics Dimensions</name>
+                <vec3>
+                    <value1>2.500000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>VehicleBody: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>VehicleBody: Primitive Type</name>
+                <enumerated>Sphere</enumerated>
+            </property>
+            <property>
+                <name>VehicleBody: Dimensions</name>
+                <vec3>
+                    <value1>4.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>5</float>
+            </property>
+        </actor>
+        <actor>
+            <type>NetDemo.Tower Actor</type>
+            <id>4021c6d8-a95c-4d2f-9267-de8ec07ef2ba</id>
+            <name>Tower _08</name>
+            <property>
+                <name>Name</name>
+                <string>Tower _08</string>
+            </property>
+            <property>
+                <name>Rotation</name>
+                <vec3>
+                    <value1>4.479983</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>33.108246</value1>
+                    <value2>-326.598236</value2>
+                    <value3>-11.118363</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>ShaderGroup</name>
+                <string>CustomizableTowerShaderGroup</string>
+            </property>
+            <property>
+                <name>Fire particles</name>
+                <resourceType>Particles</resourceType>
+                <resourceDisplayName>Particles:nd_BurningBuildingMed.osg</resourceDisplayName>
+                <resource>Particles:nd_BurningBuildingMed.osg</resource>
+            </property>
+            <property>
+                <name>Non-damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Destroyed actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>Ground Offset</name>
+                <float>0</float>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>3</float>
+            </property>
+        </actor>
+        <actor>
+            <type>NetDemo.Tower Actor</type>
+            <id>40e8ff80-5a26-41d7-bd74-f6a54b838dc9</id>
+            <name>Tower 01</name>
+            <property>
+                <name>Name</name>
+                <string>Tower 01</string>
+            </property>
+            <property>
+                <name>Rotation</name>
+                <vec3>
+                    <value1>0.491326</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-612.289429</value1>
+                    <value2>-271.852814</value2>
+                    <value3>-11.905130</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>ShaderGroup</name>
+                <string>CustomizableTowerShaderGroup</string>
+            </property>
+            <property>
+                <name>Fire particles</name>
+                <resourceType>Particles</resourceType>
+                <resourceDisplayName>Particles:nd_BurningBuildingMed.osg</resourceDisplayName>
+                <resource>Particles:nd_BurningBuildingMed.osg</resource>
+            </property>
+            <property>
+                <name>Non-damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Destroyed actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>Ground Offset</name>
+                <float>0</float>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>2</float>
+            </property>
+        </actor>
+        <actor>
+            <type>NetDemo.EnemyMineActor</type>
+            <id>462f65e6-2935-4d88-8940-19b7683fbf5c</id>
+            <name>Enemy Mine Prototype2</name>
+            <property>
+                <name>Name</name>
+                <string>Enemy Mine Prototype2</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>1.000000</value1>
+                    <value2>2.000000</value2>
+                    <value3>-0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>PROTOTYPE</enumerated>
+            </property>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleVehicleShaderGroup</string>
+            </property>
+            <property>
+                <name>Fire particles</name>
+                <resourceType>Particles</resourceType>
+                <resourceDisplayName>Particles:nd_BurningVehicleSmall.osg</resourceDisplayName>
+                <resource>Particles:nd_BurningVehicleSmall.osg</resource>
+            </property>
+            <property>
+                <name>Domain</name>
+                <enumerated>GROUND</enumerated>
+            </property>
+            <property>
+                <name>Non-damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Enemies:Mine2.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Enemies:Mine2.ive</resource>
+            </property>
+            <property>
+                <name>Damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Enemies:Mine2.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Enemies:Mine2.ive</resource>
+            </property>
+            <property>
+                <name>Destroyed actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Enemies:Mine2.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Enemies:Mine2.ive</resource>
+            </property>
+            <property>
+                <name>Point Value</name>
+                <integer>15</integer>
+            </property>
+            <property>
+                <name>Physics Dimensions</name>
+                <vec3>
+                    <value1>4.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>VehicleBody: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>VehicleBody: Primitive Type</name>
+                <enumerated>Sphere</enumerated>
+            </property>
+            <property>
+                <name>VehicleBody: Dimensions</name>
+                <vec3>
+                    <value1>4.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>5</float>
+            </property>
+        </actor>
+        <actor>
+            <type>NetDemo.Tower Actor</type>
+            <id>4bae075f-bccd-4683-865c-de740c49324d</id>
+            <name>Tower _07</name>
+            <property>
+                <name>Name</name>
+                <string>Tower _07</string>
+            </property>
+            <property>
+                <name>Rotation</name>
+                <vec3>
+                    <value1>6.318279</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-126.218079</value1>
+                    <value2>-314.551636</value2>
+                    <value3>-12.246062</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>ShaderGroup</name>
+                <string>CustomizableTowerShaderGroup</string>
+            </property>
+            <property>
+                <name>Fire particles</name>
+                <resourceType>Particles</resourceType>
+                <resourceDisplayName>Particles:nd_BurningBuildingMed.osg</resourceDisplayName>
+                <resource>Particles:nd_BurningBuildingMed.osg</resource>
+            </property>
+            <property>
+                <name>Non-damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Destroyed actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>Ground Offset</name>
+                <float>0</float>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>3</float>
+            </property>
+        </actor>
+        <actor>
+            <type>NetDemo.LightTower</type>
+            <id>4ea8c633-9880-40c9-a075-e5a94c608f50</id>
+            <name>Light_Tower_19</name>
+            <property>
+                <name>Name</name>
+                <string>Light_Tower_19</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-216.486908</value1>
+                    <value2>-182.926025</value2>
+                    <value3>-12.205867</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>Non-damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Destroyed actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Static</enumerated>
+            </property>
+        </actor>
+        <actor>
+            <type>NetDemo.Propelled Vehicle Actor</type>
+            <id>540aeb75-fe36-48cc-ade2-dd19b68e762f</id>
+            <name>Propelled Vehicle</name>
+            <property>
+                <name>Name</name>
+                <string>Propelled Vehicle</string>
+            </property>
+            <property>
+                <name>Rotation</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>57.673561</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>3.870934</value1>
+                    <value2>285.795654</value2>
+                    <value3>-0.293939</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>PROTOTYPE</enumerated>
+            </property>
+            <property>
+                <name>ShaderGroup</name>
+                <string>CustomizableVehicleShaderGroup</string>
+            </property>
+            <property>
+                <name>Fire particles</name>
+                <resourceType>Particles</resourceType>
+                <resourceDisplayName>Particles:nd_BurningVehicleSmall.osg</resourceDisplayName>
+                <resource>Particles:nd_BurningVehicleSmall.osg</resource>
+            </property>
+            <property>
+                <name>Munition Damage Table</name>
+                <string>VehicleDamageType</string>
+            </property>
+            <property>
+                <name>Default Scale</name>
+                <vec3>
+                    <value1>1.500000</value1>
+                    <value2>1.500000</value2>
+                    <value3>1.500000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Non-damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Vehicles:Truck.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Vehicles:Truck.ive</resource>
+            </property>
+            <property>
+                <name>Damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Vehicles:Truck.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Vehicles:Truck.ive</resource>
+            </property>
+            <property>
+                <name>Destroyed actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Vehicles:Truck.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Vehicles:Truck.ive</resource>
+            </property>
+            <property>
+                <name>SOUND_EFFECT_IGNITION</name>
+                <resourceType>Sounds</resourceType>
+                <resourceDisplayName>Sounds::Ignition.wav</resourceDisplayName>
+                <resource>Sounds::Ignition.wav</resource>
+            </property>
+            <property>
+                <name>SOUND_EFFECT_VEHICLE_LOOP</name>
+                <resourceType>Sounds</resourceType>
+                <resourceDisplayName>Sounds::Vehicle_Idle.wav</resourceDisplayName>
+                <resource>Sounds::Vehicle_Idle.wav</resource>
+            </property>
+            <property>
+                <name>SOUND_EFFECT_BRAKE</name>
+                <resourceType>Sounds</resourceType>
+                <resourceDisplayName>Sounds::BrakeSound.wav</resourceDisplayName>
+                <resource>Sounds::BrakeSound.wav</resource>
+            </property>
+            <property>
+                <name>SOUND_EFFECT_COLLISION_HIT</name>
+                <resourceType>Sounds</resourceType>
+                <resourceDisplayName>Sounds::SFX_Metal_Hit_Sound.wav</resourceDisplayName>
+                <resource>Sounds::SFX_Metal_Hit_Sound.wav</resource>
+            </property>
+            <property>
+                <name>Weapons</name>
+                <array>
+                    <size>2</size>
+                    <element>
+                        <index>0</index>
+                        <property>
+                            <name>NestedPropContainer</name>
+                            <propertyContainer>
+                                <property>
+                                    <name>WeaponSwapRootNode</name>
+                                    <string>dof_hotspot_01</string>
+                                </property>
+                                <property>
+                                    <name>WeaponPrototypeName</name>
+                                    <string>Weapon_MachineGun</string>
+                                </property>
+                                <property>
+                                    <name>ShooterPrototypeName</name>
+                                    <string>Particle_System_Weapon_GunWithTracer</string>
+                                </property>
+                                <property>
+                                    <name>WeaponHotSpotNode</name>
+                                    <string>hotspot_01</string>
+                                </property>
+                                <property>
+                                    <name>FiringParticleSystem</name>
+                                    <resourceType>Particles</resourceType>
+                                    <resourceDisplayName>Particles:weapon_gun_flash.osg</resourceDisplayName>
+                                    <resource>Particles:weapon_gun_flash.osg</resource>
+                                </property>
+                            </propertyContainer>
+                        </property>
+                    </element>
+                    <element>
+                        <index>1</index>
+                        <property>
+                            <name>NestedPropContainer</name>
+                            <propertyContainer>
+                                <property>
+                                    <name>WeaponSwapRootNode</name>
+                                    <string>dof_hotspot_01</string>
+                                </property>
+                                <property>
+                                    <name>WeaponPrototypeName</name>
+                                    <string>Weapon_Grenade</string>
+                                </property>
+                                <property>
+                                    <name>ShooterPrototypeName</name>
+                                    <string>Particle_System_Weapon_Grenade</string>
+                                </property>
+                                <property>
+                                    <name>WeaponHotSpotNode</name>
+                                    <string>hotspot_01</string>
+                                </property>
+                                <property>
+                                    <name>FiringParticleSystem</name>
+                                    <resourceType>Particles</resourceType>
+                                    <resourceDisplayName>Particles:weapon_gun_flash.osg</resourceDisplayName>
+                                    <resource>Particles:weapon_gun_flash.osg</resource>
+                                </property>
+                            </propertyContainer>
+                        </property>
+                    </element>
+                </array>
+            </property>
+            <property>
+                <name>Four Wheel Drive</name>
+                <boolean>true</boolean>
+            </property>
+            <property>
+                <name>FrontSuspensionRestLength</name>
+                <float>0.31999999</float>
+            </property>
+            <property>
+                <name>FrontSuspensionSpringFreq</name>
+                <float>1.3</float>
+            </property>
+            <property>
+                <name>FrontSuspensionDamperFactor</name>
+                <float>0.38</float>
+            </property>
+            <property>
+                <name>FrontTireSlip</name>
+                <float>1.2</float>
+            </property>
+            <property>
+                <name>FrontTireValue</name>
+                <float>2</float>
+            </property>
+            <property>
+                <name>FrontTireAsymptoteSlip</name>
+                <float>2</float>
+            </property>
+            <property>
+                <name>FrontTireAsymptoteValue</name>
+                <float>1</float>
+            </property>
+            <property>
+                <name>RearSuspensionRestLength</name>
+                <float>0.31999999</float>
+            </property>
+            <property>
+                <name>RearSuspensionSpringFreq</name>
+                <float>1.4</float>
+            </property>
+            <property>
+                <name>RearSuspensionDamperFactor</name>
+                <float>0.38</float>
+            </property>
+            <property>
+                <name>RearTireSlip</name>
+                <float>1.6</float>
+            </property>
+            <property>
+                <name>RearTireValue</name>
+                <float>2</float>
+            </property>
+            <property>
+                <name>RearTireAsymptoteSlip</name>
+                <float>2</float>
+            </property>
+            <property>
+                <name>RearTireAsymptoteValue</name>
+                <float>1</float>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>be123458-111d-4ec8-bd51-dd49d31abc00</actorId>
+            </property>
+            <property>
+                <name>Default Collision Group</name>
+                <integer>1</integer>
+            </property>
+            <property>
+                <name>chassis: Origin Offset</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.100000</value2>
+                    <value3>0.340000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>chassis: Dimensions</name>
+                <vec3>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>chassis: Mass</name>
+                <float>1800</float>
+            </property>
+            <property>
+                <name>chassis: Skin Thickness</name>
+                <float>0.039999999</float>
+            </property>
+            <property>
+                <name>chassis: Notify Collisions</name>
+                <boolean>true</boolean>
+            </property>
+            <property>
+                <name>chassis: Moment Of Inertia</name>
+                <vec3>
+                    <value1>9000.000000</value1>
+                    <value2>2100.000000</value2>
+                    <value3>4000.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Engine Torque</name>
+                <float>8100</float>
+            </property>
+            <property>
+                <name>Max Break Torque</name>
+                <float>40</float>
+            </property>
+            <property>
+                <name>Max Steer Angle</name>
+                <float>25</float>
+            </property>
+            <property>
+                <name>mVehicleTopSpeedReverse</name>
+                <float>45</float>
+            </property>
+            <property>
+                <name>NumUpdatesUntilFullSteeringAngle</name>
+                <integer>50</integer>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+        </actor>
+        <actor>
+            <type>NetDemo.EnemyHelixActor</type>
+            <id>68922ddc-fcc8-41d5-843b-a853eee3c2e8</id>
+            <name>Enemy Helix Prototype</name>
+            <property>
+                <name>Name</name>
+                <string>Enemy Helix Prototype</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-649.382202</value1>
+                    <value2>-302.271820</value2>
+                    <value3>-0.000001</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>PROTOTYPE</enumerated>
+            </property>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleVehicleShaderGroup</string>
+            </property>
+            <property>
+                <name>Fire particles</name>
+                <resourceType>Particles</resourceType>
+                <resourceDisplayName>Particles:nd_BurningVehicleSmall.osg</resourceDisplayName>
+                <resource>Particles:nd_BurningVehicleSmall.osg</resource>
+            </property>
+            <property>
+                <name>Service</name>
+                <enumerated>OTHER</enumerated>
+            </property>
+            <property>
+                <name>Default Scale</name>
+                <vec3>
+                    <value1>3.000000</value1>
+                    <value2>3.000000</value2>
+                    <value3>3.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Non-damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Enemies:Helix.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Enemies:Helix.ive</resource>
+            </property>
+            <property>
+                <name>Damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Enemies:Helix.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Enemies:Helix.ive</resource>
+            </property>
+            <property>
+                <name>Destroyed actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Enemies:Helix.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Enemies:Helix.ive</resource>
+            </property>
+            <property>
+                <name>Point Value</name>
+                <integer>20</integer>
+            </property>
+            <property>
+                <name>Physics Mass</name>
+                <float>1000</float>
+            </property>
+            <property>
+                <name>Physics Dimensions</name>
+                <vec3>
+                    <value1>3.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>VehicleBody: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>VehicleBody: Primitive Type</name>
+                <enumerated>Box</enumerated>
+            </property>
+            <property>
+                <name>VehicleBody: Dimensions</name>
+                <vec3>
+                    <value1>12.000000</value1>
+                    <value2>7.500000</value2>
+                    <value3>6.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>VehicleBody: Mass</name>
+                <float>1000</float>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>5</float>
+            </property>
+        </actor>
+        <actor>
+            <type>NetDemo.HoverActor</type>
+            <id>6bbb10f3-628b-4d29-a120-16891773ad45</id>
+            <name>Hover Vehicle</name>
+            <property>
+                <name>Name</name>
+                <string>Hover Vehicle</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-214.779831</value1>
+                    <value2>195.855698</value2>
+                    <value3>-10.573267</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>PROTOTYPE</enumerated>
+            </property>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleVehicleShaderGroup</string>
+            </property>
+            <property>
+                <name>Fire particles</name>
+                <resourceType>Particles</resourceType>
+                <resourceDisplayName>Particles:nd_BurningVehicleSmall.osg</resourceDisplayName>
+                <resource>Particles:nd_BurningVehicleSmall.osg</resource>
+            </property>
+            <property>
+                <name>Max Damage Amount</name>
+                <float>5</float>
+            </property>
+            <property>
+                <name>Force Affiliation</name>
+                <enumerated>FRIENDLY</enumerated>
+            </property>
+            <property>
+                <name>Munition Damage Table</name>
+                <string>VehicleDamageType</string>
+            </property>
+            <property>
+                <name>Non-damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:HoverTank.ive</resourceDisplayName>
+                <resource>StaticMeshes:HoverTank.ive</resource>
+            </property>
+            <property>
+                <name>Damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:HoverTank.ive</resourceDisplayName>
+                <resource>StaticMeshes:HoverTank.ive</resource>
+            </property>
+            <property>
+                <name>Destroyed actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:HoverTank.ive</resourceDisplayName>
+                <resource>StaticMeshes:HoverTank.ive</resource>
+            </property>
+            <property>
+                <name>VehiclesSeatConfigActorNameTable</name>
+                <string>Vehicle_Driver_Config</string>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>be123458-111d-4ec8-bd51-dd49d31abc00</actorId>
+            </property>
+            <property>
+                <name>Physics Mass</name>
+                <float>1000</float>
+            </property>
+            <property>
+                <name>Default Collision Group</name>
+                <integer>1</integer>
+            </property>
+            <property>
+                <name>VehicleBody: Collision Group</name>
+                <integer>1</integer>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+        </actor>
+        <actor>
+            <type>NetDemo.EnemyDecriptionActor</type>
+            <id>6de49300-a740-42bb-bb7f-5c02338b4fb5</id>
+            <name>EnemyDescriptionActor</name>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>250.000000</value1>
+                    <value2>-4.262748</value2>
+                    <value3>94.500000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>Enemy Type</name>
+                <enumerated>ENEMY_MINE</enumerated>
+            </property>
+            <property>
+                <name>NumSpawnPerMinute</name>
+                <float>30</float>
+            </property>
+            <property>
+                <name>MaxVelocity</name>
+                <integer>10</integer>
+            </property>
+            <property>
+                <name>EnemyPrototypeName</name>
+                <string>Enemy Mine Prototype1</string>
+            </property>
+        </actor>
+        <actor>
+            <type>NetDemo.Tower Actor</type>
+            <id>70fda8c1-d3f1-4181-badc-4ad9d12df1fd</id>
+            <name>Tower _28</name>
+            <property>
+                <name>Name</name>
+                <string>Tower _28</string>
+            </property>
+            <property>
+                <name>Rotation</name>
+                <vec3>
+                    <value1>6.316710</value1>
+                    <value2>0.141175</value2>
+                    <value3>-1.282754</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-118.309364</value1>
+                    <value2>363.690399</value2>
+                    <value3>-0.592782</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>ShaderGroup</name>
+                <string>CustomizableTowerShaderGroup</string>
+            </property>
+            <property>
+                <name>Fire particles</name>
+                <resourceType>Particles</resourceType>
+                <resourceDisplayName>Particles:nd_BurningBuildingMed.osg</resourceDisplayName>
+                <resource>Particles:nd_BurningBuildingMed.osg</resource>
+            </property>
+            <property>
+                <name>Non-damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Destroyed actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>Ground Offset</name>
+                <float>0</float>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>3</float>
+            </property>
+        </actor>
+        <actor>
+            <type>NetDemo.FortActor</type>
+            <id>7438548d-fcfd-404a-856d-264b22cefcfe</id>
+            <name>FortPrototype</name>
+            <property>
+                <name>Name</name>
+                <string>FortPrototype</string>
+            </property>
+            <property>
+                <name>Rotation</name>
+                <vec3>
+                    <value1>0.864559</value1>
+                    <value2>0.027809</value2>
+                    <value3>-1.788434</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-648.020447</value1>
+                    <value2>-319.123596</value2>
+                    <value3>-10.955580</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleVehicleShaderGroup</string>
+            </property>
+            <property>
+                <name>Fire particles</name>
+                <resourceType>Particles</resourceType>
+                <resourceDisplayName>Particles::nd_BurningBuildingFort.osg</resourceDisplayName>
+                <resource>Particles::nd_BurningBuildingFort.osg</resource>
+            </property>
+            <property>
+                <name>Max Damage Amount</name>
+                <float>5</float>
+            </property>
+            <property>
+                <name>Munition Damage Table</name>
+                <string>FortDamageType</string>
+            </property>
+            <property>
+                <name>Default Scale</name>
+                <vec3>
+                    <value1>1.500000</value1>
+                    <value2>1.500000</value2>
+                    <value3>2.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Non-damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Forts:Fort.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Forts:Fort.ive</resource>
+            </property>
+            <property>
+                <name>Damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Forts:Fort_Damaged.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Forts:Fort_Damaged.ive</resource>
+            </property>
+            <property>
+                <name>Destroyed actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Forts:Fort_Damaged.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Forts:Fort_Damaged.ive</resource>
+            </property>
+            <property>
+                <name>Engine smoke particles</name>
+                <resourceType>Particles</resourceType>
+                <resourceDisplayName>Particles::nd_BurningBuildingFort.osg</resourceDisplayName>
+                <resource>Particles::nd_BurningBuildingFort.osg</resource>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+        </actor>
+        <actor>
+            <type>NetDemo.Tower Actor</type>
+            <id>7afec5f8-fada-4744-9474-f66fe556381d</id>
+            <name>Tower _11</name>
+            <property>
+                <name>Name</name>
+                <string>Tower _11</string>
+            </property>
+            <property>
+                <name>Rotation</name>
+                <vec3>
+                    <value1>3.424593</value1>
+                    <value2>0.140569</value2>
+                    <value3>-1.275514</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-268.839294</value1>
+                    <value2>227.756775</value2>
+                    <value3>-12.685340</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>ShaderGroup</name>
+                <string>CustomizableTowerShaderGroup</string>
+            </property>
+            <property>
+                <name>Fire particles</name>
+                <resourceType>Particles</resourceType>
+                <resourceDisplayName>Particles:nd_BurningBuildingMed.osg</resourceDisplayName>
+                <resource>Particles:nd_BurningBuildingMed.osg</resource>
+            </property>
+            <property>
+                <name>Non-damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Destroyed actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>Ground Offset</name>
+                <float>0</float>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>3</float>
+            </property>
+        </actor>
+        <actor>
+            <type>NetDemo.Tower Actor</type>
+            <id>7e153e8a-637d-49d1-926e-cfb1d347d1ef</id>
+            <name>Tower _22</name>
+            <property>
+                <name>Name</name>
+                <string>Tower _22</string>
+            </property>
+            <property>
+                <name>Rotation</name>
+                <vec3>
+                    <value1>0.491326</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-720.062927</value1>
+                    <value2>-283.933136</value2>
+                    <value3>-0.297002</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>ShaderGroup</name>
+                <string>CustomizableTowerShaderGroup</string>
+            </property>
+            <property>
+                <name>Fire particles</name>
+                <resourceType>Particles</resourceType>
+                <resourceDisplayName>Particles:nd_BurningBuildingMed.osg</resourceDisplayName>
+                <resource>Particles:nd_BurningBuildingMed.osg</resource>
+            </property>
+            <property>
+                <name>Non-damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Destroyed actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>Ground Offset</name>
+                <float>0</float>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>3</float>
+            </property>
+        </actor>
+        <actor>
+            <type>NetDemo.Tower Actor</type>
+            <id>7ec3b963-d278-443c-95ff-385c36f82744</id>
+            <name>Tower _21</name>
+            <property>
+                <name>Name</name>
+                <string>Tower _21</string>
+            </property>
+            <property>
+                <name>Rotation</name>
+                <vec3>
+                    <value1>-4.530045</value1>
+                    <value2>4.735539</value2>
+                    <value3>-0.383929</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-764.384277</value1>
+                    <value2>-109.379578</value2>
+                    <value3>-11.730202</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>ShaderGroup</name>
+                <string>CustomizableTowerShaderGroup</string>
+            </property>
+            <property>
+                <name>Fire particles</name>
+                <resourceType>Particles</resourceType>
+                <resourceDisplayName>Particles:nd_BurningBuildingMed.osg</resourceDisplayName>
+                <resource>Particles:nd_BurningBuildingMed.osg</resource>
+            </property>
+            <property>
+                <name>Non-damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Destroyed actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>Ground Offset</name>
+                <float>0</float>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>3</float>
+            </property>
+        </actor>
+        <actor>
+            <type>NetDemo.EnemyDecriptionActor</type>
+            <id>7f8063d1-a782-4a0c-a04d-b1303ac8cea3</id>
+            <name>EnemyDescriptionActor</name>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>251.000000</value1>
+                    <value2>-4.262748</value2>
+                    <value3>94.500000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>Enemy Type</name>
+                <enumerated>ENEMY_MINE</enumerated>
+            </property>
+            <property>
+                <name>NumSpawnPerMinute</name>
+                <float>20</float>
+            </property>
+            <property>
+                <name>MaxVelocity</name>
+                <integer>25</integer>
+            </property>
+            <property>
+                <name>EnemyPrototypeName</name>
+                <string>Enemy Mine Prototype2</string>
+            </property>
+        </actor>
+        <actor>
+            <type>NetDemo.EnemyMothershipActor</type>
+            <id>841b6aa3-a720-43fe-ab60-0eb90d5de74e</id>
+            <name>Mothership #3</name>
+            <property>
+                <name>Name</name>
+                <string>Mothership #3</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-204.774277</value1>
+                    <value2>1034.736084</value2>
+                    <value3>150.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>Fire particles</name>
+                <resourceType>Particles</resourceType>
+                <resourceDisplayName>Particles:nd_BurningVehicleSmall.osg</resourceDisplayName>
+                <resource>Particles:nd_BurningVehicleSmall.osg</resource>
+            </property>
+            <property>
+                <name>Service</name>
+                <enumerated>OTHER</enumerated>
+            </property>
+            <property>
+                <name>Non-damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Enemies:UFO.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Enemies:UFO.ive</resource>
+            </property>
+            <property>
+                <name>Damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Enemies:UFO.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Enemies:UFO.ive</resource>
+            </property>
+            <property>
+                <name>Destroyed actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Enemies:UFO.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Enemies:UFO.ive</resource>
+            </property>
+            <property>
+                <name>Point Value</name>
+                <integer>40</integer>
+            </property>
+            <property>
+                <name>Physics Mass</name>
+                <float>50000</float>
+            </property>
+            <property>
+                <name>Physics Dimensions</name>
+                <vec3>
+                    <value1>20.000000</value1>
+                    <value2>20.000000</value2>
+                    <value3>20.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>VehicleBody: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>VehicleBody: Primitive Type</name>
+                <enumerated>Sphere</enumerated>
+            </property>
+            <property>
+                <name>VehicleBody: Dimensions</name>
+                <vec3>
+                    <value1>10.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>VehicleBody: Mass</name>
+                <float>10000</float>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>5</float>
+            </property>
+        </actor>
+        <actor>
+            <type>NetDemo.LightTower</type>
+            <id>86d9ddfb-6ffb-43cf-b51d-3de907ef23b3</id>
+            <name>Light_Tower_03</name>
+            <property>
+                <name>Name</name>
+                <string>Light_Tower_03</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-555.642029</value1>
+                    <value2>-0.897011</value2>
+                    <value3>-12.175654</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>Non-damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Destroyed actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Static</enumerated>
+            </property>
+        </actor>
+        <actor>
+            <type>NetDemo.LightTower</type>
+            <id>89077af0-8232-4855-b7a2-90287320f389</id>
+            <name>Light_Tower_21</name>
+            <property>
+                <name>Name</name>
+                <string>Light_Tower_21</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-213.780975</value1>
+                    <value2>171.937469</value2>
+                    <value3>-12.205867</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>Non-damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Destroyed actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Static</enumerated>
+            </property>
+        </actor>
+        <actor>
+            <type>NetDemo.Tower Actor</type>
+            <id>8bcb3f3e-30bf-4d74-b52f-9e34ba87eac7</id>
+            <name>Tower _29</name>
+            <property>
+                <name>Name</name>
+                <string>Tower _29</string>
+            </property>
+            <property>
+                <name>Rotation</name>
+                <vec3>
+                    <value1>6.316710</value1>
+                    <value2>0.141175</value2>
+                    <value3>-1.282754</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-292.789734</value1>
+                    <value2>310.688538</value2>
+                    <value3>-0.654969</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>ShaderGroup</name>
+                <string>CustomizableTowerShaderGroup</string>
+            </property>
+            <property>
+                <name>Fire particles</name>
+                <resourceType>Particles</resourceType>
+                <resourceDisplayName>Particles:nd_BurningBuildingMed.osg</resourceDisplayName>
+                <resource>Particles:nd_BurningBuildingMed.osg</resource>
+            </property>
+            <property>
+                <name>Non-damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Destroyed actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>Ground Offset</name>
+                <float>0</float>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>3</float>
+            </property>
+        </actor>
+        <actor>
+            <type>NetDemo.EnemyDecriptionActor</type>
+            <id>8d0459b7-5ede-41f6-95ec-6a335250482e</id>
+            <name>EnemyDescriptionActor</name>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>251.000000</value1>
+                    <value2>-4.262748</value2>
+                    <value3>94.500000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>Enemy Type</name>
+                <enumerated>ENEMY_HELIX</enumerated>
+            </property>
+            <property>
+                <name>NumSpawnPerMinute</name>
+                <float>15</float>
+            </property>
+            <property>
+                <name>MaxVelocity</name>
+                <integer>5000</integer>
+            </property>
+            <property>
+                <name>EnemyPrototypeName</name>
+                <string>Enemy Helix Prototype</string>
+            </property>
+        </actor>
+        <actor>
+            <type>NetDemo.Tower Actor</type>
+            <id>977bba90-77ae-4052-aaa9-3aa9f3a12dab</id>
+            <name>Tower _26</name>
+            <property>
+                <name>Name</name>
+                <string>Tower _26</string>
+            </property>
+            <property>
+                <name>Rotation</name>
+                <vec3>
+                    <value1>0.491326</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-75.554184</value1>
+                    <value2>-180.483841</value2>
+                    <value3>-13.409346</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>ShaderGroup</name>
+                <string>CustomizableTowerShaderGroup</string>
+            </property>
+            <property>
+                <name>Fire particles</name>
+                <resourceType>Particles</resourceType>
+                <resourceDisplayName>Particles:nd_BurningBuildingMed.osg</resourceDisplayName>
+                <resource>Particles:nd_BurningBuildingMed.osg</resource>
+            </property>
+            <property>
+                <name>Non-damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Destroyed actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>Ground Offset</name>
+                <float>0</float>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>3</float>
+            </property>
+        </actor>
+        <actor>
+            <type>dtcore.Player Start</type>
+            <id>993d179d-0439-4689-9445-93cf6f25f5a9</id>
+            <name>Start_Fort1</name>
+            <property>
+                <name>Name</name>
+                <string>Start_Fort1</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-647.789551</value1>
+                    <value2>-318.629822</value2>
+                    <value3>-28.040813</value3>
+                </vec3>
+            </property>
+        </actor>
+        <actor>
+            <type>NetDemo.Propelled Vehicle Actor</type>
+            <id>9A74C29C-CFF7-4264-852A-5897458F664C</id>
+            <name>HMMWV</name>
+            <property>
+                <name>Name</name>
+                <string>HMMWV</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>86.895264</value1>
+                    <value2>51.273102</value2>
+                    <value3>-7.545535</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>PROTOTYPE</enumerated>
+            </property>
+            <property>
+                <name>ShaderGroup</name>
+                <string>CustomizableVehicleShaderGroup</string>
+            </property>
+            <property>
+                <name>Fire particles</name>
+                <resourceType>Particles</resourceType>
+                <resourceDisplayName>Particles:nd_BurningVehicleSmall.osg</resourceDisplayName>
+                <resource>Particles:nd_BurningVehicleSmall.osg</resource>
+            </property>
+            <property>
+                <name>Munition Damage Table</name>
+                <string>VehicleDamageType</string>
+            </property>
+            <property>
+                <name>SOUND_EFFECT_IGNITION</name>
+                <resourceType>Sounds</resourceType>
+                <resourceDisplayName>Sounds::Ignition.wav</resourceDisplayName>
+                <resource>Sounds::Ignition.wav</resource>
+            </property>
+            <property>
+                <name>SOUND_EFFECT_VEHICLE_LOOP</name>
+                <resourceType>Sounds</resourceType>
+                <resourceDisplayName>Sounds::Vehicle_Idle.wav</resourceDisplayName>
+                <resource>Sounds::Vehicle_Idle.wav</resource>
+            </property>
+            <property>
+                <name>SOUND_EFFECT_BRAKE</name>
+                <resourceType>Sounds</resourceType>
+                <resourceDisplayName>Sounds::BrakeSound.wav</resourceDisplayName>
+                <resource>Sounds::BrakeSound.wav</resource>
+            </property>
+            <property>
+                <name>SOUND_EFFECT_COLLISION_HIT</name>
+                <resourceType>Sounds</resourceType>
+                <resourceDisplayName>Sounds::SFX_Metal_Hit_Sound.wav</resourceDisplayName>
+                <resource>Sounds::SFX_Metal_Hit_Sound.wav</resource>
+            </property>
+            <property>
+                <name>FrontSuspensionRestLength</name>
+                <float>0.31</float>
+            </property>
+            <property>
+                <name>FrontSuspensionSpringFreq</name>
+                <float>1.5</float>
+            </property>
+            <property>
+                <name>FrontTireSlip</name>
+                <float>0.69999999</float>
+            </property>
+            <property>
+                <name>FrontTireValue</name>
+                <float>2</float>
+            </property>
+            <property>
+                <name>FrontTireAsymptoteSlip</name>
+                <float>2</float>
+            </property>
+            <property>
+                <name>FrontTireAsymptoteValue</name>
+                <float>1</float>
+            </property>
+            <property>
+                <name>RearSuspensionRestLength</name>
+                <float>0.31</float>
+            </property>
+            <property>
+                <name>RearSuspensionSpringFreq</name>
+                <float>1.6</float>
+            </property>
+            <property>
+                <name>RearTireSlip</name>
+                <float>0.80000001</float>
+            </property>
+            <property>
+                <name>RearTireValue</name>
+                <float>2</float>
+            </property>
+            <property>
+                <name>RearTireAsymptoteSlip</name>
+                <float>2</float>
+            </property>
+            <property>
+                <name>RearTireAsymptoteValue</name>
+                <float>1</float>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId>be123458-111d-4ec8-bd51-dd49d31abc00</actorId>
+            </property>
+            <property>
+                <name>Default Collision Group</name>
+                <integer>1</integer>
+            </property>
+            <property>
+                <name>chassis: Origin Offset</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.900000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>chassis: Dimensions</name>
+                <vec3>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>chassis: Mass</name>
+                <float>2300</float>
+            </property>
+            <property>
+                <name>chassis: Skin Thickness</name>
+                <float>0.039999999</float>
+            </property>
+            <property>
+                <name>chassis: Notify Collisions</name>
+                <boolean>true</boolean>
+            </property>
+            <property>
+                <name>chassis: Moment Of Inertia</name>
+                <vec3>
+                    <value1>9000.000000</value1>
+                    <value2>2100.000000</value2>
+                    <value3>4000.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Engine Torque</name>
+                <float>1700</float>
+            </property>
+            <property>
+                <name>Max Break Torque</name>
+                <float>30</float>
+            </property>
+            <property>
+                <name>Max Steer Angle</name>
+                <float>25</float>
+            </property>
+            <property>
+                <name>Top Speed (MPH)</name>
+                <float>71</float>
+            </property>
+            <property>
+                <name>mVehicleTopSpeedReverse</name>
+                <float>30</float>
+            </property>
+            <property>
+                <name>AeroDynDragArea</name>
+                <float>7</float>
+            </property>
+            <property>
+                <name>NumUpdatesUntilFullSteeringAngle</name>
+                <integer>50</integer>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity and Acceleration</enumerated>
+            </property>
+        </actor>
+        <actor>
+            <type>NetDemo.Tower Actor</type>
+            <id>a7964526-8e8e-4094-b2ce-0ec08c3053ec</id>
+            <name>Tower _09</name>
+            <property>
+                <name>Name</name>
+                <string>Tower _09</string>
+            </property>
+            <property>
+                <name>Rotation</name>
+                <vec3>
+                    <value1>6.316710</value1>
+                    <value2>0.141175</value2>
+                    <value3>-1.282754</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-104.451088</value1>
+                    <value2>291.968719</value2>
+                    <value3>-11.651081</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>ShaderGroup</name>
+                <string>CustomizableTowerShaderGroup</string>
+            </property>
+            <property>
+                <name>Fire particles</name>
+                <resourceType>Particles</resourceType>
+                <resourceDisplayName>Particles:nd_BurningBuildingMed.osg</resourceDisplayName>
+                <resource>Particles:nd_BurningBuildingMed.osg</resource>
+            </property>
+            <property>
+                <name>Non-damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Destroyed actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>Ground Offset</name>
+                <float>0</float>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>3</float>
+            </property>
+        </actor>
+        <actor>
+            <type>NetDemo.Tower Actor</type>
+            <id>ae93a604-774e-4788-87bd-696773fb35ac</id>
+            <name>Tower _02</name>
+            <property>
+                <name>Name</name>
+                <string>Tower _02</string>
+            </property>
+            <property>
+                <name>Rotation</name>
+                <vec3>
+                    <value1>0.491326</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-678.377563</value1>
+                    <value2>-264.890625</value2>
+                    <value3>-10.535789</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>ShaderGroup</name>
+                <string>CustomizableTowerShaderGroup</string>
+            </property>
+            <property>
+                <name>Fire particles</name>
+                <resourceType>Particles</resourceType>
+                <resourceDisplayName>Particles:nd_BurningBuildingMed.osg</resourceDisplayName>
+                <resource>Particles:nd_BurningBuildingMed.osg</resource>
+            </property>
+            <property>
+                <name>Non-damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Destroyed actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>Ground Offset</name>
+                <float>0</float>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>3</float>
+            </property>
+        </actor>
+        <actor>
+            <type>NetDemo.EnemyMothershipActor</type>
+            <id>af0b3de2-c9cc-4110-95b5-4b1ee9443007</id>
+            <name>Mothership #1</name>
+            <property>
+                <name>Name</name>
+                <string>Mothership #1</string>
+            </property>
+            <property>
+                <name>Rotation</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>9.731897</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-348.886383</value1>
+                    <value2>910.707520</value2>
+                    <value3>150.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>Fire particles</name>
+                <resourceType>Particles</resourceType>
+                <resourceDisplayName>Particles:nd_BurningVehicleSmall.osg</resourceDisplayName>
+                <resource>Particles:nd_BurningVehicleSmall.osg</resource>
+            </property>
+            <property>
+                <name>Service</name>
+                <enumerated>OTHER</enumerated>
+            </property>
+            <property>
+                <name>Non-damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Enemies:UFO.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Enemies:UFO.ive</resource>
+            </property>
+            <property>
+                <name>Damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Enemies:UFO.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Enemies:UFO.ive</resource>
+            </property>
+            <property>
+                <name>Destroyed actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Enemies:UFO.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Enemies:UFO.ive</resource>
+            </property>
+            <property>
+                <name>Point Value</name>
+                <integer>40</integer>
+            </property>
+            <property>
+                <name>Physics Mass</name>
+                <float>50000</float>
+            </property>
+            <property>
+                <name>Physics Dimensions</name>
+                <vec3>
+                    <value1>20.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>VehicleBody: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>VehicleBody: Primitive Type</name>
+                <enumerated>Sphere</enumerated>
+            </property>
+            <property>
+                <name>VehicleBody: Dimensions</name>
+                <vec3>
+                    <value1>10.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>VehicleBody: Mass</name>
+                <float>10000</float>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>5</float>
+            </property>
+        </actor>
+        <actor>
+            <type>NetDemo.LightTower</type>
+            <id>af138366-9dc4-49bf-97c5-9c3eb3617c2a</id>
+            <name>Light_Tower_15</name>
+            <property>
+                <name>Name</name>
+                <string>Light_Tower_15</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-61.042347</value1>
+                    <value2>-380.897522</value2>
+                    <value3>-12.175654</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>Non-damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Destroyed actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Static</enumerated>
+            </property>
+        </actor>
+        <actor>
+            <type>NetDemo.LightTower</type>
+            <id>af6b8428-f4b4-41d0-b5bf-c7e805673619</id>
+            <name>Light_Tower_01</name>
+            <property>
+                <name>Name</name>
+                <string>Light_Tower_01</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-698.797363</value1>
+                    <value2>-215.189331</value2>
+                    <value3>-12.497979</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>Non-damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Destroyed actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Static</enumerated>
+            </property>
+        </actor>
+        <actor>
+            <type>Physics Actors.Physics Material</type>
+            <id>be123458-111d-4ec8-bd51-dd49d31abc00</id>
+            <name>Vehicle Physics Material</name>
+            <property>
+                <name>Restitution</name>
+                <float>0</float>
+            </property>
+            <property>
+                <name>DirOfAnisotropy</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+        </actor>
+        <actor>
+            <type>NetDemo.Tower Actor</type>
+            <id>c13988f2-b683-4831-8c81-06f600dad5ea</id>
+            <name>Tower _05</name>
+            <property>
+                <name>Name</name>
+                <string>Tower _05</string>
+            </property>
+            <property>
+                <name>Rotation</name>
+                <vec3>
+                    <value1>3.966955</value1>
+                    <value2>0.053580</value2>
+                    <value3>1.090802</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-469.889099</value1>
+                    <value2>1.714010</value2>
+                    <value3>-12.036656</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>ShaderGroup</name>
+                <string>CustomizableTowerShaderGroup</string>
+            </property>
+            <property>
+                <name>Fire particles</name>
+                <resourceType>Particles</resourceType>
+                <resourceDisplayName>Particles:nd_BurningBuildingMed.osg</resourceDisplayName>
+                <resource>Particles:nd_BurningBuildingMed.osg</resource>
+            </property>
+            <property>
+                <name>Non-damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Destroyed actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>Ground Offset</name>
+                <float>0</float>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>3</float>
+            </property>
+        </actor>
+        <actor>
+            <type>NetDemo.Tower Actor</type>
+            <id>c1e32a6c-82e0-4af0-986a-56514b37d568</id>
+            <name>Tower _12</name>
+            <property>
+                <name>Name</name>
+                <string>Tower _12</string>
+            </property>
+            <property>
+                <name>Rotation</name>
+                <vec3>
+                    <value1>-2.794138</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-660.710449</value1>
+                    <value2>25.780312</value2>
+                    <value3>-19.242565</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>ShaderGroup</name>
+                <string>CustomizableTowerShaderGroup</string>
+            </property>
+            <property>
+                <name>Fire particles</name>
+                <resourceType>Particles</resourceType>
+                <resourceDisplayName>Particles:nd_BurningBuildingMed.osg</resourceDisplayName>
+                <resource>Particles:nd_BurningBuildingMed.osg</resource>
+            </property>
+            <property>
+                <name>Non-damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Destroyed actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>Ground Offset</name>
+                <float>0</float>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>3</float>
+            </property>
+        </actor>
+        <actor>
+            <type>NetDemo.Tower Actor</type>
+            <id>c2a8fea9-f122-476c-b945-092d276d1095</id>
+            <name>Tower _06</name>
+            <property>
+                <name>Name</name>
+                <string>Tower _06</string>
+            </property>
+            <property>
+                <name>Rotation</name>
+                <vec3>
+                    <value1>6.318279</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-2.177444</value1>
+                    <value2>-237.211594</value2>
+                    <value3>-11.889921</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>ShaderGroup</name>
+                <string>CustomizableTowerShaderGroup</string>
+            </property>
+            <property>
+                <name>Fire particles</name>
+                <resourceType>Particles</resourceType>
+                <resourceDisplayName>Particles:nd_BurningBuildingMed.osg</resourceDisplayName>
+                <resource>Particles:nd_BurningBuildingMed.osg</resource>
+            </property>
+            <property>
+                <name>Non-damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Destroyed actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>Ground Offset</name>
+                <float>0</float>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>3</float>
+            </property>
+        </actor>
+        <actor>
+            <type>NetDemo.Tower Actor</type>
+            <id>c8fa2604-389f-47b6-8130-b1ce3797a91a</id>
+            <name>Tower _23</name>
+            <property>
+                <name>Name</name>
+                <string>Tower _23</string>
+            </property>
+            <property>
+                <name>Rotation</name>
+                <vec3>
+                    <value1>0.491326</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-572.389221</value1>
+                    <value2>-335.959351</value2>
+                    <value3>-1.436431</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>ShaderGroup</name>
+                <string>CustomizableTowerShaderGroup</string>
+            </property>
+            <property>
+                <name>Fire particles</name>
+                <resourceType>Particles</resourceType>
+                <resourceDisplayName>Particles:nd_BurningBuildingMed.osg</resourceDisplayName>
+                <resource>Particles:nd_BurningBuildingMed.osg</resource>
+            </property>
+            <property>
+                <name>Non-damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Destroyed actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>Ground Offset</name>
+                <float>0</float>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>3</float>
+            </property>
+        </actor>
+        <actor>
+            <type>NetDemo.LightTower</type>
+            <id>d31e1a9d-1dd7-4e02-863e-88cc259cf740</id>
+            <name>Light_Tower_20</name>
+            <property>
+                <name>Name</name>
+                <string>Light_Tower_20</string>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-215.133942</value1>
+                    <value2>290.635315</value2>
+                    <value3>-12.205867</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>Non-damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Destroyed actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Static</enumerated>
+            </property>
+        </actor>
+        <actor>
+            <type>NetDemo.Tower Actor</type>
+            <id>d629fec5-0cd3-4c4a-834e-e9ded464d8ff</id>
+            <name>Tower _27</name>
+            <property>
+                <name>Name</name>
+                <string>Tower _27</string>
+            </property>
+            <property>
+                <name>Rotation</name>
+                <vec3>
+                    <value1>0.491326</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-134.993408</value1>
+                    <value2>-179.385513</value2>
+                    <value3>-10.331377</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>ShaderGroup</name>
+                <string>CustomizableTowerShaderGroup</string>
+            </property>
+            <property>
+                <name>Fire particles</name>
+                <resourceType>Particles</resourceType>
+                <resourceDisplayName>Particles:nd_BurningBuildingMed.osg</resourceDisplayName>
+                <resource>Particles:nd_BurningBuildingMed.osg</resource>
+            </property>
+            <property>
+                <name>Non-damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Destroyed actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>Ground Offset</name>
+                <float>0</float>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>3</float>
+            </property>
+        </actor>
+        <actor>
+            <type>NetDemo.FortActor</type>
+            <id>d8786f5b-7062-4f87-97e7-a141e3433739</id>
+            <name>FortPrototype_02</name>
+            <property>
+                <name>Name</name>
+                <string>FortPrototype_02</string>
+            </property>
+            <property>
+                <name>Rotation</name>
+                <vec3>
+                    <value1>0.864947</value1>
+                    <value2>0.010115</value2>
+                    <value3>-0.616018</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-170.173615</value1>
+                    <value2>234.533234</value2>
+                    <value3>-9.722787</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleVehicleShaderGroup</string>
+            </property>
+            <property>
+                <name>Fire particles</name>
+                <resourceType>Particles</resourceType>
+                <resourceDisplayName>Particles::nd_BurningBuildingFort.osg</resourceDisplayName>
+                <resource>Particles::nd_BurningBuildingFort.osg</resource>
+            </property>
+            <property>
+                <name>Max Damage Amount</name>
+                <float>5</float>
+            </property>
+            <property>
+                <name>Munition Damage Table</name>
+                <string>FortDamageType</string>
+            </property>
+            <property>
+                <name>Default Scale</name>
+                <vec3>
+                    <value1>1.500000</value1>
+                    <value2>1.500000</value2>
+                    <value3>2.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Non-damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Forts:Fort.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Forts:Fort.ive</resource>
+            </property>
+            <property>
+                <name>Damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Forts:Fort_Damaged.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Forts:Fort_Damaged.ive</resource>
+            </property>
+            <property>
+                <name>Destroyed actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Forts:Fort_Damaged.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Forts:Fort_Damaged.ive</resource>
+            </property>
+            <property>
+                <name>Engine smoke particles</name>
+                <resourceType>Particles</resourceType>
+                <resourceDisplayName>Particles::nd_BurningBuildingFort.osg</resourceDisplayName>
+                <resource>Particles::nd_BurningBuildingFort.osg</resource>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+        </actor>
+        <actor>
+            <type>NetDemo.Tower Actor</type>
+            <id>e48c5d49-e12e-44ad-b97f-79a85e05a6af</id>
+            <name>Tower _15</name>
+            <property>
+                <name>Name</name>
+                <string>Tower _15</string>
+            </property>
+            <property>
+                <name>Rotation</name>
+                <vec3>
+                    <value1>6.316710</value1>
+                    <value2>0.141175</value2>
+                    <value3>-1.282754</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-9.574669</value1>
+                    <value2>248.127975</value2>
+                    <value3>-1.466216</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>ShaderGroup</name>
+                <string>CustomizableTowerShaderGroup</string>
+            </property>
+            <property>
+                <name>Fire particles</name>
+                <resourceType>Particles</resourceType>
+                <resourceDisplayName>Particles:nd_BurningBuildingMed.osg</resourceDisplayName>
+                <resource>Particles:nd_BurningBuildingMed.osg</resource>
+            </property>
+            <property>
+                <name>Non-damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Destroyed actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>Ground Offset</name>
+                <float>0</float>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>3</float>
+            </property>
+        </actor>
+        <actor>
+            <type>NetDemo.Tower Actor</type>
+            <id>f520ce6c-eb0d-4bd0-a4cd-c4010e467e3d</id>
+            <name>Tower _04</name>
+            <property>
+                <name>Name</name>
+                <string>Tower _04</string>
+            </property>
+            <property>
+                <name>Rotation</name>
+                <vec3>
+                    <value1>6.318279</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-335.044342</value1>
+                    <value2>-154.606628</value2>
+                    <value3>-11.617395</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>ShaderGroup</name>
+                <string>CustomizableTowerShaderGroup</string>
+            </property>
+            <property>
+                <name>Fire particles</name>
+                <resourceType>Particles</resourceType>
+                <resourceDisplayName>Particles:nd_BurningBuildingMed.osg</resourceDisplayName>
+                <resource>Particles:nd_BurningBuildingMed.osg</resource>
+            </property>
+            <property>
+                <name>Non-damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Destroyed actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>Ground Offset</name>
+                <float>0</float>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>3</float>
+            </property>
+        </actor>
+        <actor>
+            <type>NetDemo.Tower Actor</type>
+            <id>f8d2547b-bab9-4382-8771-5481460e5392</id>
+            <name>Tower _10</name>
+            <property>
+                <name>Name</name>
+                <string>Tower _10</string>
+            </property>
+            <property>
+                <name>Rotation</name>
+                <vec3>
+                    <value1>-4.530045</value1>
+                    <value2>4.735539</value2>
+                    <value3>-0.383929</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>-93.381691</value1>
+                    <value2>190.700912</value2>
+                    <value3>-12.334431</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>Server+Published</enumerated>
+            </property>
+            <property>
+                <name>ShaderGroup</name>
+                <string>CustomizableTowerShaderGroup</string>
+            </property>
+            <property>
+                <name>Fire particles</name>
+                <resourceType>Particles</resourceType>
+                <resourceDisplayName>Particles:nd_BurningBuildingMed.osg</resourceDisplayName>
+                <resource>Particles:nd_BurningBuildingMed.osg</resource>
+            </property>
+            <property>
+                <name>Non-damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>Destroyed actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+            </property>
+            <property>
+                <name>GroundClampType</name>
+                <enumerated>None</enumerated>
+            </property>
+            <property>
+                <name>Ground Offset</name>
+                <float>0</float>
+            </property>
+            <property>
+                <name>DesiredNumUpdatesPerSec</name>
+                <float>3</float>
+            </property>
+        </actor>
+    </actors>
+    <groups></groups>
+    <drawablehierarchy></drawablehierarchy>
+    <presetCameras></presetCameras>
+</map>

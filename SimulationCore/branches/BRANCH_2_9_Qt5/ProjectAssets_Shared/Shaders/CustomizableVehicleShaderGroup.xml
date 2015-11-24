@@ -1,0 +1,55 @@
+<shaderlist>
+   <shadergroup name="CustomizableVehicleShaderGroup">
+      <shader name="NoDamage" default="yes">
+         <source type="Vertex">Shaders/SharedBase/custom_paint.vert</source>
+         <source type="Vertex">Shaders/SharedBase/vertex_functions.vert</source>
+         <source type="Fragment">Shaders/SharedBase/custom_paint.frag</source>
+         <source type="Fragment">Shaders/SharedBase/fragment_functions.frag</source>
+         <source type="Fragment">Shaders/SharedBase/dynamic_light.frag</source>
+         <source type="Fragment">Shaders/SharedBase/spot_light.frag</source>
+         <parameter name="diffuseTexture">
+            <texture2D textureUnit="0">
+               <source type="Auto"/>
+            </texture2D>
+         </parameter>
+         <parameter name="colorMaskTexture">
+            <texture2D textureUnit="1">
+               <source type="Image">Textures/NetDemo/BodyColorMask.tga</source>
+               <wrap axis="S" mode="Clamp"/>
+               <wrap axis="T" mode="Clamp"/>
+            </texture2D>
+         </parameter>
+         <parameter name="color1">
+            <vec4 defaultValue="0.25 0.0 0.5 1.0"/>
+         </parameter>
+         <parameter name="color2">
+            <vec4 defaultValue="0.0 1.0 0.0 1.0"/>
+         </parameter>
+      </shader>
+      <shader name="ColorPulseShader">
+         <source type="Vertex">Shaders/SharedBase/vertex_functions.vert</source>
+         <source type="Vertex">Shaders/SharedBase/vertex_simple.vert</source>
+         <source type="Fragment">Shaders/SharedBase/fragment_functions.frag</source>
+         <source type="Fragment">Shaders/SharedBase/color_pulse.frag</source>
+         <parameter name="diffuseTexture">
+            <texture2D textureUnit="0">
+               <source type="Auto"/>
+            </texture2D>
+         </parameter>
+         <parameter name="pulsePathTexture">
+            <texture2D textureUnit="1">
+               <source type="Image">Textures/NetDemo/Gradient.tga</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+         <parameter name="pulseColor">
+            <vec4 defaultValue="1.0 0.0 0.0 1.0"/>
+         </parameter>
+         <parameter name="pulseOffset">
+            <oscillator oscillation="Down" cycletimemin="1.0" cycletimemax="1.0" rangemin="1.0" rangemax="1.0" offset="0.0"/>
+         </parameter>
+      </shader>
+   </shadergroup>
+
+</shaderlist>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="iso-8859-1" standalone="no" ?>
+
+<!-- 
+
+This config file must be renamed to config.xml in order for StealthQt to
+find it. It shows an example set of values one may set. NOTE - XML doesn't 
+allow two dashes together. So, replace '-' with double dashes below
+
+GameStart.exe
+DriverDemo  -fedMappingFileResource "Federations/RPR1DriverDemoMapping.xml" -federationExecutionName DriverDemo -fedFileName Federations/RPR-FOM.fed -mapName "DriverDemo"
+C:\Curtiss\Projects\SimulationCore\demos\DriverDemo
+-->
+
+<Application xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="application.xsd">
+    <Window Name="Driver Demo" X="700" Y="50" Width="800" Height="600" PixelDepth="24" RefreshRate="60" ShowCursor="1" FullScreen="0" ChangeDisplayResolution="0" VSync="0" MultiSample="4"/>
+    <Scene Name="defaultScene" />
+    <Camera Name="defaultCam" WindowInstance="Driver Demo"  />
+    <View Name="defaultView" CameraInstance="defaultCam" 
+	    SceneInstance="defaultScene" /> 
+
+    <Log Level="Warn" />
+
+    <Properties>
+      <Property Name="Delta3DLogFileName">Delta3D_Log1.html</Property> 
+      <!-- Property Name="ProjectPath">../ProjectConfig.dtproj</Property -->
+
+      <Property Name="dtPhysics.PhysicsEngine">Bullet</Property> <!-- Bullet Novodex ODE -->
+      <Property Name="dtPhysics.PalPluginPath">../../../dtPhysics/ext/PalPlugins/</Property>
+      <Property Name="dtPhysics.EnableStepPhysicsInBackground">true</Property>
+      <Property Name="dtPhysics.NumProcessingElements">1</Property>
+      <Property Name="dtPhysics.SolverIterationCount">10</Property>
+      <Property Name="dtPhysics.TicksPerSecond">60</Property>
+      <Property Name="dtPhysics.DebugDrawRange">500.0</Property>
+
+      <Property Name="MunitionsConfigFile">Configs:NetDemoMunitionsConfig.xml</Property>
+
+      <Property Name="AdditionalMap1">DriverPrototypes</Property> 
+      <Property Name="AdditionalMap2">DriverMaterials</Property> 
+      <Property Name="AdditionalMap3">DriverActors</Property> 
+      <Property Name="AdditionalMap4">NetDemoPrototypes2</Property>
+      <Property Name="AdditionalMap5">DemoMunitionTypesMap</Property>
+       <!--Property Name="AdditionalMap4">SharedDemoPrototypes</Property--> 
+      <Property Name="UseGPUCharacterSkinning">true</Property>
+      <Property Name="DeveloperMode">true</Property>
+      <Property Name="GameManager.Statistics.ToConsole">false</Property>
+      <Property Name="GameManager.Statistics.Interval">0</Property>
+      <Property Name="DefaultMunition">Medium HE</Property>
+      <Property Name="AspectRatio">1.6</Property>
+      <Property Name="System.SimFrameRate">60</Property>
+      <Property Name="System.MaxTimeBetweenDraws">0.2</Property>
+      <Property Name="System.UseFixedTimeStep">false</Property>
+      <Property Name="EnableRemotePhysicsDebugger">true</Property>
+
+      <Property Name="dtNetGM.On">false</Property>
+      <Property Name="dtNetGM.Role">Server</Property>
+      <Property Name="dtNetGM.ServerPort">7329</Property>
+      <Property Name="dtNetGM.ServerHost">216.54.77.50</Property>
+
+      <Property Name="MunitionsComponent.MaximumActiveMunitions">200</Property>
+
+      <Property Name="System.DatabasePager.PrecompileObjects">false</Property>
+      <Property Name="System.DatabasePager.MaxObjectsToCompilePerFrame">40</Property>
+      <Property Name="System.DatabasePager.MinObjectCompileTime">0.005</Property>
+      <Property Name="System.DatabasePager.TargetFrameRate">60</Property>
+      <!--<Property Name="System.DatabasePager.DrawablePolicy">???</Property> DL (for Display list), VA (for VertexArray), VBO (for Vertex Buffer Objects) or DoNotModify (whatever is in the source) --> 
+      <Property Name="System.DatabasePager.DrawablePolicy">VBO</Property>
+      <Property Name="System.DatabasePager.ThreadPriority">DEFAULT</Property>
+      <Property Name="System.DatabasePager.ExpiryDelay">10.0</Property>
+    </Properties>
+
+</Application>
