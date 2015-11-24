@@ -32,8 +32,8 @@
 
 #include <dtUtil/warningdisable.h>
 DT_DISABLE_WARNING_ALL_START
-#include <QtGui/QMainWindow>
-#include <QtGui/QCheckBox>
+#include <QtWidgets/QMainWindow>
+#include <QtWidgets/QCheckBox>
 #include <QtCore/QTimer>
 DT_DISABLE_WARNING_END
 
@@ -416,7 +416,7 @@ namespace StealthQt
 
       private:
 
-         void ParseCommandLine();
+         void ParseCommandLine(int appArgc, char* appArgv[]);
 
          void PreShowUIControlInit();
 

@@ -7,7 +7,7 @@ if (BUILD_HLA)
    list(APPEND DIRS SimCoreHLA)
    if (BUILD_STEALTHVIEWER)
       list(APPEND DIRS StealthViewer)
-      INCLUDE_DIRECTORIES(${QT_INCLUDE_DIR}) 
+      INCLUDE_DIRECTORIES(${QT_INCLUDE_DIRS}) 
    endif()
 endif()
 

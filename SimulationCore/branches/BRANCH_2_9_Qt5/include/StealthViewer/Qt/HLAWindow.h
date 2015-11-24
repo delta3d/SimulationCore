@@ -27,8 +27,8 @@
 */
 #include <dtUtil/warningdisable.h>
 DT_DISABLE_WARNING_ALL_START
-#include <QtGui/QDialog>
-#include <QtGui/QListWidget>
+#include <QtWidgets/QDialog>
+#include <QtWidgets/QListWidget>
 DT_DISABLE_WARNING_END
 
 namespace dtGame

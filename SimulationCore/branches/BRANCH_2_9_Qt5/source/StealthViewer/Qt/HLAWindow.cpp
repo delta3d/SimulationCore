@@ -25,7 +25,7 @@
 #include <dtUtil/warningdisable.h>
 DT_DISABLE_WARNING_ALL_START
 #include <ui_HLAWindowUi.h>
-#include <QtGui/QMessageBox>
+#include <QtWidgets/QMessageBox>
 DT_DISABLE_WARNING_END
 
 #include <StealthViewer/Qt/HLAWindow.h>

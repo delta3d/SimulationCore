@@ -30,14 +30,14 @@
 
 #include <dtUtil/warningdisable.h>
 DT_DISABLE_WARNING_ALL_START
-#include <QtGui/QPushButton>
-#include <QtGui/QMessageBox>
-#include <QtGui/QDialog>
-#include <QtGui/QVBoxLayout>
-#include <QtGui/QListWidget>
-#include <QtGui/QListWidgetItem>
-#include <QtGui/QTreeWidget>
-#include <QtGui/QFileDialog>
+#include <QtWidgets/QPushButton>
+#include <QtWidgets/QMessageBox>
+#include <QtWidgets/QDialog>
+#include <QtWidgets/QVBoxLayout>
+#include <QtWidgets/QListWidget>
+#include <QtWidgets/QListWidgetItem>
+#include <QtWidgets/QTreeWidget>
+#include <QtWidgets/QFileDialog>
 DT_DISABLE_WARNING_END
 
 

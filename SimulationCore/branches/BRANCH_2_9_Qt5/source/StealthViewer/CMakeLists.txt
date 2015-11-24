@@ -1,7 +1,7 @@
 
 SET(APP_NAME StealthQt)
 
-INCLUDE_DIRECTORIES(${QT_INCLUDE_DIR})
+INCLUDE_DIRECTORIES(${QT_INCLUDE_DIRS})
 
 SET(SOURCE_PATH ${SimulationCore_SOURCE_DIR}/source/StealthViewer)
 
@@ -14,9 +14,6 @@ ADD_EXECUTABLE(${APP_NAME}
 )
 
 LINK_WITH_VARIABLES(${APP_NAME}
-                                   QT_QTCORE_LIBRARY
-                                   QT_QTGUI_LIBRARY
-                                   QT_QTOPENGL_LIBRARY
                                    DTQT_LIBRARY
 )
 
@@ -25,6 +22,7 @@ TARGET_LINK_LIBRARIES(${APP_NAME}
    ${SIMCOREHLA_LIBRARY}
    ${STEALTHGM_LIBRARY}
    ${STEALTHQT_LIBRARY}
+   ${QT_LIBRARIES}
 )
 
 IF (MSVC) 

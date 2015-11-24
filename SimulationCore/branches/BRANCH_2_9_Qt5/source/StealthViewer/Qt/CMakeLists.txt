@@ -1,7 +1,5 @@
 SET(LIB_NAME ${STEALTHQT_LIBRARY})
 
-INCLUDE_DIRECTORIES(${QT_INCLUDE_DIR})
-
 SET(HEADER_PATH ${SimulationCore_SOURCE_DIR}/include/StealthViewer/Qt)
 SET(SOURCE_PATH ${SimulationCore_SOURCE_DIR}/source/StealthViewer/Qt)
 SET(UI_PATH ${SimulationCore_SOURCE_DIR}/source/StealthViewer/ui)
@@ -12,11 +10,11 @@ file(GLOB LIB_SOURCES "*.cpp")
 
 list(REMOVE_ITEM LIB_SOURCES ${SOURCE_PATH}/precomp.cpp)
 
-qt4_wrap_cpp(MOC_SOURCES ${LIB_PUBLIC_HEADERS})
-qt4_wrap_ui(UIC_HEADERS ${UI_FILES})
+qt5_wrap_cpp(MOC_SOURCES ${LIB_PUBLIC_HEADERS})
+qt5_wrap_ui(UIC_HEADERS ${UI_FILES})
 
 #The ui files are output here, so it must be included.
-include_directories(${CMAKE_CURRENT_BINARY_DIR} ${QT_INCLUDE_DIR})
+include_directories(${CMAKE_CURRENT_BINARY_DIR} ${QT_INCLUDE_DIRS})
 
 ## had to disable because of an internal compiler error on VS 2010 :-/
 #ADD_PRECOMPILED_HEADER(${LIB_NAME} prefix/StealthQtPrefix.h prefix/StealthQtPrefix.cpp LIB_SOURCES)

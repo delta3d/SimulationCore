@@ -31,7 +31,7 @@
 
 #include <dtUtil/warningdisable.h>
 DT_DISABLE_WARNING_ALL_START
-#include <QtGui/QDockWidget>
+#include <QtWidgets/QDockWidget>
 DT_DISABLE_WARNING_END
 
 #include <StealthViewer/GMApp/ViewWindowConfigObject.h>

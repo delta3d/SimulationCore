@@ -31,7 +31,7 @@
 
 #include <dtUtil/warningdisable.h>
 DT_DISABLE_WARNING_ALL_START
-#include <QtGui/QHeaderView>
+#include <QtWidgets/QHeaderView>
 DT_DISABLE_WARNING_END
 
 namespace StealthQt

@@ -48,7 +48,7 @@ DT_DISABLE_WARNING_ALL_START
 
 #include <QtCore/QStringList>
 #include <QtCore/QVariant>
-#include <QtGui/QMessageBox>
+#include <QtWidgets/QMessageBox>
 DT_DISABLE_WARNING_END
 
 //For an ugly hack...

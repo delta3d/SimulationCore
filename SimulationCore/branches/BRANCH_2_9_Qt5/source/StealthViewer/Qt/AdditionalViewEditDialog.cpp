@@ -31,9 +31,9 @@
 DT_DISABLE_WARNING_ALL_START
 //So the Q_Object macro will work
 #include <QtGui/QDoubleValidator>
-#include <QtGui/QMessageBox>
 #include <QtGui/QCloseEvent>
-#include <QtGui/QPushButton>
+#include <QtWidgets/QMessageBox>
+#include <QtWidgets/QPushButton>
 DT_DISABLE_WARNING_END
 
 #include <StealthViewer/Qt/AdditionalViewEditDialog.h>

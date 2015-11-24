@@ -34,11 +34,7 @@
 #include <SimCore/Tools/Compass.h>
 #include <SimCore/Tools/GPS.h>
 #include <CEGUI/CEGUIVersion.h>
-#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
-#include <dtGUI/ceuidrawable.h>
-#else
 #include <dtGUI/gui.h>
-#endif
 #include <dtABC/application.h>
 #include <dtCore/system.h>
 #include <dtCore/scene.h>
@@ -95,11 +91,7 @@ public:
 private:
 
    RefPtr<dtGame::GameManager> mGM;
-#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
-   RefPtr<dtGUI::CEUIDrawable> mGUI;
-#else
    RefPtr<dtGUI::GUI> mGUI;
-#endif
    // The constructor call to the GUI member assumes that an
    // application has been instantiated.
    RefPtr<dtABC::Application> mApp;
@@ -121,13 +113,9 @@ void ToolTests::setUp()
 
       dtCore::System::GetInstance().Step();
 
-#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
-      mGUI = &GetGlobalCEGUIDrawable();
-#else
       mGUI = &GetGlobalGUI();
-#endif
    }
-   catch(const dtUtil::Exception &e)
+   catch(const dtUtil::Exception& e)
    {
       CPPUNIT_FAIL(e.What());
    }
@@ -159,11 +147,6 @@ void ToolTests::tearDown()
    mGM = NULL;
    mPlayerActor = NULL;
 
-#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
-   if (mGUI.valid())
-      mGUI->Emancipate();
-#endif
-
    mGUI = NULL;
    mApp = NULL;
 }
@@ -176,9 +159,9 @@ void ToolTests::TestBinoculars()
       binos = new SimCore::Tools::Binoculars(*mApp->GetCamera(), NULL);
       binos->SetPlayerActor(mPlayerActor.get());
    }
-   catch(const CEGUI::Exception &e)
+   catch(const CEGUI::Exception& e)
    {
-      CPPUNIT_FAIL(e.getMessage().c_str() + '\n');
+      CPPUNIT_FAIL(e.getMessage().c_str());
    }
 
    CPPUNIT_ASSERT(binos->GetShowDistance());
@@ -202,9 +185,9 @@ void ToolTests::TestLRF()
       lrf = new SimCore::Tools::LaserRangeFinder(*mApp->GetCamera(), NULL);
       lrf->SetPlayerActor(mPlayerActor.get());
    }
-   catch(CEGUI::Exception &e)
+   catch(CEGUI::Exception& e)
    {
-      CPPUNIT_FAIL(e.getMessage().c_str() + '\n');
+      CPPUNIT_FAIL(e.getMessage().c_str());
    }
 
    CPPUNIT_ASSERT_MESSAGE("Laser range finder should be disabled by default", !lrf->IsEnabled());
@@ -225,9 +208,9 @@ void ToolTests::TestCompass()
       compass = new SimCore::Tools::Compass(NULL, *dtABC::Application::GetInstance(0)->GetCamera(), 0.0f);
       compass->SetPlayerActor(mPlayerActor.get());
    }
-   catch(CEGUI::Exception &e)
+   catch(CEGUI::Exception& e)
    {
-      CPPUNIT_FAIL(e.getMessage().c_str() + '\n');
+      CPPUNIT_FAIL(e.getMessage().c_str());
    }
 
    CPPUNIT_ASSERT_MESSAGE("Binoculars should be disabled by default", !compass->IsEnabled());
@@ -245,9 +228,9 @@ void ToolTests::TestGPS()
       gps = new SimCore::Tools::GPS(NULL);
       gps->SetPlayerActor(mPlayerActor.get());
    }
-   catch(CEGUI::Exception &e)
+   catch(CEGUI::Exception& e)
    {
-      CPPUNIT_FAIL(e.getMessage().c_str() + '\n');
+      CPPUNIT_FAIL(e.getMessage().c_str());
    }
 
    CPPUNIT_ASSERT_MESSAGE("Binoculars should be disabled by default", !gps->IsEnabled());

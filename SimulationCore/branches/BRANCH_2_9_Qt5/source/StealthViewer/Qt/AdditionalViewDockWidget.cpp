@@ -31,10 +31,10 @@
 #include <dtUtil/warningdisable.h>
 DT_DISABLE_WARNING_ALL_START
 #include <QtOpenGL/QGLWidget>
-#include <QtGui/QMessageBox>
+#include <QtWidgets/QMessageBox>
 #include <QtGui/QCloseEvent>
-#include <QtGui/QMainWindow>
-#include <QtGui/QVBoxLayout>
+#include <QtWidgets/QMainWindow>
+#include <QtWidgets/QVBoxLayout>
 DT_DISABLE_WARNING_END
 
 #include <StealthViewer/Qt/AdditionalViewDockWidget.h>
