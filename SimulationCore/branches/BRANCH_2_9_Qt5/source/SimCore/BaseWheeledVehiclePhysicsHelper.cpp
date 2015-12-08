@@ -87,9 +87,10 @@ namespace SimCore
    osg::Vec3 BaseWheeledVehiclePhysicsActComp::ComputeAeroDynDrag(const osg::Vec3& linearVelocity)
    {
       osg::Vec3 workVec = linearVelocity;
-      float magnitude = workVec.normalize();
-      float dragMag = -mAeroDynDragCoefficient * mAeroDynDragArea * magnitude * magnitude * 0.5f * AIR_DENSITY;
-      workVec *= dragMag;
+      for (unsigned i = 0; i < 3; ++i)
+      {
+         workVec[i] = -mAeroDynDragCoefficient * mAeroDynDragArea * workVec[i] * workVec[i] * 0.5f * AIR_DENSITY;
+      }
       return workVec;
    }
 
