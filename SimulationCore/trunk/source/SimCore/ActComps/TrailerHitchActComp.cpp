@@ -63,9 +63,6 @@ namespace SimCore
          AddInstance(this);
       }
 
-      const dtGame::ActorComponent::ACType TrailerHitchActComp::TYPE( new dtCore::ActorType("TrailerHitch", "ActorComponents",
-            "An actorcomponent that will hitch two actors together in physics like a truck to a trailer.", dtGame::ActorComponent::BaseActorComponentType));
-
       const dtUtil::RefString TrailerHitchActComp::FRONT_HITCH_DOF_NAME_DEFAULT = "dof_hitch_front";
       const dtUtil::RefString TrailerHitchActComp::REAR_HITCH_DOF_NAME_DEFAULT = "dof_hitch_rear";
 
