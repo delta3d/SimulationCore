@@ -86,6 +86,7 @@
 
 #include <SimCore/ActComps/AnimationClipActComp.h>
 #include <SimCore/ActComps/BodyPaintActComp.h>
+#include <SimCore/ActComps/TrailerHitchActComp.h>
 
 #include <dtActors/engineactorregistry.h>
 
@@ -172,6 +173,8 @@ namespace SimCore
             "Plays animation clips stored in the geometry of a drawable.", dtGame::ActorComponent::BaseActorComponentType));
       const dtGame::ActorComponent::ACType BodyPaintActComp::TYPE( new dtCore::ActorType("BodyPaintActComp", "ActorComponents",
             "Repaints geometry in the shader given colors", dtGame::ActorComponent::BaseActorComponentType));
+      const dtGame::ActorComponent::ACType TrailerHitchActComp::TYPE( new dtCore::ActorType("TrailerHitch", "ActorComponents",
+            "An actorcomponent that will hitch two actors together in physics like a truck to a trailer.", dtGame::ActorComponent::BaseActorComponentType));
    }
 
    namespace Actors
@@ -458,6 +461,7 @@ namespace SimCore
 
          mActorFactory->RegisterType<SimCore::ActComps::AnimationClipActComp>();
          mActorFactory->RegisterType<SimCore::ActComps::BodyPaintActComp>();
+         mActorFactory->RegisterType<SimCore::ActComps::TrailerHitchActComp>();
 
       }
    }
