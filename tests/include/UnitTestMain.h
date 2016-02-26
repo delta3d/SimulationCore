@@ -22,17 +22,4 @@ dtGUI::CEUIDrawable& GetGlobalCEGUIDrawable();
 dtGUI::GUI& GetGlobalGUI();
 #endif
 
-inline void SendTestPreframe(dtGame::GameManager& gm, double simdt, double realdt)
-{
-   double times[2] = {simdt, realdt};
-
-   // hack a preframe that I want :-P
-   dtCore::Base::MessageData dataToSend;
-   dataToSend.message = dtCore::System::MESSAGE_PRE_FRAME;
-   dataToSend.sender = &dtCore::System::GetInstance();
-   dataToSend.userData = times;
-
-   gm.OnMessage(&dataToSend);
-}
-
 #endif /*MAIN_H_*/

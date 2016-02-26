@@ -49,25 +49,6 @@ namespace SimCore
             AddPhysicsObject(*physObj, true);
          }
 
-         virtual void PrePhysicsUpdate()
-         {
-            dtPhysics::PhysicsObject* physObj = GetMainPhysicsObject();
-            if (physObj != NULL)
-            {
-               dtCore::Transform xform;
-               dtGame::GameActorProxy* owner = NULL;
-               GetOwner(owner);
-               dtCore::Transformable* xformable;
-               owner->GetDrawable(xformable);
-               if (xformable != NULL)
-               {
-                  xformable->GetTransform(xform);
-               }
-
-               physObj->SetTransformAsVisual(xform);
-            }
-         }
-
          virtual void OnRemovedFromActor(dtCore::BaseActorObject& actor)
          {
             dtPhysics::PhysicsActComp::OnRemovedFromActor(actor);
@@ -133,15 +114,6 @@ namespace SimCore
             if (plat->IsRemote())
             {
                physObj->SetMechanicsType(dtPhysics::MechanicsType::KINEMATIC);
-            }
-
-            if (physObj->GetMechanicsType() != dtPhysics::MechanicsType::DYNAMIC)
-            {
-               if (!IsPrePhysicsCallbackValid())
-               {
-                  // If it's kinematic or static, the prephysics callback should be applied.
-                  SetPrePhysicsCallback(dtPhysics::PhysicsActComp::UpdateCallback(this, &PlatformDefaultPhysicsActComp::PrePhysicsUpdate));
-               }
             }
 
             AddPhysicsObject(*physObj, true);

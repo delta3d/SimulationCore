@@ -157,7 +157,8 @@ namespace SimCore
 
             void Update(const osg::Vec3& lightPos);
 
-            void OnMessage(dtCore::Base::MessageData* data);
+            void OnSystem(const dtUtil::RefString& phase, double deltaSim, double deltaReal)
+;
             
             void UpdateView(dtCore::Camera& pCamera);
 

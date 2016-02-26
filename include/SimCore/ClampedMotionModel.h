@@ -78,7 +78,8 @@ namespace SimCore
           *
           * @param data the message data
           */
-         virtual void OnMessage(MessageData *data);
+         virtual void OnSystem(const dtUtil::RefString& phase, double deltaSim, double deltaReal)
+;
 
          /**
           * Set the max degrees this motion model can turn in relation to

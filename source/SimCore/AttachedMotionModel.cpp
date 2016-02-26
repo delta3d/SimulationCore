@@ -58,7 +58,7 @@ namespace SimCore
          SetDefaultMappings(keyboard, mouse);
       }
       
-      AddSender(&dtCore::System::GetInstance());
+      dtCore::System::GetInstance().TickSignal.connect_slot(this, &AttachedMotionModel::OnSystem);
 
       mMouse = mouse;
    }
@@ -68,8 +68,6 @@ namespace SimCore
     */
    AttachedMotionModel::~AttachedMotionModel()
    {
-      RemoveSender(&dtCore::System::GetInstance());
-      
       DeregisterInstance(this);
    }
          
@@ -145,14 +143,14 @@ namespace SimCore
       
    }
             
-   void AttachedMotionModel::OnMessage(MessageData *data)
+   void AttachedMotionModel::OnSystem(const dtUtil::RefString& phase, double deltaSim, double deltaReal)
    {
-      if(data->message == dtCore::System::MESSAGE_POST_EVENT_TRAVERSAL &&
+      if (phase == dtCore::System::MESSAGE_POST_EVENT_TRAVERSAL &&
          GetTarget() != NULL &&
          IsEnabled())
       {
          //get the real time. 
-         const double deltaFrameTime = static_cast<const double*>(data->userData)[1];
+         const double deltaFrameTime = deltaReal;
    
          dtCore::Transform transform;
    
