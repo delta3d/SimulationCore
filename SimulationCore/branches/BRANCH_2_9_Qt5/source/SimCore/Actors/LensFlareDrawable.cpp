@@ -179,13 +179,13 @@ namespace SimCore
          //, mTraversalMask(0xFFFFFFFF)
          , mLensFlareDrawable(new LensFlareOSGDrawable())
       {
-         AddSender(&dtCore::System::GetInstance());
+         dtCore::System::GetInstance().TickSignal.connect_slot(this, &LensFlareDrawable::OnSystem);
       }
 
       //////////////////////////////////////////////////////////////////////////
       LensFlareDrawable::~LensFlareDrawable()
       {
-         RemoveSender(&dtCore::System::GetInstance());
+         dtCore::System::GetInstance().TickSignal.disconnect(this);
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -244,7 +244,8 @@ namespace SimCore
       }
       
       //////////////////////////////////////////////////////////////////////////
-      void LensFlareDrawable::OnMessage(dtCore::Base::MessageData* data)
+      void LensFlareDrawable::OnSystem(const dtUtil::RefString& phase, double deltaSim, double deltaReal)
+
       {
          /*if (data->message == dtCore::System::MESSAGE_POST_EVENT_TRAVERSAL)
          {

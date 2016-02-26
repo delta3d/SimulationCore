@@ -236,7 +236,8 @@ namespace SimCore
             static void CalculateBoundingBox(dtCore::Transformable& transformable, osg::BoundingBox& outBB);
 
             // TEMP:
-            virtual void OnMessage(MessageData* data);
+            virtual void OnSystem(const dtUtil::RefString& phase, double deltaSim, double deltaReal)
+;
             // TEMP:
 
             /// Called to update a single label on a single actor.

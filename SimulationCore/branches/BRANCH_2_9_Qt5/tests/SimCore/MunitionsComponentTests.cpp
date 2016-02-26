@@ -391,7 +391,7 @@ namespace SimCore
          {
             mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::PLAYER_ACTOR_TYPE, curProxy);
 
-            curEntity = dynamic_cast<SimCore::Actors::BaseEntity*> (&(curProxy->GetGameActor()));
+            curEntity = curProxy->GetDrawable<SimCore::Actors::BaseEntity>();
             curProxy->GetComponent<dtGame::DeadReckoningActorComponent>()->SetAutoRegisterWithGMComponent(false);
             listToFill.push_back( curEntity );
 
@@ -1128,7 +1128,7 @@ namespace SimCore
          dtCore::RefPtr<SimCore::Actors::BaseEntity> entity;
          std::vector<dtCore::RefPtr<SimCore::Actors::BaseEntity> > entities;
          CreateTestEntities( entities, 1, true );
-         entity = dynamic_cast<SimCore::Actors::BaseEntity*> (&(entities[0]->GetGameActorProxy().GetGameActor()));
+         entity = entities[0]->GetGameActorProxy().GetDrawable<SimCore::Actors::BaseEntity>();
          CPPUNIT_ASSERT_MESSAGE( "A valid test entity should have been created",
             entity.valid() );
 
@@ -1437,7 +1437,7 @@ namespace SimCore
          std::string model("StaticMeshes:T80:t80u_good.ive");
          entityAP->GetProperty("Non-damaged actor")->FromString(model);
          dtCore::Transform xform;
-         entityAP->GetGameActor().GetTransform(xform);
+         entityAP->GetDrawable<dtCore::Transformable>()->GetTransform(xform);
          xform.SetTranslation(tankLocation);
          SimCore::Actors::BaseEntity* curEntity;
          entityAP->GetDrawable(curEntity);
@@ -1458,7 +1458,7 @@ namespace SimCore
          RefPtr<dtCore::ActorProxy> proxy = container[0];
          SimCore::Actors::DetonationActorProxy* dap = dynamic_cast<SimCore::Actors::DetonationActorProxy*>(proxy.get());
          CPPUNIT_ASSERT_MESSAGE("The 1 actor in the GM should a be a detonation actor, hence the dynamic_cast should not have failed", dap != NULL);
-         SimCore::Actors::DetonationActor& detActor = static_cast<SimCore::Actors::DetonationActor&>(dap->GetGameActor());
+         SimCore::Actors::DetonationActor& detActor = *dap->GetDrawable<SimCore::Actors::DetonationActor>();
          CPPUNIT_ASSERT_EQUAL_MESSAGE("The detonation actor should have 0 lingering shot seconds.",0.0f, detActor.GetSmokeLifeTime());
          detActor.GetTransform(xform);
          osg::Vec3 pos;
@@ -1540,7 +1540,7 @@ namespace SimCore
          dtCore::RefPtr<SimCore::Actors::BaseEntity> entity;
          std::vector<dtCore::RefPtr<SimCore::Actors::BaseEntity> > entities;
          CreateTestEntities( entities, 1, true );
-         entity = dynamic_cast<SimCore::Actors::BaseEntity*> (&(entities[0]->GetGameActorProxy().GetGameActor()));
+         entity = entities[0]->GetGameActorProxy().GetDrawable<SimCore::Actors::BaseEntity>();
          CPPUNIT_ASSERT_MESSAGE( "A valid test entity should have been created",
             entity.valid() );
 
