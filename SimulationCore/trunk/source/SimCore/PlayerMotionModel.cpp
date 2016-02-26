@@ -57,9 +57,10 @@ namespace SimCore
    }
 
    //////////////////////////////////////////////////////////////////////////         
-   void PlayerMotionModel::OnMessage(MessageData *data)
+   void PlayerMotionModel::OnSystem(const dtUtil::RefString& phase, double deltaSim, double deltaReal)
+
    {
-      if(data->message == dtCore::System::MESSAGE_POST_EVENT_TRAVERSAL &&
+      if (phase == dtCore::System::MESSAGE_POST_EVENT_TRAVERSAL &&
          GetTarget() != NULL &&
          IsEnabled())
       {
@@ -70,7 +71,7 @@ namespace SimCore
          transform.GetTranslation(position);
 
          // Update the player
-         dtCore::FPSMotionModel::OnMessage(data);
+         dtCore::FPSMotionModel::OnSystem(phase, deltaSim, deltaReal);
 
          // If physics, force the physics to update the player
          SimCore::Actors::HumanWithPhysicsActor* player = dynamic_cast<SimCore::Actors::HumanWithPhysicsActor*>(GetTarget());

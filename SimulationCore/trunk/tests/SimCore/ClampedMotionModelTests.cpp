@@ -191,18 +191,10 @@ class ClampedMotionModelTests : public CPPUNIT_NS::TestFixture
       //////////////////////////////////////////////////////////////
       void AdvanceTime( float timeDelta = 1.0f )
       {
-         double time[] = {timeDelta,timeDelta}; // motion model accesses index 1
-         dtCore::Base::MessageData msg;
-         msg.message = dtCore::System::MESSAGE_POST_EVENT_TRAVERSAL;
-         msg.userData = &time;
-
          // Bypass the whole message system and send the message
          // directly to the motion model to be ticked with EXACT time.
-         //
-         // NOTE: The local message struct pointer SHOULD be safe since
-         // this motion model does not maintain nor pass the pointer
-         // beyond the scope of this function call.
-         mMotionModel->OnMessage( &msg );
+         // This assumes that the time scale is 1, though.  Maybe one of the times should be scaled based on that.
+         mMotionModel->OnSystem(dtCore::System::MESSAGE_POST_EVENT_TRAVERSAL, timeDelta, timeDelta);
       }
 
       //////////////////////////////////////////////////////////////

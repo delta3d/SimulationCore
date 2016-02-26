@@ -129,7 +129,8 @@ namespace SimCore
           *
           * @param data the message data
           */
-         virtual void OnMessage(MessageData *data);
+         virtual void OnSystem(const dtUtil::RefString& phase, double deltaSim, double deltaReal)
+;
 
          /**
           * @return HPR orientation set on the last call to OnMessage.

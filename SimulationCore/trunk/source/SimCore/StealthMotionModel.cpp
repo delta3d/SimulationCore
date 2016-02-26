@@ -202,7 +202,7 @@ namespace SimCore
    }
 
    /////////////////////////////////////////////////////////////////////////////
-   void StealthMotionModel::OnMessage(MessageData *data)
+   void StealthMotionModel::OnSystem(const dtUtil::RefString& phase, double deltaSim, double deltaReal)
    {
       if (GetTarget() == NULL)
          return;
@@ -236,7 +236,7 @@ namespace SimCore
       transform.GetTranslation(xyzBefore);
 
       // Handle the regular inherited motion
-      FlyMotionModel::OnMessage(data);
+      FlyMotionModel::OnSystem(phase, deltaSim, deltaReal);
 
       GetTarget()->GetTransform(transform, dtCore::Transformable::REL_CS);
       transform.GetTranslation(xyzAfter);
@@ -249,7 +249,7 @@ namespace SimCore
 
       // Collide with ground
       if(mScene.valid() && GetTarget() != NULL && IsEnabled() &&
-            (data->message == dtCore::System::MESSAGE_POST_EVENT_TRAVERSAL || data->message == dtCore::System::MESSAGE_PAUSE))
+            (phase == dtCore::System::MESSAGE_POST_EVENT_TRAVERSAL || phase == dtCore::System::MESSAGE_PAUSE))
       {
          if (mCollideWithGround)
             CollideWithGround();

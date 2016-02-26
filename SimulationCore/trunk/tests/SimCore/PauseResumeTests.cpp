@@ -107,7 +107,7 @@ void PauseResumeTests::TestPauseAndResume()
    mGM->AddComponent(*new dtGame::DefaultMessageProcessor, dtGame::GameManager::ComponentPriority::HIGHEST);
    mGM->AddComponent(*new dtGame::DeadReckoningComponent, dtGame::GameManager::ComponentPriority::HIGHER);
 
-   RefPtr<dtGame::GameActorProxy> proxy = mGM->CreateRemoteGameActor(*SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE);
+   RefPtr<dtGame::GameActorProxy> proxy = mGM->CreateRemoteActor(*SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE);
    CPPUNIT_ASSERT(proxy.valid());
    SimCore::Actors::BaseEntityActorProxy *gap = dynamic_cast<SimCore::Actors::BaseEntityActorProxy*>(proxy.get());
    CPPUNIT_ASSERT(gap != NULL);

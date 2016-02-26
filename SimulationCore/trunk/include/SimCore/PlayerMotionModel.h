@@ -55,7 +55,8 @@ namespace SimCore
 
          // Message handler callback.
          // @param data the message data
-         virtual void OnMessage(MessageData *data);
+         virtual void OnSystem(const dtUtil::RefString& phase, double deltaSim, double deltaReal)
+;
 
       private:
    };
