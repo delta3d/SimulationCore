@@ -119,7 +119,8 @@ namespace SimCore
           *
           * @param data the message data
           */
-         virtual void OnMessage(MessageData *data);
+         void OnSystem(const dtUtil::RefString& phase, double deltaSim, double deltaReal);
+;
 
          dtCore::LogicalAxis* GetLeftRightKeyAxis() { return mTurnLeftRightKeyAxis.get(); }
          const dtCore::LogicalAxis* GetLeftRightKeyAxis() const { return mTurnLeftRightKeyAxis.get(); }

@@ -376,13 +376,13 @@ namespace SimCore
       LabelManager::LabelManager()
       : mTimeUntilSort(0.0f)
       {
-         AddSender( &dtCore::System::GetInstance() );
+         dtCore::System::GetInstance().TickSignal.connect_slot(this, &LabelManager::OnSystem);
       }
 
       //////////////////////////////////////////////////////////////////////////
       LabelManager::~LabelManager()
       {
-         RemoveSender( &dtCore::System::GetInstance() );
+         dtCore::System::GetInstance().TickSignal.disconnect(this);
          ClearLabelsFromGUILayer();
       }
 
@@ -854,15 +854,16 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void LabelManager::OnMessage( MessageData* data )
+      void LabelManager::OnSystem(const dtUtil::RefString& phase, double deltaSim, double deltaReal)
+
       {
          // In frame sync, the cameras have already had their view matrices updated
          // which we need, so here is where the update occurs.
-         if (data->message == dtCore::System::MESSAGE_FRAME_SYNCH)
+         if (phase == dtCore::System::MESSAGE_FRAME_SYNCH)
          {
             try
             {
-               Update(*static_cast<const double*>(data->userData));
+               Update(deltaSim);
             }
             catch (const dtUtil::Exception& ex)
             {

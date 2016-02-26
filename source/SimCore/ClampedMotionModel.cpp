@@ -73,9 +73,10 @@ namespace SimCore
    }
 
    //////////////////////////////////////////////////////////////////////////         
-   void ClampedMotionModel::OnMessage(MessageData *data)
+   void ClampedMotionModel::OnSystem(const dtUtil::RefString& phase, double , double)
+
    {
-      if(data->message == dtCore::System::MESSAGE_POST_EVENT_TRAVERSAL
+      if (phase == dtCore::System::MESSAGE_POST_EVENT_TRAVERSAL
          && (GetTarget() != NULL || GetTargetDOF() != NULL) 
          && IsEnabled() 
          && ( GetMouse()->GetHasFocus() || mTestMode ) )
